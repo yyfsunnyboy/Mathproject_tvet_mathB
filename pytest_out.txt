@@ -1,0 +1,15 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: E:\Python\Mathproject_tvet_mathB
+configfile: pytest.ini
+plugins: anyio-4.12.1
+collecting ... collected 5 items
+
+tests/test_descriptive_statistics_analyzer.py::test_empirical_rule_probability_classification PASSED [ 20%]
+tests/test_descriptive_statistics_analyzer.py::test_empirical_rule_population_count_classification PASSED [ 40%]
+tests/test_descriptive_statistics_analyzer.py::test_empirical_rule_probability_under_mu_sigma_classification PASSED [ 60%]
+tests/test_descriptive_statistics_analyzer.py::test_compute_population_standard_deviation_classification PASSED [ 80%]
+tests/test_descriptive_statistics_analyzer.py::test_compare_distribution_spread_classification PASSED [100%]
+
+============================== 5 passed in 0.07s ==============================

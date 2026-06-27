@@ -1,0 +1,78 @@
+{
+  "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+  "packaged_at": "2026-06-27T03:42:00Z",
+  "summary": {
+    "verified": [
+      "src_3856",
+      "src_3857",
+      "src_3858",
+      "src_3859",
+      "src_3897",
+      "src_3898"
+    ],
+    "failed": [],
+    "not_packaged": []
+  },
+  "components": {
+    "src_3856": {
+      "status": "verified",
+      "mode": "multi_blank",
+      "answer": "[1360, 320, 3]",
+      "has_image": false,
+      "subq_count": 3,
+      "choice_count": 0,
+      "expl_len": 202,
+      "verified_at": "2026-06-27T03:42:00Z"
+    },
+    "src_3857": {
+      "status": "verified",
+      "mode": "multi_blank",
+      "answer": "[500, 160, 680]",
+      "has_image": false,
+      "subq_count": 3,
+      "choice_count": 0,
+      "expl_len": 170,
+      "verified_at": "2026-06-27T03:42:00Z"
+    },
+    "src_3858": {
+      "status": "verified",
+      "mode": "multi_blank",
+      "answer": "[1900, 320]",
+      "has_image": false,
+      "subq_count": 2,
+      "choice_count": 0,
+      "expl_len": 127,
+      "verified_at": "2026-06-27T03:42:00Z"
+    },
+    "src_3859": {
+      "status": "verified",
+      "mode": "single_choice",
+      "answer": "D",
+      "has_image": true,
+      "subq_count": 0,
+      "choice_count": 4,
+      "expl_len": 82,
+      "verified_at": "2026-06-27T03:42:00Z"
+    },
+    "src_3897": {
+      "status": "verified",
+      "mode": "single_choice",
+      "answer": "C",
+      "has_image": false,
+      "subq_count": 0,
+      "choice_count": 4,
+      "expl_len": 67,
+      "verified_at": "2026-06-27T03:42:00Z"
+    },
+    "src_3898": {
+      "status": "verified",
+      "mode": "single_choice",
+      "answer": "D",
+      "has_image": false,
+      "subq_count": 0,
+      "choice_count": 4,
+      "expl_len": 116,
+      "verified_at": "2026-06-27T03:42:00Z"
+    }
+  }
+}

@@ -202,7 +202,11 @@ def _read_generator_specs(init_path: Path) -> list[dict[str, object]]:
     if not init_path.is_file():
         return []
     try:
-        tree = ast.parse(init_path.read_text(encoding="utf-8", errors="replace"))
+        # utf-8-sig strips the UTF-8 BOM (EF BB BF) that some editors/tools emit;
+        # using plain "utf-8" leaves the BOM as U+FEFF which causes ast.parse to raise
+        # SyntaxError: invalid non-printable character, silently returning [] and making
+        # every component appear absent from GENERATOR_SPECS.
+        tree = ast.parse(init_path.read_text(encoding="utf-8-sig", errors="replace"))
     except Exception:
         return []
     for node in tree.body:

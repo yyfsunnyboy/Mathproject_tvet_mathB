@@ -246,3 +246,48 @@ def build_numeric_distractor_candidates(
             _add(total / max(1, count - 1))
 
     return candidates[: max(1, int(max_distractors))]
+
+
+def empirical_rule_central_probability(k: float | int) -> float:
+    k_abs = abs(k)
+    if abs(k_abs - 1) < 1e-9:
+        return 0.68
+    elif abs(k_abs - 2) < 1e-9:
+        return 0.95
+    elif abs(k_abs - 3) < 1e-9:
+        return 0.997
+    raise ValueError(f"Unsupported standard deviation multiplier k={k}")
+
+
+def empirical_rule_one_tail_probability(k: float | int) -> float:
+    central_prob = empirical_rule_central_probability(k)
+    return round((1.0 - central_prob) / 2.0, 5)
+
+
+def empirical_rule_cumulative_probability(k: float | int, direction: str) -> float:
+    k_val = float(k)
+    if abs(k_val) < 1e-9:
+        return 0.5
+    
+    central_prob = empirical_rule_central_probability(k_val)
+    half_central = central_prob / 2.0
+    
+    if direction == "below":
+        if k_val > 0:
+            prob = 0.5 + half_central
+        else:
+            prob = 0.5 - half_central
+    elif direction == "above":
+        if k_val > 0:
+            prob = 0.5 - half_central
+        else:
+            prob = 0.5 + half_central
+    else:
+        raise ValueError(f"Unknown direction: {direction}")
+    
+    return round(prob, 5)
+
+
+def population_count_from_probability(total: float | int, probability: float) -> int:
+    return int(round(total * probability))
+

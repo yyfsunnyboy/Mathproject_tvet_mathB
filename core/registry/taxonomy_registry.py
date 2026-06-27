@@ -1,4 +1,4 @@
-﻿"""Bridge from administrative skill_id to domain entrypoints via taxonomy config."""
+"""Bridge from administrative skill_id to domain entrypoints via taxonomy config."""
 
 from __future__ import annotations
 
@@ -92,6 +92,13 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_statistical_chart_reading",
+    },
+    "vh_數學B4_NormalDistributionAndEmpiricalRule": {
+        "fixed_domain_key": "statistics.descriptive_statistics",
+        "domain": "statistics",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_normal_distribution_empirical_rule",
     },
 }
 
@@ -201,6 +208,17 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "default_curriculum_profile": "vocational_high_b",
         # All domain operations allowed for this skill; derived from registry.
         "allowed_types": get_domain_operations("statistics.table_chart"),
+    },
+    "vh_數學B4_NormalDistributionAndEmpiricalRule": {
+        "fixed_domain_key": "statistics.descriptive_statistics",
+        "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+        "entrypoint": "build_descriptive_statistics_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "empirical_rule_probability",
+            "empirical_rule_population_count",
+            "compare_distribution_spread",
+        ],
     },
 }
 

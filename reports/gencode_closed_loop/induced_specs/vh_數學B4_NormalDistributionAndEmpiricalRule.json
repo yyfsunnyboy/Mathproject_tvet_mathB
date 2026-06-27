@@ -1,0 +1,566 @@
+{
+  "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+  "spec_source": "phase1_induced_draft",
+  "items": [
+    {
+      "problem_type_id": "short_answer_read_table_short_answer",
+      "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+      "target_task": "read_table",
+      "task_family": "generic_numeric_family",
+      "display_name": "short_answer / read_table",
+      "answer_format_hint": "text_short",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        3856,
+        3858
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "source_has_choices": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "short_answer"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "statistics_context"
+        ],
+        "required_math_objects": [
+          "statistics_context"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "read_table"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "point_quadrant"
+        },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "short_answer_read_table_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "read_table",
+        "short_answer",
+        [
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "short_answer_read_table_short_answer",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "point_quadrant"
+    },
+    {
+      "problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
+      "display_name": "short_answer / applied_quadratic_inequality_problem",
+      "answer_format_hint": "interval",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        3857
+      ],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "statistics_context"
+        ],
+        "required_math_objects": [
+          "statistics_context"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "quadratic_factoring_reasoning",
+          "statistics_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "applied_quadratic_inequality_problem"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "applied_quadratic_inequality_problem"
+        },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "applied_quadratic_inequality_problem",
+        "short_answer",
+        [
+          "quadratic_factoring_reasoning",
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "applied_quadratic_inequality_problem"
+    },
+    {
+      "problem_type_id": "single_choice_read_table_single_choice",
+      "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+      "target_task": "read_table",
+      "task_family": "generic_numeric_family",
+      "display_name": "single_choice / read_table",
+      "answer_format_hint": "A/B/C/D",
+      "answer_fields": null,
+      "answer_separator": null,
+      "source_example_ids": [
+        3897,
+        3898
+      ],
+      "answer_contract": {
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "answer_semantics": "choice_label",
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "explicit_single_choice",
+        "accepted_formats": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "statistics_context"
+        ],
+        "required_math_objects": [
+          "statistics_context"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable",
+          "duplicated_choices",
+          "no_correct_choice",
+          "multiple_correct_choices_when_single_choice"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "read_table"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": true
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "point_quadrant_choice"
+        },
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "single_choice_read_table_single_choice",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks",
+          "choices_policy"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "single_choice",
+        "read_table",
+        "single_choice",
+        [
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "read_table_single_choice",
+      "value_type_prefix": "single_choice",
+      "_resolved_template_slot": "point_quadrant_choice"
+    }
+  ]
+}

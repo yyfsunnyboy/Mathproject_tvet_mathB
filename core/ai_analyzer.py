@@ -300,8 +300,38 @@ def _build_default_chat_prompt_from_registry():
 DEFAULT_CHAT_PROMPT = _build_default_chat_prompt_from_registry()
 
 
+GENERIC_FOLLOW_UP_FALLBACK_SETS = [
+    [
+        "為什麼這一步要這樣做？",
+        "題目中哪個條件最重要？",
+        "這裡最容易犯什麼錯？",
+    ],
+    [
+        "這一步背後的觀念是什麼？",
+        "題目裡哪個數字或符號要先確認？",
+        "別人常在哪裡算錯？",
+    ],
+    [
+        "為什麼要用這個方法？",
+        "題目條件要怎麼解讀？",
+        "哪種做法最容易走偏？",
+    ],
+]
+
+
+def build_generic_follow_up_fallback(variant=0):
+    """Short generic follow-ups when LLM output is missing or invalid."""
+    return list(GENERIC_FOLLOW_UP_FALLBACK_SETS[variant % len(GENERIC_FOLLOW_UP_FALLBACK_SETS)])
+
+
+def _prompt_fingerprint(text):
+    if not isinstance(text, str):
+        return ''
+    return re.sub(r'[\s\W_]+', '', text, flags=re.UNICODE).lower()
+
+
 def _looks_generic_followup_prompt(text):
-    """Detect placeholder-like prompts that should be regenerated."""
+    """Detect placeholder-like or legacy template prompts that should be rejected."""
     if not isinstance(text, str):
         return True
     s = text.strip()
@@ -318,10 +348,33 @@ def _looks_generic_followup_prompt(text):
         '具體修正步驟或驗算',
         'prompt 1',
         'prompt 2',
-        'prompt 3'
+        'prompt 3',
+        '【觀察】',
+        '【聯想】',
+        '【執行】',
+        '問題1 (',
+        '問題2 (',
+        '問題3 (',
+        '是否成立',
     ]
     lowered = s.lower()
-    return any(marker in s or marker in lowered for marker in generic_markers)
+    if any(marker in s or marker in lowered for marker in generic_markers):
+        return True
+    if re.match(r'^問題[123]\s*[\(:：]', s):
+        return True
+    if '驗算「' in s or '驗算"' in s:
+        return True
+    return False
+
+
+def _is_duplicate_of_user_question(prompt, user_question):
+    if not isinstance(prompt, str) or not isinstance(user_question, str):
+        return False
+    prompt_fp = _prompt_fingerprint(prompt)
+    user_fp = _prompt_fingerprint(user_question)
+    if not prompt_fp or not user_fp:
+        return False
+    return prompt_fp == user_fp or user_fp in prompt_fp or prompt_fp in user_fp
 
 
 def _extract_focus_phrase(user_question, question_context, ai_reply):
@@ -373,12 +426,6 @@ def build_dynamic_follow_up_prompts_variant(user_question='', question_context='
     return [s.format(focus=focus) for s in chosen]
 
 
-def _prompt_fingerprint(text):
-    if not isinstance(text, str):
-        return ''
-    return re.sub(r'[\s\W_]+', '', text, flags=re.UNICODE).lower()
-
-
 def diversify_follow_up_prompts(prompts, last_prompts, user_question='', question_context='', ai_reply='', turn_index=0):
     """Avoid cross-turn duplication by rewriting prompts when current equals previous turn."""
     current = normalize_follow_up_prompts(
@@ -395,44 +442,36 @@ def diversify_follow_up_prompts(prompts, last_prompts, user_question='', questio
     last_fp = [_prompt_fingerprint(p) for p in last_prompts[:3]]
 
     if current_fp == last_fp:
-        return build_dynamic_follow_up_prompts_variant(
-            user_question=user_question,
-            question_context=question_context,
-            ai_reply=ai_reply,
-            variant=(turn_index + 1)
-        )
+        return build_generic_follow_up_fallback(variant=(turn_index + 1))
 
     return current
 
 
 def normalize_follow_up_prompts(prompts, user_question='', question_context='', ai_reply=''):
-    """Keep valid prompts; regenerate if placeholders/generic text are returned."""
+    """Keep valid LLM follow-ups; use generic fallback only when output is invalid."""
     cleaned = []
     if isinstance(prompts, list):
-        for p in prompts[:3]:
-            if isinstance(p, str):
-                p = p.strip()
-                if p and p.lower() != 'none':
-                    cleaned.append(p)
+        for p in prompts:
+            if not isinstance(p, str):
+                continue
+            p = p.strip()
+            if not p or p.lower() == 'none':
+                continue
+            if _looks_generic_followup_prompt(p):
+                continue
+            if _is_duplicate_of_user_question(p, user_question):
+                continue
+            fp = _prompt_fingerprint(p)
+            if any(fp == _prompt_fingerprint(existing) for existing in cleaned):
+                continue
+            cleaned.append(p)
+            if len(cleaned) >= 3:
+                break
 
-    must_regen = len(cleaned) < 3 or all(_looks_generic_followup_prompt(p) for p in cleaned)
-    if must_regen:
-        return build_dynamic_follow_up_prompts(user_question, question_context, ai_reply)
+    if len(cleaned) < 3:
+        return build_generic_follow_up_fallback()
 
-    labels = ['【觀察】', '【聯想】', '【執行】']
-    normalized = []
-    for idx, p in enumerate(cleaned[:3]):
-        if labels[idx] in p:
-            normalized.append(p)
-        else:
-            normalized.append(f"問題{idx + 1} ({labels[idx]}：{p})")
-
-    # 去重防呆：若三句提示過度相似，改用系統產生的穩定提示
-    fps = [_prompt_fingerprint(p) for p in normalized]
-    if len(set(fps)) < len(fps):
-        return build_dynamic_follow_up_prompts(user_question, question_context, ai_reply)
-
-    return normalized
+    return cleaned[:3]
 
 
 def _unwrap_nested_reply_payload(reply_text):
@@ -1009,6 +1048,11 @@ def build_chat_prompt(skill_id, user_question, full_question_context, context, p
   "hint_focus": "...",
   "guided_question": "...",
   "micro_step": "...",
+  "follow_up_prompts": [
+    "...",
+    "...",
+    "..."
+  ],
   "forbidden": false
 }
 
@@ -1016,7 +1060,20 @@ def build_chat_prompt(skill_id, user_question, full_question_context, context, p
 - hint_focus：只指出一個核心概念，不超過 18 個中文字。
 - guided_question：只能問一個引導問題，不超過 28 個中文字。
 - micro_step：只能給一個下一步動作，不超過 22 個中文字。
-- forbidden：若你輸出了任何違規內容請設為 true，否則 false。"""
+- follow_up_prompts：固定 3 個學生可能追問，各不超過 28 個中文字。
+- forbidden：若你輸出了任何違規內容請設為 true，否則 false。
+
+follow_up_prompts 規則：
+- 必須根據目前題目、學生本輪提問及本次提示生成。
+- 使用自然、簡短的學生口吻。
+- 不得重複學生剛問過的問題。
+- 不得使用「問題1／問題2／問題3」或「觀察／聯想／執行」等標籤。
+- 不得把學生問題嵌入固定句型。
+- 不得直接透露答案。
+- 三題分別聚焦：
+  1. 為什麼要這樣做。
+  2. 題目條件、數字、圖表或符號怎麼理解。
+  3. 最可能的誤解或錯誤做法。"""
     extra_blocks.append(json_guardrail)
 
     # 3. Build Prompt via Composer

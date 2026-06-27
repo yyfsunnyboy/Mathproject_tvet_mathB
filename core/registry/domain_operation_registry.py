@@ -407,6 +407,9 @@ register_domain_spec(DomainCapabilitySpec(
         "frequency_weighted_statistics",
         "descriptive_statistics_table_completion",
         "descriptive_statistics",
+        "empirical_rule_probability",
+        "empirical_rule_population_count",
+        "compare_distribution_spread",
     }),
     operations={
         "compute_arithmetic_mean_from_raw_values": _op(
@@ -532,6 +535,27 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("multi_part", "single_choice"),
             supported_presentation_modes=("single_choice", "multi_part"),
             provided_capabilities=("median", "range"),
+        ),
+        "empirical_rule_probability": _op(
+            "empirical_rule_probability",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric", "multi_part", "table_fill", "multi_blank"),
+            supported_presentation_modes=("short_answer", "multi_blank", "table_fill"),
+            provided_capabilities=("empirical_rule_probability",),
+        ),
+        "empirical_rule_population_count": _op(
+            "empirical_rule_population_count",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("expression", "numeric", "multi_part", "table_fill", "multi_blank", "single_choice"),
+            supported_presentation_modes=("short_answer", "multi_blank", "table_fill", "single_choice"),
+            provided_capabilities=("empirical_rule_population_count",),
+        ),
+        "compare_distribution_spread": _op(
+            "compare_distribution_spread",
+            "build_descriptive_statistics_matrix",
+            supported_answer_types=("single_choice",),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("compare_distribution_spread",),
         ),
     },
 ))

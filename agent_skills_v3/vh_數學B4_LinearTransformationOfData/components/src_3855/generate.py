@@ -1,38 +1,146 @@
 from __future__ import annotations
 
+import random
 from typing import Any
 
-from core.domain.statistics.descriptive_statistics_domain import build_descriptive_statistics_matrix
-from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
-
-PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "expression"
+PRESENTATION_MODE = "single_choice"
+ANSWER_TYPE = "choice_label"
 PROBLEM_TYPE_ID = "compute_population_standard_deviation"
 TEXTBOOK_EXAMPLE_ID = 3855
 DEFAULT_COMPONENT_ID = "src_3855" if TEXTBOOK_EXAMPLE_ID else ""
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
-    matrix = build_descriptive_statistics_matrix(
-        seed=seed,
-        domain_operation="compute_population_standard_deviation",
-        curriculum_profile="vocational_high_b",
-        difficulty_profile="easy",
-        constraints={'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B4_LinearTransformationOfData', 'source_example_id': 3855, 'textbook_example_id': 3855, 'source_hash': '918aca1075d56040cdf05441815cad5c', 'problem_type_id': 'standard_deviation_computation', 'required_capabilities': ['standard_deviation'], 'classification_source': 'descriptive_statistics_domain_analyzer', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression', 'selected_operation': 'compute_population_standard_deviation', 'domain_operation': 'compute_population_standard_deviation', 'answer_shape': 'single_numeric', 'fixed_domain_key': 'statistics.descriptive_statistics'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B4_LinearTransformationOfData', 'source_example_id': 3855, 'textbook_example_id': 3855, 'source_hash': '918aca1075d56040cdf05441815cad5c', 'problem_type_id': 'standard_deviation_computation', 'required_capabilities': ['standard_deviation'], 'classification_source': 'descriptive_statistics_domain_analyzer', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression', 'selected_operation': 'compute_population_standard_deviation', 'domain_operation': 'compute_population_standard_deviation', 'answer_shape': 'single_numeric', 'fixed_domain_key': 'statistics.descriptive_statistics'}, 'problem_type_id': 'standard_deviation_computation', 'required_capabilities': ['standard_deviation'], 'classification_source': 'descriptive_statistics_domain_analyzer', 'source_hash': '918aca1075d56040cdf05441815cad5c', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 3855, 'answer_type': 'expression', 'exact_task_operation': '', 'source_answer_label': 'A (依線性變換原理)', 'domain_resolution': {'skill_id': 'vh_數學B4_LinearTransformationOfData', 'fixed_domain_key': 'statistics.descriptive_statistics', 'resolution_source': 'derived_capability_match', 'binding_status': 'derived', 'required_capabilities': ['standard_deviation'], 'matched_capabilities': ['standard_deviation'], 'selected_operation': 'standard_deviation_computation', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.statistics.descriptive_statistics_domain', 'entrypoint': 'build_descriptive_statistics_matrix', 'allowed_operations': ['compute_arithmetic_mean_from_raw_values', 'compute_arithmetic_mean_from_frequency_table', 'compute_weighted_mean', 'compute_median_from_raw_values', 'compute_mode_from_raw_values', 'compute_mode_from_frequency_table', 'compute_range', 'compute_population_variance', 'compute_population_standard_deviation', 'compute_sample_variance', 'compute_sample_standard_deviation', 'complete_descriptive_statistics_table', 'compute_quartiles_and_iqr', 'compare_dispersion', 'conceptual_dispersion_judgment'], 'curriculum_profile': 'vocational_high_b'}, 'question_text': '某公司全體員工隔年月薪皆增加 5000 元。已知調薪前平均為 47500 元、母體標準差為 3000 元。若調薪後平均為 [FORMULA_MISSING]、母體標準差為 [FORMULA_MISSING]，則下列敘述何者正確？', 'source_answer_text': 'A (依線性變換原理)'},
+    rng = random.Random(seed if seed is not None else 3855)
+    
+    # 1. Randomize parameters
+    if seed is None:
+        m = 47500
+        s = 3000
+        k = 5000
+    else:
+        m = rng.choice([35000, 38000, 40000, 42000, 45000, 48000, 50000, 52000])
+        s = rng.choice([2000, 2500, 3000, 3500, 4000, 5000])
+        k = rng.choice([-4000, -3000, -2000, 2000, 3000, 4000, 5000])
+
+    adj_str = f"增加 {k} 元" if k > 0 else f"減少 {abs(k)} 元"
+
+    # 2. Formulate question text
+    question_text = (
+        f"某公司全體員工隔年月薪皆{adj_str}。已知調薪前全體員工月薪的平均數為 {m} 元、"
+        f"母體標準差為 {s} 元。若調薪後平均數為 \\(\\mu_y\\) 元、母體標準差為 \\(\\sigma_y\\) 元，"
+        f"則下列敘述何者正確？"
     )
+
+    new_m = m + k
+    new_s = s
+
+    # 3. Create 4 choices
+    correct_text = f"\\(\\mu_y = {new_m}\\)，\\(\\sigma_y = {new_s}\\)"
+    opt2 = f"\\(\\mu_y = {m}\\)，\\(\\sigma_y = {s}\\)"
+    opt3 = f"\\(\\mu_y = {new_m}\\)，\\(\\sigma_y = {s + abs(k)}\\)"
+    opt4 = f"\\(\\mu_y = {m - k}\\)，\\(\\sigma_y = {s}\\)"
+
+    options_pool = [
+        {"text": correct_text, "is_correct": True},
+        {"text": opt2, "is_correct": False},
+        {"text": opt3, "is_correct": False},
+        {"text": opt4, "is_correct": False},
+    ]
+
+    # Deduplicate in case parameter combinations make options identical (e.g. k=0 which is not in our pool anyway)
+    # Ensure options are distinct
+    seen = set()
+    unique_options = []
+    for opt in options_pool:
+        if opt["text"] not in seen:
+            seen.add(opt["text"])
+            unique_options.append(opt)
+    
+    # Fallback to make sure we have exactly 4 choices
+    while len(unique_options) < 4:
+        dummy_m = new_m + rng.choice([-1000, 1000, 2000])
+        dummy_s = new_s + rng.choice([-500, 500, 1000])
+        if dummy_s <= 0:
+            dummy_s = 500
+        text = f"\\(\\mu_y = {dummy_m}\\)，\\(\\sigma_y = {dummy_s}\\)"
+        if text not in seen:
+            seen.add(text)
+            unique_options.append({"text": text, "is_correct": False})
+
+    # Shuffle choices
+    rng.shuffle(unique_options)
+
+    labels = ["A", "B", "C", "D"]
+    choices = []
+    answer_label = "A"
+    
+    for label, opt in zip(labels, unique_options):
+        choices.append({
+            "key": label,
+            "label": label,
+            "text": opt["text"],
+        })
+        if opt["is_correct"]:
+            answer_label = label
+
+    explanation = (
+        f"根據線性變換的性質，當所有數值資料皆增加（或減少）常數 \\(b\\) 時，\n"
+        f"新的平均數會增加（或減少）常數 \\(b\\)，即 \\(\\mu_y = \\mu_x + b\\)；\n"
+        f"而標準差不會受到平移變換的影響，保持不變，即 \\(\\sigma_y = \\sigma_x\\)。\n\n"
+        f"本題中，調薪前平均數 \\(\\mu_x = {m}\\) 元，母體標準差 \\(\\sigma_x = {s}\\) 元，\n"
+        f"每位員工月薪皆{adj_str}（即 \\(b = {k}\\)），\n"
+        f"因此，調薪後：\n"
+        f"平均數 \\(\\mu_y = {m} {'+ ' + str(k) if k >= 0 else '- ' + str(abs(k))} = {new_m}\\) 元，\n"
+        f"母體標準差 \\(\\sigma_y = \\sigma_x = {new_s}\\) 元。\n"
+        f"故正確答案為 ({answer_label})。"
+    )
+
     component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
-    payload = convert_domain_matrix_to_question_payload(
-        matrix,
-        presentation_mode=PRESENTATION_MODE,
-        answer_type=ANSWER_TYPE,
-        problem_type_id=PROBLEM_TYPE_ID,
-        component_id=component_id or None,
-        textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
-        answer_schema_key="numeric_scalar",
-        domain_operation="compute_population_standard_deviation",
-        seed=seed,
-    )
-    if component_id:
-        payload["component_id"] = component_id
-    payload["seed"] = seed
+
+    payload = {
+        "skill_id": "vh_數學B4_LinearTransformationOfData",
+        "component_id": component_id,
+        "textbook_example_id": TEXTBOOK_EXAMPLE_ID,
+        "problem_type_id": PROBLEM_TYPE_ID,
+        "domain_operation": "compute_population_standard_deviation",
+        "selected_operation": "compute_population_standard_deviation",
+        "fixed_domain_key": "statistics.descriptive_statistics",
+        "source_kind": "quiz",
+        "presentation_mode": "single_choice",
+        "answer_type": "choice_label",
+        "answer_shape": "single_choice",
+        "interaction_type": "single_choice",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "question_text": question_text,
+        "explanation": explanation,
+        "seed": seed,
+        "choices": choices,
+        "options": [c["text"] for c in choices],
+        "answer": answer_label,
+        "correct_answer": answer_label,
+        "display_answer": answer_label,
+        "answer_contract": {
+            "presentation_mode": "single_choice",
+            "answer_type": "choice_label",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "answer_equivalence": "choice_label",
+            "equivalence": "choice_label",
+            "semantic_answer": answer_label,
+        },
+        "checker_key": "choice_label_checker",
+        "equivalence_type": "choice_label",
+        "metadata": {
+            "textbook_example_id": TEXTBOOK_EXAMPLE_ID,
+            "component_id": component_id,
+            "presentation_mode": "single_choice",
+            "answer_type": "choice_label",
+            "problem_type_id": PROBLEM_TYPE_ID,
+            "source_kind": "quiz",
+            "semantic_answer": answer_label,
+        },
+    }
+
     return payload

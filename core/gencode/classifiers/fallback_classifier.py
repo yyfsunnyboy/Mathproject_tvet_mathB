@@ -20,6 +20,90 @@ class FallbackClassifier:
             pass
 
         rows: list[dict[str, Any]] = []
+        
+        try:
+            from core.registry.taxonomy_registry import resolve_domain_for_skill
+            from core.gencode.services.v3_example_semantic_classifier import TextbookExampleSource, classify_textbook_example, calculate_source_hash
+            
+            routing = resolve_domain_for_skill(context.skill_id)
+            if routing:
+                taxonomy_entry = {
+                    "fixed_domain_key": routing.get("fixed_domain_key"),
+                    "allowed_operations": routing.get("allowed_operations") or routing.get("allowed_types") or [],
+                    "allowed_types": routing.get("allowed_types") or routing.get("allowed_operations") or [],
+                }
+                for ex in examples:
+                    q_txt = ex.get("problem_text") or ex.get("question") or ex.get("stem") or ex.get("problem_preview") or ""
+                    ans_txt = ex.get("correct_answer") or ex.get("answer") or ""
+                    exp_txt = ex.get("explanation") or ex.get("detailed_solution") or ""
+                    choices = ex.get("choices") or []
+                    source = TextbookExampleSource(
+                        skill_id=context.skill_id,
+                        textbook_example_id=ex.get("id"),
+                        question_text=q_txt,
+                        answer=ans_txt,
+                        choices=choices,
+                        explanation=exp_txt,
+                        source_label="",
+                        source_type="",
+                        presentation_mode="single_choice" if choices else "short_answer",
+                        question_type="",
+                        source_hash=calculate_source_hash(q_txt, ans_txt, exp_txt),
+                    )
+                    classification = classify_textbook_example(source, taxonomy_entry)
+                    if classification:
+                        pt = classification["problem_type_id"]
+                        rt = classification.get("runtime_category", "rule_only")
+                        rows.append({
+                            "example_id": ex.get("id"),
+                            "title": str(ex.get("title", "") or ""),
+                            "source_type": "textbook_example",
+                            "source_chapter": "unknown",
+                            "source_section": "unknown",
+                            "problem_preview": q_txt[:200],
+                            "problem_text_hash": source.source_hash,
+                            "skill_id": context.skill_id,
+                            "subskill_id": pt,
+                            "problem_type_id": pt,
+                            "target_task": pt,
+                            "task_family": pt,
+                            "answer_type": classification.get("answer_type", ""),
+                            "answer_shape": classification.get("answer_shape", ""),
+                            "math_objects": [],
+                            "runtime_category": rt,
+                            "classification_rule_id": "fallback.domain_analyzer",
+                            "classification_reason": "Domain analyzer classified the example based on taxonomy.",
+                            "classifier_confidence": "high",
+                            "semantic_risk_flags": [],
+                            "semantic_audit_status": "pass",
+                            "generator_status": "candidate",
+                            "manual_review_reason": "",
+                        })
+                    else:
+                        rows.append({
+                            "example_id": ex.get("id"),
+                            "title": str(ex.get("title", "") or ""),
+                            "source_type": "textbook_example",
+                            "source_chapter": "unknown",
+                            "source_section": "unknown",
+                            "problem_preview": q_txt[:200],
+                            "problem_text_hash": source.source_hash,
+                            "skill_id": context.skill_id,
+                            "subskill_id": "unknown",
+                            "problem_type_id": "unknown",
+                            "runtime_category": "manual_review",
+                            "classification_rule_id": "fallback.domain_analyzer_failed",
+                            "classification_reason": "Domain analyzer failed to classify the example.",
+                            "classifier_confidence": "low",
+                            "semantic_risk_flags": ["possible_missing_problem_type", "weak_classifier_match"],
+                            "semantic_audit_status": "review_required",
+                            "generator_status": "manual_review",
+                            "manual_review_reason": "Domain analyzer did not match any allowed operations.",
+                        })
+                return ClassificationResult(package_dir=package_dir, examples_map_entries=rows)
+        except Exception:
+            pass
+
         for ex in examples:
             text = _example_text(ex)
             rule_feature: dict[str, Any] = {}

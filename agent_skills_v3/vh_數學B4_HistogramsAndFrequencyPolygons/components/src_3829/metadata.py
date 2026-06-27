@@ -17,25 +17,25 @@ LINE_TYPE: Final[str] = "histogram_distribution_update"
 TARGET_TASK: Final[str] = "histogram_distribution_update"
 TEMPLATE_SLOT: Final[str] = "histogram_distribution_update"
 PROBLEM_TYPE_ID: Final[str] = "histogram_distribution_update"
-PRESENTATION_MODE: Final[str] = "short_answer"
-RESPONSE_MODE: Final[str] = "expression"
-INTERACTION_TYPE: Final[str] = "expression"
-ANSWER_VALUE_TYPE: Final[str] = "string"
-ANSWER_TYPE: Final[str] = "string"
-LEGACY_ANSWER_TYPE: Final[str] = "string"
+PRESENTATION_MODE: Final[str] = "single_choice"
+RESPONSE_MODE: Final[str] = "choice"
+INTERACTION_TYPE: Final[str] = "single_choice"
+ANSWER_VALUE_TYPE: Final[str] = "choice_label"
+ANSWER_TYPE: Final[str] = "choice_label"
+LEGACY_ANSWER_TYPE: Final[str] = "choice_label"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.statistics.frequency_distribution_domain.build_frequency_distribution_table_matrix",
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "linear_equation_equivalent_checker",
-    "equivalence_type": "linear_equation_equivalent",
-    "response_mode": "expression",
-    "interaction_type": "expression",
-    "answer_value_type": "string",
-    "answer_type": "string",
-    "module": "core.checkers.linear_equation_equivalent_checker",
+    "checker_key": "choice_label_checker",
+    "equivalence_type": "choice_label",
+    "response_mode": "choice",
+    "interaction_type": "single_choice",
+    "answer_value_type": "choice_label",
+    "answer_type": "choice_label",
+    "module": "core.checkers.choice_label_checker",
 }
 
 GENERATOR_READINESS: Final[str] = "draft"

@@ -373,7 +373,9 @@
             padding-bottom: 12px;
             border-bottom: 1px solid #dee2e6;
             margin-bottom: 12px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .canvas-toolbar strong {
@@ -460,6 +462,13 @@
             margin-left: auto;
             display: flex;
             gap: 8px;
+            flex: 0 0 auto;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .canvas-actions button {
+            flex: 0 0 auto;
         }
 
         .canvas-actions button {
@@ -630,73 +639,10 @@
             gap: 10px;
         }
 
-        .symbol-buttons {
+        .chat-input-group {
             display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            justify-content: center;
-            /* Drawer styles */
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-            border-radius: 0 0 8px 8px;
-            padding: 0;
-            margin-top: 0;
+            gap: 10px;
         }
-
-        .symbol-buttons.expanded {
-            max-height: 250px;
-            opacity: 1;
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            border-top: none;
-            overflow-y: auto;
-        }
-
-        #toggle-math-btn {
-            background: none;
-            border: 1px solid #ced4da;
-            cursor: pointer;
-            color: #6c757d;
-            width: 42px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        #toggle-math-btn:hover {
-            background-color: #e9ecef;
-            color: #0d6efd;
-            border-color: #0d6efd;
-        }
-
-        #toggle-math-btn.active {
-            background-color: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
-        }
-
-        .symbol-button {
-            padding: 5px 10px;
-            background: #ecf0f1;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background 0.2s;
-        }
-
-        .symbol-button:hover {
-            background: #dfe6e9;
-        }
-
-        /* 建議按鈕樣式 */
         .suggestion-btn {
             background-color: #ffffff;
             border: 1px solid #3498db;
@@ -719,11 +665,6 @@
         /* 修正 MathJax 在按鈕內可能導致的跑版 */
         .suggestion-btn mjx-container {
             margin: 0 2px !important;
-        }
-
-        .chat-input-group {
-            display: flex;
-            gap: 10px;
         }
 
         #chat-input {
@@ -924,15 +865,21 @@
         /* ── question-media-container: inline chart image ── */
         #question-media-container {
             margin: 12px 0 4px 0;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
         }
-        #question-media-container img {
+        #question-media-container img,
+        #question-media-container svg {
             display: block;
             max-width: 100%;
             width: auto;
             height: auto;
+            object-fit: contain;
+        }
+        #question-media-container img {
             max-height: 340px;
             margin: 0 auto;
-            object-fit: contain;
             border-radius: 6px;
             box-shadow: 0 1px 6px rgba(0,0,0,.14);
         }
@@ -1357,17 +1304,15 @@
 
         #static-prompts,
         #dynamic-prompts,
-        .chat-input-area,
-        #rag-mode-btn,
-        #rag-panel {
+        .chat-input-area {
             flex: 0 0 auto;
         }
 
         #static-prompts,
         #dynamic-prompts {
-            max-height: 96px;
+            max-height: none;
             overflow-x: hidden;
-            overflow-y: auto;
+            overflow-y: visible;
             flex-wrap: wrap;
             align-content: flex-start;
         }
@@ -1384,26 +1329,34 @@
 
 <style id="responsive-layout-upgrade">
         /* =========================================================
-           Responsive Layout Upgrade (PC / Tablet / Surface Pro)
+           Responsive Layout Upgrade (4K / 1080p / Laptop / Tablet)
            ========================================================= */
 
         html {
             height: 100%;
+            overflow-x: hidden;
         }
 
         body {
             min-height: 100vh;
             min-height: 100dvh;
             height: auto;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .container {
             flex: 1;
             display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: stretch;
             min-width: 0;
             min-height: 0;
-            overflow: hidden;
+            max-width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-sizing: border-box;
         }
 
         .practice-area,
@@ -1414,17 +1367,24 @@
         #question-container,
         #question-text,
         #scratchpad-container,
-        #chat-history {
+        #chat-history,
+        .canvas-wrap {
             min-width: 0;
-            min-height: 0;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .practice-area {
-            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .chat-area {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
             overflow: hidden;
         }
 
@@ -1437,17 +1397,15 @@
             overflow: hidden;
         }
 
-        #question-container,
-        #scratchpad-container {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-
         #question-container {
+            container-type: inline-size;
+            container-name: question-main;
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: stretch;
+            width: 100% !important;
+            max-width: 100% !important;
             max-height: none;
             overflow-y: visible;
             overflow-x: hidden;
@@ -1464,8 +1422,51 @@
             word-break: break-word;
         }
 
+        #question-text img,
+        #question-text svg {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
         #question-choices {
             width: 100%;
+            max-width: 100%;
+        }
+
+        #question-media-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @container question-main (min-width: 720px) {
+            #question-media-container img,
+            #question-media-container svg {
+                max-width: 100%;
+                width: auto;
+                height: auto;
+            }
+        }
+
+        @container question-main (min-width: 560px) and (max-width: 719px) {
+            #question-media-container img,
+            #question-media-container svg {
+                max-width: 100%;
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        @container question-main (max-width: 559px) {
+            #question-media-container img,
+            #question-media-container svg {
+                min-width: 560px;
+                max-width: none;
+                width: auto;
+                height: auto;
+            }
         }
 
         #scratchpad-container {
@@ -1473,38 +1474,76 @@
             flex-direction: column;
             height: clamp(320px, 50vh, 650px);
             max-height: none;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow: hidden;
             gap: 8px;
+            width: 100%;
         }
 
-        #scratchpad-controls {
-            flex: 0 0 auto;
-            flex-wrap: nowrap;
-            white-space: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-
-        #handwriting-canvas {
+        .canvas-wrap {
+            position: relative;
             flex: 1 1 auto;
             width: 100%;
-            height: 100%;
+            min-height: 240px;
+            overflow: hidden;
+            border: 1px solid #ced4da;
+            border-radius: 0 0 var(--r-lg, 8px) var(--r-lg, 8px);
+        }
+
+        #handwriting-canvas,
+        #drawing-background-canvas {
+            flex: none;
+            width: 100% !important;
+            height: 100% !important;
             min-height: 240px;
             display: block;
             touch-action: none;
         }
 
-        .level-selector,
-        .canvas-toolbar,
-        .canvas-actions,
-        .input-group,
-        .chat-input-group {
-            flex-wrap: wrap;
+        #scratchpad-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
+            min-height: 44px;
+        }
+
+        #scratchpad-controls .tool-btn,
+        #scratchpad-controls .canvas-actions button {
+            flex: 0 0 auto;
+        }
+
+        #scratchpad-controls .toolbar-pen-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            flex: 0 0 auto;
+            margin-left: 6px;
+        }
+
+        .canvas-actions {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .canvas-actions button {
+            flex: 0 0 auto;
+            white-space: nowrap;
         }
 
         .level-selector {
-            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .level-selector > * {
@@ -1513,26 +1552,19 @@
 
         .input-group {
             align-items: stretch;
+            min-width: 0;
+            max-width: 100%;
         }
 
         #answer-input {
             min-width: 0;
         }
 
-        .canvas-actions {
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .canvas-actions button {
-            white-space: nowrap;
-        }
-
         #chat-history {
             flex: 1 1 auto;
-            min-height: 220px;
+            min-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .bot-message,
@@ -1545,57 +1577,134 @@
 
         .suggestions-container {
             width: 100%;
+            max-width: 100%;
         }
 
-        /* Generic navbar safety net for tablet widths */
+        #static-prompts,
+        #dynamic-prompts {
+            max-height: none;
+            overflow-x: hidden;
+            overflow-y: visible;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+
+        .dynamic-prompt-btn,
+        .prompt-button {
+            max-width: 100%;
+            white-space: normal !important;
+            text-align: left;
+            line-height: 1.35;
+        }
+
         .navbar,
         nav,
         .student-navbar,
-        .top-navbar {
-            min-width: 0;
-        }
-
+        .top-navbar,
         .navbar-menu,
         .nav-links,
         .nav-items,
         .navbar-content {
             min-width: 0;
+            max-width: 100%;
         }
 
-        /* =========================
-           Large Desktop
-           ========================= */
-        @media (min-width: 1440px) {
+        /* >= 1920px : 65% / 35% */
+        @media (min-width: 1920px) {
             .practice-area {
-                flex: 1.7;
+                flex: 0 0 65%;
+                max-width: 65%;
             }
 
             .chat-area {
-                flex: 0.95;
-            }
-
-            #question-text {
-                font-size: 1.2rem;
+                flex: 0 0 35%;
+                max-width: 35%;
+                min-width: 320px;
             }
         }
 
-        /* =========================
-           Surface Pro / Tablet Landscape
-           ========================= */
-        @media (max-width: 1180px) {
-            body {
-                overflow: auto;
+        /* 1280px – 1919px : 62% / 38% */
+        @media (min-width: 1280px) and (max-width: 1919px) {
+            .practice-area {
+                flex: 0 0 62%;
+                max-width: 62%;
             }
 
+            .chat-area {
+                flex: 0 0 38%;
+                max-width: 38%;
+                min-width: 320px;
+            }
+
+            #question-text {
+                font-size: 1.15rem;
+            }
+        }
+
+        /* 965px – 1279px : dual 58% / 42% (主欄 >= 560px) */
+        @media (min-width: 965px) and (max-width: 1279px) {
+            .container {
+                flex-direction: row;
+            }
+
+            .practice-area {
+                flex: 0 0 58%;
+                max-width: 58%;
+            }
+
+            .chat-area {
+                flex: 1 1 42%;
+                min-width: 320px;
+                max-width: 42%;
+            }
+
+            #scratchpad-container {
+                height: clamp(340px, 48vh, 620px);
+            }
+        }
+
+        /* 900px – 964px : 主欄 < 560px → 上下排列 */
+        @media (min-width: 900px) and (max-width: 964px) {
             .container {
                 flex-direction: column;
-                overflow: auto;
             }
 
             .practice-area,
             .chat-area {
                 flex: none;
                 width: 100%;
+                max-width: 100%;
+            }
+
+            .chat-area {
+                min-width: 0;
+                min-height: 36vh;
+                border-left: none;
+                border-top: 1px solid #dee2e6;
+            }
+
+            #scratchpad-container {
+                height: clamp(360px, 52vh, 680px);
+            }
+        }
+
+        /* < 900px : 強制單欄 */
+        @media (max-width: 899px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .container {
+                flex-direction: column;
+                overflow-x: hidden;
+                overflow-y: visible;
+            }
+
+            .practice-area,
+            .chat-area {
+                flex: none;
+                width: 100%;
+                max-width: 100%;
                 min-height: auto;
             }
 
@@ -1606,7 +1715,8 @@
             .chat-area {
                 border-left: none;
                 border-top: 1px solid #dee2e6;
-                min-height: 42vh;
+                min-width: 0;
+                min-height: 38vh;
                 padding: 14px;
             }
 
@@ -1619,37 +1729,19 @@
             }
 
             #question-container {
-                max-height: none;
-                min-height: 160px;
-                padding: 16px;
+                padding: 14px;
+            }
+
+            #question-text {
+                font-size: 1.05rem !important;
+                line-height: 1.55;
             }
 
             #scratchpad-container {
-                height: clamp(360px, 58vh, 760px);
-                min-height: 340px;
+                height: clamp(300px, 46vh, 560px);
+                min-height: 280px;
             }
 
-            #chat-history {
-                min-height: 240px;
-                max-height: 42vh;
-            }
-
-            .canvas-actions {
-                margin-left: 0;
-                width: auto;
-            }
-
-            #scratchpad-controls {
-                flex-wrap: nowrap;
-                white-space: nowrap;
-                overflow-x: auto;
-            }
-        }
-
-        /* =========================
-           Tablet Portrait / Small Laptop
-           ========================= */
-        @media (max-width: 900px) {
             .practice-top h1 {
                 font-size: 1rem;
                 line-height: 1.45;
@@ -1672,78 +1764,31 @@
                 width: 100%;
             }
 
-            .level-selector select,
-            .level-selector button,
-            .level-selector input {
-                max-width: 100%;
-            }
-
-            #question-container {
-                gap: 12px;
-                padding: 14px;
-                border-radius: 14px;
-            }
-
-            #question-text {
-                font-size: 1.05rem !important;
-                line-height: 1.55;
-            }
-
-            #scratchpad-container {
-                height: 48vh;
-                min-height: 320px;
-            }
-
-            #scratchpad-controls {
-                gap: 6px;
-                padding: 6px 8px;
-                min-height: 42px;
-                max-height: 42px;
-                flex-wrap: nowrap;
-                white-space: nowrap;
-                overflow-x: auto;
-            }
-
-            .tool-btn {
-                padding: 4px 6px;
-            }
-
-            .canvas-actions button {
-                flex: 1 1 calc(50% - 8px);
-                min-width: 120px;
-            }
-
-            .chat-area {
-                padding: 12px;
-            }
-
-            .chat-input-group {
-                gap: 8px;
-            }
-
-            #toggle-math-btn {
-                width: 44px;
-                min-width: 44px;
-                height: 44px;
-            }
-
-            #chat-input {
-                min-width: 0;
-            }
-
-            #chat-send-button {
-                flex: 0 0 auto;
+            #scratchpad-controls .toolbar-label-text {
+                display: none;
             }
         }
 
-        /* =========================
-           Mobile
-           ========================= */
-        @media (max-width: 640px) {
+        /* < 600px : 緊湊間距 + 最小字級 / 觸控 */
+        @media (max-width: 599px) {
             .practice-top,
             .practice-bottom,
             .chat-area {
+                padding: 8px 10px;
+            }
+
+            #question-container {
                 padding: 10px;
+                gap: 10px;
+            }
+
+            #question-text {
+                font-size: max(14px, 1rem) !important;
+                line-height: 1.5;
+            }
+
+            .bot-message {
+                font-size: max(14px, 0.95rem);
             }
 
             .practice-top h1 {
@@ -1757,48 +1802,57 @@
                 margin-top: 6px;
             }
 
-            #question-container {
-                padding: 12px;
-                border-radius: 12px;
-            }
-
-            #question-text {
-                font-size: 1rem !important;
-                line-height: 1.5;
-            }
-
             .input-group {
                 flex-direction: column;
+                gap: 8px;
             }
 
             #submit-button,
             #chat-send-button {
                 width: 100%;
-            }
-
-            .canvas-actions button {
-                flex: 1 1 100%;
+                min-height: 40px;
             }
 
             #scratchpad-container {
-                height: 44vh;
-                min-height: 280px;
+                height: clamp(260px, 42vh, 480px);
+                min-height: 240px;
+            }
+
+            #question-media-container img {
+                max-height: 220px;
+            }
+        }
+
+        /* 平板：工具列次要文字可隱藏 */
+        @media (max-width: 1280px) {
+            #scratchpad-controls .toolbar-label-text {
+                display: none;
+            }
+
+            .canvas-actions button {
+                padding: 6px 10px;
+                font-size: 0.88rem;
+            }
+        }
+
+        /* 觸控裝置：加大點擊區 */
+        @media (pointer: coarse) {
+            .tool-btn,
+            .canvas-actions button,
+            .level-button,
+            #submit-button,
+            #chat-send-button {
+                min-height: 40px;
+                min-width: 40px;
             }
 
             #scratchpad-controls {
-                flex-wrap: nowrap;
-                white-space: nowrap;
-                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 4px;
             }
 
-            #chat-history {
-                min-height: 220px;
-                max-height: 38vh;
-            }
-
-            .bot-message {
-                font-size: 15px;
-                padding: 12px 14px;
+            input[type="range"] {
+                min-height: 40px;
             }
         }
     </style>
@@ -1969,10 +2023,10 @@
                     </button>
 
                     <!-- 筆畫粗細滑桿 -->
-                    <div style="margin-left: 10px; display: flex; align-items: center; gap: 5px;">
-                        <span style="font-size: 0.8em; color: #666;">粗細</span>
+                    <div class="toolbar-pen-group">
+                        <span class="toolbar-label-text" style="font-size: 0.8em; color: #666;">粗細</span>
                         <input type="range" id="pen-width" min="1" max="10" value="2" style="width: 60px;">
-                        <span id="pen-width-label" style="font-size: 0.8em; min-width: 15px;">2</span>
+                        <span id="pen-width-label" class="toolbar-label-text" style="font-size: 0.8em; min-width: 15px;">2</span>
                     </div>
 
                     <div class="canvas-actions">
@@ -1985,7 +2039,7 @@
                         <button id="analyze-handwriting-button">AI檢查</button>
                     </div>
                 </div>
-                <div class="canvas-wrap" style="position: relative; flex: 1 1 auto; width: 100%; height: 100%; min-height: 240px; overflow: hidden; border: 1px solid #ced4da; border-radius: 0 0 var(--r-lg) var(--r-lg) !important;">
+                <div class="canvas-wrap">
                     <canvas id="drawing-background-canvas" style="position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 1 !important; pointer-events: none !important;"></canvas>
                     <canvas id="handwriting-canvas" style="position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; z-index: 2 !important; display: block !important; touch-action: none !important; user-select: none !important;"></canvas>
                 </div>
@@ -2006,89 +2060,10 @@
             <div id="dynamic-prompts" class="suggestions-container" style="display: none;"></div>
             <div class="chat-input-area">
                 <div class="chat-input-group">
-                    <button id="toggle-math-btn" type="button" title="開啟數學鍵盤"><i class="fas fa-calculator"></i></button>
                     <input type="text" id="chat-input" placeholder="問我觀念...">
                     <button id="chat-send-button">送出</button>
                 </div>
-                <div class="symbol-buttons" id="math-toolbar"><button class="symbol-button"
-                        data-symbol="π">π</button><button class="symbol-button" data-symbol="√">√</button><button
-                        class="symbol-button" data-symbol="²">²</button><button class="symbol-button"
-                        data-symbol="³">³</button><button class="symbol-button" data-symbol="°">°</button><button
-                        class="symbol-button" data-symbol="θ">θ</button><button class="symbol-button"
-                        data-symbol="∞">∞</button><button class="symbol-button" data-symbol="±">±</button><button
-                        class="symbol-button" data-symbol="≠">≠</button><button class="symbol-button"
-                        data-symbol="≤">≤</button><button class="symbol-button" data-symbol="≥">≥</button><button
-                        class="symbol-button" data-symbol="≈">≈</button><button class="symbol-button"
-                        data-symbol="∑">∑</button><button class="symbol-button" data-symbol="∫">∫</button></div>
                 <!-- 新增：隱藏的圖片上傳 input --><input type="file" id="image-uploader" accept="image/*" style="display: none;">
-            </div>
-
-            <!-- ========== RAG 模式 ========== -->
-            <button id="rag-mode-btn" onclick="toggleRagMode()" style="
-                width: 100%;
-                padding: 10px 16px;
-                margin-top: 8px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-size: 0.95em;
-                font-weight: 600;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-            ">
-                <span style="font-size: 1.1em;">📚</span> RAG 模式
-            </button>
-
-            <!-- RAG 面板 (預設隱藏) -->
-            <div id="rag-panel"
-                style="display: none; margin-top: 8px; padding: 12px; background: #f8f5ff; border: 1px solid #d4c5f9; border-radius: 12px;">
-                <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                    <input type="text" id="rag-query-input" placeholder="輸入你的問題…" style="
-                        flex: 1;
-                        padding: 10px 14px;
-                        border: 1px solid #d4c5f9;
-                        border-radius: 8px;
-                        font-size: 1.1em;
-                        outline: none;
-                    ">
-                    <button id="rag-search-btn" onclick="performRagSearch()" style="
-                        padding: 8px 16px;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        border: none;
-                        border-radius: 8px;
-                        font-size: 0.9em;
-                        font-weight: 600;
-                        cursor: pointer;
-                        white-space: nowrap;
-                    ">🔍 檢索</button>
-                </div>
-
-                <!-- RAG 檢索中 Loading -->
-                <div id="rag-loading" style="display: none; text-align: center; padding: 10px; color: #764ba2;">
-                    <i class="fas fa-spinner fa-spin"></i> 正在檢索相關單元...
-                </div>
-
-                <!-- Top-5 結果按鈕區 -->
-                <div id="rag-results" style="display: none; margin-bottom: 10px;">
-                    <div style="font-size: 0.8em; color: #764ba2; font-weight: 600; margin-bottom: 6px;">📌 Top-5 相關單元：
-                    </div>
-                    <div id="rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-                </div>
-
-                <!-- AI 回答區 -->
-                <div id="rag-ai-answer"
-                    style="display: none; padding: 10px; background: white; border-radius: 8px; border: 1px solid #e8e0f5; font-size: 0.9em; line-height: 1.6; color: #333;">
-                    <div style="font-size: 0.8em; color: #764ba2; font-weight: 600; margin-bottom: 6px;">🤖 AI 回答 (基於
-                        RAG 檢索結果)：</div>
-                    <div id="rag-ai-answer-text"></div>
-                </div>
             </div>
 
         </div>
@@ -2357,9 +2332,7 @@
 
         #static-prompts,
         #dynamic-prompts,
-        .chat-input-area,
-        #rag-mode-btn,
-        #rag-panel {
+        .chat-input-area {
             flex: 0 0 auto;
         }
 
@@ -2423,6 +2396,8 @@
 
         // [V9.6 新增] 用來儲存當前題目的圖片物件
         let currentQuestionImage = null;
+        // [hideQuestionImage] 追蹤已成功載入 canvas 背景的圖片 src；null 表示尚未載入或已重設
+        let _canvasQImageSrc = null;
 
         // [V9.7 新增] 紀錄題目圖片在畫布上的確切位置與大小，給橡皮擦用
         let imgDestX = 0, imgDestY = 0, imgDestW = 0, imgDestH = 0;
@@ -2446,6 +2421,8 @@
         let canvas, ctx, analyzeBtn, submitBtn, answerInput, resultDisplay;
         let questionText, questionChoices, chatHistory, streakCounter, subquestionsContainer;
         let canvasResizeObserver = null;
+        let canvasResizeRaf = null;
+        let canvasResizeListenersAttached = false;
         let lastCanvasDisplayWidth = 0;
         let lastCanvasDisplayHeight = 0;
         window.currentProblemTypeId = "";
@@ -2821,6 +2798,12 @@
             // 清空目前的動態提示
             container.innerHTML = '';
 
+            const staticContainer = document.getElementById('static-prompts');
+            if (staticContainer) {
+                staticContainer.innerHTML = '';
+                staticContainer.style.display = 'none';
+            }
+
             // 如果沒有提示詞，隱藏容器
             if (!prompts || prompts.length === 0) {
                 container.style.display = 'none';
@@ -2994,18 +2977,34 @@
             drawQuestionImageBackground();
         }
 
+        function scheduleResizeCanvas() {
+            if (canvasResizeRaf) {
+                cancelAnimationFrame(canvasResizeRaf);
+            }
+            canvasResizeRaf = requestAnimationFrame(() => {
+                canvasResizeRaf = null;
+                resizeCanvas();
+            });
+        }
+
         // === 初始化畫布 ===
         function initCanvas() {
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            scheduleResizeCanvas();
+
+            const canvasWrap = canvas ? canvas.parentElement : null;
+            if (!canvasResizeListenersAttached) {
+                window.addEventListener('resize', scheduleResizeCanvas);
+                window.addEventListener('orientationchange', scheduleResizeCanvas);
+                canvasResizeListenersAttached = true;
+            }
 
             if (canvasResizeObserver) {
                 canvasResizeObserver.disconnect();
             }
-            canvasResizeObserver = new ResizeObserver(() => {
-                resizeCanvas();
-            });
-            canvasResizeObserver.observe(canvas);
+            if (canvasWrap && typeof ResizeObserver !== 'undefined') {
+                canvasResizeObserver = new ResizeObserver(scheduleResizeCanvas);
+                canvasResizeObserver.observe(canvasWrap);
+            }
 
             canvas.addEventListener('pointerdown', startDraw);
             canvas.addEventListener('pointermove', draw);
@@ -3505,6 +3504,64 @@
             `;
         }
 
+        const INITIAL_STARTER_PROMPTS = [
+            '【觀察】這題有哪些重要條件？哪一個最容易忽略？',
+            '【聯想】這題和哪個公式或觀念有關？為什麼？',
+            '【執行】第一步應該怎麼做？請只提示，不要直接解答。',
+        ];
+
+        function clearTutorPromptSuggestions() {
+            const staticContainer = document.getElementById('static-prompts');
+            const dynamicContainer = document.getElementById('dynamic-prompts');
+            if (staticContainer) {
+                staticContainer.innerHTML = '';
+                staticContainer.style.display = 'none';
+            }
+            if (dynamicContainer) {
+                dynamicContainer.innerHTML = '';
+                dynamicContainer.style.display = 'none';
+            }
+        }
+
+        function submitChatPromptText(promptText) {
+            const chatInput = document.getElementById('chat-input');
+            const chatSendBtn = document.getElementById('chat-send-button');
+            if (!chatInput || !chatSendBtn) return;
+            chatInput.value = promptText;
+            chatSendBtn.click();
+        }
+
+        function showInitialStarterPrompts() {
+            const container = document.getElementById('static-prompts');
+            if (!container) return;
+
+            const dynamicContainer = document.getElementById('dynamic-prompts');
+            if (dynamicContainer) {
+                dynamicContainer.innerHTML = '';
+                dynamicContainer.style.display = 'none';
+            }
+
+            container.innerHTML = '';
+            INITIAL_STARTER_PROMPTS.forEach((promptText) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'prompt-button';
+                button.textContent = promptText;
+                button.onclick = () => {
+                    container.style.display = 'none';
+                    submitChatPromptText(promptText);
+                };
+                container.appendChild(button);
+            });
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+
+            if (typeof renderMathContent === 'function') {
+                renderMathContent(container);
+            }
+            scrollAiTutorToBottom();
+        }
+
         // === 自定義確認框 ===
         function showCustomConfirm(message, onConfirm, onCancel) {
             const modal = document.getElementById('customConfirmModal');
@@ -3524,42 +3581,6 @@
                 modal.style.display = 'none';
                 if (onCancel && typeof onCancel === 'function') onCancel();
             };
-        }
-
-        // === 載入固定建議 (Initial Suggestions) ===
-        function updateSuggestedPrompts(skillId) {
-            const container = document.getElementById('static-prompts'); // RENAMED
-            if (!container) return;
-
-            fetch(`/get_suggested_prompts/${skillId}`)
-                .then(response => response.json())
-                .then(prompts => {
-                    container.innerHTML = ''; // Clear old prompts
-                    if (prompts && prompts.length > 0) {
-                        prompts.forEach(promptText => {
-                            const button = document.createElement('button');
-                            button.className = 'prompt-button';
-                            button.textContent = promptText;
-                            button.onclick = () => {
-                                const chatInput = document.getElementById('chat-input');
-                                const chatSendBtn = document.getElementById('chat-send-button');
-                                chatInput.value = promptText;
-                                chatSendBtn.click();
-                            };
-                            container.appendChild(button);
-                        });
-                        container.style.display = 'flex'; // Show the container
-
-                        // 渲染提示詞按鈕中的數學公式
-                        renderMathContent(container);
-                    } else {
-                        container.style.display = 'none'; // Hide if no prompts
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching suggested prompts:', error);
-                    container.style.display = 'none'; // Hide on error
-                });
         }
 
         function stopPracticeCheckLoading() {
@@ -4195,7 +4216,7 @@
                 const forceShow = handwritingShapes.has(shape2) && uiContract.handwritingEnabled;
                 if (drawing || forceShow || (uiContract.handwritingEnabled && uiContract.canvasRequired)) {
                     scratchpad.style.display = '';
-                    resizeCanvas();
+                    scheduleResizeCanvas();
                 } else {
                     scratchpad.style.display = 'none';
                 }
@@ -4388,13 +4409,14 @@
 
         function loadQuestion() {
             const skill = getSkillId();
-            updateSuggestedPrompts(skill);
 
             practiceQuestionEpoch += 1;
             const loadEpoch = practiceQuestionEpoch;
             currentQuestion = null;
             clearPracticeFeedback();
             clearGlobalPracticeStorageKeys();
+            clearTutorPromptSuggestions();
+            resetAIChat();
             if (questionText) {
                 questionText.innerHTML = '<span style="color:#7f8c8d;">載入題目中…</span>';
                 questionText.style.opacity = '0.5';
@@ -4406,7 +4428,6 @@
                 questionChoices.innerHTML = '';
                 questionChoices.style.display = 'none';
             }
-            resetAIChat();
 
             const safeLevel = getSafeSelectedLevel();
             const params = new URLSearchParams();
@@ -4461,6 +4482,7 @@
                     const questionMainText = renderQuestion(data);
                     isInitialQuestionLoaded = true;
                     applyDrawingUiContract();
+                    showInitialStarterPrompts();
 
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
                     console.log("🔍 Backend Data Received:", data);
@@ -4469,6 +4491,7 @@
 
                     // 1. 先重置畫布與圖片變數，並清空 media container
                     currentQuestionImage = null;
+                    _canvasQImageSrc = null; // [hideQuestionImage] 切換題目時重設，避免沿用上一題狀態
                     imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
                     ctx.clearRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
                     if (backgroundCtx) {
@@ -4521,6 +4544,20 @@
                             currentQuestionImage = img;
                             drawQuestionImage();
                             saveState();
+                            // [hideQuestionImage] 三項同時成立時隱藏題幹圖片容器：
+                            //   hasQuestionImage && canvasVisible && sameQuestionImageLoadedInCanvas
+                            _canvasQImageSrc = imgSource;
+                            const _scratchpad = document.getElementById('scratchpad-container');
+                            const _qmcHide = document.getElementById('question-media-container');
+                            const canvasVisible = _scratchpad && _scratchpad.style.display !== 'none';
+                            const sameImageInCanvas = (_canvasQImageSrc === imgSource);
+                            if (canvasVisible && sameImageInCanvas && _qmcHide) {
+                                _qmcHide.style.display = 'none';
+                            }
+                        };
+                        img.onerror = function () {
+                            // canvas 載圖失敗：保留題幹圖片顯示，不隱藏
+                            console.warn('[hideQuestionImage] Canvas bg image load failed; keeping question-media-container visible.');
                         };
                         img.src = imgSource;
                     } else if (isTableFillQuestion(data)) {
@@ -5319,36 +5356,6 @@
             // 防呆：如果找不到聊天元件就不執行
             if (!chatSendBtn || !chatInput) return;
 
-            // 0. 數學鍵盤切換邏輯
-            const toggleBtn = document.getElementById('toggle-math-btn');
-            const mathToolbar = document.getElementById('math-toolbar');
-            if (toggleBtn && mathToolbar) {
-                toggleBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    mathToolbar.classList.toggle('expanded');
-                    toggleBtn.classList.toggle('active');
-                    if (mathToolbar.classList.contains('expanded')) {
-                        toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    } else {
-                        toggleBtn.innerHTML = '<i class="fas fa-calculator"></i>';
-                    }
-                });
-            }
-
-            // 1. 符號按鈕事件
-            document.querySelectorAll('.symbol-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const symbol = button.dataset.symbol;
-                    const start = chatInput.selectionStart;
-                    const end = chatInput.selectionEnd;
-                    const text = chatInput.value;
-                    chatInput.value = text.substring(0, start) + symbol + text.substring(end);
-                    chatInput.focus();
-                    chatInput.selectionStart = chatInput.selectionEnd = start + symbol.length;
-                });
-            });
-
             function addUserMessage(text) {
                 const msg = document.createElement('div');
                 msg.className = 'user-message';
@@ -5868,122 +5875,8 @@
                 }
             }
             loadRuntimeAIStatus();
-
-            // RAG 模式：Enter 鍵觸發檢索
-            const ragInput = document.getElementById('rag-query-input');
-            if (ragInput) {
-                ragInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') performRagSearch();
-                });
-            }
         });
 
-        // ========== RAG 模式 ==========
-
-        function toggleRagMode() {
-            const panel = document.getElementById('rag-panel');
-            const btn = document.getElementById('rag-mode-btn');
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                btn.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
-                btn.innerHTML = '<span style="font-size: 1.1em;">✖</span> 關閉 RAG 模式';
-            } else {
-                panel.style.display = 'none';
-                btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                btn.innerHTML = '<span style="font-size: 1.1em;">📚</span> RAG 模式';
-            }
-        }
-
-        async function performRagSearch() {
-            const query = document.getElementById('rag-query-input').value.trim();
-            if (!query) return;
-
-            const loading = document.getElementById('rag-loading');
-            const resultsDiv = document.getElementById('rag-results');
-            const buttonsDiv = document.getElementById('rag-results-buttons');
-            const answerDiv = document.getElementById('rag-ai-answer');
-            const answerText = document.getElementById('rag-ai-answer-text');
-
-            // 顯示載入中
-            loading.style.display = 'block';
-            resultsDiv.style.display = 'none';
-            answerDiv.style.display = 'none';
-            buttonsDiv.innerHTML = '';
-
-            try {
-                // 1. 呼叫 RAG 檢索 API
-                const searchResp = await fetch('/api/rag_search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
-                });
-                const searchData = await searchResp.json();
-
-                if (!searchData.results || searchData.results.length === 0) {
-                    loading.style.display = 'none';
-                    answerDiv.style.display = 'block';
-                    answerText.textContent = '未找到相關單元，請嘗試其他關鍵字。';
-                    return;
-                }
-
-                // 2. 渲染 Top-5 按鈕 (全部都是可練習的國中技能)
-                searchData.results.forEach((item, index) => {
-                    const btn = document.createElement('button');
-                    btn.style.cssText = `
-                        padding: 6px 14px;
-                        border-radius: 20px;
-                        border: 1px solid ${index === 0 ? '#667eea' : '#d4c5f9'};
-                        background: ${index === 0 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white'};
-                        color: ${index === 0 ? 'white' : '#764ba2'};
-                        font-size: 0.85em;
-                        font-weight: ${index === 0 ? '700' : '500'};
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                    `;
-                    const distStr = item.distance !== undefined ? ` (${(1 - item.distance).toFixed(2)})` : '';
-                    btn.textContent = `${item.chinese_name}${distStr}`;
-                    btn.title = `點擊前往練習：${item.skill_id}`;
-                    btn.onmouseover = () => { if (index !== 0) btn.style.background = '#f0ebff'; };
-                    btn.onmouseout = () => { if (index !== 0) btn.style.background = 'white'; };
-                    btn.onclick = () => {
-                        window.location.href = `/practice/${item.skill_id}`;
-                    };
-                    buttonsDiv.appendChild(btn);
-                });
-
-                resultsDiv.style.display = 'block';
-
-                // 3. 同時呼叫 RAG Chat API (用 Top-1 結果)
-                const topSkill = searchData.results[0].skill_id;
-                answerDiv.style.display = 'block';
-                answerText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 正在根據檢索結果生成回答...';
-
-                const chatResp = await fetch('/api/rag_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, top_skill_id: topSkill })
-                });
-                const chatData = await chatResp.json();
-
-                // 顯示 AI 回答 (支援換行與 LaTeX)
-                let replyHtml = (chatData.reply || '無法生成回答')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // 粗體
-                    .replace(/\n/g, '<br>');  // 換行
-                answerText.innerHTML = replyHtml;
-
-                // 嘗試渲染 MathJax
-                if (window.MathJax && window.MathJax.typesetPromise) {
-                    window.MathJax.typesetPromise([answerText]);
-                }
-
-            } catch (err) {
-                console.error('RAG Error:', err);
-                answerDiv.style.display = 'block';
-                answerText.textContent = '檢索發生錯誤：' + err.message;
-            } finally {
-                loading.style.display = 'none';
-            }
-        }
     </script>
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -6678,48 +6571,7 @@ canvas {
   box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
 }
 
-#toggle-math-btn {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-muted) !important;
-  transition: all var(--dur) var(--ease) !important;
-  box-shadow: var(--sh-xs) !important;
-}
-#toggle-math-btn:hover {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  border-color: var(--green) !important;
-}
-#toggle-math-btn.active {
-  background: var(--green-muted) !important;
-  color: var(--green-dark) !important;
-  border-color: var(--green) !important;
-}
-
-/* ─── 15. Math Symbol Keyboard ─────────────────────────────────── */
-.symbol-buttons {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: 0 0 var(--r-md) var(--r-md) !important;
-}
-.symbol-button {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-xs) !important;
-  color: var(--text-primary) !important;
-  font-size: 1em !important;
-  padding: 4px 10px !important;
-  cursor: pointer !important;
-  transition: background var(--dur) var(--ease) !important;
-}
-.symbol-button:hover {
-  background: var(--green) !important;
-  color: #fff !important;
-  border-color: var(--green-dark) !important;
-}
-
-/* ─── 16. Prompt Chips ─────────────────────────────────────────── */
+/* ─── 15. Prompt Chips ─────────────────────────────────────────── */
 #suggested-prompts-container h4 {
   color: var(--text-muted) !important;
   font-size: 0.72em !important;
@@ -6771,68 +6623,7 @@ canvas {
   box-shadow: none !important;
 }
 
-/* ─── 17. RAG Mode Button & Panel ──────────────────────────────── */
-#rag-mode-btn {
-  background: var(--green-pale) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-lg) !important;
-  color: var(--green-dark) !important;
-  font-weight: 600 !important;
-  box-shadow: var(--sh-xs) !important;
-  margin-top: 6px !important;
-  transition: background var(--dur) var(--ease),
-              border-color var(--dur) var(--ease) !important;
-}
-#rag-mode-btn:hover {
-  background: var(--green-muted) !important;
-  border-color: var(--green) !important;
-  box-shadow: var(--sh-sm) !important;
-}
-
-#rag-panel {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-lg) !important;
-}
-
-#rag-query-input {
-  background: var(--bg-input) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-primary) !important;
-  padding: 10px 14px !important;
-  font-size: 0.92em !important;
-  box-shadow: var(--sh-xs) !important;
-}
-#rag-query-input::placeholder { color: var(--text-muted) !important; }
-#rag-query-input:focus {
-  outline: none !important;
-  border-color: var(--green) !important;
-  box-shadow: 0 0 0 3px var(--green-ring) !important;
-}
-
-#rag-search-btn {
-  background: var(--green) !important;
-  border: 1px solid var(--green-dark) !important;
-  border-radius: var(--r-md) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: background var(--dur) var(--ease) !important;
-}
-#rag-search-btn:hover { background: var(--green-dark) !important; }
-
-#rag-loading { color: var(--green) !important; }
-
-#rag-ai-answer {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-primary) !important;
-  font-size: 0.87em !important;
-}
-
-/* ─── 18. Modals ────────────────────────────────────────────────── */
+/* ─── 17. Modals ────────────────────────────────────────────────── */
 .modal-overlay {
   background: rgba(47,58,50,0.45) !important;
   backdrop-filter: blur(4px) !important;
@@ -6876,7 +6667,7 @@ canvas {
 .image-modal { background: rgba(20,30,22,0.94) !important; }
 
 /* ─── 19. Misc / Responsive border fixes ────────────────────────── */
-@media (max-width: 1180px) {
+@media (max-width: 899px) {
   .practice-area { border-right: none !important; }
   .chat-area {
     border-left: none !important;
@@ -6921,11 +6712,6 @@ span[style*="粗細"],
 /* 靜態 prompts 區域 */
 #suggested-prompts-container {
   margin-bottom: 10px !important;
-}
-
-/* RAG 結果標題 */
-#rag-panel [style*="color: #764ba2"] {
-  color: var(--green-dark) !important;
 }
 
 /* 對話框底部留白 */

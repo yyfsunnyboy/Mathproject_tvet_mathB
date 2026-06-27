@@ -1431,8 +1431,14 @@ _DESCRIPTIVE_STATS_OPS = frozenset(
         "compare_dispersion",
         "conceptual_dispersion_judgment",
         "compute_linear_transform_median_and_range",
+        # Empirical-rule / normal-distribution operations (added for
+        # vh_數學B4_NormalDistributionAndEmpiricalRule components)
+        "empirical_rule_probability",
+        "empirical_rule_population_count",
+        "compare_distribution_spread",
     }
 )
+
 
 
 _DESCRIPTIVE_MATRIX_REQUIRED = (
@@ -1719,8 +1725,10 @@ def _convert_descriptive_statistics_payload(
         payload["answer_contract"] = dict(payload.get("answer_contract") or answer_contract)
         payload["presentation_mode"] = "table_fill"
         payload["answer_type"] = str(payload["answer_contract"].get("answer_type") or "multi_part")
+    payload["explanation"] = "\n".join(derivation)
     payload["scaffold_payload_meta"] = build_scaffold_payload_meta(payload)
     return _finalize_question_payload(payload)
+
 
 
 def convert_domain_matrix_to_question_payload(
@@ -1745,8 +1753,11 @@ def convert_domain_matrix_to_question_payload(
     """
     op = str(domain_operation or kwargs.get("domain_operation") or "").strip()
     if op in _DESCRIPTIVE_STATS_OPS:
-        return _finalize_question_payload(
-            _convert_descriptive_statistics_payload(
+        # NOTE: _convert_descriptive_statistics_payload already calls
+        # _finalize_question_payload internally (at its own return path).
+        # Do NOT wrap it again here — double finalize corrupts single_choice
+        # choices via the second normalize_single_choice_payload pass.
+        return _convert_descriptive_statistics_payload(
             matrix,
             op=op,
             presentation_mode=presentation_mode,
@@ -1757,7 +1768,7 @@ def convert_domain_matrix_to_question_payload(
             source_kind=source_kind,
             generator_key=generator_key,
             **kwargs,
-        ))
+        )
     if op in _CUMULATIVE_FREQ_DIST_OPS:
         return _finalize_question_payload(
             _convert_cumulative_frequency_distribution_payload(

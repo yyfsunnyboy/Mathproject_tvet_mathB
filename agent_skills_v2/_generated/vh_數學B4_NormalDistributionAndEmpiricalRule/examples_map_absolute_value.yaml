@@ -1,0 +1,157 @@
+examples:
+  -
+    example_id: 3856
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某校 2000 個學生，英文成績呈常態分配，平均 55 分，標準差 5 分。求：(1) 50~60 分人數；(2) 60 分以上人數；(3) 低於 40 分人數。"
+    problem_text_hash: "617b94ae74b0f17733522c95db775e7d"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    problem_type_id: "empirical_rule_population_count"
+    target_task: "empirical_rule_population_count"
+    task_family: "empirical_rule_population_count"
+    answer_type: "multi_blank"
+    answer_shape: "multi_blank"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""
+  -
+    example_id: 3857
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某校 1000 個學生，英文成績呈常態分配，平均 60 分，標準差 10 分。求：(1) 高於 60 分人數；(2) 50 分以下人數；(3) 50~70 分人數。"
+    problem_text_hash: "d010fcb3501aa100b794e16183f72463"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    problem_type_id: "empirical_rule_population_count"
+    target_task: "empirical_rule_population_count"
+    task_family: "empirical_rule_population_count"
+    answer_type: "multi_blank"
+    answer_shape: "multi_blank"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""
+  -
+    example_id: 3858
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某校 2000 個學生，英文成績呈常態分配，平均 55 分，標準差 5 分。求：(1) 45~65 分人數；(2) 50 分以下人數。"
+    problem_text_hash: "2960ba280a1af1d7fe6b4e6fb12d88dc"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    problem_type_id: "empirical_rule_population_count"
+    target_task: "empirical_rule_population_count"
+    task_family: "empirical_rule_population_count"
+    answer_type: "multi_blank"
+    answer_shape: "multi_blank"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""
+  -
+    example_id: 3859
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某年統測，甲、乙兩科成績直方圖如圖所示，下列敘述何者正確？(A)甲平均比乙大；(B)甲中位數比乙大；(C)甲全距比乙大；(D)甲標準差比乙大。"
+    problem_text_hash: "a845d5037c5f7cbbe3a1550f668b9000"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "compare_distribution_spread"
+    problem_type_id: "compare_distribution_spread"
+    target_task: "compare_distribution_spread"
+    task_family: "compare_distribution_spread"
+    answer_type: "expression"
+    answer_shape: "single_numeric"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""
+  -
+    example_id: 3897
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某校500位新生第一次數學段考成績平均分數是58分，標準差是4分，若成績呈常態分配，則成績介於62到54分的學生約有多少人？(A) 170 (B) 250 (C) 340 (D) 400。"
+    problem_text_hash: "402b949bdc89e9afb92e7a66f74860bf"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    problem_type_id: "empirical_rule_population_count"
+    target_task: "empirical_rule_population_count"
+    task_family: "empirical_rule_population_count"
+    answer_type: "expression"
+    answer_shape: "single_numeric"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""
+  -
+    example_id: 3898
+    title: ""
+    source_type: "textbook_example"
+    source_chapter: "unknown"
+    source_section: "unknown"
+    problem_preview: "某次數學考試共有1000人參加。若成績呈常態分配，且平均數為62分，標準差為8分，則成績低於70分的人數為何？ (A)介於581人與660人之間 (B)介於661人與740人之間 (C)介於741人與820人之間 (D)介於821人與900人之間。"
+    problem_text_hash: "31eb7484d2b935eaa94b4e3e66012529"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    problem_type_id: "empirical_rule_population_count"
+    target_task: "empirical_rule_population_count"
+    task_family: "empirical_rule_population_count"
+    answer_type: "expression"
+    answer_shape: "single_numeric"
+    math_objects:
+
+    runtime_category: "rule_only"
+    classification_rule_id: "fallback.domain_analyzer"
+    classification_reason: "Domain analyzer classified the example based on taxonomy."
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "pass"
+    generator_status: "candidate"
+    manual_review_reason: ""

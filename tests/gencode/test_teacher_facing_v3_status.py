@@ -475,3 +475,162 @@ def test_src_3829_production_consistency():
     assert p["answer_contract"]["checker"] == "free_response_drawing_checker"
 
 
+# ---------------------------------------------------------------------------
+# Regression tests for component status display (BOM / wrapper-inclusion fix)
+# Rule: component_status = published iff gencode_status==verified AND
+#       production generate.py exists AND component is in GENERATOR_SPECS.
+# ---------------------------------------------------------------------------
+
+def _write_production_init_utf8bom(
+    root: Path, skill_id: str, specs: list[dict[str, object]]
+) -> None:
+    """Write __init__.py with a UTF-8 BOM (EF BB BF), simulating some editors/tools."""
+    skill_dir = root / "agent_skills_v3" / skill_id
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    content = f"SKILL_ID = {skill_id!r}\nGENERATOR_SPECS = {specs!r}\n"
+    (skill_dir / "__init__.py").write_bytes(b"\xef\xbb\xbf" + content.encode("utf-8"))
+
+
+def test_regression_verified_without_wrapper_is_not_published(tmp_path: Path) -> None:
+    """Regression 1: verified + production generate.py exists BUT no __init__.py → not published."""
+    skill_id = "vh_regression_test_skill_1"
+    component_id = "src_9001"
+    prod_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    prod_dir.mkdir(parents=True)
+    (prod_dir / "generate.py").write_text("def generate(): return {}\n", encoding="utf-8")
+
+    sync = inspect_component_production_sync(
+        skill_id=skill_id,
+        component_id=component_id,
+        textbook_example_id=9001,
+        project_root=tmp_path,
+    )
+    teacher = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        production_contains_latest=bool(sync["production_contains_latest"]),
+    )
+
+    assert sync["production_contains_latest"] is False, (
+        "Component should not be published when GENERATOR_SPECS is absent"
+    )
+    assert teacher["status_key"] == "generated_not_packaged"
+
+
+def test_regression_verified_not_in_specs_is_not_published(tmp_path: Path) -> None:
+    """Regression 2: verified + generate.py exists + component NOT in GENERATOR_SPECS → not published."""
+    skill_id = "vh_regression_test_skill_2"
+    component_id = "src_9002"
+    other_id = "src_9099"
+    prod_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    prod_dir.mkdir(parents=True)
+    (prod_dir / "generate.py").write_text("def generate(): return {}\n", encoding="utf-8")
+    _write_production_init(
+        tmp_path,
+        skill_id,
+        [{"component_id": other_id, "textbook_example_id": 9099, "problem_type_id": "p"}],
+    )
+
+    sync = inspect_component_production_sync(
+        skill_id=skill_id,
+        component_id=component_id,
+        textbook_example_id=9002,
+        project_root=tmp_path,
+    )
+    teacher = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        production_contains_latest=bool(sync["production_contains_latest"]),
+    )
+
+    assert sync["production_contains_latest"] is False, (
+        "Component not listed in GENERATOR_SPECS must not be marked published"
+    )
+    assert teacher["status_key"] == "generated_not_packaged"
+
+
+def test_regression_verified_bom_wrapper_with_component_is_published(tmp_path: Path) -> None:
+    """Regression 3: verified + BOM-encoded __init__.py with component in GENERATOR_SPECS → published.
+
+    This is the exact bug: production __init__.py written with UTF-8 BOM caused ast.parse to
+    raise SyntaxError (invalid non-printable character U+FEFF), silently returning [], so every
+    component appeared absent and production_contains_latest was always False.
+    Fix: _read_generator_specs now uses encoding='utf-8-sig' which strips the BOM.
+    """
+    skill_id = "vh_regression_test_skill_3"
+    component_id = "src_9003"
+    prod_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    prod_dir.mkdir(parents=True)
+    (prod_dir / "generate.py").write_text("def generate(): return {}\n", encoding="utf-8")
+    _write_production_init_utf8bom(
+        tmp_path,
+        skill_id,
+        [{"component_id": component_id, "textbook_example_id": 9003, "problem_type_id": "p"}],
+    )
+
+    sync = inspect_component_production_sync(
+        skill_id=skill_id,
+        component_id=component_id,
+        textbook_example_id=9003,
+        project_root=tmp_path,
+    )
+    teacher = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        production_contains_latest=bool(sync["production_contains_latest"]),
+    )
+
+    assert sync["production_contains_latest"] is True, (
+        "BOM-encoded __init__.py must be parsed correctly; component in GENERATOR_SPECS → published"
+    )
+    assert teacher["status_key"] == "published"
+    assert teacher["label"] == "已經上線"
+
+
+def test_regression_partial_publish_marks_only_included_components(tmp_path: Path) -> None:
+    """Regression 4: partial publish — only components in GENERATOR_SPECS show 已上線.
+
+    A skill has 2 components but the wrapper only lists one of them.  The unlisted component
+    must remain 已驗證／尚未封裝 even though its generate.py exists in production.
+    """
+    skill_id = "vh_regression_test_skill_4"
+    included_id = "src_9004"
+    excluded_id = "src_9005"
+
+    for cid in (included_id, excluded_id):
+        d = tmp_path / "agent_skills_v3" / skill_id / "components" / cid
+        d.mkdir(parents=True)
+        (d / "generate.py").write_text("def generate(): return {}\n", encoding="utf-8")
+
+    _write_production_init(
+        tmp_path,
+        skill_id,
+        [{"component_id": included_id, "textbook_example_id": 9004, "problem_type_id": "p"}],
+    )
+
+    sync_in = inspect_component_production_sync(
+        skill_id=skill_id, component_id=included_id, textbook_example_id=9004, project_root=tmp_path
+    )
+    sync_ex = inspect_component_production_sync(
+        skill_id=skill_id, component_id=excluded_id, textbook_example_id=9005, project_root=tmp_path
+    )
+
+    teacher_in = resolve_teacher_facing_v3_status(
+        gencode_status="verified", has_tracker=True, has_component=True,
+        production_contains_latest=bool(sync_in["production_contains_latest"]),
+    )
+    teacher_ex = resolve_teacher_facing_v3_status(
+        gencode_status="verified", has_tracker=True, has_component=True,
+        production_contains_latest=bool(sync_ex["production_contains_latest"]),
+    )
+
+    assert sync_in["production_contains_latest"] is True
+    assert teacher_in["status_key"] == "published"
+
+    assert sync_ex["production_contains_latest"] is False, (
+        "Component not in GENERATOR_SPECS must not be published even if generate.py exists"
+    )
+    assert teacher_ex["status_key"] == "generated_not_packaged"

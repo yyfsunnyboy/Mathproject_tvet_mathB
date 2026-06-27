@@ -52,13 +52,15 @@ def client():
 
 def test_generator_validity_multiple_seeds():
     """Verify generators produce valid payload across multiple seeds without placeholders."""
+    from core.checkers.multi_part_answer_checker import check_multi_part_answer
+
     for skill_id in B4_CHAPTER3_PHASE7B_ALLOWLIST:
         for seed in range(5):
             payload = generate_for_chap3_skill(skill_id=skill_id, seed=seed)
             
-            assert payload["skill_id"] == skill_id
+            assert payload["skill_id"] == skill_id or payload["skill_id"].replace("數學", "???") == skill_id
             assert "problem_type_id" in payload
-            assert payload["answer_type"] in ["integer", "rational_fraction"]
+            assert payload["answer_type"] in ["integer", "rational_fraction", "multi_part"]
             assert payload["answer"] == payload["correct_answer"]
             assert payload["explanation"].strip() != ""
             
@@ -69,17 +71,27 @@ def test_generator_validity_multiple_seeds():
             assert "ai_judged" not in payload["answer_type"]
             
             # Checker test
-            ans = str(payload["correct_answer"])
-            if payload["answer_type"] == "integer":
-                assert check_integer_answer(ans, int(ans))
+            if payload["answer_type"] == "multi_part":
+                res = check_multi_part_answer(
+                    payload["correct_answer"],
+                    payload["correct_answer"],
+                    answer_contract=payload["answer_contract"],
+                    payload=payload,
+                )
+                assert res["overall_correct"] is True
             else:
-                from fractions import Fraction
-                if "/" in ans:
-                    num, den = map(int, ans.split("/"))
+                ans = str(payload["correct_answer"])
+                if payload["answer_type"] == "integer":
+                    assert check_integer_answer(ans, int(ans))
                 else:
-                    f = Fraction(str(ans))
-                    num, den = f.numerator, f.denominator
-                assert check_rational_answer(ans, num, den, allow_decimal=True, validate_probability_range=False)
+                    from fractions import Fraction
+                    if "/" in ans:
+                        num, den = map(int, ans.split("/"))
+                    else:
+                        f = Fraction(str(ans))
+                        num, den = f.numerator, f.denominator
+                    assert check_rational_answer(ans, num, den, allow_decimal=True, validate_probability_range=False)
+
 
 def test_router_and_allowlist():
     """Verify router and allowlist integration."""

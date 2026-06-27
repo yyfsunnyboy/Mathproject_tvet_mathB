@@ -1,0 +1,10 @@
+﻿python :   File "<string>", line 19
+位於 線路:1 字元:1
++ python -c "
++ ~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  File "<string>", line 19:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    print(f'  choices({len(p.get(" choices\,[])):d}):',
+                                 ^
+SyntaxError: unterminated string literal (detected at line 19)

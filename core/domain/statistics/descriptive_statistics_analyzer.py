@@ -31,6 +31,7 @@ _CAPABILITY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"方差|variance|σ\^?2", re.I), "variance"),
     (re.compile(r"標準差|standard\s*deviation|σ(?!²)", re.I), "standard_deviation"),
     (re.compile(r"完成下表|填寫.*表|統計量.*表", re.I), "descriptive_statistics_table_completion"),
+    (re.compile(r"常態分配|常態分布|常態分佈|經驗法則|empirical\s*rule|normal\s*distribution", re.I), "empirical_rule_probability"),
 )
 
 _PRIMARY_OPERATION_BY_PROBLEM_TYPE: dict[str, str] = {
@@ -62,6 +63,12 @@ _PRIMARY_OPERATION_BY_PROBLEM_TYPE: dict[str, str] = {
     "mode_computation": "compute_mode_from_raw_values",
     "descriptive_statistics_table_completion": "complete_descriptive_statistics_table",
     "descriptive_statistics_table_completion_computation": "complete_descriptive_statistics_table",
+    "empirical_rule_probability": "empirical_rule_probability",
+    "empirical_rule_probability_computation": "empirical_rule_probability",
+    "empirical_rule_population_count": "empirical_rule_population_count",
+    "empirical_rule_population_count_computation": "empirical_rule_population_count",
+    "compare_distribution_spread": "compare_distribution_spread",
+    "compare_distribution_spread_computation": "compare_distribution_spread",
 }
 
 
@@ -135,6 +142,9 @@ def _infer_answer_shape(
     ):
         if re.search(r"[\(（]\s*(?:1|2|女生|男生)", question_text):
             return "multi_part"
+    if any(cap in required_capabilities for cap in ("empirical_rule_probability", "empirical_rule_population_count")):
+        if re.search(r"[\(（]\s*(?:1|2)\s*[\)）]", question_text) or mode == "multi_blank":
+            return "multi_blank"
     return "single_numeric"
 
 
@@ -147,6 +157,15 @@ def _infer_task_classification(
     text = str(combined_text or "")
     stem = str(question_text or "")
     mode = str(presentation_mode or "short_answer").strip()
+
+    is_normal = bool(re.search(r"常態分配|常態分布|常態分佈|normal\s*distribution", text))
+    is_compare_spread = bool(re.search(r"如圖所示|成績直方圖", stem) and re.search(r"平均.*較大|標準差.*較大|平均比|標準差比", text))
+    if is_normal or is_compare_spread:
+        if is_compare_spread or re.search(r"如圖|比較|圖中|標準差較大|標準差大小|離散程度", text):
+            return "compare_distribution_spread", ["compare_distribution_spread"]
+        if re.search(r"人|個|戶|隻|個數|人數", stem) and re.search(r"幾|多少|約有|求|為何", stem):
+            return "empirical_rule_population_count", ["empirical_rule_population_count"]
+        return "empirical_rule_probability", ["empirical_rule_probability"]
 
     if mode == "single_choice":
         if re.search(r"哪一種統計量|應用了下列哪一種|觀念", stem) and re.search(
@@ -236,6 +255,14 @@ def resolve_descriptive_operation(
     required = [cap for cap in required if cap in registry_caps]
     if not required:
         return None
+
+    required_set = set(required)
+    if "empirical_rule_probability" in required_set:
+        return "empirical_rule_probability"
+    if "empirical_rule_population_count" in required_set:
+        return "empirical_rule_population_count"
+    if "compare_distribution_spread" in required_set:
+        return "compare_distribution_spread"
 
     allowed = set(spec.operations.keys())
     pt = str(problem_type_id or "").strip().lower()
@@ -428,6 +455,8 @@ def classify_textbook_example(source: Any) -> dict[str, Any] | None:
     answer_type = "single_choice" if analysis.presentation_mode == "single_choice" else "expression"
     if analysis.answer_shape == "multi_part":
         answer_type = "multi_part"
+    elif analysis.answer_shape == "multi_blank":
+        answer_type = "multi_blank"
     return {
         "selected_operation": analysis.selected_operation,
         "problem_type_id": analysis.problem_type_id,

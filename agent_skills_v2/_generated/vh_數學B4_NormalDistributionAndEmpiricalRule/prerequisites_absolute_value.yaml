@@ -1,0 +1,9 @@
+items:
+  -
+    subskill_id: "compare_distribution_spread"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "empirical_rule_population_count"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

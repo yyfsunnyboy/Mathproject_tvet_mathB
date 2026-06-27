@@ -1,0 +1,4116 @@
+# Gencode Auto Pipeline Summary: vh_數學B4_NormalDistributionAndEmpiricalRule
+
+## summary
+```json
+{
+  "ok": false,
+  "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+  "pipeline_status": "auto_pipeline_completed_runtime_blocked",
+  "source_example_count": 6,
+  "candidate_problem_types": [
+    {
+      "problem_type_id": "text_short_read_table",
+      "proposed_problem_type_id": "text_short_read_table",
+      "display_name": "text_short / read_table",
+      "matched_example_ids": [
+        3856,
+        3858
+      ],
+      "matched_example_count": 2,
+      "unmatched_example_ids": [],
+      "representative_example_id": 3856,
+      "structural_features": [
+        "text_short"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "source_has_choices": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "",
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "text_short"
+      },
+      "checker_key_proposal": "text_short_checker",
+      "equivalence_type_proposal": "exact_string",
+      "answer_shape": "text_short",
+      "answer_semantics": "text_short",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "text_short_checker",
+      "checker_selection_reason": "task_family_default",
+      "coordinate_pair_presentation_note": "",
+      "confidence": "high",
+      "promote_recommendation": "hold_pending_problem_type_induction",
+      "promote_blockers": [
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
+        "ai_unavailable_fallback_to_same_as_main",
+        "alignment_score_below_recommended_threshold",
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "read_table",
+        "short_answer",
+        [
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "expression_read_table_expression",
+        "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "display_name": "short_answer / read_table",
+        "answer_format_hint": "text_short",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          3856,
+          3858
+        ],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "answer_type": "text_short",
+          "answer_shape": "text_short",
+          "answer_equivalence": "exact_string",
+          "checker": "text_short_checker",
+          "accepted_formats": [
+            "5",
+            "5.0",
+            "-3"
+          ],
+          "source_has_choices": false,
+          "equivalence_type": "exact_string",
+          "checker_key": "text_short_checker",
+          "presentation_mode": "short_answer"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "statistics_context"
+          ],
+          "required_math_objects": [
+            "statistics_context"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "statistics_computation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "read_table"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "point_quadrant"
+          },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
+          "problem_type_id": "short_answer_read_table_short_answer",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "read_table",
+          "short_answer",
+          [
+            "statistics_computation"
+          ],
+          [
+            "statistics_context"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "short_answer_read_table_short_answer",
+        "value_type_prefix": "",
+        "_resolved_template_slot": "point_quadrant"
+      },
+      "generator_readiness": "pending_problem_type_induction",
+      "usable_for_phase3": false,
+      "template_slot": "point_quadrant",
+      "canonical_base_problem_type_id": "short_answer_read_table_short_answer",
+      "value_type_prefix": "",
+      "subskill_id": "read_table",
+      "requires_human_action": true,
+      "requires_human_rule_pack": true,
+      "pending_problem_type_induction": true,
+      "answer_type": "text_short",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.0,
+        "source_problem_type_score": 0.0164,
+        "task_consistent_with_skill": true
+      }
+    },
+    {
+      "problem_type_id": "unresolved_within_current_skill",
+      "proposed_problem_type_id": "unresolved_within_current_skill",
+      "display_name": "text_short / applied_quadratic_inequality_problem",
+      "matched_example_ids": [
+        3857
+      ],
+      "matched_example_count": 1,
+      "unmatched_example_ids": [],
+      "representative_example_id": 3857,
+      "structural_features": [
+        "interval_or_union"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "exact_string",
+        "equivalence_type": "exact_string",
+        "checker": "text_short_checker",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ],
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "interval"
+      },
+      "checker_key_proposal": "text_short_checker",
+      "equivalence_type_proposal": "exact_string",
+      "answer_shape": "interval_or_union",
+      "answer_semantics": "interval_union",
+      "presentation_mode": "short_answer",
+      "source_has_choices": false,
+      "selected_checker": "interval_checker",
+      "checker_selection_reason": "quadratic_inequality_interval_solution",
+      "coordinate_pair_presentation_note": "",
+      "confidence": "high",
+      "promote_recommendation": "hold_pending_problem_type_induction",
+      "promote_blockers": [
+        "unregistered_current_skill_problem_type"
+      ],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
+        "ai_unavailable_fallback_to_same_as_main",
+        "alignment_score_below_recommended_threshold",
+        "unregistered_current_skill_problem_type"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "split_by_feature_signature",
+      "feature_signature": [
+        "short_answer",
+        "applied_quadratic_inequality_problem",
+        "short_answer",
+        [
+          "quadratic_factoring_reasoning",
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "expression_applied_quadratic_inequality_problem_expression",
+        "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
+        "display_name": "short_answer / applied_quadratic_inequality_problem",
+        "answer_format_hint": "interval",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          3857
+        ],
+        "answer_contract": {
+          "choices_required": false,
+          "choice_count": null,
+          "correct_choice_count": null,
+          "frontend_render_choices": false,
+          "source_has_choices": false,
+          "answer_type": "interval",
+          "answer_shape": "interval_or_union",
+          "answer_semantics": "interval_union",
+          "answer_equivalence": "interval_set",
+          "equivalence_type": "interval_set",
+          "checker": "interval_checker",
+          "checker_key": "interval_checker",
+          "presentation_mode": "short_answer",
+          "selected_checker": "interval_checker",
+          "checker_selection_reason": "quadratic_inequality_interval_solution",
+          "accepted_formats": [
+            "-5 <= x <= 1",
+            "(-5, 1]",
+            "x in [-5,1]",
+            "x<-2 or x>5",
+            "-2<x<5",
+            "x<=-2 or x>=5"
+          ]
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "statistics_context"
+          ],
+          "required_math_objects": [
+            "statistics_context"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "quadratic_factoring_reasoning",
+            "statistics_computation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "applied_quadratic_inequality_problem"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": false
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "applied_quadratic_inequality_problem"
+          },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
+          "problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "split_by_feature_signature",
+        "feature_signature": [
+          "short_answer",
+          "applied_quadratic_inequality_problem",
+          "short_answer",
+          [
+            "quadratic_factoring_reasoning",
+            "statistics_computation"
+          ],
+          [
+            "statistics_context"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+        "value_type_prefix": "",
+        "_resolved_template_slot": "applied_quadratic_inequality_problem"
+      },
+      "generator_readiness": "pending_problem_type_induction",
+      "usable_for_phase3": false,
+      "template_slot": "applied_quadratic_inequality_problem",
+      "canonical_base_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "value_type_prefix": "",
+      "subskill_id": "applied_quadratic_inequality_problem",
+      "answer_type": "interval",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.0,
+        "source_problem_type_score": 0.0156,
+        "task_consistent_with_skill": true
+      },
+      "detected_weak_problem_type_id": "text_short_applied_quadratic_inequality_problem",
+      "detected_weak_target_task": "applied_quadratic_inequality_problem",
+      "requires_human_action": true,
+      "requires_human_rule_pack": true,
+      "pending_problem_type_induction": true,
+      "unresolved_reason": "unregistered_current_skill_problem_type"
+    },
+    {
+      "problem_type_id": "choice_read_table",
+      "proposed_problem_type_id": "choice_read_table",
+      "display_name": "choice / read_table",
+      "matched_example_ids": [
+        3897,
+        3898
+      ],
+      "matched_example_count": 2,
+      "unmatched_example_ids": [],
+      "representative_example_id": 3897,
+      "structural_features": [
+        "single_choice"
+      ],
+      "answer_contract_proposal": {
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "answer_type": "choice",
+        "answer_shape": "single_choice",
+        "answer_semantics": "choice_label",
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "presentation_mode": "",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "explicit_single_choice",
+        "accepted_formats": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker",
+        "order_matters": true,
+        "accepted_format_notes": [],
+        "canonical_answer_schema": "single_choice"
+      },
+      "checker_key_proposal": "choice_label_checker",
+      "equivalence_type_proposal": "choice_label",
+      "answer_shape": "single_choice",
+      "answer_semantics": "choice_label",
+      "presentation_mode": "single_choice",
+      "source_has_choices": true,
+      "selected_checker": "choice_label_checker",
+      "checker_selection_reason": "explicit_single_choice",
+      "coordinate_pair_presentation_note": "",
+      "confidence": "high",
+      "promote_recommendation": "hold_pending_problem_type_induction",
+      "promote_blockers": [
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "risk_flags": [
+        "ai_first_mode_fell_back_to_rule_only",
+        "ai_partial_unavailable_relaxed_tolerance",
+        "ai_unavailable_fallback_to_same_as_main",
+        "alignment_score_below_recommended_threshold",
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "checker_contract_warnings": [],
+      "spec_source": "phase1_induced_draft",
+      "grouping_reason": "single_signature_group",
+      "feature_signature": [
+        "single_choice",
+        "read_table",
+        "single_choice",
+        [
+          "statistics_computation"
+        ],
+        [
+          "statistics_context"
+        ],
+        "default"
+      ],
+      "problem_type_spec_draft": {
+        "problem_type_id": "single_choice_read_table_single_choice",
+        "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "display_name": "single_choice / read_table",
+        "answer_format_hint": "A/B/C/D",
+        "answer_fields": null,
+        "answer_separator": null,
+        "source_example_ids": [
+          3897,
+          3898
+        ],
+        "answer_contract": {
+          "choices_required": true,
+          "choice_count": 4,
+          "correct_choice_count": 1,
+          "frontend_render_choices": true,
+          "answer_type": "choice",
+          "answer_shape": "single_choice",
+          "answer_semantics": "choice_label",
+          "answer_equivalence": "choice_label",
+          "checker": "choice_label_checker",
+          "presentation_mode": "single_choice",
+          "source_has_choices": true,
+          "selected_checker": "choice_label_checker",
+          "checker_selection_reason": "explicit_single_choice",
+          "accepted_formats": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "equivalence_type": "choice_label",
+          "checker_key": "choice_label_checker"
+        },
+        "stem_contract": {
+          "stem_must_not_embed_choices": true,
+          "allowed_math_objects": [
+            "statistics_context"
+          ],
+          "required_math_objects": [
+            "statistics_context"
+          ],
+          "forbidden_patterns": [
+            "\\(A\\)",
+            "\\(B\\)",
+            "\\(C\\)",
+            "\\(D\\)"
+          ]
+        },
+        "dependency_contract": {
+          "givens_must_be_used": true,
+          "target_answer_must_depend_on_givens": true,
+          "variables_in_conditions_must_appear_in_target": false
+        },
+        "semantic_contract": {
+          "reasoning_type": [
+            "statistics_computation"
+          ],
+          "reject_if": [
+            "unused_condition",
+            "ambiguous_answer",
+            "answer_not_derivable",
+            "duplicated_choices",
+            "no_correct_choice",
+            "multiple_correct_choices_when_single_choice"
+          ]
+        },
+        "generator_contract": {
+          "template_variants": [
+            {
+              "id": "default",
+              "label": "default",
+              "stem_pattern": "依題意求解：{stem_hint}。",
+              "weight": 1.0,
+              "enabled": true
+            }
+          ],
+          "parameter_schema": {
+            "seed": {
+              "type": "integer",
+              "randomize": true
+            },
+            "difficulty_level": {
+              "choices": [
+                "level_1",
+                "level_2",
+                "level_3"
+              ],
+              "weights": [
+                0.4,
+                0.4,
+                0.2
+              ]
+            }
+          },
+          "variation_dimensions": [
+            "seed",
+            "difficulty_level",
+            "context_style"
+          ],
+          "difficulty_controls": {
+            "level_1": {},
+            "level_2": {},
+            "level_3": {}
+          },
+          "anti_repetition_rules": {
+            "avoid_same_template_consecutive": true,
+            "avoid_same_ratio_consecutive": true,
+            "avoid_same_point_names_consecutive": true,
+            "avoid_same_answer_consecutive": true,
+            "recent_history_window": 5,
+            "signature_fields": [
+              "problem_type_id",
+              "template_variant",
+              "routing_track",
+              "scenario_type",
+              "ratio_form",
+              "ratio_values",
+              "coordinate_pattern",
+              "answer"
+            ]
+          },
+          "validity_constraints": [
+            "answer derivable from givens"
+          ],
+          "answer_shape": "numeric",
+          "explanation_variants": [
+            "stepwise"
+          ],
+          "sampling_strategy": "weighted_random",
+          "template_families": [
+            "read_table"
+          ],
+          "parameter_slots": {
+            "seed": "integer",
+            "difficulty": "easy"
+          },
+          "randomization_rules": {
+            "shuffle_choices": true
+          },
+          "avoid_llm_freeform_math": true,
+          "use_domain_functions": true,
+          "derivation_steps_required": true,
+          "template_slots": {
+            "stem": "point_quadrant_choice"
+          },
+          "templates": [
+            "template_scalar_unknown",
+            "template_feature_value"
+          ],
+          "problem_type_id": "single_choice_read_table_single_choice",
+          "contract_validation_blockers": [],
+          "contract_validation_warnings": [
+            "single_template_variant_only",
+            "variation_dimensions_below_recommended_minimum"
+          ]
+        },
+        "validator_contract": {
+          "static_checks": [
+            "answer_contract_checks",
+            "choices_policy"
+          ],
+          "semantic_checks": [
+            "givens_to_target_dependency"
+          ],
+          "runtime_smoke_count": 30
+        },
+        "spec_source": "phase1_induced_draft",
+        "grouping_reason": "single_signature_group",
+        "feature_signature": [
+          "single_choice",
+          "read_table",
+          "single_choice",
+          [
+            "statistics_computation"
+          ],
+          [
+            "statistics_context"
+          ],
+          "default"
+        ],
+        "canonical_base_problem_type_id": "read_table_single_choice",
+        "value_type_prefix": "single_choice",
+        "_resolved_template_slot": "point_quadrant_choice"
+      },
+      "generator_readiness": "pending_problem_type_induction",
+      "usable_for_phase3": false,
+      "template_slot": "point_quadrant_choice",
+      "canonical_base_problem_type_id": "read_table_single_choice",
+      "value_type_prefix": "single_choice",
+      "subskill_id": "read_table",
+      "requires_human_action": true,
+      "requires_human_rule_pack": true,
+      "pending_problem_type_induction": true,
+      "answer_type": "choice",
+      "runtime_status": "runtime_ready_candidate",
+      "next_action": "phase2_foundation_preflight",
+      "semantic_alignment": {
+        "skill_problem_type_score": 0.0,
+        "source_problem_type_score": 0.0345,
+        "task_consistent_with_skill": true
+      }
+    }
+  ],
+  "per_example_classification": [
+    {
+      "example_id": 3856,
+      "detected_problem_type_id": "short_answer_read_table_short_answer",
+      "example_feature": {
+        "source_example_id": 3856,
+        "question_text": "某校 2000 個學生，英文成績呈常態分配，平均 55 分，標準差 5 分。求：(1) 50~60 分人數；(2) 60 分以上人數；(3) 低於 40 分人數。",
+        "answer": "(1) 1360 人；(2) 320 人；(3) 3 人",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "checker": "text_short_checker",
+        "equivalence": "exact_string",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "variables": [],
+        "givens": [],
+        "target": "read_table",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "read_table",
+          "rule_task_family": "generic_numeric_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "read_table",
+          "final_task_family": "generic_numeric_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [
+            "C1"
+          ],
+          "selected_subskill": "read_table",
+          "selected_problem_type": "read_table",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "read_table",
+          "task_family": "generic_numeric_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "short_answer",
+          "answer_shape": "text_short",
+          "source_type": "worked_example",
+          "example_label": "例題10",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "worked_example",
+          "example_label": "例題10",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": 10,
+          "practice_number": null,
+          "nearby_worked_examples": [],
+          "linked_worked_example": null,
+          "linked_practices": [
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            }
+          ],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker"
+      },
+      "answer_shape": "text_short",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "requires_human_action",
+        "candidate_only_problem_type"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "read_table",
+        "rule_task_family": "generic_numeric_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "read_table",
+        "final_task_family": "generic_numeric_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [
+          "C1"
+        ],
+        "selected_subskill": "read_table",
+        "selected_problem_type": "read_table",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "short_answer",
+        "answer_shape": "text_short",
+        "source_type": "worked_example",
+        "example_label": "例題10",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "read_table",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "text_short",
+      "equivalence_type": "exact_string",
+      "checker_key": "text_short_checker",
+      "requires_human_action": false
+    },
+    {
+      "example_id": 3857,
+      "detected_problem_type_id": "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "example_feature": {
+        "source_example_id": 3857,
+        "question_text": "某校 1000 個學生，英文成績呈常態分配，平均 60 分，標準差 10 分。求：(1) 高於 60 分人數；(2) 50 分以下人數；(3) 50~70 分人數。",
+        "answer": "(1) 500 人；(2) 160 人；(3) 680 人",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "checker": "text_short_checker",
+        "equivalence": "exact_string",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
+        "reasoning_type": [
+          "quadratic_factoring_reasoning",
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "variables": [],
+        "givens": [],
+        "target": "applied_quadratic_inequality_problem",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [
+          "[Task: Applied_Context]"
+        ],
+        "forced_target_task": "applied_quadratic_inequality_problem",
+        "meta_answer_format_hint": "interval",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "applied_quadratic_inequality_problem",
+          "rule_task_family": "quadratic_inequality_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "applied_quadratic_inequality_problem",
+          "final_task_family": "quadratic_inequality_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "structure",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "C2",
+              "target_task": "applied_quadratic_inequality_problem",
+              "task_family": "quadratic_inequality_family",
+              "problem_type_id": "applied_quadratic_inequality_problem",
+              "label": "applied_quadratic_inequality_problem",
+              "candidate_source": "outsider",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "applied_quadratic_inequality_problem"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [
+            "C2"
+          ],
+          "selected_subskill": "applied_quadratic_inequality_problem",
+          "selected_problem_type": "applied_quadratic_inequality_problem",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "applied_quadratic_inequality_problem",
+          "task_family": "quadratic_inequality_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "short_answer",
+          "answer_shape": "text_short",
+          "source_type": "in_class_practice",
+          "example_label": "",
+          "practice_label": "隨堂練習10",
+          "linked_example": "例題10",
+          "linked_example_id": 3856,
+          "linked_example_task_family": "generic_numeric_family",
+          "structure_consistency": "mismatch",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "structure_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "in_class_practice",
+          "example_label": "",
+          "practice_label": "隨堂練習10",
+          "linked_example": "例題10",
+          "section_order": 0,
+          "example_number": null,
+          "practice_number": 10,
+          "nearby_worked_examples": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            }
+          ],
+          "linked_worked_example": {
+            "example_id": 3856,
+            "source_type": "worked_example",
+            "example_label": "例題10",
+            "practice_label": "",
+            "section_order": 0,
+            "title_head": "例題 10"
+          },
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker"
+      },
+      "answer_shape": "text_short",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "requires_human_action"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "applied_quadratic_inequality_problem",
+        "rule_task_family": "quadratic_inequality_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "applied_quadratic_inequality_problem",
+        "final_task_family": "quadratic_inequality_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "structure",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "C2",
+            "target_task": "applied_quadratic_inequality_problem",
+            "task_family": "quadratic_inequality_family",
+            "problem_type_id": "applied_quadratic_inequality_problem",
+            "label": "applied_quadratic_inequality_problem",
+            "candidate_source": "outsider",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "applied_quadratic_inequality_problem"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [
+          "C2"
+        ],
+        "selected_subskill": "applied_quadratic_inequality_problem",
+        "selected_problem_type": "applied_quadratic_inequality_problem",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "applied_quadratic_inequality_problem",
+        "task_family": "quadratic_inequality_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "short_answer",
+        "answer_shape": "text_short",
+        "source_type": "in_class_practice",
+        "example_label": "",
+        "practice_label": "隨堂練習10",
+        "linked_example": "例題10",
+        "linked_example_id": 3856,
+        "linked_example_task_family": "generic_numeric_family",
+        "structure_consistency": "mismatch",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "structure_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "applied_quadratic_inequality_problem",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "text_short",
+      "equivalence_type": "exact_string",
+      "checker_key": "text_short_checker",
+      "requires_human_action": false
+    },
+    {
+      "example_id": 3858,
+      "detected_problem_type_id": "short_answer_read_table_short_answer",
+      "example_feature": {
+        "source_example_id": 3858,
+        "question_text": "某校 2000 個學生，英文成績呈常態分配，平均 55 分，標準差 5 分。求：(1) 45~65 分人數；(2) 50 分以下人數。",
+        "answer": "(1) 1900 人；(2) 320 人",
+        "choices": [],
+        "has_choices": false,
+        "stem_embeds_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "checker": "text_short_checker",
+        "equivalence": "exact_string",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "variables": [],
+        "givens": [],
+        "target": "read_table",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "read_table",
+          "rule_task_family": "generic_numeric_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "read_table",
+          "final_task_family": "generic_numeric_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "structure",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "read_table",
+          "selected_problem_type": "read_table",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "read_table",
+          "task_family": "generic_numeric_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "short_answer",
+          "answer_shape": "text_short",
+          "source_type": "basic_exercise",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "basic_exercise",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": null,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker"
+      },
+      "answer_shape": "text_short",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "requires_human_action",
+        "candidate_only_problem_type"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "read_table",
+        "rule_task_family": "generic_numeric_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "read_table",
+        "final_task_family": "generic_numeric_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "structure",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "read_table",
+        "selected_problem_type": "read_table",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "short_answer",
+        "answer_shape": "text_short",
+        "source_type": "basic_exercise",
+        "example_label": "",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "read_table",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "text_short",
+      "equivalence_type": "exact_string",
+      "checker_key": "text_short_checker",
+      "requires_human_action": false
+    },
+    {
+      "example_id": 3859,
+      "detected_problem_type_id": "single_choice_read_table_single_choice",
+      "example_feature": {
+        "source_example_id": 3859,
+        "question_text": "某年統測，甲、乙兩科成績直方圖如圖所示，下列敘述何者正確？(A)甲平均比乙大；(B)甲中位數比乙大；(C)甲全距比乙大；(D)甲標準差比乙大。",
+        "answer": "D",
+        "choices": [
+          "甲平均比乙大；",
+          "甲中位數比乙大；",
+          "甲全距比乙大；",
+          "甲標準差比乙大。"
+        ],
+        "has_choices": true,
+        "stem_embeds_choices": true,
+        "answer_type": "choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": true,
+        "variables": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "givens": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "target": "read_table",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "read_table",
+          "rule_task_family": "generic_numeric_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "read_table",
+          "final_task_family": "generic_numeric_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "structure",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "read_table",
+          "selected_problem_type": "read_table",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "read_table",
+          "task_family": "generic_numeric_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "single_choice",
+          "answer_shape": "single_choice",
+          "source_type": "advanced_exercise",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "advanced_exercise",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": null,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "answer_shape": "single_choice",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "stem_embeds_choices",
+        "requires_human_action",
+        "candidate_only"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "read_table",
+        "rule_task_family": "generic_numeric_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "read_table",
+        "final_task_family": "generic_numeric_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "structure",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "read_table",
+        "selected_problem_type": "read_table",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "source_type": "advanced_exercise",
+        "example_label": "",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "same_as_main_skill",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "requires_human_action": false
+    },
+    {
+      "example_id": 3897,
+      "detected_problem_type_id": "single_choice_read_table_single_choice",
+      "example_feature": {
+        "source_example_id": 3897,
+        "question_text": "某校500位新生第一次數學段考成績平均分數是58分，標準差是4分，若成績呈常態分配，則成績介於62到54分的學生約有多少人？(A) 170 (B) 250 (C) 340 (D) 400。",
+        "answer": "C",
+        "choices": [
+          "170",
+          "250",
+          "340",
+          "400。"
+        ],
+        "has_choices": true,
+        "stem_embeds_choices": true,
+        "answer_type": "choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "variables": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "givens": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "target": "read_table",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "read_table",
+          "rule_task_family": "generic_numeric_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "read_table",
+          "final_task_family": "generic_numeric_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "structure",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "read_table",
+          "selected_problem_type": "read_table",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "read_table",
+          "task_family": "generic_numeric_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "single_choice",
+          "answer_shape": "single_choice",
+          "source_type": "self_assessment",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "self_assessment",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": null,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "answer_shape": "single_choice",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "stem_embeds_choices",
+        "requires_human_action",
+        "candidate_only_problem_type"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "read_table",
+        "rule_task_family": "generic_numeric_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "read_table",
+        "final_task_family": "generic_numeric_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "structure",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "read_table",
+        "selected_problem_type": "read_table",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "source_type": "self_assessment",
+        "example_label": "",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "read_table",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "requires_human_action": false
+    },
+    {
+      "example_id": 3898,
+      "detected_problem_type_id": "single_choice_read_table_single_choice",
+      "example_feature": {
+        "source_example_id": 3898,
+        "question_text": "某次數學考試共有1000人參加。若成績呈常態分配，且平均數為62分，標準差為8分，則成績低於70分的人數為何？ (A)介於581人與660人之間 (B)介於661人與740人之間 (C)介於741人與820人之間 (D)介於821人與900人之間。",
+        "answer": "C",
+        "choices": [
+          "介於581人與660人之間",
+          "介於661人與740人之間",
+          "介於741人與820人之間",
+          "介於821人與900人之間。"
+        ],
+        "has_choices": true,
+        "stem_embeds_choices": true,
+        "answer_type": "choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "reasoning_type": [
+          "statistics_computation"
+        ],
+        "required_derivation": true,
+        "source_quality_issues": [],
+        "source_quality_reject": false,
+        "candidate_only": false,
+        "variables": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "givens": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "target": "read_table",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "math_meta_tags": [],
+        "forced_target_task": "",
+        "meta_answer_format_hint": "",
+        "semantic_classification": {
+          "ai_target_task": "",
+          "ai_task_family": "",
+          "ai_confidence": 0.0,
+          "ai_best_candidate_id": "needs_review",
+          "ai_evidence": [],
+          "ai_rejected_candidates": {},
+          "ai_available": false,
+          "ai_error": "ai_api_key_missing",
+          "ai_unavailable_reason": "missing_api_key",
+          "ai_semantic_status": "unavailable",
+          "ai_invalid_response_reason": "",
+          "parser_error": "",
+          "raw_response_preview": "",
+          "sanitized_response_preview": "",
+          "failed_stage": "",
+          "rule_target_task": "read_table",
+          "rule_task_family": "generic_numeric_family",
+          "rule_confidence": 0.5,
+          "final_target_task": "read_table",
+          "final_task_family": "generic_numeric_family",
+          "classifier_source": "rule_fallback_ai_unavailable",
+          "classification_decision": "",
+          "conflict_reason": "ai_api_key_missing",
+          "source_mapping_warning": "",
+          "requires_human_action": true,
+          "ai_notes": "",
+          "skill_scoped_candidates": [
+            {
+              "candidate_id": "C1",
+              "target_task": "read_table",
+              "task_family": "generic_numeric_family",
+              "problem_type_id": "read_table",
+              "label": "read_table",
+              "candidate_source": "structure",
+              "in_anchor_scope": false,
+              "answer_type": "numeric",
+              "answer_shape": "numeric",
+              "math_objects": [],
+              "checker_key": "numeric_checker",
+              "equivalence_type": "numeric_equivalence",
+              "generator_contract": {
+                "template_variants": [
+                  {
+                    "id": "default",
+                    "label": "default",
+                    "stem_pattern": "依題意求解：{stem_hint}。",
+                    "weight": 1.0,
+                    "enabled": true
+                  }
+                ],
+                "parameter_schema": {
+                  "seed": {
+                    "type": "integer",
+                    "randomize": true
+                  },
+                  "difficulty_level": {
+                    "choices": [
+                      "level_1",
+                      "level_2",
+                      "level_3"
+                    ],
+                    "weights": [
+                      0.4,
+                      0.4,
+                      0.2
+                    ]
+                  }
+                },
+                "variation_dimensions": [
+                  "seed",
+                  "difficulty_level",
+                  "context_style"
+                ],
+                "difficulty_controls": {
+                  "level_1": {},
+                  "level_2": {},
+                  "level_3": {}
+                },
+                "anti_repetition_rules": {
+                  "avoid_same_template_consecutive": true,
+                  "avoid_same_ratio_consecutive": true,
+                  "avoid_same_point_names_consecutive": true,
+                  "avoid_same_answer_consecutive": true,
+                  "recent_history_window": 5,
+                  "signature_fields": [
+                    "problem_type_id",
+                    "template_variant",
+                    "routing_track",
+                    "scenario_type",
+                    "ratio_form",
+                    "ratio_values",
+                    "coordinate_pattern",
+                    "answer"
+                  ]
+                },
+                "validity_constraints": [
+                  "answer derivable from givens"
+                ],
+                "answer_shape": "numeric",
+                "explanation_variants": [
+                  "stepwise"
+                ],
+                "sampling_strategy": "weighted_random",
+                "template_families": [
+                  "read_table"
+                ]
+              },
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              }
+            },
+            {
+              "candidate_id": "needs_review",
+              "target_task": "",
+              "task_family": "",
+              "problem_type_id": "needs_review",
+              "label": "needs_review",
+              "candidate_source": "needs_review",
+              "in_anchor_scope": false,
+              "answer_type": "",
+              "answer_shape": "",
+              "math_objects": [],
+              "checker_key": "manual_review_checker",
+              "equivalence_type": "manual_review_or_ai_judged",
+              "generator_contract": {},
+              "parameter_schema": {}
+            }
+          ],
+          "outsider_candidates": [],
+          "selected_subskill": "read_table",
+          "selected_problem_type": "read_table",
+          "candidate_source": "needs_review",
+          "selected_generator_contract": {},
+          "parameter_schema": {},
+          "variable_randomization_notes": [],
+          "checker_key": "",
+          "equivalence_type": "",
+          "skill_scope_trusted": true,
+          "target_task": "read_table",
+          "task_family": "generic_numeric_family",
+          "math_objects": [
+            "statistics_context"
+          ],
+          "answer_type": "single_choice",
+          "answer_shape": "single_choice",
+          "source_type": "self_assessment",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "linked_example_id": null,
+          "linked_example_task_family": "",
+          "structure_consistency": "not_applicable",
+          "sequence_context_used": true,
+          "structure_context_used": true,
+          "confidence_adjustment_reason": "sequence_context_used",
+          "possible_structure_mismatch": false,
+          "possible_mixed_source_context": false
+        },
+        "source_structure_context": {
+          "source_type": "self_assessment",
+          "example_label": "",
+          "practice_label": "",
+          "linked_example": "",
+          "section_order": 0,
+          "example_number": null,
+          "practice_number": null,
+          "nearby_worked_examples": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            }
+          ],
+          "linked_worked_example": null,
+          "linked_practices": [],
+          "same_section_sequence": [
+            {
+              "example_id": 3856,
+              "source_type": "worked_example",
+              "example_label": "例題10",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "例題 10"
+            },
+            {
+              "example_id": 3857,
+              "source_type": "in_class_practice",
+              "example_label": "",
+              "practice_label": "隨堂練習10",
+              "section_order": 0,
+              "title_head": "隨堂練習 10"
+            },
+            {
+              "example_id": 3858,
+              "source_type": "basic_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 基礎題 8"
+            },
+            {
+              "example_id": 3859,
+              "source_type": "advanced_exercise",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "3-3習題 進階題 9"
+            },
+            {
+              "example_id": 3897,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 19"
+            },
+            {
+              "example_id": 3898,
+              "source_type": "self_assessment",
+              "example_label": "",
+              "practice_label": "",
+              "section_order": 0,
+              "title_head": "自我評量 20"
+            }
+          ]
+        },
+        "induction_tier": "core",
+        "enrichment_reasons": [],
+        "included_in_core_induction": true,
+        "source_skill_scope_locked": true,
+        "skill_mapping_authority": "textbook_examples.skill_id",
+        "classification_scope": "within_current_skill",
+        "source_skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+        "unresolved_within_current_skill": true,
+        "pending_problem_type_induction": true,
+        "requires_human_rule_pack": true,
+        "requires_human_action": false,
+        "unresolved_reason": "semantic_score_zero_within_current_skill",
+        "generator_readiness": "pending_problem_type_induction",
+        "usable_for_phase3": false,
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "answer_shape": "single_choice",
+      "classification_confidence": "high",
+      "classification_reason": "rule_fallback_ai_unavailable",
+      "risk_flags": [
+        "stem_embeds_choices",
+        "requires_human_action",
+        "candidate_only_problem_type"
+      ],
+      "semantic_classification": {
+        "ai_target_task": "",
+        "ai_task_family": "",
+        "ai_confidence": 0.0,
+        "ai_best_candidate_id": "needs_review",
+        "ai_evidence": [],
+        "ai_rejected_candidates": {},
+        "ai_available": false,
+        "ai_error": "ai_api_key_missing",
+        "ai_unavailable_reason": "missing_api_key",
+        "ai_semantic_status": "unavailable",
+        "ai_invalid_response_reason": "",
+        "parser_error": "",
+        "raw_response_preview": "",
+        "sanitized_response_preview": "",
+        "failed_stage": "",
+        "rule_target_task": "read_table",
+        "rule_task_family": "generic_numeric_family",
+        "rule_confidence": 0.5,
+        "final_target_task": "read_table",
+        "final_task_family": "generic_numeric_family",
+        "classifier_source": "rule_fallback_ai_unavailable",
+        "classification_decision": "",
+        "conflict_reason": "ai_api_key_missing",
+        "source_mapping_warning": "",
+        "requires_human_action": true,
+        "ai_notes": "",
+        "skill_scoped_candidates": [
+          {
+            "candidate_id": "C1",
+            "target_task": "read_table",
+            "task_family": "generic_numeric_family",
+            "problem_type_id": "read_table",
+            "label": "read_table",
+            "candidate_source": "structure",
+            "in_anchor_scope": false,
+            "answer_type": "numeric",
+            "answer_shape": "numeric",
+            "math_objects": [],
+            "checker_key": "numeric_checker",
+            "equivalence_type": "numeric_equivalence",
+            "generator_contract": {
+              "template_variants": [
+                {
+                  "id": "default",
+                  "label": "default",
+                  "stem_pattern": "依題意求解：{stem_hint}。",
+                  "weight": 1.0,
+                  "enabled": true
+                }
+              ],
+              "parameter_schema": {
+                "seed": {
+                  "type": "integer",
+                  "randomize": true
+                },
+                "difficulty_level": {
+                  "choices": [
+                    "level_1",
+                    "level_2",
+                    "level_3"
+                  ],
+                  "weights": [
+                    0.4,
+                    0.4,
+                    0.2
+                  ]
+                }
+              },
+              "variation_dimensions": [
+                "seed",
+                "difficulty_level",
+                "context_style"
+              ],
+              "difficulty_controls": {
+                "level_1": {},
+                "level_2": {},
+                "level_3": {}
+              },
+              "anti_repetition_rules": {
+                "avoid_same_template_consecutive": true,
+                "avoid_same_ratio_consecutive": true,
+                "avoid_same_point_names_consecutive": true,
+                "avoid_same_answer_consecutive": true,
+                "recent_history_window": 5,
+                "signature_fields": [
+                  "problem_type_id",
+                  "template_variant",
+                  "routing_track",
+                  "scenario_type",
+                  "ratio_form",
+                  "ratio_values",
+                  "coordinate_pattern",
+                  "answer"
+                ]
+              },
+              "validity_constraints": [
+                "answer derivable from givens"
+              ],
+              "answer_shape": "numeric",
+              "explanation_variants": [
+                "stepwise"
+              ],
+              "sampling_strategy": "weighted_random",
+              "template_families": [
+                "read_table"
+              ]
+            },
+            "parameter_schema": {
+              "seed": {
+                "type": "integer",
+                "randomize": true
+              },
+              "difficulty_level": {
+                "choices": [
+                  "level_1",
+                  "level_2",
+                  "level_3"
+                ],
+                "weights": [
+                  0.4,
+                  0.4,
+                  0.2
+                ]
+              }
+            }
+          },
+          {
+            "candidate_id": "needs_review",
+            "target_task": "",
+            "task_family": "",
+            "problem_type_id": "needs_review",
+            "label": "needs_review",
+            "candidate_source": "needs_review",
+            "in_anchor_scope": false,
+            "answer_type": "",
+            "answer_shape": "",
+            "math_objects": [],
+            "checker_key": "manual_review_checker",
+            "equivalence_type": "manual_review_or_ai_judged",
+            "generator_contract": {},
+            "parameter_schema": {}
+          }
+        ],
+        "outsider_candidates": [],
+        "selected_subskill": "read_table",
+        "selected_problem_type": "read_table",
+        "candidate_source": "needs_review",
+        "selected_generator_contract": {},
+        "parameter_schema": {},
+        "variable_randomization_notes": [],
+        "checker_key": "",
+        "equivalence_type": "",
+        "skill_scope_trusted": true,
+        "target_task": "read_table",
+        "task_family": "generic_numeric_family",
+        "math_objects": [
+          "statistics_context"
+        ],
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "source_type": "self_assessment",
+        "example_label": "",
+        "practice_label": "",
+        "linked_example": "",
+        "linked_example_id": null,
+        "linked_example_task_family": "",
+        "structure_consistency": "not_applicable",
+        "sequence_context_used": true,
+        "structure_context_used": true,
+        "confidence_adjustment_reason": "sequence_context_used",
+        "possible_structure_mismatch": false,
+        "possible_mixed_source_context": false
+      },
+      "subskill_id": "read_table",
+      "classification_source": "rule_fallback_ai_unavailable",
+      "source_skill_scope_locked": true,
+      "skill_mapping_authority": "textbook_examples.skill_id",
+      "classification_scope": "within_current_skill",
+      "unresolved_reason": "semantic_score_zero_within_current_skill",
+      "requires_human_rule_pack": true,
+      "induction_eligibility": "eligible",
+      "answer_type": "choice",
+      "equivalence_type": "choice_label",
+      "checker_key": "choice_label_checker",
+      "requires_human_action": false
+    }
+  ],
+  "split_or_merge_recommendation": "induced_from_source_features",
+  "classifier_gate": {
+    "status": "classifier_auto_pending_promote_with_warning",
+    "allowed": true,
+    "warnings": [
+      "insufficient_examples",
+      "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
+      "ai_unavailable_fallback_to_same_as_main",
+      "alignment_score_below_recommended_threshold",
+      "generic_fallback_blocked_by_source_skill_binding"
+    ]
+  },
+  "generator_draft_gate": {
+    "status": "generator_draft_allowed_with_low_source_warning",
+    "allowed": true,
+    "warnings": [
+      "low_source_examples",
+      "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
+      "ai_unavailable_fallback_to_same_as_main",
+      "alignment_score_below_recommended_threshold",
+      "generic_fallback_blocked_by_source_skill_binding"
+    ]
+  },
+  "runtime_ready_gate": {
+    "status": "blocked_insufficient_examples",
+    "allowed": false,
+    "blockers": [
+      "runtime_smoke_failed",
+      "dynamic_sampling_failed"
+    ],
+    "warnings": [
+      "ai_first_mode_fell_back_to_rule_only",
+      "ai_partial_unavailable_relaxed_tolerance",
+      "ai_unavailable_fallback_to_same_as_main",
+      "alignment_score_below_recommended_threshold",
+      "generic_fallback_blocked_by_source_skill_binding"
+    ]
+  },
+  "exception_review_gate": {
+    "required": false,
+    "reasons": []
+  },
+  "self_healing_log": [],
+  "reports": {
+    "auto_pipeline_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_auto_pipeline_summary.json",
+    "auto_pipeline_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_auto_pipeline_summary.md",
+    "phase1_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase1_summary.json",
+    "phase1_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase1_summary.md",
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase1_summary.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase1_summary.md",
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.md",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_NormalDistributionAndEmpiricalRule_generator_draft_spec.json"
+  },
+  "next_action": "manual_review_before_runtime_enable",
+  "timestamp": "2026-06-27T03:25:39.293536+00:00",
+  "dry_run": true
+}
+```

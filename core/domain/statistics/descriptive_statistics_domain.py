@@ -24,6 +24,10 @@ from core.domain.statistics.descriptive_statistics_core import (
     weighted_mean_from_pairs,
     sample_variance,
     sample_standard_deviation,
+    empirical_rule_central_probability,
+    empirical_rule_one_tail_probability,
+    empirical_rule_cumulative_probability,
+    population_count_from_probability,
 )
 from core.gencode.descriptive_statistics_answer_contract import NO_MODE_SENTINEL
 
@@ -1018,6 +1022,372 @@ def _build_linear_transform_median_and_range(rng: random.Random, constraints: di
     )
 
 
+def _parse_empirical_params(constraints: dict[str, Any], rng: random.Random) -> tuple[int, float, float]:
+    q = str(constraints.get("question_text") or "")
+    
+    # Try to extract total N (e.g., 2000, 1000, 500)
+    m_total = re.search(r"(\d+)\s*(?:個學生|人|名學生|位|名)", q)
+    total = int(m_total.group(1)) if m_total else rng.choice([500, 1000, 2000, 5000])
+    
+    # Try to extract mean (e.g., 平均 55, 平均是 58, 平均為 62)
+    m_mean = re.search(r"平均(?:數)?(?:是|為)?\s*(\d+(?:\.\d+)?)", q)
+    mean = float(m_mean.group(1)) if m_mean else rng.choice([60.0, 70.0, 80.0])
+    
+    # Try to extract std (e.g., 標準差 5, 標準差是 4, 標準差為 8)
+    m_std = re.search(r"標準差(?:是|為)?\s*(\d+(?:\.\d+)?)", q)
+    std = float(m_std.group(1)) if m_std else rng.choice([5.0, 8.0, 10.0])
+    
+    return total, mean, std
+
+
+def _build_empirical_rule_probability(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    q_tmpl = str(constraints.get("question_text") or "")
+    mu = rng.choice([60, 65, 70, 75, 80, 100])
+    sd = rng.choice([5, 8, 10, 12, 15])
+    
+    if "正負 1" in q_tmpl or "1 個標準差" in q_tmpl or "within_1sd" in q_tmpl:
+        question = "常態分配的經驗法則中，落在平均數正負 1 個標準差內的資料約占百分之幾？"
+        ans = 68
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±1 個標準差內約含 68% 的資料。"
+    elif "正負 2" in q_tmpl or "2 個標準差" in q_tmpl or "within_2sd" in q_tmpl:
+        question = "常態分配的經驗法則中，落在平均數正負 2 個標準差內的資料約占百分之幾？"
+        ans = 95
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±2 個標準差內約含 95% 的資料。"
+    elif "正負 3" in q_tmpl or "3 個標準差" in q_tmpl or "within_3sd" in q_tmpl:
+        question = "常態分配的經驗法則中，落在平均數正負 3 個標準差內的資料約占百分之幾（取整數近似）？"
+        ans = 99
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±3 個標準差內約含 99.7%（取整數為 99）的資料。"
+    elif "之間" in q_tmpl or "percentage" in q_tmpl:
+        sd_count = rng.choice([1, 2, 3])
+        lo = mu - sd_count * sd
+        hi = mu + sd_count * sd
+        pct_map = {1: 68, 2: 95, 3: 99}
+        ans = pct_map[sd_count]
+        question = f"某資料呈常態分配，平均數為 {mu}，標準差為 {sd}。依經驗法則，落在 {lo} 到 {hi} 之間的資料約占百分之幾？"
+        explanation = f"區間 [{lo}, {hi}] = 平均數 ±{sd_count} 個標準差，依 68-95-99.7 法則約占 {ans}%。"
+    else:
+        question = "常態分配的經驗法則中，落在平均數正負 1 個標準差內的資料約占百分之幾？"
+        ans = 68
+        explanation = "依據 68-95-99.7 經驗法則，平均數 ±1 個標準差內約含 68% 的資料。"
+
+    ans_str = str(ans)
+    
+    return _matrix_shell(
+        givens={
+            "question_text": question,
+            "target_measure": "empirical_rule_probability",
+        },
+        answer_value=ans,
+        answer_text=ans_str,
+        validation_facts={
+            "domain_operation": op,
+            "target_measure": "empirical_rule_probability",
+            "answer_shape": "single_numeric",
+        },
+        explanation_steps=[explanation],
+        answer_shape="single_numeric",
+    )
+
+
+def _build_empirical_rule_population_count(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    q_tmpl = str(constraints.get("question_text") or "")
+    total, mean, std = _parse_empirical_params(constraints, rng)
+    
+    if "50~60" in q_tmpl or "(3) 低於" in q_tmpl or "3856" in str(constraints.get("textbook_example_id", "")):
+        lo1 = int(mean - std)
+        hi1 = int(mean + std)
+        hi2 = int(mean + std)
+        lo3 = int(mean - 3 * std)
+        
+        prob_1 = empirical_rule_central_probability(1)
+        prob_2 = empirical_rule_cumulative_probability(1, "above")
+        prob_3 = empirical_rule_cumulative_probability(-3, "below")
+        
+        ans_1 = population_count_from_probability(total, prob_1)
+        ans_2 = population_count_from_probability(total, prob_2)
+        ans_3 = population_count_from_probability(total, prob_3)
+        
+        question = f"某校 {total} 個學生，英文成績呈常態分配，平均 {int(mean)} 分，標準差 {int(std)} 分。求：(1) {lo1}~{hi1} 分人數；(2) {hi2} 分以上人數；(3) 低於 {lo3} 分人數。"
+        
+        field_specs = [
+            {"field_key": "part_1", "label": f"{lo1}~{hi1}分人數", "expected_answer": str(ans_1), "input_type": "number"},
+            {"field_key": "part_2", "label": f"{hi2}分以上人數", "expected_answer": str(ans_2), "input_type": "number"},
+            {"field_key": "part_3", "label": f"低於{lo3}分人數", "expected_answer": str(ans_3), "input_type": "number"},
+        ]
+        
+        answer_val = {"part_1": ans_1, "part_2": ans_2, "part_3": ans_3}
+        answer_text = f"(1) {ans_1} 人；(2) {ans_2} 人；(3) {ans_3} 人"
+        
+        explanation_steps = [
+            f"(1) {lo1}~{hi1} 分為平均數 ±1 個標準差內，佔 {int(prob_1*100)}%，人數為 {total} × {prob_1} = {ans_1} 人。",
+            f"(2) {hi2} 分以上為平均數 +1 個標準差以上，佔 (1 - 0.68)/2 = {int(prob_2*100)}%，人數為 {total} × {prob_2} = {ans_2} 人。",
+            f"(3) 低於 {lo3} 分為平均數 -3 個標準差以下，佔 (1 - 0.997)/2 = {prob_3*100}%，人數為 {total} × {prob_3} = {ans_3} 人。"
+        ]
+        
+        return _matrix_shell(
+            givens={
+                "question_text": question,
+                "field_specs": field_specs,
+            },
+            answer_value=answer_val,
+            answer_text=answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "empirical_rule_population_count",
+                "answer_shape": "multi_blank",
+            },
+            explanation_steps=explanation_steps,
+            answer_shape="multi_blank",
+            presentation_mode="multi_blank",
+            answer_type="multi_part",
+            ui_contract={"blank_count": 3, "labels": ["(1)", "(2)", "(3)"], "response_mode": "multi_blank"},
+            subquestions=[{"field_key": spec["field_key"], "label": spec["label"], "expected_answer": spec["expected_answer"]} for spec in field_specs],
+        )
+        
+    elif "低於 60" in q_tmpl or "50 分以下" in q_tmpl or "高於 60" in q_tmpl:
+        mean_int = int(mean)
+        lo2 = int(mean - std)
+        lo3 = int(mean - std)
+        hi3 = int(mean + std)
+        
+        prob_1 = 0.5
+        prob_2 = empirical_rule_cumulative_probability(-1, "below")
+        prob_3 = empirical_rule_central_probability(1)
+        
+        ans_1 = population_count_from_probability(total, prob_1)
+        ans_2 = population_count_from_probability(total, prob_2)
+        ans_3 = population_count_from_probability(total, prob_3)
+        
+        question = f"某校 {total} 個學生，英文成績呈常態分配，平均 {mean_int} 分，標準差 {int(std)} 分。求：(1) 低於 {mean_int} 人數；(2) {lo2} 分以下人數；(3) {lo3}~{hi3} 人數。"
+        
+        field_specs = [
+            {"field_key": "part_1", "label": f"低於{mean_int}人數", "expected_answer": str(ans_1), "input_type": "number"},
+            {"field_key": "part_2", "label": f"{lo2}分以下人數", "expected_answer": str(ans_2), "input_type": "number"},
+            {"field_key": "part_3", "label": f"{lo3}~{hi3}人數", "expected_answer": str(ans_3), "input_type": "number"},
+        ]
+        
+        answer_val = {"part_1": ans_1, "part_2": ans_2, "part_3": ans_3}
+        answer_text = f"(1) {ans_1} 人；(2) {ans_2} 人；(3) {ans_3} 人"
+        
+        explanation_steps = [
+            f"(1) 低於平均數 {mean_int} 分佔 50%，人數為 {total} × 0.5 = {ans_1} 人。",
+            f"(2) {lo2} 分以下為平均數 -1 個標準差以下，佔 (1 - 0.68)/2 = 16%，人數為 {total} × 0.16 = {ans_2} 人。",
+            f"(3) {lo3}~{hi3} 分為平均數 ±1 個標準差內，佔 68%，人數為 {total} × 0.68 = {ans_3} 人。"
+        ]
+        
+        return _matrix_shell(
+            givens={
+                "question_text": question,
+                "field_specs": field_specs,
+            },
+            answer_value=answer_val,
+            answer_text=answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "empirical_rule_population_count",
+                "answer_shape": "multi_blank",
+            },
+            explanation_steps=explanation_steps,
+            answer_shape="multi_blank",
+            presentation_mode="multi_blank",
+            answer_type="multi_part",
+            ui_contract={"blank_count": 3, "labels": ["(1)", "(2)", "(3)"], "response_mode": "multi_blank"},
+            subquestions=[{"field_key": spec["field_key"], "label": spec["label"], "expected_answer": spec["expected_answer"]} for spec in field_specs],
+        )
+
+    elif "45~65" in q_tmpl or "45到65" in q_tmpl or "65" in q_tmpl:
+        lo1 = int(mean - 2 * std)
+        hi1 = int(mean + 2 * std)
+        lo2 = int(mean - std)
+        
+        prob_1 = empirical_rule_central_probability(2)
+        prob_2 = empirical_rule_cumulative_probability(-1, "below")
+        
+        ans_1 = population_count_from_probability(total, prob_1)
+        ans_2 = population_count_from_probability(total, prob_2)
+        
+        question = f"某校 {total} 個學生，英文成績呈常態分配，平均 {int(mean)} 分，標準差 {int(std)} 分。求：(1) {lo1}~{hi1} 分人數；(2) {lo2} 分以下人數。"
+        
+        field_specs = [
+            {"field_key": "part_1", "label": f"{lo1}~{hi1}分人數", "expected_answer": str(ans_1), "input_type": "number"},
+            {"field_key": "part_2", "label": f"{lo2}分以下人數", "expected_answer": str(ans_2), "input_type": "number"},
+        ]
+        
+        answer_val = {"part_1": ans_1, "part_2": ans_2}
+        answer_text = f"(1) {ans_1} 人；(2) {ans_2} 人"
+        
+        explanation_steps = [
+            f"(1) {lo1}~{hi1} 分為平均數 ±2 個標準差內，佔 95%，人數為 {total} × 0.95 = {ans_1} 人。",
+            f"(2) {lo2} 分以下為平均數 -1 個標準差以下，佔 (1 - 0.68)/2 = 16%，人數為 {total} × 0.16 = {ans_2} 人。"
+        ]
+        
+        return _matrix_shell(
+            givens={
+                "question_text": question,
+                "field_specs": field_specs,
+            },
+            answer_value=answer_val,
+            answer_text=answer_text,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "empirical_rule_population_count",
+                "answer_shape": "multi_blank",
+            },
+            explanation_steps=explanation_steps,
+            answer_shape="multi_blank",
+            presentation_mode="multi_blank",
+            answer_type="multi_part",
+            ui_contract={"blank_count": 2, "labels": ["(1)", "(2)"], "response_mode": "multi_blank"},
+            subquestions=[{"field_key": spec["field_key"], "label": spec["label"], "expected_answer": spec["expected_answer"]} for spec in field_specs],
+        )
+
+    elif "之間" in q_tmpl or "介於" in q_tmpl or "到" in q_tmpl:
+        lo = int(mean - std)
+        hi = int(mean + std)
+        
+        prob = empirical_rule_central_probability(1)
+        ans = population_count_from_probability(total, prob)
+        
+        question = f"某{total}名學生第一次數學段考成績平均是{int(mean)}，標準差是{int(std)}，若成績呈常態分配，則成績在{lo}分到{hi}分之間的學生約有幾人？"
+        
+        choices = [
+            {"label": "A", "text": str(population_count_from_probability(total, 0.34))},
+            {"label": "B", "text": str(population_count_from_probability(total, 0.50))},
+            {"label": "C", "text": str(ans)},
+            {"label": "D", "text": str(population_count_from_probability(total, 0.80))},
+        ]
+        correct_label = "C"
+        
+        explanation = f"成績在 {lo}~{hi} 分之間為平均數 ±1 個標準差內，佔約 68%。學生人數約有 {total} × 0.68 = {ans} 人。故選 (C)。"
+        
+        return _matrix_shell(
+            givens={
+                "question_text": question,
+                "choices": choices,
+                "source_choices": choices,
+                "source_answer_label": correct_label,
+            },
+            answer_value=correct_label,
+            answer_text=correct_label,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "empirical_rule_population_count",
+                "answer_shape": "single_choice",
+            },
+            explanation_steps=[explanation],
+            answer_shape="single_choice",
+            presentation_mode="single_choice",
+            answer_type="single_choice",
+            ui_contract={"response_mode": "single_choice", "text_input_enabled": False},
+        )
+
+    else:
+        # Default Template E (including src_3898)
+        hi = int(mean + std)
+        prob = empirical_rule_cumulative_probability(1, "below")
+        ans = population_count_from_probability(total, prob)
+        
+        question = f"某數學考試共 {total} 人參加。若成績呈常態分配，平均為 {int(mean)}，標準差為 {int(std)}，則成績低於 {hi} 分的約有幾人？"
+        
+        choices = [
+            {"label": "A", "text": f"{ans-259}人到{ans-180}人"},
+            {"label": "B", "text": f"{ans-179}人到{ans-100}人"},
+            {"label": "C", "text": f"{ans-99}人到{ans-20}人"},
+            {"label": "D", "text": f"{ans-19}人到{ans+60}人"},
+        ]
+        correct_label = "D"
+        
+        explanation = f"成績低於 {hi} 分即低於平均數 +1 個標準差（{int(mean)} + {int(std)} = {hi}）。由經驗法則，低於此分數的資料約占 50% + 34% = 84%。人數為 {total} × 0.84 = {ans} 人，落在 {ans-19}~{ans+60} 的區間。故選 (D)。"
+        
+        return _matrix_shell(
+            givens={
+                "question_text": question,
+                "choices": choices,
+                "source_choices": choices,
+                "source_answer_label": correct_label,
+            },
+            answer_value=correct_label,
+            answer_text=correct_label,
+            validation_facts={
+                "domain_operation": op,
+                "target_measure": "empirical_rule_population_count",
+                "answer_shape": "single_choice",
+            },
+            explanation_steps=[explanation],
+            answer_shape="single_choice",
+            presentation_mode="single_choice",
+            answer_type="single_choice",
+            ui_contract={"response_mode": "single_choice", "text_input_enabled": False},
+        )
+
+
+def _build_compare_distribution_spread(rng: random.Random, constraints: dict[str, Any], op: str) -> dict[str, Any]:
+    import matplotlib.pyplot as plt
+    import io
+    import base64
+    import math
+    
+    fig, ax = plt.subplots(figsize=(5.2, 3.2), dpi=120)
+    try:
+        xs = [40.0 + i * 0.3 for i in range(201)]
+        ys_a = [(1.0 / (6.0 * math.sqrt(2 * math.pi))) * math.exp(-0.5 * ((x - 70.0) / 6.0) ** 2) for x in xs]
+        ys_b = [(1.0 / (12.0 * math.sqrt(2 * math.pi))) * math.exp(-0.5 * ((x - 70.0) / 12.0) ** 2) for x in xs]
+        
+        ax.plot(xs, ys_a, label="甲班", color="blue", linewidth=2)
+        ax.plot(xs, ys_b, label="乙班", color="red", linewidth=2, linestyle="--")
+        
+        ax.set_title("甲、乙兩班成績分布圖")
+        ax.set_xlabel("成績")
+        ax.set_ylabel("機率密度")
+        ax.legend(loc="upper right")
+        ax.grid(linestyle="--", alpha=0.5)
+        
+        buf = io.BytesIO()
+        fig.tight_layout()
+        fig.savefig(buf, format="png")
+        image_base64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    finally:
+        plt.close(fig)
+        
+    question = "某學校期末考，甲、乙兩班成績分布呈常態分配，如圖所示。下列關於甲、乙兩班成績的敘述何者正確？"
+    
+    choices = [
+        {"label": "A", "text": "甲班的平均數較大"},
+        {"label": "B", "text": "乙班的平均數較大"},
+        {"label": "C", "text": "甲班的標準差較大"},
+        {"label": "D", "text": "乙班的標準差較大"},
+    ]
+    correct_label = "D"
+    
+    return _matrix_shell(
+        givens={
+            "question_text": question,
+            "choices": choices,
+            "source_choices": choices,
+            "source_answer_label": correct_label,
+            "image_base64": image_base64,
+        },
+        answer_value=correct_label,
+        answer_text=correct_label,
+        validation_facts={
+            "domain_operation": op,
+            "target_measure": "compare_distribution_spread",
+            "semantic_answer": correct_label,
+            "answer_shape": "single_choice",
+        },
+        explanation_steps=[
+            "觀察圖形，甲班與乙班的對稱中心都在 70，表示兩班的平均數相同。",
+            "乙班的分布較甲班平緩且分散，表示乙班成績的離散程度較大。",
+            "因此，乙班的標準差較大，答案選 (D)。",
+        ],
+        answer_shape="single_choice",
+        presentation_mode="single_choice",
+        answer_type="single_choice",
+        ui_contract={"response_mode": "single_choice", "text_input_enabled": False},
+        table_data={"image_base64": image_base64},
+    )
+
+
 _HANDLERS = {
     "compute_arithmetic_mean_from_raw_values": _build_mean_raw,
     "compute_arithmetic_mean_from_frequency_table": _build_mean_frequency,
@@ -1035,6 +1405,9 @@ _HANDLERS = {
     "compare_dispersion": _build_compare_dispersion,
     "conceptual_dispersion_judgment": _build_conceptual_dispersion_judgment,
     "compute_linear_transform_median_and_range": _build_linear_transform_median_and_range,
+    "empirical_rule_probability": _build_empirical_rule_probability,
+    "empirical_rule_population_count": _build_empirical_rule_population_count,
+    "compare_distribution_spread": _build_compare_distribution_spread,
 }
 
 
@@ -1186,5 +1559,8 @@ def _operation_capabilities(operation: str) -> tuple[str, ...]:
         "compare_dispersion": ("dispersion_comparison", "range", "quartile", "interquartile_range"),
         "conceptual_dispersion_judgment": ("conceptual_dispersion_judgment",),
         "compute_linear_transform_median_and_range": ("median", "range"),
+        "empirical_rule_probability": ("empirical_rule_probability",),
+        "empirical_rule_population_count": ("empirical_rule_population_count",),
+        "compare_distribution_spread": ("compare_distribution_spread",),
     }
     return mapping.get(operation, ("descriptive_statistics",))

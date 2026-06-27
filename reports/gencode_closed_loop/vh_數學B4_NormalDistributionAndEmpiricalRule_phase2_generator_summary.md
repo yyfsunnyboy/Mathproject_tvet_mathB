@@ -1,0 +1,154 @@
+# Gencode Phase2 Generator Summary: vh_數學B4_NormalDistributionAndEmpiricalRule
+
+## phase2
+```json
+{
+  "ok": false,
+  "phase": "phase2",
+  "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "phase1_alignment_blocked": false,
+  "alignment_blockers": [],
+  "generator_results": [
+    {
+      "problem_type_id": "single_choice_read_table_single_choice",
+      "source_example_count": 2,
+      "answer_contract": {
+        "choices_required": true,
+        "choice_count": 4,
+        "correct_choice_count": 1,
+        "frontend_render_choices": true,
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "answer_semantics": "choice_label",
+        "answer_equivalence": "choice_label",
+        "checker": "choice_label_checker",
+        "presentation_mode": "single_choice",
+        "source_has_choices": true,
+        "selected_checker": "choice_label_checker",
+        "checker_selection_reason": "explicit_single_choice",
+        "accepted_formats": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker",
+        "fallback_checker": "text_short_checker",
+        "fallback_checker_key": "text_short_checker"
+      },
+      "answer_type": "single_choice",
+      "answer_shape": "single_choice",
+      "equivalence_type": "choice_label",
+      "selected_checker": "choice_label_checker",
+      "checker_key": "choice_label_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B4_NormalDistributionAndEmpiricalRule:single_choice_read_table_single_choice:draft_v1",
+      "generator_status": "pending_problem_type_induction",
+      "checker_smoke_status": "skipped_with_blockers",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {},
+      "unique_signature_count": 0,
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "requires_human_action": true,
+      "blockers": [
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "usable_for_phase3": false,
+      "target_task": "read_table",
+      "task_family": "generic_numeric_family",
+      "base_problem_type_id": "read_table_single_choice",
+      "value_type_prefix": "single_choice",
+      "template_slot": "point_quadrant_choice",
+      "_resolved_template_slot": "point_quadrant_choice"
+    }
+  ],
+  "failed_generators": [
+    "vh_數學B4_NormalDistributionAndEmpiricalRule:single_choice_read_table_single_choice:draft_v1"
+  ],
+  "accepted_generators": [],
+  "foundation_preflight": {
+    "foundation_ready": false,
+    "foundation_status": "FOUNDATION_REPAIR_REQUIRED",
+    "missing_checker": [],
+    "missing_verifier": [],
+    "missing_domain_function": [],
+    "missing_generator": [],
+    "missing_runtime_binding": [],
+    "missing_registry_binding": [
+      "expression_applied_quadratic_inequality_problem_expression",
+      "expression_read_table_expression"
+    ],
+    "missing_answer_contract_problem_types": [],
+    "repair_plan": [
+      {
+        "gap": "missing_registry_binding",
+        "problem_types": [
+          "expression_applied_quadratic_inequality_problem_expression",
+          "expression_read_table_expression"
+        ],
+        "action": "repair_missing_registry_binding"
+      }
+    ],
+    "next_action": "repair_foundation_gaps_then_rerun_phase2"
+  },
+  "foundation_ready": false,
+  "phase2_status": "FOUNDATION_REPAIR_REQUIRED",
+  "repair_plan": [
+    {
+      "gap": "missing_registry_binding",
+      "problem_types": [
+        "expression_applied_quadratic_inequality_problem_expression",
+        "expression_read_table_expression"
+      ],
+      "action": "repair_missing_registry_binding"
+    }
+  ],
+  "reports": {
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.md",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_NormalDistributionAndEmpiricalRule_phase2_generator_summary.md",
+    "generator_draft_spec_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_NormalDistributionAndEmpiricalRule_generator_draft_spec.json"
+  },
+  "next_action": "repair_foundation_gaps_then_rerun_phase2",
+  "timestamp": "2026-06-27T03:25:39.203242+00:00",
+  "dry_run": true
+}
+```

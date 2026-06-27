@@ -1,0 +1,59 @@
+items:
+  -
+    problem_type_id: "compare_distribution_spread"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "compare_distribution_spread"
+    display_name: "compare distribution spread"
+    runtime_category: "rule_only"
+    answer_type: "text"
+    checker_type: "exact_string_checker"
+    examples_refs:
+      - 3859
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+    difficulty_policy: "easy_only_v1"
+    output_contract:
+      required_keys:
+        - "problem_type_id"
+        - "skill_id"
+        - "subskill_id"
+        - "question_text"
+        - "answer"
+        - "answer_type"
+        - "checker_type"
+        - "solution_steps"
+        - "metadata"
+    status: "draft"
+  -
+    problem_type_id: "empirical_rule_population_count"
+    skill_id: "vh_數學B4_NormalDistributionAndEmpiricalRule"
+    subskill_id: "empirical_rule_population_count"
+    display_name: "empirical rule population count"
+    runtime_category: "rule_only"
+    answer_type: "text"
+    checker_type: "exact_string_checker"
+    examples_refs:
+      - 3856
+      - 3857
+      - 3858
+      - 3897
+      - 3898
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+    difficulty_policy: "easy_only_v1"
+    output_contract:
+      required_keys:
+        - "problem_type_id"
+        - "skill_id"
+        - "subskill_id"
+        - "question_text"
+        - "answer"
+        - "answer_type"
+        - "checker_type"
+        - "solution_steps"
+        - "metadata"
+    status: "draft"

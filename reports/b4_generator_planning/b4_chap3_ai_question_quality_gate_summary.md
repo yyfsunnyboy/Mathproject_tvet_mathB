@@ -41,7 +41,7 @@
 | TOTAL | 140 |
 
 ## 4. rule-based QA summary
-- blocking=40, major=10, minor=0
+- blocking=50, major=19, minor=0
 
 ## 5. diversity QA summary
 | skill_id | unique problem_type_id | unique scenario_family | unique scenario_id | unique question_pattern_hash | repeated_question_text_ratio |
@@ -127,12 +127,31 @@
 | vh_數學B4_DataOrganizationAndCharts | data_organization_first_step | choice_wrong_marked_correct | BLOCKING | 某社團記錄社員每日閱讀分鐘數，想先整理成可比較的資料，第一步應為何？請輸入選項代號。 | ?????? | ?? checker ????? | no |
 | vh_數學B4_DataOrganizationAndCharts | chart_usage_identification | choice_wrong_marked_correct | BLOCKING | 若資料目的是表達各類別在整體中的占比，最常使用哪一種圖表？請輸入選項代號。 | ?????? | ?? checker ????? | no |
 | vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_wrong_marked_correct | BLOCKING | 下列哪一項是閱讀折線圖時最應注意的事項？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_wrong_marked_correct | BLOCKING | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_wrong_marked_correct | BLOCKING | 學校要比較甲、乙、丙三班參加課外活動的人數差異，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_wrong_marked_correct | BLOCKING | 下列哪一項是閱讀折線圖時最應注意的事項？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_wrong_marked_correct | BLOCKING | 學生會統計全校學生最喜愛的社團類型（體育、學術、藝術、服務），想呈現各類型所占的百分比。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_wrong_marked_correct | BLOCKING | 某社團記錄一週每日到課人數，想觀察資料隨時間的變化趨勢，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_wrong_marked_correct | BLOCKING | 某調查只詢問了 10 個人的意見就宣稱『多數人喜歡A品牌』。這個結論最可能存在什麼問題？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_wrong_marked_correct | BLOCKING | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_wrong_marked_correct | BLOCKING | 老師想呈現全班段考分數在各分數區間（如 60-69、70-79）的人數分布情形，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? checker ????? | no |
-| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_wrong_marked_correct | BLOCKING | 統計圖顯示『冰淇淋銷量』與『溺水人數』在夏季都上升。下列推論何者正確？請輸入選項代號。 | ?????? | ?? checker ????? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_correct_not_accepted | BLOCKING | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_alias_not_accepted | MAJOR | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_correct_not_accepted | BLOCKING | 學校要比較甲、乙、丙三班參加課外活動的人數差異，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_alias_not_accepted | MAJOR | 學校要比較甲、乙、丙三班參加課外活動的人數差異，最適合使用哪一種統計圖表？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_correct_not_accepted | BLOCKING | 下列哪一項是閱讀折線圖時最應注意的事項？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_alias_not_accepted | MAJOR | 下列哪一項是閱讀折線圖時最應注意的事項？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_correct_not_accepted | BLOCKING | 學生會統計全校學生最喜愛的社團類型（體育、學術、藝術、服務），想呈現各類型所占的百分比。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_alias_not_accepted | MAJOR | 學生會統計全校學生最喜愛的社團類型（體育、學術、藝術、服務），想呈現各類型所占的百分比。下列哪種圖表最合適？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_correct_not_accepted | BLOCKING | 某社團記錄一週每日到課人數，想觀察資料隨時間的變化趨勢，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_alias_not_accepted | MAJOR | 某社團記錄一週每日到課人數，想觀察資料隨時間的變化趨勢，最適合使用哪一種統計圖表？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_correct_not_accepted | BLOCKING | 某調查只詢問了 10 個人的意見就宣稱『多數人喜歡A品牌』。這個結論最可能存在什麼問題？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_alias_not_accepted | MAJOR | 某調查只詢問了 10 個人的意見就宣稱『多數人喜歡A品牌』。這個結論最可能存在什麼問題？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_correct_not_accepted | BLOCKING | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_match_data_type | choice_alias_not_accepted | MAJOR | 老師記錄各班（甲、乙、丙、丁班）期中考的平均分數，想用圖表呈現各班分數高低的比較。下列哪種圖表最合適？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_correct_not_accepted | BLOCKING | 老師想呈現全班段考分數在各分數區間（如 60-69、70-79）的人數分布情形，最適合使用哪一種統計圖表？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_type_by_purpose | choice_alias_not_accepted | MAJOR | 老師想呈現全班段考分數在各分數區間（如 60-69、70-79）的人數分布情形，最適合使用哪一種統計圖表？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_correct_not_accepted | BLOCKING | 統計圖顯示『冰淇淋銷量』與『溺水人數』在夏季都上升。下列推論何者正確？請輸入選項代號。 | ?????? | ?? deterministic checker ? alias normalize? | no |
+| vh_數學B4_StatisticalChartReading | chart_interpretation_caution | choice_alias_not_accepted | MAJOR | 統計圖顯示『冰淇淋銷量』與『溺水人數』在夏季都上升。下列推論何者正確？請輸入選項代號。 | A/B/C/D alias ????? | ?? choice alias normalize? | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為身高區間（公分）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為分數區間的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為身高區間（公分）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為身高區間（公分）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為時間區間（分鐘）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為分數區間的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為時間區間（分鐘）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為身高區間（公分）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為銷售量區間（件）的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |
+| vh_數學B4_CumulativeFrequencyTablesAndGraphs | cumulative_frequency_table_completion_review | review_guard_missing | BLOCKING | 下表為分數區間的累積次數分配表，請補上空格中的累積次數，並簡述你的計算方式。 | review 題未被 guard 到 AI/Review。 | 修正 check_mode guard。 | no |

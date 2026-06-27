@@ -35,7 +35,6 @@ from core.ai_analyzer import (
     analyze,
     diagnose_error,
     diversify_follow_up_prompts,
-    build_dynamic_follow_up_prompts_variant,
     clean_and_parse_json,
     enforce_strict_mode,
 )
@@ -1966,118 +1965,15 @@ def chat_ai():
 
 
 
-    # 題目脈絡變更時重置回合索引；依序產生本回合的後續引導題組。
-
-
-
-
-
-
-
-    per_turn_prompts = build_dynamic_follow_up_prompts_variant(
-
-
-
-
-
-
-
-        user_question=user_question,
-
-
-
-
-
-
-
-        question_context=full_question_context,
-
-
-
-
-
-
-
-        ai_reply=result.get('reply', ''),
-
-
-
-
-
-
-
-        variant=turn_index
-
-
-
-
-
-
-
-    )
-
-
-
-
-
-
-
+    # 題目脈絡變更時重置回合索引；正規化 LLM 回傳的 follow_up_prompts。
+    llm_prompts = result.get('follow_up_prompts', []) if isinstance(result, dict) else []
     result['follow_up_prompts'] = diversify_follow_up_prompts(
-
-
-
-
-
-
-
-        per_turn_prompts,
-
-
-
-
-
-
-
+        llm_prompts,
         last_prompts,
-
-
-
-
-
-
-
         user_question=user_question,
-
-
-
-
-
-
-
         question_context=full_question_context,
-
-
-
-
-
-
-
         ai_reply=result.get('reply', ''),
-
-
-
-
-
-
-
         turn_index=turn_index
-
-
-
-
-
-
-
     )
 
 
