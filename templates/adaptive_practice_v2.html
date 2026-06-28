@@ -765,6 +765,22 @@
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
   <script>
+    function normalizeQuestionImageSource(rawImage) {
+        const value = String(rawImage || "").trim();
+        if (!value) return "";
+
+        if (
+            value.startsWith("data:image/") ||
+            value.startsWith("/") ||
+            value.startsWith("http://") ||
+            value.startsWith("https://")
+        ) {
+            return value;
+        }
+
+        return `data:image/png;base64,${value}`;
+    }
+
     const state = {
       sessionId: "",
       stepNumber: 0,
@@ -2752,10 +2768,7 @@
         }
       }
       if (rawImage && rawImage.trim() !== "") {
-        let imgSource = rawImage;
-        if (!imgSource.startsWith('data:image')) {
-          imgSource = "data:image/png;base64," + imgSource;
-        }
+        let imgSource = normalizeQuestionImageSource(rawImage);
         const img = new Image();
         img.onload = function () {
           currentQuestionImage = img;

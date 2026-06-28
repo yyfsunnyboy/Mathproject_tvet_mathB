@@ -2571,6 +2571,22 @@
     </style>
 
     <script>
+        function normalizeQuestionImageSource(rawImage) {
+            const value = String(rawImage || "").trim();
+            if (!value) return "";
+
+            if (
+                value.startsWith("data:image/") ||
+                value.startsWith("/") ||
+                value.startsWith("http://") ||
+                value.startsWith("https://")
+            ) {
+                return value;
+            }
+
+            return `data:image/png;base64,${value}`;
+        }
+
         // === 全域變數 ===
         let isProcessing = false;
         let currentStreak = 0;
@@ -4773,10 +4789,7 @@
 
                     // 3. 如果有圖片，(a) 顯示在題目區塊內 (b) 同時畫到 Canvas 背景
                     if (rawImage && rawImage.trim() !== "") {
-                        let imgSource = rawImage;
-                        if (!imgSource.startsWith('data:image')) {
-                            imgSource = "data:image/png;base64," + imgSource;
-                        }
+                        let imgSource = normalizeQuestionImageSource(rawImage);
 
                         // (a) inline 顯示於題目與選項之間
                         const qmc = document.getElementById('question-media-container');
@@ -5967,11 +5980,8 @@
                                 // Let's rely on what next_question returns. We might need to adjust next_question to return image_path too.
                                 // For now, assume image_base64 is populated or we modify next_question to return url.
 
-                                // Check if data.image_base64 starts with 'http' or '/' (it's a URL) or actual base64
-                                if (data.image_base64 && (data.image_base64.startsWith('/') || data.image_base64.startsWith('http'))) {
-                                    htmlContent += `<img id="instant-question-image" src="${data.image_base64}" alt="Uploaded Question">`;
-                                } else if (data.image_base64) {
-                                    htmlContent += `<img id="instant-question-image" src="data:image/png;base64,${data.image_base64}" alt="Uploaded Question">`;
+                                if (data.image_base64) {
+                                    htmlContent += `<img id="instant-question-image" src="${normalizeQuestionImageSource(data.image_base64)}" alt="Uploaded Question">`;
                                 }
 
                                 if (data.question_text) { // Changed from data.new_question_text to data.question_text to match existing data structure

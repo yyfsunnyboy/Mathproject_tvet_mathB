@@ -10,6 +10,7 @@ from core.gencode.answer_payload import (
     apply_coordinate_pair_runtime_fields,
     coerce_correct_answer,
     finalize_generator_payload,
+    grade_numeric_contract_answer,
     is_coordinate_pair_contract,
     is_coordinate_pair_runtime_payload,
     resolve_answer_contract_for_runtime,
@@ -372,14 +373,17 @@ def check_answer(
         return check_expression_equivalence_answer(user_answer, correct_answer)
 
     if checker in {"integer_checker", "numeric_checker", "rational_checker", "decimal_tolerance_checker"}:
-        from core.gencode.answer_payload import parse_rational_literal
-
-        user_frac = parse_rational_literal(user_answer)
-        correct_frac = parse_rational_literal(correct_answer)
-        if user_frac is not None and correct_frac is not None:
-            if checker == "integer_checker" and correct_frac.denominator == 1:
-                return user_frac == correct_frac
-            return user_frac == correct_frac
+        numeric_result = grade_numeric_contract_answer(
+            user_answer,
+            correct_answer,
+            ac,
+            checker=checker,
+        )
+        if numeric_result.get("system_error"):
+            raise RuntimeError(str(numeric_result.get("result") or "grading system error"))
+        if numeric_result.get("invalid_input"):
+            return False
+        return bool(numeric_result.get("correct"))
 
     if checker == "linear_equation_equivalent_checker" or equiv == "linear_equation_equivalent":
         from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer

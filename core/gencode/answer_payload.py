@@ -18,7 +18,7 @@ COORDINATE_PAIR_TYPES = frozenset({"coordinate_pair", "ordered_pair"})
 EQUATION_TYPES = frozenset({"equation"})
 LINEAR_EQUATION_SHAPES = frozenset({"linear_equation"})
 TEXT_SHORT_TYPES = frozenset({"text", "text_short", "exact_string", "case_insensitive_string"})
-MULTI_PART_TYPES = frozenset({"multi_part"})
+MULTI_PART_TYPES = frozenset({"multi_part", "table_fill"})
 
 ANSWER_TYPE_ALIASES: dict[str, str] = {
     "integer": "numeric",
@@ -43,6 +43,7 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "case_insensitive_string": "short_answer",
     "string": "short_answer",
     "multi_part": "multi_part",
+    "table_fill": "multi_part",
 }
 
 VALID_ANSWER_TYPES = frozenset(
@@ -390,6 +391,183 @@ def parse_rational_literal(value: Any) -> Fraction | None:
             return None
         return Fraction(numerator, denominator)
     return None
+
+
+def parse_single_numeric(
+    value: Any,
+    *,
+    require_integer: bool = False,
+) -> tuple[float | None, str | None]:
+    """Parse a single numeric student answer: integer, decimal, or fraction.
+
+    Returns (numeric_value, error) where error is ``empty``, ``invalid``, or None.
+    When ``require_integer`` is True (only for ``answer_type == "integer"``),
+    decimal and non-integer fraction forms are rejected as ``invalid``.
+    """
+    if value is None:
+        return None, "empty"
+    if isinstance(value, bool):
+        return None, "invalid"
+    if isinstance(value, int):
+        return float(value), None
+    if isinstance(value, float):
+        if require_integer and not value.is_integer():
+            return None, "invalid"
+        return value, None
+    if isinstance(value, Fraction):
+        if require_integer and value.denominator != 1:
+            return None, "invalid"
+        return float(value), None
+
+    text = str(value).strip()
+    if not text:
+        return None, "empty"
+
+    int_pat = r"[+-]?\d+"
+    if re.fullmatch(int_pat, text):
+        return float(int(text)), None
+
+    if "/" in text:
+        frac = parse_rational_literal(text)
+        if frac is None:
+            return None, "invalid"
+        if require_integer and frac.denominator != 1:
+            return None, "invalid"
+        return float(frac), None
+
+    if re.fullmatch(r"[+-]?\d+\.\d+", text):
+        if require_integer:
+            return None, "invalid"
+        try:
+            return float(text), None
+        except ValueError:
+            return None, "invalid"
+
+    return None, "invalid"
+
+
+def _to_exact_rational(value: Any) -> Fraction | None:
+    frac = parse_rational_literal(value)
+    if frac is not None:
+        return frac
+    if isinstance(value, bool) or value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        if re.fullmatch(r"[+-]?\d+\.\d+", text) or re.fullmatch(r"[+-]?\d+", text):
+            return Fraction(text)
+    except (ValueError, ZeroDivisionError):
+        return None
+    return None
+
+
+def check_decimal_tolerance_answer(
+    user_answer: Any,
+    canonical_answer: Any,
+    tolerance: float,
+) -> dict[str, Any]:
+    """Grade a decimal-tolerance contract using canonical_answer and tolerance."""
+    user_val, user_err = parse_single_numeric(user_answer, require_integer=False)
+    if user_err == "empty":
+        return {"correct": False, "invalid_input": True, "result": "invalid input"}
+    if user_err or user_val is None:
+        return {"correct": False, "invalid_input": True, "result": "invalid input"}
+
+    canon_val, canon_err = parse_single_numeric(canonical_answer, require_integer=False)
+    if canon_err or canon_val is None:
+        return {
+            "correct": False,
+            "system_error": True,
+            "result": "批改系統錯誤：標準答案格式無效",
+        }
+
+    is_correct = abs(user_val - canon_val) <= float(tolerance) + 1e-12
+    return {"correct": is_correct}
+
+
+def grade_numeric_contract_answer(
+    user_answer: Any,
+    correct_answer: Any,
+    answer_contract: dict[str, Any],
+    *,
+    checker: str = "",
+) -> dict[str, Any]:
+    """Dispatch numeric checker by answer_contract.checker_key."""
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    checker_key = str(
+        checker or ac.get("checker_key") or ac.get("checker") or ""
+    ).strip()
+    answer_type = str(ac.get("answer_type") or "").strip()
+    require_integer = answer_type == "integer"
+    canonical = ac.get("canonical_answer", correct_answer)
+
+    if checker_key == "decimal_tolerance_checker":
+        tolerance = ac.get("tolerance")
+        if tolerance is None:
+            return {
+                "correct": False,
+                "system_error": True,
+                "result": "批改系統錯誤：缺少容許誤差設定",
+            }
+        try:
+            tol = float(tolerance)
+        except (TypeError, ValueError):
+            return {
+                "correct": False,
+                "system_error": True,
+                "result": "批改系統錯誤：容許誤差格式無效",
+            }
+        return check_decimal_tolerance_answer(user_answer, canonical, tol)
+
+    user_val, user_err = parse_single_numeric(user_answer, require_integer=require_integer)
+    if user_err == "empty":
+        return {"correct": False, "invalid_input": True, "result": "invalid input"}
+    if user_err or user_val is None:
+        return {"correct": False, "invalid_input": True, "result": "invalid input"}
+
+    if checker_key == "integer_checker":
+        exp_val, exp_err = parse_single_numeric(canonical, require_integer=False)
+        if exp_err or exp_val is None:
+            exp_frac = parse_rational_literal(canonical)
+            if exp_frac is None or exp_frac.denominator != 1:
+                return {
+                    "correct": False,
+                    "system_error": True,
+                    "result": "批改系統錯誤：整數標準答案格式無效",
+                }
+            exp_val = float(exp_frac.numerator)
+        if require_integer and abs(user_val - round(user_val)) > 1e-9:
+            return {"correct": False}
+        return {"correct": abs(user_val - exp_val) < 1e-9}
+
+    if checker_key in {"rational_checker", "fraction_checker"}:
+        user_frac = _to_exact_rational(user_answer)
+        exp_frac = _to_exact_rational(canonical)
+        if user_frac is None or exp_frac is None:
+            return {"correct": False, "invalid_input": True, "result": "invalid input"}
+        return {"correct": user_frac == exp_frac}
+
+    if checker_key == "numeric_checker" or checker_key:
+        exp_val, exp_err = parse_single_numeric(canonical, require_integer=False)
+        if exp_err or exp_val is None:
+            exp_frac = _to_exact_rational(canonical)
+            if exp_frac is not None:
+                exp_val = float(exp_frac)
+            else:
+                return {
+                    "correct": False,
+                    "system_error": True,
+                    "result": "批改系統錯誤：標準答案格式無效",
+                }
+        return {"correct": abs(user_val - exp_val) < 1e-9}
+
+    return {
+        "correct": False,
+        "system_error": True,
+        "result": "批改系統錯誤：未支援的數值 checker",
+    }
 
 
 def is_valid_rational_literal(value: Any) -> bool:

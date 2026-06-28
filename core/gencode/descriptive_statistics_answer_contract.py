@@ -203,35 +203,37 @@ def normalize_answer_contract(
                 nested_shape,
                 rounding_policy=spec.get("rounding_policy") or policy,
             )
-            parts.append(
-                {
-                    "key": field_key,
-                    "field_key": field_key,
-                    "label": str(spec.get("label") or field_key),
-                    "group_label": str(spec.get("group_label") or "").strip(),
-                    "expected_answer": part_contract["canonical_answer"],
-                    "checker": part_contract["checker_key"],
-                    "checker_key": part_contract["checker_key"],
-                    "equivalence_type": part_contract["equivalence_type"],
-                    "answer_type": part_contract["answer_type"],
-                    "input_type": str(spec.get("input_type") or "number"),
-                }
-            )
+            part_dict = {
+                "key": field_key,
+                "field_key": field_key,
+                "label": str(spec.get("label") or field_key),
+                "group_label": str(spec.get("group_label") or "").strip(),
+                "expected_answer": part_contract["canonical_answer"],
+                "checker": part_contract["checker_key"],
+                "checker_key": part_contract["checker_key"],
+                "equivalence_type": part_contract["equivalence_type"],
+                "answer_type": part_contract["answer_type"],
+                "input_type": str(spec.get("input_type") or "number"),
+            }
+            if part_contract.get("tolerance") is not None:
+                part_dict["tolerance"] = part_contract.get("tolerance")
+            parts.append(part_dict)
         ordered = [part["expected_answer"] for part in parts]
         enriched_specs: list[dict[str, Any]] = []
         for spec, part in zip(specs, parts, strict=False):
-            enriched_specs.append(
-                {
-                    **spec,
-                    "field_key": str(spec.get("field_key") or spec.get("key") or part["field_key"]),
-                    "label": str(spec.get("label") or part["label"]),
-                    "expected_answer": part["expected_answer"],
-                    "checker": part["checker"],
-                    "checker_key": part["checker_key"],
-                    "equivalence_type": part["equivalence_type"],
-                    "answer_type": part["answer_type"],
-                }
-            )
+            spec_dict = {
+                **spec,
+                "field_key": str(spec.get("field_key") or spec.get("key") or part["field_key"]),
+                "label": str(spec.get("label") or part["label"]),
+                "expected_answer": part["expected_answer"],
+                "checker": part["checker"],
+                "checker_key": part["checker_key"],
+                "equivalence_type": part["equivalence_type"],
+                "answer_type": part["answer_type"],
+            }
+            if part.get("tolerance") is not None:
+                spec_dict["tolerance"] = part.get("tolerance")
+            enriched_specs.append(spec_dict)
         response_mode = "table_fill" if shape == "table_fill" else ("multi_part" if shape == "multi_part" else "multi_blank")
         contract = {
             "answer_shape": shape,

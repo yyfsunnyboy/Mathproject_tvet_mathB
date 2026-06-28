@@ -7,6 +7,7 @@ from core.gencode.answer_payload import (
     answer_type_family,
     coerce_correct_answer,
     format_coordinate_pair_display,
+    grade_numeric_contract_answer,
     is_coordinate_pair_contract,
     is_coordinate_pair_runtime_payload,
     refresh_runtime_question_session,
@@ -167,10 +168,12 @@ def grade_answer_for_current_question(
     ac = resolve_answer_contract_for_runtime(payload, skill_id=skill_id)
     if ac:
         payload["answer_contract"] = ac
-    correct_answer = coerce_correct_answer(
-        refreshed.get("correct_answer", refreshed.get("answer")),
-        ac if isinstance(ac, dict) else None,
-    )
+    correct_answer = ac.get("canonical_answer")
+    if correct_answer is None:
+        correct_answer = coerce_correct_answer(
+            refreshed.get("correct_answer", refreshed.get("answer")),
+            ac if isinstance(ac, dict) else None,
+        )
     checker = str(
         ac.get("checker") or ac.get("checker_key") or payload.get("checker") or payload.get("checker_key") or payload.get("checker_type") or ""
     ).strip()
@@ -286,14 +289,91 @@ def grade_answer_for_current_question(
             "per_part_results": per_part,
             "failed_parts": result.get("failed_parts", []),
         }
-    else:
-        is_correct = check_answer(
-            user_answer,
-            correct_answer,
-            payload=payload,
-            answer_contract=ac if isinstance(ac, dict) else None,
+    elif checker in {
+        "decimal_tolerance_checker",
+        "integer_checker",
+        "numeric_checker",
+        "rational_checker",
+        "fraction_checker",
+    } or (family == "numeric" and checker):
+        try:
+            numeric_result = grade_numeric_contract_answer(
+                user_answer,
+                correct_answer,
+                ac if isinstance(ac, dict) else {},
+                checker=checker,
+            )
+        except Exception as exc:
+            sink = log or logger
+            sink.error(
+                "[CHECK ANSWER] numeric checker internal error skill_id=%s checker=%s err=%s",
+                skill_id,
+                checker,
+                exc,
+                exc_info=True,
+            )
+            return {
+                "correct": False,
+                "system_error": True,
+                "result": f"批改系統錯誤：{exc}",
+            }
+        if numeric_result.get("system_error"):
+            sink = log or logger
+            sink.error(
+                "[CHECK ANSWER] numeric checker system error skill_id=%s checker=%s msg=%s",
+                skill_id,
+                checker,
+                numeric_result.get("result"),
+            )
+            return {
+                "correct": False,
+                "system_error": True,
+                "result": str(numeric_result.get("result") or "批改系統錯誤"),
+            }
+        if numeric_result.get("invalid_input"):
+            return {
+                "correct": False,
+                "invalid_input": True,
+                "result": str(numeric_result.get("result") or "invalid input"),
+            }
+        is_correct = bool(numeric_result.get("correct"))
+        log_check_answer_debug(
             skill_id=skill_id,
+            current=payload,
+            user_answer=user_answer,
+            correct_answer=correct_answer,
+            check_result=is_correct,
+            checker=checker,
+            log=log,
         )
+        display = format_correct_answer_display(correct_answer, payload)
+        return {
+            "correct": is_correct,
+            "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",
+        }
+    else:
+        try:
+            is_correct = check_answer(
+                user_answer,
+                correct_answer,
+                payload=payload,
+                answer_contract=ac if isinstance(ac, dict) else None,
+                skill_id=skill_id,
+            )
+        except Exception as exc:
+            sink = log or logger
+            sink.error(
+                "[CHECK ANSWER] checker internal error skill_id=%s checker=%s err=%s",
+                skill_id,
+                checker,
+                exc,
+                exc_info=True,
+            )
+            return {
+                "correct": False,
+                "system_error": True,
+                "result": f"批改系統錯誤：{exc}",
+            }
     log_check_answer_debug(
         skill_id=skill_id,
         current=payload,

@@ -1,1139 +1,185 @@
-# Gencode × AgentSkillV3 Pipeline 系統流程圖與狀態轉移說明
+# Gencode × AgentSkillV3 Pipeline 系統流程與狀態轉移說明
 
-> **文件版本**：v1.10（Automated Domain Bootstrap & Domain Healer · 教師端流程）  
-> **Amendment Revision**：v1.10 · 2026-06-26  
-> **Supersedes**：v1.9 流程圖中「缺 binding 即停止」而未涵蓋 capability-first Bootstrap 之敘述；v1.8 中 Phase 1 僅判定 `domain_operation`／`presentation_mode`、未強制 `answer_type` 與 UI contract 驗證鏈  
-> **文件權威分工**：本文件為 Gencode × AgentSkillV3 **唯一流程權威**（端到端流程、狀態轉移、階段時序）；含教材例題自動出題流程中 `answer_type` 判定、`generate()` 輸出契約、preview／production smoke。規則定義見 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)（**唯一規範權威**；含西堤作答套餐定義、UI 標準、禁止降級）。衝突時：規則以 Specification 為準；流程以本文件為準。本文件**不得**重新定義與 Specification 衝突的規則。  
-> **實體錨點目錄**：`docs/系統SOP/Gencode_AgentSkillV3整合/`  
-> **實作狀態**：**SOP 已更新，程式尚待對齊**
-
-### v1.10 CHANGELOG（2026-06-26）
-
-- 新增 **§1.7 Automated Domain Bootstrap & Domain Healer Phase**（**最終產品必要能力**）
-- Phase 1 resolver 改為 **capability-first**；`DOMAIN_CAPABILITY_UNRESOLVED`／`PARTIAL` 觸發 Bootstrap，非僅停止
-- 補充 `draft` → `candidate` → `verified` 流程與 Healer 迴圈（最多 N 輪）
-- 教師端標準流程：匯入 → V3 重新生成 → 預覽確認 → 發布（技術細節內隱）
-- 交叉引用 Specification §1.10、總體設計 v0.3.3 §14
-
-### v1.9 CHANGELOG（2026-06-26）
-
-- Phase 1 classifier／generator **必須**判定 `answer_type`（依 Specification §2.0.3 決策流程）
-- `answer_type` 須依教材原始作答拓撲決定；component-local config 保存教材特有作答拓撲
-- 每個 `generate()` **必須**輸出通用 generator contract（§2.4 Step 2）
-- adapter **必須**保留所有 `ui_contract` 欄位
-- preview 須實際驗證學生端操作方式；`candidate_verified` 須含 UI 可作答性
-- production smoke 依五種 `answer_type` 分項驗證（§3.4 Step 5）
-- `ui_contract` 不完整 → 不得 verified／published
-- 交叉引用 Specification §2.0（呈現與驗證權威）
-
-### v1.8 CHANGELOG
-
-- 移除 production Generic Domain Fallback
-- 新增 Domain Function Extension Phase
-- 固定 skill → fixed domain；缺 function 可恢復
-- 統一 `component_id = src_{textbook_example_id}`
-- 修正 Shadow Bridge 前置條件與錯誤分類
-- 區分 Skill Batch Build 與 Component Targeted Rebuild
-- 移除第三份 Auto-Bootstrap SOP 依賴
-
-### v1.8 端到端管線（流程權威）
-
-```text
-Source Example
-→ Read authoritative skill_id
-→ Resolve fixed_domain_key（deterministic；缺則 DOMAIN_BINDING_MISSING）
-→ Bootstrap Gate
-→ Semantic Classification（每題獨立）
-→ Determine required capability / operation
-→ Determine answer_type（教材作答拓撲 · Specification §2.0.3）
-→ Domain Capability Check
-    ├─ function / operation exists
-    │    → Shadow Bridge（前置：binding + operation + function 測試通過）
-    └─ function / operation missing
-         → Domain Function Extension
-         → Domain Function Tests
-         → Update allowed_operations
-         → Resume Shadow Bridge
-→ Create src_{example_id}
-→ Generate component
-→ Compile → Smoke → Verification
-→ Package verified components only
-→ Publish Gate → Publish
-```
-
-**明確禁止**：
-
-```text
-function missing → generic fallback → verified
-registry missing → AI inferred domain
-SHADOW_BRIDGE_NOT_EXECUTED → unsupported_task_type
-```
-
-| # | 條款 | Pipeline 影響 |
-|---|------|---------------|
-| 1 | Skill-Fixed Domain | 全程固定 `fixed_domain_key` |
-| 2 | Domain Function Extension | 缺 function 可恢復，非終止 unsupported |
-| 3 | Bootstrap Gate ≠ Publish Gate | MVP／package 缺失不阻擋 bootstrap |
-| 4 | Shadow Bridge 前置條件 | binding + operation + function 就緒 |
-| 5 | `SHADOW_BRIDGE_NOT_EXECUTED` | pipeline defect |
-| 6 | Skill Batch Build / Targeted Rebuild | §0.1 兩入口 |
-
-### v1.6 Skill-Fixed Domain Authority（verified 發布時仍適用）
-
-```text
-1. 從 textbook_example 讀取固定 skill_id（DB 權威）
-2. Registry 解析唯一 fixed_domain_key          ← Deterministic Gate（AI 不可覆寫）
-3. Domain Registry 提供 allowed_operations
-4. AI 只在 allowed_operations 中選 operation、intent、presentation、**answer_type**
-5. 後端驗證 operation 是否在白名單
-6. 固定 Domain 產生數學 matrix
-7. Scaffold 生成 component
-8. 執行 source、domain、semantic、oracle、topology、runtime 驗證
-9. verified component 才能進 manifest
-10. 缺少 Domain function → DOMAIN_FUNCTION_MISSING → Domain Function Extension（Specification §1.8）
-11. 禁止跨 Domain fallback
-```
-
-| # | 條款 | Pipeline 影響 |
-|---|------|---------------|
-| 1 | `skill_id` 自 `textbook_examples` 唯讀 | Phase 1 Step 1；Anchor Shield |
-| 2 | `fixed_domain_key` deterministic gate | Phase 1/2 入口；流程圖標示 |
-| 3 | `allowed_operations` 白名單 | Phase 1 induced spec + Phase 2 前置校驗 |
-| 4 | `operation_contract_mismatch` | Phase 1 merge fail-fast |
-| 5 | `DOMAIN_FUNCTION_MISSING` | 進入 Extension；不進 Shadow Bridge 直至 function 就緒 |
-| 6 | 禁止 nearest / cross-domain fallback | 移除語意改派路徑 |
-| 7 | `verified` 八項語意門檻 | Phase 2.5 擴充驗證鏈 |
-| 8 | `needs_regeneration` on domain_key drift | Phase 3 編譯前校驗 |
-
-### v1.5 資料流摘要（IMPLEMENTED · 疊加 v1.6 gate）
-
-```text
-textbook_examples.skill_id（DB 權威）
-  → taxonomy_registry.fixed_domain_key     ← Deterministic Gate
-  → allowed_operations
-  → induced_spec_payload（AI 僅選 operation / presentation）
-  → operation whitelist 驗證
-  → semantic classification（不得改派 domain）
-  → answer_type（西堤作答套餐 · Specification §2.0.2）
-  → data_presentation（text/image/graph/readonly_table/canvas）
-  → problem_type_id / domain_operation
-  → Domain matrix（固定 domain_operation）
-  → answer_schema_key
-  → ui_contract / answer_contract 草案
-  → validate_full_matrix_shell + validate_answer_schema
-  → component scaffold (src_{id})
-  → source / domain / semantic / oracle / topology / runtime 驗證
-  → tracker evidence → publish gate
-```
-
-| # | 條款 | Pipeline 影響 |
-|---|------|---------------|
-| 1 | `component_id = src_{textbook_example_id}` | Phase 1/2 物理目錄與 tracker 鍵 |
-| 2 | `SOURCE_KIND` / `ORDER_WEIGHT` 自教材列映射 | metadata 注入；**禁止** src_ 前綴推斷 |
-| 3 | Answer schema 兩層驗證 | Phase 2.5 fail-fast；禁止 slope/intercept 全域 fallback |
-| 4 | 四層錯誤責任 | shared_contract_failure → 停止逐題 AI repair |
-| 5 | Skill Batch Build / Component Targeted Rebuild | `run_admin_v3_dryrun_for_skill` / `_for_example` |
-
-### v1.4 Domain 層架構摘要（保留 · 已落地）
-
-| # | 條款 | Pipeline 影響 |
-|---|------|---------------|
-| 1 | 數學核心收斂 `core/domain/` | Phase 2 Codegen 呼叫 `build_*_matrix`，非 component 內 SymPy |
-| 2 | `generate.py` 搬運工化 | Phase 2.5 斷言無 `import sympy`、無 distractors 自算 |
-| 3 | Registry 中繼 `skill_id` → Domain | Phase 2 啟動前經 `taxonomy_registry` 解析入口 |
-| 4 | Full Matrix Dict 六大欄位 | Phase 2.5 沙盒驗證 `matrix` 結構完整性 |
-| 5 | P0 直線方程式垂直切片 | 首波驗收取 `build_line_equation_matrix` 為標竿 |
-| 6 | 教材例題影子對接表 `gencode_component_tracker` | `textbook_examples` 增量設計（§4.5） |
-| 7 | 後台熱拔插 | `admin_trigger_rebuild` → Reload Compiler → `importlib.reload`（§4.6） |
-
-### v1.3 務實落地摘要（保留）
-
-| # | 條款 | Pipeline 影響 |
-|---|------|---------------|
-| 1 | 廢除概念聚類；一題一 `generate.py` | Phase 1 Layer 3 改為物理拆分器 + 天然權重排序 |
-| 2 | 同構題僅換數值 | Gemini Flash 單題模板填空；數學由 Domain Function 算子盾牌 |
-| 3 | `SOURCE_KIND` → `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` | metadata 注入（§Specification §1.5） |
-| 4 | 核心例題 verified → Partial Publish | 非核心題失敗剔除，不觸發 `SYSTEM_INTERRUPT` |
-| 5 | 保留 v1.2 防禦 | AST 掃描、Full Matrix Dict、P0 Checker、Taxonomy MVP 六單元 |
-
-### v1.2 實戰修訂摘要（保留）
-
-| # | 防禦條款 | Pipeline 影響 |
-|---|----------|---------------|
-| 1 | Taxonomy MVP 六單元 | 僅 `review_required`；**不**阻擋 Phase 2 |
-| 2 | AST 精準左值比對 + 敏感區白名單 | Phase 2.5 驗證鏈更新（§2.4 Step 3） |
-| 3 | Full Matrix Dictionary 回傳契約 | Phase 2 斷言 `matrix["answer"]` 可追溯 |
-| 4 | `required_core_components` 禁止 AI/管線寫入 | Step 5 / Phase 3 僅讀取 Taxonomy 靜態條目 |
-| 5 | P0 Checker 垂直切片 | smoke 回歸含 `vh_數學B1_PointSlopeForm` 等價案例 |
-
-### v1.1 修訂摘要（保留 · 部分條款 v1.3 已簡化）
-
-- Phase 1 Taxonomy：MVP 僅審核提示，不阻擋 Phase 2（Specification §1.4）
-- Phase 2 定位 AI 為 **Component 模板工程師**；在 Registry `fixed_domain_key` 與 `allowed_operations` 內選 operation / presentation；數學正確性由固定 Domain Function + Validator 接管
-- Phase 2.5 新增 **Visual Validator** 與 **語意 Checker** Fail-Fast 鏈
-- 發布門檻改為 `skill.json` 的 `required_core_components` 動態判定（廢除寫死 `verified >= 2`）
-- **不得破壞** `practice.py` public route、query contract、response contract（Specification §0.1.1）
+> **文件版本**：v1.10  
+> **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一流程權威**（流程、時序、狀態轉移、階段責任、錯誤分流、正常路徑與 repair 路徑、package/publish/runtime 邊界）。具體欄位 schema 與規格規則見 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)（唯一規範權威）。
 
 ---
 
-## 0. 總覽
+## 0. 錯誤快速索引
 
-### 0.1 兩種合法重建入口（流程層）
-
-| 入口 | 觸發 | 行為 |
-|------|------|------|
-| **Skill Batch Build** | 新 skill 首次建立；整 skill 重建；Domain function／schema 重大變更 | 逐 example → 獨立 `src_{id}`；單題失敗不阻斷姊妹題 |
-| **Component Targeted Rebuild** | 後台「⚡產生/重構出題程式」；單題修復 | 只重建指定 `src_{example_id}`；完成後重跑 wrapper compiler |
-
-兩者共用 `run_gencode_phase2_v3_shadow_bridge`；規範細節見 Specification §2.9。
-
-本文件以 Mermaid 圖與逐步文字說明 Gencode V3 三階段 Pipeline：
-
-| Phase | 名稱 | 核心產物 |
-|-------|------|----------|
-| Phase 1 | 案源一題一物理拆分 | `src_{textbook_example_id}` component + induced spec |
-| Phase 2 | 原子組件隔離生成與修補閉環 | `components/{component_id}/generate.py`（verified / failed） |
-| Phase 3 | 微元件自動黏合與發布 | `component_manifest.json` + `__init__.py` + `skills/{skill_id}.py` + verified registry |
-
-**實體模組對照**：
-
-- Phase 1 編排：`core/gencode/pipeline_orchestrator.py`、`problem_type_induction.py`、`spec_phase1_merge.py`
-- Taxonomy 白名單：`configs/gencode_taxonomy/k12_component_taxonomy.yaml`
-- **Domain 邏輯層（v1.4 目標）**：`core/domain/coordinate_geometry/line_equation_domain.py` 等（見 Specification §2.5）
-- **Domain 註冊中繼（v1.4 目標）**：`core/registry/taxonomy_registry.py`（見 Specification §2.7）
-- Phase 2 閉環：`gencode_closed_loop/controller.py` → `run_gencode_phase2_raw()`
-- Phase 2.5 驗證：`core/gencode/visual_schema_validators.py`、Domain Function AST 掃描、`checker_registry`
-- Phase 3 編譯：`core/gencode/skill_wrapper_compiler.py`（目標名；現行 `phase3_skill_codegen.build_phase3_skill_module_code`）
-- 執行期：`core/gencode/runtime_skill_wrapper.py`、`slot_generators.SLOT_REGISTRY`
-- 發布閘門：`scripts/gencode_pipeline_phase3_publish_gate.py`
-- Registry：`configs/generated_registry/*_verified_registry.v*.yaml`
+| 關鍵字／錯誤 | 查詢章節 |
+| --- | --- |
+| Phase 1 unresolved | 3. Phase 1 流程與 Onboarding |
+| taxonomy missing | 3. Phase 1 流程與 Onboarding |
+| DOMAIN_FUNCTION_MISSING | 4. Phase 2 流程與 Component 驗證 |
+| DOMAIN_CAPABILITY_UNRESOLVED | 3. Phase 1 流程與 Onboarding |
+| SHADOW_BRIDGE_NOT_EXECUTED | 4. Phase 2 流程與 Component 驗證 |
+| component failed | 8. Component 狀態轉移 |
+| PACKAGING_FAILED | 5. Phase 3 流程與 Package/Publish |
+| partial publish | 5. Phase 3 流程與 Package/Publish |
+| runtime generation | 6. Runtime 邊界與出題 |
 
 ---
 
-## 1. Phase 1：案源一題一物理拆分流程
+## 1. AI / Agent 執行規則
 
-### 1.1 總流程圖
-
-```mermaid
-graph TD
-    subgraph L1["Layer 1 — Source Normalization（物理隔離）"]
-        S[Sources 輸入<br/>Word / DB examples / OCR]
-        N[Normalize &amp; skill_id 唯讀校驗<br/>textbook_examples.skill_id 為權威]
-        S --> N
-    end
-
-    subgraph BOOT["Bootstrap Gate（v1.8）"]
-        BG{skill_id + example_id<br/>+ 教材可讀 + binding 可解析?}
-        N --> BG
-        BG -->|否 · 缺 binding| DBM[DOMAIN_BINDING_MISSING<br/>停止 component generation]
-        BG -->|是| BIND[domain_binding_resolved]
-    end
-
-    subgraph REG_GATE["Fixed Domain Gate"]
-        REG[fixed_domain_key<br/>deterministic · AI 不可覆寫]
-        OPS[allowed_operations]
-        BIND --> REG --> OPS
-    end
-
-    subgraph L2["Layer 2 — Source Audit"]
-        A[Source Audit]
-        SALV[Non-Destructive Salvage]
-        OPS --> A --> SALV
-    end
-
-    subgraph L3["Layer 3 — Induction"]
-        E[教材 Sources]
-        SPLIT[component_id = src_{textbook_example_id}]
-        CLASS[Semantic Classification]
-        CAP[Domain Capability Check]
-        FN_OK{operation + function<br/>就緒?}
-        EXT[Domain Function Extension<br/>→ Tests → update registry]
-        GEM[Gemini Flash：選 operation / presentation<br/>（固定 Domain 內）]
-        SALV --> E
-        E --> SPLIT --> CLASS --> CAP --> FN_OK
-        FN_OK -->|否| EXT --> FN_OK
-        FN_OK -->|是| GEM --> ACC[進入 Shadow Bridge 佇列]
-    end
-
-    subgraph OUT["Phase 1 產出"]
-        P1J[phase1_summary.json]
-        IND[induced_specs per src_{id}]
-        ACC --> P1J --> IND
-        DBM --> P1J
-    end
-
-    style BOOT fill:#e8f5e9,stroke:#2e7d32
-    style REG_GATE fill:#ffe8e8,stroke:#c44
-    style L3 fill:#f0fff4,stroke:#4a9a6c
-```
-
-### 1.1b Taxonomy 審核提示（非阻擋）
-
-```mermaid
-stateDiagram-v2
-    [*] --> split_done: src_{id} 產出
-    split_done --> bootstrap_gate: Bootstrap Gate
-    bootstrap_gate --> domain_binding_resolved: binding OK
-    bootstrap_gate --> domain_binding_missing: DOMAIN_BINDING_MISSING
-    domain_binding_resolved --> capability_check
-    capability_check --> extension_pending: DOMAIN_FUNCTION_MISSING
-    extension_pending --> capability_check: function tests pass
-    capability_check --> phase2_ready: operation + function 就緒
-    phase2_ready --> [*]
-```
-
-### 1.2 一題一物理拆分子流程
-
-```mermaid
-graph TD
-    EX[單一 Source Example<br/>例題 / 隨堂 / 自我評量] --> SID[讀取 textbook_example.skill_id<br/>DB 權威 · 唯讀]
-    SID --> REG[Registry → fixed_domain_key]
-    REG --> CID[component_id: src_{textbook_example_id}]
-    CID --> SK[SOURCE_KIND 映射<br/>ORDER_WEIGHT / DIFFICULTY_LEVEL]
-    SK --> META[metadata.py 骨架<br/>+ 單一 generate.py 目錄]
-    META --> GEM[Gemini Flash<br/>allowed_operations 內選 operation]
-```
-
-> **廢除**：舊版 §1.2 水平線 / 鉛直線概念聚類子流程；極端數學邊界改由 Domain Function 算子盾牌處理（Specification §2.3）。
-
-### 1.3 文字步驟說明
-
-**Step 1 — Sources 輸入與標準化**
-
-1. 管線自 DB `textbook_examples`、Word 匯入或 `reports/gencode_closed_loop/` 讀取原始題目。
-2. `pipeline_orchestrator._load_examples()` 完成題幹清理、LaTeX 保留、答案擷取。
-3. **剛性校驗** `textbook_examples.skill_id` 為**唯讀權威**；違規標記 `skill_id_format_violation`，沒收寫入權。
-4. **Registry Gate**：立即以 `taxonomy_registry` 解析 `fixed_domain_key` 與 `allowed_operations`；AI **不得**覆寫（§1.6.1）。
-
-**Step 2 — 來源品質審核（不阻擋整 skill）**
-
-1. 逐題標記 `source_item_status`：`usable` / `rejected` / `enrichment` / `source_bank_only`。
-2. 對 `missing_answer` / `broken_latex` 的 core 題執行 **Non-Destructive Salvage**，標記 `FORCE_ALLOWED_FOR_INDUCTION`。
-3. **Anchor Shield**：禁止 AI 改寫 `skill_id`、`fixed_domain_key` 或將題目剔出本單元。
-
-**Step 3 — 單題特徵提取（不聚類 · 固定 Domain）**
-
-對每筆 usable Source **獨立**抽取（一題一 spec，不合併）：
-
-| 特徵 | 來源 | 用途 |
-|------|------|------|
-| `skill_id` | `textbook_examples.skill_id`（DB 權威） | 行政歸屬；**禁止** AI 重判 |
-| `fixed_domain_key` | `taxonomy_registry` | Deterministic Gate；**禁止** AI 覆寫 |
-| `component_id` | `src_{textbook_example_id}` | 物理隔離鍵（§1.5） |
-| `ORDER_WEIGHT` / `DIFFICULTY_LEVEL` | `SOURCE_KIND` 映射 | 天然出題順序 |
-| `domain_operation` | AI 自 `allowed_operations` 選取 | 須白名單驗證 |
-| `answer_type` | 教材原始作答拓撲 + §2.0.3 決策 | 五選一西堤作答套餐；寫入 induced spec |
-| `data_presentation` | 題幹附件型態 | `text`／`image`／`graph`／`readonly_table`／`canvas`；**非**作答模式 |
-| `answer_format_hint` | `core/gencode/answer_format_hint.py` | 決定 `presentation_mode`（輸入元件外觀） |
-| `ui_contract` 草案 | induced spec + component-local config | 須保留至 adapter／runtime |
-| `answer_contract` 草案 | `spec_to_answer_contract_proposal()` | 預綁 checker、`answer_order` |
-| `story_tokens` | 該題情境詞 | 單題 `SCENARIO_POOL` 候選 |
-
-**Step 3b — Domain Capability Check 與 Extension 分流（v1.8）**
-
-1. 驗證 AI 選取之 `domain_operation` 與 required capabilities。
-2. **Existing Function Search**：僅在固定 Domain + 允許的 shared primitives 內搜尋。
-3. function／operation 就緒 → 進入 Shadow Bridge 佇列。
-4. 缺失 → `DOMAIN_FUNCTION_MISSING` → **Domain Function Extension**（§1.5）；**禁止** generic／跨 Domain fallback。
-5. 語意不符 → `operation_contract_mismatch`（Specification §1.6.9）。
-
-### 1.5 Domain Function Extension Phase（v1.8 正式階段）
-
-```text
-Function Gap Record
-→ Domain Function Specification
-→ Add function to core/domain/{fixed_domain}/
-→ Domain Function Tests（通過前不得 verified）
-→ Update allowed_operations / registry
-→ Resume Shadow Bridge for src_{example_id}
-```
-
-| 步驟 | 產物 |
-|------|------|
-| Gap Record | `skill_id`, `fixed_domain_key`, `proposed_operation`, contracts, `related_example_ids` |
-| Implementation | 可重用 function；Full Matrix Dict；無 skill_id／example_id |
-| Tests | 邊界、多 seed、回歸、Fraction/Decimal 精確性 |
-| Resume | induced spec → Shadow Bridge → component generation |
-
-失敗 → `DOMAIN_FUNCTION_EXTENSION_FAILED` 或 `DOMAIN_FUNCTION_TEST_FAILED`；**不**計入 `unsupported_count`。
-
-### 1.6 Shadow Bridge 前置條件與執行（v1.8）
-
-**前置條件**（缺一不可）：
-
-- `skill_id` 已確定（DB 權威）
-- `fixed_domain_key` 已 deterministic 解析
-- `domain_operation` 已存在於 `allowed_operations`
-- 所需 domain function 已存在且 **測試通過**
-- induced spec 已建立
-
-**不得**因下列原因跳過 Shadow Bridge：MVP allowlist、V3 package／wrapper／component 尚未存在、taxonomy 未人工審核。
-
-若應執行卻未執行 → `SHADOW_BRIDGE_NOT_EXECUTED`（pipeline defect）；**禁止**映射 `unsupported_task_type`。
-
-**Step 4 — 單題三層解構（同構模板用）**
-
-1. **Story Layer**：該題敘事元素 → `SCENARIO_POOL` 候選。
-2. **Math Core Layer**：`givens`、`unknowns`、`constraints`；數值變異由 Domain Function 負責。
-3. **Presentation Layer**：
-   - `data_presentation`：題幹附件（圖、唯讀表等）
-   - `answer_type`：西堤作答套餐（Specification §2.0.2–§2.0.4）
-   - `presentation_mode` + `ui_contract`：輸入元件外觀
-   - `SOURCE_KIND` → `ORDER_WEIGHT` / `DIFFICULTY_LEVEL`
-
-**Step 4b — `answer_type` 判定剛性要求（v1.9）**
-
-1. classifier／induced spec **除了** `domain_operation`，**必須**判定 `answer_type`。
-2. `answer_type` **必須**依教材原始作答拓撲（小題數、是否表格內填答、是否作圖）決定，**不得**僅因 Domain 或答案型態推斷。
-3. Domain function 負責數學資料與答案；component-local config（induced spec、`metadata.py`）保存教材特有作答拓撲。
-4. 作圖題即使存在 `expected_answer` 字串，**仍須** `answer_type: "drawing"`，不得降級 `short_answer`。
-
-**Step 5 — 一題一 component_id 命名（禁止合併）**
-
-1. 每道原題 → `components/src_{textbook_example_id}/` + 單一 `generate.py`。
-2. `component_id` **必須**為 `src_{textbook_example_id}`；`SOURCE_KIND` 僅寫入 metadata。
-3. **禁止**：多題合一、AI 融合、跨 Domain 改派。
-
-**Step 6 — Taxonomy 審核提示（非阻擋）**
-
-1. MVP 清單僅標記 `review_required`；**仍**進入 Phase 2（function 就緒後 Shadow Bridge）。
-2. Auto-Bootstrap 自動建立 package／tracker skeleton（Specification §1.7）；缺 verified provider 時走 **Automated Domain Bootstrap**（§1.7 · Specification §1.10），**不**由 AI 推論 Routing Domain，**不**僅產 gap report。
-
-**Step 7 — Phase 1 產出**
-
-1. `reports/gencode_closed_loop/{skill_id}_phase1_summary.json`
-2. `reports/gencode_closed_loop/induced_specs/{skill_id}.json`（每題一 spec）
-3. **不產出**可執行 `generate.py`；就緒者進 Phase 2 Shadow Bridge；缺 verified provider 者進 §1.7 Bootstrap
-
-### 1.7 Automated Domain Bootstrap & Domain Healer Phase（v1.10 · **最終產品必要能力**）
-
-> **產品定位**：本節為 **最終產品必要能力**，不是未來選配。規則權威見 Specification §1.10；教師端敘事見總體設計 v0.3.3 §14。
-
-#### 1.7.1 教師端觸發流程（對外唯一敘事）
-
-```text
-匯入教材
-→ 按「V3 重新生成」
-→ 系統自動辨識 problem_type 與 required_capabilities
-→ 優先重用既有 verified domain
-→ 產生 component
-→ 自動 compile / smoke / integrity validation
-→ 顯示生成例題
-→ 教師確認並發布
-```
-
-#### 1.7.2 Capability 缺口閉環（內部管線）
-
-當 resolver 輸出 `DOMAIN_CAPABILITY_UNRESOLVED` 或 `DOMAIN_CAPABILITY_PARTIAL`：
-
-```mermaid
-graph TD
-    CAP[Capability-First Resolver] --> MATCH{verified provider<br/>全滿足?}
-    MATCH -->|是| SB[Shadow Bridge → Phase 2]
-    MATCH -->|否| COST[成本控制鏈<br/>重用 artifact · no-LLM classify]
-    COST --> GAP[Domain Gap Report<br/>聚合同類例題]
-    GAP --> AI_OK{source_hash 變更<br/>或無 candidate?}
-    AI_OK -->|重用| CAND_REUSE[載入既有 candidate]
-    AI_OK -->|需 AI| BOOT[Automated Domain Bootstrap<br/>draft 隔離區]
-    BOOT --> TEST[§1.7.3 驗證 Gate]
-    CAND_REUSE --> TEST
-    TEST -->|失敗| HEAL[Domain Healer<br/>只修 candidate · ≤N 輪]
-    HEAL --> TEST
-    TEST -->|通過| CAND[candidate 預覽]
-    HEAL -->|超限| ADMIN[待管理員審查]
-    CAND --> TEACH[教師確認教學語意]
-    TEACH -->|核准| VER[verified → append provider]
-    VER --> RERUN[自動重跑原失敗 components]
-    RERUN --> SB
-```
-
-**剛性**：不得 500、不得產錯題、不得阻斷姊妹 components、不得要求教師寫程式。
-
-#### 1.7.3 Candidate 驗證 Gate（升格前）
-
-| 類別 | 檢查項 |
-|------|--------|
-| 結構 | module import、py_compile、registry consistency |
-| 可執行 | operation callable、checker dispatch |
-| 數學 | **獨立 oracle**（≠ generator）、answer contract |
-| 變異 | 固定 seed 可重現、不同 seed 合理變異、多 seed integrity |
-| 語意 | 教材同構、UI contract、禁止 skill/example 特例掃描 |
-| 安全 | 既有 domain 回歸、超時檢查 |
-
-```text
-generator algorithm ≠ answer oracle ≠ integrity validator
-```
-
-#### 1.7.4 Domain Healer 迴圈
-
-```text
-candidate 生成 → 結構化測試失敗
-→ healer 只修失敗 domain（candidate 隔離區）
-→ 只重跑失敗測試與必要回歸
-→ 最多 N 輪 → 通過則繼續 / 超限則管理員審查
-```
-
-**禁止**：修改 production core、修改 verified domain、skill 白名單、教材 ID 特例、降低 validator 標準。
-
-#### 1.7.5 與 §1.5 Domain Function Extension 分工
-
-| 情境 | 走哪條路 |
-|------|----------|
-| verified fixed domain 存在，缺 operation | §1.5 Extension |
-| 無 verified provider 可滿足 capability | §1.7 Bootstrap |
-| 相近 domain 看似可用但 capability 不全 | **安全停止** → Bootstrap；**禁止**錯配 |
-
-#### 1.7.6 教師端狀態文字
-
-| 教師可見 | 內部 |
-|----------|------|
-| 已找到既有出題能力 | provider matched |
-| 正在生成題目 | Shadow Bridge |
-| 偵測到新的數學能力 | `DOMAIN_CAPABILITY_UNRESOLVED` |
-| 正在建立可重用出題能力 | Bootstrap → `candidate` |
-| 自動測試與修補中 | validator + Healer |
-| 等待教師確認 | `candidate` 預覽 |
-| 已核准並重新生成 | `verified` + 重跑 |
-| 需要管理員審查 | healer 超限 / bootstrap 失敗 |
+1. 遇到錯誤先查 SOP 錯誤索引，再讀對應章節。
+2. 流程、時序、狀態與分流以 PipelineFlow 為準。
+3. 欄位、契約、checker、UI 與 Gate 以 Specification 為準。
+4. 修改前先確認 production code 的真實行為。
+5. SOP 的 `[Current]` 定義應有行為；production code 表示目前實作。
+6. 若兩者不一致，先回報差異，再依 `[Current]` 規則最小修改。
+7. `[Planned]` 不得宣稱已實作，也不得直接當成必填 contract。
+8. `[Deprecated]` 不得用於產生或修改程式。
+9. 一個任務只修改一個責任層，原則上限 1～2 個函式。
+10. 缺乏直接證據時標記 `[Unknown]`，不得自行猜測。
+11. 不得依 skill_id 或 example_id 新增個別數學補丁。
+12. 修改後必須執行局部離線驗證並回報是否符合 SOP。
 
 ---
 
-## 2. Phase 2：原子組件隔離生成與修補閉環
+## 2. Current 端到端主流程
 
-### 2.1 總流程圖
+系統實施時 Phase 2 與 Phase 3 是兩個獨立的異步動線。
 
 ```mermaid
 graph TD
-    subgraph P2IN["Phase 2 輸入"]
-        PT[accepted_problem_types<br/>來自 Phase 1]
-        SPEC[ProblemTypeSpec 草案<br/>含 fixed_domain_key]
+    subgraph FlowA["Phase 2 Shadow / Component 動線 (逐題執行)"]
+        Src[textbook_examples 例題] --> P1[Phase 1 Classification / Onboarding]
+        P1 --> P2[Phase 2 Shadow Component]
+        P2 --> P25[Component Verification / Sandbox]
     end
-
-    subgraph ISOLATE["組件隔離生成（每 src_{id} 獨立）"]
-        LOOP{{"FOR EACH src_{textbook_example_id}"}}
-        SB_PRE{Shadow Bridge 前置<br/>function 就緒?}
-        SB[run_gencode_phase2_v3_shadow_bridge]
-        EXT2[DOMAIN_FUNCTION_MISSING<br/>→ Extension Phase]
-        DOM[固定 Domain → Full Matrix Dict]
-        GEM[Gemini Flash 搬運工]
-        WRITE[寫入 components/src_{id}/]
-        SBX[獨立沙盒 pytest]
-        VAL[Phase 2.5 驗證鏈]
-        LOOP --> SB_PRE
-        SB_PRE -->|否| EXT2 --> SB_PRE
-        SB_PRE -->|是| SB --> DOM --> GEM --> WRITE --> SBX --> VAL
-    end
-
-    PT --> LOOP
-    SPEC --> GEM
-
-    VAL -->|通過| OK[status = verified<br/>usable_for_phase3 = true]
-    VAL -->|失敗| RETRY{retry &lt; 3?}
-
-    subgraph REPAIR["修補閉環 — gencode_closed_loop/controller.py"]
-        RETRY -->|是| CTRL[controller.execute_phase_2<br/>鎖定單一子檔案]
-        NF[Negative Feedback<br/>blockers + generation_errors]
-        AI[Gemini Flash Repair<br/>僅覆寫 generate.py]
-        CTRL --> NF --> AI --> WRITE
-    end
-
-    RETRY -->|否| FAIL[status = failed · error_code]
-    EXT2 --> TRACK[tracker: domain_extension_pending]
-    FAIL --> DEG{required_core src_*<br/>全部 verified?}
-    OK --> DEG
-    TRACK --> DEG
-    DEG -->|是| PARTIAL[Partial Publish<br/>僅編譯 verified 題目]
-    DEG -->|否| BLOCK[publish_status: blocked<br/>不觸發 SYSTEM_INTERRUPT]
-
-    RETRY -->|controller 無修補目標<br/>或 skill 級基礎設施損壞| SI[SYSTEM_INTERRUPT<br/>僅 skill 級災難]
-
-    style ISOLATE fill:#f0f4ff,stroke:#4a6fa5
-    style REPAIR fill:#fff0f0,stroke:#c44
-    style OK fill:#d4edda,stroke:#28a745
-    style FAIL fill:#f8d7da,stroke:#dc3545
-    style UDO fill:#fff3cd,stroke:#ffc107
-```
-
-### 2.2 單一 Component 狀態機（v1.8）
-
-規範定義見 Specification §1.9.2。下圖為流程層摘要：
-
-```mermaid
-stateDiagram-v2
-    [*] --> discovered
-    discovered --> classified
-    classified --> domain_binding_resolved
-    domain_binding_resolved --> domain_capability_checking
-    domain_capability_checking --> domain_function_missing: 缺 function
-    domain_function_missing --> domain_extension_pending
-    domain_extension_pending --> domain_extension_testing
-    domain_extension_testing --> domain_extension_verified: tests pass
-    domain_extension_testing --> domain_extension_failed: tests fail
-    domain_extension_verified --> bootstrapped
-    bootstrapped --> draft_written: Shadow Bridge
-    draft_written --> compile_passed
-    compile_passed --> smoke_passed
-    smoke_passed --> verified
-    verified --> packaged
-    packaged --> published: Publish Gate
-    draft_written --> generation_failed
-    classified --> unsupported: 教材本質不可程式化
-```
-
-### 2.3 Controller 修補閉環詳圖
-
-```mermaid
-sequenceDiagram
-    participant PO as pipeline_orchestrator
-    participant CTRL as gencode_closed_loop/controller.py
-    participant GEM as Gemini Flash
-    participant FS as components/{id}/generate.py
-    participant SBX as 沙盒 pytest
-    participant REG as checker_registry
-    participant VIS as visual_schema_validators
-
-    PO->>CTRL: execute_phase_2(skill_id, dry_run)
-    loop attempt 1..3
-        CTRL->>PO: run_gencode_phase2_raw()
-        PO->>FS: Codegen 模板骨架（Domain Function 驅動）
-        FS->>SBX: 獨立編譯測試
-        SBX->>REG: validate_answer_contract_capability
-        SBX->>VIS: validate_* (若有 visual_spec)
-        alt 驗證通過
-            SBX-->>CTRL: usable_for_phase3 = true
-            CTRL-->>PO: phase2_response (success)
-        else 驗證失敗
-            SBX-->>CTRL: blockers + generation_errors
-            CTRL->>CTRL: 定位 component_id → 檔案路徑
-            CTRL->>GEM: repair_prompt(negative_feedback, current_code)
-            GEM-->>FS: 覆寫完整 generate.py
-        end
-    end
-    alt 3 次仍失敗
-        CTRL-->>PO: component status = failed（放手）
+    
+    subgraph FlowB["Phase 3 Package / Publish 動線 (整 Skill 執行)"]
+        P25 -->|儲存 verified 狀態| Track[Tracker / JSON 緩存]
+        Track --> P3[Phase 3 Package / Wrapper Compile]
+        P3 --> Gate[Publish Gate]
+        Gate --> Run[Runtime 學生端出題]
     end
 ```
 
-### 2.4 文字步驟說明
+### 2.1 Phase 2 Shadow (Current)
+`run_gencode_phase2_v3_shadow_bridge` $\rightarrow$ `build_v3_component_draft_from_skill` $\rightarrow$ `write_v3_component_to_disk` $\rightarrow$ sandbox (沙盒極簡校驗)
 
-**Step 1 — Phase 2 啟動**
-
-1. 輸入：`skill_id`、`accepted_problem_types`（來自 Phase 1 核准清單）。
-2. `run_gencode_phase2_raw()` 載入 induced spec，逐 `component_id` 建立目錄骨架。
-
-**Step 2 — Gemini Flash 原子生成（搬運工 + 固定 Domain 委派）**
-
-1. 經 `taxonomy_registry` 解析 `fixed_domain_key` 與 `allowed_operations`；**禁止** AI 改派 Domain 或在 `generate.py` 硬編碼 skill 分支。
-2. 驗證 induced spec 之 `domain_operation`；缺失 → `DOMAIN_OPERATION_MISSING` → Extension，**不**進 Shadow Bridge。
-3. 提示詞注入：八維度 `metadata.py` 範本、`curriculum_profile` / `difficulty_profile`、`answer_type`、`ui_contract`、`answer_contract`；**剝除** AI 回應中之 `domain_key` / `recommended_skill` 等非 authority 欄位。
-4. **Codegen 鐵律**（§2.3.1、§2.6）：`generate.py` 僅呼叫**固定** `core/domain/` entry 並搬運 **Full Matrix Dictionary**；禁止 SymPy、distractors 自算、visual 坐標重算。
-5. **`generate()` 通用輸出契約**（v1.9 · 每個 component **必須**明確輸出）：
-
-```json
-{
-  "question_text": "",
-  "answer_type": "short_answer | single_choice | multi_part | table_fill | drawing",
-  "answer": {},
-  "choices": [],
-  "subquestions": [],
-  "table_question": {},
-  "table_data": {},
-  "image_base64": "",
-  "visual_spec": {},
-  "visual_aids": [],
-  "ui_contract": {},
-  "answer_contract": {}
-}
-```
-
-不相關欄位可為空，但依 `answer_type` 所需欄位**不可缺失**（契約範例見 Specification §2.0.4）。
-
-6. **adapter 剛性**：`runtime_skill_wrapper`／`domain_matrix_adapter` **必須**保留 `ui_contract`、`answer_contract`、`table_question`、`subquestions` 等全部 UI 欄位；經 wrapper／API 後欄位遺失 → contract violation。
-7. 應用題強制產出該題專屬 `SCENARIO_POOL`（§3.4）；禁止執行期 LLM 改寫題幹。
-8. 產出三檔：`metadata.py`、`generate.py`、`get_hint.py`。
-9. 每個 component 在**獨立行程**跑沙盒，避免交叉 import 污染。
-10. **禁止**在此階段建立或修改 `skill.json` 的 `required_core_components`（§4.3.1.1）。
-11. **禁止**跨 Domain fallback、nearest template、或借用其他 Domain 之算子通過驗證。
-
-**Step 3 — Phase 2.5 沙盒驗證鏈（數學語意閉環）**
-
-執行順序（fail-fast）：
-
-```
-compile(metadata.py)
-  → import generate.py
-  → AST 精準掃描（§2.3.1 v1.2）:
-      禁止 matplotlib / PIL import
-      放行敏感區：level+1, seed+17, range(n+1), x_range=[-8,8], min(1.0, base+0.1) 等
-      僅當四則運算左值指向 answer/choices/distractors/visual_spec 坐標
-        且同 Code Block 無 DOMAIN_LIBRARY 呼叫 → ai_math_operation_forbidden
-  → 斷言 Domain 回傳 Full Matrix Dict 六大欄位齊全
-      givens / answer / distractors / explanation_steps / validation_facts / visual_spec
-  → 斷言 generate.py 無 import sympy
-  → 斷言 matrix["answer"] 可追溯至 payload["correct_answer"]（未手算改寫）
-  → 斷言 SCENARIO_POOL 存在（應用題）
-  → generate(seed=0) × 5
-  → validate_generator_payload(payload)
-  → validate_generated_question_format(payload)
-  → b4_validators.validate_problem_payload_contract(payload)  # B4 題
-  → visual_schema_validators（若有 visual_spec）:
-      validate_coordinate_points_in_range
-      validate_line_passes_through_points
-      validate_horizontal_line_y / validate_vertical_line_x
-      validate_tree_diagram_branch_counts / validate_statistics_chart_data
-  → validate_answer_contract_capability(metadata)
-  → answer_type contract gate（v1.9 · Specification §2.0.4–§2.0.5）:
-      short_answer: single_input、無 field_key 外露
-      single_choice: choices 唯一正解、semantic_value 可驗
-      multi_part: subquestions 非空、field_key 唯一、answer_order 完整
-      table_fill: blank_cells 有效、inline cell input、show_blank_labels 一致
-      drawing: textbox/submit disabled、ai_check_required、ui_contract 齊全
-  → preview UI 可作答性（candidate_verified 必檢 · 非僅數學答案）
-  → P0 semantic checker 回歸（首波切片）:
-      linear_equation_equivalent_checker: y=2x+1 ≡ 2x-y+1=0
-      rational_or_decimal_checker: 1/2 ≡ 0.5
-  → verified 八項語意門檻（§1.6.11）:
-      skill identity / fixed domain / operation whitelist /
-      source completeness / mathematical oracle /
-      question-answer semantic / presentation topology / runtime contract
-  → check(correct, correct) == True
-  → get_hint(1..3) 皆非空
-  → drawing：斷言 ui_contract.drawing_required、ai_check_required、text_answer_enabled=false、submit_button_enabled=false
-  → legacy handwriting：同上映射至 drawing 斷言
-```
-
-**`candidate_verified` 與 `verified` 補充（v1.9）**：
-
-- **不僅**驗證數學答案與 oracle；**必須**確認 preview 可依 `answer_type` 實際操作（輸入框、選項、表格 cell、canvas AI 檢查）。
-- `ui_contract` 不完整或與前台實際渲染不一致 → **不得** `candidate_verified`／`verified`／`published`。
-
-**禁止降級（驗證鏈 fail-fast）**：見 Specification §2.0.5 全表；沙盒偵測到 multi_part 單框、table_fill 表格外輸入、drawing 可文字提交等 → `contract_violation` blocker。
-
-**Step 4 — 失敗修補（精確鎖定子檔案）**
-
-1. `controller.py` 彙整 `blockers` 與 `diversity_sampling.generation_errors`。
-2. 透過 `GENERATOR_REPAIR_CATALOG` 或 V3 路徑映射，解析 `module_path` → `agent_skills_v3/{skill_id}/components/{component_id}/generate.py`。
-3. Gemini 僅回傳修正後**完整 Python 檔**；`write_text` 覆寫。
-4. `MAX_RETRY = 3`（與現行 controller 一致）。
-
-**Step 5 — 放手降級與 Partial Publish（v1.3）**
-
-1. 單一非核心題（`SOURCE_KIND=quiz` / `test`）第 3 次仍失敗 → `GENERATOR_READINESS = "failed"`，從發布清單剔除。
-2. **不**因單題失敗呼叫 `raise RuntimeError("SYSTEM_INTERRUPT")`。
-3. `required_core_components`（`src_*`）全部 `verified` → Partial Publish。
-4. 任一核心例題未 verified → `publish_status = blocked`（仍不觸發 `SYSTEM_INTERRUPT`）。
-5. `required_core_components` 僅能來自 Taxonomy / 架構師預置（§4.3.1.1）。
-
-**Step 6 — Phase 2 產出**
-
-- `reports/gencode_closed_loop/{skill_id}_phase2_generator_summary.json`
-- 各 component 目錄內實體 `.py` 檔
-- 每列 `usable_for_phase3` / `status` 標記
+### 2.2 Phase 3 Package (Current)
+`execute_phase_3` $\rightarrow$ `run_gencode_phase3_package_raw` $\rightarrow$ `build_generator_specs_for_phase3` $\rightarrow$ `build_phase3_skill_module_code` $\rightarrow$ `drafts/{skill_id}.py`
 
 ---
 
-## 3. Phase 3：微元件自動黏合與發布流程
+## 3. Phase 1 流程與 Onboarding
 
-### 3.1 總流程圖
+### 3.1 核心流程 (Current)
+讀取教材庫 `textbook_examples.skill_id` (為唯讀權威) $\rightarrow$ 透過 `resolve_domain_for_skill` 查詢固定 Domain 關係 $\rightarrow$ 找不到時拋出異常並捕獲，將 `taxonomy_entry` 設為空字典 $\rightarrow$ 執行 `_infer_generic_capabilities_from_text` $\rightarrow$ 若 capabilities 非空則映射為 resolved 進入 Phase 2，若為空或為絕對值等非內置學科，則判定為 `SKILL_ONBOARDING_NEEDS_REVIEW` 並寫入 needs_human_review，引導至人工登錄。
 
-```mermaid
-graph TD
-    subgraph P3IN["Phase 3 輸入"]
-        V[verified components 清單<br/>usable_for_phase3 = true]
-        P2SUM[phase2_generator_summary.json]
-    end
+### 3.2 阻斷與 Onboarding (Current)
+未登錄 skill 的主要責任層是 Phase 1 onboarding，而不是 Phase 3 封裝編譯器。系統整機絕不在預檢期自動寫入 production taxonomy_registry。
 
-    subgraph COMPILE["skill_wrapper_compiler.py（編譯器）"]
-        SCAN[掃描 agent_skills_v3/{skill_id}/components/]
-        DK[驗證 component.domain_key<br/>== Registry fixed_domain_key]
-        TAX[讀取 Taxonomy 靜態<br/>required_core_components]
-        SKILL[讀取 skill.json<br/>僅讀不寫 · 架構師預置]
-        MAN[生成 component_manifest.json<br/>verified / failed 全記錄]
-        GATE[動態發布門檻判定<br/>§4.3 · 禁止 AI 改 core]
-        SPECS[編譯 GENERATOR_SPECS<br/>依 ORDER_WEIGHT 排序]
-        INIT[生成 __init__.py<br/>component dispatch 路由器]
-        FACADE[生成 skills/{skill_id}.py<br/>Thin Facade]
-        SCAN --> DK --> TAX --> SKILL --> MAN --> GATE --> SPECS --> INIT --> FACADE
-    end
+---
 
-    V --> SCAN
-    P2SUM --> MAN
+## 4. Phase 2 流程與 Component 驗證
 
-    subgraph GATE["發布閘門"]
-        SMOKE[runtime_smoke<br/>每 verified component 抽樣]
-        INT[validate_phase3_generator_spec_integrity]
-        PUB[phase3_publish_gate]
-        FACADE --> SMOKE --> INT --> PUB
-    end
+### 4.1 物理隔離與單題發布 (Current)
+每道 textbook example 建立一個獨立的 `components/src_{textbook_example_id}/` 子目錄，包含 `generate.py`、`metadata.py` 及 `get_hint.py`。
+單題失敗（failed 狀態）應被阻斷在 Phase 3 usable 篩選器之外，但不影響同單元其他 `verified` 組件的 `Partial Publish`。
 
-    subgraph REG["Registry 同步"]
-        YAML[configs/generated_registry/<br/>*_verified_registry.v*.yaml]
-        BK[backups/gencode_skill_publish/<br/>{skill_id}.{timestamp}.py]
-        PUB --> YAML
-        PUB --> BK
-    end
+### 4.2 Capability 路由與動態擴充 (Current)
+* **已有 verified 且 operation 就緒**：正常執行 Phase 2 shadow 生成。
+* **已有 verified 且缺 operation/function**：觸發 Domain Function Extension，調用 `extend_domain_function_for_capability()`，但不可修改或覆寫正式的 production 共享代碼。
+* **沒有 verified 且無法解析**：進入 Onboarding 流程。
+* **狀態標示**：
+  * `[Current]`：未 ready capability 會進入自動擴充呼叫路徑。
+  * `[Planned]`：production 寫入保護與隔離機制待實現。
 
-    subgraph RUNTIME["執行期就緒"]
-        WEB[practice.py importlib<br/>skills.{skill_id}]
-        WRAP[runtime_skill_wrapper<br/>generate_for_skill / check_answer]
-        SLOT[slot_generators.SLOT_REGISTRY<br/>visual_spec → image_base64]
-        YAML --> WEB --> WRAP --> SLOT
-    end
+### 4.3 Extension、Bootstrap 與 Healer 詳細分工 (Current)
+* **Domain Function Extension**：當 `fixed_domain_key` 存在但缺失具體 `operation` 或 `function` 時觸發，針對該 domain 新增/寫入 function 並跑通單元測試，完成後更新 `allowed_operations` 重新執行 Phase 2。
+* **Automated Domain Bootstrap**：當無任何 `verified` provider 可以滿足 capability 需求時觸發，進入獨立 `draft` 隔離區自動建立 candidate domain。
+* **Domain Healer**：僅用於修補 `candidate` 狀態的 domain (最多進行 N 輪測試與語意修復)，不得用於修改 `production` 或已發布的 `verified` 共享代碼。
+* **Phase 3 Exception Repair**：當且僅當 `execute_phase_3` 包裝時發生編譯/代碼結構崩潰，觸發封裝期自癒，此時僅涉及 `generator_draft_spec.json` 的參數復原，與 `Domain Healer` 物理隔離。
 
-    style COMPILE fill:#f0f4ff,stroke:#4a6fa5
-    style GATE fill:#fff8f0,stroke:#c49a6c
-    style REG fill:#f0fff4,stroke:#4a9a6c
-```
+---
 
-### 3.2 發布狀態轉移
+## 5. Phase 3 流程與 Package/Publish
 
-```mermaid
-stateDiagram-v2
-    [*] --> compiling
-    compiling --> smoke_testing
-    smoke_testing --> full_published
-    smoke_testing --> partial_published
-    smoke_testing --> blocked
-
-    blocked --> compiling: admin_trigger_rebuild
-    partial_published --> compiling: admin_trigger_rebuild
-
-    full_published --> registry_synced
-    partial_published --> registry_synced
-    registry_synced --> runtime_reload
-    runtime_reload --> [*]
-
-    note right of runtime_reload
-        importlib invalidate caches
-        importlib reload
-        no web server restart
-    end note
-```
-
-**務實落地說明（v1.3 / v1.4）**：
-
-1. **發布門檻**：`required_core_components`（`src_*`）全數 `verified` 即可 `partial_published` 或 `full_published`。
-2. **定點重構迴圈**：當處於 `blocked` 或 `partial_published` 時，允許經由後台管理員點擊「⚡重構出題程式」（`admin_trigger_rebuild`），將特定失敗題型重新定點送回 `compiling` 鏈結，重跑單題沙盒與 Reload Compiler（§4.6）。
-3. **零重啟熱拔插**：發布流程進入 `runtime_reload` 節點時，系統必須動態執行 `importlib.invalidate_caches()` 清除目錄快取，並對路由調度模組（`__init__.py` / component `generate`）執行 `importlib.reload()`，確保新生成的單題 `generate.py` 即刻無縫上架；**剛性禁止**重啟 Web 伺服器作為發布手段（§4.6.4）。
-
-### 3.3 編譯器內部資料流
-
-```mermaid
-flowchart LR
-    subgraph Components
-        C1[component A<br/>verified]
-        C2[component B<br/>verified]
-        C3[component C<br/>failed]
-    end
-
-    MAN[component_manifest.json]
-    C1 --> MAN
-    C2 --> MAN
-    C3 --> MAN
-
-    MAN --> GS[GENERATOR_SPECS 矩陣]
-    MAN --> GK[GENERATOR_KEYS 清單]
-    GS --> INIT[__init__.py<br/>_COMPONENT_DISPATCH]
-    GK --> FACADE[skills/{skill_id}.py]
-    INIT --> FACADE
-
-    FACADE --> REG[verified_registry.yaml]
-```
-
-### 3.4 文字步驟說明
-
-**Step 1 — 編譯器掃描**
-
-`skill_wrapper_compiler.py`（現行等價：`phase3_skill_codegen.build_generator_specs_for_phase3` + `build_phase3_skill_module_code`）：
-
-1. 遍歷 `agent_skills_v3/{skill_id}/components/*/metadata.py`。
-2. 讀取 `GENERATOR_READINESS`；僅 `verified` 進入編譯白名單。
-3. `failed` 組件寫入 manifest 供審計，**不**進入 `GENERATOR_SPECS`。
-
-**Step 2 — 生成 component_manifest.json**
-
-```json
-{
-  "skill_id": "vh_數學B1_LinearFunction",
-  "publish_status": "partial_published",
-  "verified_count": 2,
-  "failed_count": 1,
-  "components": [ "..." ]
-}
-```
-
-**Step 3 — 生成 `__init__.py` 調度路由器**
-
-1. 為每個 verified `component_id` 生成 `_COMPONENT_DISPATCH` 表項。
-2. `generate()` 邏輯：抽題 → 查表 → **動態載入** component `generate()`（見 Step 7）；未命中 verified component 時 fallback 至 `runtime_skill_wrapper.generate_for_skill()`（**legacy 執行期路徑**，非 Gencode 跨 Domain 授權）。
-3. `check()` **統一**委派 `runtime_skill_wrapper.check_answer()`（checker 鏈不改）。
-4. 熱拔插場景下，路由器須實作 `importlib.import_module` + `importlib.reload`（§4.6.4）。
-
-**Step 4 — 生成 Thin Facade（編譯器雙重寫入 · 老屋門面 + 新屋路由）**
-
-`skill_wrapper_compiler.py` 在掃描完 `agent_skills_v3/{skill_id}/components/` 底下所有最新 `verified` 子目錄後，**必須**於 Phase 3 同一編譯回合執行**雙重寫入**（調度邊界不可拆成二段人工步驟）。  
-編譯白名單與後台維運列表**均以** `gencode_component_tracker` 為權威來源（LEFT JOIN `textbook_examples` 取題幹上下文）。
-
-| # | 寫入目標 | 編譯器職責 |
-|---|----------|------------|
-| 1 | **新屋路由** | 更新 `agent_skills_v3/{skill_id}/__init__.py` 的 `_COMPONENT_DISPATCH` 表項、`GENERATOR_SPECS` / `GENERATOR_KEYS`；僅納入 `verified` 之 `{component_id}`。 |
-| 2 | **覆寫老屋門面** | 同步自動將最輕量的 Thin Facade **覆寫**入原位的 `skills/{skill_id}.py`（**嚴禁**移出 `skills/` 根目錄）。內容與 V2 形狀同構，僅含 `SKILL_ID`、`GENERATOR_SPECS`、`GENERATOR_KEYS` 及薄委派函式。 |
-
-**場景 1 — 後台列表（Step 4 維運入口 · 定點 Debug 交叉校對）**
-
-後台「⚡重構出題程式」列表頁**必須**使用下列 JOIN；增補 `correct_answer`、`source_chapter`、`source_section`，供老師對照原題與 Gencode 狀態：
-
-```sql
-SELECT
-    e.id AS example_id,
-    e.skill_id,
-    e.source_description AS text_type,
-    e.source_chapter,
-    e.source_section,
-    e.problem_text AS raw_stem,
-    e.correct_answer,
-    COALESCE(t.gencode_status, 'pending') AS current_status,
-    t.component_id,
-    t.gencode_error_log,
-    t.updated_at
-FROM textbook_examples e
-LEFT JOIN gencode_component_tracker t ON e.id = t.textbook_example_id
-WHERE e.skill_id = :skill_id
-ORDER BY e.id ASC;
-```
-
-**場景 2 — Phase 3 編譯 verified 題目（編譯器職責 · Deterministic 排序）**
-
-`skill_wrapper_compiler` 讀取 verified 白名單時**剛性要求**下列 SQL；`ORDER BY textbook_example_id ASC, component_id ASC` 確保 `GENERATOR_SPECS` 陣列完全對齊教材自然匯入順序，且保證代碼重現性（徹底防止 Git 程式碼隨機漂移）：
-
-```sql
-SELECT
-    textbook_example_id,
-    component_id,
-    induced_spec_payload
-FROM gencode_component_tracker
-WHERE skill_id = :skill_id AND gencode_status = 'verified'
-ORDER BY textbook_example_id ASC, component_id ASC;
-```
-
-**Thin Facade 剛性邊界**：`skills/{skill_id}.py` **不得**內嵌任何數學邏輯、SymPy 運算或出題程式；它是純轉運站，100% 向後相容 `practice.py` 既有 import 契約。
+### 5.1 封裝與自癒 (Current)
+Phase 3 的封裝（`build_phase3_skill_module_code`）是確定性的程式碼模板拼接過程，0 LLM 調用。當且僅當 execute_phase_3 捕捉到編譯或執行崩潰異常時，才會進入 `Phase 3 Exception Repair` 自癒路徑。
 
 ```python
-# skills/{skill_id}.py — 【自動生成 · 禁止手改 · 原位覆寫】
-from core.gencode.runtime_skill_wrapper import check_answer, generate_for_skill
-
-SKILL_ID = "vh_數學B1_LinearFunction"
-GENERATOR_KEYS = [...]     # 編譯器自 verified manifest 寫入
-GENERATOR_SPECS = [...]    # 編譯器依 ORDER_WEIGHT 排序寫入
-
-def generate(level=1, seed=None, **kwargs):
-    # 薄外殼：零數學邏輯；僅轉交全域 runtime
-    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, **kwargs)
-
-def check(user_answer, correct_answer, question_payload=None):
-    return check_answer(user_answer, correct_answer, payload=question_payload)
-```
-
-**執行期調度閉環**（與 Step 7 銜接；**不得破壞** `practice.py` public contract，Specification §0.1.1）：
-
-```
-practice.py
-  → importlib.import_module("skills.{skill_id}")     # 老屋入口：路徑不變
-  → skills.{skill_id}.generate(level, seed)          # Thin Facade：純轉運，無出題邏輯
-  → runtime_skill_wrapper.generate_for_skill(...)      # 全域調度：抽 component_id / problem_type
-      ├─ manifest 白名單命中 verified component_id
-      │     → importlib.import_module(
-      │           "agent_skills_v3.{skill_id}.components.{component_id}.generate")
-      │     → （熱拔插）importlib.reload(module) 若已載入
-      │     → 呼叫該子目錄 generate.py 之 generate(level, seed, ...)   # 新屋軍火庫幹活
-      └─ 否則 → slot_generators.generate_from_problem_type_spec()
-            # legacy 執行期 fallback；Gencode V3 管線禁止以此規避 DOMAIN_FUNCTION_MISSING
-```
-
-要點摘要：
-
-1. **老屋**（`skills/{skill_id}.py`）只做門面轉發；**新屋**（`agent_skills_v3/.../components/{component_id}/generate.py`）才承載單題出題與 Domain 搬運。
-2. `_COMPONENT_DISPATCH` 與 Thin Facade 的 `GENERATOR_SPECS` **必須同源**（同一 manifest 編譯回合），避免路由表與門面白名單漂移。
-3. `check()` 仍統一委派 `runtime_skill_wrapper.check_answer()`；component 內不得覆寫全域 checker 鏈。
-
-**Step 5 — runtime_smoke 與 integrity gate**
-
-1. `core/gencode/runtime_smoke.py` 對每個 `GENERATOR_SPECS` 列執行抽樣生成 + 批改。
-2. **P0 等價 Checker 垂直切片回歸**（首波必跑）：
-   - `vh_數學B1_PointSlopeForm`：`y=2x+1` vs `2x-y+1=0` 互判正確
-   - 分數小數：`1/2` vs `0.5` 互判正確
-3. **`answer_type` 分項 production smoke（v1.9 · 每種至少一題 representative）**：
-
-| `answer_type` | smoke 必驗項目 |
-|---------------|----------------|
-| `short_answer` | 單一輸入框、checker 批改、無 field_key 外露 |
-| `single_choice` | 選項可見、唯一正解、semantic 非僅 label 位置 |
-| `multi_part` | 多欄位、per-part grading、共用圖只顯示一次 |
-| `table_fill` | 表格格內輸入、field mapping、`show_blank_labels` 一致 |
-| `drawing` | textbox／submit disabled、AI 檢查按鈕、成功 msgbox、確認後跳題 |
-
-4. `packaging_policy.validate_phase3_generator_spec_integrity()` 檢查 `checker_key`／`presentation_mode`／`answer_type` 一致性。
-5. `scripts/gencode_pipeline_phase3_publish_gate.py` 判定 `full_published`／`partial_published`／`blocked`。
-6. **`ui_contract` 不完整 → Publish Gate blocked**（不得進學生端）。
-
-**Step 6 — 同步 verified registry**
-
-1. 更新 `configs/generated_registry/b1_section_1_1_verified_registry.v0.1.yaml`（或對應 scope 檔）。
-2. 寫入 `backups/gencode_skill_publish/{skill_id}.{timestamp}.py`。
-3. 報告輸出至 `reports/gencode_closed_loop/{skill_id}_publish_summary.json`。
-
-**Step 7 — 執行期路徑（學生請求 · 含動態熱拔插 · 跨單元積木）**
-
-**場景 3 — 跨單元綜合大會考共用積木（執行期反向查表）**
-
-當綜合評量需從多個 skill 挑選已 verified 微元件時，以 `textbook_example_id` 批次反查 `(skill_id, component_id)`，再依 §4.6.5 路徑公式動態載入：
-
-```sql
-SELECT
-    skill_id,
-    component_id
-FROM gencode_component_tracker
-WHERE gencode_status = 'verified' AND textbook_example_id IN (4545, 4610);
-```
-
-查詢結果每列對應執行期路徑 `agent_skills_v3/{skill_id}/components/{component_id}/generate.py`（不讀 DB 內 `component_path`）。
-
-**標準單 skill 請求閉環**：
-
-```
-HTTP /api/practice/next
-  → practice.py: importlib.import_module("skills.{skill_id}")   # 對外入口不變
-  → skills.{skill_id}.generate()
-  → runtime_skill_wrapper.generate_for_skill()
-      ├─ manifest 白名單命中 component_id
-      │     → 【動態解析】importlib.import_module(
-      │           "agent_skills_v3.{skill_id}.components.{component_id}.generate")
-      │     → 若已載入：importlib.reload(module)   # 熱拔插：後台重構後即刻生效
-      │     → 直接呼叫該 component 最新 generate(level, seed, ...)
-      │           └─ Domain Function 搬運 + SCENARIO_POOL 模板填空
-      └─ 否則 → slot_generators.generate_from_problem_type_spec()
-  → visual_spec → visual_schema_validators（審核層重算）→ image_base64（若有）
-  → handwriting payload → 前台 textbox disabled（既有欄位驅動）
-  → payload 返回前台（practice.py 路由不變 · 零重啟）
-```
-
-**動態加載要點**：
-
-1. 學生請求路徑**不經** Web 伺服器重啟；依賴 `importlib.reload` 載入後台剛編譯之 `generate.py`。
-2. `component_manifest.json` 與 `gencode_component_tracker`（`gencode_status = 'verified'`）為執行期白名單雙錨；僅 verified 之 `component_id` 參與 dispatch。
-3. 熱拔插由 `admin_trigger_rebuild`（§4.6）觸發：`gencode_component_tracker.induced_spec_payload` 修正 → 單題沙盒 → Reload Compiler → 下一筆請求生效。
-4. 跨單元場景（場景 3）以 `textbook_example_id IN (...)` 反查後，仍走相同 `importlib` 動態載入契約；路徑由 `skill_id` + `component_id` 公式推導（§4.6.5）。
-
----
-
-## 4. 端到端時序（三 Phase 串接）
-
-```mermaid
-sequenceDiagram
-    participant SRC as 教材 Sources
-    participant DB as textbook_examples
-    participant REG as taxonomy_registry
-    participant P1 as Phase 1 Induction
-    participant P2 as Phase 2 Component Gen
-    participant CTRL as controller.py
-    participant P3 as skill_wrapper_compiler
-    participant TRK as gencode_component_tracker
-    participant WEB as practice.py
-
-    SRC->>DB: 讀取 skill_id（權威）
-    DB->>REG: resolve fixed_domain_key
-    Note over REG: Deterministic Gate<br/>AI 不可覆寫
-    REG->>P1: allowed_operations
-    P1->>P1: AI 選 operation / presentation
-    P1->>P1: 白名單 + source facts 驗證
-    alt DOMAIN_FUNCTION_MISSING
-        P1->>TRK: domain_extension_pending
-    else operation_contract_mismatch
-        P1->>TRK: fail-fast
-    else function ready
-        P1-->>P2: Shadow Bridge + induced_specs
-        loop each src_{textbook_example_id}
-            P2->>REG: 確認 domain_key 未漂移
-            P2->>P2: 固定 Domain matrix + Codegen + 沙盒
-            alt 失敗
-                P2->>CTRL: blockers
-                CTRL->>P2: 覆寫 generate.py（≤3 次）
-            end
-        end
-        P2-->>P3: verified components
-        P3->>P3: domain_key 校驗 + manifest + facade
-        P3->>TRK: sync verified
-        P3-->>WEB: publish 完成
-    end
-
-    WEB->>WEB: importlib skills.{skill_id}
-    WEB-->>WEB: 學生端出題（向後相容）
+# build_phase3_skill_module_code (core/gencode/phase3_skill_codegen.py) 核心片段
+def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str, Any]], generator_keys: list[str]) -> str:
+    ...
+    return (
+        "from __future__ import annotations\n\n"
+        "from core.gencode.runtime_skill_wrapper import check_answer, generate_for_skill\n\n"
+        f"SKILL_ID = {skill_id!r}\n"
+        f"GENERATOR_SPECS = {generator_specs!r}\n\n"
+        "def generate(level: int = 1, seed: int | None = None, difficulty: int | str | None = None, **kwargs) -> dict[str, Any]:\n"
+        "    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n"
+    )
 ```
 
 ---
 
-## 5. SYSTEM_INTERRUPT 觸發邊界（v1.3 嚴格限定）
+## 6. Runtime 邊界與出題
 
-| 場景 | 是否觸發 `SYSTEM_INTERRUPT` |
-|------|----------------------------|
-| 單一非核心 component 沙盒 3 次失敗 | **否** → `failed` |
-| 核心 `src_*` 全 verified，部分其他題 failed | **否** → `partial_published` |
-| 任一 `required_core_components` 未 verified | **否** → `blocked`（人工審核） |
-| controller 無法定位可修補檔案，或 skill 級基礎設施損壞 | **是** |
-| `phase1_alignment_blocked` 且無 induced spec | **是**（沿用現行 controller） |
+### 6.1 職責隔離 (Current)
+* **Phase 3 package** 僅做靜態規格合約完整性校驗 (`validate_phase3_generator_spec_integrity`)。
+* **Runtime parameter sampling**：題目參數抽樣、變數範圍二元約束過濾、隨機 seed 映射均在執行期（`generate_for_skill` 執行時）動態完成。
+* **Answer grading**：批改與正規化流程由 `check_answer` 執行分發。
+* **AI 限制**：學生端出題與驗證期，**嚴禁**使用 LLM 生成或動態計算數學內容。
 
-```mermaid
-graph TD
-    F[Component 失敗] --> R{retry < 3?}
-    R -->|是| REPAIR[controller 修補子檔案]
-    R -->|否| MARK[標記 failed · 放手]
-    MARK --> C{required_core<br/>全部 verified?}
-    C -->|是| PP[Phase 3 動態發布]
-    C -->|否| BL[blocked 等待人工]
-    REPAIR --> F
+---
 
-    BL --> SI{skill 級不可恢復?}
-    PP --> OK[正常發布]
-    SI -->|是| INTERRUPT[SYSTEM_INTERRUPT]
-    SI -->|否| BL
+## 7. Lifecycle 分層與狀態轉移 (Current)
 
-    style INTERRUPT fill:#f8d7da,stroke:#dc3545
-    style OK fill:#d4edda,stroke:#28a745
-    style PP fill:#fff3cd,stroke:#ffc107
+### 7.1 Domain 狀態機 (Domain Lifecycle)
+```text
+draft (隔離區，不可發布)
+  → candidate (自動測試通過，可教師端預覽，非正式 provider)
+  → verified (人工/管理員確認，進入正式路由 resolver)
+```
+
+### 7.2 Component 狀態機 (Component Lifecycle)
+```text
+discovered (發現題目)
+  → classified (完成 induced spec)
+  → draft_written (寫入 sandbox)
+  → compile_passed (通過沙盒編譯)
+  → smoke_passed (通過單題 smoke 測試)
+  → verified (通過八項指標驗證)
+  → packaged (打包入 manifest)
+  → published (正式發布)
 ```
 
 ---
 
-## 6. 報告產物清單（審計用）
+## 8. 錯誤分流索引
 
-| 階段 | 檔案路徑 |
-|------|----------|
-| Domain 層（v1.4 目標） | `core/domain/coordinate_geometry/line_equation_domain.py` |
-| Domain 層（v1.4 目標） | `core/domain/counting/permutation_combination_domain.py` |
-| Domain 層（v1.4 目標） | `core/registry/taxonomy_registry.py` |
-| Phase 1 | `configs/gencode_taxonomy/k12_component_taxonomy.yaml` |
-| Phase 1 | `reports/gencode_closed_loop/{skill_id}_phase1_summary.json` |
-| Phase 1 | `reports/gencode_closed_loop/induced_specs/{skill_id}.json` |
-| Phase 2 | `reports/gencode_closed_loop/{skill_id}_phase2_generator_summary.json` |
-| Phase 3 | `agent_skills_v3/{skill_id}/component_manifest.json` |
-| Phase 3 | `gencode_component_tracker`（SQLite 3 影子表 · §4.5） |
-| Phase 3 | `reports/gencode_closed_loop/{skill_id}_publish_summary.json` |
-| 備份 | `backups/gencode_skill_publish/{skill_id}.*.py` |
-| Registry | `configs/generated_registry/*_verified_registry.v*.yaml` |
+| 錯誤碼 | 階段 | 下一步行為 |
+| --- | --- | --- |
+| `SKILL_ONBOARDING_NEEDS_REVIEW` | Phase 1 | 記錄 needs_human_review，掛起待人工註冊 |
+| `DOMAIN_FUNCTION_MISSING` | Phase 2 | 進入 Domain Function Extension 自動擴充 |
+| `GENERATOR_SPEC_MISSING_FIELD` | Phase 3 | 封裝前 Gate 攔截，排除此組件且不干擾其他題 |
+| `SAMPLING_EXHAUSTED` | Runtime | 抽樣超限拋出，拋棄該 seed 並記錄異常 |
 
 ---
 
-## 7. 人工審核檢查點
-
-| 檢查點 | 通過條件 |
-|--------|----------|
-| Phase 1 結束 | 每題 `src_*`；binding 已解析；每題 induced spec 含 `answer_type`（§1.3 Step 4b） |
-| Phase 2 結束 | Shadow Bridge 已執行；`generate()` 輸出契約齊全；adapter 未剝除 `ui_contract` |
-| Phase 2.5 | Full Matrix Dict 齊全；**answer_type contract gate** 通過；preview UI 可作答；禁止降級未觸發（Specification §2.0.5） |
-| Phase 3 結束 | smoke 含五種 `answer_type` 分項（§3.4 Step 5）；manifest 僅 verified；雙重寫入完成 |
-| 發布 | `ui_contract` 完整；核心例題 verified 即可 `partial_published` |
-| 維運熱拔插 | 後台 `admin_trigger_rebuild` 可從 `blocked`／`partial_published` 重回 `compiling`；`importlib.reload` 零重啟生效（§4.6） |
+## 9. Planned Alignment
+* **M1: GeneratorSpec 完整性 Gate**：建立強型別 spec Pydantic / Dataclass 模型，並在封裝前進行非破壞性攔截。
+* **M2: Answer Contract 統一**：將外層 legacy 批改鍵值全面重構至內部 `answer_contract`。
+* **M3: Runtime 變數取樣引擎**：實現 declarative 二元約束驗證器。
 
 ---
 
-*本文件為 Pipeline 流程審查規格書 v1.9（西堤作答套餐 · answer_type 管線），與 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md) 配套使用：本文件說明**如何產出**作答契約；Specification 說明**如何呈現與驗證**契約。**實作狀態：SOP 已更新，程式尚待對齊。***
+## 10. Deprecated
+* **全域 Generic Domain Fallback** (已廢除，禁止跨 Domain fallback 或 Nearest Template 映射)
+* **一題一獨立 Domain Function** (已廢除，禁止為單一題目新增專屬 domain，能力必須收斂)
+
+---
+
+## 11. Change Log
+
+| 版本 | 核心變更 |
+| --- | --- |
+| v1.10 | 新增 Automated Domain Bootstrap 與 Healer 流程，Phase 1 導入 capability-first 解析 |
+| v1.9 | 強制判定 `answer_type` 且保留 `ui_contract` 欄位 |
+| v1.8 | 移除全域 Fallback，新增 Domain Function Extension 與一題一 component 定義 |

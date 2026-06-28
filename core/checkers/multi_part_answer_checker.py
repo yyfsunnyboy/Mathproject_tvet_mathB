@@ -14,6 +14,7 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "expression_equivalence_checker",
         "linear_equation_equivalent_checker",
         "choice_label_checker",
+        "decimal_tolerance_checker",
     }
 )
 
@@ -57,6 +58,13 @@ def _check_part(
 ) -> bool:
     checker_key = checker.strip()
     equiv = equivalence_type.strip()
+    if checker_key == "decimal_tolerance_checker" or equiv == "decimal_tolerance":
+        from core.gencode.answer_payload import grade_numeric_contract_answer
+
+        res = grade_numeric_contract_answer(student_answer, expected_answer, part, checker=checker_key)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("result") or "grading system error"))
+        return bool(res.get("correct"))
     if checker_key in {"numeric_checker", "integer_checker"} or equiv == "numeric_exact":
         return _check_numeric_equivalent(student_answer, expected_answer)
     if checker_key in {"rational_checker", "fraction_checker"} or equiv == "rational_equivalent":
@@ -131,6 +139,7 @@ def check_multi_part_answer(
             "algebraic_equivalent",
             "linear_equation_equivalent",
             "choice_label",
+            "decimal_tolerance",
         }
         correct = False
         reason = ""

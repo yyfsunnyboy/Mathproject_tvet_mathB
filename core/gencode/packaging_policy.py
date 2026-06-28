@@ -66,7 +66,16 @@ def validate_phase3_generator_spec_integrity(row: dict[str, Any]) -> list[str]:
     answer_type = str(row.get("answer_type", "")).strip()
     answer_shape = str(row.get("answer_shape", "")).strip()
     slot = str(row.get("template_slot", "")).strip()
-    readiness = str(row.get("generator_readiness", "")).strip()
+    readiness = str(row.get("generator_readiness") or "").strip()
+
+    if not pt:
+        blockers.append("phase3_required_field_missing:problem_type_id")
+    if not checker:
+        blockers.append("phase3_required_field_missing:checker_key")
+    if not eq:
+        blockers.append("phase3_required_field_missing:equivalence_type")
+    if not readiness:
+        blockers.append("phase3_required_field_missing:generator_readiness")
 
     # 1. generator_not_ready must never enter wrapper
     if readiness == "generator_not_ready":

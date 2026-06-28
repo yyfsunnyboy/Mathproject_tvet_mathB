@@ -144,6 +144,15 @@ def test_table_fill_contract() -> None:
         "field_standard_deviation",
     }
 
+    # Verify decimal tolerance propagation
+    for part in parts:
+        key = part["field_key"]
+        if key in {"field_mean", "field_median", "field_variance", "field_standard_deviation"}:
+            assert part.get("tolerance") == pytest.approx(0.05)
+        else:
+            assert "tolerance" not in part or part.get("tolerance") is None
+
+
 
 @pytest.mark.parametrize(
     "operation",

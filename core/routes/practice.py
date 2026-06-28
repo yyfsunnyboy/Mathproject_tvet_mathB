@@ -1336,6 +1336,52 @@ def get_adaptive_question():
         return jsonify({"error": f"???芷???格??潛??折?航炊: {str(e)}"}), 500
 
 
+def _materialize_question_image(raw_image: str) -> str:
+    if not raw_image or not isinstance(raw_image, str):
+        return raw_image
+    
+    val = raw_image.strip()
+    if not val:
+        return raw_image
+        
+    if val.startswith("/") or val.startswith("http://") or val.startswith("https://"):
+        return raw_image
+        
+    b64_data = val
+    if b64_data.startswith("data:"):
+        parts = b64_data.split(",", 1)
+        if len(parts) == 2:
+            b64_data = parts[1]
+        else:
+            return raw_image
+            
+    try:
+        import base64
+        import hashlib
+        import os
+        from flask import current_app
+        
+        decoded_bytes = base64.b64decode(b64_data)
+        if not decoded_bytes:
+            return raw_image
+            
+        sha256_hash = hashlib.sha256(decoded_bytes).hexdigest()
+        filename = f"{sha256_hash}.png"
+        
+        rel_dir = "uploads/question_assets/generated_cache"
+        abs_dir = os.path.join(current_app.root_path, rel_dir)
+        os.makedirs(abs_dir, exist_ok=True)
+        
+        file_path = os.path.join(abs_dir, filename)
+        if not os.path.exists(file_path):
+            with open(file_path, "wb") as f:
+                f.write(decoded_bytes)
+                
+        return f"/{rel_dir}/{filename}"
+    except Exception:
+        return raw_image
+
+
 @practice_bp.route('/get_next_question')
 @login_required
 def next_question():
@@ -1849,7 +1895,7 @@ def next_question():
             "inequality_string": session_data.get("inequality_string", ""),
             "consecutive_correct": consecutive,
             "current_level": difficulty_level,
-            "image_base64": data.get("image_base64", ""),
+            "image_base64": _materialize_question_image(data.get("image_base64", "")),
             "visual_spec": data.get("visual_spec", {}),
             "visual_aids": session_data.get("visual_aids", data.get("visual_aids", [])),
             "table_data": session_data.get("table_data", data.get("table_data", {})),
@@ -2222,6 +2268,10 @@ def check_answer():
     if contract_result is not None:
         result = contract_result
         is_correct = bool(result.get("correct", False))
+        should_record = (
+            not result.get("system_error")
+            and not result.get("invalid_input")
+        )
         _log_runtime_check_session(
             skill_id,
             user_ans,
@@ -2230,8 +2280,14 @@ def check_answer():
             checker_result=is_correct,
             feedback_display=str(result.get("result", "")),
         )
-        _record_compact_practice_progress(skill_id, is_correct)
-        return _emit_check_result(question_uid, skill_id, result)
+        if should_record:
+            _record_compact_practice_progress(skill_id, is_correct)
+        return _emit_check_result(
+            question_uid,
+            skill_id,
+            result,
+            record_progress=should_record,
+        )
 
     mod = get_skill(skill_id)
 
