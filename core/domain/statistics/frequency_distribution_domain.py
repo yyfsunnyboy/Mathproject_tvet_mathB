@@ -143,15 +143,41 @@ def _ensure_class_frequencies(
     if class_frequencies is not None:
         return [int(x) for x in class_frequencies]
     total = int(constraints.get("total_students") or rng.randint(30, 50))
+
+    class_count = len(class_bounds)
+    minimum_total = class_count * 1
+    if total < minimum_total:
+        from core.exceptions import RetryableSamplingError
+        raise RetryableSamplingError(
+            f"Sampling constraints unsatisfied: total_students={total} is less than minimum_total={minimum_total} for class_count={class_count}",
+            total_students=total,
+            class_count=class_count,
+            minimum_total=minimum_total,
+            operation="_ensure_class_frequencies",
+        )
+
     raw = [rng.randint(2, 9) for _ in class_bounds]
     scale = total / max(1, sum(raw))
     freqs = [max(1, int(round(x * scale))) for x in raw]
-    while sum(freqs) != total:
+    
+    attempts = 0
+    while sum(freqs) != total and attempts < 100:
+        attempts += 1
         idx = rng.randrange(len(freqs))
         if sum(freqs) < total:
             freqs[idx] += 1
         elif freqs[idx] > 1:
             freqs[idx] -= 1
+
+    if sum(freqs) != total:
+        from core.exceptions import RetryableSamplingError
+        raise RetryableSamplingError(
+            f"Failed to adjust frequencies to total: sum(freqs)={sum(freqs)} != total={total} after {attempts} attempts",
+            total_students=total,
+            class_count=class_count,
+            minimum_total=minimum_total,
+            operation="_ensure_class_frequencies",
+        )
     return freqs
 
 
@@ -869,12 +895,34 @@ def build_frequency_distribution_table_matrix(
             init_freqs[3] = 2
 
         # Adjust frequencies to look like heights of 25 kids
-        while sum(init_freqs) != 25:
+        if sum(init_freqs) > 25 and (init_freqs[3] + 4) > 25:
+            from core.exceptions import RetryableSamplingError
+            raise RetryableSamplingError(
+                f"Sampling constraints unsatisfied: target total 25 cannot be reached by decrementing because fixed index 3 frequency is {init_freqs[3]} (min possible sum is {init_freqs[3] + 4})",
+                total_students=25,
+                class_count=5,
+                minimum_total=init_freqs[3] + 4,
+                operation="histogram_distribution_update",
+            )
+
+        attempts = 0
+        while sum(init_freqs) != 25 and attempts < 100:
+            attempts += 1
             idx = rng.choice([0, 1, 2, 4]) # Do not change index 3 so it stays stable >= 2
             if sum(init_freqs) < 25:
                 init_freqs[idx] += 1
             elif init_freqs[idx] > 1:
                 init_freqs[idx] -= 1
+
+        if sum(init_freqs) != 25:
+            from core.exceptions import RetryableSamplingError
+            raise RetryableSamplingError(
+                f"Failed to adjust histogram frequencies to 25: sum(init_freqs)={sum(init_freqs)} != 25 after {attempts} attempts",
+                total_students=25,
+                class_count=5,
+                minimum_total=init_freqs[3] + 4,
+                operation="histogram_distribution_update",
+            )
 
         height_bins = ["100~105", "105~110", "110~115", "115~120", "120~125"]
         init_map = dict(zip(height_bins, init_freqs, strict=True))

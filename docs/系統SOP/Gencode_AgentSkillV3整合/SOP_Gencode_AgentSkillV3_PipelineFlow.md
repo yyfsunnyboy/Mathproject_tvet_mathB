@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 Pipeline 系統流程與狀態轉移說明
 
-> **文件版本**：v1.10  
+> **文件版本**：v1.11  
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一流程權威**（流程、時序、狀態轉移、階段責任、錯誤分流、正常路徑與 repair 路徑、package/publish/runtime 邊界）。具體欄位 schema 與規格規則見 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)（唯一規範權威）。
 
 ---
@@ -125,6 +125,19 @@ def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str
 * **Phase 3 package** 僅做靜態規格合約完整性校驗 (`validate_phase3_generator_spec_integrity`)。
 * **Runtime parameter sampling**：題目參數抽樣、變數範圍二元約束過濾、隨機 seed 映射均在執行期（`generate_for_skill` 執行時）動態完成。
 * **Answer grading**：批改與正規化流程由 `check_answer` 執行分發。
+  * **合約分派**：runtime 依 `answer_contract` 與 `answer_type` 進行分派。五種 Answer Type 均有正式的 grading 處理路徑，不得由 `presentation_mode` 取代 `answer_type`，亦不得跨套餐進行 silent fallback。
+  * **異常處理**：所有 checker failure／system error 均需經 try-catch 結構妥善轉換為系統錯誤回傳，**絕不得**記為學生答錯。
+  * **Grading Dispatch 拓撲**：
+    ```text
+    answer_type
+      ├─ short_answer → checker_key dispatch (數值/方程/短文字)
+      ├─ single_choice → semantic choice grading (選項反查)
+      ├─ multi_part → per-part grading (all-parts-correct)
+      ├─ table_fill → per-cell grading (all-cells-correct)
+      └─ drawing → AI drawing grading (AI 圖像評估)
+    ```
+  * **drawing 狀態邊界閉環**：
+    drawing 成功後必須保持 processing lock，直到下一題完成渲染及 UI contract 套用後才解除；AI 判錯或 system error 則保留 Canvas、解除鎖定並允許學生重試。
 * **AI 限制**：學生端出題與驗證期，**嚴禁**使用 LLM 生成或動態計算數學內容。
 
 ---
@@ -163,10 +176,15 @@ discovered (發現題目)
 
 ---
 
-## 9. Planned Alignment
-* **M1: GeneratorSpec 完整性 Gate**：建立強型別 spec Pydantic / Dataclass 模型，並在封裝前進行非破壞性攔截。
-* **M2: Answer Contract 統一**：將外層 legacy 批改鍵值全面重構至內部 `answer_contract`。
-* **M3: Runtime 變數取樣引擎**：實現 declarative 二元約束驗證器。
+## 9. Alignment Roadmap
+
+- **M1**：Planned
+  * 目標：GeneratorSpec 完整性 Gate，建立強型別 spec Pydantic / Dataclass 模型，並在封裝前進行非破壞性攔截。
+- **M2**：Completed
+  * 目標：Answer Contract 統一與五種 Answer Type 收斂。
+  * 結果：`answer_contract` 為 runtime grading 唯一權威；五套餐 UI、checker dispatch、錯誤分流及題型切換已完成 production 驗收。
+- **M3**：Planned
+  * 目標：Runtime 變數取樣引擎，實現 declarative 二元約束驗證器。
 
 ---
 
@@ -180,6 +198,7 @@ discovered (發現題目)
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.11 | M2 正式封板，補充五套餐 runtime dispatch、drawing 狀態閉環與 answer_contract Current 權威 |
 | v1.10 | 新增 Automated Domain Bootstrap 與 Healer 流程，Phase 1 導入 capability-first 解析 |
 | v1.9 | 強制判定 `answer_type` 且保留 `ui_contract` 欄位 |
 | v1.8 | 移除全域 Fallback，新增 Domain Function Extension 與一題一 component 定義 |

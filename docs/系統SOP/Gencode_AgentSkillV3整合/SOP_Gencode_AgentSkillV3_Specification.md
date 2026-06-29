@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.10  
+> **文件版本**：v1.11  
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義、學生端作答契約與批改標準）。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（唯一流程權威）。
 
 ---
@@ -185,11 +185,11 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | `checker_key` | `str` | `"integer_checker"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L205) |
 | `equivalence_type` | `str` | `"numeric_exact"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L206) |
 | `generator_readiness` | `str` | `"runtime_ready"` | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L207) |
-| `answer_type` | `str` | `"expression"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L210) |
+| `answer_type` | `str` | `"short_answer"、"single_choice" 等` | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L210) |
 | `template_slot` | `str` | 模板位置標記 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L212) |
 | `value_type_prefix` | `str` | `"integer"` 等前綴 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L214) |
 | `target_task` | `str` | 目標任務標記 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L219) |
-| `presentation_mode` | `str` | `"short_answer"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L223) |
+| `presentation_mode` | `str` | `"integer"、"rational" 等` | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L223) |
 | `answer_shape` | `str` | 答案外觀 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L225) |
 | `schema_version` | `str` | 契約版本 | `[Planned]` | 待 M1 實施後啟用 |
 | `skill_id` | `str` | 大綱 ID | `[Planned]` | 待 M1 實施後啟用 |
@@ -197,7 +197,7 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | `component_id` | `str` | 元件 ID | `[Planned]` | 待 M1 實施後啟用 |
 | `classification_status`| `str`| 分類狀態 | `[Planned]` | 待 M1 實施後啟用 |
 | `capabilities` | `list` | 能力列表 | `[Planned]` | 待 M1 實施後啟用 |
-| `answer_contract` | `dict` | 答案完整合約 | `[Planned]` | 待 M1 實施後啟用 |
+| `answer_contract` | `dict` | 答案完整合約 | `[Current]` | 學生作答與批改的正式權威；外層 legacy 僅供相容 fallback，衝突時以 nested contract 為準，由 validator／Gate 阻擋不一致合約 |
 
 ---
 
@@ -223,20 +223,35 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 
 本節決定答案表示、正規化與批改分發。
 
-### 8.1 Current 規格
-目前在 component 內依據 `metadata.py` 的 `ANSWER_VERIFICATION_TYPE` 來查找 `checker_key`、`equivalence_type`、`answer_type`、`answer_shape` 並於 runtime 的 `check_answer` 執行分發，支援：
-* `choice_label_checker` (選擇題，比對 ABCD 標籤)
-* `rational_checker` / `numeric_checker` (數值/有理數分數)
-* `linear_equation_equivalent_checker` (直線方程式等價，比對方程式化簡結果)
-* `text_short_checker` (普通短文字比對)
+### 8.1 Answer Contract 權威
+目前以 `answer_contract` 作為學生作答與批改的正式權威。外層 legacy 欄位（如 `checker_key`、`equivalence_type` 等）僅保留相容讀取用途。任何新 component 或 generator spec 均不得以 legacy 欄位取代 `answer_contract`。
+若發生合約衝突，以 nested `answer_contract` 為準，並由 validator／Gate 阻擋不一致之合約。
 
-### 8.2 Planned 規格
-未來 `answer_contract` 字典將作為唯一權威來源，legacy 欄位如 `checker_key` 與 `equivalence_type` 做為相容 fallback；任何合約衝突將直接拋出 `GENERATOR_SPEC_ANSWER_CONTRACT_CONFLICT` 阻斷，且 canonical 答案優先。
+批改資料權威順序為：
+1. nested `answer_contract`
+2. 題型專用正式結構：
+   * `multi_part`：parts
+   * `table_fill`：blank_cells
+   * `drawing`：expected_drawing_spec
+   * `single_choice`：choices／semantic mapping
+3. canonical_answer (或 expected_drawing_spec 的 spec 設定)
+4. legacy root 欄位（僅作相容 fallback）
 
-### 8.3 批改語意原則
-* 數值、分數、小數應依數學語意比較，不得只做字串相等比對。
-* 方程式應依等價性進行比較。
-* 評分時必須分開處理：`checker failure`、`parse failure` 與一般學生 `答錯`。
+### 8.2 五種 grading 規則
+* **short_answer**：單一答案，由 checker_key 進行 dispatch（如 `integer_checker`, `rational_checker`, `decimal_tolerance_checker`, `linear_equation_equivalent_checker`, `text_short_checker` 等）。
+* **single_choice**：選項語意批改 (semantic option grading)。經 `choice_value_to_label` 將學生答案與正確答案對齊，不依賴脆弱的 ABCD 絕對位置。
+* **multi_part**：多欄位 (per-part grading)，且必須 all-parts-correct (所有 parts 皆答對) 才能判定 overall correct。
+* **table_fill**：表格逐格批改 (per-cell grading)，且必須 all-cells-correct (所有 cells 皆答對) 才能判定 overall correct。
+* **drawing**：AI 視覺評分 (AI grading)。必須經 AI 判定通過且信心值高於設定門檻才算 correct。
+
+### 8.3 錯誤分流與批改語意原則
+* **數學語意比對**：數值、分數、小數應依數學語意比對，不得退化為字串相等對比；方程式應依等價性進行比較。
+* **錯誤分流機制**：評分與執行期必須嚴密分開以下狀態：
+  * **未作答**：由前端攔截，不得發送請求。
+  * **parse failure**：如輸入格式非法，返回格式錯誤提示引導學生修正，不計為學生答錯。
+  * **contract mismatch**：合約不匹配，判定答錯或觸發系統錯誤。
+  * **checker execution failure / system error**：評分器或系統執行異常，記錄日誌並返回系統錯誤，**絕不得**被靜默當成學生答錯。
+  * **一般答錯**：比對結果不符，返回 incorrect。
 
 ---
 
@@ -301,12 +316,21 @@ SOP 與 production 是否已對齊：[是／否]
 
 ---
 
+## 11.5 M2 Production Verification Summary
+
+* **五套餐全面驗收**：五種 Answer Type（短答、單選、多小題、表格填空、作圖題）的前後端交互、契約與批改均已通過 production 唯讀驗收。
+* **作圖題閉環完成**：drawing 題型已特別修復成功轉題期間的鎖定時間窗，確保在下一題渲染前持續鎖定防刷，且判錯與 system error 均能保留 canvas 並允許重試。
+* **橫向一致性對齊**：UI renderer 互斥與題型切換時的狀態重設（canvas 清除、紅綠反饋與 styles 抹除）全數通過，無題型交界衝突與 silent fallback。
+* **獨立性與安全**：所有題型均無特例補丁，驗收過程完全離線，未依賴外部 LLM，M2 已正式封板。
+
+---
+
 ## 12. Planned Roadmap
 
 | 里程碑 | 目標 | 狀態 |
 | --- | --- | --- |
 | M1 | Phase 3 Integrity Gate 邊界與最小相容檢查，不預設新增 Pydantic/schema_version | Planned |
-| M2 | Answer Contract／Checker 一致化，以 `answer_contract` 作為批改唯一權威 | Planned |
+| M2 | Answer Contract／Checker 一致化，五種 Answer Type 完成 UI、runtime grading、錯誤分流與橫向一致性驗收 | Completed |
 | M3 | Runtime Variables／Constraints 變數取樣引擎，引進 `ConstraintPolicy` | Planned |
 | M4 | Capability Extension 寫入保護與隔離 [Unknown Implementation 待 M4-A 唯讀確認] | Investigation |
 | M5 | Phase 1 通用 Onboarding 分流器 | Planned |
@@ -323,6 +347,7 @@ SOP 與 production 是否已對齊：[是／否]
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.11 | M2 正式封板：answer_contract 升格為 Current 權威；五種 Answer Type 完成 UI、grading、error handling 與橫向一致性驗收；修正 answer_type／presentation_mode 舊範例 |
 | v1.10 | 定義 Bootstrap 與 Healer 狀態及升格 Gate，確定 generator/oracle/validator 三元分離 |
 | v1.9 | 新增資料呈現/學生作答三層分離，正式確立五種作答套餐及禁止降級原則 |
 | v1.8 | 移除全域 fallback，確立一題一 component_id 實體隔離與 practice.py 相容規範 |

@@ -20,6 +20,7 @@ from core.gencode.slot_generators import generate_from_problem_type_spec
 from core.gencode.validators import validate_generator_payload
 from core.gencode.generated_question_format_validator import validate_generated_question_format
 from core.checkers.quadrant_checker import check_quadrant_answer
+from core.exceptions import RetryableSamplingError
 
 try:
     from core.vocational_math_b1.generated_candidate_loader import generate_from_verified_candidate
@@ -137,6 +138,9 @@ def _log_dispatch(
     logger.info("[GENCODE DISPATCH] selection_strategy=%s", selection_strategy)
 
 
+DEFAULT_GENERATION_MAX_ATTEMPTS = 10
+
+
 def generate_for_skill(
     skill_id: str,
     generator_specs: list[dict[str, Any]],
@@ -173,37 +177,74 @@ def generate_for_skill(
     if not problem_type_spec:
         raise RuntimeError(f"generator_spec_not_found:{pt}")
 
-    generation_seed = seed
-    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=generation_seed)
-    if str(payload.get("block_reason", "")).strip():
-        raise RuntimeError(str(payload.get("block_reason")))
+    last_retryable_error = ""
+    last_attempted_seed = None
 
-    payload["problem_type_id"] = pt
-    payload.setdefault("question", payload.get("question_text", ""))
-    payload.setdefault("correct_answer", payload.get("answer"))
-    payload.setdefault("choices", payload.get("choices", []))
-    payload.setdefault("explanation", payload.get("explanation", ""))
-    payload.setdefault("metadata", payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {})
+    for attempt in range(DEFAULT_GENERATION_MAX_ATTEMPTS):
+        if seed is not None:
+            attempt_seed = seed + attempt
+        else:
+            attempt_seed = None if attempt == 0 else random.randint(1, 1000000)
 
-    answer_contract = get_answer_contract(problem_type_spec)
-    if answer_contract:
-        payload = finalize_generator_payload(payload, answer_contract)
-        payload = apply_coordinate_pair_runtime_fields(payload, answer_contract)
+        last_attempted_seed = attempt_seed
 
-    # ── Global format & localization validation (fail-fast, no repair) ───
-    format_errors = validate_generated_question_format(
-        payload,
-        skill_id=skill_id,
-        problem_type_spec=problem_type_spec,
+        try:
+            payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=attempt_seed)
+            if str(payload.get("block_reason", "")).strip():
+                raise RuntimeError(str(payload.get("block_reason")))
+
+            payload["problem_type_id"] = pt
+            payload.setdefault("question", payload.get("question_text", ""))
+            payload.setdefault("correct_answer", payload.get("answer"))
+            payload.setdefault("choices", payload.get("choices", []))
+            payload.setdefault("explanation", payload.get("explanation", ""))
+            payload.setdefault("metadata", payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {})
+
+            answer_contract = get_answer_contract(problem_type_spec)
+            if answer_contract:
+                payload = finalize_generator_payload(payload, answer_contract)
+                payload = apply_coordinate_pair_runtime_fields(payload, answer_contract)
+
+            # ── Global format & localization validation (fail-fast, no repair) ───
+            format_errors = validate_generated_question_format(
+                payload,
+                skill_id=skill_id,
+                problem_type_spec=problem_type_spec,
+            )
+            if format_errors:
+                raise RuntimeError(f"generator_format_unsafe:{','.join(format_errors)}")
+
+            # ── Semantic validation (retryable choices_duplicate) ───
+            errors = validate_generator_payload(payload, problem_type_spec=problem_type_spec)
+            if errors:
+                if errors == ["choices_duplicate"]:
+                    last_retryable_error = "choices_duplicate"
+                    continue
+                else:
+                    raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")
+
+            return payload
+
+        except (ZeroDivisionError, RetryableSamplingError) as exc:
+            last_retryable_error = str(exc)
+            continue
+
+        except RuntimeError as exc:
+            msg = str(exc)
+            if "generator_semantically_unsafe:" in msg:
+                err_part = msg.split("generator_semantically_unsafe:")[1]
+                errs = [x.strip() for x in err_part.split(",") if x.strip()]
+                if errs == ["choices_duplicate"]:
+                    last_retryable_error = "choices_duplicate"
+                    continue
+            raise
+
+    component_id = str(problem_type_spec.get("component_id") or "")
+    raise RuntimeError(
+        f"SAMPLING_EXHAUSTED: skill_id={skill_id}, component_id={component_id}, "
+        f"original_seed={seed}, attempts={DEFAULT_GENERATION_MAX_ATTEMPTS}, "
+        f"last_attempted_seed={last_attempted_seed}, last_error={last_retryable_error}"
     )
-    if format_errors:
-        raise RuntimeError(f"generator_format_unsafe:{','.join(format_errors)}")
-
-    errors = validate_generator_payload(payload, problem_type_spec=problem_type_spec)
-    if errors:
-        raise RuntimeError(f"generator_semantically_unsafe:{','.join(errors)}")
-
-    return payload
 
 
 def _resolve_answer_contract(
