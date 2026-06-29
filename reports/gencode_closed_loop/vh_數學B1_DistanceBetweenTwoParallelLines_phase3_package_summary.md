@@ -1,0 +1,332 @@
+# Gencode Phase3 Package Summary: vh_數學B1_DistanceBetweenTwoParallelLines
+
+## phase3
+```json
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "remaining_todos": [
+    "SOP v0.2 Verification: Verify that if a problem_type is verified, `/practice` must hit it within 50 rounds.",
+    "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
+    "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
+  ],
+  "skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenTwoParallelLines.py",
+  "package_status": "failed",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "failed",
+  "runtime_smoke_raw": {
+    "status": "failed",
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "payload_preview": {
+      "problem_type_id": null,
+      "answer_type": null,
+      "answer_contract_answer_type": null,
+      "checker": null,
+      "equivalence": null,
+      "question_text_len": 0,
+      "answer": null,
+      "correct_answer": null,
+      "choices_count": 0,
+      "metadata_keys": []
+    },
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "py_compile_status": "passed",
+    "samples_tested": 0,
+    "negative_semantic_smoke": "passed",
+    "error": "'list' object has no attribute 'get'",
+    "failed_seed": 0,
+    "runtime_smoke_raw": {
+      "exception_type": "AttributeError",
+      "exception_message": "'list' object has no attribute 'get'",
+      "traceback_preview": "ct_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenTwoParallelLines.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 216, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=attempt_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 2793, in generate_from_problem_type_spec\n    errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\validators\\__init__.py\", line 72, in validate_generator_payload\n    categories = givens.get(\"categories\", [])\n                 ^^^^^^^^^^\nAttributeError: 'list' object has no attribute 'get'\n",
+      "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "seed": 0
+    }
+  },
+  "publish_check": {
+    "draft_check_passed": false,
+    "can_publish_draft": false,
+    "can_publish_formal": false,
+    "can_mark_runtime_ready": false,
+    "formal_publish_blockers": [
+      "draft_check_not_passed"
+    ],
+    "runtime_ready_blockers": [
+      "runtime_ready_gate_not_allowed_or_not_verified"
+    ],
+    "warnings": [
+      "draft_passed_but_runtime_ready_not_confirmed"
+    ],
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "py_compile_status": "passed",
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "runtime_smoke_status": "failed",
+    "runtime_smoke_raw": {
+      "status": "failed",
+      "blockers": [
+        "runtime_smoke_generate_exception"
+      ],
+      "payload_preview": {
+        "problem_type_id": null,
+        "answer_type": null,
+        "answer_contract_answer_type": null,
+        "checker": null,
+        "equivalence": null,
+        "question_text_len": 0,
+        "answer": null,
+        "correct_answer": null,
+        "choices_count": 0,
+        "metadata_keys": []
+      },
+      "interface_check": {
+        "generate_exists": true,
+        "check_exists": true,
+        "generate_returns_dict": false,
+        "check_callable": true
+      },
+      "py_compile_status": "passed",
+      "samples_tested": 0,
+      "negative_semantic_smoke": "passed",
+      "error": "'list' object has no attribute 'get'",
+      "failed_seed": 0,
+      "runtime_smoke_raw": {
+        "exception_type": "AttributeError",
+        "exception_message": "'list' object has no attribute 'get'",
+        "traceback_preview": "ct_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenTwoParallelLines.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 216, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=attempt_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 2793, in generate_from_problem_type_spec\n    errors = validate_generator_payload(payload, skill_id=skill_id, problem_type_spec=problem_type_spec)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\validators\\__init__.py\", line 72, in validate_generator_payload\n    categories = givens.get(\"categories\", [])\n                 ^^^^^^^^^^\nAttributeError: 'list' object has no attribute 'get'\n",
+        "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+        "seed": 0
+      }
+    },
+    "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
+  },
+  "generator_specs": [
+    {
+      "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "checker_key": "linear_equation_equivalent_checker",
+      "equivalence_type": "linear_equation_equivalent",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "equation",
+      "template_slot": "line_equation_from_point_slope",
+      "base_problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+      "target_task": "write_line_equation_from_point_slope",
+      "presentation_mode": "short_answer",
+      "answer_shape": "linear_equation"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "checker_key": "linear_equation_equivalent_checker",
+      "equivalence_type": "linear_equation_equivalent",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "equation",
+      "template_slot": "line_equation_from_slope_and_intercept",
+      "base_problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+      "target_task": "write_line_equation_from_slope_and_intercept",
+      "presentation_mode": "short_answer",
+      "answer_shape": "linear_equation"
+    },
+    {
+      "problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+      "checker_key": "linear_equation_equivalent_checker",
+      "equivalence_type": "linear_equation_equivalent",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "equation",
+      "template_slot": "line_equation_from_two_points",
+      "base_problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+      "target_task": "write_line_equation_from_two_points",
+      "presentation_mode": "short_answer",
+      "answer_shape": "linear_equation"
+    },
+    {
+      "problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+      "checker_key": "linear_equation_equivalent_checker",
+      "equivalence_type": "linear_equation_equivalent",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "equation",
+      "template_slot": "perpendicular_bisector_from_two_points",
+      "base_problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+      "target_task": "write_perpendicular_bisector_from_two_points",
+      "presentation_mode": "short_answer",
+      "answer_shape": "linear_equation"
+    },
+    {
+      "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "checker_key": "linear_equation_equivalent_checker",
+      "equivalence_type": "linear_equation_equivalent",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "equation",
+      "template_slot": "triangle_median_line_from_vertices",
+      "base_problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+      "target_task": "write_triangle_median_line_from_vertices",
+      "presentation_mode": "short_answer",
+      "answer_shape": "linear_equation"
+    }
+  ],
+  "packaging_usable_count": 5,
+  "packaging_diagnostics": {
+    "candidate_count": 5,
+    "included_count": 5,
+    "excluded_count": 0,
+    "included": [
+      {
+        "problem_type_id": "equation_write_line_equation_from_point_slope_short_answer",
+        "generator_key": "vh_數學B1_DistanceBetweenTwoParallelLines:equation_write_line_equation_from_point_slope_short_answer:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      },
+      {
+        "problem_type_id": "equation_write_line_equation_from_slope_and_intercept_short_answer",
+        "generator_key": "vh_數學B1_DistanceBetweenTwoParallelLines:equation_write_line_equation_from_slope_and_intercept_short_answer:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      },
+      {
+        "problem_type_id": "equation_write_line_equation_from_two_points_short_answer",
+        "generator_key": "vh_數學B1_DistanceBetweenTwoParallelLines:equation_write_line_equation_from_two_points_short_answer:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      },
+      {
+        "problem_type_id": "equation_write_perpendicular_bisector_from_two_points_short_answer",
+        "generator_key": "vh_數學B1_DistanceBetweenTwoParallelLines:equation_write_perpendicular_bisector_from_two_points_short_answer:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      },
+      {
+        "problem_type_id": "equation_write_triangle_median_line_from_vertices_short_answer",
+        "generator_key": "vh_數學B1_DistanceBetweenTwoParallelLines:equation_write_triangle_median_line_from_vertices_short_answer:draft_v1",
+        "generator_status": "runtime_ready_with_warning"
+      }
+    ],
+    "excluded": [],
+    "phase2_summary_exists": true,
+    "generator_draft_spec_exists": true,
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase2_generator_summary.json",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenTwoParallelLines_generator_draft_spec.json",
+    "runtime_spec_alignment": {
+      "status": "synced",
+      "synced_spec_count": 5,
+      "synced_problem_type_ids": [
+        "equation_write_line_equation_from_point_slope_short_answer",
+        "equation_write_line_equation_from_slope_and_intercept_short_answer",
+        "equation_write_line_equation_from_two_points_short_answer",
+        "equation_write_perpendicular_bisector_from_two_points_short_answer",
+        "equation_write_triangle_median_line_from_vertices_short_answer"
+      ],
+      "induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_DistanceBetweenTwoParallelLines.json",
+      "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_DistanceBetweenTwoParallelLines.json",
+      "purged_induced_spec_paths": [
+        "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_DistanceBetweenTwoParallelLines.json"
+      ],
+      "runtime_usable_problem_type_ids": [
+        "equation_write_line_equation_from_point_slope_short_answer",
+        "equation_write_line_equation_from_slope_and_intercept_short_answer",
+        "equation_write_line_equation_from_two_points_short_answer",
+        "equation_write_perpendicular_bisector_from_two_points_short_answer",
+        "equation_write_triangle_median_line_from_vertices_short_answer"
+      ],
+      "downgraded_historical_problem_type_ids": [],
+      "canonical_filter_applied": true
+    }
+  },
+  "reports": {
+    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.json",
+    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.md",
+    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.json",
+    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.md",
+    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.json",
+    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoParallelLines_phase3_package_summary.md",
+    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_DistanceBetweenTwoParallelLines.py"
+  },
+  "next_action": "review_phase3_publish_check",
+  "error": "",
+  "dry_run": true,
+  "timestamp": "2026-06-29T02:37:11.494894+00:00",
+  "generated_with_warning": true,
+  "warnings": [
+    "consecutive_same_template_variant",
+    "low_sample_diversity_tolerance_applied",
+    "low_source_examples",
+    "no_matched_source_examples"
+  ],
+  "publish_gate_layers": {
+    "technical_closed_loop": "FAIL",
+    "runtime_quality": "FAIL",
+    "web_runtime": "FAIL",
+    "source_alignment": "PARTIAL"
+  },
+  "source_alignment_audit": {
+    "status": "PARTIAL",
+    "missing_source_aligned_problem_types": [
+      "equation_write_line_equation_from_point_slope_single_choice",
+      "numeric_applied_quadratic_inequality_problem_short_answer",
+      "numeric_compute_numeric_short_answer",
+      "numeric_evaluate_function_value_fallback_application"
+    ],
+    "underrepresented_runtime_forms": [
+      "equation_write_line_equation_from_point_slope_single_choice",
+      "numeric_applied_quadratic_inequality_problem_short_answer",
+      "numeric_compute_numeric_short_answer",
+      "numeric_evaluate_function_value_fallback_application"
+    ]
+  },
+  "post_phase3_audit_scripts": [
+    {
+      "script": "gencode_choice_quality_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_runtime_distribution_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_web_runtime_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_source_alignment_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    }
+  ],
+  "summary_message": "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. See publish_check / runtime_smoke_raw. usable_generators=5."
+}
+```

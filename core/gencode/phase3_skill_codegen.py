@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from core.gencode.problem_type_spec import list_problem_types_for_skill
+from core.gencode.problem_type_spec import list_problem_types_for_skill, load_problem_type_spec
 from core.gencode.spec_phase1_merge import spec_to_answer_contract_proposal, slot_generator_readiness
 
 
@@ -46,7 +46,12 @@ def _resolve_phase3_source_specs(
         pt = str(row.get("problem_type_id", "")).strip()
         if not pt:
             continue
-        base_spec = induced_by_pt.get(pt) or candidate_by_pt.get(pt) or {}
+        base_spec = (
+            induced_by_pt.get(pt)
+            or candidate_by_pt.get(pt)
+            or load_problem_type_spec(skill_id, pt, prefer="curated")
+            or {}
+        )
         spec = dict(base_spec) if isinstance(base_spec, dict) else {}
         spec["skill_id"] = skill_id
         spec["problem_type_id"] = pt
@@ -223,6 +228,21 @@ def build_generator_specs_for_phase3(skill_id: str, phase2_usable: list[dict[str
             row["presentation_mode"] = canonical_ac["presentation_mode"]
         if canonical_ac.get("answer_shape"):
             row["answer_shape"] = canonical_ac["answer_shape"]
+        curated_spec = load_problem_type_spec(skill_id, original_pt, prefer="curated") or {}
+        max_att = (
+            enriched.get("max_attempts")
+            or spec.get("max_attempts")
+            or curated_spec.get("max_attempts")
+        )
+        if max_att is not None:
+            row["max_attempts"] = max_att
+        h_const = (
+            enriched.get("hard_constraints")
+            or spec.get("hard_constraints")
+            or curated_spec.get("hard_constraints")
+        )
+        if h_const is not None:
+            row["hard_constraints"] = h_const
         specs_out.append(row)
         keys.append(str(g2.get("generator_key", "")).strip() or f"{skill_id}:{pt}:spec_v1")
     filtered_specs: list[dict[str, Any]] = []

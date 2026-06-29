@@ -1,0 +1,192 @@
+# Gencode Phase2 Generator Summary: vh_數學B4_HistogramsAndFrequencyPolygons
+
+## phase2
+```json
+{
+  "ok": true,
+  "phase": "phase2",
+  "skill_id": "vh_數學B4_HistogramsAndFrequencyPolygons",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "phase1_alignment_blocked": false,
+  "alignment_blockers": [],
+  "generator_results": [
+    {
+      "problem_type_id": "text_short_compute_numeric",
+      "source_example_count": 3,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
+        "accepted_formats": [
+          "5",
+          "5.0",
+          "-3"
+        ],
+        "source_has_choices": false,
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "short_answer"
+      },
+      "answer_type": "text_short",
+      "answer_shape": "text_short",
+      "equivalence_type": "exact_string",
+      "selected_checker": "text_short_checker",
+      "checker_key": "text_short_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B4_HistogramsAndFrequencyPolygons:text_short_compute_numeric:draft_v1",
+      "generator_status": "pending_problem_type_induction",
+      "checker_smoke_status": "skipped_with_blockers",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {},
+      "unique_signature_count": 0,
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "requires_human_action": true,
+      "blockers": [
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "usable_for_phase3": false,
+      "target_task": "compute_numeric",
+      "task_family": "generic_numeric_family",
+      "base_problem_type_id": "compute_numeric",
+      "value_type_prefix": "text_short",
+      "template_slot": "point_quadrant",
+      "_resolved_template_slot": "point_quadrant"
+    },
+    {
+      "problem_type_id": "unresolved_within_current_skill",
+      "source_example_count": 1,
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "source_has_choices": false,
+        "answer_type": "interval",
+        "answer_shape": "interval_or_union",
+        "answer_semantics": "interval_union",
+        "answer_equivalence": "interval_equivalence",
+        "equivalence_type": "interval_equivalence",
+        "checker": "interval_checker",
+        "checker_key": "interval_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "interval_checker",
+        "checker_selection_reason": "quadratic_inequality_interval_solution",
+        "accepted_formats": [
+          "-5 <= x <= 1",
+          "(-5, 1]",
+          "x in [-5,1]",
+          "x<-2 or x>5",
+          "-2<x<5",
+          "x<=-2 or x>=5"
+        ]
+      },
+      "answer_type": "interval",
+      "answer_shape": "interval_or_union",
+      "equivalence_type": "interval_equivalence",
+      "selected_checker": "interval_checker",
+      "checker_key": "interval_checker",
+      "checker_capability_status": "ok",
+      "checker_contract_blockers": [],
+      "checker_contract_warnings": [],
+      "generator_key": "vh_數學B4_HistogramsAndFrequencyPolygons:unresolved_within_current_skill:draft_v1",
+      "generator_status": "pending_problem_type_induction",
+      "checker_smoke_status": "skipped_with_blockers",
+      "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+      "diversity_sampling": {},
+      "unique_signature_count": 0,
+      "template_variant_distribution": {},
+      "variable_coverage_report": {},
+      "repetition_warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "requires_human_action": true,
+      "blockers": [
+        "generic_fallback_blocked_by_source_skill_binding"
+      ],
+      "warnings": [
+        "low_sample_diversity_tolerance_applied",
+        "low_source_examples"
+      ],
+      "usable_for_phase3": false,
+      "target_task": "applied_quadratic_inequality_problem",
+      "task_family": "quadratic_inequality_family",
+      "base_problem_type_id": "unresolved_within_current_skill",
+      "value_type_prefix": "",
+      "template_slot": "applied_quadratic_inequality_problem",
+      "_resolved_template_slot": "applied_quadratic_inequality_problem"
+    }
+  ],
+  "failed_generators": [
+    "vh_數學B4_HistogramsAndFrequencyPolygons:text_short_compute_numeric:draft_v1",
+    "vh_數學B4_HistogramsAndFrequencyPolygons:unresolved_within_current_skill:draft_v1"
+  ],
+  "accepted_generators": [],
+  "foundation_preflight": {
+    "foundation_ready": true,
+    "foundation_status": "PASS",
+    "missing_checker": [],
+    "missing_verifier": [],
+    "missing_domain_function": [],
+    "missing_generator": [],
+    "missing_runtime_binding": [],
+    "missing_registry_binding": [],
+    "missing_answer_contract_problem_types": [],
+    "repair_plan": [],
+    "next_action": "phase3_package_draft"
+  },
+  "foundation_ready": true,
+  "phase2_status": "PASS",
+  "repair_plan": [],
+  "reports": {
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase2_generator_summary.md",
+    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase2_generator_summary.json",
+    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase2_generator_summary.md",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons_generator_draft_spec.json"
+  },
+  "next_action": "phase3_package_draft",
+  "timestamp": "2026-06-29T02:55:09.779328+00:00",
+  "dry_run": true
+}
+```

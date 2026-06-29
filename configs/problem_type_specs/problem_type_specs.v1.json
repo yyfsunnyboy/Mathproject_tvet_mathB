@@ -673,6 +673,70 @@
         ],
         "runtime_smoke_count": 30
       }
+    },
+    {
+      "problem_type_id": "frequency_distribution_chart_construction",
+      "skill_id": "vh_數學B4_HistogramsAndFrequencyPolygons",
+      "display_name": "直方圖與次數分配折線圖繪製",
+      "answer_contract": {
+        "answer_type": "drawing",
+        "answer_shape": "drawing",
+        "choices_required": false,
+        "answer_equivalence": "drawing_equivalence",
+        "checker": "free_response_drawing_checker",
+        "checker_key": "free_response_drawing_checker",
+        "frontend_render_choices": false
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "frequency_distribution_table",
+          "histogram",
+          "frequency_polygon"
+        ],
+        "required_math_objects": [
+          "frequency_distribution_table"
+        ],
+        "forbidden_patterns": []
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "frequency_table_visualization"
+        ],
+        "reject_if": [
+          "ambiguous_answer"
+        ]
+      },
+      "generator_contract": {
+        "template_slots": {
+          "stem": "frequency_distribution_chart_construction"
+        },
+        "derivation_steps_required": true,
+        "use_domain_functions": true,
+        "avoid_llm_freeform_math": true
+      },
+      "validator_contract": {
+        "static_checks": [
+          "question_answer_consistency"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "hard_constraints": [
+        {
+          "left": {"var": "total_frequency"},
+          "operator": ">=",
+          "right": {"value": 12}
+        }
+      ],
+      "max_attempts": 10
     }
   ]
 }

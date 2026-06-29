@@ -21,6 +21,7 @@ from core.gencode.validators import validate_generator_payload
 from core.gencode.generated_question_format_validator import validate_generated_question_format
 from core.checkers.quadrant_checker import check_quadrant_answer
 from core.exceptions import RetryableSamplingError
+from core.gencode.constraint_evaluator import evaluate_hard_constraints
 
 try:
     from core.vocational_math_b1.generated_candidate_loader import generate_from_verified_candidate
@@ -177,10 +178,33 @@ def generate_for_skill(
     if not problem_type_spec:
         raise RuntimeError(f"generator_spec_not_found:{pt}")
 
+    # Find matching spec row in generator_specs to check max_attempts
+    matched_spec = {}
+    for spec_row in generator_specs:
+        if isinstance(spec_row, dict) and str(spec_row.get("problem_type_id", "")).strip() == pt:
+            matched_spec = spec_row
+            break
+
+    raw_max_attempts = matched_spec.get("max_attempts") or problem_type_spec.get("max_attempts")
+    if raw_max_attempts is not None:
+        if isinstance(raw_max_attempts, bool) or not isinstance(raw_max_attempts, int) or raw_max_attempts <= 0:
+            raise ValueError(f"Invalid max_attempts: {raw_max_attempts!r}. Must be an integer > 0.")
+        max_attempts = raw_max_attempts
+    else:
+        max_attempts = DEFAULT_GENERATION_MAX_ATTEMPTS
+
+    raw_hard_constraints = matched_spec.get("hard_constraints") or problem_type_spec.get("hard_constraints")
+    if raw_hard_constraints is not None:
+        if not isinstance(raw_hard_constraints, list):
+            raise ValueError(f"Invalid hard_constraints: {raw_hard_constraints!r}. Must be a list.")
+        hard_constraints = raw_hard_constraints
+    else:
+        hard_constraints = None
+
     last_retryable_error = ""
     last_attempted_seed = None
 
-    for attempt in range(DEFAULT_GENERATION_MAX_ATTEMPTS):
+    for attempt in range(max_attempts):
         if seed is not None:
             attempt_seed = seed + attempt
         else:
@@ -199,6 +223,25 @@ def generate_for_skill(
             payload.setdefault("choices", payload.get("choices", []))
             payload.setdefault("explanation", payload.get("explanation", ""))
             payload.setdefault("metadata", payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {})
+
+            # ── Hard Constraints Evaluation ───
+            if hard_constraints is not None:
+                metadata = payload.get("metadata")
+                if not isinstance(metadata, dict):
+                    raise ValueError("Payload missing metadata dict for hard constraints evaluation.")
+                givens = metadata.get("givens")
+                if givens is None or not isinstance(givens, dict):
+                    raise ValueError("Payload missing metadata.givens dict for hard constraints evaluation.")
+
+                ok, failures = evaluate_hard_constraints(hard_constraints, givens)
+                if not ok:
+                    failure_indices = [f["index"] for f in failures]
+                    component_id = str(problem_type_spec.get("component_id") or "")
+                    raise RetryableSamplingError(
+                        f"Hard constraints not satisfied. "
+                        f"component_id={component_id}, problem_type={pt}, "
+                        f"failure_indices={failure_indices}, attempt_seed={attempt_seed}"
+                    )
 
             answer_contract = get_answer_contract(problem_type_spec)
             if answer_contract:
@@ -225,7 +268,7 @@ def generate_for_skill(
 
             return payload
 
-        except (ZeroDivisionError, RetryableSamplingError) as exc:
+        except RetryableSamplingError as exc:
             last_retryable_error = str(exc)
             continue
 
@@ -242,7 +285,7 @@ def generate_for_skill(
     component_id = str(problem_type_spec.get("component_id") or "")
     raise RuntimeError(
         f"SAMPLING_EXHAUSTED: skill_id={skill_id}, component_id={component_id}, "
-        f"original_seed={seed}, attempts={DEFAULT_GENERATION_MAX_ATTEMPTS}, "
+        f"original_seed={seed}, attempts={max_attempts}, "
         f"last_attempted_seed={last_attempted_seed}, last_error={last_retryable_error}"
     )
 

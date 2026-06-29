@@ -3,7 +3,7 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "target_task": "evaluate_function_value",
       "task_family": "function_concept_family",
@@ -140,7 +140,7 @@
         "template_slots": {
           "stem": "function_value_numeric"
         },
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -162,12 +162,12 @@
         "anchor_slot_bootstrap",
         "evaluate_function_value"
       ],
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     },
     {
-      "problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "target_task": "interpret_function_notation",
       "task_family": "function_concept_family",
@@ -304,7 +304,7 @@
         "template_slots": {
           "stem": "linear_function_two_point_choice"
         },
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -326,7 +326,7 @@
         "anchor_slot_bootstrap",
         "interpret_function_notation"
       ],
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }

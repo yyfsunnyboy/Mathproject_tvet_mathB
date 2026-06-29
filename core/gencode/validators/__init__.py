@@ -12,6 +12,39 @@ from core.gencode.validators.semantic_validator import (
 )
 
 
+def check_complete_frequency_data(givens: dict[str, Any], categories: Any) -> bool:
+    if not isinstance(categories, list) or len(categories) == 0:
+        return False
+    frequencies = givens.get("frequencies")
+    frequency_map = givens.get("frequency_map")
+    total_frequency = givens.get("total_frequency")
+
+    if not isinstance(frequencies, list):
+        return False
+    if len(frequencies) != len(categories):
+        return False
+    if not all(isinstance(x, int) and not isinstance(x, bool) for x in frequencies):
+        return False
+    if not isinstance(frequency_map, dict):
+        return False
+    if set(frequency_map.keys()) != set(categories) or len(frequency_map) != len(categories):
+        return False
+    try:
+        retrieved = [frequency_map[c] for c in categories]
+    except KeyError:
+        return False
+    if retrieved != frequencies:
+        return False
+    if not all(isinstance(frequency_map[c], int) and not isinstance(frequency_map[c], bool) for c in categories):
+        return False
+    if not isinstance(total_frequency, int) or isinstance(total_frequency, bool):
+        return False
+    if total_frequency != sum(frequencies):
+        return False
+
+    return True
+
+
 def validate_generator_payload(
     payload: dict[str, Any],
     *,
@@ -71,12 +104,15 @@ def validate_generator_payload(
     givens = metadata.get("givens", {})
     categories = givens.get("categories", [])
     is_generic = False
-    if categories == ["A組", "B組", "C組", "D組"]:
+    generic_labels = (categories == ["A組", "B組", "C組", "D組"])
+    has_complete_frequency_data = check_complete_frequency_data(givens, categories)
+    if generic_labels and not has_complete_frequency_data:
         is_generic = True
     elif "A組" in question_text and "B組" in question_text and "C組" in question_text and "D組" in question_text:
-        background_keywords = ["模擬考", "體重", "國貿", "會計", "女中", "成績", "班"]
-        if not any(k in question_text for k in background_keywords):
-            is_generic = True
+        if not has_complete_frequency_data:
+            background_keywords = ["模擬考", "體重", "國貿", "會計", "女中", "成績", "班"]
+            if not any(k in question_text for k in background_keywords):
+                is_generic = True
     if is_generic:
         errors.append("SCAFFOLD_NOT_PUBLISHABLE: generic scaffold with placeholder categories ['A組', 'B組', 'C組', 'D組'] cannot be published")
 

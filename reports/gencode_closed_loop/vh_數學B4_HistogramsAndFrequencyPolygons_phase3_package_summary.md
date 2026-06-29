@@ -1,0 +1,252 @@
+# Gencode Phase3 Package Summary: vh_數學B4_HistogramsAndFrequencyPolygons
+
+## phase3
+```json
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B4_HistogramsAndFrequencyPolygons",
+  "sop_reference": {
+    "sop_policy_version": "v0.3",
+    "highest_sop": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+    "required_sop_files": [
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/Gencode與AgentSkillV2整合總體設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AgentSkillV2_ProblemType規格包設計_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      },
+      {
+        "path": "docs/系統SOP/Gencode_AgentSkillV2整合/AnswerContract_EquivalenceType_Gate_v0.3.md",
+        "exists": true,
+        "readable": true,
+        "mojibake_detected": false
+      }
+    ],
+    "sop_preflight_status": "PASS"
+  },
+  "remaining_todos": [
+    "SOP v0.2 Verification: Verify that if a problem_type is verified, `/practice` must hit it within 50 rounds.",
+    "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
+    "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
+  ],
+  "skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons.py",
+  "package_status": "failed",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "failed",
+  "runtime_smoke_raw": {
+    "status": "failed",
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "payload_preview": {
+      "problem_type_id": null,
+      "answer_type": null,
+      "answer_contract_answer_type": null,
+      "checker": null,
+      "equivalence": null,
+      "question_text_len": 0,
+      "answer": null,
+      "correct_answer": null,
+      "choices_count": 0,
+      "metadata_keys": []
+    },
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "py_compile_status": "passed",
+    "samples_tested": 0,
+    "negative_semantic_smoke": "passed",
+    "error": "slot_generator_not_registered:frequency_distribution_chart_construction",
+    "failed_seed": 0,
+    "runtime_smoke_raw": {
+      "exception_type": "RuntimeError",
+      "exception_message": "slot_generator_not_registered:frequency_distribution_chart_construction",
+      "traceback_preview": "Traceback (most recent call last):\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 471, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 216, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=attempt_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 2787, in generate_from_problem_type_spec\n    raise RuntimeError(f\"slot_generator_not_registered:{slot or at}\")\nRuntimeError: slot_generator_not_registered:frequency_distribution_chart_construction\n",
+      "problem_type_id": "frequency_distribution_chart_construction",
+      "seed": 0
+    }
+  },
+  "publish_check": {
+    "draft_check_passed": false,
+    "can_publish_draft": false,
+    "can_publish_formal": false,
+    "can_mark_runtime_ready": false,
+    "formal_publish_blockers": [
+      "draft_check_not_passed"
+    ],
+    "runtime_ready_blockers": [
+      "runtime_ready_gate_not_allowed_or_not_verified"
+    ],
+    "warnings": [
+      "draft_passed_but_runtime_ready_not_confirmed"
+    ],
+    "blockers": [
+      "runtime_smoke_generate_exception"
+    ],
+    "py_compile_status": "passed",
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": false,
+      "check_callable": true
+    },
+    "runtime_smoke_status": "failed",
+    "runtime_smoke_raw": {
+      "status": "failed",
+      "blockers": [
+        "runtime_smoke_generate_exception"
+      ],
+      "payload_preview": {
+        "problem_type_id": null,
+        "answer_type": null,
+        "answer_contract_answer_type": null,
+        "checker": null,
+        "equivalence": null,
+        "question_text_len": 0,
+        "answer": null,
+        "correct_answer": null,
+        "choices_count": 0,
+        "metadata_keys": []
+      },
+      "interface_check": {
+        "generate_exists": true,
+        "check_exists": true,
+        "generate_returns_dict": false,
+        "check_callable": true
+      },
+      "py_compile_status": "passed",
+      "samples_tested": 0,
+      "negative_semantic_smoke": "passed",
+      "error": "slot_generator_not_registered:frequency_distribution_chart_construction",
+      "failed_seed": 0,
+      "runtime_smoke_raw": {
+        "exception_type": "RuntimeError",
+        "exception_message": "slot_generator_not_registered:frequency_distribution_chart_construction",
+        "traceback_preview": "Traceback (most recent call last):\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_smoke.py\", line 471, in _run_draft_runtime_smoke_impl\n    payload = gen(level=1, seed=seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons.py\", line 12, in generate\n    return generate_for_skill(SKILL_ID, GENERATOR_SPECS, level=level, seed=seed, difficulty=difficulty)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\runtime_skill_wrapper.py\", line 216, in generate_for_skill\n    payload = generate_from_problem_type_spec(skill_id, problem_type_spec, seed=attempt_seed)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"d:\\Python/Mathproject_tvet_mathB\\core\\gencode\\slot_generators.py\", line 2787, in generate_from_problem_type_spec\n    raise RuntimeError(f\"slot_generator_not_registered:{slot or at}\")\nRuntimeError: slot_generator_not_registered:frequency_distribution_chart_construction\n",
+        "problem_type_id": "frequency_distribution_chart_construction",
+        "seed": 0
+      }
+    },
+    "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
+  },
+  "generator_specs": [
+    {
+      "problem_type_id": "frequency_distribution_chart_construction",
+      "checker_key": "free_response_drawing_checker",
+      "equivalence_type": "drawing_equivalence",
+      "generator_readiness": "runtime_ready",
+      "answer_type": "drawing",
+      "template_slot": "frequency_distribution_chart_construction",
+      "base_problem_type_id": "frequency_distribution_chart_construction",
+      "target_task": "frequency_distribution_chart_construction",
+      "presentation_mode": "short_answer",
+      "answer_shape": "drawing",
+      "max_attempts": 10,
+      "hard_constraints": [
+        {
+          "left": {
+            "var": "total_frequency"
+          },
+          "operator": ">=",
+          "right": {
+            "value": 12
+          }
+        }
+      ]
+    }
+  ],
+  "packaging_usable_count": 1,
+  "packaging_diagnostics": {
+    "candidate_count": 1,
+    "included_count": 1,
+    "excluded_count": 0,
+    "included": [
+      {
+        "problem_type_id": "frequency_distribution_chart_construction",
+        "generator_key": "vh_數學B4_HistogramsAndFrequencyPolygons:frequency_distribution_chart_construction:draft_v1",
+        "generator_status": "runtime_ready"
+      }
+    ],
+    "excluded": [],
+    "phase2_summary_exists": true,
+    "generator_draft_spec_exists": false,
+    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase2_generator_summary.json",
+    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons_generator_draft_spec.json",
+    "runtime_spec_alignment": {
+      "status": "skipped_no_aligned_draft_specs",
+      "synced_spec_count": 0,
+      "synced_problem_type_ids": [],
+      "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B4_HistogramsAndFrequencyPolygons.json",
+      "purged_induced_spec_paths": [],
+      "runtime_usable_problem_type_ids": [],
+      "downgraded_historical_problem_type_ids": [],
+      "canonical_filter_applied": false
+    }
+  },
+  "reports": {
+    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.json",
+    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.md",
+    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.json",
+    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.md",
+    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.json",
+    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B4_HistogramsAndFrequencyPolygons_phase3_package_summary.md",
+    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B4_HistogramsAndFrequencyPolygons.py"
+  },
+  "next_action": "review_phase3_publish_check",
+  "error": "",
+  "dry_run": true,
+  "timestamp": "2026-06-29T02:58:39.386121+00:00",
+  "generated_with_warning": false,
+  "warnings": [],
+  "publish_gate_layers": {
+    "technical_closed_loop": "FAIL",
+    "runtime_quality": "FAIL",
+    "web_runtime": "FAIL",
+    "source_alignment": "PARTIAL"
+  },
+  "source_alignment_audit": {
+    "status": "PARTIAL",
+    "missing_source_aligned_problem_types": [
+      "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "short_answer_compute_numeric_short_answer"
+    ],
+    "underrepresented_runtime_forms": [
+      "short_answer_applied_quadratic_inequality_problem_short_answer",
+      "short_answer_compute_numeric_short_answer"
+    ]
+  },
+  "post_phase3_audit_scripts": [
+    {
+      "script": "gencode_choice_quality_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_runtime_distribution_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_web_runtime_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    },
+    {
+      "script": "gencode_source_alignment_audit.py",
+      "exists": true,
+      "py_compile_ok": true
+    }
+  ],
+  "summary_message": "Phase 3 packaged draft skill file, but draft runtime smoke did not pass. See publish_check / runtime_smoke_raw. usable_generators=1."
+}
+```

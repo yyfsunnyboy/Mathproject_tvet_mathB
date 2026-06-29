@@ -34,6 +34,10 @@ from core.gencode.scenario_pool_manager import (
 )
 from core.gencode.template_slot_resolver import infer_registered_task_token, resolve_template_slot
 from core.gencode.validators import validate_generator_payload
+from core.domain.statistics.frequency_distribution_domain import (
+    build_frequency_distribution_table_matrix,
+)
+from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 GeneratorFn = Callable[[str, str, dict[str, Any], int | None], dict[str, Any]]
 
@@ -2617,7 +2621,37 @@ def _slot_parallel_lines_properties(skill_id: str, pt: str, spec: dict[str, Any]
         }
 
 
+def _slot_frequency_distribution_chart_construction(
+    skill_id: str,
+    pt: str,
+    spec: dict[str, Any],
+    seed: int | None,
+) -> dict[str, Any]:
+    matrix = build_frequency_distribution_table_matrix(
+        seed=seed,
+        domain_operation="frequency_distribution_chart_construction",
+        curriculum_profile="vocational_high_b",
+        difficulty_profile="easy",
+        constraints={},
+    )
+    payload = convert_domain_matrix_to_question_payload(
+        matrix,
+        presentation_mode="short_answer",
+        answer_type="string",
+        problem_type_id=pt,
+        component_id=None,
+        textbook_example_id=3826,
+        answer_schema_key="",
+        domain_operation="frequency_distribution_chart_construction",
+    )
+    payload["skill_id"] = skill_id
+    payload["seed"] = seed
+    payload.setdefault("question", payload.get("question_text", ""))
+    return payload
+
+
 SLOT_REGISTRY: dict[str, GeneratorFn] = {
+    "frequency_distribution_chart_construction": _slot_frequency_distribution_chart_construction,
     "parallel_lines_properties": _slot_parallel_lines_properties,
     "point_quadrant": _slot_point_quadrant,
     "point_quadrant_choice": _slot_point_quadrant_choice,

@@ -66,6 +66,7 @@ VALID_ANSWER_TYPES = frozenset(
         "equation",
         "multi_part",
         "short_answer",
+        "drawing",
     }
     | SOLUTION_SET_TYPES
     | EQUATION_TYPES

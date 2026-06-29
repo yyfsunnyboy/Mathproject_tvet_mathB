@@ -106,8 +106,8 @@
 
 | problem_type_id | display_name | answer_type | source_examples | grouping_reason |
 | --- | --- | --- | --- | --- |
-| evaluate_function_value | evaluate_function_value / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
-| interpret_function_notation | interpret_function_notation / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
+| evaluate_function_value_2 | evaluate_function_value / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
+| interpret_function_notation_2 | interpret_function_notation / anchor bootstrap | expression | [] | anchor_subskill_bootstrap_zero_source |
 
 ## phase1
 ```json
@@ -404,7 +404,7 @@
     "source_problem_type_score": 0.0,
     "per_problem_type_scores": [
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
         "inferred_tasks": [
@@ -417,7 +417,7 @@
         "answer_contract_supported": true
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
         "inferred_tasks": [
@@ -919,11 +919,11 @@
   "inherited_from_previous_context_examples": [],
   "low_source_examples": [
     {
-      "problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
       "matched_example_count": 0
     },
     {
-      "problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
       "matched_example_count": 0
     }
   ],
@@ -1067,8 +1067,8 @@
   ],
   "candidate_problem_types": [
     {
-      "problem_type_id": "evaluate_function_value",
-      "proposed_problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
+      "proposed_problem_type_id": "evaluate_function_value_2",
       "display_name": "evaluate_function_value / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -1209,7 +1209,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -1256,7 +1256,7 @@
         "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -1393,7 +1393,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -1415,14 +1415,14 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
@@ -1435,8 +1435,8 @@
       "answer_type": "expression"
     },
     {
-      "problem_type_id": "interpret_function_notation",
-      "proposed_problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
+      "proposed_problem_type_id": "interpret_function_notation_2",
       "display_name": "interpret_function_notation / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -1577,7 +1577,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -1624,7 +1624,7 @@
         "interpret_function_notation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -1761,7 +1761,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -1783,14 +1783,14 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "subskill_id": "interpret_function_notation",
       "runtime_status": "runtime_ready_candidate",
@@ -1819,7 +1819,7 @@
       "unordered_tuple_equivalent"
     ],
     "observed_problem_type_answer_contracts": {
-      "evaluate_function_value": {
+      "evaluate_function_value_2": {
         "answer_type": "expression",
         "answer_shape": "factored_expression",
         "equivalence_type": "algebraic_equivalent",
@@ -1828,7 +1828,7 @@
         "accepted_format_notes": [],
         "canonical_answer_schema": "expression"
       },
-      "interpret_function_notation": {
+      "interpret_function_notation_2": {
         "answer_type": "expression",
         "answer_shape": "factored_expression",
         "equivalence_type": "algebraic_equivalent",
@@ -1841,12 +1841,12 @@
     "missing_answer_contract_problem_types": [],
     "missing_checker_key_problem_types": [],
     "equivalence_test_required_problem_types": [
-      "evaluate_function_value",
-      "interpret_function_notation"
+      "evaluate_function_value_2",
+      "interpret_function_notation_2"
     ],
     "convertible_to_choice_problem_types": [
-      "evaluate_function_value",
-      "interpret_function_notation"
+      "evaluate_function_value_2",
+      "interpret_function_notation_2"
     ],
     "manual_review_or_ai_judged_problem_types": []
   },
@@ -3675,7 +3675,7 @@
     "phase1_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase1_summary.md"
   },
   "next_action": "phase2_generate_from_induced_specs",
-  "timestamp": "2026-06-25T05:44:39.753716+00:00",
+  "timestamp": "2026-06-29T03:15:14.719590+00:00",
   "dry_run": true,
   "auto_review_summary": {
     "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
@@ -4947,7 +4947,7 @@
       "source_problem_type_score": 0.0,
       "per_problem_type_scores": [
         {
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
           "inferred_tasks": [
@@ -4960,7 +4960,7 @@
           "answer_contract_supported": true
         },
         {
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "target_task": "interpret_function_notation",
           "task_family": "function_concept_family",
           "inferred_tasks": [
@@ -5050,11 +5050,11 @@
     "inherited_from_previous_context_examples": [],
     "low_source_examples": [
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "matched_example_count": 0
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "matched_example_count": 0
       }
     ],
@@ -5325,7 +5325,7 @@
     ],
     "induced_problem_type_specs": [
       {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -5462,7 +5462,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -5484,12 +5484,12 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -5626,7 +5626,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -5648,15 +5648,15 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       }
     ],
     "candidate_problem_types": [
       {
-        "problem_type_id": "evaluate_function_value",
-        "proposed_problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
+        "proposed_problem_type_id": "evaluate_function_value_2",
         "display_name": "evaluate_function_value / anchor bootstrap",
         "matched_example_ids": [],
         "matched_example_count": 0,
@@ -5797,7 +5797,7 @@
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "evaluate_function_value",
+            "problem_type_id": "evaluate_function_value_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -5844,7 +5844,7 @@
           "evaluate_function_value"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
           "target_task": "evaluate_function_value",
           "task_family": "function_concept_family",
@@ -5981,7 +5981,7 @@
             "template_slots": {
               "stem": "function_value_numeric"
             },
-            "problem_type_id": "evaluate_function_value",
+            "problem_type_id": "evaluate_function_value_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -6003,14 +6003,14 @@
             "anchor_slot_bootstrap",
             "evaluate_function_value"
           ],
-          "canonical_base_problem_type_id": "evaluate_function_value",
+          "canonical_base_problem_type_id": "evaluate_function_value_2",
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
         "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "function_value_numeric",
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "subskill_id": "evaluate_function_value",
         "runtime_status": "runtime_ready_candidate",
@@ -6022,8 +6022,8 @@
         }
       },
       {
-        "problem_type_id": "interpret_function_notation",
-        "proposed_problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
+        "proposed_problem_type_id": "interpret_function_notation_2",
         "display_name": "interpret_function_notation / anchor bootstrap",
         "matched_example_ids": [],
         "matched_example_count": 0,
@@ -6164,7 +6164,7 @@
             "template_slots": {
               "stem": "linear_function_two_point_choice"
             },
-            "problem_type_id": "interpret_function_notation",
+            "problem_type_id": "interpret_function_notation_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -6211,7 +6211,7 @@
           "interpret_function_notation"
         ],
         "problem_type_spec_draft": {
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
           "target_task": "interpret_function_notation",
           "task_family": "function_concept_family",
@@ -6348,7 +6348,7 @@
             "template_slots": {
               "stem": "linear_function_two_point_choice"
             },
-            "problem_type_id": "interpret_function_notation",
+            "problem_type_id": "interpret_function_notation_2",
             "contract_validation_blockers": [],
             "contract_validation_warnings": [
               "single_template_variant_only",
@@ -6370,14 +6370,14 @@
             "anchor_slot_bootstrap",
             "interpret_function_notation"
           ],
-          "canonical_base_problem_type_id": "interpret_function_notation",
+          "canonical_base_problem_type_id": "interpret_function_notation_2",
           "value_type_prefix": "",
           "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
         },
         "generator_readiness": "runtime_ready",
         "usable_for_phase3": true,
         "template_slot": "linear_function_two_point_choice",
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "subskill_id": "interpret_function_notation",
         "runtime_status": "runtime_ready_candidate",
@@ -7257,8 +7257,8 @@
     "split_or_merge_recommendation": "induced_from_source_features",
     "problem_type_spec_first": true,
     "spec_defined_problem_type_ids": [
-      "evaluate_function_value",
-      "interpret_function_notation"
+      "evaluate_function_value_2",
+      "interpret_function_notation_2"
     ],
     "classifier_gate": {
       "status": "classifier_auto_pending_promote_with_warning",
@@ -7331,13 +7331,13 @@
   "default_problem_type_used": false,
   "problem_type_spec_first": true,
   "spec_defined_problem_type_ids": [
-    "evaluate_function_value",
-    "interpret_function_notation"
+    "evaluate_function_value_2",
+    "interpret_function_notation_2"
   ],
   "spec_mode": "induce_from_sources",
   "induced_problem_type_specs": [
     {
-      "problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "target_task": "evaluate_function_value",
       "task_family": "function_concept_family",
@@ -7474,7 +7474,7 @@
         "template_slots": {
           "stem": "function_value_numeric"
         },
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -7496,12 +7496,12 @@
         "anchor_slot_bootstrap",
         "evaluate_function_value"
       ],
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     },
     {
-      "problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
       "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
       "target_task": "interpret_function_notation",
       "task_family": "function_concept_family",
@@ -7638,7 +7638,7 @@
         "template_slots": {
           "stem": "linear_function_two_point_choice"
         },
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
@@ -7660,7 +7660,7 @@
         "anchor_slot_bootstrap",
         "interpret_function_notation"
       ],
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
@@ -7760,8 +7760,8 @@
   "source_quality_reject_examples": [],
   "proposal_items": [
     {
-      "problem_type_id": "evaluate_function_value",
-      "proposed_problem_type_id": "evaluate_function_value",
+      "problem_type_id": "evaluate_function_value_2",
+      "proposed_problem_type_id": "evaluate_function_value_2",
       "display_name": "evaluate_function_value / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -7902,7 +7902,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -7949,7 +7949,7 @@
         "evaluate_function_value"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "evaluate_function_value",
+        "problem_type_id": "evaluate_function_value_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "evaluate_function_value",
         "task_family": "function_concept_family",
@@ -8086,7 +8086,7 @@
           "template_slots": {
             "stem": "function_value_numeric"
           },
-          "problem_type_id": "evaluate_function_value",
+          "problem_type_id": "evaluate_function_value_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -8108,14 +8108,14 @@
           "anchor_slot_bootstrap",
           "evaluate_function_value"
         ],
-        "canonical_base_problem_type_id": "evaluate_function_value",
+        "canonical_base_problem_type_id": "evaluate_function_value_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "function_value_numeric",
-      "canonical_base_problem_type_id": "evaluate_function_value",
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
       "value_type_prefix": "",
       "subskill_id": "evaluate_function_value",
       "runtime_status": "runtime_ready_candidate",
@@ -8128,8 +8128,8 @@
       "answer_type": "expression"
     },
     {
-      "problem_type_id": "interpret_function_notation",
-      "proposed_problem_type_id": "interpret_function_notation",
+      "problem_type_id": "interpret_function_notation_2",
+      "proposed_problem_type_id": "interpret_function_notation_2",
       "display_name": "interpret_function_notation / anchor bootstrap",
       "matched_example_ids": [],
       "matched_example_count": 0,
@@ -8270,7 +8270,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -8317,7 +8317,7 @@
         "interpret_function_notation"
       ],
       "problem_type_spec_draft": {
-        "problem_type_id": "interpret_function_notation",
+        "problem_type_id": "interpret_function_notation_2",
         "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
         "target_task": "interpret_function_notation",
         "task_family": "function_concept_family",
@@ -8454,7 +8454,7 @@
           "template_slots": {
             "stem": "linear_function_two_point_choice"
           },
-          "problem_type_id": "interpret_function_notation",
+          "problem_type_id": "interpret_function_notation_2",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
@@ -8476,14 +8476,14 @@
           "anchor_slot_bootstrap",
           "interpret_function_notation"
         ],
-        "canonical_base_problem_type_id": "interpret_function_notation",
+        "canonical_base_problem_type_id": "interpret_function_notation_2",
         "value_type_prefix": "",
         "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
       },
       "generator_readiness": "runtime_ready",
       "usable_for_phase3": true,
       "template_slot": "linear_function_two_point_choice",
-      "canonical_base_problem_type_id": "interpret_function_notation",
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
       "value_type_prefix": "",
       "subskill_id": "interpret_function_notation",
       "runtime_status": "runtime_ready_candidate",
