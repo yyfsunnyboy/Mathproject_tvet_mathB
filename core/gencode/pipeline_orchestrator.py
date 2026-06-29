@@ -4793,6 +4793,17 @@ def _resolve_phase1_problem_type_from_row(row: dict[str, Any]) -> str:
     return ""
 
 
+def _skill_has_python_classifier(skill_id: str) -> bool:
+    """Return True when a dedicated (non-fallback) Python classifier exists for skill_id."""
+    try:
+        from core.gencode.classifiers import get_classifier_for_skill
+        from core.gencode.classifiers.fallback_classifier import FallbackClassifier
+
+        return not isinstance(get_classifier_for_skill(skill_id), FallbackClassifier)
+    except Exception:
+        return False
+
+
 def run_v3_no_llm_phase1_for_example(
     skill_id: str,
     textbook_row: dict[str, Any],
@@ -4857,6 +4868,61 @@ def run_v3_no_llm_phase1_for_example(
                 presentation_mode=presentation_mode,
                 answer_contract=answer_contract,
             )
+
+    # ── Python classifier dispatch ────────────────────────────────────────────
+    # For skills that have a dedicated Python classifier (registered in
+    # core/gencode/classifiers/__init__.py) but no YAML rule pack, dispatch to
+    # the Python classifier before falling back to generic structural inference.
+    # This path is taken only when registered_pack is None.
+    if not registered_pack:
+        try:
+            from core.gencode.classifiers import get_classifier_for_skill
+            from core.gencode.classifiers.base import ClassificationResult, ClassifierContext
+            from core.gencode.classifiers.fallback_classifier import FallbackClassifier
+
+            py_classifier = get_classifier_for_skill(skill_key)
+            if not isinstance(py_classifier, FallbackClassifier):
+                ctx = ClassifierContext(skill_id=skill_key, project_root=PROJECT_ROOT)
+                py_result: ClassificationResult = py_classifier.classify_examples(
+                    [textbook_row], ctx
+                )
+                for entry in py_result.examples_map_entries:
+                    if int(entry.get("example_id") or 0) != example_id:
+                        continue
+                    pt = str(entry.get("problem_type_id") or entry.get("subskill_id") or "").strip()
+                    if not pt or pt.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
+                        continue
+                    runtime_cat = str(entry.get("runtime_category") or "").strip()
+                    entry_mode = (
+                        "single_choice" if runtime_cat == "deterministic_choice"
+                        else presentation_mode
+                    )
+                    caps = list(
+                        entry.get("required_domain_capabilities")
+                        or entry.get("required_capabilities")
+                        or []
+                    )
+                    if not caps:
+                        caps = [pt]
+                    answer_contract = _infer_answer_contract_from_row(
+                        textbook_row, presentation_mode=entry_mode
+                    )
+                    if runtime_cat == "deterministic_choice":
+                        answer_contract.setdefault("answer_type", "choice")
+                        answer_contract.setdefault("checker_key", "choice_label_checker")
+                        answer_contract.setdefault("equivalence_type", "choice_label")
+                    return _build_v3_phase1_induced_spec(
+                        skill_id=skill_key,
+                        textbook_example_id=example_id,
+                        source_hash=source_hash,
+                        problem_type_id=pt,
+                        required_capabilities=caps,
+                        classification_source="python_skill_classifier",
+                        presentation_mode=entry_mode,
+                        answer_contract=answer_contract,
+                    )
+        except Exception:
+            pass  # Fall through to generic structural inference
 
     taxonomy_entry: dict[str, Any] = {}
     try:
@@ -4944,6 +5010,21 @@ def run_v3_no_llm_phase1_for_example(
             answer_contract=answer_contract,
         )
 
+    # Determine whether there was a registered dispatcher at all.
+    _has_registered_classifier = bool(registered_pack) or _skill_has_python_classifier(skill_key)
+    _unresolved_reason = (
+        "empty_problem_text"
+        if not question_text.strip()
+        else (
+            "generic_structural_inference_no_match"
+            if not combined_text.strip()
+            else (
+                "phase1_classifier_not_registered"
+                if not _has_registered_classifier
+                else "phase1_classification_unresolved"
+            )
+        )
+    )
     return {
         "classification_status": "unresolved",
         "classification_status_code": PHASE1_CLASSIFICATION_UNRESOLVED,
@@ -4956,15 +5037,7 @@ def run_v3_no_llm_phase1_for_example(
         "classification_source": "",
         "presentation_mode": presentation_mode,
         "answer_contract": {},
-        "reason": (
-            "empty_problem_text"
-            if not question_text.strip()
-            else (
-                "generic_structural_inference_no_match"
-                if not combined_text.strip()
-                else "phase1_classification_unresolved"
-            )
-        ),
+        "reason": _unresolved_reason,
     }
 
 

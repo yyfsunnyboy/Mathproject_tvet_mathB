@@ -1,0 +1,38 @@
+{
+  "job_id": "20260629143859_68292e8c",
+  "kind": "import",
+  "created_at": "2026-06-29T14:38:59.276383+00:00",
+  "result": {
+    "route": "upload_db",
+    "filename": "kumon_math_backup_20260629_1701.xlsx",
+    "mode": "core",
+    "success": true,
+    "message": "偵測到 models: 30\nimport mode: core\nTable skills_info: source_rows=468, imported=468, failed=0, skipped=0\nTable skill_curriculum: source_rows=507, imported=507, failed=0, skipped=0\nTable textbook_examples: source_rows=4228, imported=4228, failed=0, skipped=0\nTable skill_family_bridge: source_rows=67, imported=67, failed=0, skipped=0\nTable skill_prerequisites: source_rows=0, imported=0, failed=0, skipped=0\nTable gencode_component_tracker: source_rows=132, imported=132, failed=0, skipped=0\nDB counts: skills_info=468, skill_curriculum=507\nskills_info by prefix: B1=45, B4=40\norphan skill_curriculum rows: 24\nWARNING: orphan skill_curriculum rows: 24\norphan: skill_id='jh_數學2下_ArithmeticSeriesSum', volume='數學2下', chapter='1 數列與級數', section='1-2 等差級數'\norphan: skill_id='jh_數學2下_ArithmeticSeriesApplications', volume='數學2下', chapter='1 數列與級數', section='1-2 等差級數'\norphan: skill_id='jh_數學2下_UnderstandFunctions', volume='數學2下', chapter='2 函數', section='2-1 函數與函數圖形'\norphan: skill_id='jh_數學2下_TransversalAndAngles', volume='數學2下', chapter='4 平行與四邊形', section='4-1 平行'\norphan: skill_id='jh_數學2下_JudgingAndConstructingParallelLines', volume='數學2下', chapter='4 平行與四邊形', section='4-1 平行'\norphan: skill_id='jh_數學2下_MeaningAndPropertiesOfParallelogram', volume='數學2下', chapter='4 平行與四邊形', section='4-2 平行四邊形'\norphan: skill_id='jh_數學2下_IdentificationAndConstructionOfParallelogram', volume='數學2下', chapter='4 平行與四邊形', section='4-2 平行四邊形'\norphan: skill_id='jh_數學2下_PropertiesOfSpecialQuadrilaterals', volume='數學2下', chapter='4 平行與四邊形', section='4-3 特殊四邊形的性質'\norphan: skill_id='jh_數學3上_SerialRatio', volume='數學3上', chapter='1 相似形', section='1-1 連比例'\norphan: skill_id='jh_數學3上_ProportionAndApplication', volume='數學3上', chapter='1 相似形', section='1-1 連比例'\norphan: skill_id='jh_數學3上_ParallelLinesInterceptProportionalSegmentsProperty', volume='數學3上', chapter='1 相似形', section='1-2 比例線段'\norphan: skill_id='jh_數學3上_ApplicationsOfParallelLinesInterceptProportionalSegmentsProperty', volume='數學3上', chapter='1 相似形', section='1-2 比例線段'\norphan: skill_id='jh_數學3上_TriangleSimilarityCriteria', volume='數學3上', chapter='1 相似形', section='1-3 縮放與相似'\norphan: skill_id='jh_數學3上_SimilarTriangleAreaSideRelation', volume='數學3上', chapter='1 相似形', section='1-4 相似三角形的應用'\norphan: skill_id='jh_數學3上_PointCircleRelationship', volume='數學3上', chapter='2 圓', section='2-1 點、直線與圓之間的位置關係'\norphan: skill_id='jh_數學3上_LineCircleRelationship', volume='數學3上', chapter='2 圓', section='2-1 點、直線與圓之間的位置關係'\norphan: skill_id='jh_數學3上_ChordChordalDistance', volume='數學3上', chapter='2 圓', section='2-1 點、直線與圓之間的位置關係'\norphan: skill_id='jh_數學3上_CentralAngleAndArcRelationship', volume='數學3上', chapter='2 圓', section='2-2 圓心角、圓周角與弧的關係'\norphan: skill_id='jh_數學3上_InscribedAngleAndArcRelationship', volume='數學3上', chapter='2 圓', section='2-2 圓心角、圓周角與弧的關係'\norphan: skill_id='jh_數學3上_GeometricProofs', volume='數學3上', chapter='3 幾何與證明', section='3-1 證明與推理'\ntracker restore: source_rows=132, imported=132, db_count=132\norphan gencode_component_tracker rows: 0\ntracker skill mismatch rows: 0\nduplicate tracker (skill_id, component_id) groups: 0\nfinal_status: completed_with_warnings\nfinal_status_reason: post_import_warnings\nwarning_count: 24\nfatal_errors: 0\norphan_skill_curriculum_count: 24",
+    "summary": {
+      "success": true,
+      "status": "completed_with_warnings",
+      "final_status": "completed_with_warnings",
+      "final_status_reason": "post_import_warnings",
+      "line_count": 41,
+      "table_count": 6,
+      "source_rows": 5402,
+      "imported_rows": 5402,
+      "failed_rows": 0,
+      "fatal_errors": 0,
+      "warning_count": 24,
+      "error_count": 0,
+      "orphan_skill_curriculum_count": 24,
+      "preview": [
+        "偵測到 models: 30",
+        "import mode: core",
+        "Table skills_info: source_rows=468, imported=468, failed=0, skipped=0",
+        "Table skill_curriculum: source_rows=507, imported=507, failed=0, skipped=0",
+        "Table textbook_examples: source_rows=4228, imported=4228, failed=0, skipped=0",
+        "Table skill_family_bridge: source_rows=67, imported=67, failed=0, skipped=0",
+        "Table skill_prerequisites: source_rows=0, imported=0, failed=0, skipped=0",
+        "Table gencode_component_tracker: source_rows=132, imported=132, failed=0, skipped=0"
+      ],
+      "message": "偵測到 models: 30\nimport mode: core\nTable skills_info: source_rows=468, imported=468, failed=0, skipped=0\nTable skill_curriculum: source_rows=507, imported=507, failed=0, skipped=0\nTable textbook_examples: source_rows=4228, imported=4228, failed=0, skipped=0\nTable skill_family_bridge: source_rows=67, imported=67, failed=0, skipped=0\nTable skill_prerequisites: source_rows=0, imported=0, failed=0, skipped=0\nTable gencode_component_tracker: source_rows=132, imported=132, failed=0, skipped=0"
+    }
+  }
+}
