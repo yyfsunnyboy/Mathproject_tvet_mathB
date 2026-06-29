@@ -4543,17 +4543,22 @@
             .then(r => r.json())
             .then(data => {
                 stopPracticeCheckLoading();
-                if (submitBtn) submitBtn.disabled = false;
-                if (analyzeBtn) analyzeBtn.disabled = false;
-                isProcessing = false;
 
                 if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+                    applyDrawingUiContract();
                     return;
                 }
 
                 if (data.duplicate_submission) {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
                     resultDisplay.textContent = data.message || data.result || '此題已批改過。';
                     resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                    applyDrawingUiContract();
                     return;
                 }
 
@@ -4565,21 +4570,27 @@
                     updateStreak(true);
                     consecutiveWrongs = 0;
                     handleCorrectAnswer();
-                } else if (isCorrectVal === false) {
-                    resultDisplay.textContent = data.result || '錯誤';
-                    resultDisplay.className = 'incorrect';
-                    updateStreak(false);
-                    consecutiveWrongs++;
-                    if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
-                        showPrereqSuggestionModal();
-                        consecutiveWrongs = 0;
-                    }
                 } else {
-                    // isCorrectVal === null (None / System Error / Blank Detection)
-                    resultDisplay.textContent = data.result || data.message || '無法判斷，請重新作答。';
-                    resultDisplay.className = 'incorrect';
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+
+                    if (isCorrectVal === false) {
+                        resultDisplay.textContent = data.result || '錯誤';
+                        resultDisplay.className = 'incorrect';
+                        updateStreak(false);
+                        consecutiveWrongs++;
+                        if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
+                            showPrereqSuggestionModal();
+                            consecutiveWrongs = 0;
+                        }
+                    } else {
+                        // isCorrectVal === null (None / System Error / Blank Detection)
+                        resultDisplay.textContent = data.result || data.message || '無法判斷，請重新作答。';
+                        resultDisplay.className = 'incorrect';
+                    }
+                    applyDrawingUiContract();
                 }
-                applyDrawingUiContract();
             })
             .catch(err => {
                 stopPracticeCheckLoading();
@@ -4730,6 +4741,7 @@
 
                     if (data.error) {
                         questionText.textContent = `錯誤：${data.error}`;
+                        isProcessing = false;
                         return;
                     }
 
@@ -4740,12 +4752,14 @@
                             responseSkill,
                         });
                         questionText.textContent = '題目技能不一致，請重新整理頁面。';
+                        isProcessing = false;
                         return;
                     }
 
                     applyCurrentQuestion(data);
                     if (!currentQuestion) {
                         questionText.textContent = '題目載入失敗（技能不一致），請重新整理。';
+                        isProcessing = false;
                         return;
                     }
                     logPracticeNewQuestionDebug(data);
@@ -4754,6 +4768,7 @@
                     const questionMainText = renderQuestion(data);
                     isInitialQuestionLoaded = true;
                     applyDrawingUiContract();
+                    isProcessing = false;
                     showInitialStarterPrompts();
 
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
@@ -4922,6 +4937,7 @@
                     questionText.textContent = '出題失敗，請重新整理';
                     if (questionChoices) questionChoices.innerHTML = '';
                     if (questionText) questionText.style.opacity = '1';
+                    isProcessing = false;
                 });
         }
 
