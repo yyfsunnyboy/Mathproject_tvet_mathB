@@ -4900,8 +4900,9 @@ def run_v3_no_llm_phase1_for_example(
             if not caps:
                 caps = [problem_type_id]
             answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
-            if deterministic.get("answer_type"):
-                answer_contract["answer_type"] = str(deterministic.get("answer_type"))
+            for key in ("answer_type", "checker_key", "equivalence_type"):
+                if deterministic.get(key):
+                    answer_contract[key] = str(deterministic.get(key))
             return _build_v3_phase1_induced_spec(
                 skill_id=skill_key,
                 textbook_example_id=example_id,
@@ -5694,19 +5695,31 @@ def _v3_resolve_gated_domain_operation(
         classification_source = "derived_capability_match" if str(
             domain_result.resolution_source or ""
         ).strip() == "derived_capability_match" else "constraints"
+        res_dict = {
+            "problem_type_id": selected,
+            "domain_operation": selected,
+            "selected_operation": selected,
+            "classification_source": classification_source,
+            "required_capabilities": list(
+                resolver_extra.get("required_capabilities")
+                or induced_spec.get("required_capabilities")
+                or []
+            ),
+        }
+        # Copy relevant Phase 1 contract fields from induced_spec, extra, or resolver_extra
+        srcs = [resolver_extra, extra, induced_spec]
+        for k in (
+            "presentation_mode", "answer_type", "checker_key",
+            "equivalence_type", "semantic_answer", "canonical_answer",
+            "question_text", "question_template", "answer_contract"
+        ):
+            for src in srcs:
+                if isinstance(src, dict) and k in src:
+                    res_dict[k] = src[k]
+                    break
         return (
             selected,
-            {
-                "problem_type_id": selected,
-                "domain_operation": selected,
-                "selected_operation": selected,
-                "classification_source": classification_source,
-                "required_capabilities": list(
-                    resolver_extra.get("required_capabilities")
-                    or induced_spec.get("required_capabilities")
-                    or []
-                ),
-            },
+            res_dict,
             ctx,
         )
 
@@ -6021,7 +6034,28 @@ def build_v3_component_draft_from_skill(
     source_label = str(extra.get("source_answer_label") or "").strip().upper()
     if source_label:
         convert_kwargs["source_answer_label"] = source_label
-    if (
+
+    # 2. 優先使用上游正式 contract
+    contract = classification.get("answer_contract") or {}
+    chk = str(classification.get("checker_key") or contract.get("checker_key") or "").strip()
+    eq = str(classification.get("equivalence_type") or classification.get("answer_equivalence") or contract.get("equivalence_type") or "").strip()
+
+    if chk and eq:
+        checker_key = chk
+        equivalence_type = eq
+        if chk == "choice_label_checker":
+            checker_module = "core.checkers.choice_label_checker"
+        elif chk == "solution_set_checker":
+            checker_module = "core.checkers.solution_set_checker"
+        elif chk in ("integer_checker", "numeric_checker", "rational_checker", "text_short_checker"):
+            checker_module = "core.checkers.structured_text_checker"
+        else:
+            checker_module = "core.checkers.structured_text_checker"
+    elif presentation_mode == "single_choice":
+        checker_key = "choice_label_checker"
+        equivalence_type = "choice_label"
+        checker_module = "core.checkers.choice_label_checker"
+    elif (
         presentation_mode == "single_choice"
         and convert_kwargs.get("source_choices")
         and re.fullmatch(r"[A-D]", source_label)

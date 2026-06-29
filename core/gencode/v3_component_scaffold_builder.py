@@ -1,4 +1,4 @@
-﻿"""Build V3 component scaffold source strings without writing to disk."""
+"""Build V3 component scaffold source strings without writing to disk."""
 
 from __future__ import annotations
 
@@ -135,29 +135,30 @@ def _build_metadata_py(
         checker_module = str(payload_meta.get("checker_module", "core.checkers.choice_label_checker"))
     else:
         fixed_domain = str(payload_meta.get("fixed_domain_key") or payload_meta.get("template_domain_key") or "").strip()
-        default_checker = "integer_checker" if fixed_domain == "statistics.descriptive_statistics" else "linear_equation_equivalent_checker"
-        default_equiv = "numeric_exact" if fixed_domain == "statistics.descriptive_statistics" else "linear_equation_equivalent"
-        default_module = (
-            "core.gencode.runtime_skill_wrapper"
-            if fixed_domain == "statistics.descriptive_statistics"
-            else "core.checkers.linear_equation_equivalent_checker"
-        )
+        default_checker = "integer_checker"
+        default_equiv = "numeric_exact"
+        default_module = "core.gencode.runtime_skill_wrapper"
+
         checker_key = str(payload_meta.get("checker_key") or default_checker)
         equivalence_type = str(payload_meta.get("equivalence_type") or default_equiv)
         checker_module = str(payload_meta.get("checker_module") or default_module)
+        if checker_module == "pipeline":
+            checker_module = "core.gencode.runtime_skill_wrapper"
 
     domain_entry = _domain_library_entry(domain_meta)
-    semantic_concepts = payload_meta.get(
-        "semantic_required_concepts",
-        ("斜率", "直線方程式"),
-    )
-    math_objects = payload_meta.get(
-        "math_objects",
-        ("coordinate_point", "linear_equation"),
-    )
-    taxonomy_path = str(
-        payload_meta.get("taxonomy_path", "coordinate_geometry:line_equation")
-    )
+
+    if fixed_domain == "algebra.absolute_value":
+        default_concepts = ("絕對值", "絕對值方程式")
+        default_objects = ("absolute_value", "equation")
+        default_taxonomy = "algebra:absolute_value"
+    else:
+        default_concepts = ()
+        default_objects = ()
+        default_taxonomy = "algebra"
+
+    semantic_concepts = payload_meta.get("semantic_required_concepts") or default_concepts
+    math_objects = payload_meta.get("math_objects") or default_objects
+    taxonomy_path = str(payload_meta.get("taxonomy_path") or default_taxonomy)
     concepts_repr = ", ".join(f'"{item}"' for item in semantic_concepts)
     objects_repr = ", ".join(f'"{item}"' for item in math_objects)
 

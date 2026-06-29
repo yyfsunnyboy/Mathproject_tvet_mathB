@@ -215,6 +215,38 @@ _op = OperationSpec  # convenience alias
 
 
 register_domain_spec(DomainCapabilitySpec(
+    domain_key="algebra.absolute_value",
+    domain_module="core.domain.absolute_value_domain",
+    entrypoint="build_absolute_value_matrix",
+    capabilities=frozenset({
+        "solve_basic_absolute_value_equation",
+        "solve_basic_absolute_value_equation_no_solution",
+        "number_line_distance_between_two_points",
+    }),
+    operations={
+        "solve_basic_absolute_value_equation": _op(
+            "solve_basic_absolute_value_equation",
+            "solve_basic_absolute_value_equation",
+            supported_answer_types=("solution_set",),
+            provided_capabilities=("solve_basic_absolute_value_equation",),
+        ),
+        "solve_basic_absolute_value_equation_no_solution": _op(
+            "solve_basic_absolute_value_equation_no_solution",
+            "solve_basic_absolute_value_equation_no_solution",
+            supported_answer_types=("solution_set",),
+            provided_capabilities=("solve_basic_absolute_value_equation_no_solution",),
+        ),
+        "number_line_distance_between_two_points": _op(
+            "number_line_distance_between_two_points",
+            "number_line_distance",
+            supported_answer_types=("integer", "numeric"),
+            provided_capabilities=("number_line_distance_between_two_points",),
+        ),
+    },
+))
+
+
+register_domain_spec(DomainCapabilitySpec(
     domain_key="coordinate_geometry.line_equation",
     domain_module="core.domain.coordinate_geometry.line_equation_domain",
     entrypoint="build_line_equation_matrix",

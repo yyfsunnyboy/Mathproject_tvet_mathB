@@ -2117,14 +2117,32 @@ def convert_domain_matrix_to_question_payload(
             "validation_facts": validation_facts,
             "generator_key": generator_key or component_id,
         })
-    question_text = str(kwargs.get("question_text") or "閱讀下列資料，根據表格回答問題。")
+    question_text = str(kwargs.get("question_text") or "")
+    if not question_text:
+        if op == "solve_basic_absolute_value_equation":
+            rhs = givens.get("rhs", 8)
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+        elif op == "solve_basic_absolute_value_equation_no_solution":
+            rhs = givens.get("rhs", -3)
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+        elif op == "number_line_distance_between_two_points":
+            a = givens.get("a", -3)
+            b = givens.get("b", 7)
+            question_text = f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，試求A、B兩點的距離。"
+        else:
+            question_text = "閱讀下列資料，根據表格回答問題。"
+
     if problem_type_id == "frequency_distribution_chart_construction":
         pass
     elif problem_type_id == "histogram_distribution_update":
         question_text = "下圖為某幼兒園班上25位小朋友身高分布之直方圖。今班上轉出一位身高117公分的小朋友，轉入一位身高112公分的小朋友，則此時班上小朋友身高分布之直方圖為何？（請說明哪兩組次數改變以及各改變多少）"
     else:
         target_label = validation_facts.get("target_label")
-        if target_label:
+        if target_label and op not in {
+            "solve_basic_absolute_value_equation",
+            "solve_basic_absolute_value_equation_no_solution",
+            "number_line_distance_between_two_points"
+        }:
             question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
 
     if problem_type_id == "frequency_distribution_chart_construction":
@@ -2227,13 +2245,24 @@ def convert_domain_matrix_to_question_payload(
     options: list[str] = []
     payload_answer = semantic_answer
     payload_correct = semantic_answer
+    if resolved_answer_type == "solution_set":
+        chk_key = "solution_set_checker"
+        equiv_type = "unordered_solution_set"
+    elif problem_type_id == "histogram_distribution_update":
+        chk_key = "text_short_checker"
+        equiv_type = "string_equivalence"
+    else:
+        chk_key = "integer_checker"
+        equiv_type = "numeric_exact"
+
     answer_contract = {
         "presentation_mode": mode,
         "answer_type": resolved_answer_type,
-        "checker": "text_short_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
-        "checker_key": "text_short_checker" if problem_type_id == "histogram_distribution_update" else "integer_checker",
-        "answer_equivalence": "string_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
-        "equivalence": "string_equivalence" if problem_type_id == "histogram_distribution_update" else "numeric_exact",
+        "checker": chk_key,
+        "checker_key": chk_key,
+        "answer_equivalence": equiv_type,
+        "equivalence": equiv_type,
+        "equivalence_type": equiv_type,
         "semantic_answer": semantic_answer,
         "ui_contract": {
             "response_mode": "text",
@@ -2277,6 +2306,10 @@ def convert_domain_matrix_to_question_payload(
         "source_kind": source_kind,
         "presentation_mode": mode,
         "answer_type": resolved_answer_type,
+        "checker": answer_contract["checker"],
+        "checker_key": answer_contract["checker_key"],
+        "equivalence": answer_contract["equivalence"],
+        "equivalence_type": answer_contract["answer_equivalence"],
         "interaction_type": "expression",
         "auto_checkable": True,
         "grading_mode": "auto",
@@ -2304,7 +2337,15 @@ def convert_domain_matrix_to_question_payload(
             "derivation": [str(step) for step in normalized["explanation_steps"]],
             "validation_facts": validation_facts,
         },
-        "visual_spec": normalized["visual_spec"],
+        "visual_spec": (
+            None
+            if (
+                isinstance(normalized.get("visual_spec"), dict)
+                and not normalized["visual_spec"].get("points")
+                and not normalized["visual_spec"].get("lines")
+            )
+            else normalized["visual_spec"]
+        ),
         "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
         "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,

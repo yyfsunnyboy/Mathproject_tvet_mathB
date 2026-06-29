@@ -366,14 +366,39 @@ def test_domain_failure_preserves_phase1_trace(memory_conn, dryrun_root):
         problem_text="試求平均數：4, 5, 6, 7",
     )
 
-    result = run_admin_v3_dryrun_for_example(
-        conn=memory_conn,
-        textbook_example_id=example_id,
-        skill_id=UNKNOWN_SKILL,
-        dryrun_base_dir=str(dryrun_root),
-        allow_non_mvp_skill=True,
-        force_regenerate=True,
-    )
+    def _phase2_domain_failure(skill_id, **kwargs):
+        phase1 = kwargs["v3_induced_spec"]
+        save_tracker_record(
+            memory_conn,
+            textbook_example_id=example_id,
+            skill_id=skill_id,
+            gencode_status="failed",
+            induced_spec_payload={
+                "phase1_classification": phase1,
+                "failure_stage": "domain_resolution",
+                "failure_code": "DOMAIN_FUNCTION_MISSING",
+            },
+            gencode_error_log="DOMAIN_FUNCTION_MISSING: injected domain failure",
+        )
+        return {
+            "phase_status": "V3_SHADOW_BRIDGE",
+            "tracker_status": "failed",
+            "v3_shadow_bridge": {"model_generation_invoked": False},
+        }
+
+    with patch(
+        "core.gencode.services.admin_gencode_action_service.run_gencode_phase2_raw",
+        side_effect=_phase2_domain_failure,
+    ) as phase2_mock:
+        result = run_admin_v3_dryrun_for_example(
+            conn=memory_conn,
+            textbook_example_id=example_id,
+            skill_id=UNKNOWN_SKILL,
+            dryrun_base_dir=str(dryrun_root),
+            allow_non_mvp_skill=True,
+            force_regenerate=True,
+        )
+        phase2_mock.assert_called_once()
 
     assert result["status"] == "failed"
     tracker = memory_conn.execute(
@@ -386,3 +411,5 @@ def test_domain_failure_preserves_phase1_trace(memory_conn, dryrun_root):
     assert phase1.get("required_capabilities")
     assert phase1.get("classification_source")
     assert phase1.get("problem_type_id") != "mixed_counting"
+    assert payload["failure_stage"] == "domain_resolution"
+    assert payload["failure_code"] == "DOMAIN_FUNCTION_MISSING"

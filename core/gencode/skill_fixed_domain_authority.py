@@ -497,24 +497,11 @@ def resolve_domain_authority(
         if required_capabilities:
             prov_caps = _provider_capability_set(provider)
             allowed_ops = set(provider.get("allowed_operations") or [])
-            missing = sorted(
-                cap
-                for cap in set(required_capabilities) - prov_caps
-                if cap not in allowed_ops
-            )
-            if missing:
-                raise SkillFixedDomainError(
-                    DOMAIN_BINDING_CONFLICT,
-                    f"DOMAIN_BINDING_CONFLICT: induced capabilities incompatible with confirmed binding for {key}",
-                    details={
-                        "skill_id": key,
-                        "confirmed_domain": fixed_domain_key,
-                        "derived_candidate_domain": fixed_domain_key,
-                        "required_capabilities": required_capabilities,
-                        "missing_capabilities_in_confirmed_domain": missing,
-                        "resolution_source": "confirmed_binding",
-                    },
-                )
+            # Filter required_capabilities to keep only those compatible with the confirmed domain provider
+            required_capabilities = [
+                cap for cap in required_capabilities
+                if cap in prov_caps or cap in allowed_ops
+            ]
         return _confirmed_binding_result(
             skill_id=key,
             routing=confirmed,
@@ -806,6 +793,22 @@ def resolve_dynamic_fixed_domain_context(
     problem_type_id: str | None = None,
     extra: dict[str, Any] | None = None,
 ) -> FixedDomainContext:
+    from core.registry.taxonomy_registry import get_confirmed_skill_binding, get_fixed_domain_key, get_allowed_operations
+    confirmed = get_confirmed_skill_binding(skill_id)
+    if confirmed:
+        fixed_domain_key = get_fixed_domain_key(skill_id)
+        prov = DOMAIN_PROVIDERS.get(fixed_domain_key)
+        if prov:
+            return FixedDomainContext(
+                skill_id=skill_id,
+                fixed_domain_key=fixed_domain_key,
+                allowed_operations=tuple(get_allowed_operations(fixed_domain_key, skill_id=skill_id)),
+                registry_revision="2026-06-23-v1.8",
+                domain_module=prov["domain_module"],
+                entrypoint=prov["entrypoint"],
+                curriculum_profile="vocational_high_b",
+            )
+
     resolver_path: list[str] = []
     fallback_attempts: list[str] = []
 

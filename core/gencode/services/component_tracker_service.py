@@ -163,6 +163,7 @@ def save_tracker_record(
             "draft_written",
             "smoke_passed",
             "verified",
+            "needs_human_review",
             "failed",
         }
     )
@@ -268,6 +269,7 @@ def update_status(
             "draft_written",
             "smoke_passed",
             "verified",
+            "needs_human_review",
             "failed",
         }
     )

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import hashlib
+import unicodedata
 from dataclasses import dataclass
 from typing import Any
 
@@ -44,6 +45,73 @@ def parse_choices_from_text(text: str) -> list[str]:
         if i + 1 < len(parts):
             choices.append(parts[i+1].strip())
     return choices
+
+
+def _normalize_structural_math_text(text: str) -> str:
+    normalized = unicodedata.normalize("NFKC", str(text or ""))
+    normalized = normalized.replace("\\left", "").replace("\\right", "")
+    return re.sub(r"\s+", "", normalized)
+
+
+def _classify_basic_absolute_value_equation(text: str) -> dict[str, Any] | None:
+    compact = _normalize_structural_math_text(text)
+    match = re.search(r"\|([A-Za-z])\|\$?=(-?\d+(?:\.\d+)?)", compact)
+    if match is None:
+        return None
+
+    variable = match.group(1)
+    if not re.search(rf"(求|試求|solve).*{re.escape(variable)}", compact, re.IGNORECASE):
+        return None
+
+    rhs = float(match.group(2))
+    if rhs < 0:
+        operation = "solve_basic_absolute_value_equation_no_solution"
+        task_intent = "solve_absolute_value_equation_no_solution"
+    else:
+        operation = "solve_basic_absolute_value_equation"
+        task_intent = "solve_absolute_value_equation"
+
+    return {
+        "selected_operation": operation,
+        "problem_type_id": operation,
+        "math_family": "absolute_value_equation",
+        "task_intent": task_intent,
+        "presentation_mode": "multiple_inputs",
+        "answer_type": "solution_set",
+        "checker_key": "solution_set_checker",
+        "equivalence_type": "unordered_solution_set",
+        "required_domain_capabilities": [operation],
+        "confidence": 1.0,
+        "classification_source": "deterministic_structural",
+    }
+
+
+def _classify_number_line_distance(text: str) -> dict[str, Any] | None:
+    compact = _normalize_structural_math_text(text)
+    if "數線" not in compact or not any(token in compact for token in ("距離", "求AB", "求PQ")):
+        return None
+
+    point_coordinates = re.findall(
+        r"([A-Za-z])(?:點)?(?:坐標為)?[（(]?(-?\d+(?:\.\d+)?|[A-Za-z])[）)]?",
+        compact,
+    )
+    distinct_points = {point.upper() for point, _ in point_coordinates}
+    if len(point_coordinates) < 2 or len(distinct_points) < 2:
+        return None
+
+    return {
+        "selected_operation": "number_line_distance_between_two_points",
+        "problem_type_id": "number_line_distance_between_two_points",
+        "math_family": "number_line_distance",
+        "task_intent": "compute_one_dimensional_distance",
+        "presentation_mode": "integer",
+        "answer_type": "integer",
+        "checker_key": "integer_checker",
+        "equivalence_type": "numeric_exact",
+        "required_domain_capabilities": ["number_line_distance_between_two_points"],
+        "confidence": 1.0,
+        "classification_source": "deterministic_structural",
+    }
 
 
 def _distance_comparison_target_direction(text: str) -> str:
@@ -227,6 +295,14 @@ def _deterministic_classify(
 ) -> dict[str, Any] | None:
     text = source.question_text or ""
     fixed_domain_key = str((taxonomy_entry or {}).get("fixed_domain_key") or "").strip()
+
+    structural = _classify_basic_absolute_value_equation(text)
+    if structural is not None:
+        return structural
+
+    structural = _classify_number_line_distance(text)
+    if structural is not None:
+        return structural
 
     if fixed_domain_key == "statistics.table_chart":
         example_id = int(getattr(source, "textbook_example_id", 0) or 0)
