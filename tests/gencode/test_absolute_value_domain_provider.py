@@ -53,6 +53,10 @@ def test_number_line_distance(a: int, b: int, expected: int) -> None:
         "solve_basic_absolute_value_equation",
         "solve_basic_absolute_value_equation_no_solution",
         "number_line_distance_between_two_points",
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_integer_solution_count_choice",
     ],
 )
 def test_capability_resolver_selects_absolute_value_provider(capability: str) -> None:

@@ -29,12 +29,16 @@ def _normalize(text: object) -> str:
 
 
 def _parse_num(token: str) -> float:
+    from fractions import Fraction
     t = token.strip().lower()
     if t in {"inf", "+inf", "+infinity", "infinity"}:
         return float("inf")
     if t in {"-inf", "-infinity"}:
         return float("-inf")
-    return float(t)
+    try:
+        return float(Fraction(t))
+    except Exception:
+        return float(t)
 
 
 def _split_union(s: str) -> List[str]:
@@ -54,11 +58,11 @@ def _parse_bracket_interval(part: str) -> List[Interval]:
 
 def _parse_inequality(part: str) -> List[Interval]:
     p = part.replace(" ", "")
-    m = re.match(r"^([\-]?\w+)(<=|<)x(<=|<)([\-]?\w+)$", p)
+    m = re.match(r"^([\-]?[\w/]+)(<=|<)x(<=|<)([\-]?[\w/]+)$", p)
     if m:
         lo, op1, op2, hi = m.groups()
         return [(_parse_num(lo), _parse_num(hi), op1 == "<=", op2 == "<=")]
-    m = re.match(r"^x(<=|<|>=|>)([\-]?\w+)$", p)
+    m = re.match(r"^x(<=|<|>=|>)([\-]?[\w/]+)$", p)
     if m:
         op, val = m.groups()
         v = _parse_num(val)
@@ -70,11 +74,11 @@ def _parse_inequality(part: str) -> List[Interval]:
             return [(v, float("inf"), False, False)]
         if op == ">=":
             return [(v, float("inf"), True, False)]
-    m = re.match(r"^([\-]?\w+)(<=|<)x$", p)
+    m = re.match(r"^([\-]?[\w/]+)(<=|<)x$", p)
     if m:
         lo, op = m.groups()
         return [(_parse_num(lo), float("inf"), op == "<=", False)]
-    m = re.match(r"^([\-]?\w+)(>=|>)x$", p)
+    m = re.match(r"^([\-]?[\w/]+)(>=|>)x$", p)
     if m:
         hi, op = m.groups()
         return [(float("-inf"), _parse_num(hi), False, op == ">=")]

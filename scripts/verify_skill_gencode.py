@@ -1,4 +1,4 @@
-﻿import argparse
+import argparse
 import importlib
 import json
 import subprocess
@@ -73,8 +73,8 @@ def main() -> None:
     runtime_cov["status"] = "pass" if len(runtime_cov["missing_problem_types"]) == 0 and ok_generate and ok_registry else "fail"
 
     pytest_target = "tests/test_b1_absolute_value_skill_wrapper.py"
-    if args.skill_id != "vh_數學B1_AbsoluteValue":
-        pytest_target = "tests/test_b1_absolute_value_skill_wrapper.py"
+    if args.skill_id == "vh_數學B1_AbsoluteValueInequality":
+        pytest_target = "tests/test_b1_absolute_value_inequality_runtime_wrapper.py"
     test_cmd = [sys.executable, "-m", "pytest", pytest_target, "-q"]
     tr = subprocess.run(test_cmd, cwd=str(root), capture_output=True, text=True, timeout=180)
     ok_pytest = tr.returncode == 0

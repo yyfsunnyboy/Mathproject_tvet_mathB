@@ -41,17 +41,28 @@ def generate(level: int = 1, seed: int | None = None, difficulty: int | None = N
     return {
         "skill_id": SKILL_ID,
         "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+        "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
         "question_text": question,
         "question": question,
         "choices": options,
         "answer": answer_label,
         "correct_answer": answer_label,
-        "answer_type": "choice_label",
+        "answer_type": "choice",
+        "checker_type": "choice_label_checker",
         "answer_contract": {"answer_type": "choice", "equivalence_type": "choice_label", "checker_key": "choice_label_checker"},
         "explanation": f"先解得區間 {format_interval(iv)}，再計算整數點個數。",
-        "difficulty": int(difficulty if difficulty is not None else level),
+        "solution_steps": [f"先解得區間 {format_interval(iv)}，再計算整數點個數。"],
+        "difficulty": int(difficulty) if isinstance(difficulty, int) or (isinstance(difficulty, str) and difficulty.isdigit()) else int(level),
         "diagnosis_tags": ["absolute_value", "integer_count", "choice_label"],
         "source": "gencode_candidate_v1",
+        "metadata": {
+            "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+            "scenario_id": "s1",
+            "parameter_signature": f"solution_count:a={a}:b={b}:c={c}",
+            "question_pattern_id": "p1",
+            "diagnosis_tags": ["absolute_value", "integer_count", "choice_label"],
+            "prerequisite_subskills": ["absolute_value_numeric_evaluation"],
+        },
     }
 
 

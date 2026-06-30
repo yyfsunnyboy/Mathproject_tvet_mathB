@@ -14,9 +14,7 @@
   "registry_binding_status": "SKIPPED_NON_DESTRUCTIVE",
   "wrapper_binding_status": "BOUND",
   "runtime_binding_status": "READY_FOR_PHASE3_CHECK",
-  "manual_review_exclusions": [
-    "absolute_value_inequality_malformed_source_review"
-  ],
+  "manual_review_exclusions": [],
   "tests_run": [
     "py_compile skills/vh_數學B1_AbsoluteValueInequality.py",
     "pytest tests/test_b1_absolute_value_inequality_runtime_wrapper.py -q"
@@ -27,14 +25,14 @@
   "pytest_results": {
     "tests/test_b1_absolute_value_inequality_runtime_wrapper.py": {
       "passed": true,
-      "output": "..                                                                       [100%]\n============================== warnings summary ===============================\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\cacheprovider.py:451: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\nodeids: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\nodeids'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\nC:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56\n  C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\_pytest\\stepwise.py:56: PytestCacheWarning: cache could not write path D:\\Python\\Mathproject_tvet_mathB\\.pytest_cache\\v\\cache\\stepwise: [Errno 13] Permission denied: 'D:\\\\Python\\\\Mathproject_tvet_mathB\\\\.pytest_cache\\\\v\\\\cache\\\\stepwise'\n    session.config.cache.set(STEPWISE_CACHE_DIR, [])\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 2 warnings in 0.02s"
+      "output": "..                                                                       [100%]\n2 passed in 0.07s"
     }
   },
   "blocking_reasons": [],
   "warnings": [],
   "artifact_paths": {
-    "repair_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_runtime_binding.json",
-    "repair_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_runtime_binding.md"
+    "repair_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_runtime_binding.json",
+    "repair_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_repair_missing_runtime_binding.md"
   },
-  "timestamp": "2026-05-27T01:44:58.438863+00:00"
+  "timestamp": "2026-06-30T15:11:46.923717+00:00"
 }

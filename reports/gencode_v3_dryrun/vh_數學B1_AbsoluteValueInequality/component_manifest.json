@@ -1,0 +1,117 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "compiled_at": "2026-06-30T15:27:13.876099+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4400",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4400",
+      "textbook_example_id": 4400,
+      "line_type": "absolute_value_inequality_zero_center_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4400"
+    },
+    {
+      "component_id": "src_4402",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4402",
+      "textbook_example_id": 4402,
+      "line_type": "absolute_value_inequality_shifted_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4402"
+    },
+    {
+      "component_id": "src_4403",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4403",
+      "textbook_example_id": 4403,
+      "line_type": "absolute_value_inequality_shifted_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4403"
+    },
+    {
+      "component_id": "src_4404",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4404",
+      "textbook_example_id": 4404,
+      "line_type": "absolute_value_inequality_linear_expression_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4404"
+    },
+    {
+      "component_id": "src_4405",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4405",
+      "textbook_example_id": 4405,
+      "line_type": "absolute_value_inequality_linear_expression_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4405"
+    },
+    {
+      "component_id": "src_4406",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4406",
+      "textbook_example_id": 4406,
+      "line_type": "absolute_value_inequality_linear_expression_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4406"
+    },
+    {
+      "component_id": "src_4407",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4407",
+      "textbook_example_id": 4407,
+      "line_type": "absolute_value_inequality_linear_expression_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4407"
+    },
+    {
+      "component_id": "src_4409",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4409",
+      "textbook_example_id": 4409,
+      "line_type": "absolute_value_inequality_zero_center_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4409"
+    },
+    {
+      "component_id": "src_4413",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4413",
+      "textbook_example_id": 4413,
+      "line_type": "absolute_value_inequality_zero_center_basic",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4413"
+    },
+    {
+      "component_id": "src_4499",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4499",
+      "textbook_example_id": 4499,
+      "line_type": "absolute_value_inequality_integer_solution_count_choice",
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix",
+      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_AbsoluteValueInequality\\components\\src_4499"
+    }
+  ]
+}

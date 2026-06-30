@@ -222,6 +222,10 @@ register_domain_spec(DomainCapabilitySpec(
         "solve_basic_absolute_value_equation",
         "solve_basic_absolute_value_equation_no_solution",
         "number_line_distance_between_two_points",
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_integer_solution_count_choice",
     }),
     operations={
         "solve_basic_absolute_value_equation": _op(
@@ -241,6 +245,30 @@ register_domain_spec(DomainCapabilitySpec(
             "number_line_distance",
             supported_answer_types=("integer", "numeric"),
             provided_capabilities=("number_line_distance_between_two_points",),
+        ),
+        "absolute_value_inequality_zero_center_basic": _op(
+            "absolute_value_inequality_zero_center_basic",
+            "build_absolute_value_matrix",
+            supported_answer_types=("interval_set",),
+            provided_capabilities=("absolute_value_inequality_zero_center_basic",),
+        ),
+        "absolute_value_inequality_linear_expression_basic": _op(
+            "absolute_value_inequality_linear_expression_basic",
+            "build_absolute_value_matrix",
+            supported_answer_types=("interval_set",),
+            provided_capabilities=("absolute_value_inequality_linear_expression_basic",),
+        ),
+        "absolute_value_inequality_shifted_basic": _op(
+            "absolute_value_inequality_shifted_basic",
+            "build_absolute_value_matrix",
+            supported_answer_types=("interval_set",),
+            provided_capabilities=("absolute_value_inequality_shifted_basic",),
+        ),
+        "absolute_value_inequality_integer_solution_count_choice": _op(
+            "absolute_value_inequality_integer_solution_count_choice",
+            "build_absolute_value_matrix",
+            supported_answer_types=("choice",),
+            provided_capabilities=("absolute_value_inequality_integer_solution_count_choice",),
         ),
     },
 ))

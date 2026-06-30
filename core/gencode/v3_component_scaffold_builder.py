@@ -129,12 +129,13 @@ def _build_metadata_py(
     answer_schema_key = str(payload_meta.get("answer_schema_key") or "").strip()
     textbook_id = int(textbook_example_id if textbook_example_id is not None else payload_meta.get("textbook_example_id", 0) or 0)
 
+    fixed_domain = str(payload_meta.get("fixed_domain_key") or payload_meta.get("template_domain_key") or "").strip()
+
     if presentation_mode == "single_choice":
         checker_key = str(payload_meta.get("checker_key", "choice_label_checker"))
         equivalence_type = str(payload_meta.get("equivalence_type", "choice_label"))
         checker_module = str(payload_meta.get("checker_module", "core.checkers.choice_label_checker"))
     else:
-        fixed_domain = str(payload_meta.get("fixed_domain_key") or payload_meta.get("template_domain_key") or "").strip()
         default_checker = "integer_checker"
         default_equiv = "numeric_exact"
         default_module = "core.gencode.runtime_skill_wrapper"

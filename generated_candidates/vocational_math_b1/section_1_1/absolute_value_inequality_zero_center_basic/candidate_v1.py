@@ -43,16 +43,27 @@ def generate(level: int = 1, seed: int | None = None, difficulty: int | None = N
     return {
         "skill_id": SKILL_ID,
         "problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "subskill_id": "absolute_value_inequality_zero_center_basic",
         "question_text": question,
         "question": question,
         "answer": answer,
         "correct_answer": answer,
         "answer_type": "interval_set",
+        "checker_type": "interval_checker",
         "answer_contract": {"answer_type": "interval_set", "equivalence_type": "interval_set", "checker_key": "interval_checker"},
         "explanation": "將絕對值不等式轉為區間端點形式。",
-        "difficulty": int(difficulty if difficulty is not None else level),
+        "solution_steps": ["將絕對值不等式轉為區間端點形式。"],
+        "difficulty": int(difficulty) if isinstance(difficulty, int) or (isinstance(difficulty, str) and difficulty.isdigit()) else int(level),
         "diagnosis_tags": ["absolute_value", "inequality", "interval_set"],
         "source": "gencode_candidate_v1",
+        "metadata": {
+            "scenario_family": "absolute_value_inequality_zero_center_basic",
+            "scenario_id": "s1",
+            "parameter_signature": f"zero_center:a={a}:op={op}",
+            "question_pattern_id": "p1",
+            "diagnosis_tags": ["absolute_value", "inequality", "interval_set"],
+            "prerequisite_subskills": ["absolute_value_numeric_evaluation"],
+        },
     }
 
 

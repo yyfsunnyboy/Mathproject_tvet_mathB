@@ -56,6 +56,30 @@ PT_SPECS: dict[str, dict[str, Any]] = {
         "candidate_subdir": "text_short_slope_of_line_problems",
         "subskill_id": "text_short_slope_of_line_problems",
     },
+    "absolute_value_inequality_integer_solution_count_choice": {
+        "answer_type": "choice",
+        "checker_type": "choice_label_checker",
+        "candidate_subdir": "absolute_value_inequality_integer_solution_count_choice",
+        "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+    },
+    "absolute_value_inequality_linear_expression_basic": {
+        "answer_type": "interval_set",
+        "checker_type": "interval_checker",
+        "candidate_subdir": "absolute_value_inequality_linear_expression_basic",
+        "subskill_id": "absolute_value_inequality_linear_expression_basic",
+    },
+    "absolute_value_inequality_shifted_basic": {
+        "answer_type": "interval_set",
+        "checker_type": "interval_checker",
+        "candidate_subdir": "absolute_value_inequality_shifted_basic",
+        "subskill_id": "absolute_value_inequality_shifted_basic",
+    },
+    "absolute_value_inequality_zero_center_basic": {
+        "answer_type": "interval_set",
+        "checker_type": "interval_checker",
+        "candidate_subdir": "absolute_value_inequality_zero_center_basic",
+        "subskill_id": "absolute_value_inequality_zero_center_basic",
+    },
 }
 
 
@@ -438,8 +462,8 @@ def main() -> None:
     p.add_argument("--max-rounds", type=int, default=5)
     args = p.parse_args()
 
-    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine"}:
-        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines 與 SlopeOfALine")
+    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine", "vh_數學B1_AbsoluteValueInequality"}:
+        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines、SlopeOfALine 與 AbsoluteValueInequality")
     if args.problem_type_id not in PT_SPECS:
         raise RuntimeError("closed_loop_generator_not_implemented")
 

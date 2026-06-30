@@ -106,3 +106,14 @@ skills:
       - solve_basic_absolute_value_equation
       - solve_basic_absolute_value_equation_no_solution
       - number_line_distance_between_two_points
+  vh_數學B1_AbsoluteValueInequality:
+    fixed_domain_key: algebra.absolute_value
+    domain_module: core.domain.absolute_value_domain
+    entrypoint: build_absolute_value_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - absolute_value_inequality_zero_center_basic
+      - absolute_value_inequality_linear_expression_basic
+      - absolute_value_inequality_shifted_basic
+      - absolute_value_inequality_integer_solution_count_choice

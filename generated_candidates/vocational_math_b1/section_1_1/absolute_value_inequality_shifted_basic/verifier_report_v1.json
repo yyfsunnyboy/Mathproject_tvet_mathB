@@ -1,0 +1,1243 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_shifted_basic\\candidate_v1.py",
+  "errors": [],
+  "samples": [
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 4 \\right| >= 8$。",
+      "question": "解不等式：$\\left| x - 4 \\right| >= 8$。",
+      "answer": "(-∞,-4] ∪ [12,∞)",
+      "correct_answer": "(-∞,-4] ∪ [12,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=4:a=8:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 4 \\right| < 6$。",
+      "question": "解不等式：$\\left| x + 4 \\right| < 6$。",
+      "answer": "(-10,2)",
+      "correct_answer": "(-10,2)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-4:a=6:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 7 \\right| < 2$。",
+      "question": "解不等式：$\\left| x + 7 \\right| < 2$。",
+      "answer": "(-9,-5)",
+      "correct_answer": "(-9,-5)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-7:a=2:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 1 \\right| <= 6$。",
+      "question": "解不等式：$\\left| x + 1 \\right| <= 6$。",
+      "answer": "[-7,5]",
+      "correct_answer": "[-7,5]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-1:a=6:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 1 \\right| < 4$。",
+      "question": "解不等式：$\\left| x + 1 \\right| < 4$。",
+      "answer": "(-5,3)",
+      "correct_answer": "(-5,3)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-1:a=4:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 3 \\right| > 7$。",
+      "question": "解不等式：$\\left| x - 3 \\right| > 7$。",
+      "answer": "(-∞,-4) ∪ (10,∞)",
+      "correct_answer": "(-∞,-4) ∪ (10,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=3:a=7:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 6 \\right| > 5$。",
+      "question": "解不等式：$\\left| x + 6 \\right| > 5$。",
+      "answer": "(-∞,-11) ∪ (-1,∞)",
+      "correct_answer": "(-∞,-11) ∪ (-1,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-6:a=5:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 2 \\right| >= 3$。",
+      "question": "解不等式：$\\left| x - 2 \\right| >= 3$。",
+      "answer": "(-∞,-1] ∪ [5,∞)",
+      "correct_answer": "(-∞,-1] ∪ [5,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=2:a=3:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 1 \\right| >= 4$。",
+      "question": "解不等式：$\\left| x + 1 \\right| >= 4$。",
+      "answer": "(-∞,-5] ∪ [3,∞)",
+      "correct_answer": "(-∞,-5] ∪ [3,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-1:a=4:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 6 \\right| > 6$。",
+      "question": "解不等式：$\\left| x - 6 \\right| > 6$。",
+      "answer": "(-∞,0) ∪ (12,∞)",
+      "correct_answer": "(-∞,0) ∪ (12,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=6:a=6:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 7 \\right| >= 5$。",
+      "question": "解不等式：$\\left| x + 7 \\right| >= 5$。",
+      "answer": "(-∞,-12] ∪ [-2,∞)",
+      "correct_answer": "(-∞,-12] ∪ [-2,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-7:a=5:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 6 \\right| >= 8$。",
+      "question": "解不等式：$\\left| x - 6 \\right| >= 8$。",
+      "answer": "(-∞,-2] ∪ [14,∞)",
+      "correct_answer": "(-∞,-2] ∪ [14,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=6:a=8:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 7 \\right| > 4$。",
+      "question": "解不等式：$\\left| x - 7 \\right| > 4$。",
+      "answer": "(-∞,3) ∪ (11,∞)",
+      "correct_answer": "(-∞,3) ∪ (11,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=7:a=4:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 3 \\right| <= 4$。",
+      "question": "解不等式：$\\left| x - 3 \\right| <= 4$。",
+      "answer": "[-1,7]",
+      "correct_answer": "[-1,7]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=3:a=4:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 5 \\right| <= 6$。",
+      "question": "解不等式：$\\left| x + 5 \\right| <= 6$。",
+      "answer": "[-11,1]",
+      "correct_answer": "[-11,1]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-5:a=6:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 2 \\right| < 2$。",
+      "question": "解不等式：$\\left| x + 2 \\right| < 2$。",
+      "answer": "(-4,0)",
+      "correct_answer": "(-4,0)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-2:a=2:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 3 \\right| >= 5$。",
+      "question": "解不等式：$\\left| x - 3 \\right| >= 5$。",
+      "answer": "(-∞,-2] ∪ [8,∞)",
+      "correct_answer": "(-∞,-2] ∪ [8,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=3:a=5:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 8 \\right| > 5$。",
+      "question": "解不等式：$\\left| x - 8 \\right| > 5$。",
+      "answer": "(-∞,3) ∪ (13,∞)",
+      "correct_answer": "(-∞,3) ∪ (13,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=8:a=5:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 3 \\right| >= 2$。",
+      "question": "解不等式：$\\left| x + 3 \\right| >= 2$。",
+      "answer": "(-∞,-5] ∪ [-1,∞)",
+      "correct_answer": "(-∞,-5] ∪ [-1,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-3:a=2:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 7 \\right| < 8$。",
+      "question": "解不等式：$\\left| x + 7 \\right| < 8$。",
+      "answer": "(-15,1)",
+      "correct_answer": "(-15,1)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-7:a=8:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 4 \\right| < 4$。",
+      "question": "解不等式：$\\left| x + 4 \\right| < 4$。",
+      "answer": "(-8,0)",
+      "correct_answer": "(-8,0)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-4:a=4:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 3 \\right| >= 5$。",
+      "question": "解不等式：$\\left| x + 3 \\right| >= 5$。",
+      "answer": "(-∞,-8] ∪ [2,∞)",
+      "correct_answer": "(-∞,-8] ∪ [2,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-3:a=5:op=>=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 4 \\right| < 3$。",
+      "question": "解不等式：$\\left| x + 4 \\right| < 3$。",
+      "answer": "(-7,-1)",
+      "correct_answer": "(-7,-1)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-4:a=3:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 1 \\right| < 8$。",
+      "question": "解不等式：$\\left| x - 1 \\right| < 8$。",
+      "answer": "(-7,9)",
+      "correct_answer": "(-7,9)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=1:a=8:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 4 \\right| <= 8$。",
+      "question": "解不等式：$\\left| x - 4 \\right| <= 8$。",
+      "answer": "[-4,12]",
+      "correct_answer": "[-4,12]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=4:a=8:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 4 \\right| < 8$。",
+      "question": "解不等式：$\\left| x - 4 \\right| < 8$。",
+      "answer": "(-4,12)",
+      "correct_answer": "(-4,12)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=4:a=8:op=<",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 2 \\right| <= 7$。",
+      "question": "解不等式：$\\left| x + 2 \\right| <= 7$。",
+      "answer": "[-9,5]",
+      "correct_answer": "[-9,5]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-2:a=7:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x - 7 \\right| > 7$。",
+      "question": "解不等式：$\\left| x - 7 \\right| > 7$。",
+      "answer": "(-∞,0) ∪ (14,∞)",
+      "correct_answer": "(-∞,0) ∪ (14,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=7:a=7:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 5 \\right| <= 7$。",
+      "question": "解不等式：$\\left| x + 5 \\right| <= 7$。",
+      "answer": "[-12,2]",
+      "correct_answer": "[-12,2]",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-5:a=7:op=<=",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_shifted_basic",
+      "subskill_id": "absolute_value_inequality_shifted_basic",
+      "question_text": "解不等式：$\\left| x + 6 \\right| > 4$。",
+      "question": "解不等式：$\\left| x + 6 \\right| > 4$。",
+      "answer": "(-∞,-10) ∪ (-2,∞)",
+      "correct_answer": "(-∞,-10) ∪ (-2,∞)",
+      "answer_type": "interval_set",
+      "checker_type": "interval_checker",
+      "answer_contract": {
+        "answer_type": "interval_set",
+        "equivalence_type": "interval_set",
+        "checker_key": "interval_checker"
+      },
+      "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
+      "solution_steps": [
+        "先視為 |x-h| 型，再轉回 x 的區間。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "shifted",
+        "interval_set"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_shifted_basic",
+        "scenario_id": "s1",
+        "parameter_signature": "shifted:h=-6:a=4:op=>",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "shifted",
+          "interval_set"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    }
+  ],
+  "passed": true,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 30,
+    "repeated_question_text_ratio": 0.0,
+    "unique_parameter_signature_count": 30
+  }
+}

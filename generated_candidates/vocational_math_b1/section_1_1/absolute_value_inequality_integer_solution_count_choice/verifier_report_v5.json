@@ -1,0 +1,1454 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\absolute_value_inequality_integer_solution_count_choice\\candidate_v1.py",
+  "errors": [
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid",
+    "answer_type_invalid"
+  ],
+  "samples": [
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x + 6 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x + 6 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "11",
+        "10",
+        "9",
+        "8"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-7,1]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-7,1]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=6:c=8",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x + 3 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x + 3 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "9",
+        "7",
+        "6",
+        "8"
+      ],
+      "answer": "B",
+      "correct_answer": "B",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-6,0]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-6,0]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=3:c=3",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 5 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 5 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "9",
+        "7",
+        "6",
+        "8"
+      ],
+      "answer": "B",
+      "correct_answer": "B",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [2,8]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [2,8]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-5:c=3",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x + 3 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x + 3 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "8",
+        "9",
+        "11",
+        "10"
+      ],
+      "answer": "B",
+      "correct_answer": "B",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-7,1]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-7,1]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=3:c=4",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 2 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 2 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "8",
+        "6",
+        "7",
+        "9"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-1,5]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-1,5]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-2:c=3",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 2 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 2 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "6",
+        "7",
+        "5",
+        "4"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-1.6666666667,3]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-1.6666666667,3]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-2:c=7",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 5 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 5 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "6",
+        "8",
+        "5",
+        "7"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-1.3333333333,4.6666666667]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-1.3333333333,4.6666666667]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-5:c=9",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x - 4 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x - 4 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "9",
+        "10",
+        "11",
+        "8"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-2,6]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-2,6]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=-4:c=8",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 1 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 1 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "19",
+        "18",
+        "16",
+        "17"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-7,9]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-7,9]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-1:c=8",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x + 3 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x + 3 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "8",
+        "10",
+        "7",
+        "9"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-5,2]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-5,2]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=3:c=7",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 6 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 6 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "5",
+        "4",
+        "6",
+        "7"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-0.6666666667,4.6666666667]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-0.6666666667,4.6666666667]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-6:c=8",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x + 2 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x + 2 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "9",
+        "8",
+        "10",
+        "11"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-5.5,3.5]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-5.5,3.5]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=2:c=9",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x - 2 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x - 2 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "8",
+        "6",
+        "9",
+        "7"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-2.5,4.5]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-2.5,4.5]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=-2:c=7",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x - 2 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x - 2 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "7",
+        "4",
+        "6",
+        "5"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-1,3]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-1,3]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=-2:c=4",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x + 3 \\right| \\le 5$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x + 3 \\right| \\le 5$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "10",
+        "11",
+        "13",
+        "12"
+      ],
+      "answer": "B",
+      "correct_answer": "B",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-8,2]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-8,2]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=3:c=5",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 6 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 6 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "7",
+        "6",
+        "4",
+        "5"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [4,8]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [4,8]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-6:c=2",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x + 1 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x + 1 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "12",
+        "9",
+        "10",
+        "11"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-5,4]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-5,4]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=1:c=9",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x + 0 \\right| \\le 6$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x + 0 \\right| \\le 6$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "7",
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-2,2]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-2,2]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=0:c=6",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 5 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 5 \\right| \\le 9$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "19",
+        "21",
+        "18",
+        "20"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-4,14]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-4,14]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-5:c=9",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 6 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 6 \\right| \\le 3$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "2",
+        "4",
+        "5",
+        "3"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [1,3]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [1,3]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-6:c=3",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x + 4 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x + 4 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "3",
+        "2",
+        "5",
+        "4"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-2.6666666667,0]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-2.6666666667,0]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=4:c=4",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x + 0 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x + 0 \\right| \\le 8$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "19",
+        "16",
+        "17",
+        "18"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-8,8]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-8,8]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=0:c=8",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x - 3 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x - 3 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "5",
+        "6",
+        "4",
+        "7"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [1,5]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [1,5]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=-3:c=2",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x - 5 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x - 5 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "1",
+        "4",
+        "2",
+        "3"
+      ],
+      "answer": "C",
+      "correct_answer": "C",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [1.5,3.5]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [1.5,3.5]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=-5:c=2",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x + 0 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x + 0 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "5",
+        "4",
+        "2",
+        "3"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-1.3333333333,1.3333333333]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-1.3333333333,1.3333333333]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=0:c=4",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 2x + 6 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 2x + 6 \\right| \\le 2$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "2",
+        "4",
+        "5",
+        "3"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-4,-2]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-4,-2]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=2:b=6:c=2",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 3 \\right| \\le 5$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 3 \\right| \\le 5$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "3",
+        "2",
+        "4",
+        "5"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-0.6666666667,2.6666666667]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-0.6666666667,2.6666666667]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-3:c=5",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x + 1 \\right| \\le 6$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x + 1 \\right| \\le 6$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "4",
+        "6",
+        "3",
+        "5"
+      ],
+      "answer": "A",
+      "correct_answer": "A",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-2.3333333333,1.6666666667]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-2.3333333333,1.6666666667]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=1:c=6",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 1x + 5 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 1x + 5 \\right| \\le 4$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "11",
+        "10",
+        "8",
+        "9"
+      ],
+      "answer": "D",
+      "correct_answer": "D",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-9,-1]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-9,-1]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=1:b=5:c=4",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+      "subskill_id": "absolute_value_inequality_integer_solution_count_choice",
+      "question_text": "若 $\\left| 3x - 5 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "question": "若 $\\left| 3x - 5 \\right| \\le 7$，滿足的整數 $x$ 有幾個？",
+      "choices": [
+        "7",
+        "5",
+        "4",
+        "6"
+      ],
+      "answer": "B",
+      "correct_answer": "B",
+      "answer_type": "choice_label",
+      "checker_type": "choice_label_checker",
+      "answer_contract": {
+        "answer_type": "choice",
+        "equivalence_type": "choice_label",
+        "checker_key": "choice_label_checker"
+      },
+      "explanation": "先解得區間 [-0.6666666667,4]，再計算整數點個數。",
+      "solution_steps": [
+        "先解得區間 [-0.6666666667,4]，再計算整數點個數。"
+      ],
+      "difficulty": 1,
+      "diagnosis_tags": [
+        "absolute_value",
+        "integer_count",
+        "choice_label"
+      ],
+      "source": "gencode_candidate_v1",
+      "metadata": {
+        "scenario_family": "absolute_value_inequality_integer_solution_count_choice",
+        "scenario_id": "s1",
+        "parameter_signature": "solution_count:a=3:b=-5:c=7",
+        "question_pattern_id": "p1",
+        "diagnosis_tags": [
+          "absolute_value",
+          "integer_count",
+          "choice_label"
+        ],
+        "prerequisite_subskills": [
+          "absolute_value_numeric_evaluation"
+        ]
+      }
+    }
+  ],
+  "passed": false,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 30,
+    "repeated_question_text_ratio": 0.0,
+    "unique_parameter_signature_count": 30
+  }
+}

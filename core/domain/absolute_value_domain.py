@@ -35,6 +35,59 @@ def solve_basic_absolute_value_equation_no_solution(
     return solve_abs_equation(rhs)
 
 
+def solve_absolute_value_inequality(a: int | float, b: int | float, op: str, c: int | float) -> str:
+    from fractions import Fraction
+    fa = Fraction(a)
+    fb = Fraction(b)
+    fc = Fraction(c)
+    if fc < 0:
+        if op in {"<", "<="}:
+            return "(1,0)"
+        return "(-∞,∞)"
+    left = (-fc - fb) / fa
+    right = (fc - fb) / fa
+    lo = min(left, right)
+    hi = max(left, right)
+    if op == "<":
+        return f"({lo},{hi})"
+    if op == "<=":
+        return f"[{lo},{hi}]"
+    if op == ">":
+        return f"(-∞,{lo}) ∪ ({hi},∞)"
+    if op == ">=":
+        return f"(-∞,{lo}] ∪ [{hi},∞]"
+    raise ValueError(f"Unsupported inequality operator: {op}")
+
+
+def count_integer_solutions_for_inequality(a: int | float, b: int | float, op: str, c: int | float) -> int:
+    from fractions import Fraction
+    from math import ceil, floor
+    fa = Fraction(a)
+    fb = Fraction(b)
+    fc = Fraction(c)
+    if fc < 0:
+        if op in {"<", "<="}:
+            return 0
+        raise ValueError("Infinite integer solutions")
+    left = (-fc - fb) / fa
+    right = (fc - fb) / fa
+    lo = min(left, right)
+    hi = max(left, right)
+    
+    if op in {"<", "<="}:
+        if op == "<=":
+            start = ceil(lo)
+            end = floor(hi)
+        else:
+            start = floor(lo) + 1
+            end = ceil(hi) - 1
+        if start > end:
+            return 0
+        return end - start + 1
+    else:
+        raise ValueError("Infinite integer solutions")
+
+
 def number_line_distance(a: int | float, b: int | float) -> int | float:
     """Return the distance between two real coordinates on a number line."""
     left = _finite_number(a, name="a")
@@ -61,6 +114,10 @@ def build_absolute_value_matrix(
         "solve_basic_absolute_value_equation",
         "solve_basic_absolute_value_equation_no_solution",
         "number_line_distance_between_two_points",
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_integer_solution_count_choice",
     }
     if op not in supported:
         raise ValueError(f"Unsupported absolute-value operation: {op!r}")
@@ -136,7 +193,7 @@ def build_absolute_value_matrix(
         }
         distractors = ["0", "-1, 1", "2"]
 
-    else:  # number_line_distance_between_two_points
+    elif op == "number_line_distance_between_two_points":
         if a_val is None:
             a_val = rng.randint(-20, 20)
         else:
@@ -162,6 +219,70 @@ def build_absolute_value_matrix(
             "coefficients": [dist],
         }
         distractors = [str(dist + 1), str(abs(dist - 1)), str(dist + 2)]
+
+    elif op in {
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_integer_solution_count_choice",
+    }:
+        if op == "absolute_value_inequality_zero_center_basic":
+            a_val = 1
+            b_val = 0
+            c_val = extra.get("c") or extra.get("rhs") or extra.get("rhs_value")
+            if c_val is None:
+                c_val = rng.randint(1, 20)
+            op_val = extra.get("op") or rng.choice(["<", "<=", ">", ">="])
+        elif op == "absolute_value_inequality_shifted_basic":
+            a_val = 1
+            b_val = extra.get("b")
+            if b_val is None:
+                b_val = rng.choice([-1, 1]) * rng.randint(1, 10)
+            c_val = extra.get("c") or extra.get("rhs") or extra.get("rhs_value")
+            if c_val is None:
+                c_val = rng.randint(1, 15)
+            op_val = extra.get("op") or rng.choice(["<", "<=", ">", ">="])
+        elif op == "absolute_value_inequality_linear_expression_basic":
+            a_val = extra.get("a")
+            if a_val is None:
+                a_val = rng.randint(2, 9)
+            b_val = extra.get("b")
+            if b_val is None:
+                b_val = rng.choice([-1, 1]) * rng.randint(1, 15)
+            c_val = extra.get("c") or extra.get("rhs") or extra.get("rhs_value")
+            if c_val is None:
+                c_val = rng.randint(1, 20)
+            op_val = extra.get("op") or rng.choice(["<", "<=", ">", ">="])
+        else:
+            a_val = extra.get("a")
+            if a_val is None:
+                a_val = rng.randint(2, 6)
+            b_val = extra.get("b")
+            if b_val is None:
+                b_val = rng.choice([-1, 1]) * rng.randint(1, 10)
+            c_val = extra.get("c") or extra.get("rhs") or extra.get("rhs_value")
+            if c_val is None:
+                c_val = rng.randint(1, 15)
+            op_val = extra.get("op") or rng.choice(["<", "<="])
+
+        if op == "absolute_value_inequality_integer_solution_count_choice":
+            ans_val = count_integer_solutions_for_inequality(a_val, b_val, op_val, c_val)
+            canonical_str = str(ans_val)
+            distractors = [str(ans_val - 1), str(ans_val + 1), str(ans_val + 2)]
+            distractors = [d if int(d) >= 0 else "0" for d in distractors]
+            distractors = list(set(distractors))
+            if len(distractors) < 3:
+                distractors = [str(ans_val + 3), str(ans_val + 4)]
+        else:
+            canonical_str = solve_absolute_value_inequality(a_val, b_val, op_val, c_val)
+            distractors = []
+
+        givens = {"a": a_val, "b": b_val, "op": op_val, "c": c_val}
+        answer = {
+            "canonical_form": canonical_str,
+            "general_form": canonical_str,
+            "coefficients": [a_val, b_val, c_val],
+        }
 
     return {
         "givens": givens,

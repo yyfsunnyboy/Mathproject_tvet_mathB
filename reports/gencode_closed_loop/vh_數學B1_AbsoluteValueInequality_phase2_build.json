@@ -2,7 +2,7 @@
   "skill_id": "vh_數學B1_AbsoluteValueInequality",
   "phase": "phase2_build",
   "final_status": "BUILD_PASS",
-  "input_phase1_report": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
+  "input_phase1_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase1_audit.json",
   "build_mode": "normal",
   "generated_problem_types": [
     "absolute_value_inequality_integer_solution_count_choice",
@@ -18,9 +18,7 @@
   ],
   "failed_problem_types": [],
   "pending_implementation": [],
-  "manual_review_problem_types": [
-    "absolute_value_inequality_malformed_source_review"
-  ],
+  "manual_review_problem_types": [],
   "future_ai_judged_problem_types": [],
   "checker_implementation_summary": {
     "missing_checker_key_problem_types": []
@@ -52,18 +50,6 @@
       ],
       "canonical_answer_schema": {
         "type": "interval_set"
-      }
-    },
-    "absolute_value_inequality_malformed_source_review": {
-      "answer_type": "manual_review",
-      "equivalence_type": "manual_review_or_ai_judged",
-      "checker_key": "manual_review_checker",
-      "order_matters": false,
-      "accepted_format_notes": [
-        "requires source text correction before deterministic generation"
-      ],
-      "canonical_answer_schema": {
-        "type": "manual_review"
       }
     },
     "absolute_value_inequality_shifted_basic": {
@@ -101,7 +87,7 @@
   },
   "registry_merge_summary": {
     "mode": "non_destructive",
-    "updated": true
+    "updated": false
   },
   "wrapper_summary": {
     "pipeline_invoked": false,
@@ -117,10 +103,10 @@
   "blocking_reasons": [],
   "warnings": [],
   "artifact_paths": {
-    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json",
-    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.md"
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json",
+    "phase2_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.md"
   },
-  "timestamp": "2026-05-27T01:44:58.438863+00:00",
+  "timestamp": "2026-06-30T15:11:46.923717+00:00",
   "build_dependency_plan": {
     "foundation_ready": true,
     "required_checkers": [
@@ -130,11 +116,20 @@
     "existing_checkers": [
       "choice_checker",
       "choice_label_checker",
+      "coordinate_pair_checker",
       "exact_string_checker",
+      "expression_equivalence_checker",
+      "free_response_drawing_checker",
       "integer_checker",
       "interval_checker",
+      "line_label_checker",
+      "linear_equation_equivalent_checker",
+      "multi_part_answer_checker",
       "numeric_checker",
-      "solution_set_checker"
+      "quadrant_checker",
+      "rational_checker",
+      "solution_set_checker",
+      "structured_text_checker"
     ],
     "missing_checkers": [],
     "required_verifiers": [
@@ -155,18 +150,14 @@
       "absolute_value_inequality_zero_center_basic"
     ],
     "missing_generators": [],
-    "excluded_manual_review_problem_types": [
-      "absolute_value_inequality_malformed_source_review"
-    ],
+    "excluded_manual_review_problem_types": [],
     "buildable_problem_types": [
       "absolute_value_inequality_integer_solution_count_choice",
       "absolute_value_inequality_linear_expression_basic",
       "absolute_value_inequality_shifted_basic",
       "absolute_value_inequality_zero_center_basic"
     ],
-    "blocked_problem_types": [
-      "absolute_value_inequality_malformed_source_review"
-    ],
+    "blocked_problem_types": [],
     "preflight_status": "PASS"
   },
   "preflight_status": "PASS",
@@ -216,94 +207,15 @@
     "failure_reasons": []
   },
   "build_gap_summary": {
-    "has_build_gaps": true,
-    "gap_types": [
-      "manual_review_unresolved"
-    ],
-    "problem_type_gaps": {
-      "absolute_value_inequality_malformed_source_review": {
-        "answer_type": "manual_review",
-        "equivalence_type": "manual_review_or_ai_judged",
-        "checker_key": "manual_review_checker",
-        "gap_types": [
-          "manual_review_unresolved"
-        ],
-        "recommended_components": [
-          "manual_review_marker",
-          "future_ai_judged_path"
-        ],
-        "suggested_next_actions": [
-          "保留 manual_review 或先修正來源題庫"
-        ],
-        "severity": "medium"
-      }
-    }
+    "has_build_gaps": false,
+    "gap_types": [],
+    "problem_type_gaps": {}
   },
   "repair_plan": {
-    "recommended_next_action": "fix_build_gaps_then_rerun_phase2",
-    "steps": [
-      {
-        "step_id": "S1",
-        "title": "建立或驗證 checker/verifier",
-        "action_type": "implement_or_register_checker",
-        "target": "equivalence_type 對應 checker/verifier",
-        "reason": "優先打通答案等價判分",
-        "depends_on": [],
-        "safe_to_auto_generate": true,
-        "requires_human_review": false
-      },
-      {
-        "step_id": "S2",
-        "title": "建立 domain function",
-        "action_type": "implement_domain_function",
-        "target": "interval/solution_set/algebraic 題型 domain solver",
-        "reason": "支援非單純數值題型",
-        "depends_on": [
-          "S1"
-        ],
-        "safe_to_auto_generate": true,
-        "requires_human_review": false
-      },
-      {
-        "step_id": "S3",
-        "title": "建立 deterministic generators",
-        "action_type": "implement_generator",
-        "target": "failed deterministic problem types",
-        "reason": "補齊可生成題型",
-        "depends_on": [
-          "S1",
-          "S2"
-        ],
-        "safe_to_auto_generate": false,
-        "requires_human_review": true
-      },
-      {
-        "step_id": "S4",
-        "title": "修復 wrapper candidates",
-        "action_type": "fix_wrapper_candidate_linking",
-        "target": "verified candidates / wrapper pipeline",
-        "reason": "避免 wrapper verify fail",
-        "depends_on": [
-          "S3"
-        ],
-        "safe_to_auto_generate": false,
-        "requires_human_review": true
-      },
-      {
-        "step_id": "S5",
-        "title": "重跑 Phase 2",
-        "action_type": "rerun_phase2",
-        "target": "scripts/gencode_pipeline_phase2_build.py",
-        "reason": "驗證缺口是否修復",
-        "depends_on": [
-          "S4"
-        ],
-        "safe_to_auto_generate": true,
-        "requires_human_review": false
-      }
-    ]
+    "recommended_next_action": "phase2_ready",
+    "steps": []
   },
-  "repair_plan_status": "GENERATED",
+  "repair_plan_status": "SKIPPED",
   "next_action": {
     "next_action_type": "phase3_publish_gate",
     "gap": "",

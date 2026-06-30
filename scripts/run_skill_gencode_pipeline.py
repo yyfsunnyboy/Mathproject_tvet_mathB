@@ -64,6 +64,40 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "canonical_answer_schema": "set[int]",
         },
     },
+    "vh_數學B1_AbsoluteValueInequality": {
+        "absolute_value_inequality_integer_solution_count_choice": {
+            "answer_type": "choice",
+            "equivalence_type": "choice_label",
+            "checker_key": "choice_label_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["A/a/(A)/A./1/choice text aliases accepted by label checker"],
+            "canonical_answer_schema": "choice_label",
+        },
+        "absolute_value_inequality_linear_expression_basic": {
+            "answer_type": "interval_set",
+            "equivalence_type": "interval_set",
+            "checker_key": "interval_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["interval notation like [a,b] or (-∞,a] ∪ [b,∞)"],
+            "canonical_answer_schema": "interval_set",
+        },
+        "absolute_value_inequality_shifted_basic": {
+            "answer_type": "interval_set",
+            "equivalence_type": "interval_set",
+            "checker_key": "interval_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["interval notation like [a,b] or (-∞,a] ∪ [b,∞)"],
+            "canonical_answer_schema": "interval_set",
+        },
+        "absolute_value_inequality_zero_center_basic": {
+            "answer_type": "interval_set",
+            "equivalence_type": "interval_set",
+            "checker_key": "interval_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["interval notation like [a,b] or (-∞,a] ∪ [b,∞)"],
+            "canonical_answer_schema": "interval_set",
+        },
+    },
     "vh_數學B1_SlopeOfALine": {
         "text_short_slope_of_line_problems": {
             "answer_type": "rational",

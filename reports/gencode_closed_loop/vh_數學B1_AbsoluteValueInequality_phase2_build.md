@@ -4,7 +4,7 @@
 - skill_id: vh_數學B1_AbsoluteValueInequality
 - final_status: BUILD_PASS
 - build_mode: normal
-- input_phase1_report: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase1_audit.json
+- input_phase1_report: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase1_audit.json
 
 ## 2. Build Dependency Plan
 - foundation_ready: true
@@ -16,7 +16,7 @@
 - missing_domain_functions: -
 - required_generators: absolute_value_inequality_integer_solution_count_choice, absolute_value_inequality_linear_expression_basic, absolute_value_inequality_shifted_basic, absolute_value_inequality_zero_center_basic
 - missing_generators: -
-- excluded_manual_review_problem_types: absolute_value_inequality_malformed_source_review
+- excluded_manual_review_problem_types: -
 
 ## 3. Preflight Result
 - preflight_status: PASS
@@ -41,14 +41,14 @@
 - failure_reasons: -
 
 ## 5. Build Gap Summary
-- has_build_gaps: true
-- gap_types: manual_review_unresolved
+- has_build_gaps: false
+- gap_types: -
 
 ## 6. Problem Type Gaps
 
 | problem_type_id | gap_types | recommended_components | suggested_next_actions | severity |
 | --- | --- | --- | --- | --- |
-| absolute_value_inequality_malformed_source_review | manual_review_unresolved | manual_review_marker, future_ai_judged_path | 保留 manual_review 或先修正來源題庫 | medium |
+| - | - | - | - | - |
 
 ## 下一步建議
 - next_action_type: phase3_publish_gate

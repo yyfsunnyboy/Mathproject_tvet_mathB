@@ -47,16 +47,27 @@ def generate(level: int = 1, seed: int | None = None, difficulty: int | None = N
     return {
         "skill_id": SKILL_ID,
         "problem_type_id": "absolute_value_inequality_shifted_basic",
+        "subskill_id": "absolute_value_inequality_shifted_basic",
         "question_text": question,
         "question": question,
         "answer": answer,
         "correct_answer": answer,
         "answer_type": "interval_set",
+        "checker_type": "interval_checker",
         "answer_contract": {"answer_type": "interval_set", "equivalence_type": "interval_set", "checker_key": "interval_checker"},
         "explanation": "先視為 |x-h| 型，再轉回 x 的區間。",
-        "difficulty": int(difficulty if difficulty is not None else level),
+        "solution_steps": ["先視為 |x-h| 型，再轉回 x 的區間。"],
+        "difficulty": int(difficulty) if isinstance(difficulty, int) or (isinstance(difficulty, str) and difficulty.isdigit()) else int(level),
         "diagnosis_tags": ["absolute_value", "shifted", "interval_set"],
         "source": "gencode_candidate_v1",
+        "metadata": {
+            "scenario_family": "absolute_value_inequality_shifted_basic",
+            "scenario_id": "s1",
+            "parameter_signature": f"shifted:h={h}:a={a}:op={op}",
+            "question_pattern_id": "p1",
+            "diagnosis_tags": ["absolute_value", "shifted", "interval_set"],
+            "prerequisite_subskills": ["absolute_value_numeric_evaluation"],
+        },
     }
 
 

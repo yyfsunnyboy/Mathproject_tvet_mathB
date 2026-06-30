@@ -2129,6 +2129,32 @@ def convert_domain_matrix_to_question_payload(
             a = givens.get("a", -3)
             b = givens.get("b", 7)
             question_text = f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，試求A、B兩點的距離。"
+        elif op == "absolute_value_inequality_zero_center_basic":
+            a = givens.get("a", 1)
+            op_sign = givens.get("op", "<")
+            c = givens.get("c", 5)
+            ax_text = "x" if a == 1 else f"{a}x"
+            question_text = f"解不等式：$\\left| {ax_text} \\right| {op_sign} {c}$。"
+        elif op == "absolute_value_inequality_shifted_basic":
+            b_val = givens.get("b", -3)
+            op_sign = givens.get("op", "<")
+            c = givens.get("c", 5)
+            b_text = f"+ {b_val}" if b_val >= 0 else f"- {abs(b_val)}"
+            question_text = f"解不等式：$\\left| x {b_text} \\right| {op_sign} {c}$。"
+        elif op == "absolute_value_inequality_linear_expression_basic":
+            a = givens.get("a", 1)
+            b = givens.get("b", 0)
+            op_sign = givens.get("op", "<")
+            c = givens.get("c", 5)
+            b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
+            question_text = f"解不等式：$\\left| {a}x {b_text} \\right| {op_sign} {c}$。"
+        elif op == "absolute_value_inequality_integer_solution_count_choice":
+            a = givens.get("a", 1)
+            b = givens.get("b", 0)
+            op_sign = givens.get("op", "<=")
+            c = givens.get("c", 5)
+            b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
+            question_text = f"若 $\\left| {a}x {b_text} \\right| {op_sign} {c}$，滿足的整數 $x$ 有幾個？"
         else:
             question_text = "閱讀下列資料，根據表格回答問題。"
 
@@ -2248,6 +2274,17 @@ def convert_domain_matrix_to_question_payload(
     if resolved_answer_type == "solution_set":
         chk_key = "solution_set_checker"
         equiv_type = "unordered_solution_set"
+    elif resolved_answer_type == "interval_set" or op in {
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic"
+    } or problem_type_id in {
+        "absolute_value_inequality_zero_center_basic",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic"
+    }:
+        chk_key = "interval_checker"
+        equiv_type = "interval_set"
     elif problem_type_id == "histogram_distribution_update":
         chk_key = "text_short_checker"
         equiv_type = "string_equivalence"
