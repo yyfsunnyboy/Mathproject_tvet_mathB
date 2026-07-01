@@ -357,12 +357,19 @@ def _emit_check_result(
     record_progress: bool = True,
 ) -> Any:
     uid = str(question_uid or session.get("current_question_uid", "")).strip()
-    if uid:
+    # Only mark the question as answered in the store when the result carries a
+    # definitive verdict (correct / incorrect). parse_error and system_error are
+    # not genuine student answers and must not pollute the question store.
+    _status = str(result.get("status", "")).strip() if isinstance(result, dict) else ""
+    _is_gradable = _status in ("correct", "incorrect") or (
+        _status == "" and not result.get("system_error") and not result.get("invalid_input")
+    )
+    if uid and _is_gradable:
         mark_question_answered(uid, result)
     out = dict(result)
     if uid:
         out["question_uid"] = uid
-    if record_progress:
+    if record_progress and _is_gradable:
         try:
             update_progress(current_user.id, skill_id, bool(out.get("correct", False)))
         except Exception:
@@ -2151,7 +2158,16 @@ def check_answer():
         )
         if contract_result is not None:
             is_correct_value = contract_result.get("correct")
-            should_record = is_correct_value is not None and not contract_result.get("system_error")
+            _cr_status = str(contract_result.get("status", "")).strip()
+            # Only record progress for genuine correct/incorrect verdicts.
+            # parse_error and system_error must not affect mastery, fail_streak or
+            # student records.
+            should_record = _cr_status in ("correct", "incorrect") or (
+                _cr_status == ""
+                and is_correct_value is not None
+                and not contract_result.get("system_error")
+                and not contract_result.get("invalid_input")
+            )
             if should_record:
                 _record_compact_practice_progress(skill_id, bool(is_correct_value))
             return _emit_check_result(
@@ -2268,8 +2284,13 @@ def check_answer():
     if contract_result is not None:
         result = contract_result
         is_correct = bool(result.get("correct", False))
-        should_record = (
-            not result.get("system_error")
+        _res_status = str(result.get("status", "")).strip()
+        # Only record progress for genuine correct/incorrect verdicts.
+        # parse_error and system_error must not affect mastery, fail_streak or
+        # student records.
+        should_record = _res_status in ("correct", "incorrect") or (
+            _res_status == ""
+            and not result.get("system_error")
             and not result.get("invalid_input")
         )
         _log_runtime_check_session(

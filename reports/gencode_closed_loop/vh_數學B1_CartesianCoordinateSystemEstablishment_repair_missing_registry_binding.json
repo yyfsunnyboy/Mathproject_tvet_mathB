@@ -1,0 +1,21 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "gap": "missing_registry_binding",
+  "repair_status": "PASS",
+  "registry_binding_status": "BOUND",
+  "registry_path": "E:\\Python\\Mathproject_tvet_mathB\\configs\\generated_registry\\b1_section_1_1_verified_registry.v0.1.yaml",
+  "registry_updated": true,
+  "merge_mode": "non_destructive",
+  "preserved_existing_entries": true,
+  "verified_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "manual_review_exclusions": [],
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "repair_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_repair_missing_registry_binding.json",
+    "repair_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_repair_missing_registry_binding.md"
+  },
+  "timestamp": "2026-07-01T04:39:48.174296+00:00"
+}

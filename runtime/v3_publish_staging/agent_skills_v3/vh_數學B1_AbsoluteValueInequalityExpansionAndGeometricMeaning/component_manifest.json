@@ -1,0 +1,40 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_4411",
+      "textbook_example_id": 4411,
+      "status": "verified",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "domain_operation": "absolute_value_inequality_linear_expression_basic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4411/generate.py"
+    },
+    {
+      "component_id": "src_4415",
+      "textbook_example_id": 4415,
+      "status": "verified",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "domain_operation": "absolute_value_inequality_linear_expression_basic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4415/generate.py"
+    },
+    {
+      "component_id": "src_4416",
+      "textbook_example_id": 4416,
+      "status": "verified",
+      "problem_type_id": "absolute_value_inequality_interval_interpretation",
+      "domain_operation": "absolute_value_inequality_interval_interpretation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4416/generate.py"
+    }
+  ]
+}

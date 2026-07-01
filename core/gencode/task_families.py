@@ -383,6 +383,8 @@ def task_family_for_task(target_task: str) -> str:
     task = str(target_task or "").strip()
     if not task:
         return ""
+    if "absolute_value_inequality" in task:
+        return ABSOLUTE_VALUE_INEQUALITY_FAMILY
     if task in TASK_TO_FAMILY:
         return TASK_TO_FAMILY[task]
     for key, fam in TASK_TO_FAMILY.items():

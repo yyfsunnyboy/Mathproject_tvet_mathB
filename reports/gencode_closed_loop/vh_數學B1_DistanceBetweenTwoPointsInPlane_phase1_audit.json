@@ -1,0 +1,169 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_PASS",
+  "examples_total": 4,
+  "examples_covered": 4,
+  "examples_map": [
+    {
+      "example_id": 4419,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設$A\\left( k,-5 \\right)$、$B\\left( 2,7 \\right)$為坐標平面上兩點，且$\\overline{AB}=13$，試求k值。",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4432,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設$P\\left( 2,-3 \\right)$、$Q\\left( 6,k \\right)$為坐標平面上兩點，且$\\overline{PQ}=5$，試求k值。",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4436,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "試求坐標平面上$A\\left( 3,-1 \\right)$、$B(4,2)$\n兩點間的距離。",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4437,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設$A\\left( -2,-6 \\right)$、$B\\left( k,2 \\right)$為坐標平面上兩點，且$\\overline{AB}=10$，試求k值。",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "runtime_category": "deterministic_expression",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    }
+  ],
+  "observed_problem_types": [
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+  ],
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": {
+      "answer_type": "short_answer",
+      "presentation_mode": "text_short",
+      "equivalence_type": "algebraic_equivalent",
+      "checker_key": "expression_equivalence_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "exact string or simplified radical like 5 or sqrt(17)"
+      ],
+      "canonical_answer_schema": {
+        "type": "short_answer"
+      },
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": {
+      "answer_type": "short_answer",
+      "presentation_mode": "text_short",
+      "answer_shape": "parameter_solution_set",
+      "checker_key": "solution_set_checker",
+      "equivalence_type": "unordered_solution_set",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "unordered solution set like 2,14"
+      ],
+      "canonical_answer_schema": {
+        "type": "short_answer"
+      },
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+  ],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoPointsInPlane_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_DistanceBetweenTwoPointsInPlane"
+  },
+  "auto_review_summary": {},
+  "risk_flags": [],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoPointsInPlane_phase1_audit.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoPointsInPlane_phase1_audit.md",
+    "inventory_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoPointsInPlane_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
+  },
+  "timestamp": "2026-07-01T16:33:39.549117+00:00"
+}

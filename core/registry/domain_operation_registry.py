@@ -226,6 +226,7 @@ register_domain_spec(DomainCapabilitySpec(
         "absolute_value_inequality_linear_expression_basic",
         "absolute_value_inequality_shifted_basic",
         "absolute_value_inequality_integer_solution_count_choice",
+        "absolute_value_inequality_interval_interpretation",
     }),
     operations={
         "solve_basic_absolute_value_equation": _op(
@@ -269,6 +270,12 @@ register_domain_spec(DomainCapabilitySpec(
             "build_absolute_value_matrix",
             supported_answer_types=("choice",),
             provided_capabilities=("absolute_value_inequality_integer_solution_count_choice",),
+        ),
+        "absolute_value_inequality_interval_interpretation": _op(
+            "absolute_value_inequality_interval_interpretation",
+            "build_absolute_value_matrix",
+            supported_answer_types=("choice", "interval_set", "numeric", "expression"),
+            provided_capabilities=("absolute_value_inequality_interval_interpretation",),
         ),
     },
 ))
@@ -619,3 +626,48 @@ register_domain_spec(DomainCapabilitySpec(
         ),
     },
 ))
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="coordinate_geometry.cartesian_coordinate",
+    domain_module="core.domain.coordinate_geometry.cartesian_coordinate_domain",
+    entrypoint="build_cartesian_coordinate_matrix",
+    capabilities=frozenset({
+        "cartesian_coordinate_quadrant_symbol_reasoning",
+    }),
+    operations={
+        "cartesian_coordinate_quadrant_symbol_reasoning": _op(
+            "cartesian_coordinate_quadrant_symbol_reasoning",
+            "build_cartesian_coordinate_matrix",
+            supported_answer_types=("choice", "single_choice"),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("cartesian_coordinate_quadrant_symbol_reasoning",),
+        ),
+    },
+))
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="coordinate_geometry.distance_between_two_points",
+    domain_module="core.domain.coordinate_geometry.distance_between_two_points_domain",
+    entrypoint="build_distance_between_two_points_matrix",
+    capabilities=frozenset({
+        "compute_distance_between_two_points",
+        "solve_unknown_coordinate_from_two_point_distance",
+    }),
+    operations={
+        "compute_distance_between_two_points": _op(
+            "compute_distance_between_two_points",
+            "build_distance_between_two_points_matrix",
+            supported_answer_types=("expression",),
+            provided_capabilities=("short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",),
+        ),
+        "solve_unknown_coordinate_from_two_point_distance": _op(
+            "solve_unknown_coordinate_from_two_point_distance",
+            "build_distance_between_two_points_matrix",
+            supported_answer_types=("expression", "solution_set"),
+            provided_capabilities=("short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",),
+        ),
+    },
+))
+
+

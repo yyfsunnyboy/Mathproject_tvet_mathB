@@ -1,0 +1,17 @@
+skill_id: "vh_數學B1_CartesianCoordinateSystemEstablishment"
+subskills:
+  -
+    subskill_id: "cartesian_coordinate_quadrant_symbol_reasoning"
+    observed: true
+    supporting_example_ids:
+      - 4417
+      - 4435
+      - 4509
+      - 4510
+    suggested_problem_types:
+      - "cartesian_coordinate_quadrant_symbol_reasoning"
+    runtime_category: "deterministic_choice"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

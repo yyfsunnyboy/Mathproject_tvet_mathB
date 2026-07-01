@@ -1,0 +1,146 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "phase": "phase3_publish_gate",
+  "final_status": "PUBLISH_BINDING_REQUIRED",
+  "publish_ready": false,
+  "publish_review_mode": "",
+  "full_observed_coverage": true,
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "examples_total": 4,
+  "examples_covered": 4,
+  "observed_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "verified_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "answer_contract_summary": {
+    "cartesian_coordinate_quadrant_symbol_reasoning": null
+  },
+  "missing_answer_contract_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "runtime_problem_type_coverage": {
+    "expected_problem_types": [
+      "cartesian_coordinate_quadrant_symbol_reasoning"
+    ],
+    "observed_problem_types": [
+      "cartesian_coordinate_quadrant_symbol_reasoning"
+    ],
+    "missing_problem_types": [],
+    "status": "pass"
+  },
+  "blocking_reasons": [
+    "answer_contract_gate_failed",
+    "draft_skill_file_missing",
+    "phase3_can_publish_formal_false",
+    "phase3_included_generators_empty",
+    "phase3_package_summary_stale_vs_phase2_generator_summary",
+    "phase3_publish_check_blockers_present",
+    "phase3_py_compile_not_passed",
+    "phase3_runtime_smoke_not_passed"
+  ],
+  "warnings": [],
+  "publish_binding_summary": {
+    "candidate_verification_status": "PASS",
+    "answer_contract_gate_status": "FAIL",
+    "verified_candidates_count": 1,
+    "verified_problem_types": [
+      "cartesian_coordinate_quadrant_symbol_reasoning"
+    ],
+    "registry_binding_status": "BOUND",
+    "formal_registry_binding_status": "BOUND",
+    "registry_path": "E:\\Python\\Mathproject_tvet_mathB\\configs\\generated_registry\\b1_section_1_1_verified_registry.v0.1.yaml",
+    "registry_entry_found": true,
+    "registry_entry_valid": true,
+    "registry_verified_problem_types": [
+      "cartesian_coordinate_quadrant_symbol_reasoning"
+    ],
+    "registry_manual_review_exclusions": [],
+    "registry_binding_failure_reason": "",
+    "wrapper_binding_status": "BOUND",
+    "formal_wrapper_binding_status": "BOUND",
+    "runtime_binding_status": "READY",
+    "formal_runtime_binding_status": "READY",
+    "draft_publish_review_ready": false,
+    "publish_review_mode": "",
+    "binding_required": true,
+    "binding_blockers": [
+      "phase3_runtime_smoke_not_passed"
+    ],
+    "publish_exclusions": {
+      "manual_review_problem_types": [],
+      "future_ai_judged_problem_types": []
+    },
+    "phase3_package_summary_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase3_package_summary.json",
+    "phase2_generator_summary_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.json",
+    "draft_skill_file": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment.py"
+  },
+  "phase3_draft_publish_review": {
+    "ready": false,
+    "blockers": [
+      "draft_skill_file_missing",
+      "phase3_can_publish_formal_false",
+      "phase3_included_generators_empty",
+      "phase3_package_summary_stale_vs_phase2_generator_summary",
+      "phase3_publish_check_blockers_present",
+      "phase3_py_compile_not_passed",
+      "phase3_runtime_smoke_not_passed"
+    ],
+    "warnings": [],
+    "included_generators": [],
+    "draft_specs": [],
+    "binding_tier": "",
+    "answer_contract_gate_status": "FAIL",
+    "candidate_verification_status": "FAIL",
+    "verified_problem_types": []
+  },
+  "next_action": {
+    "next_action_type": "repair_publish_binding",
+    "command": "python scripts\\gencode_repair_build_gap.py --skill-id vh_數學B1_CartesianCoordinateSystemEstablishment --gap missing_runtime_binding",
+    "reason": "candidate 已驗證，但 registry / wrapper / runtime 尚未接線。",
+    "should_publish": false,
+    "requires_human_review": false
+  },
+  "success_items": {
+    "phase1_coverage_ok": true,
+    "phase2_candidate_verification_ok": true,
+    "phase3_draft_publish_review_ok": false,
+    "verified_problem_types": [
+      "cartesian_coordinate_quadrant_symbol_reasoning"
+    ],
+    "answer_contract_gate_ok": false,
+    "checker_key_gate_ok": true
+  },
+  "incomplete_items": {
+    "registry_binding_done": true,
+    "wrapper_binding_done": true,
+    "runtime_binding_ready": true,
+    "runtime_coverage_pass": true,
+    "formal_registry_binding_done": true,
+    "formal_wrapper_binding_done": true,
+    "formal_runtime_binding_ready": true
+  },
+  "status_message": "candidate 驗證、binding 與 runtime coverage 綜合判讀結果。",
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase1_audit.json",
+    "phase2_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_build.json",
+    "phase2_generator_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_generator_summary.json",
+    "phase3_package_summary_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase3_package_summary.json",
+    "draft_skill_file": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_CartesianCoordinateSystemEstablishment.py",
+    "final_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_pipeline_final.json",
+    "final_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_pipeline_final.md"
+  },
+  "timestamp": "2026-07-01T04:40:01.440501+00:00"
+}

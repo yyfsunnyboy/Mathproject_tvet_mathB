@@ -163,14 +163,27 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "canonical_answer_schema": {"type": "integer"},
         }
     },
-    "vh_數學B1_PropertiesOfPerpendicularLines": {
-        "perpendicular_lines_properties": {
-            "answer_type": "rational",
-            "equivalence_type": "rational_equivalent",
-            "checker_key": "rational_checker",
+    "vh_數學B1_DistanceBetweenTwoPointsInPlane": {
+        "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": {
+            "answer_type": "short_answer",
+            "presentation_mode": "text_short",
+            "equivalence_type": "algebraic_equivalent",
+            "checker_key": "expression_equivalence_checker",
             "order_matters": True,
-            "accepted_format_notes": ["rational or integer slope/parameter answer"],
-            "canonical_answer_schema": {"type": "rational"},
+            "accepted_format_notes": ["exact string or simplified radical like 5 or sqrt(17)"],
+            "canonical_answer_schema": {"type": "short_answer"},
+            "ui_contract": {"presentation_mode": "text_short"},
+        },
+        "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": {
+            "answer_type": "short_answer",
+            "presentation_mode": "text_short",
+            "answer_shape": "parameter_solution_set",
+            "checker_key": "solution_set_checker",
+            "equivalence_type": "unordered_solution_set",
+            "order_matters": False,
+            "accepted_format_notes": ["unordered solution set like 2,14"],
+            "canonical_answer_schema": {"type": "short_answer"},
+            "ui_contract": {"presentation_mode": "text_short"},
         }
     }
 }
@@ -1200,6 +1213,13 @@ def main() -> None:
     }
     write_json(out_json, report)
     _write_phase1_markdown(out_md, report)
+    
+    # Formally handoff rule-pack classification as the canonical summary for Phase 2/3
+    summary_json = REPORT_DIR / f"{skill_id}_phase1_summary.json"
+    summary_md = REPORT_DIR / f"{skill_id}_phase1_summary.md"
+    write_json(summary_json, report)
+    _write_phase1_markdown(summary_md, report)
+    
     if args.json:
         print(json.dumps(report, ensure_ascii=True))
     else:

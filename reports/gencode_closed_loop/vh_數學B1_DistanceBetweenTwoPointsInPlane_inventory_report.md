@@ -1,0 +1,6 @@
+# Inventory Report: vh_數學B1_DistanceBetweenTwoPointsInPlane
+
+- examples_count: 4
+- examples_map_count: 4
+- observed_deterministic_problem_types: ['short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2', 'short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2']
+- package_dir: E:\Python\Mathproject_tvet_mathB\agent_skills_v2\_generated\vh_數學B1_DistanceBetweenTwoPointsInPlane

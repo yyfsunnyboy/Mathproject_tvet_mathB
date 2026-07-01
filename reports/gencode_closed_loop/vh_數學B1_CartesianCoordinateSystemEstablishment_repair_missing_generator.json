@@ -1,0 +1,16 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "gap": "missing_generator",
+  "repair_status": "PARTIAL",
+  "blocking_reasons": [
+    "missing_generator_logic_preserved_existing_flow"
+  ],
+  "warnings": [
+    "此版本保留既有流程；本輪主要新增 missing_runtime_binding。"
+  ],
+  "artifact_paths": {
+    "repair_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_repair_missing_generator.json",
+    "repair_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_repair_missing_generator.md"
+  },
+  "timestamp": "2026-07-01T04:37:54.969310+00:00"
+}

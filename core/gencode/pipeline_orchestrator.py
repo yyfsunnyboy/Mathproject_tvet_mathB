@@ -6120,6 +6120,8 @@ def build_v3_component_draft_from_skill(
             checker_module = "core.checkers.choice_label_checker"
         elif chk == "solution_set_checker":
             checker_module = "core.checkers.solution_set_checker"
+        elif chk == "interval_checker":
+            checker_module = "core.checkers.interval_checker"
         elif chk in ("integer_checker", "numeric_checker", "rational_checker", "text_short_checker"):
             checker_module = "core.checkers.structured_text_checker"
         else:
@@ -6171,7 +6173,10 @@ def build_v3_component_draft_from_skill(
     else:
         payload["metadata"] = draft_metadata
 
-    if presentation_mode == "single_choice":
+    if chk and eq:
+        # Upstream contract has priority
+        pass
+    elif presentation_mode == "single_choice":
         checker_key = "choice_label_checker"
         equivalence_type = "choice_label"
         checker_module = "core.checkers.choice_label_checker"

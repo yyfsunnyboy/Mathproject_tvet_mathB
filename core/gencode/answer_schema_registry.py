@@ -109,7 +109,10 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "complete_descriptive_statistics_table": "numeric_scalar",
     "compute_quartiles_and_iqr": "numeric_scalar",
     "compare_dispersion": "numeric_scalar",
-    "conceptual_dispersion_judgment": "choice_label",
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": "distance_scalar",
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": "parameter_solution_set",
+    "compute_distance_between_two_points": "distance_scalar",
+    "solve_unknown_coordinate_from_two_point_distance": "parameter_solution_set",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)

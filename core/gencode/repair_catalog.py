@@ -124,6 +124,22 @@ GENERATOR_REPAIR_CATALOG = {
         "required_checkers": ["rational_checker"],
         "required_verifiers": [],
     },
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": {
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2/candidate_v1.py",
+        "test_path": "tests/gencode/test_phase1_distance_between_two_points.py",
+        "factory": "create_compute_distance_between_two_points_generator",
+        "required_domain_functions": [],
+        "required_checkers": ["expression_equivalence_checker"],
+        "required_verifiers": [],
+    },
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": {
+        "module_path": "generated_candidates/vocational_math_b1/section_1_1/short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2/candidate_v1.py",
+        "test_path": "tests/gencode/test_phase1_distance_between_two_points.py",
+        "factory": "create_solve_unknown_coordinate_from_two_point_distance_generator",
+        "required_domain_functions": ["equation_solver_domain_function"],
+        "required_checkers": ["solution_set_checker"],
+        "required_verifiers": ["solution_set_verifier"],
+    },
 }
 
 

@@ -288,3 +288,54 @@ class TestProductionExamples:
             assert isinstance(caps, list) and len(caps) > 0, (
                 f"Example {row['id']} has empty required_capabilities"
             )
+
+
+# ---------------------------------------------------------------------------
+# Test for vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning
+# ---------------------------------------------------------------------------
+
+class TestExpansionSkillProductionExamples:
+    EXP_SKILL = "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+
+    @pytest.fixture(scope="class")
+    def exp_examples(self) -> list[dict[str, Any]]:
+        """Load all examples from production DB for the expansion skill."""
+        if not DB_PATH.exists():
+            pytest.skip(f"Production DB not found: {DB_PATH}")
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT * FROM textbook_examples WHERE skill_id=? ORDER BY id",
+            (self.EXP_SKILL,),
+        ).fetchall()
+        conn.close()
+        return [dict(r) for r in rows]
+
+    def test_load_all_examples(self, exp_examples: list[dict[str, Any]]) -> None:
+        # Expected total_examples=3 (4411, 4415, 4416)
+        assert len(exp_examples) == 3, f"Expected 3 examples, got {len(exp_examples)}"
+
+    def test_examples_classification(self, exp_examples: list[dict[str, Any]]) -> None:
+        for row in exp_examples:
+            result = run_v3_no_llm_phase1_for_example(self.EXP_SKILL, row)
+            assert result.get("classification_status_code") != PHASE1_CLASSIFICATION_UNRESOLVED, (
+                f"Example {row['id']} got unresolved classification: {result.get('reason')}"
+            )
+            assert result.get("classification_source") == "python_skill_classifier"
+
+            ex_id = row["id"]
+            pt_id = result.get("problem_type_id")
+            mode = result.get("presentation_mode")
+            ac = result.get("answer_contract") or {}
+
+            if ex_id in (4411, 4415):
+                assert pt_id == "absolute_value_inequality_linear_expression_basic"
+                assert mode == "short_answer"
+                assert "absolute_value_inequality_linear_expression_basic" in result.get("required_capabilities", [])
+            elif ex_id == 4416:
+                assert pt_id == "absolute_value_inequality_interval_interpretation"
+                assert mode == "single_choice"
+                assert ac.get("answer_type") == "choice"
+                assert ac.get("checker_key") == "choice_label_checker"
+                assert "absolute_value_inequality_interval_interpretation" in result.get("required_capabilities", [])
+

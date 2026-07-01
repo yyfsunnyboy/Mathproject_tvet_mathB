@@ -7,6 +7,12 @@ import time
 from pathlib import Path
 from typing import Any
 
+import sys
+from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from core.gencode.problem_type_spec import load_problem_type_spec
 from core.gencode.validators import validate_generator_payload
 
@@ -79,6 +85,19 @@ PT_SPECS: dict[str, dict[str, Any]] = {
         "checker_type": "interval_checker",
         "candidate_subdir": "absolute_value_inequality_zero_center_basic",
         "subskill_id": "absolute_value_inequality_zero_center_basic",
+    },
+    "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": {
+        "answer_type": "short_answer",
+        "checker_type": "expression_equivalence_checker",
+        "candidate_subdir": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "subskill_id": "compute_distance_between_two_points",
+    },
+    "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": {
+        "answer_type": "short_answer",
+        "checker_type": "solution_set_checker",
+        "answer_shape": "parameter_solution_set",
+        "candidate_subdir": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+        "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
     },
 }
 
@@ -337,6 +356,14 @@ def _run_verifier(path: Path, problem_type_id: str, rounds: int = 30) -> dict[st
     for i in range(rounds):
         t0 = time.time()
         payload = mod.generate(seed=i, difficulty="easy")
+        
+        from core.gencode.answer_payload import finalize_generator_payload
+        from scripts.gencode_pipeline_phase1_audit import ANSWER_CONTRACT_DEFAULTS
+        
+        contract = ANSWER_CONTRACT_DEFAULTS.get(str(payload.get("skill_id", "")), {}).get(problem_type_id)
+        if contract:
+            payload = finalize_generator_payload(payload, contract)
+            
         if time.time() - t0 > 5:
             rep["errors"].append("timeout_exceeded")
             break
@@ -462,8 +489,8 @@ def main() -> None:
     p.add_argument("--max-rounds", type=int, default=5)
     args = p.parse_args()
 
-    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine", "vh_數學B1_AbsoluteValueInequality"}:
-        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines、SlopeOfALine 與 AbsoluteValueInequality")
+    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine", "vh_數學B1_AbsoluteValueInequality", "vh_數學B1_DistanceBetweenTwoPointsInPlane"}:
+        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines、SlopeOfALine、AbsoluteValueInequality 與 DistanceBetweenTwoPointsInPlane")
     if args.problem_type_id not in PT_SPECS:
         raise RuntimeError("closed_loop_generator_not_implemented")
 

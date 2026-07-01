@@ -161,7 +161,11 @@ def _build_metadata_py(
     math_objects = payload_meta.get("math_objects") or default_objects
     taxonomy_path = str(payload_meta.get("taxonomy_path") or default_taxonomy)
     concepts_repr = ", ".join(f'"{item}"' for item in semantic_concepts)
+    if concepts_repr:
+        concepts_repr = concepts_repr + ","
     objects_repr = ", ".join(f'"{item}"' for item in math_objects)
+    if objects_repr:
+        objects_repr = objects_repr + ","
 
     return f'''from __future__ import annotations
 from typing import Final
@@ -206,10 +210,10 @@ ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {{
 GENERATOR_READINESS: Final[str] = "draft"
 
 SEMANTIC_REQUIRED_CONCEPTS: Final[tuple[str, ...]] = (
-    {concepts_repr},
+    {concepts_repr}
 )
 MATH_OBJECTS: Final[tuple[str, ...]] = (
-    {objects_repr},
+    {objects_repr}
 )
 TAXONOMY_PATH: Final[str] = "{taxonomy_path}"
 '''

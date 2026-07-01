@@ -652,6 +652,7 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
         )
         return out
 
+    from core.gencode.task_families import ABSOLUTE_VALUE_INEQUALITY_FAMILY, task_family_for_task
     if (
         base_task in QUADRATIC_INEQUALITY_INTERVAL_SOLUTION_TASKS
         or (
@@ -660,6 +661,10 @@ def enrich_spec_with_canonicalization(spec: dict[str, Any]) -> dict[str, Any]:
                 problem_type_id=canonical["base_problem_type_id"],
                 target_task=base_task,
             )
+        )
+        or (
+            task_family_for_task(base_task) == ABSOLUTE_VALUE_INEQUALITY_FAMILY
+            and base_task != "absolute_value_inequality_interval_interpretation"
         )
     ):
         from core.gencode.answer_format_hint import HINT_INTERVAL

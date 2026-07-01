@@ -56,6 +56,13 @@ def verify_generator_candidate(candidate_path: str, expected_skill_id: str, expe
     produced = None
     try:
         produced = generate_fn(level=1, seed=1)
+        
+        from core.gencode.answer_payload import finalize_generator_payload
+        from scripts.gencode_pipeline_phase1_audit import ANSWER_CONTRACT_DEFAULTS
+        
+        contract = ANSWER_CONTRACT_DEFAULTS.get(expected_skill_id, {}).get(expected_problem_type_id)
+        if contract:
+            produced = finalize_generator_payload(produced, contract)
     except Exception as e:
         return {"ok": False, "failure_reasons": [f"generate_crashed:{e}"], "sample_count": 0}
     if not isinstance(produced, dict):

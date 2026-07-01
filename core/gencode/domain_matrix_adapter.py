@@ -2148,13 +2148,26 @@ def convert_domain_matrix_to_question_payload(
             c = givens.get("c", 5)
             b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
             question_text = f"解不等式：$\\left| {a}x {b_text} \\right| {op_sign} {c}$。"
-        elif op == "absolute_value_inequality_integer_solution_count_choice":
-            a = givens.get("a", 1)
-            b = givens.get("b", 0)
-            op_sign = givens.get("op", "<=")
-            c = givens.get("c", 5)
-            b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
-            question_text = f"若 $\\left| {a}x {b_text} \\right| {op_sign} {c}$，滿足的整數 $x$ 有幾個？"
+        elif op == "absolute_value_inequality_interval_interpretation":
+            d = givens.get("d", 7)
+            a = givens.get("a", 0)
+            c = givens.get("c", 28)
+            e = givens.get("e", 5)
+            a_part = f"- {a}" if a >= 0 else f"+ {abs(a)}"
+            question_text = f"若不等式 $\\left| {d}x {a_part} \\right| < {c}$ 之解為 $b < x < {e}$，則點 $(b, a)$ 屬於哪一象限？"
+        elif op == "compute_distance_between_two_points":
+            x1 = givens.get("x1")
+            y1 = givens.get("y1")
+            x2 = givens.get("x2")
+            y2 = givens.get("y2")
+            question_text = f"已知坐標平面上兩點 $A({x1}, {y1})$、$B({x2}, {y2})$，試求 $A$、$B$ 兩點的距離。"
+        elif op == "solve_unknown_coordinate_from_two_point_distance":
+            x1 = givens.get("x1")
+            y1 = givens.get("y1")
+            x2 = givens.get("x2")
+            y2 = givens.get("y2")
+            dist = givens.get("distance")
+            question_text = f"設 $A({x1}, {y1})$、$B({x2}, {y2})$ 為坐標平面上兩點，且其距離為 ${dist}$，試求 $k$ 值。"
         else:
             question_text = "閱讀下列資料，根據表格回答問題。"
 

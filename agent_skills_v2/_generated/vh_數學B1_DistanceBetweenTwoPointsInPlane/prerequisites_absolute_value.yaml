@@ -1,0 +1,9 @@
+items:
+  -
+    subskill_id: "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

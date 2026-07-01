@@ -18,6 +18,85 @@ from core.gencode.runtime_skill_wrapper import check_answer
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Grading result status schema
+# ---------------------------------------------------------------------------
+# Possible status values returned in grading result dicts:
+#   "correct"         – answer is correct
+#   "incorrect"       – answer is wrong but parseable
+#   "parse_error"     – user input could not be parsed as a valid answer
+#   "system_error"    – checker raised an exception or returned system_error
+#
+# Only "correct" and "incorrect" should count toward student answer records.
+# "parse_error" and "system_error" MUST NOT be stored as student mistakes.
+# ---------------------------------------------------------------------------
+
+# Types that are never valid answer inputs regardless of checker
+_UNPARSEABLE_TYPES = (dict, list, set, frozenset, tuple, bytearray, bytes, memoryview)
+
+
+def validate_answer_input(user_answer: Any, answer_contract: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """Return a parse_error result dict if user_answer cannot be a valid answer input.
+
+    Returns None when the input looks valid (caller should proceed with grading).
+    This does NOT validate mathematical correctness – only structural parseability.
+
+    Unparseable cases:
+    - None
+    - dict / list / set / tuple (structured objects)
+    - bytes / bytearray
+    """
+    if user_answer is None:
+        return {
+            "correct": False,
+            "status": "parse_error",
+            "error_code": "ANSWER_PARSE_FAILED",
+            "message": "答案格式不正確",
+        }
+    if isinstance(user_answer, _UNPARSEABLE_TYPES):
+        return {
+            "correct": False,
+            "status": "parse_error",
+            "error_code": "ANSWER_PARSE_FAILED",
+            "message": "答案格式不正確",
+        }
+    # Empty string is technically parseable but semantically empty –
+    # treat as parse_error (student has not entered anything).
+    if isinstance(user_answer, str) and not user_answer.strip():
+        return {
+            "correct": False,
+            "status": "parse_error",
+            "error_code": "ANSWER_PARSE_FAILED",
+            "message": "答案格式不正確",
+        }
+    return None
+
+
+def normalize_grading_result(result: dict[str, Any]) -> dict[str, Any]:
+    """Ensure a grading result dict contains a canonical 'status' field.
+
+    Idempotent: if 'status' is already set it is preserved.
+    Maps legacy 'system_error'/'invalid_input' flags to canonical status.
+    """
+    if not isinstance(result, dict):
+        return {"correct": False, "status": "system_error", "error_code": "CHECKER_EXECUTION_FAILED"}
+    if "status" in result:
+        return result
+    out = dict(result)
+    if out.get("system_error"):
+        out["status"] = "system_error"
+        out.setdefault("error_code", "CHECKER_EXECUTION_FAILED")
+    elif out.get("invalid_input") or out.get("parse_error"):
+        out["status"] = "parse_error"
+        out.setdefault("error_code", "ANSWER_PARSE_FAILED")
+        out.setdefault("message", "答案格式不正確")
+    elif out.get("correct"):
+        out["status"] = "correct"
+    else:
+        out["status"] = "incorrect"
+    return out
+
+
 _CONTRACT_CHECKERS = frozenset(
     {
         "solution_set_checker",
@@ -160,9 +239,20 @@ def grade_answer_for_current_question(
     *,
     log: Any | None = None,
 ) -> dict[str, Any] | None:
-    """Contract-aware grading for session current question. Returns None if not applicable."""
+    """Contract-aware grading for session current question. Returns None if not applicable.
+
+    Result dict always contains a 'status' field:
+        'correct'      – answer is correct
+        'incorrect'    – wrong but parseable
+        'parse_error'  – user input is structurally invalid (not a student mistake)
+        'system_error' – checker raised an exception (not a student mistake)
+    """
     if not should_use_contract_aware_grading(current):
         return None
+    # --- Pre-flight: reject structurally invalid inputs before calling any checker ---
+    parse_fail = validate_answer_input(user_answer)
+    if parse_fail is not None:
+        return parse_fail
     refreshed = refresh_runtime_question_session(current, skill_id=skill_id)
     payload = build_grading_payload(refreshed, skill_id)
     ac = resolve_answer_contract_for_runtime(payload, skill_id=skill_id)
@@ -312,11 +402,12 @@ def grade_answer_for_current_question(
                 exc,
                 exc_info=True,
             )
-            return {
+            return normalize_grading_result({
                 "correct": False,
                 "system_error": True,
+                "error_code": "CHECKER_EXECUTION_FAILED",
                 "result": f"批改系統錯誤：{exc}",
-            }
+            })
         if numeric_result.get("system_error"):
             sink = log or logger
             sink.error(
@@ -325,17 +416,19 @@ def grade_answer_for_current_question(
                 checker,
                 numeric_result.get("result"),
             )
-            return {
+            return normalize_grading_result({
                 "correct": False,
                 "system_error": True,
+                "error_code": "CHECKER_EXECUTION_FAILED",
                 "result": str(numeric_result.get("result") or "批改系統錯誤"),
-            }
+            })
         if numeric_result.get("invalid_input"):
-            return {
+            return normalize_grading_result({
                 "correct": False,
                 "invalid_input": True,
+                "error_code": "ANSWER_PARSE_FAILED",
                 "result": str(numeric_result.get("result") or "invalid input"),
-            }
+            })
         is_correct = bool(numeric_result.get("correct"))
         log_check_answer_debug(
             skill_id=skill_id,
@@ -347,10 +440,10 @@ def grade_answer_for_current_question(
             log=log,
         )
         display = format_correct_answer_display(correct_answer, payload)
-        return {
+        return normalize_grading_result({
             "correct": is_correct,
             "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",
-        }
+        })
     else:
         try:
             is_correct = check_answer(
@@ -369,11 +462,12 @@ def grade_answer_for_current_question(
                 exc,
                 exc_info=True,
             )
-            return {
+            return normalize_grading_result({
                 "correct": False,
                 "system_error": True,
+                "error_code": "CHECKER_EXECUTION_FAILED",
                 "result": f"批改系統錯誤：{exc}",
-            }
+            })
     log_check_answer_debug(
         skill_id=skill_id,
         current=payload,
@@ -385,7 +479,7 @@ def grade_answer_for_current_question(
         extra=expr_debug,
     )
     display = format_correct_answer_display(correct_answer, payload)
-    return {
+    return normalize_grading_result({
         "correct": is_correct,
         "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",
-    }
+    })

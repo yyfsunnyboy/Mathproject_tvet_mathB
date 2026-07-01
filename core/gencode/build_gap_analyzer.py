@@ -141,13 +141,20 @@ def analyze_build_dependency_plan(phase1_report: dict[str, Any], phase2_report: 
         "choice_label_checker",
         "rational_checker",
         "linear_equation_equivalent_checker",
+        "text_short_checker",
+        "algebraic_equivalence_checker",
     }
     existing_verifiers = _collect_existing(PROJECT_ROOT / "core" / "verifiers") | {
         "numeric_verifier",
         "rational_verifier",
         "algebraic_verifier",
+        "solution_set_verifier",
     }
-    existing_domain_functions = _collect_existing(PROJECT_ROOT / "core" / "domain")
+    existing_domain_functions = _collect_existing(PROJECT_ROOT / "core" / "domain") | {
+        "equation_solver_domain_function",
+        "symbolic_simplifier",
+        "expression_generator",
+    }
 
     gen_root = PROJECT_ROOT / "generated_candidates" / "vocational_math_b1"
     existing_generators: set[str] = set()

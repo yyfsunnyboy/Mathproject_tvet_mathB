@@ -1,0 +1,5 @@
+items:
+  -
+    subskill_id: "cartesian_coordinate_quadrant_symbol_reasoning"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

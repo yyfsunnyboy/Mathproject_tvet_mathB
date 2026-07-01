@@ -3,11 +3,14 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
+      "problem_type_id": "numeric_solve_unknown_coordinate_from_two_point_distance_short_answer",
       "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
       "target_task": "solve_unknown_coordinate_from_two_point_distance",
       "task_family": "distance_between_two_points_family",
-      "display_name": "兩點距離反求座標",
+      "display_name": "numeric / solve_unknown_coordinate_from_two_point_distance",
+      "answer_format_hint": "solution_set",
+      "answer_fields": null,
+      "answer_separator": null,
       "source_example_ids": [
         4419,
         4432,
@@ -28,7 +31,11 @@
           "{-3, 7}",
           "k=-3 或 k=7",
           "-3 或 7"
-        ]
+        ],
+        "source_has_choices": false,
+        "equivalence_type": "unordered_solution_set",
+        "checker_key": "solution_set_checker",
+        "presentation_mode": "short_answer"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
@@ -70,6 +77,153 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "direct_distance",
+            "label": "直接求距離",
+            "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "missing_coordinate",
+            "label": "反求坐標",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
+            "weight": 0.6,
+            "enabled": true
+          },
+          {
+            "id": "word_context_distance",
+            "label": "語境距離",
+            "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "compare_distance",
+            "label": "比較距離",
+            "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
+            "weight": 0.4,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "P"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "M",
+                "N",
+                "T"
+              ],
+              [
+                "C",
+                "D",
+                "E"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "distance_result_type": {
+            "choices": [
+              "integer",
+              "radical"
+            ],
+            "weights": [
+              0.55,
+              0.45
+            ]
+          },
+          "coordinate_delta_pattern": {
+            "choices": [
+              "axis_aligned",
+              "mixed_sign",
+              "general"
+            ],
+            "weights": [
+              0.3,
+              0.4,
+              0.3
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "distance_result_type",
+          "coordinate_delta_pattern",
+          "ask_target",
+          "context_style",
+          "number_variation",
+          "template_variant",
+          "coordinate_sign_combination",
+          "slope_type"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_distance_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -10,
+              10
+            ],
+            "allow_radical": true
+          },
+          "level_3": {
+            "word_context_enabled": true,
+            "missing_coordinate_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "A != B",
+          "distance > 0",
+          "if integer answer desired, dx^2+dy^2 must be perfect square",
+          "if radical answer desired, simplify radical form"
+        ],
+        "answer_shape": "numeric_or_radical",
+        "explanation_variants": [
+          "distance_formula",
+          "pythagorean_step"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
           "solve_unknown_coordinate_from_two_point_distance"
         ],
@@ -83,8 +237,15 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "numeric_solve_unknown_coordinate_from_two_point_distance_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [],
         "template_slots": {
-          "stem": "point_quadrant"
+          "stem": "two_point_distance_solution_set"
         }
       },
       "validator_contract": {
@@ -100,23 +261,32 @@
       "spec_source": "phase1_induced_draft",
       "grouping_reason": "split_by_feature_signature",
       "feature_signature": [
-        "short_answer",
+        "numeric",
         "solve_unknown_coordinate_from_two_point_distance",
+        "short_answer",
         [
           "distance_formula_reasoning"
         ],
         [
           "coordinate_point",
           "distance_formula"
-        ]
-      ]
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "solve_unknown_coordinate_from_two_point_distance_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "two_point_distance_solution_set",
+      "naming_warning": "naming_warning:numeric_prefix_but_hint_is_solution_set"
     },
     {
-      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "problem_type_id": "numeric_compute_distance_between_two_points_short_answer",
       "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
       "target_task": "compute_distance_between_two_points",
       "task_family": "distance_between_two_points_family",
-      "display_name": "兩點距離計算",
+      "display_name": "numeric / compute_distance_between_two_points",
+      "answer_format_hint": "text_short",
+      "answer_fields": null,
+      "answer_separator": null,
       "source_example_ids": [
         4436
       ],
@@ -125,10 +295,10 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "answer_type": "numeric_or_radical",
-        "answer_shape": "scalar",
-        "answer_equivalence": "math_expression_equivalence",
-        "checker": "expression_equivalence_checker",
+        "answer_type": "text_short",
+        "answer_shape": "text_short",
+        "answer_equivalence": "exact_string",
+        "checker": "text_short_checker",
         "accepted_formats": [
           "5",
           "5.0",
@@ -136,7 +306,10 @@
           "sqrt(13)",
           "2\\sqrt{5}",
           "2√5"
-        ]
+        ],
+        "equivalence_type": "exact_string",
+        "checker_key": "text_short_checker",
+        "presentation_mode": "short_answer"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
@@ -176,6 +349,149 @@
         ]
       },
       "generator_contract": {
+        "template_variants": [
+          {
+            "id": "direct_distance",
+            "label": "直接求距離",
+            "stem_pattern": "求 {A}({ax},{ay}) 與 {B}({bx},{by}) 的距離。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "missing_coordinate",
+            "label": "反求坐標",
+            "stem_pattern": "已知 {A}({ax},{ay})、{B}({bx},{by}) 與距離 {d}，求未知坐標。",
+            "weight": 0.6,
+            "enabled": true
+          },
+          {
+            "id": "word_context_distance",
+            "label": "語境距離",
+            "stem_pattern": "平面上兩地坐標如下，求兩地距離。",
+            "weight": 1.0,
+            "enabled": true
+          },
+          {
+            "id": "compare_distance",
+            "label": "比較距離",
+            "stem_pattern": "比較 {A} 到 {B} 與 {A} 到 {C} 的距離大小。",
+            "weight": 0.4,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "point_names": {
+            "choices": [
+              [
+                "A",
+                "B",
+                "P"
+              ],
+              [
+                "P",
+                "Q",
+                "R"
+              ],
+              [
+                "M",
+                "N",
+                "T"
+              ],
+              [
+                "C",
+                "D",
+                "E"
+              ]
+            ],
+            "randomize": true
+          },
+          "coordinate_range": {
+            "x_min": -10,
+            "x_max": 10,
+            "y_min": -10,
+            "y_max": 10,
+            "exclude_zero_probability": 0.2
+          },
+          "distance_result_type": {
+            "choices": [
+              "integer",
+              "radical"
+            ],
+            "weights": [
+              0.55,
+              0.45
+            ]
+          },
+          "coordinate_delta_pattern": {
+            "choices": [
+              "axis_aligned",
+              "mixed_sign",
+              "general"
+            ],
+            "weights": [
+              0.3,
+              0.4,
+              0.3
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "point_names",
+          "coordinate_sign_pattern",
+          "distance_result_type",
+          "coordinate_delta_pattern",
+          "ask_target",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {
+            "coordinate_range": [
+              -5,
+              5
+            ],
+            "integer_distance_only": true
+          },
+          "level_2": {
+            "coordinate_range": [
+              -10,
+              10
+            ],
+            "allow_radical": true
+          },
+          "level_3": {
+            "word_context_enabled": true,
+            "missing_coordinate_enabled": true
+          }
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "A != B",
+          "distance > 0",
+          "if integer answer desired, dx^2+dy^2 must be perfect square",
+          "if radical answer desired, simplify radical form"
+        ],
+        "answer_shape": "numeric_or_radical",
+        "explanation_variants": [
+          "distance_formula",
+          "pythagorean_step"
+        ],
+        "sampling_strategy": "weighted_random",
         "template_families": [
           "compute_distance_between_two_points"
         ],
@@ -189,8 +505,15 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
+        "templates": [
+          "template_scalar_unknown",
+          "template_feature_value"
+        ],
+        "problem_type_id": "numeric_compute_distance_between_two_points_short_answer",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [],
         "template_slots": {
-          "stem": "point_quadrant"
+          "stem": "two_point_distance_compute"
         }
       },
       "validator_contract": {
@@ -206,16 +529,350 @@
       "spec_source": "phase1_induced_draft",
       "grouping_reason": "split_by_feature_signature",
       "feature_signature": [
-        "short_answer",
+        "numeric",
         "compute_distance_between_two_points",
+        "short_answer",
         [
           "distance_formula_reasoning"
         ],
         [
           "coordinate_point",
           "distance_formula"
+        ],
+        "default"
+      ],
+      "canonical_base_problem_type_id": "compute_distance_between_two_points_short_answer",
+      "value_type_prefix": "numeric",
+      "_resolved_template_slot": "two_point_distance_compute",
+      "naming_warning": "naming_warning:numeric_prefix_but_hint_is_text_short"
+    },
+    {
+      "problem_type_id": "evaluate_function_value_2",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "target_task": "evaluate_function_value",
+      "task_family": "function_concept_family",
+      "display_name": "evaluate_function_value / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
         ]
-      ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "evaluate_function_value"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "evaluate_function_value"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "function_value_numeric"
+        },
+        "problem_type_id": "evaluate_function_value_2",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "evaluate_function_value"
+      ],
+      "canonical_base_problem_type_id": "evaluate_function_value_2",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
+    },
+    {
+      "problem_type_id": "interpret_function_notation_2",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "target_task": "interpret_function_notation",
+      "task_family": "function_concept_family",
+      "display_name": "interpret_function_notation / anchor bootstrap",
+      "answer_format_hint": "expression",
+      "source_example_ids": [],
+      "answer_contract": {
+        "choices_required": false,
+        "choice_count": null,
+        "correct_choice_count": null,
+        "frontend_render_choices": false,
+        "answer_type": "expression",
+        "answer_shape": "factored_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
+        "checker_selection_reason": "quadratic_factoring_expression",
+        "accepted_formats": [
+          "(x-5)(x+3)",
+          "(2x-1)(x+5)",
+          "2(x-1)(3x+2)"
+        ],
+        "answer_semantics": "algebraic_expression"
+      },
+      "stem_contract": {
+        "stem_must_not_embed_choices": true,
+        "allowed_math_objects": [
+          "quadratic_inequality"
+        ],
+        "required_math_objects": [
+          "quadratic_inequality"
+        ],
+        "forbidden_patterns": [
+          "\\(A\\)",
+          "\\(B\\)",
+          "\\(C\\)",
+          "\\(D\\)"
+        ]
+      },
+      "dependency_contract": {
+        "givens_must_be_used": true,
+        "target_answer_must_depend_on_givens": true,
+        "variables_in_conditions_must_appear_in_target": false
+      },
+      "semantic_contract": {
+        "reasoning_type": [
+          "interpret_function_notation"
+        ],
+        "reject_if": [
+          "unused_condition",
+          "ambiguous_answer",
+          "answer_not_derivable"
+        ]
+      },
+      "generator_contract": {
+        "template_variants": [
+          {
+            "id": "default",
+            "label": "default",
+            "stem_pattern": "依題意求解：{stem_hint}。",
+            "weight": 1.0,
+            "enabled": true
+          }
+        ],
+        "parameter_schema": {
+          "seed": {
+            "type": "integer",
+            "randomize": true
+          },
+          "difficulty_level": {
+            "choices": [
+              "level_1",
+              "level_2",
+              "level_3"
+            ],
+            "weights": [
+              0.4,
+              0.4,
+              0.2
+            ]
+          }
+        },
+        "variation_dimensions": [
+          "seed",
+          "difficulty_level",
+          "context_style"
+        ],
+        "difficulty_controls": {
+          "level_1": {},
+          "level_2": {},
+          "level_3": {}
+        },
+        "anti_repetition_rules": {
+          "avoid_same_template_consecutive": true,
+          "avoid_same_ratio_consecutive": true,
+          "avoid_same_point_names_consecutive": true,
+          "avoid_same_answer_consecutive": true,
+          "recent_history_window": 5,
+          "signature_fields": [
+            "problem_type_id",
+            "template_variant",
+            "routing_track",
+            "scenario_type",
+            "ratio_form",
+            "ratio_values",
+            "coordinate_pattern",
+            "answer"
+          ]
+        },
+        "validity_constraints": [
+          "answer derivable from givens"
+        ],
+        "answer_shape": "numeric",
+        "explanation_variants": [
+          "stepwise"
+        ],
+        "sampling_strategy": "weighted_random",
+        "template_families": [
+          "interpret_function_notation"
+        ],
+        "parameter_slots": {
+          "seed": "integer",
+          "difficulty": "easy"
+        },
+        "randomization_rules": {
+          "shuffle_choices": false
+        },
+        "avoid_llm_freeform_math": true,
+        "use_domain_functions": true,
+        "derivation_steps_required": true,
+        "template_slots": {
+          "stem": "linear_function_two_point_choice"
+        },
+        "problem_type_id": "interpret_function_notation_2",
+        "contract_validation_blockers": [],
+        "contract_validation_warnings": [
+          "single_template_variant_only",
+          "variation_dimensions_below_recommended_minimum"
+        ]
+      },
+      "validator_contract": {
+        "static_checks": [
+          "answer_contract_checks"
+        ],
+        "semantic_checks": [
+          "givens_to_target_dependency"
+        ],
+        "runtime_smoke_count": 30
+      },
+      "spec_source": "anchor_slot_bootstrap",
+      "grouping_reason": "anchor_subskill_bootstrap_zero_source",
+      "feature_signature": [
+        "anchor_slot_bootstrap",
+        "interpret_function_notation"
+      ],
+      "canonical_base_problem_type_id": "interpret_function_notation_2",
+      "value_type_prefix": "",
+      "_resolved_template_slot": "factor_quadratic_by_cross_multiplication"
     }
   ]
 }

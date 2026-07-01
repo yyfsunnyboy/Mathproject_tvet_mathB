@@ -1,0 +1,81 @@
+examples:
+  -
+    example_id: 4419
+    title: ""
+    source_type: "textbook_example"
+    problem_preview: "設$A\\left( k,-5 \\right)$、$B\\left( 2,7 \\right)$為坐標平面上兩點，且$\\overline{AB}=13$，試求k值。"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    problem_type_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    runtime_category: "deterministic_expression"
+    classification_rule_id: "rule_pack.yaml"
+    classification_reason: "matched_registered_yaml_rule_pack"
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "ok"
+    generator_status: "ready_for_draft"
+    manual_review_reason: ""
+    source_chapter: ""
+    source_section: ""
+    problem_text_hash: ""
+  -
+    example_id: 4432
+    title: ""
+    source_type: "textbook_example"
+    problem_preview: "設$P\\left( 2,-3 \\right)$、$Q\\left( 6,k \\right)$為坐標平面上兩點，且$\\overline{PQ}=5$，試求k值。"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    problem_type_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    runtime_category: "deterministic_expression"
+    classification_rule_id: "rule_pack.yaml"
+    classification_reason: "matched_registered_yaml_rule_pack"
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "ok"
+    generator_status: "ready_for_draft"
+    manual_review_reason: ""
+    source_chapter: ""
+    source_section: ""
+    problem_text_hash: ""
+  -
+    example_id: 4436
+    title: ""
+    source_type: "textbook_example"
+    problem_preview: "試求坐標平面上$A\\left( 3,-1 \\right)$、$B(4,2)$\n兩點間的距離。"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2"
+    problem_type_id: "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2"
+    runtime_category: "deterministic_expression"
+    classification_rule_id: "rule_pack.yaml"
+    classification_reason: "matched_registered_yaml_rule_pack"
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "ok"
+    generator_status: "ready_for_draft"
+    manual_review_reason: ""
+    source_chapter: ""
+    source_section: ""
+    problem_text_hash: ""
+  -
+    example_id: 4437
+    title: ""
+    source_type: "textbook_example"
+    problem_preview: "設$A\\left( -2,-6 \\right)$、$B\\left( k,2 \\right)$為坐標平面上兩點，且$\\overline{AB}=10$，試求k值。"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    problem_type_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    runtime_category: "deterministic_expression"
+    classification_rule_id: "rule_pack.yaml"
+    classification_reason: "matched_registered_yaml_rule_pack"
+    classifier_confidence: "high"
+    semantic_risk_flags:
+
+    semantic_audit_status: "ok"
+    generator_status: "ready_for_draft"
+    manual_review_reason: ""
+    source_chapter: ""
+    source_section: ""
+    problem_text_hash: ""

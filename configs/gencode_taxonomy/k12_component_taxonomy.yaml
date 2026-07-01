@@ -82,6 +82,23 @@ skills:
       - construct_parallel_line_at_distance
       - parallel_lines_distance_single_choice
       - area_using_parallel_distance
+  vh_數學B1_CartesianCoordinateSystemEstablishment:
+    fixed_domain_key: coordinate_geometry.line_equation
+    domain_module: core.domain.coordinate_geometry.line_equation_domain
+    entrypoint: build_line_equation_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - cartesian_coordinate_quadrant_symbol_reasoning
+  vh_數學B1_DistanceBetweenTwoPointsInPlane:
+    fixed_domain_key: coordinate_geometry.distance_between_two_points
+    domain_module: core.domain.coordinate_geometry.distance_between_two_points_domain
+    entrypoint: build_distance_between_two_points_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_distance_between_two_points
+      - solve_unknown_coordinate_from_two_point_distance
   vh_數學B4_StatisticalChartReading:
     fixed_domain_key: statistics.table_chart
     domain_module: core.domain.statistics.table_chart_domain
@@ -117,3 +134,17 @@ skills:
       - absolute_value_inequality_linear_expression_basic
       - absolute_value_inequality_shifted_basic
       - absolute_value_inequality_integer_solution_count_choice
+  vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning:
+    fixed_domain_key: algebra.absolute_value
+    domain_module: core.domain.absolute_value_domain
+    entrypoint: build_absolute_value_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - absolute_value_inequality_zero_center_basic
+      - absolute_value_inequality_linear_expression_basic
+      - absolute_value_inequality_shifted_basic
+      - absolute_value_inequality_interval_interpretation
+
+
+

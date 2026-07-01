@@ -127,6 +127,34 @@ ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
             "accepted_format_notes": ["rational or integer slope/parameter answer"],
             "canonical_answer_schema": {"type": "rational"},
         }
+    },
+    "vh_數學B1_CartesianCoordinateSystemEstablishment": {
+        "cartesian_coordinate_quadrant_symbol_reasoning": {
+            "answer_type": "choice",
+            "equivalence_type": "choice_label",
+            "checker_key": "choice_label_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["A/B/C/D choice label"],
+            "canonical_answer_schema": {"type": "choice_label"},
+        }
+    },
+    "vh_數學B1_DistanceBetweenTwoPointsInPlane": {
+        "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2": {
+            "answer_type": "text_short",
+            "equivalence_type": "exact_string",
+            "checker_key": "text_short_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["exact string or simplified radical like 5 or sqrt(17)"],
+            "canonical_answer_schema": {"type": "text_short"},
+        },
+        "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": {
+            "answer_type": "solution_set",
+            "equivalence_type": "unordered_solution_set",
+            "checker_key": "solution_set_checker",
+            "order_matters": False,
+            "accepted_format_notes": ["unordered solution set like 2,14"],
+            "canonical_answer_schema": {"type": "solution_set"},
+        }
     }
 }
 

@@ -260,4 +260,43 @@ skills:
       - example_id: 4539
         matched_problem_type_id: perpendicular_lines_properties
 
+  - skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
+    skill_ch_name: 平面兩點距離
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
+        display_name: 兩點間的距離計算
+        checker: expression_equivalence_checker
+        equivalence: expression_equivalence
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
+        display_name: 已知距離求未知坐標
+        checker: solution_set_checker
+        equivalence: unordered_solution_set
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+    classification_rules:
+      - if_contains:
+          - 求k
+          - 求 k
+          - k值
+        prefer_problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
+      - if_contains:
+          - 距離
+        prefer_problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
+      default_problem_type_used: false
+      single_primary_problem_type: false
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+
 

@@ -1,0 +1,137 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "phase": "phase1_audit",
+  "final_status": "AUDIT_FAIL",
+  "examples_total": 4,
+  "examples_covered": 4,
+  "examples_map": [
+    {
+      "example_id": 4417,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "若點$P\\left( a,b \\right)$位在第一象限且a < b，則$Q\\left( a-b,{{a}^{2}}b \\right)$位在第幾象限？",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "subskill_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "runtime_category": "deterministic_choice",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4435,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設a、b為實數，且a < b < 0，則點$Q\\left( ab,a+b \\right)$在第幾象限？",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "subskill_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "runtime_category": "deterministic_choice",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4509,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "設A點為坐標平面上一點，且A點到x軸及y軸之距離分別為3和4，則下列何者可能為A點之坐標？ 　(A)$\\left( -4,-3 \\right)$　(B)$\\left( -3,4 \\right)$　_x000D_\n(C)$\\left( -3,-4 \\right)$　(D)$\\left( 3,4 \\right)$。_x000D_",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "subskill_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "runtime_category": "deterministic_choice",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    },
+    {
+      "example_id": 4510,
+      "title": "",
+      "source_type": "textbook_example",
+      "problem_preview": "已知點$P\\left( a-b,ab \\right)$在坐標平面的第四象限，則下列敘述何者正確？_x000D_\n(A)$A\\left( -a,b \\right)$在第一象限　(B)$B\\left( \\left| ab \\right|,-{{a}^{2}}b \\right)$在第二象限_x000D_\n(C)$C\\left( \\frac{{{a}^{2}}}{b},-b \\right)$在第三象限　(",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "subskill_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "runtime_category": "deterministic_choice",
+      "classification_rule_id": "rule_pack.yaml",
+      "classification_reason": "matched_registered_yaml_rule_pack",
+      "classifier_confidence": "high",
+      "semantic_risk_flags": null,
+      "semantic_audit_status": "ok",
+      "generator_status": "ready_for_draft",
+      "manual_review_reason": "",
+      "source_chapter": "",
+      "source_section": "",
+      "problem_text_hash": ""
+    }
+  ],
+  "observed_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "answer_contract_summary": {
+    "cartesian_coordinate_quadrant_symbol_reasoning": null
+  },
+  "missing_answer_contract_problem_types": [
+    "cartesian_coordinate_quadrant_symbol_reasoning"
+  ],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "classifier_proposal": {
+    "enabled": false,
+    "reason": "",
+    "proposal_status": "SKIPPED",
+    "proposed_problem_types": [],
+    "proposed_example_map": [],
+    "proposed_answer_contracts": {},
+    "manual_review_candidates": [],
+    "risk_flags": [],
+    "proposal_path": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_classifier_proposal.json",
+    "promote_ready": false,
+    "promote_command_suggestion": "python scripts\\gencode_promote_classifier_proposal.py --skill-id vh_數學B1_CartesianCoordinateSystemEstablishment"
+  },
+  "auto_review_summary": {},
+  "risk_flags": [],
+  "recommended_next_phase": "phase2_build",
+  "blocking_reasons": [
+    "missing_answer_contract_problem_types"
+  ],
+  "warnings": [],
+  "artifact_paths": {
+    "phase1_json": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase1_audit.json",
+    "phase1_md": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase1_audit.md",
+    "inventory_report": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_inventory_report.md",
+    "classifier_proposal_json": "",
+    "classifier_proposal_md": ""
+  },
+  "timestamp": "2026-07-01T04:37:48.939706+00:00"
+}

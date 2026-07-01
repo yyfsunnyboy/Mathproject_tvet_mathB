@@ -118,6 +118,7 @@ def build_absolute_value_matrix(
         "absolute_value_inequality_linear_expression_basic",
         "absolute_value_inequality_shifted_basic",
         "absolute_value_inequality_integer_solution_count_choice",
+        "absolute_value_inequality_interval_interpretation",
     }
     if op not in supported:
         raise ValueError(f"Unsupported absolute-value operation: {op!r}")
@@ -225,8 +226,15 @@ def build_absolute_value_matrix(
         "absolute_value_inequality_linear_expression_basic",
         "absolute_value_inequality_shifted_basic",
         "absolute_value_inequality_integer_solution_count_choice",
+        "absolute_value_inequality_interval_interpretation",
     }:
-        if op == "absolute_value_inequality_zero_center_basic":
+        if op == "absolute_value_inequality_interval_interpretation":
+            # Set dummy coefficients for general inequality parsing, but we will override them below
+            a_val = 1
+            b_val = 0
+            c_val = 1
+            op_val = "<"
+        elif op == "absolute_value_inequality_zero_center_basic":
             a_val = 1
             b_val = 0
             c_val = extra.get("c") or extra.get("rhs") or extra.get("rhs_value")
@@ -273,16 +281,82 @@ def build_absolute_value_matrix(
             distractors = list(set(distractors))
             if len(distractors) < 3:
                 distractors = [str(ans_val + 3), str(ans_val + 4)]
+            givens = {"a": a_val, "b": b_val, "op": op_val, "c": c_val}
+            answer = {
+                "canonical_form": canonical_str,
+                "general_form": canonical_str,
+                "coefficients": [a_val, b_val, c_val],
+            }
+        elif op == "absolute_value_inequality_interval_interpretation":
+            # |d x - a| < c -> solution is b < x < e
+            # a = d * e - c, b = e - 2 * (c / d)
+            d_val = extra.get("d") or spec.get("d")
+            e_val = extra.get("e") or spec.get("e")
+            c_val = extra.get("c") or spec.get("c") or extra.get("rhs")
+            
+            if d_val is None or e_val is None or c_val is None:
+                # Ensure a_val != 0 and b_val != 0
+                for _ in range(100):
+                    d_candidate = rng.choice([3, 5, 7, 9]) if d_val is None else int(d_val)
+                    e_candidate = rng.choice([2, 3, 4, 5, 6]) if e_val is None else int(e_val)
+                    if c_val is None:
+                        k_candidate = rng.choice([3, 4, 5])
+                        c_candidate = d_candidate * k_candidate
+                    else:
+                        c_candidate = int(c_val)
+                    
+                    a_candidate = d_candidate * e_candidate - c_candidate
+                    b_candidate = e_candidate - 2 * (c_candidate // d_candidate)
+                    if a_candidate != 0 and b_candidate != 0:
+                        d_val = d_candidate
+                        e_val = e_candidate
+                        c_val = c_candidate
+                        a_val = a_candidate
+                        b_val = b_candidate
+                        break
+                else:
+                    # Fallback if loop didn't find anything
+                    d_val = d_val or 7
+                    e_val = e_val or 5
+                    c_val = c_val or 28
+                    a_val = d_val * e_val - c_val
+                    b_val = e_val - 2 * (c_val // d_val)
+            else:
+                d_val = int(d_val)
+                e_val = int(e_val)
+                c_val = int(c_val)
+                a_val = d_val * e_val - c_val
+                b_val = e_val - 2 * (c_val // d_val)
+            
+            # Quadrant of (b, a)
+            if b_val > 0 and a_val > 0:
+                quadrant = "第一象限"
+            elif b_val < 0 and a_val > 0:
+                quadrant = "第二象限"
+            elif b_val < 0 and a_val < 0:
+                quadrant = "第三象限"
+            else:
+                quadrant = "第四象限"
+                
+            canonical_str = quadrant
+            all_quadrants = ["第一象限", "第二象限", "第三象限", "第四象限"]
+            distractors = [q for q in all_quadrants if q != quadrant]
+            
+            givens = {"d": d_val, "e": e_val, "c": c_val, "a": a_val, "b": b_val}
+            answer = {
+                "canonical_form": canonical_str,
+                "general_form": canonical_str,
+                "coefficients": [d_val, e_val, c_val],
+            }
         else:
             canonical_str = solve_absolute_value_inequality(a_val, b_val, op_val, c_val)
             distractors = []
-
-        givens = {"a": a_val, "b": b_val, "op": op_val, "c": c_val}
-        answer = {
-            "canonical_form": canonical_str,
-            "general_form": canonical_str,
-            "coefficients": [a_val, b_val, c_val],
-        }
+            givens = {"a": a_val, "b": b_val, "op": op_val, "c": c_val}
+            answer = {
+                "canonical_form": canonical_str,
+                "general_form": canonical_str,
+                "coefficients": [a_val, b_val, c_val],
+            }
 
     return {
         "givens": givens,

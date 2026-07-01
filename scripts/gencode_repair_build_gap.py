@@ -187,26 +187,72 @@ def _load_candidate(module_rel_path: str):
     return mod
 
 
-def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:
+def generate(
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: int | None = None,
+    component_id: str | None = None,
+    problem_type_id: str | None = None,
+    **kwargs
+) -> dict[str, Any]:
     pts = [pt for pt in VERIFIED_CANDIDATE_MODULES.keys() if pt not in set(MANUAL_REVIEW_EXCLUSIONS)]
     if not pts:
         raise RuntimeError("No verified deterministic problem types available.")
-    if seed is None:
-        idx = _STATE["idx"] % len(pts)
-        _STATE["idx"] += 1
+        
+    # Build dynamic component mapping
+    comp_map = {{}}
+    for pt in pts:
+        try:
+            cand_mod = _load_candidate(VERIFIED_CANDIDATE_MODULES[pt])
+            sample = cand_mod.generate(seed=1)
+            cid = sample.get("component_id") or (sample.get("metadata") or {{}}).get("component_id")
+            if cid:
+                comp_map[str(cid).strip()] = pt
+            ex_id = (sample.get("metadata") or {{}}).get("textbook_example_id")
+            if ex_id:
+                comp_map[str(ex_id).strip()] = pt
+                comp_map[f"src_{{ex_id}}"] = pt
+        except Exception:
+            pass
+
+    # Routing logic
+    if component_id is not None:
+        cid_str = str(component_id).strip()
+        if cid_str not in comp_map:
+            raise KeyError(f"System routing error: component_id {{component_id}} is not verified or does not exist.")
+        pt = comp_map[cid_str]
+    elif problem_type_id is not None:
+        pt_str = str(problem_type_id).strip()
+        if pt_str not in pts:
+            raise KeyError(f"System routing error: problem_type_id {{problem_type_id}} is not verified or does not exist.")
+        pt = pt_str
     else:
-        idx = random.Random(seed).randint(0, len(pts) - 1)
-    pt = pts[idx]
+        if seed is None:
+            idx = _STATE["idx"] % len(pts)
+            _STATE["idx"] += 1
+        else:
+            idx = random.Random(seed).randint(0, len(pts) - 1)
+        pt = pts[idx]
+
     mod = _load_candidate(VERIFIED_CANDIDATE_MODULES[pt])
     payload = mod.generate(level=level, seed=seed, difficulty=difficulty)
     if not isinstance(payload, dict):
         raise RuntimeError("candidate.generate must return dict")
+        
+    from core.gencode.answer_payload import finalize_generator_payload
+    from scripts.gencode_pipeline_phase1_audit import ANSWER_CONTRACT_DEFAULTS
+    
+    contract = ANSWER_CONTRACT_DEFAULTS.get(SKILL_ID, {{}}).get(pt)
+    if contract:
+        payload = finalize_generator_payload(payload, contract)
+        
     payload["skill_id"] = SKILL_ID
     payload["metadata"] = payload.get("metadata", {{}})
     payload["metadata"]["verified_problem_types"] = pts
     payload["metadata"]["manual_review_exclusions"] = MANUAL_REVIEW_EXCLUSIONS
     payload["metadata"]["source"] = "gencode_runtime_binding"
     return payload
+
 
 
 def check(user_answer: object, correct_answer: object, current_question: dict[str, Any] | None = None) -> dict[str, Any]:

@@ -75,6 +75,8 @@ def main() -> None:
     pytest_target = "tests/test_b1_absolute_value_skill_wrapper.py"
     if args.skill_id == "vh_數學B1_AbsoluteValueInequality":
         pytest_target = "tests/test_b1_absolute_value_inequality_runtime_wrapper.py"
+    elif args.skill_id == "vh_數學B1_DistanceBetweenTwoPointsInPlane":
+        pytest_target = "tests/gencode/test_phase1_distance_between_two_points.py"
     test_cmd = [sys.executable, "-m", "pytest", pytest_target, "-q"]
     tr = subprocess.run(test_cmd, cwd=str(root), capture_output=True, text=True, timeout=180)
     ok_pytest = tr.returncode == 0

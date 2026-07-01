@@ -761,13 +761,22 @@ def finalize_generator_payload(payload: dict[str, Any], answer_contract: dict[st
     if ac:
         out["answer_contract"] = ac
         if ac.get("answer_type"):
-            out["answer_type"] = str(ac.get("answer_type"))
-        checker_name = str(ac.get("checker", "")).strip()
+            out["answer_type"] = canonical_answer_type(str(ac.get("answer_type")))
+        checker_name = str(ac.get("checker", "")).strip() or str(ac.get("checker_key", "")).strip()
         if checker_name:
             out["checker"] = checker_name
-            out.setdefault("checker_type", checker_name)
-        if ac.get("answer_equivalence"):
-            out["equivalence"] = str(ac.get("answer_equivalence"))
+            out["checker_type"] = checker_name
+        equiv_type = str(ac.get("answer_equivalence", "")).strip() or str(ac.get("equivalence_type", "")).strip()
+        if equiv_type:
+            out["equivalence"] = equiv_type
+        
+        # Ensure ui_contract is populated and has presentation_mode
+        ui = out.get("ui_contract") or ac.get("ui_contract")
+        if not ui and ac.get("presentation_mode"):
+            ui = {"presentation_mode": str(ac.get("presentation_mode"))}
+        if ui:
+            out["ui_contract"] = ui
+            ac["ui_contract"] = ui
     family = answer_type_family(str(ac.get("answer_type", "")))
     raw_answer = out.get("correct_answer", out.get("answer"))
     if family == "solution_set":

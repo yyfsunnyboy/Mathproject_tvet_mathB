@@ -1,0 +1,3854 @@
+{
+  "candidate_path": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2\\candidate_v1.py",
+  "errors": [
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid",
+    "checker_type_invalid"
+  ],
+  "samples": [
+    {
+      "question_text": "已知坐標平面上兩點 $A(2, 3)$、$B(-9, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(146)",
+      "correct_answer": "sqrt(146)",
+      "display_answer": "sqrt(146)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 2,
+          "y1": 3,
+          "x2": -9,
+          "y2": -2,
+          "point_a": "(2,3)",
+          "point_b": "(-9,-2)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": 3,
+          "x2": -9,
+          "y2": -2,
+          "point_a": "(2,3)",
+          "point_b": "(-9,-2)"
+        },
+        "target": "sqrt(146)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(146)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=0"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 2,
+          "y1": 3,
+          "x2": -9,
+          "y2": -2,
+          "point_a": "(2,3)",
+          "point_b": "(-9,-2)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": 3,
+          "x2": -9,
+          "y2": -2,
+          "point_a": "(2,3)",
+          "point_b": "(-9,-2)"
+        },
+        "target": "sqrt(146)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(2, 3)$、$B(-9, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-6, 8)$、$B(-8, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(104)",
+      "correct_answer": "sqrt(104)",
+      "display_answer": "sqrt(104)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -6,
+          "y1": 8,
+          "x2": -8,
+          "y2": -2,
+          "point_a": "(-6,8)",
+          "point_b": "(-8,-2)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": 8,
+          "x2": -8,
+          "y2": -2,
+          "point_a": "(-6,8)",
+          "point_b": "(-8,-2)"
+        },
+        "target": "sqrt(104)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(104)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=1"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -6,
+          "y1": 8,
+          "x2": -8,
+          "y2": -2,
+          "point_a": "(-6,8)",
+          "point_b": "(-8,-2)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": 8,
+          "x2": -8,
+          "y2": -2,
+          "point_a": "(-6,8)",
+          "point_b": "(-8,-2)"
+        },
+        "target": "sqrt(104)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-6, 8)$、$B(-8, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-9, -8)$、$B(-8, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(82)",
+      "correct_answer": "sqrt(82)",
+      "display_answer": "sqrt(82)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -9,
+          "y1": -8,
+          "x2": -8,
+          "y2": 1,
+          "point_a": "(-9,-8)",
+          "point_b": "(-8,1)"
+        },
+        "raw_givens": {
+          "x1": -9,
+          "y1": -8,
+          "x2": -8,
+          "y2": 1,
+          "point_a": "(-9,-8)",
+          "point_b": "(-8,1)"
+        },
+        "target": "sqrt(82)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(82)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=2"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -9,
+          "y1": -8,
+          "x2": -8,
+          "y2": 1,
+          "point_a": "(-9,-8)",
+          "point_b": "(-8,1)"
+        },
+        "raw_givens": {
+          "x1": -9,
+          "y1": -8,
+          "x2": -8,
+          "y2": 1,
+          "point_a": "(-9,-8)",
+          "point_b": "(-8,1)"
+        },
+        "target": "sqrt(82)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-9, -8)$、$B(-8, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-3, 8)$、$B(7, -6)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(296)",
+      "correct_answer": "sqrt(296)",
+      "display_answer": "sqrt(296)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -3,
+          "y1": 8,
+          "x2": 7,
+          "y2": -6,
+          "point_a": "(-3,8)",
+          "point_b": "(7,-6)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": 8,
+          "x2": 7,
+          "y2": -6,
+          "point_a": "(-3,8)",
+          "point_b": "(7,-6)"
+        },
+        "target": "sqrt(296)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(296)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=3"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -3,
+          "y1": 8,
+          "x2": 7,
+          "y2": -6,
+          "point_a": "(-3,8)",
+          "point_b": "(7,-6)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": 8,
+          "x2": 7,
+          "y2": -6,
+          "point_a": "(-3,8)",
+          "point_b": "(7,-6)"
+        },
+        "target": "sqrt(296)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-3, 8)$、$B(7, -6)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-3, -1)$、$B(-7, 2)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "5",
+      "correct_answer": "5",
+      "display_answer": "5",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -3,
+          "y1": -1,
+          "x2": -7,
+          "y2": 2,
+          "point_a": "(-3,-1)",
+          "point_b": "(-7,2)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": -1,
+          "x2": -7,
+          "y2": 2,
+          "point_a": "(-3,-1)",
+          "point_b": "(-7,2)"
+        },
+        "target": "5",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "5",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=4"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -3,
+          "y1": -1,
+          "x2": -7,
+          "y2": 2,
+          "point_a": "(-3,-1)",
+          "point_b": "(-7,2)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": -1,
+          "x2": -7,
+          "y2": 2,
+          "point_a": "(-3,-1)",
+          "point_b": "(-7,2)"
+        },
+        "target": "5",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-3, -1)$、$B(-7, 2)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(9, -2)$、$B(1, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(208)",
+      "correct_answer": "sqrt(208)",
+      "display_answer": "sqrt(208)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 9,
+          "y1": -2,
+          "x2": 1,
+          "y2": 10,
+          "point_a": "(9,-2)",
+          "point_b": "(1,10)"
+        },
+        "raw_givens": {
+          "x1": 9,
+          "y1": -2,
+          "x2": 1,
+          "y2": 10,
+          "point_a": "(9,-2)",
+          "point_b": "(1,10)"
+        },
+        "target": "sqrt(208)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(208)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=5"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 9,
+          "y1": -2,
+          "x2": 1,
+          "y2": 10,
+          "point_a": "(9,-2)",
+          "point_b": "(1,10)"
+        },
+        "raw_givens": {
+          "x1": 9,
+          "y1": -2,
+          "x2": 1,
+          "y2": 10,
+          "point_a": "(9,-2)",
+          "point_b": "(1,10)"
+        },
+        "target": "sqrt(208)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(9, -2)$、$B(1, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(8, -8)$、$B(5, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(45)",
+      "correct_answer": "sqrt(45)",
+      "display_answer": "sqrt(45)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 8,
+          "y1": -8,
+          "x2": 5,
+          "y2": -2,
+          "point_a": "(8,-8)",
+          "point_b": "(5,-2)"
+        },
+        "raw_givens": {
+          "x1": 8,
+          "y1": -8,
+          "x2": 5,
+          "y2": -2,
+          "point_a": "(8,-8)",
+          "point_b": "(5,-2)"
+        },
+        "target": "sqrt(45)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(45)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=6"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 8,
+          "y1": -8,
+          "x2": 5,
+          "y2": -2,
+          "point_a": "(8,-8)",
+          "point_b": "(5,-2)"
+        },
+        "raw_givens": {
+          "x1": 8,
+          "y1": -8,
+          "x2": 5,
+          "y2": -2,
+          "point_a": "(8,-8)",
+          "point_b": "(5,-2)"
+        },
+        "target": "sqrt(45)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(8, -8)$、$B(5, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(0, -6)$、$B(2, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(260)",
+      "correct_answer": "sqrt(260)",
+      "display_answer": "sqrt(260)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 0,
+          "y1": -6,
+          "x2": 2,
+          "y2": 10,
+          "point_a": "(0,-6)",
+          "point_b": "(2,10)"
+        },
+        "raw_givens": {
+          "x1": 0,
+          "y1": -6,
+          "x2": 2,
+          "y2": 10,
+          "point_a": "(0,-6)",
+          "point_b": "(2,10)"
+        },
+        "target": "sqrt(260)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(260)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=7"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 0,
+          "y1": -6,
+          "x2": 2,
+          "y2": 10,
+          "point_a": "(0,-6)",
+          "point_b": "(2,10)"
+        },
+        "raw_givens": {
+          "x1": 0,
+          "y1": -6,
+          "x2": 2,
+          "y2": 10,
+          "point_a": "(0,-6)",
+          "point_b": "(2,10)"
+        },
+        "target": "sqrt(260)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(0, -6)$、$B(2, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-3, 1)$、$B(2, -6)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(74)",
+      "correct_answer": "sqrt(74)",
+      "display_answer": "sqrt(74)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -3,
+          "y1": 1,
+          "x2": 2,
+          "y2": -6,
+          "point_a": "(-3,1)",
+          "point_b": "(2,-6)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": 1,
+          "x2": 2,
+          "y2": -6,
+          "point_a": "(-3,1)",
+          "point_b": "(2,-6)"
+        },
+        "target": "sqrt(74)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(74)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=8"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -3,
+          "y1": 1,
+          "x2": 2,
+          "y2": -6,
+          "point_a": "(-3,1)",
+          "point_b": "(2,-6)"
+        },
+        "raw_givens": {
+          "x1": -3,
+          "y1": 1,
+          "x2": 2,
+          "y2": -6,
+          "point_a": "(-3,1)",
+          "point_b": "(2,-6)"
+        },
+        "target": "sqrt(74)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-3, 1)$、$B(2, -6)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(4, 9)$、$B(1, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(130)",
+      "correct_answer": "sqrt(130)",
+      "display_answer": "sqrt(130)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 4,
+          "y1": 9,
+          "x2": 1,
+          "y2": -2,
+          "point_a": "(4,9)",
+          "point_b": "(1,-2)"
+        },
+        "raw_givens": {
+          "x1": 4,
+          "y1": 9,
+          "x2": 1,
+          "y2": -2,
+          "point_a": "(4,9)",
+          "point_b": "(1,-2)"
+        },
+        "target": "sqrt(130)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(130)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=9"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 4,
+          "y1": 9,
+          "x2": 1,
+          "y2": -2,
+          "point_a": "(4,9)",
+          "point_b": "(1,-2)"
+        },
+        "raw_givens": {
+          "x1": 4,
+          "y1": 9,
+          "x2": 1,
+          "y2": -2,
+          "point_a": "(4,9)",
+          "point_b": "(1,-2)"
+        },
+        "target": "sqrt(130)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(4, 9)$、$B(1, -2)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(8, -9)$、$B(3, 5)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(221)",
+      "correct_answer": "sqrt(221)",
+      "display_answer": "sqrt(221)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 8,
+          "y1": -9,
+          "x2": 3,
+          "y2": 5,
+          "point_a": "(8,-9)",
+          "point_b": "(3,5)"
+        },
+        "raw_givens": {
+          "x1": 8,
+          "y1": -9,
+          "x2": 3,
+          "y2": 5,
+          "point_a": "(8,-9)",
+          "point_b": "(3,5)"
+        },
+        "target": "sqrt(221)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(221)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=10"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 8,
+          "y1": -9,
+          "x2": 3,
+          "y2": 5,
+          "point_a": "(8,-9)",
+          "point_b": "(3,5)"
+        },
+        "raw_givens": {
+          "x1": 8,
+          "y1": -9,
+          "x2": 3,
+          "y2": 5,
+          "point_a": "(8,-9)",
+          "point_b": "(3,5)"
+        },
+        "target": "sqrt(221)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(8, -9)$、$B(3, 5)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(4, 7)$、$B(4, 4)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "3",
+      "correct_answer": "3",
+      "display_answer": "3",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 4,
+          "y1": 7,
+          "x2": 4,
+          "y2": 4,
+          "point_a": "(4,7)",
+          "point_b": "(4,4)"
+        },
+        "raw_givens": {
+          "x1": 4,
+          "y1": 7,
+          "x2": 4,
+          "y2": 4,
+          "point_a": "(4,7)",
+          "point_b": "(4,4)"
+        },
+        "target": "3",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "3",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=11"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 4,
+          "y1": 7,
+          "x2": 4,
+          "y2": 4,
+          "point_a": "(4,7)",
+          "point_b": "(4,4)"
+        },
+        "raw_givens": {
+          "x1": 4,
+          "y1": 7,
+          "x2": 4,
+          "y2": 4,
+          "point_a": "(4,7)",
+          "point_b": "(4,4)"
+        },
+        "target": "3",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(4, 7)$、$B(4, 4)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(5, -2)$、$B(6, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(10)",
+      "correct_answer": "sqrt(10)",
+      "display_answer": "sqrt(10)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 5,
+          "y1": -2,
+          "x2": 6,
+          "y2": 1,
+          "point_a": "(5,-2)",
+          "point_b": "(6,1)"
+        },
+        "raw_givens": {
+          "x1": 5,
+          "y1": -2,
+          "x2": 6,
+          "y2": 1,
+          "point_a": "(5,-2)",
+          "point_b": "(6,1)"
+        },
+        "target": "sqrt(10)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(10)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=12"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 5,
+          "y1": -2,
+          "x2": 6,
+          "y2": 1,
+          "point_a": "(5,-2)",
+          "point_b": "(6,1)"
+        },
+        "raw_givens": {
+          "x1": 5,
+          "y1": -2,
+          "x2": 6,
+          "y2": 1,
+          "point_a": "(5,-2)",
+          "point_b": "(6,1)"
+        },
+        "target": "sqrt(10)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(5, -2)$、$B(6, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-2, -1)$、$B(-5, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(130)",
+      "correct_answer": "sqrt(130)",
+      "display_answer": "sqrt(130)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -2,
+          "y1": -1,
+          "x2": -5,
+          "y2": 10,
+          "point_a": "(-2,-1)",
+          "point_b": "(-5,10)"
+        },
+        "raw_givens": {
+          "x1": -2,
+          "y1": -1,
+          "x2": -5,
+          "y2": 10,
+          "point_a": "(-2,-1)",
+          "point_b": "(-5,10)"
+        },
+        "target": "sqrt(130)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(130)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=13"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -2,
+          "y1": -1,
+          "x2": -5,
+          "y2": 10,
+          "point_a": "(-2,-1)",
+          "point_b": "(-5,10)"
+        },
+        "raw_givens": {
+          "x1": -2,
+          "y1": -1,
+          "x2": -5,
+          "y2": 10,
+          "point_a": "(-2,-1)",
+          "point_b": "(-5,10)"
+        },
+        "target": "sqrt(130)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-2, -1)$、$B(-5, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-7, 9)$、$B(10, 6)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(298)",
+      "correct_answer": "sqrt(298)",
+      "display_answer": "sqrt(298)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -7,
+          "y1": 9,
+          "x2": 10,
+          "y2": 6,
+          "point_a": "(-7,9)",
+          "point_b": "(10,6)"
+        },
+        "raw_givens": {
+          "x1": -7,
+          "y1": 9,
+          "x2": 10,
+          "y2": 6,
+          "point_a": "(-7,9)",
+          "point_b": "(10,6)"
+        },
+        "target": "sqrt(298)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(298)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=14"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -7,
+          "y1": 9,
+          "x2": 10,
+          "y2": 6,
+          "point_a": "(-7,9)",
+          "point_b": "(10,6)"
+        },
+        "raw_givens": {
+          "x1": -7,
+          "y1": 9,
+          "x2": 10,
+          "y2": 6,
+          "point_a": "(-7,9)",
+          "point_b": "(10,6)"
+        },
+        "target": "sqrt(298)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-7, 9)$、$B(10, 6)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-4, -10)$、$B(6, -9)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(101)",
+      "correct_answer": "sqrt(101)",
+      "display_answer": "sqrt(101)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -4,
+          "y1": -10,
+          "x2": 6,
+          "y2": -9,
+          "point_a": "(-4,-10)",
+          "point_b": "(6,-9)"
+        },
+        "raw_givens": {
+          "x1": -4,
+          "y1": -10,
+          "x2": 6,
+          "y2": -9,
+          "point_a": "(-4,-10)",
+          "point_b": "(6,-9)"
+        },
+        "target": "sqrt(101)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(101)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=15"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -4,
+          "y1": -10,
+          "x2": 6,
+          "y2": -9,
+          "point_a": "(-4,-10)",
+          "point_b": "(6,-9)"
+        },
+        "raw_givens": {
+          "x1": -4,
+          "y1": -10,
+          "x2": 6,
+          "y2": -9,
+          "point_a": "(-4,-10)",
+          "point_b": "(6,-9)"
+        },
+        "target": "sqrt(101)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-4, -10)$、$B(6, -9)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(1, 5)$、$B(5, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(52)",
+      "correct_answer": "sqrt(52)",
+      "display_answer": "sqrt(52)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 1,
+          "y1": 5,
+          "x2": 5,
+          "y2": -1,
+          "point_a": "(1,5)",
+          "point_b": "(5,-1)"
+        },
+        "raw_givens": {
+          "x1": 1,
+          "y1": 5,
+          "x2": 5,
+          "y2": -1,
+          "point_a": "(1,5)",
+          "point_b": "(5,-1)"
+        },
+        "target": "sqrt(52)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(52)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=16"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 1,
+          "y1": 5,
+          "x2": 5,
+          "y2": -1,
+          "point_a": "(1,5)",
+          "point_b": "(5,-1)"
+        },
+        "raw_givens": {
+          "x1": 1,
+          "y1": 5,
+          "x2": 5,
+          "y2": -1,
+          "point_a": "(1,5)",
+          "point_b": "(5,-1)"
+        },
+        "target": "sqrt(52)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(1, 5)$、$B(5, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(6, 3)$、$B(-1, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(53)",
+      "correct_answer": "sqrt(53)",
+      "display_answer": "sqrt(53)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 6,
+          "y1": 3,
+          "x2": -1,
+          "y2": 1,
+          "point_a": "(6,3)",
+          "point_b": "(-1,1)"
+        },
+        "raw_givens": {
+          "x1": 6,
+          "y1": 3,
+          "x2": -1,
+          "y2": 1,
+          "point_a": "(6,3)",
+          "point_b": "(-1,1)"
+        },
+        "target": "sqrt(53)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(53)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=17"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 6,
+          "y1": 3,
+          "x2": -1,
+          "y2": 1,
+          "point_a": "(6,3)",
+          "point_b": "(-1,1)"
+        },
+        "raw_givens": {
+          "x1": 6,
+          "y1": 3,
+          "x2": -1,
+          "y2": 1,
+          "point_a": "(6,3)",
+          "point_b": "(-1,1)"
+        },
+        "target": "sqrt(53)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(6, 3)$、$B(-1, 1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-5, -7)$、$B(4, 0)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(130)",
+      "correct_answer": "sqrt(130)",
+      "display_answer": "sqrt(130)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -5,
+          "y1": -7,
+          "x2": 4,
+          "y2": 0,
+          "point_a": "(-5,-7)",
+          "point_b": "(4,0)"
+        },
+        "raw_givens": {
+          "x1": -5,
+          "y1": -7,
+          "x2": 4,
+          "y2": 0,
+          "point_a": "(-5,-7)",
+          "point_b": "(4,0)"
+        },
+        "target": "sqrt(130)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(130)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=18"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -5,
+          "y1": -7,
+          "x2": 4,
+          "y2": 0,
+          "point_a": "(-5,-7)",
+          "point_b": "(4,0)"
+        },
+        "raw_givens": {
+          "x1": -5,
+          "y1": -7,
+          "x2": 4,
+          "y2": 0,
+          "point_a": "(-5,-7)",
+          "point_b": "(4,0)"
+        },
+        "target": "sqrt(130)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-5, -7)$、$B(4, 0)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-9, 6)$、$B(-7, 6)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "2",
+      "correct_answer": "2",
+      "display_answer": "2",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -9,
+          "y1": 6,
+          "x2": -7,
+          "y2": 6,
+          "point_a": "(-9,6)",
+          "point_b": "(-7,6)"
+        },
+        "raw_givens": {
+          "x1": -9,
+          "y1": 6,
+          "x2": -7,
+          "y2": 6,
+          "point_a": "(-9,6)",
+          "point_b": "(-7,6)"
+        },
+        "target": "2",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "2",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=19"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -9,
+          "y1": 6,
+          "x2": -7,
+          "y2": 6,
+          "point_a": "(-9,6)",
+          "point_b": "(-7,6)"
+        },
+        "raw_givens": {
+          "x1": -9,
+          "y1": 6,
+          "x2": -7,
+          "y2": 6,
+          "point_a": "(-9,6)",
+          "point_b": "(-7,6)"
+        },
+        "target": "2",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-9, 6)$、$B(-7, 6)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-6, -2)$、$B(10, -7)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(281)",
+      "correct_answer": "sqrt(281)",
+      "display_answer": "sqrt(281)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -6,
+          "y1": -2,
+          "x2": 10,
+          "y2": -7,
+          "point_a": "(-6,-2)",
+          "point_b": "(10,-7)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": -2,
+          "x2": 10,
+          "y2": -7,
+          "point_a": "(-6,-2)",
+          "point_b": "(10,-7)"
+        },
+        "target": "sqrt(281)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(281)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=20"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -6,
+          "y1": -2,
+          "x2": 10,
+          "y2": -7,
+          "point_a": "(-6,-2)",
+          "point_b": "(10,-7)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": -2,
+          "x2": 10,
+          "y2": -7,
+          "point_a": "(-6,-2)",
+          "point_b": "(10,-7)"
+        },
+        "target": "sqrt(281)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-6, -2)$、$B(10, -7)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-5, 3)$、$B(3, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(113)",
+      "correct_answer": "sqrt(113)",
+      "display_answer": "sqrt(113)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -5,
+          "y1": 3,
+          "x2": 3,
+          "y2": 10,
+          "point_a": "(-5,3)",
+          "point_b": "(3,10)"
+        },
+        "raw_givens": {
+          "x1": -5,
+          "y1": 3,
+          "x2": 3,
+          "y2": 10,
+          "point_a": "(-5,3)",
+          "point_b": "(3,10)"
+        },
+        "target": "sqrt(113)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(113)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=21"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -5,
+          "y1": 3,
+          "x2": 3,
+          "y2": 10,
+          "point_a": "(-5,3)",
+          "point_b": "(3,10)"
+        },
+        "raw_givens": {
+          "x1": -5,
+          "y1": 3,
+          "x2": 3,
+          "y2": 10,
+          "point_a": "(-5,3)",
+          "point_b": "(3,10)"
+        },
+        "target": "sqrt(113)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-5, 3)$、$B(3, 10)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-6, -3)$、$B(-10, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(160)",
+      "correct_answer": "sqrt(160)",
+      "display_answer": "sqrt(160)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -6,
+          "y1": -3,
+          "x2": -10,
+          "y2": 9,
+          "point_a": "(-6,-3)",
+          "point_b": "(-10,9)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": -3,
+          "x2": -10,
+          "y2": 9,
+          "point_a": "(-6,-3)",
+          "point_b": "(-10,9)"
+        },
+        "target": "sqrt(160)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(160)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=22"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -6,
+          "y1": -3,
+          "x2": -10,
+          "y2": 9,
+          "point_a": "(-6,-3)",
+          "point_b": "(-10,9)"
+        },
+        "raw_givens": {
+          "x1": -6,
+          "y1": -3,
+          "x2": -10,
+          "y2": 9,
+          "point_a": "(-6,-3)",
+          "point_b": "(-10,9)"
+        },
+        "target": "sqrt(160)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-6, -3)$、$B(-10, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-1, -8)$、$B(-10, 8)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(337)",
+      "correct_answer": "sqrt(337)",
+      "display_answer": "sqrt(337)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -1,
+          "y1": -8,
+          "x2": -10,
+          "y2": 8,
+          "point_a": "(-1,-8)",
+          "point_b": "(-10,8)"
+        },
+        "raw_givens": {
+          "x1": -1,
+          "y1": -8,
+          "x2": -10,
+          "y2": 8,
+          "point_a": "(-1,-8)",
+          "point_b": "(-10,8)"
+        },
+        "target": "sqrt(337)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(337)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=23"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -1,
+          "y1": -8,
+          "x2": -10,
+          "y2": 8,
+          "point_a": "(-1,-8)",
+          "point_b": "(-10,8)"
+        },
+        "raw_givens": {
+          "x1": -1,
+          "y1": -8,
+          "x2": -10,
+          "y2": 8,
+          "point_a": "(-1,-8)",
+          "point_b": "(-10,8)"
+        },
+        "target": "sqrt(337)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-1, -8)$、$B(-10, 8)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(2, 8)$、$B(-5, -4)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(193)",
+      "correct_answer": "sqrt(193)",
+      "display_answer": "sqrt(193)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 2,
+          "y1": 8,
+          "x2": -5,
+          "y2": -4,
+          "point_a": "(2,8)",
+          "point_b": "(-5,-4)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": 8,
+          "x2": -5,
+          "y2": -4,
+          "point_a": "(2,8)",
+          "point_b": "(-5,-4)"
+        },
+        "target": "sqrt(193)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(193)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=24"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 2,
+          "y1": 8,
+          "x2": -5,
+          "y2": -4,
+          "point_a": "(2,8)",
+          "point_b": "(-5,-4)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": 8,
+          "x2": -5,
+          "y2": -4,
+          "point_a": "(2,8)",
+          "point_b": "(-5,-4)"
+        },
+        "target": "sqrt(193)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(2, 8)$、$B(-5, -4)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(2, -10)$、$B(-4, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(117)",
+      "correct_answer": "sqrt(117)",
+      "display_answer": "sqrt(117)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 2,
+          "y1": -10,
+          "x2": -4,
+          "y2": -1,
+          "point_a": "(2,-10)",
+          "point_b": "(-4,-1)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": -10,
+          "x2": -4,
+          "y2": -1,
+          "point_a": "(2,-10)",
+          "point_b": "(-4,-1)"
+        },
+        "target": "sqrt(117)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(117)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=25"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 2,
+          "y1": -10,
+          "x2": -4,
+          "y2": -1,
+          "point_a": "(2,-10)",
+          "point_b": "(-4,-1)"
+        },
+        "raw_givens": {
+          "x1": 2,
+          "y1": -10,
+          "x2": -4,
+          "y2": -1,
+          "point_a": "(2,-10)",
+          "point_b": "(-4,-1)"
+        },
+        "target": "sqrt(117)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(2, -10)$、$B(-4, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-4, -4)$、$B(3, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(218)",
+      "correct_answer": "sqrt(218)",
+      "display_answer": "sqrt(218)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -4,
+          "y1": -4,
+          "x2": 3,
+          "y2": 9,
+          "point_a": "(-4,-4)",
+          "point_b": "(3,9)"
+        },
+        "raw_givens": {
+          "x1": -4,
+          "y1": -4,
+          "x2": 3,
+          "y2": 9,
+          "point_a": "(-4,-4)",
+          "point_b": "(3,9)"
+        },
+        "target": "sqrt(218)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(218)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=26"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -4,
+          "y1": -4,
+          "x2": 3,
+          "y2": 9,
+          "point_a": "(-4,-4)",
+          "point_b": "(3,9)"
+        },
+        "raw_givens": {
+          "x1": -4,
+          "y1": -4,
+          "x2": 3,
+          "y2": 9,
+          "point_a": "(-4,-4)",
+          "point_b": "(3,9)"
+        },
+        "target": "sqrt(218)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-4, -4)$、$B(3, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(10, 5)$、$B(-2, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(180)",
+      "correct_answer": "sqrt(180)",
+      "display_answer": "sqrt(180)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 10,
+          "y1": 5,
+          "x2": -2,
+          "y2": -1,
+          "point_a": "(10,5)",
+          "point_b": "(-2,-1)"
+        },
+        "raw_givens": {
+          "x1": 10,
+          "y1": 5,
+          "x2": -2,
+          "y2": -1,
+          "point_a": "(10,5)",
+          "point_b": "(-2,-1)"
+        },
+        "target": "sqrt(180)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(180)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=27"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 10,
+          "y1": 5,
+          "x2": -2,
+          "y2": -1,
+          "point_a": "(10,5)",
+          "point_b": "(-2,-1)"
+        },
+        "raw_givens": {
+          "x1": 10,
+          "y1": 5,
+          "x2": -2,
+          "y2": -1,
+          "point_a": "(10,5)",
+          "point_b": "(-2,-1)"
+        },
+        "target": "sqrt(180)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(10, 5)$、$B(-2, -1)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(-7, -6)$、$B(7, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(421)",
+      "correct_answer": "sqrt(421)",
+      "display_answer": "sqrt(421)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": -7,
+          "y1": -6,
+          "x2": 7,
+          "y2": 9,
+          "point_a": "(-7,-6)",
+          "point_b": "(7,9)"
+        },
+        "raw_givens": {
+          "x1": -7,
+          "y1": -6,
+          "x2": 7,
+          "y2": 9,
+          "point_a": "(-7,-6)",
+          "point_b": "(7,9)"
+        },
+        "target": "sqrt(421)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(421)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=28"
+      },
+      "math_core": {
+        "givens": {
+          "x1": -7,
+          "y1": -6,
+          "x2": 7,
+          "y2": 9,
+          "point_a": "(-7,-6)",
+          "point_b": "(7,9)"
+        },
+        "raw_givens": {
+          "x1": -7,
+          "y1": -6,
+          "x2": 7,
+          "y2": 9,
+          "point_a": "(-7,-6)",
+          "point_b": "(7,9)"
+        },
+        "target": "sqrt(421)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(-7, -6)$、$B(7, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    },
+    {
+      "question_text": "已知坐標平面上兩點 $A(7, -8)$、$B(1, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "answer": "sqrt(325)",
+      "correct_answer": "sqrt(325)",
+      "display_answer": "sqrt(325)",
+      "choices": [],
+      "options": [],
+      "component_id": "src_4436",
+      "textbook_example_id": 4436,
+      "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "source_kind": null,
+      "presentation_mode": "short_answer",
+      "answer_type": "short_answer",
+      "checker": "expression_equivalence_checker",
+      "checker_key": "integer_checker",
+      "equivalence": "algebraic_equivalent",
+      "equivalence_type": "numeric_exact",
+      "interaction_type": "expression",
+      "auto_checkable": true,
+      "grading_mode": "auto",
+      "answer_contract": {
+        "answer_type": "short_answer",
+        "presentation_mode": "text_short",
+        "equivalence_type": "algebraic_equivalent",
+        "checker_key": "expression_equivalence_checker",
+        "order_matters": true,
+        "accepted_format_notes": [
+          "exact string or simplified radical like 5 or sqrt(17)"
+        ],
+        "canonical_answer_schema": {
+          "type": "short_answer"
+        },
+        "ui_contract": {
+          "presentation_mode": "text_short"
+        }
+      },
+      "metadata": {
+        "givens": {
+          "x1": 7,
+          "y1": -8,
+          "x2": 1,
+          "y2": 9,
+          "point_a": "(7,-8)",
+          "point_b": "(1,9)"
+        },
+        "raw_givens": {
+          "x1": 7,
+          "y1": -8,
+          "x2": 1,
+          "y2": 9,
+          "point_a": "(7,-8)",
+          "point_b": "(1,9)"
+        },
+        "target": "sqrt(325)",
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "presentation_mode": "short_answer",
+        "answer_type": "text_short",
+        "semantic_answer": "sqrt(325)",
+        "problem_type_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+        "component_id": "src_4436",
+        "textbook_example_id": 4436,
+        "interaction_type": "expression",
+        "auto_checkable": true,
+        "grading_mode": "auto",
+        "parameter_signature": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:seed=29"
+      },
+      "math_core": {
+        "givens": {
+          "x1": 7,
+          "y1": -8,
+          "x2": 1,
+          "y2": 9,
+          "point_a": "(7,-8)",
+          "point_b": "(1,9)"
+        },
+        "raw_givens": {
+          "x1": 7,
+          "y1": -8,
+          "x2": 1,
+          "y2": 9,
+          "point_a": "(7,-8)",
+          "point_b": "(1,9)"
+        },
+        "target": "sqrt(325)",
+        "math_objects": [
+          "frequency_table",
+          "frequency"
+        ],
+        "derivation": [
+          "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+          "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+        ],
+        "validation_facts": {
+          "domain_operation": "compute_distance_between_two_points",
+          "task_type": "compute_distance_between_two_points",
+          "line_type": "compute_distance_between_two_points",
+          "curriculum_profile": "vocational_high_b",
+          "difficulty_profile": "easy"
+        }
+      },
+      "visual_spec": null,
+      "visual_aids": [],
+      "image_base64": "",
+      "validation_facts": {
+        "domain_operation": "compute_distance_between_two_points",
+        "task_type": "compute_distance_between_two_points",
+        "line_type": "compute_distance_between_two_points",
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy"
+      },
+      "generator_key": "src_4436",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "subskill_id": "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2",
+      "checker_type": "text_short_checker",
+      "question": "已知坐標平面上兩點 $A(7, -8)$、$B(1, 9)$，試求 $A$、$B$ 兩點的距離。",
+      "solution_steps": [
+        "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).",
+        "For unknown coordinate problems, set up the quadratic equation and solve for all possible values of k."
+      ],
+      "explanation": "Use the 2D Cartesian distance formula: AB = sqrt((x2 - x1)^2 + (y2 - y1)^2).\nFor unknown coordinate problems, set up the quadratic equation and solve for all possible values of k.",
+      "ui_contract": {
+        "presentation_mode": "text_short"
+      }
+    }
+  ],
+  "passed": false,
+  "diversity": {
+    "consecutive_duplicate_count": 0,
+    "unique_question_text_count": 30,
+    "repeated_question_text_ratio": 0.0,
+    "unique_parameter_signature_count": 30
+  }
+}

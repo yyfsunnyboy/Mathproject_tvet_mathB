@@ -1,0 +1,12 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "candidate": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\solve_unknown_coordinate_from_two_point_distance\\candidate_v1.py",
+      "report": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\solve_unknown_coordinate_from_two_point_distance\\verifier_report_v1.json",
+      "passed": true
+    }
+  ],
+  "final_candidate": "E:\\Python\\Mathproject_tvet_mathB\\generated_candidates\\vocational_math_b1\\section_1_1\\solve_unknown_coordinate_from_two_point_distance\\candidate_v1.py",
+  "status": "verified"
+}
