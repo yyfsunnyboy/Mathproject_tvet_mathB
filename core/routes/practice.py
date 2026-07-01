@@ -2320,6 +2320,21 @@ def check_answer():
             record_progress=False,
         )
 
+    from core.gencode.answer_grading import normalize_grading_result, validate_answer_input
+
+    # --- [Legacy Guard] Pre-flight: classify user_ans before calling mod.check() ---
+    # Structurally invalid input → parse_error (not a student mistake)
+    _legacy_parse_fail = validate_answer_input(user_ans)
+    if _legacy_parse_fail is not None:
+        current_app.logger.info(
+            "[PRACTICE legacy check] parse_error skill_id=%s error_code=%s",
+            skill_id,
+            _legacy_parse_fail.get("error_code"),
+        )
+        return _emit_check_result(
+            question_uid, skill_id, _legacy_parse_fail, record_progress=False
+        )
+
     correct_for_check = current.get("correct_answer", current.get("answer"))
     grading_payload = {
         "skill_id": skill_id,
@@ -2329,19 +2344,62 @@ def check_answer():
         "equivalence": current.get("equivalence", current.get("equivalence_type", "")),
         "answer_type": current.get("answer_type", ""),
     }
+
+    # --- [Legacy Guard] Invoke mod.check() and catch ALL exceptions → system_error ---
+    _legacy_checker_exc: Exception | None = None
     try:
-        result = mod.check(user_ans, correct_for_check, question_payload=grading_payload)
-    except TypeError:
-        result = mod.check(user_ans, correct_for_check)
-    
-    # [V10.1 Repair] 撘瑕頧?嚗璅∠?? bool嚗??鋆 dict
+        try:
+            result = mod.check(user_ans, correct_for_check, question_payload=grading_payload)
+        except TypeError:
+            result = mod.check(user_ans, correct_for_check)
+    except Exception as _exc:
+        _legacy_checker_exc = _exc
+        current_app.logger.error(
+            "[PRACTICE legacy check] checker exception skill_id=%s err=%s",
+            skill_id,
+            _exc,
+            exc_info=True,
+        )
+        result = normalize_grading_result({
+            "correct": False,
+            "system_error": True,
+            "error_code": "CHECKER_EXECUTION_FAILED",
+            "result": f"批改系統錯誤：{_exc}",
+        })
+
+    # [V10.1 Repair] bool → dict
     if isinstance(result, bool):
         result = {
             "correct": result,
-            "result": "Correct!" if result else "Incorrect."
+            "result": "Correct!" if result else "Incorrect.",
         }
-        
-    is_correct = result.get('correct', False)
+
+    # Normalize to ensure 'status' is always present
+    if isinstance(result, dict) and "status" not in result:
+        result = normalize_grading_result(result)
+
+    # --- [Legacy Guard] Single gradability gate for all downstream persistence ---
+    # Only status="correct" / "incorrect" (or legacy results without error flags)
+    # may write to student records.  parse_error and system_error are silently
+    # returned to the caller without touching any persistence layer.
+    _legacy_status = str(result.get("status", "")).strip() if isinstance(result, dict) else ""
+    _legacy_gradable = _legacy_status in ("correct", "incorrect") or (
+        _legacy_status == ""
+        and not result.get("system_error")
+        and not result.get("invalid_input")
+    )
+
+    if not _legacy_gradable:
+        current_app.logger.info(
+            "[PRACTICE legacy check] non-gradable result – skipping all persistence "
+            "skill_id=%s status=%s error_code=%s",
+            skill_id,
+            result.get("status"),
+            result.get("error_code"),
+        )
+        return _emit_check_result(question_uid, skill_id, result, record_progress=False)
+
+    is_correct = bool(result.get("correct", False))
 
     # --- [Phase 8] Update compact review hints and stats ---
     _record_compact_practice_progress(skill_id, is_correct)
