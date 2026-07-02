@@ -209,3 +209,80 @@ def test_true_response_or_answer_value_mismatch_blocks(tmp_path: Path, metadata_
     errors = validate_generator_spec_against_metadata(spec, metadata_path)
 
     assert any(expected in err for err in errors)
+
+
+DIVISION_SKILL = "vh_數學B1_DivisionPointCoordinates"
+
+
+def _write_legacy_division_metadata(tmp_path: Path, component_id: str, *, presentation_mode: str, answer_value_type: str) -> Path:
+    comp_dir = tmp_path / DIVISION_SKILL / "components" / component_id
+    comp_dir.mkdir(parents=True)
+    response_mode = "single_choice" if presentation_mode == "single_choice" else "short_answer"
+    metadata = f'''COMPONENT_ID = "{component_id}"
+PRESENTATION_MODE = "{presentation_mode}"
+RESPONSE_MODE = "{response_mode}"
+INTERACTION_TYPE = "{response_mode}"
+ANSWER_VALUE_TYPE = "{answer_value_type}"
+ANSWER_TYPE = "{answer_value_type}"
+PROBLEM_TYPE_ID = "compute_internal_division_point_coordinates"
+TARGET_TASK = PROBLEM_TYPE_ID
+SOURCE_KIND = "example"
+'''
+    path = comp_dir / "metadata.py"
+    path.write_text(metadata, encoding="utf-8")
+    return path
+
+
+@pytest.mark.parametrize(
+    ("component_id", "presentation_mode", "legacy_answer_type", "metadata_value_type"),
+    [
+        ("src_4420", "short_answer", "coordinate_pair", "coordinate_pair"),
+        ("src_4512", "single_choice", "single_choice", "single_choice"),
+        ("src_4513", "single_choice", "single_choice", "single_choice"),
+    ],
+)
+def test_division_point_tracker_shape_normalizes_consistently(
+    tmp_path: Path,
+    component_id: str,
+    presentation_mode: str,
+    legacy_answer_type: str,
+    metadata_value_type: str,
+):
+    spec = {
+        "textbook_example_id": int(component_id.rsplit("_", 1)[-1]),
+        "component_id": component_id,
+        "presentation_mode": presentation_mode,
+        "answer_type": legacy_answer_type,
+        "problem_type_id": "compute_internal_division_point_coordinates",
+        "source_kind": "example",
+    }
+    metadata_path = _write_legacy_division_metadata(
+        tmp_path,
+        component_id,
+        presentation_mode=presentation_mode,
+        answer_value_type=metadata_value_type,
+    )
+    assert validate_generator_spec_against_metadata(spec, metadata_path) == []
+
+
+def test_staging_component_source_sync_includes_production_package(tmp_path: Path):
+    from core.gencode.v3_production_publish_service import _sync_staging_v3_component_sources
+
+    project = tmp_path / "project"
+    staging = tmp_path / "staging"
+    skill = DIVISION_SKILL
+    component_id = "src_4420"
+    prod_component = project / "agent_skills_v3" / skill / "components" / component_id
+    prod_component.mkdir(parents=True)
+    (prod_component / "generate.py").write_text("def generate(**kwargs):\n    return {}\n", encoding="utf-8")
+    (prod_component / "metadata.py").write_text('COMPONENT_ID = "src_4420"\n', encoding="utf-8")
+    (prod_component / "get_hint.py").write_text("def get_hint(*_a, **_k):\n    return ''\n", encoding="utf-8")
+    (project / "agent_skills_v3" / skill / "component_runtime.py").write_text("# runtime\n", encoding="utf-8")
+
+    result = _sync_staging_v3_component_sources(staging, skill, project_path=project)
+
+    dest_generate = staging / "agent_skills_v3" / skill / "components" / component_id / "generate.py"
+    dest_runtime = staging / "agent_skills_v3" / skill / "component_runtime.py"
+    assert dest_generate.is_file()
+    assert dest_runtime.is_file()
+    assert component_id in result["synced_component_ids"]

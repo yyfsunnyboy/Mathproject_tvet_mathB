@@ -81,6 +81,19 @@ def _metadata_problem_type_id(module: Any) -> tuple[str, list[str]]:
     return problem_type or target_task, errors
 
 
+def _metadata_payload_from_module(module: Any) -> dict[str, Any]:
+    return {
+        "presentation_mode": str(_metadata_value(module, "PRESENTATION_MODE") or ""),
+        "response_mode": str(
+            _metadata_value(module, "RESPONSE_MODE")
+            or _metadata_value(module, "INTERACTION_TYPE")
+            or ""
+        ),
+        "answer_type": str(_metadata_value(module, "ANSWER_TYPE") or ""),
+        "answer_value_type": str(_metadata_value(module, "ANSWER_VALUE_TYPE") or ""),
+    }
+
+
 def validate_generator_spec_against_metadata(
     generator_spec: dict[str, Any],
     metadata_path: Path,
@@ -109,12 +122,16 @@ def validate_generator_spec_against_metadata(
         )
 
     normalized_spec = normalize_v3_component_metadata_fields(generator_spec)
-    metadata_response = _metadata_response_mode(module)
-    spec_response = normalized_spec["response_mode"]
-    if metadata_response and spec_response and metadata_response != spec_response:
+    normalized_metadata = normalize_v3_component_metadata_fields(_metadata_payload_from_module(module))
+    if (
+        normalized_metadata["response_mode"]
+        and normalized_spec["response_mode"]
+        and normalized_metadata["response_mode"] != normalized_spec["response_mode"]
+    ):
         errors.append(
             f"{component_id}: response_mode mismatch "
-            f"(generator_spec.response_mode={spec_response!r}, metadata response_mode={metadata_response!r})"
+            f"(generator_spec.response_mode={normalized_spec['response_mode']!r}, "
+            f"metadata response_mode={normalized_metadata['response_mode']!r})"
         )
 
     metadata_source_kind = str(_metadata_value(module, "SOURCE_KIND") or "").strip()
@@ -125,12 +142,13 @@ def validate_generator_spec_against_metadata(
             f"(spec={spec_source_kind!r}, metadata={metadata_source_kind!r})"
         )
 
-    metadata_answer_value = _metadata_answer_value_type(module)
+    metadata_answer_value = normalized_metadata["answer_value_type"]
     spec_answer_value = normalized_spec["answer_value_type"]
     if metadata_answer_value and spec_answer_value and metadata_answer_value != spec_answer_value:
         errors.append(
             f"{component_id}: answer_value_type mismatch "
-            f"(generator_spec.answer_value_type={spec_answer_value!r}, metadata answer_value_type={metadata_answer_value!r})"
+            f"(generator_spec.answer_value_type={spec_answer_value!r}, "
+            f"metadata answer_value_type={metadata_answer_value!r})"
         )
 
     metadata_problem_type, alias_errors = _metadata_problem_type_id(module)

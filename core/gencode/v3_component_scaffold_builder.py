@@ -71,13 +71,25 @@ def normalize_v3_component_metadata_fields(payload_meta: dict[str, Any]) -> dict
     response_mode = str(
         payload_meta.get("response_mode")
         or payload_meta.get("interaction_type")
-        or ("single_choice" if presentation_mode == "single_choice" else "expression")
+        or ""
     ).strip()
+    if not response_mode:
+        if presentation_mode == "single_choice":
+            response_mode = "single_choice"
+        elif presentation_mode == "short_answer":
+            response_mode = "short_answer"
+        else:
+            response_mode = presentation_mode or "expression"
+
     legacy_answer_type = str(payload_meta.get("answer_type") or "").strip()
     answer_value_type = str(payload_meta.get("answer_value_type") or "").strip()
+    if answer_value_type in _RESPONSE_MODE_VALUES:
+        answer_value_type = ""
+    if legacy_answer_type in _RESPONSE_MODE_VALUES:
+        legacy_answer_type = ""
     if not answer_value_type and legacy_answer_type == "text_short":
         answer_value_type = legacy_answer_type
-    elif not answer_value_type and legacy_answer_type and legacy_answer_type not in _RESPONSE_MODE_VALUES:
+    elif not answer_value_type and legacy_answer_type:
         answer_value_type = legacy_answer_type
     if not answer_value_type:
         answer_value_type = "choice_label" if response_mode == "single_choice" else "expression"

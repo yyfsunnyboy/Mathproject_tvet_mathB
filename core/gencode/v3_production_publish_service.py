@@ -108,24 +108,56 @@ def assert_safe_staging_root(staging_root: str, project_root: Path) -> Path:
     return staging_path
 
 
-def _sync_dryrun_components_to_v3_house(staging_path: Path, skill_id: str) -> None:
-    # Compile_and_double_write_skill output components under staging_path / skill_id / "components" during test runs,
-    # or they are in the project dryrun reports dir. We scan both to sync to staging's agent_skills_v3 directory.
-    project_dryrun = PROJECT_ROOT / "reports" / "gencode_v3_dryrun" / skill_id / "components"
-    staging_dryrun = staging_path / skill_id / "components"
-    
-    src = None
+def _sync_staging_v3_component_sources(
+    staging_path: Path,
+    skill_id: str,
+    *,
+    project_path: Path | None = None,
+) -> dict[str, object]:
+    """Ensure staging V3 house contains publish-gate component sources."""
+    skill_key = str(skill_id or "").strip()
+    dest_root = staging_path / "agent_skills_v3" / skill_key
+    dest_components = dest_root / "components"
+    dest_components.mkdir(parents=True, exist_ok=True)
+
+    source_roots: list[Path] = []
+    staging_dryrun = staging_path / skill_key / "components"
     if staging_dryrun.is_dir() and any(staging_dryrun.iterdir()):
-        src = staging_dryrun
-    elif project_dryrun.is_dir() and any(project_dryrun.iterdir()):
-        src = project_dryrun
-        
-    if not src:
-        return
-        
-    v3_components = staging_path / "agent_skills_v3" / skill_id / "components"
-    v3_components.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(src, v3_components, dirs_exist_ok=True)
+        source_roots.append(staging_dryrun)
+    project_dryrun = PROJECT_ROOT / "reports" / "gencode_v3_dryrun" / skill_key / "components"
+    if project_dryrun.is_dir() and any(project_dryrun.iterdir()):
+        source_roots.append(project_dryrun)
+    if project_path is not None:
+        production_components = project_path / "agent_skills_v3" / skill_key / "components"
+        if production_components.is_dir() and any(production_components.iterdir()):
+            source_roots.append(production_components)
+
+    copied: set[str] = set()
+    for src_root in source_roots:
+        for entry in sorted(src_root.iterdir()):
+            if not entry.is_dir() or entry.name.startswith("__"):
+                continue
+            shutil.copytree(entry, dest_components / entry.name, dirs_exist_ok=True)
+            copied.add(entry.name)
+
+    if project_path is not None:
+        prod_pkg = project_path / "agent_skills_v3" / skill_key
+        if prod_pkg.is_dir():
+            dest_root.mkdir(parents=True, exist_ok=True)
+            for fname in ("component_runtime.py", "component_hint.py"):
+                src_file = prod_pkg / fname
+                if src_file.is_file():
+                    shutil.copy2(src_file, dest_root / fname)
+
+    return {
+        "synced_component_ids": sorted(copied),
+        "component_count": len(copied),
+        "dest_components": str(dest_components.resolve()),
+    }
+
+
+def _sync_dryrun_components_to_v3_house(staging_path: Path, skill_id: str) -> None:
+    _sync_staging_v3_component_sources(staging_path, skill_id)
 
 
 def _backup_facade_before_overwrite(facade_path: Path) -> bool:
@@ -458,7 +490,11 @@ def publish_single_v3_skill_to_production(
         raise ValueError("no_eligible_components")
 
     compile_result = compile_and_double_write_skill(conn, skill_key, str(staging_path))
-    _sync_dryrun_components_to_v3_house(staging_path, skill_key)
+    _sync_staging_v3_component_sources(
+        staging_path,
+        skill_key,
+        project_path=project_path,
+    )
 
     from core.gencode.v3_component_spec_validator import (
         assert_generator_specs_metadata_consistent,
