@@ -20,6 +20,7 @@ DIVISION_POINT_SLOT = "division_point_coordinates"
 _TARGET_TASKS = frozenset(
     {
         "compute_internal_division_point_coordinates",
+        "compute_section_point_distance_from_origin",
         "compute_centroid_coordinates",
         "compute_midpoint_coordinates",
         "solve_point_from_section_ratio",
@@ -103,7 +104,14 @@ def _pick_ratio(rng: random.Random, schema: dict[str, Any]) -> tuple[int, int]:
         g = math.gcd(m, n)
         m, n = max(1, m // g), max(1, n // g)
     if not ratio.get("allow_equal_ratio", False) and m == n:
-        n = min(int(ratio.get("n_max", 5)), m + 1)
+        n_min = int(ratio.get("n_min", 1))
+        n_max = int(ratio.get("n_max", 5))
+        if n < n_max:
+            n += 1
+        elif n > n_min:
+            n -= 1
+        else:
+            raise RuntimeError("division_point_ratio_range_has_no_distinct_pair")
     return m, n
 
 
@@ -187,6 +195,22 @@ def _assert_core_answer_matches_generation_context(core: dict[str, Any]) -> None
     meta = core.get("metadata") if isinstance(core.get("metadata"), dict) else {}
     gcoords = meta.get("generation_coords") if isinstance(meta.get("generation_coords"), dict) else {}
     answer = str(core.get("answer", "")).strip()
+    if str(meta.get("answer_semantics", "")).strip() == "distance_from_origin":
+        point = gcoords.get("P")
+        if not isinstance(point, (list, tuple)) or len(point) != 2:
+            raise RuntimeError("section_point_origin_distance_missing_point")
+        px, py = Fraction(str(point[0])), Fraction(str(point[1]))
+        distance_squared = px * px + py * py
+        expected = math.isqrt(distance_squared.numerator)
+        if (
+            distance_squared.denominator != 1
+            or expected * expected != distance_squared.numerator
+            or str(expected) != answer
+        ):
+            raise RuntimeError(
+                f"section_point_origin_distance_context_mismatch:expected_squared={distance_squared} actual={answer}"
+            )
+        return
     ratio = _parse_ratio_values(str(meta.get("ratio_values", "")))
     a_raw = gcoords.get("A")
     b_raw = gcoords.get("B")
@@ -242,7 +266,7 @@ def _coord_dedupe_key(text: str) -> str | None:
     parsed = parse_coordinate_pair_answer(text)
     if parsed is None:
         return str(text).strip() or None
-    return f"{parsed[0]:.6g},{parsed[1]:.6g}"
+    return f"{float(parsed[0]):.6g},{float(parsed[1]):.6g}"
 
 
 def _coords_snapshot(coords: dict[str, Any]) -> dict[str, Any]:
@@ -397,6 +421,75 @@ def _build_division_point_single_choice_payload(
     }
 
 
+def _make_scalar_distance_distractors(
+    rng: random.Random,
+    correct_value: str,
+) -> list[str]:
+    correct = int(correct_value)
+    candidates = [
+        correct - 1,
+        correct + 1,
+        correct + 2,
+        abs(correct - 2),
+        correct * 2,
+    ]
+    unique = [value for value in dict.fromkeys(candidates) if value > 0 and value != correct]
+    while len(unique) < 3:
+        value = rng.randint(1, max(8, correct + 5))
+        if value != correct and value not in unique:
+            unique.append(value)
+    rng.shuffle(unique)
+    return [str(value) for value in unique[:3]]
+
+
+def _build_scalar_distance_choice_payload(
+    skill_id: str,
+    problem_type_id: str,
+    spec: dict[str, Any],
+    core: dict[str, Any],
+    ac: dict[str, Any],
+    rng: random.Random,
+) -> dict[str, Any]:
+    correct_value = str(core["answer"])
+    options = [correct_value, *_make_scalar_distance_distractors(rng, correct_value)]
+    rng.shuffle(options)
+    labels = ["A", "B", "C", "D"]
+    choices = [
+        {"label": label, "text": value, "value": value}
+        for label, value in zip(labels, options)
+    ]
+    answer_label = labels[options.index(correct_value)]
+    ac_out = dict(ac)
+    coerce_single_choice_contract(ac_out)
+    metadata = dict(core.get("metadata") or {})
+    metadata["presentation_mode"] = "single_choice"
+    metadata["semantic_answer"] = correct_value
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": problem_type_id,
+        "question_text": core["question_text"],
+        "question": core["question_text"],
+        "choices": choices,
+        "options": options,
+        "answer": answer_label,
+        "correct_answer": answer_label,
+        "correct_value": correct_value,
+        "answer_type": "single_choice",
+        "checker_type": "choice_label_checker",
+        "explanation": core["explanation"],
+        "diagnosis_tags": [
+            "division_point_coordinates",
+            "compute_section_point_distance_from_origin",
+            f"template_{core.get('template_variant', '')}",
+        ],
+        "metadata": metadata,
+        "answer_contract": ac_out,
+        "checker": "choice_label_checker",
+        "equivalence": "choice_label",
+        "source": "gencode_slot_generator",
+    }
+
+
 def _to_float_pair(x: float | Fraction | int, y: float | Fraction | int) -> tuple[float, float]:
     fx = float(x) if not isinstance(x, Fraction) else float(x.numerator) / float(x.denominator)
     fy = float(y) if not isinstance(y, Fraction) else float(y.numerator) / float(y.denominator)
@@ -437,7 +530,14 @@ def _gen_ab_for_internal_integer(
         if not rational_ok and (pxf.denominator != 1 or pyf.denominator != 1):
             continue
         return ax, ay, bx, by, pxf, pyf
-    return None
+    px = _rand_int(rng, xmin, xmax)
+    py = _rand_int(rng, ymin, ymax)
+    dx, dy = rng.choice(
+        [(1, 0), (0, 1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+    )
+    ax, ay = px - m * dx, py - m * dy
+    bx, by = px + n * dx, py + n * dy
+    return ax, ay, bx, by, Fraction(px, 1), Fraction(py, 1)
 
 
 def _gen_internal_stem(
@@ -538,6 +638,69 @@ def _gen_internal_division(spec: dict[str, Any], rng: random.Random) -> dict[str
         point_names=names,
         coords={"A": (ax, ay), "B": (bx, by), "P": _to_float_pair(px, py)},
     )
+
+
+def _gen_section_point_distance_from_origin(
+    spec: dict[str, Any],
+    rng: random.Random,
+) -> dict[str, Any]:
+    gc = _gc(spec)
+    schema = _schema(gc)
+    variant = _weighted_variant(rng, _enabled_variants(gc))
+    variant_id = str(variant.get("id", "section_point_origin_distance_choice"))
+    names = _pick_names(rng, schema, ["A", "B", "P"])
+    a_name, b_name, point_name = names[:3]
+    m, n = _pick_ratio(rng, schema)
+    px, py = rng.choice(
+        [
+            (3, 4), (3, -4), (-3, 4), (-3, -4),
+            (4, 3), (4, -3), (-4, 3), (-4, -3),
+        ]
+    )
+    dx, dy = rng.choice(
+        [
+            (1, 0), (0, 1), (1, 1), (1, -1),
+            (-1, 1), (-1, -1),
+        ]
+    )
+    ax, ay = px - m * dx, py - m * dy
+    bx, by = px + n * dx, py + n * dy
+    distance = math.isqrt(px * px + py * py)
+    if distance <= 0 or distance * distance != px * px + py * py:
+        raise RuntimeError("section_point_origin_distance_generation_failed")
+
+    if variant_id == "linear_ratio_origin_distance_choice":
+        question = (
+            f"已知 {a_name}({ax},{ay})、{b_name}({bx},{by})，"
+            f"{point_name} 在線段 {a_name}{b_name} 上，且 "
+            f"{n}{a_name}{point_name}={m}{point_name}{b_name}，求 O{point_name}。"
+        )
+        ratio_form = f"{n}AP={m}PB"
+    else:
+        question = (
+            f"已知 {a_name}({ax},{ay})、{b_name}({bx},{by})，"
+            f"{point_name} 在線段 {a_name}{b_name} 上，且 "
+            f"{a_name}{point_name}:{point_name}{b_name}={m}:{n}，"
+            f"求 {point_name} 到原點 O 的距離。"
+        )
+        ratio_form = f"AP:PB={m}:{n}"
+    explanation = (
+        f"由內分點公式得 {point_name}=({px},{py})，"
+        f"所以 O{point_name}=sqrt({px}^2+{py}^2)={distance}。"
+    )
+    core = _pack(
+        spec,
+        question,
+        str(distance),
+        explanation,
+        template_variant=variant_id,
+        ratio_form=ratio_form,
+        ratio_values=f"{m}:{n}",
+        point_names=names,
+        coords={"A": (ax, ay), "B": (bx, by), "P": (px, py)},
+    )
+    core["metadata"]["answer_semantics"] = "distance_from_origin"
+    return core
 
 
 def _gen_centroid(spec: dict[str, Any], rng: random.Random) -> dict[str, Any]:
@@ -713,7 +876,14 @@ def _pack(
             tx, ty = tgt
             sign = ("+" if tx >= 0 else "-") + ("+" if ty >= 0 else "-")
     meta = {
-        "givens": [str(k) for k in coords.keys() if k != "target"],
+        "givens": {
+            "points": {
+                str(key): value
+                for key, value in _coords_snapshot(coords).items()
+                if key != "target"
+            },
+            "ratio": ratio_values,
+        },
         "target": answer,
         "derivation": [explanation],
         "template_variant": template_variant,
@@ -756,6 +926,8 @@ def generate_division_point_payload(
     rng = _rng(seed, problem_type_id)
     if target == "compute_centroid_coordinates":
         core = _gen_centroid(spec, rng)
+    elif target == "compute_section_point_distance_from_origin":
+        core = _gen_section_point_distance_from_origin(spec, rng)
     elif target == "compute_midpoint_coordinates":
         core = _gen_midpoint(spec, rng)
     elif target == "solve_point_from_section_ratio":
@@ -768,6 +940,10 @@ def generate_division_point_payload(
     ac = get_answer_contract(spec)
     presentation = _resolve_presentation_mode(spec, ac)
     if presentation == "single_choice":
+        if target == "compute_section_point_distance_from_origin":
+            return _build_scalar_distance_choice_payload(
+                skill_id, problem_type_id, spec, core, ac, rng
+            )
         return _build_division_point_single_choice_payload(skill_id, problem_type_id, spec, core, ac, rng)
 
     at = str(ac.get("answer_type", "ordered_pair")).strip() or "ordered_pair"

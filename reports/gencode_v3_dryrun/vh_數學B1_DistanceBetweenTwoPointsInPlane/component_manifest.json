@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
-  "compiled_at": "2026-07-01T16:08:14.416673+00:00",
+  "compiled_at": "2026-07-02T14:41:29.806323+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -12,7 +12,7 @@
       "line_type": "solve_unknown_coordinate_from_two_point_distance",
       "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
       "entrypoint": "build_distance_between_two_points_matrix",
-      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4419"
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4419"
     },
     {
       "component_id": "src_4432",
@@ -23,7 +23,7 @@
       "line_type": "solve_unknown_coordinate_from_two_point_distance",
       "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
       "entrypoint": "build_distance_between_two_points_matrix",
-      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4432"
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4432"
     },
     {
       "component_id": "src_4436",
@@ -34,7 +34,7 @@
       "line_type": "compute_distance_between_two_points",
       "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
       "entrypoint": "build_distance_between_two_points_matrix",
-      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4436"
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4436"
     },
     {
       "component_id": "src_4437",
@@ -45,7 +45,7 @@
       "line_type": "solve_unknown_coordinate_from_two_point_distance",
       "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
       "entrypoint": "build_distance_between_two_points_matrix",
-      "component_dir": "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4437"
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_DistanceBetweenTwoPointsInPlane\\components\\src_4437"
     }
   ]
 }

@@ -22,6 +22,7 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "solve_unknown_coordinate_from_two_point_distance": "two_point_distance_solution_set",
     "compute_distance_between_two_points": "two_point_distance_compute",
     "compute_internal_division_point_coordinates": DIVISION_POINT_SLOT,
+    "compute_section_point_distance_from_origin": DIVISION_POINT_SLOT,
     "compute_centroid_coordinates": DIVISION_POINT_SLOT,
     "compute_midpoint_coordinates": DIVISION_POINT_SLOT,
     "solve_point_from_section_ratio": DIVISION_POINT_SLOT,

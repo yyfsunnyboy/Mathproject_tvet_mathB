@@ -4890,7 +4890,11 @@ def run_v3_no_llm_phase1_for_example(
                     if int(entry.get("example_id") or 0) != example_id:
                         continue
                     pt = str(entry.get("problem_type_id") or entry.get("subskill_id") or "").strip()
-                    if not pt or pt.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
+                    if (
+                        not pt
+                        or pt.lower() == "unknown"
+                        or pt.lower() in _NON_MATHEMATICAL_SOURCE_TYPES
+                    ):
                         continue
                     runtime_cat = str(entry.get("runtime_category") or "").strip()
                     entry_mode = (
@@ -4907,10 +4911,10 @@ def run_v3_no_llm_phase1_for_example(
                     answer_contract = _infer_answer_contract_from_row(
                         textbook_row, presentation_mode=entry_mode
                     )
-                    if runtime_cat == "deterministic_choice":
-                        answer_contract.setdefault("answer_type", "choice")
-                        answer_contract.setdefault("checker_key", "choice_label_checker")
-                        answer_contract.setdefault("equivalence_type", "choice_label")
+                    for key in ("answer_type", "checker_key", "equivalence_type"):
+                        if entry.get(key):
+                            answer_contract[key] = str(entry.get(key))
+                    entry_mode = str(entry.get("presentation_mode") or entry_mode)
                     return _build_v3_phase1_induced_spec(
                         skill_id=skill_key,
                         textbook_example_id=example_id,

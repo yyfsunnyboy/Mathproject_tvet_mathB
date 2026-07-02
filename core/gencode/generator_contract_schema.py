@@ -261,6 +261,54 @@ for _task in DIVISION_POINT_COORDINATES_TASKS:
                 "sampling_strategy": DEFAULT_SAMPLING_STRATEGY,
             },
         )
+    elif _task == "compute_section_point_distance_from_origin":
+        _register_blueprint(
+            _task,
+            {
+                "template_variants": [
+                    _variant(
+                        "section_point_origin_distance_choice",
+                        "內分點到原點距離",
+                        "已知 A({ax},{ay})、B({bx},{by})，P 在 AB 上且 AP:PB={m}:{n}，求 P 到原點 O 的距離。",
+                    ),
+                    _variant(
+                        "linear_ratio_origin_distance_choice",
+                        "線性比例求原點距離",
+                        "已知 A({ax},{ay})、B({bx},{by})，P 在 AB 上且 {n}AP={m}PB，求 OP。",
+                    ),
+                ],
+                "parameter_schema": {
+                    "point_names": dict(_POINT_NAMES_SCHEMA),
+                    "coordinate_range": dict(_COORD_RANGE_SCHEMA),
+                    "ratio": dict(_RATIO_SCHEMA),
+                    "distance_result_type": {"choices": ["integer"], "weights": [1.0]},
+                },
+                "variation_dimensions": [
+                    "point_names",
+                    "coordinate_sign_pattern",
+                    "ratio_form",
+                    "ratio_values",
+                    "origin_distance",
+                    "template_variant",
+                ],
+                "difficulty_controls": {
+                    "level_1": {"integer_section_point": True, "integer_distance": True},
+                    "level_2": {"allow_negative_coordinates": True},
+                },
+                "anti_repetition_rules": dict(DEFAULT_ANTI_REPETITION),
+                "validity_constraints": [
+                    "A != B",
+                    "m, n positive integers",
+                    "m + n != 0",
+                    "P lies strictly between A and B",
+                    "P != O",
+                    "OP is an exact positive integer",
+                ],
+                "answer_shape": "choice_label",
+                "explanation_variants": ["section_formula_then_origin_distance"],
+                "sampling_strategy": DEFAULT_SAMPLING_STRATEGY,
+            },
+        )
     elif _task == "compute_centroid_coordinates":
         _register_blueprint(
             _task,

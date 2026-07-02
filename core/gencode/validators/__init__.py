@@ -5,11 +5,74 @@ from typing import Any
 from core.gencode.problem_type_spec import load_problem_type_spec
 from core.gencode.validators.answer_contract_validator import validate_answer_contract
 from core.gencode.validators.condition_target_dependency import validate_condition_target_dependency
+from core.gencode.problem_type_spec import get_stem_contract
 from core.gencode.validators.semantic_validator import (
     validate_dependency_contract,
     validate_semantic_and_dependency,
     validate_semantic_contract,
 )
+
+
+def _requires_symbolic_coordinate(spec: dict[str, Any]) -> bool:
+    required = get_stem_contract(spec).get("required_math_objects", [])
+    if not isinstance(required, list):
+        return False
+    return "symbolic_condition" in required and "coordinate_point" in required
+
+
+def _requires_sympy_semantic_validation(
+    payload: dict[str, Any],
+    spec: dict[str, Any],
+) -> bool:
+    if _requires_symbolic_coordinate(spec):
+        return True
+    answer_contract = spec.get("answer_contract", {}) or spec.get("answer_contract_proposal", {}) or {}
+    raw_answer_type = str(answer_contract.get("answer_type", "")).strip().lower()
+    checker_key = str(answer_contract.get("checker") or answer_contract.get("checker_key") or "").strip()
+    if raw_answer_type in {"choice", "single_choice", "multi_choice", "multiple_choice"}:
+        return False
+    from validators.base_checker import _is_linear_equation_contract
+
+    if _is_linear_equation_contract(answer_contract):
+        return False
+    is_math = (
+        raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction", "interval", "solution_set"}
+        or "expression" in checker_key
+        or "solution_set" in checker_key
+        or "interval" in checker_key
+    )
+    return is_math and (
+        payload.get("answer") is not None or payload.get("correct_answer") is not None
+    )
+
+
+def _needs_semantic_checker(payload: dict[str, Any], spec: dict[str, Any]) -> bool:
+    answer_contract = spec.get("answer_contract", {}) or spec.get("answer_contract_proposal", {}) or {}
+    raw_answer_type = str(answer_contract.get("answer_type", "")).strip().lower()
+    if raw_answer_type in {"choice", "single_choice", "multi_choice", "multiple_choice"}:
+        return True
+    return _requires_sympy_semantic_validation(payload, spec)
+
+
+def _run_semantic_checker(payload: dict[str, Any], spec: dict[str, Any]) -> list[str]:
+    if not _needs_semantic_checker(payload, spec):
+        return []
+    try:
+        from validators.semantic_checker import SemanticChecker
+    except ModuleNotFoundError as exc:
+        if "sympy" in str(exc):
+            return ["system_error:sympy_dependency_missing"]
+        raise
+    checker = SemanticChecker()
+    ok, err_detail = checker.check_semantic(payload, spec)
+    if not ok:
+        if isinstance(err_detail, dict) and err_detail.get("error_type") == "system_error":
+            code = str(err_detail.get("error_code") or "sympy_dependency_missing")
+            return [f"system_error:{code}"]
+        import json
+
+        return [f"generator_semantically_unsafe:{json.dumps(err_detail, ensure_ascii=False)}"]
+    return []
 
 
 def check_complete_frequency_data(givens: dict[str, Any], categories: Any) -> bool:
@@ -102,6 +165,8 @@ def validate_generator_payload(
     # 4. SCAFFOLD_NOT_PUBLISHABLE: Do not publish generic AST scaffolds
     metadata = payload.get("metadata", {})
     givens = metadata.get("givens", {})
+    if not isinstance(givens, dict):
+        givens = {}
     categories = givens.get("categories", [])
     is_generic = False
     generic_labels = (categories == ["A組", "B組", "C組", "D組"])
@@ -193,14 +258,8 @@ def validate_generator_payload(
 
     errors.extend(validate_descriptive_statistics_payload(payload))
 
-    # Run SemanticChecker Base check
-    import json
-    from validators.semantic_checker import SemanticChecker
-    checker = SemanticChecker()
-    ok, err_detail = checker.check_semantic(payload, spec)
-    if not ok:
-        errors.append(f"generator_semantically_unsafe:{json.dumps(err_detail, ensure_ascii=False)}")
-        
+    errors.extend(_run_semantic_checker(payload, spec))
+
     return sorted(set(errors))
 
 

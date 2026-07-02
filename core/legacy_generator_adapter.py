@@ -142,6 +142,24 @@ def normalize_runtime_value(value: Any) -> Any:
     return value
 
 
+def _skill_facade_uses_generate_for_skill(module: Any) -> bool:
+    path = getattr(module, "__file__", None)
+    if not path:
+        return False
+    try:
+        from pathlib import Path
+
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return (
+        "generate_for_skill" in text
+        and "dispatch_generate" not in text
+        and hasattr(module, "SKILL_ID")
+        and hasattr(module, "GENERATOR_SPECS")
+    )
+
+
 def invoke_skill_generate(
     module: Any,
     *,
@@ -152,6 +170,18 @@ def invoke_skill_generate(
     skill_id: str = ""
 ) -> dict[str, Any]:
     """Dynamically invokes a skill module's generate function according to its signature."""
+    if _skill_facade_uses_generate_for_skill(module):
+        from core.gencode.runtime_skill_wrapper import generate_for_skill
+
+        return generate_for_skill(
+            str(getattr(module, "SKILL_ID", "")).strip(),
+            list(getattr(module, "GENERATOR_SPECS", []) or []),
+            level=int(level if level is not None else 1),
+            seed=seed,
+            component_id=component_id,
+            problem_type_id=problem_type_id,
+        )
+
     generate_fn = getattr(module, "generate", None)
     if not callable(generate_fn):
         raise AttributeError(f"Module does not have a callable 'generate' function: {skill_id}")

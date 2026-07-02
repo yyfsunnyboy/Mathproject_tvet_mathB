@@ -1413,6 +1413,9 @@ def next_question():
     current_app.logger.info("[GENCODE WEB RUNTIME] skill_id=%s", request.args.get('skill', ''))
     current_app.logger.info("[GENCODE WEB RUNTIME] decoded_skill_id=%s", skill_id)
     problem_type = request.args.get('problem_type', '')
+    requested_component_id = (
+        request.args.get('component_id') or request.args.get('component') or ''
+    ).strip() or None
     variant = request.args.get('variant', B4_TREE_DIAGRAM_DEFAULT_VARIANT)
     tree_diagram_index = request.args.get('tree_diagram_index', type=int)
     pascal_triangle_index = request.args.get('pascal_triangle_index', type=int)
@@ -1829,11 +1832,13 @@ def next_question():
 
                         try:
                             from core.legacy_generator_adapter import invoke_skill_generate, normalize_runtime_value
+                            effective_component_id = requested_component_id or picked_component_id
                             data = invoke_skill_generate(
                                 mod,
                                 level=difficulty_level,
                                 seed=gen_seed,
-                                component_id=picked_component_id,
+                                component_id=effective_component_id,
+                                problem_type_id=problem_type or None,
                                 skill_id=skill_id
                             )
                             data = normalize_runtime_value(data)

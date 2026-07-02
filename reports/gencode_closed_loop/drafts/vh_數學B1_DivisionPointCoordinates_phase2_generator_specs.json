@@ -1,0 +1,105 @@
+{
+  "skill_id": "vh_數學B1_DivisionPointCoordinates",
+  "phase": "phase2",
+  "dry_run": true,
+  "ai_llm_used": false,
+  "generator_specs_count": 7,
+  "build_candidate_count": 6,
+  "verified_reference_count": 1,
+  "verified_reference": {
+    "source_id": 4421,
+    "component_id": "src_4421",
+    "status": "rebuilt_verified_component",
+    "publication_eligible": true,
+    "exclude_from_publish_candidates": false,
+    "reuse_assessment": "rebuilt with the generic division-point engine and validated for 10 seeds"
+  },
+  "generator_specs": [
+    {
+      "source_id": 4420,
+      "status": "draft",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "answer_type": "coordinate_pair",
+      "presentation_mode": "short_answer",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "target_task": "compute_internal_division_point_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4421,
+      "status": "verified",
+      "publication_eligible": true,
+      "exclude_from_publish_candidates": false,
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "answer_type": "coordinate_pair",
+      "presentation_mode": "short_answer",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "target_task": "compute_internal_division_point_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4423,
+      "status": "draft",
+      "problem_type_id": "compute_centroid_coordinates",
+      "operation": "compute_centroid_coordinates",
+      "answer_type": "coordinate_pair",
+      "presentation_mode": "short_answer",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "target_task": "compute_centroid_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4427,
+      "status": "draft",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "answer_type": "coordinate_pair",
+      "presentation_mode": "short_answer",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "target_task": "compute_internal_division_point_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4438,
+      "status": "draft",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "answer_type": "coordinate_pair",
+      "presentation_mode": "short_answer",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "target_task": "compute_internal_division_point_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4512,
+      "status": "draft",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "answer_type": "choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "target_task": "compute_internal_division_point_coordinates",
+      "template_slot": "division_point_coordinates"
+    },
+    {
+      "source_id": 4513,
+      "status": "draft",
+      "problem_type_id": "compute_section_point_distance_from_origin",
+      "operation": "compute_section_point_distance_from_origin",
+      "answer_type": "choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "target_task": "compute_section_point_distance_from_origin",
+      "template_slot": "division_point_coordinates"
+    }
+  ]
+}

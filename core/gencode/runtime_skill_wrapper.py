@@ -38,6 +38,85 @@ def _normalize_problem_type_id(problem_type_id: str) -> str:
     return _PT_SUFFIX.sub("", str(problem_type_id or "").strip())
 
 
+def _known_component_ids(
+    generator_specs: list[dict[str, Any]],
+    generator_keys: list[str] | None = None,
+) -> set[str]:
+    ids: set[str] = set()
+    if generator_keys:
+        ids.update(str(k).strip() for k in generator_keys if str(k).strip())
+    for row in generator_specs:
+        if isinstance(row, dict):
+            cid = str(row.get("component_id", "")).strip()
+            if cid:
+                ids.add(cid)
+    return ids
+
+
+def resolve_component_dispatch(
+    generator_specs: list[dict[str, Any]],
+    generator_keys: list[str] | None = None,
+    *,
+    component_id: str | None = None,
+    problem_type_id: str | None = None,
+    seed: int | None = None,
+) -> str | None:
+    """Resolve a concrete component_id from explicit id or problem_type_id."""
+    known = _known_component_ids(generator_specs, generator_keys)
+    cid = str(component_id or "").strip()
+    if cid:
+        if known and cid not in known:
+            raise RuntimeError(f"unknown_component_id:{cid}")
+        return cid
+
+    pt = str(problem_type_id or "").strip()
+    if not pt:
+        return None
+
+    norm_pt = _normalize_problem_type_id(pt)
+    matches: list[dict[str, Any]] = []
+    for row in generator_specs:
+        if not isinstance(row, dict):
+            continue
+        row_pt = str(row.get("problem_type_id", "")).strip()
+        if not row_pt:
+            continue
+        if row_pt == pt or _normalize_problem_type_id(row_pt) == norm_pt:
+            matches.append(row)
+
+    if not matches:
+        raise RuntimeError(f"generator_spec_not_found:{pt}")
+    if len(matches) == 1:
+        return str(matches[0].get("component_id", "")).strip() or None
+    idx = int(seed or 0) % len(matches)
+    return str(matches[idx].get("component_id", "")).strip() or None
+
+
+def _problem_type_for_component(
+    generator_specs: list[dict[str, Any]],
+    component_id: str,
+) -> str:
+    for row in generator_specs:
+        if isinstance(row, dict) and str(row.get("component_id", "")).strip() == component_id:
+            return str(row.get("problem_type_id", "")).strip()
+    return ""
+
+
+def _match_available_problem_type(
+    available: list[dict[str, Any]],
+    problem_type_id: str,
+) -> str:
+    target = str(problem_type_id or "").strip()
+    if not target:
+        return ""
+    norm = _normalize_problem_type_id(target)
+    for row in available:
+        row_pt = str(row.get("problem_type_id", "")).strip()
+        if row_pt == target or _normalize_problem_type_id(row_pt) == norm:
+            return row_pt
+    return ""
+
+
 def _dispatch_rng(seed: int | None, *scope: str) -> random.Random:
     if seed is None:
         return random.Random()
@@ -113,6 +192,8 @@ def dispatch_problem_type(
     *,
     level: int = 1,
     seed: int | None = None,
+    component_id: str | None = None,
+    problem_type_id: str | None = None,
 ) -> tuple[str, str, list[str]]:
     available = collect_available_runtime_problem_types(
         skill_id,
@@ -120,6 +201,28 @@ def dispatch_problem_type(
         level=level,
     )
     available_ids = [str(row.get("problem_type_id", "")).strip() for row in available if str(row.get("problem_type_id", "")).strip()]
+
+    resolved_component_id = resolve_component_dispatch(
+        generator_specs,
+        component_id=component_id,
+        problem_type_id=problem_type_id,
+        seed=seed,
+    )
+    if resolved_component_id:
+        pt_from_component = _problem_type_for_component(generator_specs, resolved_component_id)
+        if pt_from_component:
+            matched = _match_available_problem_type(available, pt_from_component)
+            if matched:
+                return matched, "component_id_override", available_ids
+            return pt_from_component, "component_id_override", available_ids
+
+    pt_req = str(problem_type_id or "").strip()
+    if pt_req:
+        matched = _match_available_problem_type(available, pt_req)
+        if matched:
+            return matched, "problem_type_id_override", available_ids
+        raise RuntimeError(f"generator_spec_not_found:{pt_req}")
+
     strategy = "uniform_random"
     if not available:
         return "", strategy, []
@@ -149,6 +252,8 @@ def generate_for_skill(
     level: int = 1,
     seed: int | None = None,
     difficulty: str | int | None = None,
+    component_id: str | None = None,
+    problem_type_id: str | None = None,
 ) -> dict[str, Any]:
     if not generator_specs:
         raise RuntimeError("generator_specs_empty")
@@ -169,6 +274,8 @@ def generate_for_skill(
         generator_specs,
         level=level,
         seed=seed,
+        component_id=component_id,
+        problem_type_id=problem_type_id,
     )
     _log_dispatch(skill_id, available_ids, pt, strategy)
     if not pt:
@@ -412,6 +519,21 @@ def check_answer(
         )
         return bool(result.get("overall_correct"))
 
+    if (
+        checker == "choice_label_checker"
+        or family == "choice"
+        or str(ac.get("presentation_mode", "")).strip() == "single_choice"
+        or str((payload or {}).get("presentation_mode", "")).strip() == "single_choice"
+    ):
+        from core.checkers.choice_label_checker import check_choice_label
+
+        choices = []
+        if isinstance(payload, dict):
+            raw_choices = payload.get("choices") or payload.get("options") or []
+            if isinstance(raw_choices, list):
+                choices = raw_choices
+        return bool(check_choice_label(user_answer, correct_answer, choices))
+
     if checker == "coordinate_pair_checker" or family == "coordinate_pair" or coord_ctx:
         from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
 
@@ -474,21 +596,6 @@ def check_answer(
 
         return check_linear_equation_equivalent_answer(user_answer, correct_answer)
 
-    if (
-        checker == "choice_label_checker"
-        or family == "choice"
-        or str(ac.get("presentation_mode", "")).strip() == "single_choice"
-        or str((payload or {}).get("presentation_mode", "")).strip() == "single_choice"
-    ):
-        from core.checkers.choice_label_checker import check_choice_label
-
-        choices = []
-        if isinstance(payload, dict):
-            raw_choices = payload.get("choices") or payload.get("options") or []
-            if isinstance(raw_choices, list):
-                choices = raw_choices
-        return bool(check_choice_label(user_answer, correct_answer, choices))
-
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)
     if quadrant_result is not None:
         return quadrant_result
@@ -531,17 +638,30 @@ def dispatch_generate(
     level: int = 1,
     seed: int | None = None,
     difficulty: str | int | None = None,
+    component_id: str | None = None,
+    problem_type_id: str | None = None,
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Thin-facade entry: delegate generate to sandbox V3 skill router."""
-    _ = generator_keys
-    _ = generator_specs
     _ = difficulty
+    resolved_component_id = resolve_component_dispatch(
+        generator_specs,
+        generator_keys,
+        component_id=component_id or kwargs.pop("component_id", None),
+        problem_type_id=problem_type_id or kwargs.pop("problem_type_id", None),
+        seed=seed,
+    )
     router = _load_v3_skill_router(skill_id, v3_package_root)
     generate_fn = getattr(router, "generate", None)
     if not callable(generate_fn):
         raise RuntimeError(f"v3_skill_generate_missing:{skill_id}")
-    payload = generate_fn(level=level, seed=seed, **kwargs)
+    router_kwargs = dict(kwargs)
+    if resolved_component_id:
+        router_kwargs["component_id"] = resolved_component_id
+    effective_problem_type_id = str(problem_type_id or router_kwargs.pop("problem_type_id", "") or "").strip()
+    if effective_problem_type_id:
+        router_kwargs["problem_type_id"] = effective_problem_type_id
+    payload = generate_fn(level=level, seed=seed, **router_kwargs)
     if isinstance(payload, dict):
         selected_component_id = str(payload.get("component_id") or "")
         selected_problem_type_id = str(payload.get("problem_type_id") or "")

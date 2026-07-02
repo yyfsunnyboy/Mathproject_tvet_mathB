@@ -1,0 +1,13 @@
+{
+  "skill_id": "vh_數學B1_DivisionPointCoordinates",
+  "compiled_at": "2026-07-02T14:45:11.577398+00:00",
+  "publish_status": "invalidated_stale_component_removed",
+  "components": [],
+  "invalidated_components": [
+    {
+      "component_id": "src_4421",
+      "status": "removed_wrong_domain_binding",
+      "former_operation": "distance_from_point_to_line"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "skill_id": "vh_數學B1_DivisionPointCoordinates",
+  "phase": "phase3",
+  "publish_status": "not_published",
+  "publish_ready": true,
+  "publish_candidate_count": 7,
+  "wrapper_status": "verified",
+  "package_status": "verified",
+  "production_component_count": 7,
+  "published_count": 0,
+  "stale_exclusions": [],
+  "components": [
+    {
+      "component_id": "src_4420",
+      "textbook_example_id": 4420,
+      "status": "verified",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence"
+    },
+    {
+      "component_id": "src_4421",
+      "textbook_example_id": 4421,
+      "status": "verified",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence"
+    },
+    {
+      "component_id": "src_4423",
+      "textbook_example_id": 4423,
+      "status": "verified",
+      "problem_type_id": "compute_centroid_coordinates",
+      "operation": "compute_centroid_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence"
+    },
+    {
+      "component_id": "src_4427",
+      "textbook_example_id": 4427,
+      "status": "verified",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence"
+    },
+    {
+      "component_id": "src_4438",
+      "textbook_example_id": 4438,
+      "status": "verified",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "checker_key": "coordinate_pair_checker",
+      "equivalence_type": "coordinate_pair_equivalence"
+    },
+    {
+      "component_id": "src_4512",
+      "textbook_example_id": 4512,
+      "status": "verified",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "operation": "compute_internal_division_point_coordinates",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label"
+    },
+    {
+      "component_id": "src_4513",
+      "textbook_example_id": 4513,
+      "status": "verified",
+      "problem_type_id": "compute_section_point_distance_from_origin",
+      "operation": "compute_section_point_distance_from_origin",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label"
+    }
+  ]
+}

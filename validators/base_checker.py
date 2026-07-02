@@ -3,7 +3,6 @@ import json
 import logging
 import re
 from typing import Any, Tuple, Dict
-from sympy.parsing.sympy_parser import parse_expr
 
 logger = logging.getLogger(__name__)
 
@@ -164,9 +163,21 @@ class BaseChecker:
                     continue
                 try:
                     from sympy import sqrt
+                    from sympy.parsing.sympy_parser import parse_expr
                     from core.checkers.expression_equivalence_checker import normalize_math_expression
                     norm_part = normalize_math_expression(clean_part)
                     parse_expr(norm_part, local_dict={"sqrt": sqrt})
+                except ModuleNotFoundError as exc:
+                    if "sympy" in str(exc):
+                        error = {
+                            "can_continue": False,
+                            "error_type": "system_error",
+                            "error_code": "sympy_dependency_missing",
+                            "expected": "sympy package available for symbolic validation",
+                            "actual": str(exc),
+                        }
+                        return False, error
+                    raise
                 except Exception as e:
                     error = {
                         "can_continue": False,

@@ -2689,6 +2689,7 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
 
 TARGET_TASK_GENERATOR_REGISTRY: dict[str, GeneratorFn] = {
     "compute_internal_division_point_coordinates": _slot_division_point_coordinates,
+    "compute_section_point_distance_from_origin": _slot_division_point_coordinates,
     "compute_centroid_coordinates": _slot_division_point_coordinates,
     "compute_midpoint_coordinates": _slot_division_point_coordinates,
     "solve_point_from_section_ratio": _slot_division_point_coordinates,

@@ -647,6 +647,41 @@ register_domain_spec(DomainCapabilitySpec(
 ))
 
 register_domain_spec(DomainCapabilitySpec(
+    domain_key="coordinate_geometry.division_point_coordinates",
+    domain_module="core.gencode.division_point_slot_engine",
+    entrypoint="generate_division_point_payload",
+    capabilities=frozenset({
+        "compute_internal_division_point_coordinates",
+        "compute_centroid_coordinates",
+        "compute_section_point_distance_from_origin",
+    }),
+    operations={
+        "compute_internal_division_point_coordinates": _op(
+            "compute_internal_division_point_coordinates",
+            "generate_division_point_payload",
+            supported_answer_types=("coordinate_pair", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            provided_capabilities=("compute_internal_division_point_coordinates",),
+        ),
+        "compute_centroid_coordinates": _op(
+            "compute_centroid_coordinates",
+            "generate_division_point_payload",
+            supported_answer_types=("coordinate_pair",),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("compute_centroid_coordinates",),
+        ),
+        "compute_section_point_distance_from_origin": _op(
+            "compute_section_point_distance_from_origin",
+            "generate_division_point_payload",
+            supported_answer_types=("single_choice",),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("compute_section_point_distance_from_origin",),
+        ),
+    },
+))
+
+
+register_domain_spec(DomainCapabilitySpec(
     domain_key="coordinate_geometry.distance_between_two_points",
     domain_module="core.domain.coordinate_geometry.distance_between_two_points_domain",
     entrypoint="build_distance_between_two_points_matrix",
