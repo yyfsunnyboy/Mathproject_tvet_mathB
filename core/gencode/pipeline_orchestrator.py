@@ -5015,7 +5015,16 @@ def run_v3_no_llm_phase1_for_example(
         )
 
     # Determine whether there was a registered dispatcher at all.
-    _has_registered_classifier = bool(registered_pack) or _skill_has_python_classifier(skill_key)
+    from core.registry.taxonomy_registry import is_confirmed_skill_binding
+    _is_registered = (
+        bool(registered_pack)
+        or _skill_has_python_classifier(skill_key)
+        or is_confirmed_skill_binding(skill_key)
+    )
+    _classifier_available = (
+        bool(registered_pack)
+        or _skill_has_python_classifier(skill_key)
+    )
     _unresolved_reason = (
         "empty_problem_text"
         if not question_text.strip()
@@ -5024,8 +5033,12 @@ def run_v3_no_llm_phase1_for_example(
             if not combined_text.strip()
             else (
                 "phase1_classifier_not_registered"
-                if not _has_registered_classifier
-                else "phase1_classification_unresolved"
+                if not _is_registered
+                else (
+                    "phase1_classifier_not_available"
+                    if not _classifier_available
+                    else "phase1_classification_unresolved"
+                )
             )
         )
     )
@@ -5871,27 +5884,41 @@ def _v3_invoke_domain_entrypoint(
     difficulty_profile: str,
     constraints: dict[str, object] | None,
 ) -> dict[str, object]:
-    if entrypoint_name in {
-        "build_coordinate_geometry_matrix",
-        "build_parallel_lines_distance_matrix",
-        "build_frequency_distribution_table_matrix",
-        "build_statistical_chart_reading_matrix",
-        "build_descriptive_statistics_matrix",
-    }:
-        return entrypoint_fn(
-            seed=seed,
-            domain_operation=domain_operation,
-            curriculum_profile=curriculum_profile,
-            difficulty_profile=difficulty_profile,
-            constraints=constraints or None,
-        )
-    return entrypoint_fn(
-        seed=seed,
-        line_type=domain_operation,
-        curriculum_profile=curriculum_profile,
-        difficulty_profile=difficulty_profile,
-        constraints=constraints or None,
-    )
+    import inspect
+
+    available_args = {
+        "seed": seed,
+        "domain_operation": domain_operation,
+        "line_type": domain_operation,
+        "problem_type_id": domain_operation,
+        "curriculum_profile": curriculum_profile,
+        "difficulty_profile": difficulty_profile,
+        "constraints": constraints or {},
+        "spec": constraints or {},
+        "skill_id": (constraints or {}).get("skill_id") if isinstance(constraints, dict) else None
+    }
+
+    sig = inspect.signature(entrypoint_fn)
+    has_var_keyword = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values())
+    kwargs = {}
+    for param_name, param in sig.parameters.items():
+        if param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+            continue
+        if param_name in available_args:
+            val = available_args[param_name]
+            if val is not None or param.default is inspect.Parameter.empty:
+                kwargs[param_name] = val
+        else:
+            if param.default is inspect.Parameter.empty:
+                raise ValueError(
+                    f"domain_entrypoint_argument_missing: Required argument '{param_name}' "
+                    f"is not available for entrypoint '{entrypoint_name}'"
+                )
+    if has_var_keyword:
+        for k, v in available_args.items():
+            if k not in kwargs and v is not None:
+                kwargs[k] = v
+    return entrypoint_fn(**kwargs)
 
 
 def build_v3_component_draft_from_skill(
@@ -6073,6 +6100,9 @@ def build_v3_component_draft_from_skill(
             answer_type = "rational"
         elif line_type == "distance_between_parallel_lines":
             answer_type = "rational"
+    extra["skill_id"] = skill_id
+    if presentation_mode == "single_choice" or answer_type == "single_choice" or answer_type == "choice":
+        answer_schema_key = "choice_label"
     presentation_evidence = build_presentation_evidence_payload(inferred)
 
     matrix = _v3_invoke_domain_entrypoint(
@@ -6088,6 +6118,20 @@ def build_v3_component_draft_from_skill(
         raise TypeError(
             f"Domain entrypoint must return dict, got {type(matrix)!r}"
         )
+
+    from core.gencode.domain_matrix_adapter import normalize_domain_payload_to_v3_matrix
+    norm_context = {
+        "skill_id": skill_id,
+        "problem_type_id": problem_type_id,
+        "seed": seed,
+        "curriculum_profile": curriculum_profile,
+        "difficulty_profile": difficulty_profile,
+        "answer_schema_key": answer_schema_key,
+        "presentation_mode": presentation_mode,
+        "answer_type": answer_type,
+        "fixed_domain_key": domain_ctx.fixed_domain_key,
+    }
+    matrix = normalize_domain_payload_to_v3_matrix(matrix, norm_context)
 
     validate_domain_matrix(
         matrix,

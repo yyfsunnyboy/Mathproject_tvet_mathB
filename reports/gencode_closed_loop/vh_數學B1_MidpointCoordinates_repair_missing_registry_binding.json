@@ -1,0 +1,25 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "gap": "missing_registry_binding",
+  "repair_status": "FAIL",
+  "registry_binding_status": "FAIL",
+  "registry_path": "C:\\Python\\Mathproject_tvet_mathB\\configs\\generated_registry\\b1_section_1_1_verified_registry.v0.1.yaml",
+  "registry_updated": false,
+  "merge_mode": "non_destructive",
+  "preserved_existing_entries": true,
+  "verified_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "manual_review_exclusions": [],
+  "blocking_reasons": [
+    "wrapper_not_bound",
+    "runtime_not_ready"
+  ],
+  "warnings": [],
+  "artifact_paths": {
+    "repair_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_repair_missing_registry_binding.json",
+    "repair_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_repair_missing_registry_binding.md"
+  },
+  "timestamp": "2026-07-03T16:20:18.900959+00:00"
+}

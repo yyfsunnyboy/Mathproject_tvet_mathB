@@ -30,6 +30,24 @@ BOOTSTRAP_ONLY_SKILLS: dict[str, dict[str, str]] = {
     }
 }
 ANSWER_CONTRACT_DEFAULTS: dict[str, dict[str, dict[str, Any]]] = {
+    "vh_數學B1_MidpointCoordinates": {
+        "compute_midpoint_coordinates": {
+            "answer_type": "coordinate_pair",
+            "equivalence_type": "exact_string",
+            "checker_key": "coordinate_pair_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["(x,y) coordinate pair"],
+            "canonical_answer_schema": {"type": "coordinate_pair"},
+        },
+        "compute_centroid_coordinates": {
+            "answer_type": "coordinate_pair",
+            "equivalence_type": "exact_string",
+            "checker_key": "coordinate_pair_checker",
+            "order_matters": True,
+            "accepted_format_notes": ["(x,y) coordinate pair"],
+            "canonical_answer_schema": {"type": "coordinate_pair"},
+        },
+    },
     "vh_數學B1_AbsoluteValue": {
         "absolute_value_numeric_evaluation": {
             "answer_type": "integer",

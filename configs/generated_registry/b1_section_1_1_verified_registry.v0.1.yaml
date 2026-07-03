@@ -1,499 +1,550 @@
-version: '0.1'
-scope: vocational_math_b1_section_1_1
+version: "0.1"
+scope: "vocational_math_b1_section_1_1"
 verified_problem_types:
-- problem_type_id: absolute_value_numeric_evaluation
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_numeric_evaluation
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-- problem_type_id: absolute_value_distance_from_zero
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_distance_from_zero
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_checker
-- problem_type_id: absolute_value_distance_between_two_points
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_distance_between_two_points
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-- problem_type_id: absolute_value_equation_basic
-  skill_id: vh_數學B1_AbsoluteValue
-  subskill_id: absolute_value_equation_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py
-  function_name: generate
-  answer_type: text
-  checker_type: exact_string_checker
-- problem_type_id: integer_numeric_evaluate_function_notation
-  skill_id: vh_數學B1_LinearFunction
-  subskill_id: integer_numeric_evaluate_function_notation
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-  wrapper_path: skills/vh_數學B1_LinearFunction.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json
-- problem_type_id: parallel_lines_properties
-  skill_id: vh_數學B1_PropertiesOfParallelLines
-  subskill_id: parallel_lines_properties
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py
-  function_name: generate
-  answer_type: integer
-  checker_type: integer_checker
-- problem_type_id: text_short_slope_of_line_problems
-  skill_id: vh_數學B1_SlopeOfALine
-  subskill_id: text_short_slope_of_line_problems
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py
-  function_name: generate
-  answer_type: rational
-  checker_type: rational_checker
-- problem_type_id: perpendicular_lines_properties
-  skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-  subskill_id: perpendicular_lines_properties
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py
-  function_name: generate
-  answer_type: rational
-  checker_type: rational_checker
-- problem_type_id: perpendicular_line_equation
-  skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-  subskill_id: perpendicular_lines_properties
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_2_1/perpendicular_line_equation/candidate_v1.py
-  function_name: generate
-  answer_type: text_short
-  checker_type: exact_string_checker
-- problem_type_id: triangle_right_angle_verification
-  skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-  subskill_id: perpendicular_lines_properties
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_2_1/triangle_right_angle_verification/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_label_checker
-- problem_type_id: equation_write_line_equation_from_point_slope_short_answer
-  skill_id: vh_數學B1_PointSlopeForm
-  subskill_id: write_line_equation_from_point_slope
-  status: verified
-  candidate_path: skills/vh_數學B1_PointSlopeForm.py
-  function_name: generate
-  answer_type: equation
-  checker_type: linear_equation_equivalent_checker
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- problem_type_id: equation_write_line_equation_from_two_points_short_answer
-  skill_id: vh_數學B1_PointSlopeForm
-  subskill_id: write_line_equation_from_two_points
-  status: verified
-  candidate_path: skills/vh_數學B1_PointSlopeForm.py
-  function_name: generate
-  answer_type: equation
-  checker_type: linear_equation_equivalent_checker
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- problem_type_id: equation_write_perpendicular_bisector_from_two_points_short_answer
-  skill_id: vh_數學B1_PointSlopeForm
-  subskill_id: write_perpendicular_bisector_from_two_points
-  status: verified
-  candidate_path: skills/vh_數學B1_PointSlopeForm.py
-  function_name: generate
-  answer_type: equation
-  checker_type: linear_equation_equivalent_checker
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- problem_type_id: equation_write_line_equation_from_slope_and_intercept_short_answer
-  skill_id: vh_數學B1_PointSlopeForm
-  subskill_id: write_line_equation_from_slope_and_intercept
-  status: verified
-  candidate_path: skills/vh_數學B1_PointSlopeForm.py
-  function_name: generate
-  answer_type: equation
-  checker_type: linear_equation_equivalent_checker
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- problem_type_id: equation_write_triangle_median_line_from_vertices_short_answer
-  skill_id: vh_數學B1_PointSlopeForm
-  subskill_id: write_triangle_median_line_from_vertices
-  status: verified
-  candidate_path: skills/vh_數學B1_PointSlopeForm.py
-  function_name: generate
-  answer_type: equation
-  checker_type: linear_equation_equivalent_checker
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  manual_review_exclusions:
-  - unknown
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- problem_type_id: absolute_value_inequality_integer_solution_count_choice
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_integer_solution_count_choice
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_label_checker
-- problem_type_id: absolute_value_inequality_linear_expression_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_linear_expression_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-- problem_type_id: absolute_value_inequality_shifted_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_shifted_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-- problem_type_id: absolute_value_inequality_zero_center_basic
-  skill_id: vh_數學B1_AbsoluteValueInequality
-  subskill_id: absolute_value_inequality_zero_center_basic
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py
-  function_name: generate
-  answer_type: interval_set
-  checker_type: interval_checker
-- problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-  skill_id: vh_數學B1_CartesianCoordinateSystemEstablishment
-  subskill_id: cartesian_coordinate_quadrant_symbol_reasoning
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_2/cartesian_coordinate_quadrant_symbol_reasoning/candidate_v1.py
-  function_name: generate
-  answer_type: choice
-  checker_type: choice_label_checker
-- problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
-  skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
-  subskill_id: compute_distance_between_two_points
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2/candidate_v1.py
-  function_name: generate
-  answer_type: short_answer
-  checker_type: expression_equivalence_checker
-- problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
-  skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
-  subskill_id: solve_unknown_coordinate_from_two_point_distance
-  status: verified
-  candidate_path: generated_candidates/vocational_math_b1/section_1_1/short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2/candidate_v1.py
-  function_name: generate
-  answer_type: short_answer
-  checker_type: solution_set_checker
-failed_problem_types: null
-manual_review_problem_types: null
-future_ai_judged_problem_types: null
+  -
+    problem_type_id: "absolute_value_numeric_evaluation"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_numeric_evaluation"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_numeric_evaluation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "absolute_value_distance_from_zero"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_distance_from_zero"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_from_zero/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_checker"
+  -
+    problem_type_id: "absolute_value_distance_between_two_points"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_distance_between_two_points"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_distance_between_two_points/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "absolute_value_equation_basic"
+    skill_id: "vh_數學B1_AbsoluteValue"
+    subskill_id: "absolute_value_equation_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_equation_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "text"
+    checker_type: "exact_string_checker"
+  -
+    problem_type_id: "integer_numeric_evaluate_function_notation"
+    skill_id: "vh_數學B1_LinearFunction"
+    subskill_id: "integer_numeric_evaluate_function_notation"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+    wrapper_path: "skills/vh_數學B1_LinearFunction.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_build.json"
+  -
+    problem_type_id: "parallel_lines_properties"
+    skill_id: "vh_數學B1_PropertiesOfParallelLines"
+    subskill_id: "parallel_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "integer"
+    checker_type: "integer_checker"
+  -
+    problem_type_id: "text_short_slope_of_line_problems"
+    skill_id: "vh_數學B1_SlopeOfALine"
+    subskill_id: "text_short_slope_of_line_problems"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "rational"
+    checker_type: "rational_checker"
+  -
+    problem_type_id: "perpendicular_lines_properties"
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    subskill_id: "perpendicular_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "rational"
+    checker_type: "rational_checker"
+  -
+    problem_type_id: "perpendicular_line_equation"
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    subskill_id: "perpendicular_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_line_equation/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "text_short"
+    checker_type: "exact_string_checker"
+  -
+    problem_type_id: "triangle_right_angle_verification"
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    subskill_id: "perpendicular_lines_properties"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_2_1/triangle_right_angle_verification/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_label_checker"
+  -
+    problem_type_id: "equation_write_line_equation_from_point_slope_short_answer"
+    skill_id: "vh_數學B1_PointSlopeForm"
+    subskill_id: "write_line_equation_from_point_slope"
+    status: "verified"
+    candidate_path: "skills/vh_數學B1_PointSlopeForm.py"
+    function_name: "generate"
+    answer_type: "equation"
+    checker_type: "linear_equation_equivalent_checker"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    problem_type_id: "equation_write_line_equation_from_two_points_short_answer"
+    skill_id: "vh_數學B1_PointSlopeForm"
+    subskill_id: "write_line_equation_from_two_points"
+    status: "verified"
+    candidate_path: "skills/vh_數學B1_PointSlopeForm.py"
+    function_name: "generate"
+    answer_type: "equation"
+    checker_type: "linear_equation_equivalent_checker"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    problem_type_id: "equation_write_perpendicular_bisector_from_two_points_short_answer"
+    skill_id: "vh_數學B1_PointSlopeForm"
+    subskill_id: "write_perpendicular_bisector_from_two_points"
+    status: "verified"
+    candidate_path: "skills/vh_數學B1_PointSlopeForm.py"
+    function_name: "generate"
+    answer_type: "equation"
+    checker_type: "linear_equation_equivalent_checker"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    problem_type_id: "equation_write_line_equation_from_slope_and_intercept_short_answer"
+    skill_id: "vh_數學B1_PointSlopeForm"
+    subskill_id: "write_line_equation_from_slope_and_intercept"
+    status: "verified"
+    candidate_path: "skills/vh_數學B1_PointSlopeForm.py"
+    function_name: "generate"
+    answer_type: "equation"
+    checker_type: "linear_equation_equivalent_checker"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    problem_type_id: "equation_write_triangle_median_line_from_vertices_short_answer"
+    skill_id: "vh_數學B1_PointSlopeForm"
+    subskill_id: "write_triangle_median_line_from_vertices"
+    status: "verified"
+    candidate_path: "skills/vh_數學B1_PointSlopeForm.py"
+    function_name: "generate"
+    answer_type: "equation"
+    checker_type: "linear_equation_equivalent_checker"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    manual_review_exclusions:
+      - "unknown"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    problem_type_id: "absolute_value_inequality_integer_solution_count_choice"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_integer_solution_count_choice"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_label_checker"
+  -
+    problem_type_id: "absolute_value_inequality_linear_expression_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_linear_expression_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+  -
+    problem_type_id: "absolute_value_inequality_shifted_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_shifted_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+  -
+    problem_type_id: "absolute_value_inequality_zero_center_basic"
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    subskill_id: "absolute_value_inequality_zero_center_basic"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "interval_set"
+    checker_type: "interval_checker"
+  -
+    problem_type_id: "cartesian_coordinate_quadrant_symbol_reasoning"
+    skill_id: "vh_數學B1_CartesianCoordinateSystemEstablishment"
+    subskill_id: "cartesian_coordinate_quadrant_symbol_reasoning"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_2/cartesian_coordinate_quadrant_symbol_reasoning/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "choice"
+    checker_type: "choice_label_checker"
+  -
+    problem_type_id: "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "compute_distance_between_two_points"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "short_answer"
+    checker_type: "expression_equivalence_checker"
+  -
+    problem_type_id: "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    subskill_id: "solve_unknown_coordinate_from_two_point_distance"
+    status: "verified"
+    candidate_path: "generated_candidates/vocational_math_b1/section_1_1/short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2/candidate_v1.py"
+    function_name: "generate"
+    answer_type: "short_answer"
+    checker_type: "solution_set_checker"
+  -
+    problem_type_id: "compute_centroid_coordinates"
+    skill_id: "vh_數學B1_MidpointCoordinates"
+    subskill_id: "compute_centroid_coordinates"
+    status: "verified"
+    candidate_path: "agent_skills_v3/vh_數學B1_MidpointCoordinates/components"
+    function_name: "generate"
+    answer_type: "coordinate_pair"
+    checker_type: "coordinate_pair_checker"
+  -
+    problem_type_id: "compute_midpoint_coordinates"
+    skill_id: "vh_數學B1_MidpointCoordinates"
+    subskill_id: "compute_midpoint_coordinates"
+    status: "verified"
+    candidate_path: "agent_skills_v3/vh_數學B1_MidpointCoordinates/components"
+    function_name: "generate"
+    answer_type: "coordinate_pair"
+    checker_type: "coordinate_pair_checker"
+failed_problem_types:
+
+manual_review_problem_types:
+
+future_ai_judged_problem_types:
+
 runtime_ready_auto_publish: false
 runtime_bindings:
-- skill_id: vh_數學B1_AbsoluteValueInequality
-  wrapper_path: skills/vh_數學B1_AbsoluteValueInequality.py
-  verified_problem_types:
-  - absolute_value_inequality_integer_solution_count_choice
-  - absolute_value_inequality_linear_expression_basic
-  - absolute_value_inequality_shifted_basic
-  - absolute_value_inequality_zero_center_basic
-  manual_review_exclusions:
-  - absolute_value_inequality_malformed_source_review
-  candidate_paths:
-    absolute_value_inequality_integer_solution_count_choice: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py
-    absolute_value_inequality_linear_expression_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py
-    absolute_value_inequality_shifted_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py
-    absolute_value_inequality_zero_center_basic: generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py
-  answer_contract_summary:
-    absolute_value_inequality_integer_solution_count_choice:
-      answer_type: choice
-      equivalence_type: choice_label
-      checker_key: choice_label_checker
-      order_matters: false
-      accepted_format_notes:
-      - A/B/C/D labels
-      canonical_answer_schema:
-        type: choice_label
-    absolute_value_inequality_linear_expression_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-    absolute_value_inequality_malformed_source_review:
-      answer_type: manual_review
-      equivalence_type: manual_review_or_ai_judged
-      checker_key: manual_review_checker
-      order_matters: false
-      accepted_format_notes:
-      - requires source text correction before deterministic generation
-      canonical_answer_schema:
-        type: manual_review
-    absolute_value_inequality_shifted_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-    absolute_value_inequality_zero_center_basic:
-      answer_type: interval_set
-      equivalence_type: interval_set
-      checker_key: interval_checker
-      order_matters: false
-      accepted_format_notes:
-      - x > a
-      - x < a
-      - x ≤ a
-      - x ≥ a
-      - interval notation
-      canonical_answer_schema:
-        type: interval_set
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_AbsoluteValueInequality_phase2_build.json
-- skill_id: vh_數學B1_LinearFunction
-  wrapper_path: skills/vh_數學B1_LinearFunction.py
-  verified_problem_types:
-  - integer_numeric_evaluate_function_notation
-  manual_review_exclusions:
-  - unknown
-  candidate_paths:
-    integer_numeric_evaluate_function_notation: generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py
-  answer_contract_summary:
-    integer_numeric_evaluate_function_notation:
-      answer_type: integer
-      equivalence_type: numeric_exact
-      checker_key: integer_checker
-      order_matters: true
-      accepted_format_notes:
-      - single integer answer
-      canonical_answer_schema:
-        type: integer
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_LinearFunction_phase2_build.json
-- skill_id: vh_數學B1_SlopeOfALine
-  wrapper_path: skills/vh_數學B1_SlopeOfALine.py
-  verified_problem_types:
-  - text_short_slope_of_line_problems
-  manual_review_exclusions: null
-  candidate_paths:
-    text_short_slope_of_line_problems: generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py
-  answer_contract_summary:
-    text_short_slope_of_line_problems:
-      answer_type: rational
-      equivalence_type: rational_equivalent
-      checker_key: rational_checker
-      order_matters: true
-      accepted_format_notes:
-      - integer or fraction slope answer
-      canonical_answer_schema:
-        type: rational
-  source: gencode_runtime_binding
-  phase2_report_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_SlopeOfALine_phase2_build.json
-- skill_id: vh_數學B1_PropertiesOfParallelLines
-  wrapper_path: skills/vh_數學B1_PropertiesOfParallelLines.py
-  verified_problem_types:
-  - parallel_lines_properties
-  manual_review_exclusions: null
-  candidate_paths:
-    parallel_lines_properties: generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py
-  answer_contract_summary:
-    parallel_lines_properties:
-      answer_type: integer
-      equivalence_type: numeric_exact
-      checker_key: integer_checker
-      order_matters: true
-      accepted_format_notes:
-      - single integer answer
-      canonical_answer_schema:
-        type: integer
-  source: gencode_runtime_binding
-  phase2_report_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfParallelLines_phase2_build.json
-- skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-  wrapper_path: skills/vh_數學B1_PropertiesOfPerpendicularLines.py
-  verified_problem_types:
-  - perpendicular_lines_properties
-  - perpendicular_line_equation
-  - triangle_right_angle_verification
-  manual_review_exclusions: null
-  candidate_paths:
-    perpendicular_lines_properties: generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py
-    perpendicular_line_equation: generated_candidates/vocational_math_b1/section_2_1/perpendicular_line_equation/candidate_v1.py
-    triangle_right_angle_verification: generated_candidates/vocational_math_b1/section_2_1/triangle_right_angle_verification/candidate_v1.py
-  answer_contract_summary:
-    perpendicular_lines_properties:
-      answer_type: rational
-      equivalence_type: rational_equivalent
-      checker_key: rational_checker
-      order_matters: true
-      accepted_format_notes:
-      - rational or integer slope/parameter answer
-      canonical_answer_schema:
-        type: rational
-    perpendicular_line_equation:
-      answer_type: text_short
-      equivalence_type: exact_string
-      checker_key: text_short_checker
-      order_matters: true
-      accepted_format_notes:
-      - line equation in the form Ax+By+C=0
-      canonical_answer_schema:
-        type: text_short
-    triangle_right_angle_verification:
-      answer_type: choice
-      equivalence_type: choice_label
-      checker_key: choice_label_checker
-      order_matters: false
-      accepted_format_notes:
-      - Yes or No choice answer
-      canonical_answer_schema:
-        type: choice
-  source: gencode_runtime_binding
-  phase2_report_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PropertiesOfPerpendicularLines_phase2_build.json
-- skill_id: vh_數學B1_PointSlopeForm
-  wrapper_path: skills/vh_數學B1_PointSlopeForm.py
-  verified_problem_types:
-  - equation_write_line_equation_from_point_slope_short_answer
-  - equation_write_line_equation_from_two_points_short_answer
-  - equation_write_perpendicular_bisector_from_two_points_short_answer
-  - equation_write_line_equation_from_slope_and_intercept_short_answer
-  - equation_write_triangle_median_line_from_vertices_short_answer
-  manual_review_exclusions:
-  - unknown
-  candidate_paths:
-    equation_write_line_equation_from_point_slope_short_answer: skills/vh_數學B1_PointSlopeForm.py
-    equation_write_line_equation_from_two_points_short_answer: skills/vh_數學B1_PointSlopeForm.py
-    equation_write_perpendicular_bisector_from_two_points_short_answer: skills/vh_數學B1_PointSlopeForm.py
-    equation_write_line_equation_from_slope_and_intercept_short_answer: skills/vh_數學B1_PointSlopeForm.py
-    equation_write_triangle_median_line_from_vertices_short_answer: skills/vh_數學B1_PointSlopeForm.py
-  answer_contract_summary:
-    equation_write_line_equation_from_point_slope_short_answer:
-      answer_type: equation
-      equivalence_type: linear_equation_equivalent
-      checker_key: linear_equation_equivalent_checker
-      order_matters: false
-      accepted_format_notes:
-      - point-slope / slope-intercept / general form equivalent
-      canonical_answer_schema:
-        type: linear_equation
-    equation_write_line_equation_from_two_points_short_answer:
-      answer_type: equation
-      equivalence_type: linear_equation_equivalent
-      checker_key: linear_equation_equivalent_checker
-      order_matters: false
-      accepted_format_notes:
-      - general form equivalent
-      canonical_answer_schema:
-        type: linear_equation
-    equation_write_perpendicular_bisector_from_two_points_short_answer:
-      answer_type: equation
-      equivalence_type: linear_equation_equivalent
-      checker_key: linear_equation_equivalent_checker
-      order_matters: false
-      accepted_format_notes:
-      - perpendicular bisector general form equivalent
-      canonical_answer_schema:
-        type: linear_equation
-    equation_write_line_equation_from_slope_and_intercept_short_answer:
-      answer_type: equation
-      equivalence_type: linear_equation_equivalent
-      checker_key: linear_equation_equivalent_checker
-      order_matters: false
-      accepted_format_notes:
-      - slope and intercept general form equivalent
-      canonical_answer_schema:
-        type: linear_equation
-    equation_write_triangle_median_line_from_vertices_short_answer:
-      answer_type: equation
-      equivalence_type: linear_equation_equivalent
-      checker_key: linear_equation_equivalent_checker
-      order_matters: false
-      accepted_format_notes:
-      - triangle median line general form equivalent
-      canonical_answer_schema:
-        type: linear_equation
-  source: gencode_runtime_binding
-  phase2_report_path: D:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_PointSlopeForm_phase2_build.json
-- skill_id: vh_數學B1_CartesianCoordinateSystemEstablishment
-  wrapper_path: skills/vh_數學B1_CartesianCoordinateSystemEstablishment.py
-  verified_problem_types:
-  - cartesian_coordinate_quadrant_symbol_reasoning
-  manual_review_exclusions: null
-  candidate_paths:
-    cartesian_coordinate_quadrant_symbol_reasoning: generated_candidates/vocational_math_b1/section_1_2/cartesian_coordinate_quadrant_symbol_reasoning/candidate_v1.py
-  answer_contract_summary:
-    cartesian_coordinate_quadrant_symbol_reasoning: null
-  source: gencode_runtime_binding
-  phase2_report_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_build.json
-- skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
-  wrapper_path: skills/vh_數學B1_DistanceBetweenTwoPointsInPlane.py
-  verified_problem_types:
-  - short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
-  - short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
-  manual_review_exclusions: []
-  candidate_paths:
-    short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2: generated_candidates/vocational_math_b1/section_1_1/short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2/candidate_v1.py
-    short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2: generated_candidates/vocational_math_b1/section_1_1/short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2/candidate_v1.py
-  answer_contract_summary:
-    short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:
-      answer_type: short_answer
-      presentation_mode: text_short
-      equivalence_type: algebraic_equivalent
-      checker_key: expression_equivalence_checker
-      order_matters: true
-      accepted_format_notes:
-      - exact string or simplified radical like 5 or sqrt(17)
-      canonical_answer_schema:
-        type: short_answer
-      ui_contract:
-        presentation_mode: text_short
-    short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2:
-      answer_type: short_answer
-      presentation_mode: text_short
-      answer_shape: parameter_solution_set
-      checker_key: solution_set_checker
-      equivalence_type: unordered_solution_set
-      order_matters: false
-      accepted_format_notes:
-      - unordered solution set like 2,14
-      canonical_answer_schema:
-        type: short_answer
-      ui_contract:
-        presentation_mode: text_short
-  source: gencode_runtime_binding
-  phase2_report_path: E:\Python\Mathproject_tvet_mathB\reports\gencode_closed_loop\vh_數學B1_DistanceBetweenTwoPointsInPlane_phase2_build.json
+  -
+    skill_id: "vh_數學B1_AbsoluteValueInequality"
+    wrapper_path: "skills/vh_數學B1_AbsoluteValueInequality.py"
+    verified_problem_types:
+      - "absolute_value_inequality_integer_solution_count_choice"
+      - "absolute_value_inequality_linear_expression_basic"
+      - "absolute_value_inequality_shifted_basic"
+      - "absolute_value_inequality_zero_center_basic"
+    manual_review_exclusions:
+      - "absolute_value_inequality_malformed_source_review"
+    candidate_paths:
+      absolute_value_inequality_integer_solution_count_choice: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_integer_solution_count_choice/candidate_v1.py"
+      absolute_value_inequality_linear_expression_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_linear_expression_basic/candidate_v1.py"
+      absolute_value_inequality_shifted_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_shifted_basic/candidate_v1.py"
+      absolute_value_inequality_zero_center_basic: "generated_candidates/vocational_math_b1/section_1_1/absolute_value_inequality_zero_center_basic/candidate_v1.py"
+    answer_contract_summary:
+      absolute_value_inequality_integer_solution_count_choice:
+        answer_type: "choice"
+        equivalence_type: "choice_label"
+        checker_key: "choice_label_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "A/B/C/D labels"
+        canonical_answer_schema:
+          type: "choice_label"
+      absolute_value_inequality_linear_expression_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+      absolute_value_inequality_malformed_source_review:
+        answer_type: "manual_review"
+        equivalence_type: "manual_review_or_ai_judged"
+        checker_key: "manual_review_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "requires source text correction before deterministic generation"
+        canonical_answer_schema:
+          type: "manual_review"
+      absolute_value_inequality_shifted_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+      absolute_value_inequality_zero_center_basic:
+        answer_type: "interval_set"
+        equivalence_type: "interval_set"
+        checker_key: "interval_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "x > a"
+          - "x < a"
+          - "x ≤ a"
+          - "x ≥ a"
+          - "interval notation"
+        canonical_answer_schema:
+          type: "interval_set"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_AbsoluteValueInequality_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_LinearFunction"
+    wrapper_path: "skills/vh_數學B1_LinearFunction.py"
+    verified_problem_types:
+      - "integer_numeric_evaluate_function_notation"
+    manual_review_exclusions:
+      - "unknown"
+    candidate_paths:
+      integer_numeric_evaluate_function_notation: "generated_candidates/vocational_math_b1/section_1_2/integer_numeric_evaluate_function_notation/candidate_v1.py"
+    answer_contract_summary:
+      integer_numeric_evaluate_function_notation:
+        answer_type: "integer"
+        equivalence_type: "numeric_exact"
+        checker_key: "integer_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "single integer answer"
+        canonical_answer_schema:
+          type: "integer"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_LinearFunction_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_SlopeOfALine"
+    wrapper_path: "skills/vh_數學B1_SlopeOfALine.py"
+    verified_problem_types:
+      - "text_short_slope_of_line_problems"
+    manual_review_exclusions: null
+    candidate_paths:
+      text_short_slope_of_line_problems: "generated_candidates/vocational_math_b1/section_2_1/text_short_slope_of_line_problems/candidate_v1.py"
+    answer_contract_summary:
+      text_short_slope_of_line_problems:
+        answer_type: "rational"
+        equivalence_type: "rational_equivalent"
+        checker_key: "rational_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "integer or fraction slope answer"
+        canonical_answer_schema:
+          type: "rational"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_SlopeOfALine_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_PropertiesOfParallelLines"
+    wrapper_path: "skills/vh_數學B1_PropertiesOfParallelLines.py"
+    verified_problem_types:
+      - "parallel_lines_properties"
+    manual_review_exclusions: null
+    candidate_paths:
+      parallel_lines_properties: "generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py"
+    answer_contract_summary:
+      parallel_lines_properties:
+        answer_type: "integer"
+        equivalence_type: "numeric_exact"
+        checker_key: "integer_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "single integer answer"
+        canonical_answer_schema:
+          type: "integer"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfParallelLines_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_PropertiesOfPerpendicularLines"
+    wrapper_path: "skills/vh_數學B1_PropertiesOfPerpendicularLines.py"
+    verified_problem_types:
+      - "perpendicular_lines_properties"
+      - "perpendicular_line_equation"
+      - "triangle_right_angle_verification"
+    manual_review_exclusions: null
+    candidate_paths:
+      perpendicular_lines_properties: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py"
+      perpendicular_line_equation: "generated_candidates/vocational_math_b1/section_2_1/perpendicular_line_equation/candidate_v1.py"
+      triangle_right_angle_verification: "generated_candidates/vocational_math_b1/section_2_1/triangle_right_angle_verification/candidate_v1.py"
+    answer_contract_summary:
+      perpendicular_lines_properties:
+        answer_type: "rational"
+        equivalence_type: "rational_equivalent"
+        checker_key: "rational_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "rational or integer slope/parameter answer"
+        canonical_answer_schema:
+          type: "rational"
+      perpendicular_line_equation:
+        answer_type: "text_short"
+        equivalence_type: "exact_string"
+        checker_key: "text_short_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "line equation in the form Ax+By+C=0"
+        canonical_answer_schema:
+          type: "text_short"
+      triangle_right_angle_verification:
+        answer_type: "choice"
+        equivalence_type: "choice_label"
+        checker_key: "choice_label_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "Yes or No choice answer"
+        canonical_answer_schema:
+          type: "choice"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PropertiesOfPerpendicularLines_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_PointSlopeForm"
+    wrapper_path: "skills/vh_數學B1_PointSlopeForm.py"
+    verified_problem_types:
+      - "equation_write_line_equation_from_point_slope_short_answer"
+      - "equation_write_line_equation_from_two_points_short_answer"
+      - "equation_write_perpendicular_bisector_from_two_points_short_answer"
+      - "equation_write_line_equation_from_slope_and_intercept_short_answer"
+      - "equation_write_triangle_median_line_from_vertices_short_answer"
+    manual_review_exclusions:
+      - "unknown"
+    candidate_paths:
+      equation_write_line_equation_from_point_slope_short_answer: "skills/vh_數學B1_PointSlopeForm.py"
+      equation_write_line_equation_from_two_points_short_answer: "skills/vh_數學B1_PointSlopeForm.py"
+      equation_write_perpendicular_bisector_from_two_points_short_answer: "skills/vh_數學B1_PointSlopeForm.py"
+      equation_write_line_equation_from_slope_and_intercept_short_answer: "skills/vh_數學B1_PointSlopeForm.py"
+      equation_write_triangle_median_line_from_vertices_short_answer: "skills/vh_數學B1_PointSlopeForm.py"
+    answer_contract_summary:
+      equation_write_line_equation_from_point_slope_short_answer:
+        answer_type: "equation"
+        equivalence_type: "linear_equation_equivalent"
+        checker_key: "linear_equation_equivalent_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "point-slope / slope-intercept / general form equivalent"
+        canonical_answer_schema:
+          type: "linear_equation"
+      equation_write_line_equation_from_two_points_short_answer:
+        answer_type: "equation"
+        equivalence_type: "linear_equation_equivalent"
+        checker_key: "linear_equation_equivalent_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "general form equivalent"
+        canonical_answer_schema:
+          type: "linear_equation"
+      equation_write_perpendicular_bisector_from_two_points_short_answer:
+        answer_type: "equation"
+        equivalence_type: "linear_equation_equivalent"
+        checker_key: "linear_equation_equivalent_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "perpendicular bisector general form equivalent"
+        canonical_answer_schema:
+          type: "linear_equation"
+      equation_write_line_equation_from_slope_and_intercept_short_answer:
+        answer_type: "equation"
+        equivalence_type: "linear_equation_equivalent"
+        checker_key: "linear_equation_equivalent_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "slope and intercept general form equivalent"
+        canonical_answer_schema:
+          type: "linear_equation"
+      equation_write_triangle_median_line_from_vertices_short_answer:
+        answer_type: "equation"
+        equivalence_type: "linear_equation_equivalent"
+        checker_key: "linear_equation_equivalent_checker"
+        order_matters: false
+        accepted_format_notes:
+          - "triangle median line general form equivalent"
+        canonical_answer_schema:
+          type: "linear_equation"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PointSlopeForm_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_CartesianCoordinateSystemEstablishment"
+    wrapper_path: "skills/vh_數學B1_CartesianCoordinateSystemEstablishment.py"
+    verified_problem_types:
+      - "cartesian_coordinate_quadrant_symbol_reasoning"
+    manual_review_exclusions: null
+    candidate_paths:
+      cartesian_coordinate_quadrant_symbol_reasoning: "generated_candidates/vocational_math_b1/section_1_2/cartesian_coordinate_quadrant_symbol_reasoning/candidate_v1.py"
+    answer_contract_summary:
+      cartesian_coordinate_quadrant_symbol_reasoning: null
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_CartesianCoordinateSystemEstablishment_phase2_build.json"
+  -
+    skill_id: "vh_數學B1_DistanceBetweenTwoPointsInPlane"
+    wrapper_path: "skills/vh_數學B1_DistanceBetweenTwoPointsInPlane.py"
+    verified_problem_types:
+      - "short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2"
+      - "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2"
+    manual_review_exclusions: null
+    candidate_paths:
+      short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2: "generated_candidates/vocational_math_b1/section_1_1/short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2/candidate_v1.py"
+      short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2: "generated_candidates/vocational_math_b1/section_1_1/short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2/candidate_v1.py"
+    answer_contract_summary:
+      short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2:
+        answer_type: "short_answer"
+        presentation_mode: "text_short"
+        equivalence_type: "algebraic_equivalent"
+        checker_key: "expression_equivalence_checker"
+        order_matters: true
+        accepted_format_notes:
+          - "exact string or simplified radical like 5 or sqrt(17)"
+        canonical_answer_schema:
+          type: "short_answer"
+        ui_contract:
+          presentation_mode: "text_short"
+      short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2:
+        answer_type: "short_answer"
+        presentation_mode: "text_short"
+        answer_shape: "parameter_solution_set"
+        checker_key: "solution_set_checker"
+        equivalence_type: "unordered_solution_set"
+        order_matters: false
+        accepted_format_notes:
+          - "unordered solution set like 2,14"
+        canonical_answer_schema:
+          type: "short_answer"
+        ui_contract:
+          presentation_mode: "text_short"
+    source: "gencode_runtime_binding"
+    phase2_report_path: "E:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_DistanceBetweenTwoPointsInPlane_phase2_build.json"

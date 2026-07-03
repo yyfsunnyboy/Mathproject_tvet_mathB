@@ -41,7 +41,8 @@ def _format_list(xs: list[Any]) -> str:
 def _run_candidate_build_execution(skill_id: str, p1: dict[str, Any], dep: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], list[str], list[str], list[str], list[str]]:
     answer_contract_summary = p1.get("answer_contract_summary", {}) if isinstance(p1.get("answer_contract_summary"), dict) else {}
     buildable_pts = list(dep.get("buildable_problem_types", []) or [])
-    discovery = discover_generator_candidates(skill_id, buildable_pts, GENERATOR_REPAIR_CATALOG)
+    non_slot_pts = [pt for pt in buildable_pts if not target_task_has_registered_slot_generator(pt)]
+    discovery = discover_generator_candidates(skill_id, non_slot_pts, GENERATOR_REPAIR_CATALOG)
     verified_candidates: list[str] = []
     failed_candidates: list[str] = []
     candidate_failure_reasons: dict[str, list[str]] = {}

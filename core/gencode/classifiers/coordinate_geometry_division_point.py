@@ -8,7 +8,10 @@ from .base import ClassificationResult, ClassifierContext
 
 
 _POINT_COORDINATE = re.compile(r"[A-Z]\s*(?:\\left)?\s*\(\s*[^)]+\s*(?:\\right)?\s*\)", re.I)
-_CENTROID = re.compile(r"重心|centroid|形心|�ߧ��", re.I)
+_CENTROID = re.compile(r"重心|centroid|形心|ߧ", re.I)
+_MIDPOINT_KEYWORDS = re.compile(r"中點|中线|中線|midpoint", re.I)
+_PARALLELOGRAM = re.compile(r"平行四邊形|平行四边形", re.I)
+_PARALLELOGRAM_MIDPOINT_CONTEXT = re.compile(r"對角|对角|平分|中點|中点|中線|中线|頂點|顶点|D點|D点|第四點|第四点", re.I)
 _SEGMENT_RATIO = re.compile(
     r"\\overline\{\s*[A-Z]{2}\s*\}\s*:\s*\\overline\{\s*[A-Z]{2}\s*\}"
     r"|(?:\d+\s*)?\\overline\{\s*[A-Z]{2}\s*\}\s*=\s*(?:\d+\s*)?\\overline\{\s*[A-Z]{2}\s*\}"
@@ -47,13 +50,36 @@ def _classify_example(example: dict[str, Any], skill_id: str) -> dict[str, Any]:
     has_choices = bool(_CHOICE_MARKER.search(text))
     coordinate_choices = bool(_COORDINATE_CHOICE.search(text))
 
+    is_midpoint = bool(_MIDPOINT_KEYWORDS.search(text)) or (
+        bool(_PARALLELOGRAM.search(text)) and bool(_PARALLELOGRAM_MIDPOINT_CONTEXT.search(text))
+    )
+
     if _CENTROID.search(text) and len(_POINT_COORDINATE.findall(text)) >= 3:
         operation = "compute_centroid_coordinates"
-        answer_type = "coordinate_pair"
-        checker_key = "coordinate_pair_checker"
-        equivalence_type = "coordinate_pair_equivalence"
-        runtime_category = "deterministic_expression"
+        if has_choices:
+            answer_type = "choice"
+            checker_key = "choice_label_checker"
+            equivalence_type = "choice_label"
+            runtime_category = "deterministic_choice"
+        else:
+            answer_type = "coordinate_pair"
+            checker_key = "coordinate_pair_checker"
+            equivalence_type = "coordinate_pair_equivalence"
+            runtime_category = "deterministic_expression"
         rule_id = "coordinate_geometry.division_point.centroid"
+    elif is_midpoint:
+        operation = "compute_midpoint_coordinates"
+        if has_choices:
+            answer_type = "choice"
+            checker_key = "choice_label_checker"
+            equivalence_type = "choice_label"
+            runtime_category = "deterministic_choice"
+        else:
+            answer_type = "coordinate_pair"
+            checker_key = "coordinate_pair_checker"
+            equivalence_type = "coordinate_pair_equivalence"
+            runtime_category = "deterministic_expression"
+        rule_id = "coordinate_geometry.division_point.midpoint"
     elif _SEGMENT_RATIO.search(text) and has_choices and not coordinate_choices:
         operation = "compute_section_point_distance_from_origin"
         answer_type = "choice"

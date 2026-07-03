@@ -1730,6 +1730,153 @@ def _convert_descriptive_statistics_payload(
     return _finalize_question_payload(payload)
 
 
+def _convert_coordinate_pair_matrix_to_question_payload(
+    matrix: dict[str, Any],
+    *,
+    presentation_mode: str | None = None,
+    answer_type: str | None = None,
+    problem_type_id: str | None = None,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+    domain_operation: str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    """Convert a coordinate-pair domain matrix (midpoint, centroid, division point) to a question payload."""
+    # Extract the coordinate answer from V3 matrix answer dict or legacy raw payload
+    answer_raw = matrix.get("answer")
+    if isinstance(answer_raw, dict):
+        coord = (
+            answer_raw.get("point")
+            or answer_raw.get("coordinate")
+            or answer_raw.get("value")
+            or answer_raw.get("canonical_form")
+            or answer_raw.get("correct_label")
+        )
+    else:
+        coord = str(answer_raw) if answer_raw is not None else None
+
+    # Fallback to correct_answer / top-level keys
+    if not coord:
+        coord = matrix.get("correct_answer") or matrix.get("answer")
+        if isinstance(coord, dict):
+            coord = coord.get("point") or coord.get("coordinate") or coord.get("value")
+
+    coord = str(coord).strip() if coord else ""
+
+    question_text = str(
+        matrix.get("question_text") or matrix.get("question")
+        or (matrix.get("givens") or {}).get("question_text") or ""
+    ).strip()
+
+    mode = str(presentation_mode or matrix.get("presentation_mode") or "short_answer").strip()
+    op = str(domain_operation or "").strip()
+    validation_facts = dict(matrix.get("validation_facts") or {})
+    if op:
+        validation_facts.setdefault("domain_operation", op)
+        validation_facts.setdefault("task_type", op)
+    explanation_steps = matrix.get("explanation_steps") or []
+
+    # Single-choice path
+    if mode == "single_choice":
+        import random as _random
+        choices_raw = matrix.get("distractors") or matrix.get("choices") or []
+        labels = ["A", "B", "C", "D"]
+        if choices_raw and isinstance(choices_raw, list):
+            all_opts = [coord] + [str(x) for x in choices_raw if str(x) != coord]
+        else:
+            all_opts = [coord]
+        _random.shuffle(all_opts)
+        correct_label = ""
+        choices = []
+        for i, opt in enumerate(all_opts[:4]):
+            lbl = labels[i]
+            choices.append({"label": lbl, "text": opt, "value": opt})
+            if opt == coord:
+                correct_label = lbl
+        answer_contract = {
+            "presentation_mode": "single_choice",
+            "answer_type": "single_choice",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "answer_equivalence": "choice_label",
+            "equivalence_type": "choice_label",
+            "equivalence": "choice_label",
+            "semantic_answer": correct_label,
+        }
+        return {
+            "question_text": question_text,
+            "answer": correct_label,
+            "correct_answer": correct_label,
+            "display_answer": correct_label,
+            "choices": choices,
+            "options": [c["text"] for c in choices],
+            "component_id": component_id or "",
+            "textbook_example_id": textbook_example_id,
+            "problem_type_id": problem_type_id or op,
+            "source_kind": source_kind or "",
+            "presentation_mode": mode,
+            "answer_type": "single_choice",
+            "checker": "choice_label_checker",
+            "checker_key": "choice_label_checker",
+            "equivalence": "choice_label",
+            "equivalence_type": "choice_label",
+            "interaction_type": "single_choice",
+            "auto_checkable": True,
+            "grading_mode": "auto",
+            "answer_contract": answer_contract,
+            "metadata": {"target": coord, "domain_operation": op},
+            "math_core": {"target": coord, "domain_operation": op},
+            "visual_spec": matrix.get("visual_spec") or {"kind": "no_visual"},
+            "visual_aids": [],
+            "image_base64": None,
+            "validation_facts": validation_facts,
+            "generator_key": generator_key or component_id or "",
+        }
+
+    # Short-answer path
+    answer_contract = {
+        "presentation_mode": mode,
+        "answer_type": "coordinate_pair",
+        "checker": "coordinate_pair_checker",
+        "checker_key": "coordinate_pair_checker",
+        "answer_equivalence": "coordinate_pair_equivalence",
+        "equivalence_type": "coordinate_pair_equivalence",
+        "equivalence": "coordinate_pair_equivalence",
+        "semantic_answer": coord,
+    }
+    return {
+        "question_text": question_text,
+        "answer": coord,
+        "correct_answer": coord,
+        "display_answer": coord,
+        "choices": [],
+        "options": [],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id,
+        "problem_type_id": problem_type_id or op,
+        "source_kind": source_kind or "",
+        "presentation_mode": mode,
+        "answer_type": "coordinate_pair",
+        "checker": "coordinate_pair_checker",
+        "checker_key": "coordinate_pair_checker",
+        "equivalence": "coordinate_pair_equivalence",
+        "equivalence_type": "coordinate_pair_equivalence",
+        "interaction_type": "short_answer",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": answer_contract,
+        "metadata": {"target": coord, "domain_operation": op},
+        "math_core": {"target": coord, "domain_operation": op},
+        "visual_spec": matrix.get("visual_spec") or {"kind": "no_visual"},
+        "visual_aids": [],
+        "image_base64": None,
+        "validation_facts": validation_facts,
+        "generator_key": generator_key or component_id or "",
+        "explanation": "\n".join(str(s) for s in explanation_steps) if explanation_steps else "",
+    }
+
 
 def convert_domain_matrix_to_question_payload(
     matrix: dict[str, Any],
@@ -1783,6 +1930,29 @@ def convert_domain_matrix_to_question_payload(
             generator_key=generator_key,
             **kwargs,
         ))
+    _COORDINATE_PAIR_OPS = {
+        "compute_midpoint_coordinates",
+        "compute_centroid_coordinates",
+        "compute_internal_division_point_coordinates",
+        "compute_external_division_point_coordinates",
+        "compute_division_point_coordinates",
+        "compute_section_point_coordinates",
+    }
+    if op in _COORDINATE_PAIR_OPS:
+        return _finalize_question_payload(
+            _convert_coordinate_pair_matrix_to_question_payload(
+                matrix,
+                presentation_mode=presentation_mode,
+                answer_type=answer_type or "coordinate_pair",
+                problem_type_id=problem_type_id,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+                domain_operation=op,
+                **kwargs,
+            )
+        )
     if op in {
         "two_points",
         "point_slope",
@@ -1837,7 +2007,13 @@ def convert_domain_matrix_to_question_payload(
             **kwargs,
         ))
 
-    normalized = normalize_domain_matrix(matrix)
+    normalized = normalize_domain_matrix(
+        matrix,
+        answer_schema_key=answer_schema_key,
+        domain_operation=op,
+        problem_type_id=problem_type_id,
+        **kwargs
+    )
     answer = normalized["answer"]
     givens = normalized["givens"]
     validation_facts = dict(normalized["validation_facts"])
@@ -2401,3 +2577,190 @@ def convert_domain_matrix_to_question_payload(
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
     })
+
+
+def normalize_domain_payload_to_v3_matrix(payload: Any, context: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a raw entrypoint payload into a formal V3 Domain Matrix.
+
+    If the payload is already a valid V3 Matrix, it is returned as-is (preserved).
+    Otherwise, a legacy Slot/V2 payload is dynamically mapped to the V3 matrix schema.
+    If core semantic fields (like canonical answer) are missing, it raises ValueError.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("domain_matrix_invalid: payload must be a dict.")
+
+    # 1. Check if it's already a complete V3 matrix
+    MATRIX_REQUIRED_FIELDS = ("givens", "answer", "distractors", "explanation_steps", "validation_facts", "visual_spec")
+    if all(field in payload for field in MATRIX_REQUIRED_FIELDS):
+        return payload
+
+    # 2. Check for missing core question/answer content (should block)
+    ans_val = payload.get("correct_answer")
+    if ans_val is None:
+        ans_val = payload.get("answer")
+    if isinstance(ans_val, dict):
+        ans_val = ans_val.get("value") or ans_val.get("canonical_form")
+
+    if ans_val is None or str(ans_val).strip() == "":
+        raise ValueError("domain_matrix_missing_answer: canonical answer is missing")
+
+    question = payload.get("question_text") or payload.get("question")
+    if not question:
+        raise ValueError("domain_matrix_missing_question: question content is missing")
+
+    pres_mode = str(context.get("presentation_mode") or payload.get("presentation_mode") or "short_answer").strip()
+
+    # 3. Resolve Answer Schema Key
+    from core.gencode.answer_schema_registry import resolve_answer_schema_key, ANSWER_SCHEMAS
+
+    at = str(context.get("answer_type") or payload.get("answer_type") or "").strip()
+    ck = str(payload.get("checker_key") or payload.get("checker_type") or payload.get("checker") or "").strip()
+    eq = str(payload.get("equivalence") or payload.get("equivalence_type") or payload.get("answer_equivalence") or "").strip()
+
+    if pres_mode == "single_choice" or at == "single_choice":
+        schema_key = "choice_label"
+    else:
+        schema_key = resolve_answer_schema_key(
+            answer_schema_key=context.get("answer_schema_key") or payload.get("answer_schema_key"),
+            domain_operation=context.get("problem_type_id") or payload.get("problem_type_id"),
+            problem_type_id=context.get("problem_type_id") or payload.get("problem_type_id"),
+        )
+
+    if not schema_key:
+        if at in {"ordered_pair"} or ck in {"coordinate_pair_checker"} or eq in {"coordinate_pair_equivalence"}:
+            schema_key = "coordinate_pair"
+        elif at in {"rational", "integer", "numeric"} or ck in {"integer_checker", "rational_checker"} or eq in {"numeric_exact", "rational_equivalent"}:
+            schema_key = "numeric_scalar"
+        elif at in {"linear_equation", "expression"} or ck in {"linear_equation_equivalent_checker"} or eq in {"linear_equation_equivalent", "expression"}:
+            if ck in {"linear_equation_equivalent_checker"} or "line_equation" in str(context.get("problem_type_id") or payload.get("problem_type_id")):
+                schema_key = "line_equation"
+            else:
+                schema_key = "numeric_scalar"
+        elif at in {"single_choice"} or ck in {"choice_label_checker"} or eq in {"choice_label"}:
+            schema_key = "choice_label"
+        elif at in {"solution_set"} or ck in {"solution_set_checker"} or eq in {"unordered_solution_set"}:
+            schema_key = "parameter_solution_set"
+        elif at in {"distance_scalar"} or ck in {"distance_scalar_checker"}:
+            schema_key = "distance_scalar"
+
+    if not schema_key:
+        raise ValueError("domain_payload_answer_schema_unresolved: Cannot resolve answer schema key")
+
+    schema = ANSWER_SCHEMAS.get(schema_key)
+    if not schema:
+        raise ValueError(f"domain_payload_answer_schema_unresolved: Unknown schema key {schema_key}")
+    required_fields = schema["required_fields"]
+
+    # 4. Extract distractors
+    distractors = []
+    choices = payload.get("choices")
+
+    ans_text_val = str(ans_val)
+    if isinstance(choices, list) and choices:
+        for choice in choices:
+            if isinstance(choice, dict):
+                label = str(choice.get("label") or "").strip()
+                if label and label.upper() == ans_text_val.upper():
+                    ans_text_val = str(choice.get("text") or choice.get("value") or "")
+                    break
+
+    if isinstance(choices, list) and choices:
+        for choice in choices:
+            if isinstance(choice, dict):
+                txt = str(choice.get("text") or choice.get("value") or "")
+                if txt and txt != ans_text_val and txt != str(ans_val):
+                    distractors.append(txt)
+            elif isinstance(choice, str):
+                if choice and choice != ans_text_val and choice != str(ans_val):
+                    distractors.append(choice)
+
+    if pres_mode == "single_choice" and not distractors:
+        raw_distractors = payload.get("distractors")
+        if isinstance(raw_distractors, list) and raw_distractors:
+            distractors = [str(x) for x in raw_distractors]
+        else:
+            raise ValueError("domain_matrix_missing_distractors: single_choice requires distractors")
+
+    # 5. Extract givens
+    givens = {}
+    if isinstance(payload.get("metadata"), dict):
+        givens.update(payload["metadata"])
+    for key in ["x1", "y1", "x2", "y2", "x3", "y3", "ratio_m", "ratio_n", "point_names", "coordinates", "known_values"]:
+        if key in payload:
+            givens[key] = payload[key]
+    if "question_text" not in givens:
+        givens["question_text"] = str(question)
+
+    # 6. Extract explanation_steps
+    explanation_steps = []
+    exp = payload.get("explanation") or payload.get("explanation_steps") or payload.get("derivation")
+    if isinstance(exp, list):
+        explanation_steps = [str(s) for s in exp if s]
+    elif isinstance(exp, str) and exp.strip():
+        explanation_steps = [s.strip() for s in exp.split("\n") if s.strip()]
+
+    # 7. Extract validation_facts
+    validation_facts = {}
+    if isinstance(payload.get("validation_facts"), dict):
+        validation_facts.update(payload["validation_facts"])
+
+    op_name = str(context.get("problem_type_id") or payload.get("problem_type_id") or "").strip()
+    if op_name:
+        validation_facts.setdefault("domain_operation", op_name)
+        validation_facts.setdefault("task_type", op_name)
+        validation_facts.setdefault("line_type", op_name)
+    validation_facts.setdefault("curriculum_profile", context.get("curriculum_profile") or "vocational_high_b")
+    validation_facts.setdefault("difficulty_profile", context.get("difficulty_profile") or "easy")
+    validation_facts.setdefault("canonical_answer", str(ans_val))
+
+    # 8. Resolve visual_spec
+    domain_key = str(context.get("fixed_domain_key") or payload.get("fixed_domain_key") or "").strip()
+    if not domain_key:
+        from core.registry.taxonomy_registry import resolve_domain_for_skill
+        try:
+            domain_key = resolve_domain_for_skill(context.get("skill_id") or payload.get("skill_id")) or ""
+        except Exception:
+            domain_key = ""
+
+    if domain_key.startswith("coordinate_geometry"):
+        visual_spec = {
+            "kind": "coordinate_plane_spec",
+            "points": [],
+            "lines": [],
+            "x_range": [-10, 10],
+            "y_range": [-10, 10]
+        }
+    else:
+        visual_spec = {
+            "kind": "no_visual"
+        }
+
+    # 9. Construct the strict schema-adhering answer dict
+    answer_dict = {}
+    for field in required_fields:
+        if field == "solutions":
+            if isinstance(ans_val, list):
+                answer_dict[field] = ans_val
+            else:
+                answer_dict[field] = [x.strip() for x in str(ans_val).split(",") if x.strip()]
+        elif field == "coefficients":
+            answer_dict[field] = payload.get("coefficients") or {}
+        elif field == "correct_label":
+            answer_dict[field] = str(ans_val)
+        else:
+            answer_dict[field] = str(ans_val)
+
+    v3_matrix = {
+        "givens": givens,
+        "answer": answer_dict,
+        "distractors": distractors,
+        "explanation_steps": explanation_steps,
+        "validation_facts": validation_facts,
+        "visual_spec": visual_spec,
+    }
+
+    for k, v in payload.items():
+        if k not in v3_matrix and k not in {"metadata", "answer_contract"}:
+            v3_matrix[k] = v
+
+    return v3_matrix

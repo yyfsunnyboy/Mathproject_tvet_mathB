@@ -113,6 +113,17 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2": "parameter_solution_set",
     "compute_distance_between_two_points": "distance_scalar",
     "solve_unknown_coordinate_from_two_point_distance": "parameter_solution_set",
+    "compute_midpoint_coordinates": "coordinate_pair",
+    "compute_centroid_coordinates": "coordinate_pair",
+    "compute_internal_division_point_coordinates": "coordinate_pair",
+    "solve_point_from_section_ratio": "coordinate_pair",
+    "compute_section_point_distance_from_origin": "distance_scalar",
+    "solve_basic_absolute_value_equation": "parameter_solution_set",
+    "solve_basic_absolute_value_equation_no_solution": "parameter_solution_set",
+    "number_line_distance_between_two_points": "distance_scalar",
+    "absolute_value_inequality_zero_center_basic": "numeric_scalar",
+    "absolute_value_inequality_linear_expression_basic": "numeric_scalar",
+    "absolute_value_inequality_shifted_basic": "numeric_scalar",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)

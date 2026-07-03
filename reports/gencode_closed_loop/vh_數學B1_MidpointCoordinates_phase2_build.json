@@ -1,0 +1,156 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "phase": "phase2_build",
+  "final_status": "BUILD_PASS",
+  "input_phase1_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase1_audit.json",
+  "build_mode": "normal",
+  "generated_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "verified_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "failed_problem_types": [],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "checker_implementation_summary": {
+    "missing_checker_key_problem_types": []
+  },
+  "answer_contract_summary": {
+    "compute_centroid_coordinates": {
+      "answer_type": "coordinate_pair",
+      "equivalence_type": "exact_string",
+      "checker_key": "coordinate_pair_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "(x,y) coordinate pair"
+      ],
+      "canonical_answer_schema": {
+        "type": "coordinate_pair"
+      }
+    },
+    "compute_midpoint_coordinates": {
+      "answer_type": "coordinate_pair",
+      "equivalence_type": "exact_string",
+      "checker_key": "coordinate_pair_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "(x,y) coordinate pair"
+      ],
+      "canonical_answer_schema": {
+        "type": "coordinate_pair"
+      }
+    }
+  },
+  "registry_merge_summary": {
+    "mode": "non_destructive",
+    "updated": false
+  },
+  "wrapper_summary": {
+    "pipeline_invoked": false,
+    "pipeline_return_code": 0,
+    "pipeline_final_status": "SKIPPED_CANDIDATE_VERIFICATION_MODE"
+  },
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "blocking_reasons": [],
+  "warnings": [],
+  "artifact_paths": {
+    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_build.json",
+    "phase2_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_build.md"
+  },
+  "timestamp": "2026-07-03T16:25:32.410247+00:00",
+  "build_dependency_plan": {
+    "foundation_ready": true,
+    "required_checkers": [
+      "coordinate_pair_checker"
+    ],
+    "existing_checkers": [
+      "algebraic_equivalence_checker",
+      "choice_checker",
+      "choice_label_checker",
+      "coordinate_pair_checker",
+      "exact_string_checker",
+      "expression_equivalence_checker",
+      "free_response_drawing_checker",
+      "integer_checker",
+      "interval_checker",
+      "line_label_checker",
+      "linear_equation_equivalent_checker",
+      "multi_part_answer_checker",
+      "numeric_checker",
+      "quadrant_checker",
+      "rational_checker",
+      "solution_set_checker",
+      "structured_text_checker",
+      "text_short_checker"
+    ],
+    "missing_checkers": [],
+    "required_verifiers": [],
+    "missing_verifiers": [],
+    "required_domain_functions": [],
+    "missing_domain_functions": [],
+    "required_generators": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "missing_generators": [],
+    "excluded_manual_review_problem_types": [],
+    "buildable_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "blocked_problem_types": [],
+    "preflight_status": "PASS"
+  },
+  "preflight_status": "PASS",
+  "build_execution_status": "EXECUTED",
+  "candidate_discovery_summary": {
+    "discovered_candidates": [],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [],
+    "verified_candidates": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "failed_candidates": [],
+    "candidate_failure_reasons": {},
+    "sample_count": 0
+  },
+  "build_execution_summary": {
+    "execution_attempted": true,
+    "execution_status": "PASS",
+    "verified_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "failed_problem_types": [],
+    "pending_problem_types": [],
+    "failure_reasons": []
+  },
+  "build_gap_summary": {
+    "has_build_gaps": false,
+    "gap_types": [],
+    "problem_type_gaps": {}
+  },
+  "repair_plan": {
+    "recommended_next_action": "phase2_ready",
+    "steps": []
+  },
+  "repair_plan_status": "SKIPPED",
+  "next_action": {
+    "next_action_type": "phase3_publish_gate",
+    "gap": "",
+    "command": "python scripts\\gencode_pipeline_phase3_publish_gate.py --skill-id vh_數學B1_MidpointCoordinates",
+    "reason": "No blocking build dependency gaps detected and phase2 status is publish-gate eligible.",
+    "should_run_phase3": true,
+    "requires_human_review": false
+  }
+}

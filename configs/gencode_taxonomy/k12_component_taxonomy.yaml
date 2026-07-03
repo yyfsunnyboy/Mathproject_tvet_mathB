@@ -109,6 +109,16 @@ skills:
       - compute_internal_division_point_coordinates
       - compute_centroid_coordinates
       - compute_section_point_distance_from_origin
+  vh_數學B1_MidpointCoordinates:
+    fixed_domain_key: coordinate_geometry.division_point_coordinates
+    domain_module: core.gencode.division_point_slot_engine
+    entrypoint: generate_division_point_payload
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_midpoint_coordinates
+      - compute_centroid_coordinates
+
   vh_數學B4_StatisticalChartReading:
     fixed_domain_key: statistics.table_chart
     domain_module: core.domain.statistics.table_chart_domain

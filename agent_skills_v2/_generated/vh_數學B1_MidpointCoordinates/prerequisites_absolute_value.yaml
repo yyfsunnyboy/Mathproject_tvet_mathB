@@ -1,0 +1,9 @@
+items:
+  -
+    subskill_id: "compute_centroid_coordinates"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "compute_midpoint_coordinates"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

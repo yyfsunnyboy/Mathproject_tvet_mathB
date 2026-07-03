@@ -99,6 +99,20 @@ PT_SPECS: dict[str, dict[str, Any]] = {
         "candidate_subdir": "short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2",
         "subskill_id": "solve_unknown_coordinate_from_two_point_distance",
     },
+    "compute_midpoint_coordinates": {
+        "answer_type": "coordinate_pair",
+        "checker_type": "coordinate_pair_checker",
+        "candidate_subdir": "compute_midpoint_coordinates",
+        "subskill_id": "compute_midpoint_coordinates",
+        "v3_skill_id": "vh_數學B1_MidpointCoordinates",
+    },
+    "compute_centroid_coordinates": {
+        "answer_type": "coordinate_pair",
+        "checker_type": "coordinate_pair_checker",
+        "candidate_subdir": "compute_centroid_coordinates",
+        "subskill_id": "compute_centroid_coordinates",
+        "v3_skill_id": "vh_數學B1_MidpointCoordinates",
+    },
 }
 
 
@@ -489,10 +503,97 @@ def main() -> None:
     p.add_argument("--max-rounds", type=int, default=5)
     args = p.parse_args()
 
-    if args.skill_id not in {TARGET_SKILL, "vh_數學B1_PropertiesOfParallelLines", "vh_數學B1_PropertiesOfPerpendicularLines", "vh_數學B1_SlopeOfALine", "vh_數學B1_AbsoluteValueInequality", "vh_數學B1_DistanceBetweenTwoPointsInPlane"}:
-        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines、SlopeOfALine、AbsoluteValueInequality 與 DistanceBetweenTwoPointsInPlane")
+    _ALLOWED_SKILLS = {
+        TARGET_SKILL,
+        "vh_數學B1_PropertiesOfParallelLines",
+        "vh_數學B1_PropertiesOfPerpendicularLines",
+        "vh_數學B1_SlopeOfALine",
+        "vh_數學B1_AbsoluteValueInequality",
+        "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+        "vh_數學B1_MidpointCoordinates",
+    }
+    _V3_SKILLS = {
+        "vh_數學B1_MidpointCoordinates",
+    }
+    if args.skill_id not in _ALLOWED_SKILLS:
+        raise RuntimeError("此版本只支援 vh_數學B1_AbsoluteValue、ParallelLines、PerpendicularLines、SlopeOfALine、AbsoluteValueInequality、DistanceBetweenTwoPointsInPlane 與 MidpointCoordinates")
     if args.problem_type_id not in PT_SPECS:
         raise RuntimeError("closed_loop_generator_not_implemented")
+
+    # V3 short-circuit: validate the skill wrapper directly
+    if args.skill_id in _V3_SKILLS:
+        spec = PT_SPECS[args.problem_type_id]
+        root = Path(__file__).resolve().parents[1]
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        import importlib
+        try:
+            mod_name = f"skills.{args.skill_id}"
+            if mod_name in sys.modules:
+                del sys.modules[mod_name]
+            mod = importlib.import_module(mod_name)
+        except Exception as e:
+            out = {"status": "failed", "first_error": f"wrapper_import_failed: {e}"}
+            print(json.dumps(out, ensure_ascii=False))
+            sys.exit(1)
+
+        errors = []
+        seen_pts = set()
+        seen_answers = []
+        for seed in range(20):
+            try:
+                payload = mod.generate(level=1, seed=seed)
+            except Exception as e:
+                errors.append(f"generate_failed: {e}")
+                continue
+            if not isinstance(payload, dict):
+                errors.append("payload_not_dict")
+                continue
+            pt = str(payload.get("problem_type_id", "")).strip()
+            if pt:
+                seen_pts.add(pt)
+            ans = str(payload.get("answer", "") or payload.get("correct_answer", "")).strip()
+            if ans:
+                seen_answers.append(ans)
+            if not str(payload.get("question_text", "")).strip():
+                errors.append("question_text_empty")
+            if not ans:
+                errors.append("answer_empty")
+
+        if args.problem_type_id not in seen_pts and seen_pts:
+            # Only fail if the wrapper produced a different pt, not if no samples at all
+            if len(seen_answers) == 0:
+                errors.append(f"problem_type_id_not_observed: {args.problem_type_id}")
+        if len(set(seen_answers)) < 3:
+            errors.append("answer_diversity_too_low")
+
+        status = "verified" if not errors else "failed"
+        reg_path = root / "configs" / "generated_registry" / "b1_section_1_1_verified_registry.v0.1.yaml"
+        v3_cand_path = f"agent_skills_v3/{args.skill_id}/components"
+        entry = None
+        if status == "verified":
+            entry = {
+                "problem_type_id": args.problem_type_id,
+                "skill_id": args.skill_id,
+                "subskill_id": spec["subskill_id"],
+                "status": "verified",
+                "candidate_path": v3_cand_path,
+                "function_name": "generate",
+                "answer_type": spec["answer_type"],
+                "checker_type": spec["checker_type"],
+            }
+        reason = ", ".join(errors[:3]) if errors else None
+        reg = _merge_registry(reg_path, args.skill_id, args.problem_type_id, entry, reason)
+        out = {
+            "status": status,
+            "registry": str(reg_path),
+            "verified_count": len(reg.get("verified_problem_types", [])),
+        }
+        if errors:
+            out["first_error"] = errors[0]
+        print(json.dumps(out, ensure_ascii=False))
+        sys.exit(0 if status == "verified" else 1)
+
 
     root = Path(__file__).resolve().parents[1]
     

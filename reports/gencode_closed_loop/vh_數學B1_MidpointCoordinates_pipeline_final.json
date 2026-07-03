@@ -1,0 +1,223 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "phase": "phase3_publish_gate",
+  "final_status": "PUBLISH_BINDING_REQUIRED",
+  "publish_ready": false,
+  "publish_review_mode": "",
+  "full_observed_coverage": true,
+  "source_coverage_status": "FULL_OBSERVED_COVERAGE_CANDIDATE",
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "examples_total": 10,
+  "examples_covered": 10,
+  "observed_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "verified_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "answer_contract_summary": {
+    "compute_centroid_coordinates": {
+      "answer_type": "coordinate_pair",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "checker_key": "coordinate_pair_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "(x,y) coordinate pair"
+      ],
+      "canonical_answer_schema": {
+        "type": "coordinate_pair"
+      }
+    },
+    "compute_midpoint_coordinates": {
+      "answer_type": "coordinate_pair",
+      "equivalence_type": "coordinate_pair_equivalence",
+      "checker_key": "coordinate_pair_checker",
+      "order_matters": true,
+      "accepted_format_notes": [
+        "(x,y) coordinate pair"
+      ],
+      "canonical_answer_schema": {
+        "type": "coordinate_pair"
+      }
+    }
+  },
+  "missing_answer_contract_problem_types": [],
+  "missing_checker_key_problem_types": [],
+  "equivalence_test_required_problem_types": [
+    "compute_centroid_coordinates",
+    "compute_midpoint_coordinates"
+  ],
+  "runtime_problem_type_coverage": {
+    "expected_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "observed_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "missing_problem_types": [],
+    "status": "pass"
+  },
+  "blocking_reasons": [
+    "phase3_package_summary_stale_vs_phase2_generator_summary",
+    "registry_binding_missing",
+    "runtime_binding_missing",
+    "wrapper_binding_missing"
+  ],
+  "warnings": [
+    "draft_skill_older_than_phase3_package_summary"
+  ],
+  "publish_binding_summary": {
+    "candidate_verification_status": "PASS",
+    "answer_contract_gate_status": "PASS",
+    "verified_candidates_count": 2,
+    "verified_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "registry_binding_status": "NOT_BOUND",
+    "formal_registry_binding_status": "NOT_BOUND",
+    "registry_path": "",
+    "registry_entry_found": false,
+    "registry_entry_valid": false,
+    "registry_verified_problem_types": [],
+    "registry_manual_review_exclusions": [],
+    "registry_binding_failure_reason": "registry_binding_missing",
+    "wrapper_binding_status": "NOT_BOUND",
+    "formal_wrapper_binding_status": "NOT_BOUND",
+    "runtime_binding_status": "NOT_READY",
+    "formal_runtime_binding_status": "NOT_READY",
+    "draft_publish_review_ready": false,
+    "publish_review_mode": "",
+    "binding_required": true,
+    "binding_blockers": [
+      "registry_binding_missing",
+      "runtime_binding_missing",
+      "wrapper_binding_missing"
+    ],
+    "publish_exclusions": {
+      "manual_review_problem_types": [],
+      "future_ai_judged_problem_types": []
+    },
+    "phase3_package_summary_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase3_package_summary.json",
+    "phase2_generator_summary_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
+    "draft_skill_file": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_MidpointCoordinates.py"
+  },
+  "phase3_draft_publish_review": {
+    "ready": false,
+    "blockers": [
+      "phase3_package_summary_stale_vs_phase2_generator_summary"
+    ],
+    "warnings": [
+      "draft_skill_older_than_phase3_package_summary"
+    ],
+    "included_generators": [
+      {
+        "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+        "checker_key": "coordinate_pair_checker",
+        "equivalence_type": "ordered_tuple_exact",
+        "generator_readiness": "runtime_ready",
+        "answer_type": "coordinate_pair",
+        "template_slot": "division_point_coordinates",
+        "base_problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+        "target_task": "compute_midpoint_coordinates",
+        "presentation_mode": "short_answer",
+        "answer_shape": "coordinate_pair"
+      },
+      {
+        "problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+        "checker_key": "coordinate_pair_checker",
+        "equivalence_type": "ordered_tuple_exact",
+        "generator_readiness": "runtime_ready",
+        "answer_type": "coordinate_pair",
+        "template_slot": "division_point_coordinates",
+        "base_problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+        "target_task": "compute_centroid_coordinates",
+        "presentation_mode": "short_answer",
+        "answer_shape": "coordinate_pair"
+      }
+    ],
+    "draft_specs": [
+      {
+        "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+        "checker_key": "coordinate_pair_checker",
+        "equivalence_type": "ordered_tuple_exact",
+        "generator_readiness": "runtime_ready",
+        "answer_type": "coordinate_pair",
+        "template_slot": "division_point_coordinates",
+        "base_problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+        "target_task": "compute_midpoint_coordinates",
+        "presentation_mode": "short_answer",
+        "answer_shape": "coordinate_pair"
+      },
+      {
+        "problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+        "checker_key": "coordinate_pair_checker",
+        "equivalence_type": "ordered_tuple_exact",
+        "generator_readiness": "runtime_ready",
+        "answer_type": "coordinate_pair",
+        "template_slot": "division_point_coordinates",
+        "base_problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+        "target_task": "compute_centroid_coordinates",
+        "presentation_mode": "short_answer",
+        "answer_shape": "coordinate_pair"
+      }
+    ],
+    "binding_tier": "",
+    "answer_contract_gate_status": "FAIL",
+    "candidate_verification_status": "FAIL",
+    "verified_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ]
+  },
+  "next_action": {
+    "next_action_type": "repair_publish_binding",
+    "command": "python scripts\\gencode_repair_build_gap.py --skill-id vh_數學B1_MidpointCoordinates --gap missing_runtime_binding",
+    "reason": "candidate 已驗證，但 registry / wrapper / runtime 尚未接線。",
+    "should_publish": false,
+    "requires_human_review": false
+  },
+  "success_items": {
+    "phase1_coverage_ok": true,
+    "phase2_candidate_verification_ok": true,
+    "phase3_draft_publish_review_ok": false,
+    "verified_problem_types": [
+      "compute_centroid_coordinates",
+      "compute_midpoint_coordinates"
+    ],
+    "answer_contract_gate_ok": true,
+    "checker_key_gate_ok": true
+  },
+  "incomplete_items": {
+    "registry_binding_done": false,
+    "wrapper_binding_done": false,
+    "runtime_binding_ready": false,
+    "runtime_coverage_pass": true,
+    "formal_registry_binding_done": false,
+    "formal_wrapper_binding_done": false,
+    "formal_runtime_binding_ready": false
+  },
+  "status_message": "candidate 驗證、binding 與 runtime coverage 綜合判讀結果。",
+  "artifact_paths": {
+    "phase1_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase1_audit.json",
+    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_build.json",
+    "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
+    "phase3_package_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase3_package_summary.json",
+    "draft_skill_file": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_MidpointCoordinates.py",
+    "final_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_pipeline_final.json",
+    "final_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_pipeline_final.md"
+  },
+  "timestamp": "2026-07-03T16:20:35.729944+00:00"
+}

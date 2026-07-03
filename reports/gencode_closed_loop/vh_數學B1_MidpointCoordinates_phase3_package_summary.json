@@ -45,7 +45,7 @@
       "answer_contract_answer_type": "coordinate_pair",
       "checker": "coordinate_pair_checker",
       "equivalence": "ordered_tuple_exact",
-      "question_text_len": 57,
+      "question_text_len": 71,
       "answer": "(6,0)",
       "correct_answer": "(6,0)",
       "choices_count": 0,
@@ -62,7 +62,8 @@
         "generation_coords",
         "generator_contract",
         "presentation_mode",
-        "semantic_required_concepts"
+        "semantic_required_concepts",
+        "answer_format_suffix"
       ]
     },
     "interface_check": {
@@ -85,12 +86,16 @@
       "correct_answer_repr": "'(6,0)'",
       "correct_answer_python_type": "str",
       "validator_expected_types": [
+        "case_insensitive_string",
         "category",
         "choice",
         "choice_label",
         "classification",
         "coordinate_pair",
         "decimal",
+        "drawing",
+        "equation",
+        "exact_string",
         "expression",
         "fraction",
         "integer",
@@ -100,6 +105,7 @@
         "manual_review",
         "math_expression",
         "multi_choice",
+        "multi_part",
         "number",
         "number_set",
         "numeric",
@@ -107,12 +113,17 @@
         "ordered_pair",
         "quadrant_label",
         "radical_number",
+        "rational",
+        "rational_fraction",
         "set",
         "short_answer",
         "single_choice",
         "solution_set",
         "table",
+        "table_fill",
+        "text",
         "text_label",
+        "text_short",
         "union_of_intervals"
       ],
       "expected_answer_shape": "coordinate_pair allows (x,y) string or equivalent formats; answer_shape=coordinate_pair",
@@ -150,7 +161,7 @@
         "answer_contract_answer_type": "coordinate_pair",
         "checker": "coordinate_pair_checker",
         "equivalence": "ordered_tuple_exact",
-        "question_text_len": 57,
+        "question_text_len": 71,
         "answer": "(6,0)",
         "correct_answer": "(6,0)",
         "choices_count": 0,
@@ -167,7 +178,8 @@
           "generation_coords",
           "generator_contract",
           "presentation_mode",
-          "semantic_required_concepts"
+          "semantic_required_concepts",
+          "answer_format_suffix"
         ]
       },
       "interface_check": {
@@ -190,12 +202,16 @@
         "correct_answer_repr": "'(6,0)'",
         "correct_answer_python_type": "str",
         "validator_expected_types": [
+          "case_insensitive_string",
           "category",
           "choice",
           "choice_label",
           "classification",
           "coordinate_pair",
           "decimal",
+          "drawing",
+          "equation",
+          "exact_string",
           "expression",
           "fraction",
           "integer",
@@ -205,6 +221,7 @@
           "manual_review",
           "math_expression",
           "multi_choice",
+          "multi_part",
           "number",
           "number_set",
           "numeric",
@@ -212,12 +229,17 @@
           "ordered_pair",
           "quadrant_label",
           "radical_number",
+          "rational",
+          "rational_fraction",
           "set",
           "short_answer",
           "single_choice",
           "solution_set",
           "table",
+          "table_fill",
+          "text",
           "text_label",
+          "text_short",
           "union_of_intervals"
         ],
         "expected_answer_shape": "coordinate_pair allows (x,y) string or equivalent formats; answer_shape=coordinate_pair",
@@ -232,26 +254,32 @@
       "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
       "checker_key": "coordinate_pair_checker",
       "equivalence_type": "ordered_tuple_exact",
-      "generator_readiness": "runtime_ready"
+      "generator_readiness": "runtime_ready",
+      "answer_type": "coordinate_pair",
+      "template_slot": "division_point_coordinates",
+      "base_problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
+      "target_task": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_shape": "coordinate_pair"
     },
     {
-      "problem_type_id": "text_short_compute_midpoint_coordinates",
+      "problem_type_id": "ordered_tuple_compute_centroid_coordinates",
       "checker_key": "coordinate_pair_checker",
       "equivalence_type": "ordered_tuple_exact",
-      "generator_readiness": "runtime_ready"
-    },
-    {
-      "problem_type_id": "text_short_compute_centroid_coordinates",
-      "checker_key": "coordinate_pair_checker",
-      "equivalence_type": "ordered_tuple_exact",
-      "generator_readiness": "runtime_ready"
+      "generator_readiness": "runtime_ready",
+      "answer_type": "coordinate_pair",
+      "template_slot": "division_point_coordinates",
+      "base_problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+      "target_task": "compute_centroid_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_shape": "coordinate_pair"
     }
   ],
-  "packaging_usable_count": 3,
+  "packaging_usable_count": 2,
   "packaging_diagnostics": {
-    "candidate_count": 3,
-    "included_count": 3,
-    "excluded_count": 0,
+    "candidate_count": 4,
+    "included_count": 2,
+    "excluded_count": 2,
     "included": [
       {
         "problem_type_id": "ordered_tuple_compute_midpoint_coordinates",
@@ -259,28 +287,57 @@
         "generator_status": "runtime_ready_with_warning"
       },
       {
-        "problem_type_id": "text_short_compute_midpoint_coordinates",
-        "generator_key": "vh_數學B1_MidpointCoordinates:text_short_compute_midpoint_coordinates:draft_v1",
-        "generator_status": "runtime_ready"
-      },
-      {
-        "problem_type_id": "text_short_compute_centroid_coordinates",
-        "generator_key": "vh_數學B1_MidpointCoordinates:text_short_compute_centroid_coordinates:draft_v1",
+        "problem_type_id": "ordered_tuple_compute_centroid_coordinates",
+        "generator_key": "vh_數學B1_MidpointCoordinates:ordered_tuple_compute_centroid_coordinates:draft_v1",
         "generator_status": "runtime_ready_with_warning"
       }
     ],
-    "excluded": [],
+    "excluded": [
+      {
+        "problem_type_id": "single_choice_evaluate_function_value_fallback_application",
+        "generator_key": "vh_數學B1_MidpointCoordinates:single_choice_evaluate_function_value_fallback_application:draft_v1",
+        "generator_status": "runtime_ready_with_warning",
+        "checker_smoke_status": "passed",
+        "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+        "blockers": [],
+        "warnings": [
+          "consecutive_same_template_variant",
+          "low_sample_diversity_tolerance_applied",
+          "low_source_examples",
+          "low_unique_signature_count"
+        ],
+        "reasons": [
+          "slot_base_task_mismatch:point_quadrant_choice!=function_value_numeric"
+        ]
+      },
+      {
+        "problem_type_id": "interpret_function_notation",
+        "generator_key": "vh_數學B1_MidpointCoordinates:interpret_function_notation:draft_v1",
+        "generator_status": "runtime_ready_with_warning",
+        "checker_smoke_status": "passed",
+        "dynamic_sampling_status": "runtime_ready_with_diversity_warning",
+        "blockers": [],
+        "warnings": [
+          "consecutive_same_template_variant",
+          "low_sample_diversity_tolerance_applied",
+          "low_source_examples",
+          "no_matched_source_examples"
+        ],
+        "reasons": [
+          "slot_base_task_mismatch:factor_quadratic_by_cross_multiplication!=linear_function_two_point_choice"
+        ]
+      }
+    ],
     "phase2_summary_exists": true,
     "generator_draft_spec_exists": true,
     "phase2_generator_summary_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_MidpointCoordinates_phase2_generator_summary.json",
     "generator_draft_spec_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\vh_數學B1_MidpointCoordinates_generator_draft_spec.json",
     "runtime_spec_alignment": {
       "status": "synced",
-      "synced_spec_count": 3,
+      "synced_spec_count": 2,
       "synced_problem_type_ids": [
         "ordered_tuple_compute_midpoint_coordinates",
-        "text_short_compute_midpoint_coordinates",
-        "text_short_compute_centroid_coordinates"
+        "ordered_tuple_compute_centroid_coordinates"
       ],
       "induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_MidpointCoordinates.json",
       "purged_induced_spec_path": "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_MidpointCoordinates.json",
@@ -288,13 +345,10 @@
         "reports\\gencode_closed_loop\\induced_specs\\vh_數學B1_MidpointCoordinates.json"
       ],
       "runtime_usable_problem_type_ids": [
-        "ordered_tuple_compute_midpoint_coordinates",
-        "text_short_compute_centroid_coordinates",
-        "text_short_compute_midpoint_coordinates"
+        "ordered_tuple_compute_centroid_coordinates",
+        "ordered_tuple_compute_midpoint_coordinates"
       ],
-      "downgraded_historical_problem_type_ids": [
-        "single_choice_compute_midpoint_coordinates"
-      ],
+      "downgraded_historical_problem_type_ids": [],
       "canonical_filter_applied": true
     }
   },
@@ -310,9 +364,10 @@
   "next_action": "review_phase3_publish_check",
   "error": "",
   "dry_run": true,
-  "timestamp": "2026-06-02T15:36:33.805601+00:00",
+  "timestamp": "2026-07-03T16:25:26.302808+00:00",
   "generated_with_warning": true,
   "warnings": [
+    "consecutive_same_template_variant",
     "low_sample_diversity_tolerance_applied",
     "low_source_examples"
   ],
@@ -327,12 +382,12 @@
     "missing_source_aligned_problem_types": [
       "short_answer_compute_centroid_coordinates",
       "short_answer_compute_midpoint_coordinates",
-      "single_choice_compute_midpoint_coordinates"
+      "short_answer_compute_numeric_short_answer"
     ],
     "underrepresented_runtime_forms": [
       "short_answer_compute_centroid_coordinates",
       "short_answer_compute_midpoint_coordinates",
-      "single_choice_compute_midpoint_coordinates"
+      "short_answer_compute_numeric_short_answer"
     ]
   },
   "post_phase3_audit_scripts": [

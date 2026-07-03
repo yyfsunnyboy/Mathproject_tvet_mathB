@@ -1,0 +1,117 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_4418",
+      "textbook_example_id": 4418,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_4418/generate.py"
+    },
+    {
+      "component_id": "src_4422",
+      "textbook_example_id": 4422,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_4422/generate.py"
+    },
+    {
+      "component_id": "src_4428",
+      "textbook_example_id": 4428,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_4428/generate.py"
+    },
+    {
+      "component_id": "src_4429",
+      "textbook_example_id": 4429,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_4429/generate.py"
+    },
+    {
+      "component_id": "src_4439",
+      "textbook_example_id": 4439,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4439/generate.py"
+    },
+    {
+      "component_id": "src_4440",
+      "textbook_example_id": 4440,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4440/generate.py"
+    },
+    {
+      "component_id": "src_4443",
+      "textbook_example_id": 4443,
+      "status": "verified",
+      "problem_type_id": "compute_centroid_coordinates",
+      "domain_operation": "compute_centroid_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_4443/generate.py"
+    },
+    {
+      "component_id": "src_4447",
+      "textbook_example_id": 4447,
+      "status": "verified",
+      "problem_type_id": "compute_centroid_coordinates",
+      "domain_operation": "compute_centroid_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4447/generate.py"
+    },
+    {
+      "component_id": "src_4511",
+      "textbook_example_id": 4511,
+      "status": "verified",
+      "problem_type_id": "compute_midpoint_coordinates",
+      "domain_operation": "compute_midpoint_coordinates",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_4511/generate.py"
+    },
+    {
+      "component_id": "src_4514",
+      "textbook_example_id": 4514,
+      "status": "verified",
+      "problem_type_id": "compute_centroid_coordinates",
+      "domain_operation": "compute_centroid_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "test",
+      "generate_py": "components/src_4514/generate.py"
+    }
+  ]
+}

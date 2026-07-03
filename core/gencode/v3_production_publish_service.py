@@ -562,6 +562,13 @@ def publish_single_v3_skill_to_production(
             gen_path = staging_path / "components" / component_id / "generate.py"
             if not gen_path.exists():
                 continue
+            import sys
+            if "core.gencode.domain_matrix_adapter" in sys.modules:
+                import importlib
+                try:
+                    importlib.reload(sys.modules["core.gencode.domain_matrix_adapter"])
+                except Exception:
+                    pass
             import importlib.util as _ilu
             _spec = _ilu.spec_from_file_location(f"_integ_{component_id}", gen_path)
             if _spec is None or _spec.loader is None:

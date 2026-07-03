@@ -654,6 +654,7 @@ register_domain_spec(DomainCapabilitySpec(
         "compute_internal_division_point_coordinates",
         "compute_centroid_coordinates",
         "compute_section_point_distance_from_origin",
+        "compute_midpoint_coordinates",
     }),
     operations={
         "compute_internal_division_point_coordinates": _op(
@@ -666,8 +667,8 @@ register_domain_spec(DomainCapabilitySpec(
         "compute_centroid_coordinates": _op(
             "compute_centroid_coordinates",
             "generate_division_point_payload",
-            supported_answer_types=("coordinate_pair",),
-            supported_presentation_modes=("short_answer",),
+            supported_answer_types=("coordinate_pair", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
             provided_capabilities=("compute_centroid_coordinates",),
         ),
         "compute_section_point_distance_from_origin": _op(
@@ -676,6 +677,13 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("single_choice",),
             supported_presentation_modes=("single_choice",),
             provided_capabilities=("compute_section_point_distance_from_origin",),
+        ),
+        "compute_midpoint_coordinates": _op(
+            "compute_midpoint_coordinates",
+            "generate_division_point_payload",
+            supported_answer_types=("coordinate_pair", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            provided_capabilities=("compute_midpoint_coordinates",),
         ),
     },
 ))

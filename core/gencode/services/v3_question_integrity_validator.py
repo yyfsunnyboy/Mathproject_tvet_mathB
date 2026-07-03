@@ -359,6 +359,13 @@ def validate_skill_samples(
         if not gen_py.is_file():
             continue
 
+        import sys
+        if "core.gencode.domain_matrix_adapter" in sys.modules:
+            import importlib
+            try:
+                importlib.reload(sys.modules["core.gencode.domain_matrix_adapter"])
+            except Exception:
+                pass
         spec = importlib.util.spec_from_file_location(f"_integ_{comp_id}", gen_py)
         if spec is None or spec.loader is None:
             continue

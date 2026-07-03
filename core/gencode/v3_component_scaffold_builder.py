@@ -57,6 +57,7 @@ def build_component_files_from_domain_payload(
             textbook_example_id=textbook_example_id,
         ),
         "generate.py": _build_generate_py(
+            skill_id=skill_id,
             domain_meta=domain_meta,
             payload_meta=payload_meta,
             difficulty_level=difficulty_level,
@@ -233,6 +234,7 @@ TAXONOMY_PATH: Final[str] = "{taxonomy_path}"
 
 def _build_generate_py(
     *,
+    skill_id: str,
     domain_meta: dict[str, Any],
     payload_meta: dict[str, Any],
     difficulty_level: str,
@@ -256,28 +258,7 @@ def _build_generate_py(
     if line_type.startswith("slope_intercept_"):
         constraints = {}
     constraints_literal = repr(constraints if isinstance(constraints, dict) else {})
-    if entrypoint in {
-        "build_coordinate_geometry_matrix",
-        "build_parallel_lines_distance_matrix",
-        "build_frequency_distribution_table_matrix",
-        "build_statistical_chart_reading_matrix",
-        "build_descriptive_statistics_matrix",
-    }:
-        matrix_call = f'''{entrypoint}(
-        seed=seed,
-        domain_operation="{domain_operation}",
-        curriculum_profile="{curriculum_profile}",
-        difficulty_profile="{difficulty_level}",
-        constraints={constraints_literal},
-    )'''
-    else:
-        matrix_call = f'''{entrypoint}(
-        seed=seed,
-        line_type="{line_type}",
-        curriculum_profile="{curriculum_profile}",
-        difficulty_profile="{difficulty_level}",
-        constraints={constraints_literal},
-    )'''
+    fixed_domain = str(domain_meta.get("fixed_domain_key") or payload_meta.get("fixed_domain_key") or "").strip()
 
     return f'''from __future__ import annotations
 
@@ -294,7 +275,35 @@ DEFAULT_COMPONENT_ID = "src_{textbook_example_id}" if TEXTBOOK_EXAMPLE_ID else "
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
-    matrix = {matrix_call}
+    from core.gencode.pipeline_orchestrator import _v3_invoke_domain_entrypoint
+    from core.gencode.domain_matrix_adapter import normalize_domain_payload_to_v3_matrix
+
+    norm_context = {{
+        "skill_id": "{skill_id}",
+        "problem_type_id": PROBLEM_TYPE_ID,
+        "seed": seed,
+        "curriculum_profile": "{curriculum_profile}",
+        "difficulty_profile": "{difficulty_level}",
+        "answer_schema_key": "{answer_schema_key}",
+        "presentation_mode": PRESENTATION_MODE,
+        "answer_type": ANSWER_TYPE,
+        "fixed_domain_key": "{fixed_domain}",
+    }}
+
+    constraints = dict({constraints_literal})
+    constraints["skill_id"] = "{skill_id}"
+
+    matrix = _v3_invoke_domain_entrypoint(
+        {entrypoint},
+        entrypoint_name="{entrypoint}",
+        domain_operation="{domain_operation}",
+        seed=seed,
+        curriculum_profile="{curriculum_profile}",
+        difficulty_profile="{difficulty_level}",
+        constraints=constraints,
+    )
+    matrix = normalize_domain_payload_to_v3_matrix(matrix, norm_context)
+
     component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
     payload = convert_domain_matrix_to_question_payload(
         matrix,
