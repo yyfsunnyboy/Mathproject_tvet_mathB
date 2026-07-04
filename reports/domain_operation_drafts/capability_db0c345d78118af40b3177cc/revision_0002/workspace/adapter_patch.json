@@ -1,0 +1,4 @@
+{
+  "operation": "linear_equation_from_two_points_choice",
+  "route": "if op == 'linear_equation_from_two_points_choice': convert_to_payload()"
+}

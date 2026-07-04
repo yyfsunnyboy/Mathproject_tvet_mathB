@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "coordinate_geometry.cartesian_coordinate",
+  "operation": {
+    "operation_key": "collinear_trisection_coordinate",
+    "handler": "collinear_trisection_coordinate",
+    "provided_capabilities": [
+      "collinear_trisection_coordinate"
+    ]
+  }
+}

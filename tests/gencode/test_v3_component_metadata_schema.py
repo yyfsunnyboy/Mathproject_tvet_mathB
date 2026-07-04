@@ -107,7 +107,7 @@ def test_scaffold_default_target_task_does_not_override_component_spec():
     files = build_component_files_from_domain_payload(
         skill_id=SKILL_ID,
         component_id="src_4566",
-        source_kind="ex_4566",
+        source_kind="example_4566",
         domain_meta=DOMAIN_META,
         payload_meta={
             "problem_type_id": "line_through_point_parallel_to_line",

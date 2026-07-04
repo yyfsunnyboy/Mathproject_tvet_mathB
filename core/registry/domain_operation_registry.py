@@ -291,7 +291,14 @@ register_domain_spec(DomainCapabilitySpec(
         "line_through_point_parallel_to_line", "line_through_point_perpendicular_to_line",
         "compare_line_slopes", "line_through_intersection_parallel_to_line",
         "line_through_point_perpendicular_to_segment", "perpendicular_bisector_application",
-        "coordinate_geometry_word_problem",
+        "coordinate_geometry_word_problem", "graph_intercepts_and_linear_equation",
+        "draw_constant_function_graph",
+        "draw_linear_function_graph",
+        "graph_based_linear_application_inverse",
+        "linear_equation_from_two_points_choice",
+        "linear_graph_feasibility_choice",
+        "graph_based_linear_model_equation",
+        "robust_budget_feasibility_choice",
     }),
     operations={
         "two_points":                                   _op("two_points",                                   "build_line_equation_matrix", supported_answer_types=("expression",)),
@@ -322,6 +329,14 @@ register_domain_spec(DomainCapabilitySpec(
         "line_through_point_perpendicular_to_segment":  _op("line_through_point_perpendicular_to_segment",  "build_line_equation_matrix", supported_answer_types=("expression",)),
         "perpendicular_bisector_application":           _op("perpendicular_bisector_application",           "build_line_equation_matrix", supported_answer_types=("expression",)),
         "coordinate_geometry_word_problem":             _op("coordinate_geometry_word_problem",             "build_line_equation_matrix", supported_answer_types=("expression",)),
+        "graph_intercepts_and_linear_equation":         _op("graph_intercepts_and_linear_equation",         "build_graph_intercepts_and_linear_equation_matrix", supported_answer_types=("multi_part",), provided_capabilities=("graph_intercepts_and_linear_equation",)),
+        "draw_constant_function_graph":                 _op("draw_constant_function_graph",                 "build_draw_constant_function_graph_matrix", supported_answer_types=("drawing",), supported_presentation_modes=("canvas",), provided_capabilities=("draw_constant_function_graph",)),
+        "draw_linear_function_graph":                   _op("draw_linear_function_graph",                   "build_draw_linear_function_graph_matrix", supported_answer_types=("drawing",), supported_presentation_modes=("canvas",), provided_capabilities=("draw_linear_function_graph",)),
+        "graph_based_linear_application_inverse":       _op("graph_based_linear_application_inverse",       "build_graph_based_linear_application_inverse_matrix", supported_answer_types=("numeric",), supported_presentation_modes=("graph_short_answer",), provided_capabilities=("graph_based_linear_application_inverse",)),
+        "linear_equation_from_two_points_choice":       _op("linear_equation_from_two_points_choice",       "build_linear_equation_from_two_points_choice_matrix", supported_answer_types=("single_choice",), supported_presentation_modes=("single_choice",), provided_capabilities=("linear_equation_from_two_points_choice",)),
+        "linear_graph_feasibility_choice":              _op("linear_graph_feasibility_choice",              "build_linear_graph_feasibility_choice_matrix", supported_answer_types=("single_choice",), supported_presentation_modes=("graph_single_choice",), provided_capabilities=("linear_graph_feasibility_choice",)),
+        "graph_based_linear_model_equation":            _op("graph_based_linear_model_equation",            "build_graph_based_linear_model_equation_matrix", supported_answer_types=("single_choice",), supported_presentation_modes=("graph_single_choice",), provided_capabilities=("graph_based_linear_model_equation",)),
+        "robust_budget_feasibility_choice":             _op("robust_budget_feasibility_choice",             "build_robust_budget_feasibility_choice_matrix", supported_answer_types=("single_choice",), supported_presentation_modes=("single_choice",), provided_capabilities=("robust_budget_feasibility_choice",)),
     },
 ))
 
@@ -662,6 +677,8 @@ register_domain_spec(DomainCapabilitySpec(
         "inverse_centroid_vertex",
         "triangle_median_length",
         "multi_part_midpoint_application",
+        "graph_based_tiered_linear_application_multi_part",
+        "collinear_trisection_coordinate",
     }),
     operations={
         "compute_internal_division_point_coordinates": _op(
@@ -740,6 +757,20 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("multi_part_scalar", "choice", "single_choice"),
             supported_presentation_modes=("short_answer", "single_choice"),
             provided_capabilities=("multi_part_midpoint_application",),
+        ),
+        "graph_based_tiered_linear_application_multi_part": _op(
+            "graph_based_tiered_linear_application_multi_part",
+            "build_graph_based_tiered_linear_application_multi_part_matrix",
+            supported_answer_types=("multi_part",),
+            supported_presentation_modes=("graph_multi_part", "multiple_inputs"),
+            provided_capabilities=("graph_based_tiered_linear_application_multi_part",),
+        ),
+        "collinear_trisection_coordinate": _op(
+            "collinear_trisection_coordinate",
+            "build_collinear_trisection_coordinate_matrix",
+            supported_answer_types=("coordinate_pair",),
+            supported_presentation_modes=("short_answer",),
+            provided_capabilities=("collinear_trisection_coordinate",),
         ),
     },
 ))

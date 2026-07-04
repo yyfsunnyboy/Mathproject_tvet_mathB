@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "coordinate_geometry.division_point_coordinates",
+  "operation": {
+    "operation_key": "graph_based_tiered_linear_application_multi_part",
+    "handler": "graph_based_tiered_linear_application_multi_part",
+    "provided_capabilities": [
+      "graph_based_tiered_linear_application_multi_part"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "draft_index_schema": "review_domain_operation_draft_index.v1",
+  "proposal_id": "capability_db0c345d78118af40b3177cc",
+  "revisions": [
+    {
+      "revision": 1,
+      "proposal_hash": "3c9db181177ba4ac19c0ea38d94f1d4ed2f62773cc1f84e7feb6af6825d4964d",
+      "artifact": "revision_0001\\domain_operation_draft.json"
+    },
+    {
+      "revision": 2,
+      "proposal_hash": "87bfcc8775810a49a4bc48af6958a9965876829c996873afd83fc45cfb730408",
+      "artifact": "revision_0002\\domain_operation_draft.json"
+    }
+  ]
+}

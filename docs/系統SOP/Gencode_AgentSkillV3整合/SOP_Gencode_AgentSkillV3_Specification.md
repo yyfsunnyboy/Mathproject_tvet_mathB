@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.11  
+> **文件版本**：v1.12  
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義、學生端作答契約與批改標準）。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（唯一流程權威）。
 
 ---
@@ -10,7 +10,12 @@
 | 關鍵字／錯誤 | 查詢章節 |
 | --- | --- |
 | component_id | 2. 一題一最小生成單位 |
+| 一題一 generator | 2. 一題一最小生成單位 |
 | problem_type_id | 3. Skill-Fixed Domain |
+| fixed_domain_key ≠ ready | 10.1 Exact Capability Readiness Gate |
+| ready_to_rebuild | 10.1 Exact Capability Readiness Gate |
+| placeholder / NotImplementedError | 10.2 Executable Workspace Gate |
+| capability 狀態 | 10.3 Capability 狀態定義 |
 | checker_key | 8. Answer Contract 與 Checker 規則 |
 | equivalence_type | 8. Answer Contract 與 Checker 規則 |
 | decimal_tolerance_checker | 8. Answer Contract 與 Checker 規則 |
@@ -21,6 +26,7 @@
 | canonical_answer | 8. Answer Contract 與 Checker 規則 |
 | verified blocker | 10. Gate 與錯誤碼責任分區 |
 | constraint | 9. 變數與約束分層 |
+| AI 修改前／後回報 | 11. AI Implementation Contract |
 
 ---
 
@@ -38,19 +44,46 @@
 10. 缺乏直接證據時標記 `[Unknown]`，不得自行猜測。
 11. 不得依 skill_id 或 example_id 新增個別數學補丁。
 12. 修改後必須執行局部離線驗證並回報是否符合 SOP。
+13. 修改程式前／後必須依 §11 AI Implementation Contract 完整回報；缺任一欄位即不得開始或宣稱完成修改。
 
 ---
 
 ## 2. 一題一最小生成單位 (Current)
 
-* **一對一隔離關係**：
-  $$\text{textbook\_example\_row} \rightarrow \text{component\_id} \rightarrow \text{components/src\_<textbook\_example\_id>/} \rightarrow \text{generate.py}$$
-  教材中每一道原題都是獨立隨機生成的最小元件，`component_id` 恆等於 `src_{textbook_example_id}`。
-* **開發禁令**：
-  * 嚴禁將多道教材題目合併在同一個 component 資料夾中。
-  * 嚴禁因為共用 Domain Function 而合併 component。
-  * 嚴禁在程式碼中依據 `skill_id`、`example_id` 或 `component_id` 寫死數學計算、數值或特例分支。
-  * 單一 component 失敗僅將其排除，絕不可使同單元其他 `verified` 組件無法發布。
+本節為 **一題一 generator** 的唯一規範權威。流程文件僅引用本節，不得另立較弱或較寬鬆的定義。
+
+### 2.1 一對一隔離關係
+
+$$\text{textbook\_example\_row} \rightarrow \text{component\_id} \rightarrow \text{components/src\_<textbook\_example\_id>/} \rightarrow \text{generate.py}$$
+
+教材中每一道原題都是獨立隨機生成的最小元件，`component_id` 恆等於 `src_{textbook_example_id}`。
+
+### 2.2 最小生成單位必須同時滿足
+
+每一筆 textbook example **必須**對應：
+
+| 項目 | 要求 |
+| --- | --- |
+| `component_id` | 一筆 textbook example = 一個 `component_id` |
+| 目錄 | 一個獨立 component 目錄（`components/src_<textbook_example_id>/`） |
+| 原始碼 | 一個獨立 `generate.py`、`metadata.py`、`get_hint.py` |
+| Tracker | 一筆獨立 tracker 紀錄 |
+| Domain operation | 相同 capability **僅可共用 Domain operation**，**不得合併 generator** |
+
+### 2.3 開發禁令
+
+* 嚴禁將多道教材題目合併在同一個 component 資料夾中。
+* 嚴禁因為共用 Domain Function／operation／capability 而合併 component 或合併 `generate.py`。
+* 嚴禁在程式碼中依據 `skill_id`、`example_id` 或 `component_id` 寫死數學計算、數值或特例分支。
+* 單一 component 失敗僅將其排除，絕不可使同單元其他 `verified` 組件無法發布。
+* 建置、驗證、tracker 更新必須逐 component 獨立執行；不得以 capability 分組取代逐題 generator。
+
+### 2.4 與 Capability 分組的邊界
+
+* Capability 分組**只用於**：Exact Readiness 檢查、proposal 去重、Domain operation 共用。
+* Capability 分組**不得用於**：合併 generator、合併 component 目錄、合併 tracker、以一題結果代表同組其他題。
+
+流程層的 Recovery Orchestrator 與 rebuild 規則見 PipelineFlow §4.4、§4.5。
 
 ---
 
@@ -60,6 +93,7 @@
 * **Registry 決定路由**：由 [taxonomy_registry.py](file:///e:/Python/Mathproject_tvet_mathB/core/registry/taxonomy_registry.py) 解析的 `fixed_domain_key` 決定唯一物理 Domain Module，AI 嚴禁修改 `skill_id`、改派 `fixed_domain_key` 或跨 Domain 借菜。
 * **共享算子**：共享數學算子 (Shared Mathematical Primitive) 允許跨 Domain 調用，但不改變上層 routing domain。
 * **型別驗證**：若發現 operation 不符時回報為 `operation_contract_mismatch`，禁止以更換 Domain 逃避。
+* **Readiness 邊界**：`fixed_domain_key` 存在**不等於** capability ready。完整就緒條件見 §10.1 Exact Capability Readiness Gate。
 
 ---
 
@@ -216,6 +250,9 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | `single_choice` 單選題選項內容重複或無唯一正解 | 不得 verified / published |
 | metadata / config 中的 `answer_type` 與實際前台渲染的 UI 套餐不一致 | 不得 verified / published |
 | 組件 schema、adapter 或 wrapper 遺失了必要 `ui_contract` 或 `answer_contract` | 不得 verified / published |
+| 將多道 textbook example 合併為單一 generator／component | 不得 verified / published |
+| 在 Exact Readiness Gate 未通過時標記 `ready_to_rebuild` 或重建 generator | 不得 verified / published |
+| 以 placeholder／`pass`／`NotImplementedError`／固定空回傳通過 Executable Workspace Gate | 不得 verified / published |
 
 ---
 
@@ -270,7 +307,10 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | 錯誤碼 | 責任層 | 影響範圍 | 正確處置 | 狀態 |
 | --- | --- | --- | --- | --- |
 | `SKILL_ONBOARDING_NEEDS_REVIEW` | Phase 1 / Onboarding | 整 Skill | 記錄於 needs_human_review，掛起待人工處理 | `[Current]` |
-| `DOMAIN_FUNCTION_MISSING` | Phase 2 / Component | 單題 | 進入 Domain Function Extension 自動擴充 | `[Current]` |
+| `DOMAIN_FUNCTION_MISSING` | Phase 2 / Component | 單題 | 進入 Capability 自動生長閉環（見 PipelineFlow §4.3） | `[Current]` |
+| `DOMAIN_CAPABILITY_UNRESOLVED` | Phase 1 / Capability | 單 capability | 建立 proposal，進入自動生長閉環；不得阻斷其他 capability | `[Current]` |
+| `CAPABILITY_NOT_READY` | Capability Gate | 單 capability | Exact Readiness Gate 未通過，禁止 `ready_to_rebuild` | `[Current]` |
+| `EXECUTABLE_WORKSPACE_INCOMPLETE` | Capability Gate | 單 capability | Executable Workspace Gate 未通過，不得標記完成 | `[Current]` |
 | `GENERATOR_SPEC_MISSING_FIELD` | Spec Contract | 單題 | 排除該組件，不阻斷其他題 | `[Planned]` |
 | `GENERATOR_SPEC_ANSWER_CONTRACT_CONFLICT` | Spec Contract | 單題 | 排除該組件，不阻斷其他題 | `[Planned]` |
 | `GENERATOR_SPEC_UNSUPPORTED_VERSION` | Spec Contract | 單題 | 排除該組件 | `[Planned]` |
@@ -282,28 +322,117 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | `SAMPLING_EXHAUSTED` | Sampling Runtime | 單題 (出題) | 超限拋出異常，拋棄該 seed | `[Planned]` |
 | `CAPABILITY_IMMUTABILITY_VIOLATION` | Capability | 單題 | 自動管線寫入 production 唯讀區，Gate 安全攔截 | `[Current]` |
 
+### 10.1 Exact Capability Readiness Gate (Current)
+
+本節為 **capability 是否可 `ready_to_rebuild`** 的唯一規範權威。
+
+**明定**：`fixed_domain_key` 存在 **不等於** capability ready。僅有 Domain 路由鍵不足以重建任何 generator。
+
+只有以下條件**全部**存在且一致時，才可標記 `ready_to_rebuild`：
+
+| # | 必要條件 | 說明 |
+| --- | --- | --- |
+| 1 | capability declaration | capability 已正式宣告，可被解析與追蹤 |
+| 2 | operation registry spec | operation 已登錄於 registry，規格完整 |
+| 3 | executable implementation | 可執行實作存在，且通過 §10.2 Executable Workspace Gate |
+| 4 | adapter route | adapter 路由存在，可將 domain 結果轉為 component payload |
+| 5 | presentation／answer contract | presentation 與 answer contract 完整且一致 |
+| 6 | checker | 對應 checker 已登錄且可執行 |
+| 7 | component validator | 每個 source example 具備獨立 validator |
+| 8 | selected operation ≡ required operation | 選定 operation 與 required operation 一致 |
+
+**Gate 失敗處置**：
+
+* 不得標記 `ready_to_rebuild`。
+* 不得重建任何 generator。
+* `partial_capability`（僅部分條件滿足）**不得**重建 generator。
+* 失敗 capability 必須隔離並記錄 `failure_stage`，不得阻斷其他 capability 或其他 component。
+
+### 10.2 Executable Workspace Gate (Current)
+
+本節為 **workspace／implementation 是否可判定完成** 的唯一規範權威。
+
+#### 10.2.1 不得判定為完成的情形
+
+以下任一成立，即判定 **未完成**（`implementation_incomplete` 或 `validation_failed`），不得進入 promotion：
+
+| 禁止通過項 | 說明 |
+| --- | --- |
+| `pass` | 空實作或僅 `pass` 語句 |
+| `NotImplementedError` | 明確未實作 |
+| placeholder | 佔位字串、TODO、stub 註記充當完成 |
+| 固定空回傳 | 固定回傳 `{}`、`None`、空字串等無數學內容結果 |
+| 無 assertion 測試 | 測試檔存在但無有效 assertion |
+| 僅編譯通過 | 語法／import 通過不足以證明正確性 |
+| 僅 payload schema 通過 | schema 形狀正確不足以證明數學與批改正確 |
+
+#### 10.2.2 必須實際驗證的項目
+
+必須**實際執行並通過**以下驗證，缺一不得判定完成：
+
+| # | 驗證項 | 要求 |
+| --- | --- | --- |
+| 1 | mathematical invariants | 數學不變量成立（非字串形狀檢查） |
+| 2 | adapter conversion | adapter 轉換結果正確且可被 component 消費 |
+| 3 | answer contract | answer contract 與產出答案一致 |
+| 4 | checker 正解／錯解 | checker 對正解通過、對錯解拒絕 |
+| 5 | fixed seeds | 固定 seed 可重現且結果穩定 |
+| 6 | 每題獨立 validator | 每個 source example 有獨立 validator，不得以同 capability 一題結果代表其他題 |
+
+### 10.3 Capability 狀態定義 (Current)
+
+本節為 capability lifecycle **狀態名稱**的唯一規範權威。狀態轉移時序見 PipelineFlow §4.3、§7.3。
+
+| 狀態 | 含義 |
+| --- | --- |
+| `proposed` | capability 缺口已建立 proposal（含去重後的正式提案） |
+| `approved` | proposal 通過 auto triage／規則審核，允許進入 draft |
+| `draft_scaffold_ready` | 隔離 workspace 的 scaffold（規格、測試骨架、registry／adapter patch 草稿）已就緒 |
+| `implementation_incomplete` | 實作存在但未通過 Executable Workspace Gate |
+| `validation_failed` | 已執行完整驗證但未通過 |
+| `ready_for_human_review` | 隔離實作與 full validation 皆通過，等待 production promotion 前人工審核 |
+| `promoted` | 已原子性寫入 production（registry、implementation、adapter 等） |
+| `verified` | promotion 後經逐題 rebuild／validator 確認可用 |
+
+**狀態使用禁令**：
+
+* 不得跳過 `ready_for_human_review` 直接 `promoted`（人工審核位置見 PipelineFlow §4.6）。
+* 不得在 `implementation_incomplete`、`validation_failed` 或未通過 Exact Readiness Gate 時標記 `ready_to_rebuild`。
+* `promoted` 後仍須逐 component 獨立 rebuild 與 tracker 更新，才得進入 component 層 `verified`。
+
 ---
 
 ## 11. AI Implementation Contract (AI 程式修改規範)
 
-AI 在修改程式前**必須**先在回覆中輸出以下格式的診斷說明：
+本節為 AI／Agent **修改 production 或管線程式前／後回報格式**的唯一規範權威。缺欄不得開始修改；缺欄不得宣稱完成。
+
+### 11.1 修改前必須回報
+
 ```text
-錯誤責任層：[Phase 1 / Phase 2 / Spec Contract / Answer Runtime / Sampling Runtime / Capability]
-對應 SOP 章節：[例如 §8. Gate]
-production code 現況：[1-3句說明現行程式碼行為]
+錯誤責任層：[Phase 1 / Phase 2 / Spec Contract / Answer Runtime / Sampling Runtime / Capability / Recovery Orchestrator]
+對應 SOP 章節：[Specification §x / PipelineFlow §y]
+production code 現況：[1-3 句說明現行程式碼行為]
 直接根因：[說明為何出錯]
-預計修改檔案與函式：[點擊 file 連結]
-明確不修改範圍：[明示不影響的組件]
-局部測試：[說明測試指令]
-停止條件：[說明何時算完成]
+預計修改範圍：[檔案與函式；點擊 file 連結]
+不修改範圍：[明示不影響的組件、capability、其他題]
+局部測試：[說明測試指令與預期]
+停止條件：[說明何時算完成，以及何時必須停止不得擴大範圍]
 ```
 
+### 11.2 實作約束
+
 在撰寫與實作程式碼時，AI 必須遵守：
+
 * 一個 Prompt 只處理一個微小任務，限改 1～2 個函式，優先 no-LLM。
 * 禁止修改已發布的 `verified` 既有組件（除非根因代碼就在該組件內）。
 * 同類工具或 shell 失敗最多重試 2 次，超過即停止，禁止反覆切換腳本或重寫排版。
+* 不得依 skill_id、example_id、component_id 新增個別數學補丁。
+* 不得合併多題 generator；相同 capability 僅可共用 Domain operation。
+* 不得在 Exact Readiness Gate 未通過時重建 generator。
+* 不得以 placeholder／僅編譯通過／僅 schema 通過宣稱 capability 完成。
 
-AI 實作完成後，**必須**回報：
+### 11.3 修改後必須回報
+
 ```text
 違反的 SOP 規則：[無／有 (說明理由)]
 修改檔案與函式：[點擊 file 連結]
@@ -332,7 +461,7 @@ SOP 與 production 是否已對齊：[是／否]
 | M1 | Phase 3 Integrity Gate 邊界與最小相容檢查，不預設新增 Pydantic/schema_version | Planned |
 | M2 | Answer Contract／Checker 一致化，五種 Answer Type 完成 UI、runtime grading、錯誤分流與橫向一致性驗收 | Completed |
 | M3 | Runtime Variables／Constraints 變數取樣引擎，引進 `ConstraintPolicy` | Planned |
-| M4 | Capability Extension 寫入保護與隔離 [Unknown Implementation 待 M4-A 唯讀確認] | Investigation |
+| M4 | Capability Extension 寫入保護與隔離；Exact Readiness／Executable Workspace Gate 與自動生長閉環對齊 production | Investigation |
 | M5 | Phase 1 通用 Onboarding 分流器 | Planned |
 
 ---
@@ -340,6 +469,9 @@ SOP 與 production 是否已對齊：[是／否]
 ## 13. Deprecated
 * **全域 Nearest Template Fallback**：已廢除，禁止跨 Domain 相似度匹配。
 * **V2 Handwriting 舊批改路由**：已廢除，全面由 V3 `drawing` 元件與評分器取代。
+* **以 `fixed_domain_key` 存在推斷 capability ready**：已廢除，必須通過 Exact Capability Readiness Gate。
+* **多題合併單一 generator**：已廢除，必須遵守 §2 一題一最小生成單位。
+* **以 placeholder／僅編譯／僅 schema 通過判定 implementation 完成**：已廢除，必須通過 Executable Workspace Gate。
 
 ---
 
@@ -347,6 +479,7 @@ SOP 與 production 是否已對齊：[是／否]
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.12 | 確立一題一最小生成單位完整契約；新增 Exact Capability Readiness Gate、Executable Workspace Gate、Capability 狀態定義；強化 AI Implementation Contract 修改前／後回報欄位；禁止降級矩陣納入 readiness／workspace 違規 |
 | v1.11 | M2 正式封板：answer_contract 升格為 Current 權威；五種 Answer Type 完成 UI、grading、error handling 與橫向一致性驗收；修正 answer_type／presentation_mode 舊範例 |
 | v1.10 | 定義 Bootstrap 與 Healer 狀態及升格 Gate，確定 generator/oracle/validator 三元分離 |
 | v1.9 | 新增資料呈現/學生作答三層分離，正式確立五種作答套餐及禁止降級原則 |

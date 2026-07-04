@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -635,6 +636,30 @@ def rollback_v3_to_v2_facade(
             status = "skipped_no_backup_non_v3_file"
 
     if v3_skill_dir.exists():
+        import gc
+        import importlib
+        import linecache
+
+        facade_resolved = facade_path.resolve()
+        v3_resolved = v3_skill_dir.resolve()
+        for module_name, module in tuple(sys.modules.items()):
+            module_file = getattr(module, "__file__", None)
+            if not module_file:
+                continue
+            try:
+                module_path = Path(module_file).resolve()
+                is_v3_module = module_path == facade_resolved or _is_path_under(
+                    module_path,
+                    v3_resolved,
+                )
+            except (OSError, RuntimeError, ValueError):
+                continue
+            if is_v3_module:
+                sys.modules.pop(module_name, None)
+        linecache.clearcache()
+        importlib.invalidate_caches()
+        gc.collect()
+
         for child in sorted(v3_skill_dir.rglob("*"), reverse=True):
             if child.is_file():
                 child.unlink()

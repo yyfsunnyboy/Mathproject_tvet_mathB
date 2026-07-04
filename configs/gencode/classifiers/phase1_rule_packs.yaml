@@ -62,14 +62,14 @@ skills:
         requires_human_action: false
       - problem_type_id: draw_constant_function_graph
         display_name: draw constant function graph
-        checker: graph_spec_checker
-        equivalence: graph_equivalence
+        checker: free_response_drawing_checker
+        equivalence: drawing_equivalence
         runtime_candidate: true
         requires_human_action: false
       - problem_type_id: draw_linear_function_graph
         display_name: draw linear function graph
-        checker: graph_spec_checker
-        equivalence: graph_equivalence
+        checker: free_response_drawing_checker
+        equivalence: drawing_equivalence
         runtime_candidate: true
         requires_human_action: false
       - problem_type_id: graph_based_linear_application_inverse
@@ -80,8 +80,8 @@ skills:
         requires_human_action: false
       - problem_type_id: graph_based_linear_model_equation
         display_name: derive contextual linear model from graph
-        checker: expression_equivalence_checker
-        equivalence: algebraic_equivalent
+        checker: choice_label_checker
+        equivalence: choice_label
         runtime_candidate: true
         requires_human_action: false
       - problem_type_id: robust_budget_feasibility_choice

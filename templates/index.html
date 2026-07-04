@@ -3930,7 +3930,17 @@
                 checker: payload.checker || payload.checker_type || '',
                 equivalence: payload.equivalence || '',
                 choices: Array.isArray(choices) ? choices.slice() : [],
-                answer_type: payload.answer_type || '',
+                answer_type: payload.answer_type
+                    || (payload.answer_contract && payload.answer_contract.answer_type)
+                    || '',
+                answer_shape: payload.answer_shape
+                    || (payload.answer_contract && payload.answer_contract.answer_shape)
+                    || '',
+                presentation_mode: payload.presentation_mode
+                    || (payload.answer_contract && payload.answer_contract.presentation_mode)
+                    || '',
+                interaction_type: payload.interaction_type || '',
+                visual_spec: payload.visual_spec || null,
                 subquestions: Array.isArray(payload.subquestions) ? payload.subquestions.slice() : [],
                 table_data: payload.table_data || {},
                 table_question: payload.table_question || {},
@@ -4199,12 +4209,36 @@
             });
         }
 
+        function resolveMultiPartFields(payload) {
+            const cq = payload || currentQuestion || {};
+            const contract = cq.answer_contract || {};
+            const parts = Array.isArray(contract.parts) ? contract.parts : [];
+            const fromParts = parts
+                .filter((part) => part && (part.key || part.field_key))
+                .map((part, index) => ({
+                    key: String(part.key || part.field_key),
+                    field_key: String(part.key || part.field_key),
+                    label: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    prompt: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    answer_order: part.answer_order ?? index,
+                }));
+            if (fromParts.length > 0) return fromParts;
+            const subqs = Array.isArray(cq.subquestions) ? cq.subquestions : [];
+            return subqs
+                .filter((sq) => sq && (sq.field_key || sq.key || sq.part))
+                .map((sq, index) => ({
+                    key: String(sq.field_key || sq.key || sq.part || `part_${index + 1}`),
+                    field_key: String(sq.field_key || sq.key || sq.part || `part_${index + 1}`),
+                    label: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
+                    prompt: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
+                    answer_order: sq.answer_order ?? index,
+                }));
+        }
+
         function isMultiPartQuestion(payload) {
             const cq = payload || currentQuestion || {};
             if (isTableFillQuestion(cq)) return true;
-            const answerType = String(cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '').toLowerCase();
-            const subqs = cq.subquestions;
-            return answerType === 'multi_part' && Array.isArray(subqs) && subqs.length > 0;
+            return resolveMultiPartFields(cq).length > 0;
         }
 
         function clearSubquestionInputs() {
@@ -4283,40 +4317,40 @@
                 }
                 return;
             }
-            if (!subquestionsContainer || !isMultiPartQuestion(payload)) {
+            const parts = resolveMultiPartFields(payload);
+            if (!subquestionsContainer || parts.length === 0) {
                 if (answerInput) {
                     answerInput.style.display = '';
                 }
                 return;
             }
-            const subqs = payload.subquestions || [];
             subquestionsContainer.style.display = 'block';
             subquestionsContainer.classList.add('multi-part-list');
-            const groups = buildMultiPartFieldGroups(payload, subqs);
+            const legacySubqs = Array.isArray(payload.subquestions) ? payload.subquestions : [];
+            const groups = legacySubqs.length > 0
+                ? buildMultiPartFieldGroups(payload, legacySubqs)
+                : [{ label: '', fields: parts }];
             const useGroupedLayout = groups.length > 0
                 && (groups.length > 1 || (groups[0].fields && groups[0].fields.length > 1));
-            if (useGroupedLayout) {
+            if (useGroupedLayout && legacySubqs.length > 0) {
                 renderGroupedMultiPartInputs(payload, groups);
             } else {
-                subqs.forEach((sq, index) => {
+                parts.forEach((part, index) => {
                     const row = document.createElement('div');
                     row.className = 'multi-part-row';
                     const label = document.createElement('label');
-                    const rawPart = String(sq.part || sq.field_key || `(${index + 1})`);
-                    const partLabel = isEngineeringFieldKey(rawPart)
-                        ? String.fromCharCode(97 + index)
-                        : rawPart;
-                    const prompt = String(sq.prompt || `小題 ${index + 1}`);
-                    label.textContent = prompt.startsWith('：') || prompt.startsWith('=')
-                        ? `${partLabel}${prompt}`
-                        : `${partLabel} ${prompt}`;
-                    label.setAttribute('for', `multi-part-input-${index}`);
+                    const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
+                    const prompt = String(part.label || part.prompt || fieldKey);
+                    label.textContent = prompt;
+                    label.setAttribute('for', `multi-part-input-${fieldKey}`);
                     const input = document.createElement('input');
                     input.type = 'text';
-                    input.id = `multi-part-input-${index}`;
+                    input.id = `multi-part-input-${fieldKey}`;
                     input.className = 'multi-part-input';
                     input.dataset.partIndex = String(index);
-                    input.dataset.fieldKey = String(sq.field_key || sq.part || partLabel);
+                    input.dataset.fieldKey = fieldKey;
+                    input.dataset.answerOrder = String(part.answer_order ?? index);
+                    input.autocomplete = 'off';
                     row.appendChild(label);
                     row.appendChild(input);
                     subquestionsContainer.appendChild(row);
@@ -4333,9 +4367,36 @@
             if (isTableFillQuestion(currentQuestion)) {
                 return collectTableAnswers().ordered;
             }
-            if (!subquestionsContainer) return [];
-            const inputs = subquestionsContainer.querySelectorAll('.multi-part-input, .table-fill-input');
-            return Array.from(inputs).map((node) => String(node.value || '').trim());
+            if (!subquestionsContainer) return {};
+            const answer = {};
+            subquestionsContainer.querySelectorAll('.multi-part-input[data-field-key], .table-fill-input[data-field-key]').forEach((node) => {
+                answer[String(node.dataset.fieldKey)] = String(node.value || '').trim();
+            });
+            return answer;
+        }
+
+        function renderReadonlyVisualSpec(visualSpec) {
+            const runtime = window.VisualSpecRuntime;
+            const qmc = document.getElementById('question-media-container');
+            if (!qmc || !runtime || !runtime.requiresVisualRendering(visualSpec)) {
+                return false;
+            }
+            qmc.innerHTML = '';
+            const readonlyCanvas = document.createElement('canvas');
+            readonlyCanvas.setAttribute('aria-label', '題目圖形');
+            readonlyCanvas.style.width = '100%';
+            readonlyCanvas.style.maxWidth = '640px';
+            readonlyCanvas.style.height = '360px';
+            readonlyCanvas.style.display = 'block';
+            readonlyCanvas.style.margin = '8px auto';
+            readonlyCanvas.style.border = '1px solid #e5e7eb';
+            readonlyCanvas.style.borderRadius = '8px';
+            readonlyCanvas.style.background = '#fff';
+            qmc.appendChild(readonlyCanvas);
+            qmc.style.display = 'block';
+            const paint = () => runtime.renderToCanvas(readonlyCanvas, visualSpec);
+            requestAnimationFrame(() => requestAnimationFrame(paint));
+            return true;
         }
 
         function applyMultiPartUiContract(payload) {
@@ -4360,8 +4421,17 @@
             } else {
                 clearSubquestionInputs();
                 if (answerInput) {
-                    answerInput.style.display = '';
-                    answerInput.disabled = false;
+                    const currentPayload = payload || currentQuestion || {};
+                    const isChoice = isChoiceQuestionPayload(currentPayload)
+                        && getChoiceItems(currentPayload).length > 0;
+                    if (isChoice) {
+                        answerInput.style.display = 'none';
+                        answerInput.disabled = true;
+                        answerInput.value = '';
+                    } else {
+                        answerInput.style.display = '';
+                        answerInput.disabled = false;
+                    }
                 }
             }
         }
@@ -4481,14 +4551,9 @@
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
-                const shape = String(cq.answer_shape || (cq.answer_contract && cq.answer_contract.answer_type) || '').toLowerCase();
-                const handwritingShapes = new Set(['short_answer', 'multi_field', 'table_fill', 'multi_blank', 'multi_part']);
-                const forceShow = handwritingShapes.has(shape) && uiContract.handwritingEnabled;
-                const showScratchpad = drawing
-                    || forceShow
-                    || uiContract.aiCheckRequired
-                    || (uiContract.handwritingEnabled && uiContract.canvasRequired);
-                if (showScratchpad) {
+                // Non-drawing questions must not show the handwriting canvas.
+                const isDrawing = drawing || isDrawingQuestion(cq);
+                if (isDrawing) {
                     scratchpad.style.display = '';
                     scheduleResizeCanvas();
                 } else {
@@ -4616,9 +4681,11 @@
                 payload.answers = collected.ordered;
                 payload.answer = collected.ordered;
                 payload.table_answers = collected.answers;
-            } else if (isMultiPartQuestion(cq)) {
-                payload.answers = collectMultiPartAnswers();
-                payload.answer = payload.answers;
+            } else if (isMultiPartQuestion(cq) && !isTableFillQuestion(cq)) {
+                const collected = collectMultiPartAnswers();
+                payload.answer = collected;
+                payload.answers = collected;
+                payload.user_answer = collected;
             } else {
                 payload.answer = userAnswer;
             }
@@ -4864,16 +4931,7 @@
                             qmc.style.display = 'block';
                         }
                         saveState();
-                    } else if (
-                        window.VisualSpecRuntime
-                        && window.VisualSpecRuntime.requiresVisualRendering(data.visual_spec)
-                    ) {
-                        // fallback: visual_spec 存在但無 base64，顯示提示
-                        const qmc = document.getElementById('question-media-container');
-                        if (qmc) {
-                            qmc.innerHTML = '<div class="question-media-error">📊 圖表資料需由伺服器渲染（visual_spec 可用，base64 缺失）</div>';
-                            qmc.style.display = 'block';
-                        }
+                    } else if (renderReadonlyVisualSpec(data.visual_spec)) {
                         saveState();
                     } else {
                         saveState(); // 沒圖片也要存初始狀態
@@ -4984,11 +5042,17 @@
         function isChoiceQuestionPayload(payload) {
             const choices = getChoiceItems(payload);
             const answerType = String((payload && payload.answer_type) || '').toLowerCase();
+            const contractType = String(
+                (payload && payload.answer_contract && payload.answer_contract.answer_type) || ''
+            ).toLowerCase();
             const checker = String((payload && payload.checker) || '').toLowerCase();
             const checkerType = String((payload && payload.checker_type) || '').toLowerCase();
             const questionType = String((payload && payload.question_type) || '').toLowerCase();
             return (Array.isArray(choices) && choices.length > 0)
                 || answerType === 'choice'
+                || answerType === 'single_choice'
+                || contractType === 'choice'
+                || contractType === 'single_choice'
                 || questionType === 'choice'
                 || checkerType.includes('choice')
                 || checker.includes('choice')
@@ -5095,7 +5159,7 @@
                 button.innerHTML = renderChoiceText(`(${label}) ${rawText}`, idx);
                 button.addEventListener('click', () => {
                     if (isProcessing) return;
-                    if (answerInput && !answerInput.disabled) {
+                    if (answerInput) {
                         answerInput.value = label;
                     }
                     Array.from(questionChoices.querySelectorAll('.choice-option')).forEach((node) => node.classList.remove('selected'));
@@ -5281,12 +5345,27 @@
                 const submitQuestionUid = currentQuestion && currentQuestion.question_uid
                     ? String(currentQuestion.question_uid)
                     : '';
-                const userAnswer = (answerInput && answerInput.style.display !== 'none' && answerInput.value)
+                const isChoiceSubmit = isChoiceQuestionPayload(currentQuestion)
+                    && getChoiceItems(currentQuestion).length > 0;
+                const userAnswer = (answerInput && answerInput.value && (isChoiceSubmit || answerInput.style.display !== 'none'))
                     ? answerInput.value
                     : '';
-                if (isMultiPartQuestion(currentQuestion)) {
+                if (isMultiPartQuestion(currentQuestion) && !isTableFillQuestion(currentQuestion)) {
                     const partAnswers = collectMultiPartAnswers();
-                    if (partAnswers.some((v) => !v)) {
+                    const missingPart = Object.keys(partAnswers).length === 0
+                        || Object.values(partAnswers).some((value) => !String(value || '').trim());
+                    if (missingPart) {
+                        resultDisplay.textContent = '請完成每一小題的答案。';
+                        resultDisplay.className = 'incorrect';
+                        isProcessing = false;
+                        submitBtn.disabled = false;
+                        setChoiceOptionsDisabled(false);
+                        stopLoadingMessage();
+                        return;
+                    }
+                } else if (isTableFillQuestion(currentQuestion)) {
+                    const partAnswers = collectMultiPartAnswers();
+                    if (!Array.isArray(partAnswers) || partAnswers.some((v) => !v)) {
                         resultDisplay.textContent = '請完成每一小題的答案。';
                         resultDisplay.className = 'incorrect';
                         isProcessing = false;

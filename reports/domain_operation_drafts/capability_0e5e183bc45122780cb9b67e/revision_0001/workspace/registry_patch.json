@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "algebra.absolute_value",
+  "operation": {
+    "operation_key": "robust_budget_feasibility_choice",
+    "handler": "robust_budget_feasibility_choice",
+    "provided_capabilities": [
+      "robust_budget_feasibility_choice"
+    ]
+  }
+}

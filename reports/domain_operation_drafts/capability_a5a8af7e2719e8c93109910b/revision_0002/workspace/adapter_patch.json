@@ -1,0 +1,4 @@
+{
+  "operation": "graph_based_linear_application_inverse",
+  "route": "if op == 'graph_based_linear_application_inverse': convert_to_payload()"
+}

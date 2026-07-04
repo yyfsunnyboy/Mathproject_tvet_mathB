@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "algebra.absolute_value",
+  "operation": {
+    "operation_key": "linear_equation_from_two_points_choice",
+    "handler": "linear_equation_from_two_points_choice",
+    "provided_capabilities": [
+      "linear_equation_from_two_points_choice"
+    ]
+  }
+}

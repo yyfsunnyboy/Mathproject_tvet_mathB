@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "coordinate_geometry.line_equation",
+  "operation": {
+    "operation_key": "graph_based_linear_model_equation",
+    "handler": "graph_based_linear_model_equation",
+    "provided_capabilities": [
+      "graph_based_linear_model_equation"
+    ]
+  }
+}

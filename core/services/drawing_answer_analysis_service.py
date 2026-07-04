@@ -408,6 +408,54 @@ def evaluate_not_implemented(recognized_features: dict[str, Any], expected_drawi
     return _result("analysis_unavailable", None, feedback="drawing_evaluator_not_implemented", system_error=True)
 
 
+def evaluate_line_graph(
+    recognized_features: dict[str, Any],
+    expected_drawing_spec: dict[str, Any],
+) -> dict[str, Any]:
+    required = recognized_features.get("required_elements")
+    required = required if isinstance(required, dict) else {}
+    line = recognized_features.get("line")
+    line = line if isinstance(line, dict) else {}
+    tolerance = expected_drawing_spec.get("tolerance")
+    tolerance = tolerance if isinstance(tolerance, dict) else {}
+    missing = [
+        element
+        for element in expected_drawing_spec.get("required_elements", [])
+        if not required.get(element)
+    ]
+    if not line.get("detected"):
+        missing.append("function_line")
+    incorrect: list[str] = []
+    try:
+        slope_error = abs(
+            float(line.get("slope")) - float(expected_drawing_spec["slope"])
+        )
+        intercept_error = abs(
+            float(line.get("y_intercept"))
+            - float(expected_drawing_spec["y_intercept"])
+        )
+        if slope_error > float(tolerance.get("slope", 0.08)):
+            incorrect.append("slope")
+        if intercept_error > float(tolerance.get("y_intercept", 0.35)):
+            incorrect.append("y_intercept")
+    except (TypeError, ValueError, KeyError):
+        incorrect.append("line_parameters")
+    if line and not line.get("spans_graph_width", False):
+        incorrect.append("line_extent")
+    is_correct = not missing and not incorrect
+    return {
+        "status": "success",
+        "is_correct": is_correct,
+        "score": 1.0 if is_correct else 0.0,
+        "confidence": _clamp01(
+            float(recognized_features.get("confidence", 1.0) or 0.0)
+        ),
+        "missing_features": sorted(set(missing)),
+        "incorrect_features": sorted(set(incorrect)),
+        "feedback": _build_feedback(is_correct, missing, incorrect),
+    }
+
+
 DRAWING_EVALUATOR_REGISTRY.update(
     {
         "histogram": evaluate_histogram,
@@ -416,7 +464,7 @@ DRAWING_EVALUATOR_REGISTRY.update(
         "bar_chart": evaluate_not_implemented,
         "line_chart": evaluate_not_implemented,
         "coordinate_point_plot": evaluate_not_implemented,
-        "line_graph": evaluate_not_implemented,
+        "line_graph": evaluate_line_graph,
     }
 )
 

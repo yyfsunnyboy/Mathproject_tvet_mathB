@@ -1,0 +1,12 @@
+{
+  "apply": false,
+  "target_file": "core/registry/domain_operation_registry.py",
+  "target_domain": "coordinate_geometry.line_equation",
+  "operation": {
+    "operation_key": "graph_based_linear_application_inverse",
+    "handler": "graph_based_linear_application_inverse",
+    "provided_capabilities": [
+      "graph_based_linear_application_inverse"
+    ]
+  }
+}

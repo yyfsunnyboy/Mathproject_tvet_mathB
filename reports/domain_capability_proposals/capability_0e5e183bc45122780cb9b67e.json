@@ -1,0 +1,83 @@
+{
+  "proposal_schema": "domain_capability_proposal.v1",
+  "proposal_id": "capability_0e5e183bc45122780cb9b67e",
+  "skill_id": "vh_數學B1_LinearFunction",
+  "component_id": "src_4446",
+  "problem_type_id": "robust_budget_feasibility_choice",
+  "required_capabilities": [
+    "robust_budget_feasibility_choice"
+  ],
+  "candidate_domains": [
+    {
+      "domain_key": "algebra.absolute_value",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "absolute_value_inequality_integer_solution_count_choice"
+      ],
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.line_equation",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "parabola_secant_parallel_line_choice"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.parallel_lines_distance",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "parallel_lines_distance_single_choice"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.parallel_lines_distance_domain",
+      "entrypoint": "build_parallel_lines_distance_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.point_line_distance",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "distance_from_point_to_line_parameter_single_choice_scalar"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_coordinate_geometry_matrix"
+    }
+  ],
+  "best_reuse_domain": "algebra.absolute_value",
+  "missing_operation": "robust_budget_feasibility_choice",
+  "source_example_ids": [
+    4446
+  ],
+  "reuse_priority": [
+    "capability_alias",
+    "existing_operation_wrapper",
+    "new_generic_operation",
+    "new_domain"
+  ],
+  "recommended_action": "new_generic_operation",
+  "status": "ready_for_human_review",
+  "production_publish_allowed": false,
+  "tracker_status_change": null,
+  "skill_ids": [
+    "vh_數學B1_LinearFunction"
+  ],
+  "component_ids": [
+    "src_4446"
+  ],
+  "reviewed_at": "2026-07-04T11:40:26.194822",
+  "reviewed_by": "auto_pipeline",
+  "proposal_hash": "5b8e9c141a49e2cdc1276afca4dd67b9a3dc8e435b534a74f01e7214906e9f6b",
+  "failed_gate": [],
+  "missing_artifacts": [],
+  "failed_source_example_ids": []
+}

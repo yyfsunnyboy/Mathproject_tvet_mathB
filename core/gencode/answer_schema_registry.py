@@ -47,6 +47,18 @@ ANSWER_SCHEMAS: dict[str, dict[str, frozenset[str]]] = {
     "numeric_scalar": {
         "required_fields": frozenset({"canonical_form"}),
     },
+    "drawing_spec": {
+        "required_fields": frozenset(
+            {
+                "drawing_type",
+                "equation",
+                "slope",
+                "y_intercept",
+                "expected_line",
+                "axis_range",
+            }
+        ),
+    },
 }
 
 # Deterministic migration: domain_operation / legacy task_type -> schema key.
@@ -128,6 +140,15 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "inverse_centroid_vertex": "coordinate_pair",
     "triangle_median_length": "choice_label",
     "multi_part_midpoint_application": "multi_part_scalar",
+    "graph_based_tiered_linear_application_multi_part": "multi_part_scalar",
+    "draw_constant_function_graph": "drawing_spec",
+    "draw_linear_function_graph": "drawing_spec",
+    "collinear_trisection_coordinate": "coordinate_pair",
+    "graph_based_linear_application_inverse": "numeric_scalar",
+    "linear_equation_from_two_points_choice": "choice_label",
+    "linear_graph_feasibility_choice": "choice_label",
+    "graph_based_linear_model_equation": "choice_label",
+    "robust_budget_feasibility_choice": "choice_label",
     "solve_basic_absolute_value_equation": "parameter_solution_set",
     "solve_basic_absolute_value_equation_no_solution": "parameter_solution_set",
     "number_line_distance_between_two_points": "distance_scalar",

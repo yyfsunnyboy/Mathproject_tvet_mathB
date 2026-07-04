@@ -63,6 +63,11 @@ def _contract(
         checker_key = "graph_spec_checker"
         equivalence_type = "graph_equivalence"
         runtime_category = "deterministic_expression"
+    elif answer_schema == "drawing_spec":
+        answer_type = "drawing"
+        checker_key = "free_response_drawing_checker"
+        equivalence_type = "drawing_equivalence"
+        runtime_category = "deterministic_drawing"
     else:
         answer_type = "expression"
         checker_key = "expression_equivalence_checker"
@@ -143,8 +148,8 @@ def classify_source_topology(row: dict[str, Any]) -> dict[str, Any] | None:
             required_givens=["constant_function_equation"],
             requested_quantity=["function_graph"],
             topology_tags=["graph_construction", "horizontal_line", "constant_function"],
-            answer_schema="graph",
-            presentation_mode="graph",
+            answer_schema="drawing_spec",
+            presentation_mode="canvas",
         )
     if draws_graph and expression_kind == "affine":
         return _contract(
@@ -152,8 +157,8 @@ def classify_source_topology(row: dict[str, Any]) -> dict[str, Any] | None:
             required_givens=["linear_function_equation"],
             requested_quantity=["function_graph"],
             topology_tags=["graph_construction", "linear_function", "two_point_plotting"],
-            answer_schema="graph",
-            presentation_mode="graph",
+            answer_schema="drawing_spec",
+            presentation_mode="canvas",
         )
 
     if graph and contextual and re.search(r"(?:幾公斤|多少公里|多少公升)", text):
@@ -171,9 +176,9 @@ def classify_source_topology(row: dict[str, Any]) -> dict[str, Any] | None:
             "graph_based_linear_model_equation",
             required_givens=["context_variables", "linear_relation_graph"],
             requested_quantity=["linear_model_equation"],
-            topology_tags=["contextual_application", "graph_reading", "equation_from_graph"],
-            answer_schema="expression",
-            presentation_mode="graph_short_answer",
+            topology_tags=["contextual_application", "graph_reading", "equation_from_graph", "single_choice"],
+            answer_schema="choice_label",
+            presentation_mode="graph_single_choice",
         )
 
     if contextual and choices and "預算" in text and "單價" in text:

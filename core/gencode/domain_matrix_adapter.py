@@ -1899,6 +1899,84 @@ def convert_domain_matrix_to_question_payload(
     evidence and does not perform cross-domain routing.
     """
     op = str(domain_operation or kwargs.get("domain_operation") or "").strip()
+    if op in {"draw_constant_function_graph", "draw_linear_function_graph"}:
+        return _finalize_question_payload(
+            _convert_line_graph_drawing_payload(
+                matrix,
+                domain_operation=op,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                **kwargs,
+            )
+        )
+    if op == "graph_based_linear_application_inverse":
+        return _finalize_question_payload(
+            _convert_graph_based_linear_application_inverse_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+            )
+        )
+    if op == "linear_equation_from_two_points_choice":
+        return _finalize_question_payload(
+            _convert_linear_equation_from_two_points_choice_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+            )
+        )
+    if op == "linear_graph_feasibility_choice":
+        return _finalize_question_payload(
+            _convert_linear_graph_feasibility_choice_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+            )
+        )
+    if op == "robust_budget_feasibility_choice":
+        return _finalize_question_payload(
+            _convert_robust_budget_feasibility_choice_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+            )
+        )
+    if op == "graph_based_linear_model_equation":
+        return _finalize_question_payload(
+            _convert_graph_based_linear_model_equation_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                source_kind=source_kind,
+                generator_key=generator_key,
+            )
+        )
+    if op == "graph_intercepts_and_linear_equation":
+        return _finalize_question_payload(
+            _convert_graph_intercepts_and_linear_equation_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                **kwargs
+            )
+        )
+    if op == "graph_based_tiered_linear_application_multi_part":
+        return _finalize_question_payload(
+            _convert_graph_based_tiered_linear_application_multi_part_payload(
+                matrix,
+                component_id=component_id,
+                textbook_example_id=textbook_example_id,
+                **kwargs,
+            )
+        )
     if op in _DESCRIPTIVE_STATS_OPS:
         # NOTE: _convert_descriptive_statistics_payload already calls
         # _finalize_question_payload internally (at its own return path).
@@ -1937,6 +2015,7 @@ def convert_domain_matrix_to_question_payload(
         "compute_external_division_point_coordinates",
         "compute_division_point_coordinates",
         "compute_section_point_coordinates",
+        "collinear_trisection_coordinate",
     }
     if op in _COORDINATE_PAIR_OPS:
         return _finalize_question_payload(
@@ -2764,3 +2843,578 @@ def normalize_domain_payload_to_v3_matrix(payload: Any, context: dict[str, Any])
             v3_matrix[k] = v
 
     return v3_matrix
+
+
+def _convert_graph_intercepts_and_linear_equation_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    canonical = dict(matrix["semantic_answer"])
+    parts = [
+        {
+            "key": key,
+            "label": label,
+            "checker": checker,
+            "expected_answer": canonical.get(key),
+        }
+        for key, label, checker in (
+            ("x_intercept", "x 截距", "rational_checker"),
+            ("y_intercept", "y 截距", "rational_checker"),
+            ("function_equation", "f(x)", "linear_equation_equivalent_checker"),
+        )
+    ]
+    return {
+        "question_text": matrix["question"],
+        "answer": canonical,
+        "correct_answer": canonical,
+        "display_answer": canonical,
+        "semantic_answer": canonical,
+        "semantic_answer_type": "multi_part",
+        "answer_type": "multi_part",
+        "presentation_mode": "graph_multi_part",
+        "interaction_type": "multi_part",
+        "problem_type_id": "graph_intercepts_and_linear_equation",
+        "domain_operation": "graph_intercepts_and_linear_equation",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "topology_tags": list(matrix["topology_tags"]),
+        "visual_spec": dict(matrix["visual_spec"]),
+        "answer_contract": {
+            "presentation_mode": "graph_multi_part",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "semantic_answer": canonical,
+            "parts": parts,
+            "ui_contract": {
+                "response_mode": "multi_part",
+                "text_input_enabled": True,
+            },
+        },
+        "metadata": {
+            "givens": dict(matrix["givens"]),
+            "semantic_answer": canonical,
+            "presentation_mode": "graph_multi_part",
+            "answer_type": "multi_part",
+            "source_example_id": textbook_example_id or 0,
+        },
+        "math_core": {
+            "givens": dict(matrix["givens"]),
+            "target": canonical,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": dict(matrix["validation_facts"]),
+        },
+        "choices": [],
+        "options": [],
+        "auto_checkable": True,
+        "grading_mode": "auto",
+    }
+
+
+def _convert_line_graph_drawing_payload(
+    matrix: dict[str, Any],
+    *,
+    domain_operation: str,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    expected_spec = dict(matrix["expected_drawing_spec"])
+    semantic_answer = dict(matrix["semantic_answer"])
+    ui_contract = {
+        "response_mode": "drawing",
+        "drawing_required": True,
+        "ai_check_required": True,
+        "text_answer_enabled": False,
+        "text_input_enabled": False,
+        "submit_button_enabled": False,
+        "normal_submit_enabled": False,
+        "success_dialog_required": True,
+        "canvas_required": True,
+        "allow_image_upload": False,
+        "allow_text_answer": False,
+    }
+    return {
+        "question_text": matrix["question"],
+        "question": matrix["question"],
+        "answer": semantic_answer,
+        "correct_answer": semantic_answer,
+        "display_answer": expected_spec["equation"],
+        "semantic_answer": semantic_answer,
+        "answer_type": "drawing",
+        "answer_shape": "drawing",
+        "presentation_mode": "canvas",
+        "interaction_type": "handwriting_drawing",
+        "problem_type_id": domain_operation,
+        "domain_operation": domain_operation,
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "topology_tags": list(matrix["topology_tags"]),
+        "visual_spec": dict(matrix["visual_spec"]),
+        "expected_drawing_spec": expected_spec,
+        "answer_contract": {
+            "presentation_mode": "canvas",
+            "answer_type": "drawing",
+            "answer_shape": "drawing",
+            "checker": "free_response_drawing_checker",
+            "checker_key": "free_response_drawing_checker",
+            "answer_equivalence": "drawing_equivalence",
+            "equivalence": "drawing_equivalence",
+            "equivalence_type": "drawing_equivalence",
+            "semantic_answer": semantic_answer,
+            "expected_drawing_spec": expected_spec,
+            "ui_contract": ui_contract,
+        },
+        "metadata": {
+            "givens": dict(matrix["givens"]),
+            "semantic_answer": semantic_answer,
+            "presentation_mode": "canvas",
+            "answer_type": "drawing",
+            "answer_shape": "drawing",
+            "source_example_id": textbook_example_id or 0,
+            "answer_dependencies": [],
+            "expected_drawing_spec": expected_spec,
+            "ui_contract": ui_contract,
+        },
+        "math_core": {
+            "givens": dict(matrix["givens"]),
+            "target": semantic_answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": dict(matrix["validation_facts"]),
+        },
+        "choices": [],
+        "options": [],
+        "auto_checkable": False,
+        "grading_mode": "manual_or_ai_visual_review",
+    }
+
+
+def _convert_graph_based_tiered_linear_application_multi_part_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    canonical = dict(matrix["semantic_answer"])
+    parts = [
+        {
+            "key": key,
+            "label": label,
+            "checker": "rational_checker",
+            "equivalence_type": "numeric_exact",
+            "expected_answer": canonical.get(key),
+        }
+        for key, label in (
+            ("part_1", "第（1）小題"),
+            ("part_2", "第（2）小題"),
+        )
+    ]
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": canonical,
+        "correct_answer": canonical,
+        "display_answer": canonical,
+        "semantic_answer": canonical,
+        "semantic_answer_type": "multi_part",
+        "answer_type": "multi_part",
+        "presentation_mode": "graph_multi_part",
+        "interaction_type": "multi_part",
+        "problem_type_id": "graph_based_tiered_linear_application_multi_part",
+        "domain_operation": "graph_based_tiered_linear_application_multi_part",
+        "fixed_domain_key": "coordinate_geometry.division_point_coordinates",
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "topology_tags": list(matrix.get("topology_tags") or []),
+        "visual_spec": dict(matrix.get("visual_spec") or {}),
+        "answer_contract": {
+            "presentation_mode": "graph_multi_part",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "equivalence_type": "multi_part_answer",
+            "semantic_answer": canonical,
+            "parts": parts,
+            "ui_contract": {
+                "response_mode": "multi_part",
+                "text_input_enabled": True,
+            },
+        },
+        "metadata": {
+            "givens": dict(matrix.get("givens") or {}),
+            "semantic_answer": canonical,
+            "presentation_mode": "graph_multi_part",
+            "answer_type": "multi_part",
+            "source_example_id": textbook_example_id or 0,
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": dict(matrix.get("givens") or {}),
+            "target": canonical,
+            "derivation": list(matrix.get("explanation_steps") or []),
+            "validation_facts": dict(matrix.get("validation_facts") or {}),
+        },
+        "choices": [],
+        "options": [],
+        "auto_checkable": True,
+        "grading_mode": "auto",
+    }
+
+
+def _convert_graph_based_linear_application_inverse_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+) -> dict[str, Any]:
+    answer = matrix["answer"]["canonical_form"]
+    givens = dict(matrix["givens"])
+    facts = dict(matrix["validation_facts"])
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    contract = {
+        "presentation_mode": "graph_short_answer",
+        "answer_type": "numeric",
+        "checker": "numeric_checker",
+        "checker_key": "numeric_checker",
+        "answer_equivalence": "numeric_equivalence",
+        "equivalence": "numeric_equivalence",
+        "equivalence_type": "numeric_equivalence",
+        "semantic_answer": answer,
+    }
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "display_answer": str(answer),
+        "semantic_answer": answer,
+        "choices": [],
+        "options": [],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "problem_type_id": "graph_based_linear_application_inverse",
+        "domain_operation": "graph_based_linear_application_inverse",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "source_kind": source_kind or "",
+        "presentation_mode": "graph_short_answer",
+        "answer_type": "numeric",
+        "checker": "numeric_checker",
+        "checker_key": "numeric_checker",
+        "equivalence": "numeric_equivalence",
+        "equivalence_type": "numeric_equivalence",
+        "interaction_type": "short_answer",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": contract,
+        "metadata": {
+            "givens": givens,
+            "semantic_answer": answer,
+            "validation_facts": facts,
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": givens,
+            "target": answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": facts,
+        },
+        "visual_spec": dict(matrix["visual_spec"]),
+        "validation_facts": facts,
+        "generator_key": generator_key or component_id or "",
+    }
+
+
+def _convert_linear_equation_from_two_points_choice_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+) -> dict[str, Any]:
+    choices = [dict(choice) for choice in matrix["choices"]]
+    correct_label = str(matrix["answer"]["correct_label"])
+    semantic_answer = str(matrix["semantic_answer"])
+    givens = dict(matrix["givens"])
+    facts = dict(matrix["validation_facts"])
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    contract = {
+        "presentation_mode": "single_choice",
+        "answer_type": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "answer_equivalence": "choice_label",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "semantic_answer": semantic_answer,
+        "choice_value_to_label": dict(facts["choice_value_to_label"]),
+    }
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": correct_label,
+        "correct_answer": correct_label,
+        "display_answer": semantic_answer,
+        "semantic_answer": semantic_answer,
+        "choices": choices,
+        "options": [choice["text"] for choice in choices],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "problem_type_id": "linear_equation_from_two_points_choice",
+        "domain_operation": "linear_equation_from_two_points_choice",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "source_kind": source_kind or "",
+        "presentation_mode": "single_choice",
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "interaction_type": "single_choice",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": contract,
+        "metadata": {
+            "givens": givens,
+            "semantic_answer": semantic_answer,
+            "validation_facts": facts,
+            "choice_value_to_label": dict(facts["choice_value_to_label"]),
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": givens,
+            "target": semantic_answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": facts,
+        },
+        "visual_spec": dict(matrix["visual_spec"]),
+        "validation_facts": facts,
+        "generator_key": generator_key or component_id or "",
+    }
+
+
+def _convert_linear_graph_feasibility_choice_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+) -> dict[str, Any]:
+    choices = [dict(choice) for choice in matrix["choices"]]
+    correct_label = str(matrix["answer"]["correct_label"])
+    semantic_answer = str(matrix["semantic_answer"])
+    givens = dict(matrix["givens"])
+    facts = dict(matrix["validation_facts"])
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    contract = {
+        "presentation_mode": "graph_single_choice",
+        "answer_type": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "answer_equivalence": "choice_label",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "semantic_answer": semantic_answer,
+        "choice_value_to_label": dict(facts["choice_value_to_label"]),
+    }
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": correct_label,
+        "correct_answer": correct_label,
+        "display_answer": semantic_answer,
+        "semantic_answer": semantic_answer,
+        "choices": choices,
+        "options": [choice["text"] for choice in choices],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "problem_type_id": "linear_graph_feasibility_choice",
+        "domain_operation": "linear_graph_feasibility_choice",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "source_kind": source_kind or "",
+        "presentation_mode": "graph_single_choice",
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "interaction_type": "single_choice",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": contract,
+        "metadata": {
+            "givens": givens,
+            "semantic_answer": semantic_answer,
+            "validation_facts": facts,
+            "choice_value_to_label": dict(facts["choice_value_to_label"]),
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": givens,
+            "target": semantic_answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": facts,
+        },
+        "visual_spec": dict(matrix["visual_spec"]),
+        "validation_facts": facts,
+        "generator_key": generator_key or component_id or "",
+    }
+
+
+def _convert_robust_budget_feasibility_choice_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+) -> dict[str, Any]:
+    choices = [dict(choice) for choice in matrix["choices"]]
+    correct_label = str(matrix["answer"]["correct_label"])
+    semantic_answer = str(matrix["semantic_answer"])
+    givens = dict(matrix["givens"])
+    facts = dict(matrix["validation_facts"])
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    value_to_label = dict(facts["choice_value_to_label"])
+    contract = {
+        "presentation_mode": "single_choice",
+        "answer_type": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "answer_equivalence": "choice_label",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "semantic_answer": semantic_answer,
+        "choice_value_to_label": value_to_label,
+    }
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": correct_label,
+        "correct_answer": correct_label,
+        "display_answer": semantic_answer,
+        "semantic_answer": semantic_answer,
+        "choices": choices,
+        "options": [choice["text"] for choice in choices],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "problem_type_id": "robust_budget_feasibility_choice",
+        "domain_operation": "robust_budget_feasibility_choice",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "source_kind": source_kind or "",
+        "presentation_mode": "single_choice",
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "interaction_type": "single_choice",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": contract,
+        "metadata": {
+            "givens": givens,
+            "semantic_answer": semantic_answer,
+            "validation_facts": facts,
+            "choice_value_to_label": value_to_label,
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": givens,
+            "target": semantic_answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": facts,
+        },
+        "visual_spec": dict(matrix["visual_spec"]),
+        "validation_facts": facts,
+        "generator_key": generator_key or component_id or "",
+    }
+
+
+def _convert_graph_based_linear_model_equation_payload(
+    matrix: dict[str, Any],
+    *,
+    component_id: str | None = None,
+    textbook_example_id: int | None = None,
+    source_kind: str | None = None,
+    generator_key: str | None = None,
+) -> dict[str, Any]:
+    choices = [dict(choice) for choice in matrix["choices"]]
+    correct_label = str(matrix["answer"]["correct_label"])
+    semantic_answer = str(matrix["semantic_answer"])
+    givens = dict(matrix["givens"])
+    facts = dict(matrix["validation_facts"])
+    question_text = str(matrix.get("question") or matrix.get("question_text") or "")
+    contract = {
+        "presentation_mode": "graph_single_choice",
+        "answer_type": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "answer_equivalence": "choice_label",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "semantic_answer": semantic_answer,
+        "choice_value_to_label": dict(facts["choice_value_to_label"]),
+    }
+    return {
+        "question_text": question_text,
+        "question": question_text,
+        "answer": correct_label,
+        "correct_answer": correct_label,
+        "display_answer": semantic_answer,
+        "semantic_answer": semantic_answer,
+        "choices": choices,
+        "options": [choice["text"] for choice in choices],
+        "component_id": component_id or "",
+        "textbook_example_id": textbook_example_id or 0,
+        "problem_type_id": "graph_based_linear_model_equation",
+        "domain_operation": "graph_based_linear_model_equation",
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "source_kind": source_kind or "",
+        "presentation_mode": "graph_single_choice",
+        "answer_type": "single_choice",
+        "answer_shape": "single_choice",
+        "checker": "choice_label_checker",
+        "checker_key": "choice_label_checker",
+        "equivalence": "choice_label",
+        "equivalence_type": "choice_label",
+        "interaction_type": "single_choice",
+        "auto_checkable": True,
+        "grading_mode": "auto",
+        "answer_contract": contract,
+        "metadata": {
+            "givens": givens,
+            "semantic_answer": semantic_answer,
+            "validation_facts": facts,
+            "choice_value_to_label": dict(facts["choice_value_to_label"]),
+            "answer_dependencies": [],
+        },
+        "math_core": {
+            "givens": givens,
+            "target": semantic_answer,
+            "derivation": list(matrix["explanation_steps"]),
+            "validation_facts": facts,
+        },
+        "visual_spec": dict(matrix["visual_spec"]),
+        "validation_facts": facts,
+        "generator_key": generator_key or component_id or "",
+    }

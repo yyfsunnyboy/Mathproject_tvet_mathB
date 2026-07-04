@@ -1,0 +1,63 @@
+{
+  "proposal_schema": "domain_capability_proposal.v1",
+  "proposal_id": "capability_b97c4a1b18edbbe90905454a",
+  "skill_id": "vh_數學B1_LinearFunction",
+  "component_id": "src_4448",
+  "problem_type_id": "draw_constant_function_graph",
+  "required_capabilities": [
+    "draw_constant_function_graph"
+  ],
+  "candidate_domains": [
+    {
+      "domain_key": "coordinate_geometry.line_equation",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "graph_intercepts_and_linear_equation"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix"
+    },
+    {
+      "domain_key": "statistics.frequency_distribution",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "cumulative_frequency_graph_reading"
+      ],
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix"
+    }
+  ],
+  "best_reuse_domain": "coordinate_geometry.line_equation",
+  "missing_operation": "draw_constant_function_graph",
+  "source_example_ids": [
+    4433,
+    4448
+  ],
+  "reuse_priority": [
+    "capability_alias",
+    "existing_operation_wrapper",
+    "new_generic_operation",
+    "new_domain"
+  ],
+  "recommended_action": "new_generic_operation",
+  "status": "ready_for_human_review",
+  "production_publish_allowed": false,
+  "tracker_status_change": null,
+  "skill_ids": [
+    "vh_數學B1_LinearFunction"
+  ],
+  "component_ids": [
+    "src_4433",
+    "src_4448"
+  ],
+  "reviewed_at": "2026-07-04T11:40:26.297067",
+  "reviewed_by": "auto_pipeline",
+  "proposal_hash": "efbdaf620294b4040c84e4879a1763674db9640a0a16d0dd2d65f29785c603bc",
+  "failed_gate": [],
+  "missing_artifacts": [],
+  "failed_source_example_ids": []
+}

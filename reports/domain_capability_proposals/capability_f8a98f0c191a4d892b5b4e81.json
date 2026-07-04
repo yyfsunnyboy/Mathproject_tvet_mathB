@@ -1,0 +1,138 @@
+{
+  "proposal_schema": "domain_capability_proposal.v1",
+  "proposal_id": "capability_f8a98f0c191a4d892b5b4e81",
+  "skill_id": "vh_數學B1_LinearFunction",
+  "component_id": "src_4445",
+  "problem_type_id": "graph_based_tiered_linear_application_multi_part",
+  "required_capabilities": [
+    "graph_based_tiered_linear_application_multi_part"
+  ],
+  "candidate_domains": [
+    {
+      "domain_key": "coordinate_geometry.division_point_coordinates",
+      "score": 0.428571,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "multi_part_midpoint_application"
+      ],
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload"
+    },
+    {
+      "domain_key": "coordinate_geometry.line_equation",
+      "score": 0.285714,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "compare_line_slopes",
+        "graph_intercepts_and_linear_equation",
+        "horizontal_line",
+        "line_through_intersection_parallel_to_line",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "line_through_point_perpendicular_to_segment",
+        "oblique_line",
+        "parabola_secant_parallel_line_choice",
+        "parallel_line_slope",
+        "perpendicular_bisector_application",
+        "perpendicular_line_slope",
+        "slope_of_horizontal_or_vertical_line",
+        "triangle_area_bisector_line_equation",
+        "vertical_line"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix"
+    },
+    {
+      "domain_key": "algebra.absolute_value",
+      "score": 0.142857,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "absolute_value_inequality_linear_expression_basic",
+        "number_line_distance_between_two_points"
+      ],
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.parallel_lines_distance",
+      "score": 0.142857,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "construct_parallel_line_at_distance",
+        "distance_between_parallel_lines",
+        "parallel_lines_distance_single_choice"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.parallel_lines_distance_domain",
+      "entrypoint": "build_parallel_lines_distance_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.point_line_distance",
+      "score": 0.142857,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "compare_point_to_line_distances",
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_coordinate_geometry_matrix"
+    },
+    {
+      "domain_key": "statistics.descriptive_statistics",
+      "score": 0.142857,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "compute_linear_transform_median_and_range"
+      ],
+      "domain_module": "core.domain.statistics.descriptive_statistics_domain",
+      "entrypoint": "build_descriptive_statistics_matrix"
+    },
+    {
+      "domain_key": "statistics.frequency_distribution",
+      "score": 0.142857,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "cumulative_frequency_graph_reading"
+      ],
+      "domain_module": "core.domain.statistics.frequency_distribution_domain",
+      "entrypoint": "build_frequency_distribution_table_matrix"
+    }
+  ],
+  "best_reuse_domain": "coordinate_geometry.division_point_coordinates",
+  "missing_operation": "graph_based_tiered_linear_application_multi_part",
+  "source_example_ids": [
+    4425,
+    4445
+  ],
+  "reuse_priority": [
+    "capability_alias",
+    "existing_operation_wrapper",
+    "new_generic_operation",
+    "new_domain"
+  ],
+  "recommended_action": "new_generic_operation",
+  "status": "verified",
+  "production_publish_allowed": false,
+  "tracker_status_change": null,
+  "skill_ids": [
+    "vh_數學B1_LinearFunction"
+  ],
+  "component_ids": [
+    "src_4425",
+    "src_4445"
+  ],
+  "reviewed_at": "2026-07-04T11:40:26.356769",
+  "reviewed_by": "auto_pipeline",
+  "proposal_hash": "2e27a1c41320656a012174d7def9992e6fa928890ffc723313b1056bac0792f8",
+  "failed_gate": [],
+  "missing_artifacts": [],
+  "failed_source_example_ids": []
+}

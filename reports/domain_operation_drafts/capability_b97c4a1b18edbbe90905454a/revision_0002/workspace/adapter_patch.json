@@ -1,0 +1,4 @@
+{
+  "operation": "draw_constant_function_graph",
+  "route": "if op == 'draw_constant_function_graph': convert_to_payload()"
+}

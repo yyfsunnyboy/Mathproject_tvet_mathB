@@ -1,0 +1,29 @@
+{
+  "schema": "isolated_domain_operation_candidate.v1",
+  "proposal_id": "capability_64830fcffbb56fa709b9abad",
+  "proposal_revision": 1,
+  "status": "implementation_candidate",
+  "production_publish_allowed": false,
+  "target_domain": "coordinate_geometry.line_equation",
+  "capabilities": [
+    "graph_intercepts_and_linear_equation"
+  ],
+  "operations": {
+    "graph_intercepts_and_linear_equation": {
+      "handler": "operation.build_graph_intercepts_and_linear_equation_matrix",
+      "adapter": "adapter.adapt_matrix_to_component_payload",
+      "checker": "adapter.check_multi_part_answer",
+      "supported_line_kinds": [
+        "oblique",
+        "horizontal",
+        "vertical"
+      ],
+      "supported_number_types": [
+        "integer",
+        "rational"
+      ]
+    }
+  },
+  "production_registry_patch_applied": false,
+  "tracker_status_change": null
+}

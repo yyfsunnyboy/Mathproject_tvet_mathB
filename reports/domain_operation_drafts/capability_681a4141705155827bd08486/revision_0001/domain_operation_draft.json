@@ -1,0 +1,118 @@
+{
+  "draft_schema": "review_domain_operation_draft.v1",
+  "proposal_id": "capability_681a4141705155827bd08486",
+  "proposal_hash": "03b191858788854439efc38caefbad3cad72fac70074125b90442f98d1b67a7a",
+  "revision": 1,
+  "capability": "linear_graph_feasibility_choice",
+  "target_domain": "coordinate_geometry.line_equation",
+  "recommendation": "new_generic_operation",
+  "operation_name": "linear_graph_feasibility_choice",
+  "operation_signature": "build_linear_graph_feasibility_choice_matrix(*, seed: int | None = None, constraints: dict[str, object] | None = None) -> dict[str, object]",
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "source_topology"
+    ],
+    "properties": {
+      "source_topology": {
+        "type": "object"
+      },
+      "constraints": {
+        "type": "object"
+      },
+      "seed": {
+        "type": [
+          "integer",
+          "null"
+        ]
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": [
+      "question",
+      "answer",
+      "semantic_answer",
+      "answer_type",
+      "presentation_mode",
+      "topology_tags"
+    ],
+    "properties": {
+      "question": {
+        "type": "string"
+      },
+      "answer": {},
+      "semantic_answer": {},
+      "answer_type": {
+        "type": "string"
+      },
+      "presentation_mode": {
+        "type": "string"
+      },
+      "topology_tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "choices": {
+        "type": "array"
+      },
+      "visual_spec": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "mathematical_invariants": [
+    "generated givens determine the requested quantities",
+    "semantic_answer and displayed answer represent the same mathematical result",
+    "all derived values remain consistent with the generated givens",
+    "source topology, answer schema, and presentation mode are preserved"
+  ],
+  "validation_rules": [
+    "validate input and output against the draft schemas",
+    "validate every declared mathematical invariant",
+    "validate source-fidelity against the originating source topology",
+    "validate a unique correct choice when choices are present",
+    "reject visual metadata that cannot be rendered consistently"
+  ],
+  "source_example_ids": [
+    4516
+  ],
+  "registry_patch_preview": {
+    "apply": false,
+    "target_file": "core/registry/domain_operation_registry.py",
+    "target_domain": "coordinate_geometry.line_equation",
+    "operation": {
+      "operation_key": "linear_graph_feasibility_choice",
+      "handler": "linear_graph_feasibility_choice",
+      "provided_capabilities": [
+        "linear_graph_feasibility_choice"
+      ]
+    }
+  },
+  "implementation_file_preview": {
+    "apply": false,
+    "target_file": "core/domain/coordinate_geometry/line_equation_domain.py",
+    "operation_signature": "build_linear_graph_feasibility_choice_matrix(*, seed: int | None = None, constraints: dict[str, object] | None = None) -> dict[str, object]",
+    "body": "raise NotImplementedError('review-only operation draft')"
+  },
+  "test_file_preview": {
+    "apply": false,
+    "target_file": "tests/domain/test_linear_graph_feasibility_choice.py",
+    "required_cases": [
+      "schema contract",
+      "mathematical invariants",
+      "source topology fidelity",
+      "deterministic seeded generation"
+    ]
+  },
+  "status": "draft",
+  "production_publish_allowed": false,
+  "tracker_status_change": null
+}

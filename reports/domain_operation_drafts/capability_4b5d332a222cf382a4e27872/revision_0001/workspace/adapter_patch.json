@@ -1,0 +1,4 @@
+{
+  "operation": "collinear_trisection_coordinate",
+  "route": "if op == 'collinear_trisection_coordinate': convert_to_payload()"
+}

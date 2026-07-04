@@ -1,0 +1,40 @@
+{
+  "schema": "isolated_component_validation.v1",
+  "proposal_id": "capability_64830fcffbb56fa709b9abad",
+  "draft_revision": 1,
+  "component": "src_4424",
+  "fixed_seeds": [
+    4424,
+    4425,
+    4426,
+    4427,
+    4428
+  ],
+  "checks": {
+    "answer_contract": "passed",
+    "correct_answer_accepted": "passed",
+    "wrong_answer_rejected": "passed",
+    "question_answer_consistency": "passed",
+    "component_validator": "passed",
+    "source_topology": "passed"
+  },
+  "component_validator": {
+    "passed": 5,
+    "failed": 0,
+    "blockers": []
+  },
+  "focused_tests": {
+    "passed": 10,
+    "failed": 0
+  },
+  "production_sha256": {
+    "core/registry/domain_operation_registry.py": "5e9fe6f3c78aec1cb6338c379c6175ff3531e70976e2cb4b8f2123b90ec95125",
+    "core/domain/coordinate_geometry/line_equation_domain.py": "2b45f1ec466118a12020a29e037524255bceeb1320eaef64c6135c578eafc617",
+    "instance/kumon_math.db": "d42eaf89d02ee9d5481ea401785df840352b834669bf30987f16caa08d51fa74"
+  },
+  "production_unchanged": true,
+  "review_status": "ready_for_human_review",
+  "ai_llm_called": false,
+  "full_pipeline_executed": false,
+  "production_published": false
+}

@@ -593,12 +593,16 @@
             </div>
             <div class="question-box">
               <div class="question-text" id="questionText">按下「開始診斷」後載入第一題。</div>
+              <div id="questionVisualContainer" hidden>
+                <canvas id="questionVisualCanvas" aria-label="題目圖形"></canvas>
+              </div>
               <div class="choice-list" id="choiceList"></div>
               <div class="question-context" id="questionContext"></div>
               <div class="subskills" id="subskillsBox"></div>
             </div>
             <div class="answer-box">
               <input id="answerInput" type="text" placeholder="請輸入你的答案" disabled>
+              <div id="multiPartAnswerFields" hidden></div>
               <button class="primary" id="submitBtn" disabled>送出答案</button>
             </div>
             <div class="answer-format-box" id="answerFormatBox">
@@ -959,6 +963,9 @@
       backgroundCtx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
     }
     const answerInput = document.getElementById("answerInput");
+    const multiPartAnswerFields = document.getElementById("multiPartAnswerFields");
+    const questionVisualContainer = document.getElementById("questionVisualContainer");
+    const questionVisualCanvas = document.getElementById("questionVisualCanvas");
     const submitBtn = document.getElementById("submitBtn");
     const choiceList = document.getElementById("choiceList");
     const bootstrapBtn = document.getElementById("bootstrapBtn");
@@ -2346,10 +2353,61 @@
         textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
         normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
         aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
-        canvasRequired: drawing ? (ui.canvas_required !== false) : (ui.canvas_required === true),
+        canvasRequired: drawing ? (ui.canvas_required !== false) : false,
         allowImageUpload: ui.allow_image_upload !== false,
         allowTextAnswer: ui.allow_text_answer === true,
       };
+    }
+
+    function resolveMultiPartFields(question) {
+      const contract = question?.answer_contract || {};
+      if (contract.answer_type !== "multi_part") return [];
+      return Array.isArray(contract.parts) ? contract.parts.filter((part) => part && part.key) : [];
+    }
+
+    function renderAnswerFields(question) {
+      const parts = resolveMultiPartFields(question);
+      const isMultiPart = parts.length > 0;
+      answerInput.style.display = isMultiPart ? "none" : "";
+      multiPartAnswerFields.hidden = !isMultiPart;
+      multiPartAnswerFields.innerHTML = "";
+      if (!isMultiPart) return;
+      parts.forEach((part, index) => {
+        const wrapper = document.createElement("label");
+        wrapper.className = "multi-part-answer-field";
+        wrapper.textContent = String(part.label || part.key);
+        const input = document.createElement("input");
+        input.type = "text";
+        input.dataset.fieldKey = String(part.key);
+        input.dataset.answerOrder = String(part.answer_order ?? index);
+        input.autocomplete = "off";
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            submitBtn.click();
+          }
+        });
+        wrapper.appendChild(input);
+        multiPartAnswerFields.appendChild(wrapper);
+      });
+    }
+
+    function collectCurrentAnswer() {
+      const parts = resolveMultiPartFields(state.currentQuestion);
+      if (!parts.length) return answerInput.value.trim();
+      const answer = {};
+      multiPartAnswerFields.querySelectorAll("[data-field-key]").forEach((input) => {
+        answer[input.dataset.fieldKey] = input.value.trim();
+      });
+      return answer;
+    }
+
+    function renderReadonlyVisualSpec(visualSpec) {
+      const runtime = window.VisualSpecRuntime;
+      const shouldRender = runtime && runtime.requiresVisualRendering(visualSpec);
+      questionVisualContainer.hidden = !shouldRender;
+      if (!shouldRender) return false;
+      return runtime.renderToCanvas(questionVisualCanvas, visualSpec);
     }
 
     function applyDrawingUiContract() {
@@ -2627,6 +2685,8 @@
       state.currentCheckerKey = String(q.answer_contract?.checker_key || q.answer_contract?.checker || q.checker_key || q.checker || "");
       state.currentEquivalence = String(q.answer_contract?.answer_equivalence || q.answer_contract?.equivalence || q.equivalence || q.equivalence_type || "");
       state.currentExpectedDrawingSpec = q.expected_drawing_spec || q.answer_contract?.expected_drawing_spec || q.metadata?.expected_drawing_spec || null;
+      renderAnswerFields(q);
+      renderReadonlyVisualSpec(q.visual_spec);
       console.log("[DRAWING FRONTEND]", {
         answerType: state.currentQuestion?.answer_contract?.answer_type || state.currentAnswerType,
         answerShape: state.currentQuestion?.answer_contract?.answer_shape || state.currentQuestion?.answer_shape || "",
@@ -3195,8 +3255,11 @@
             await submitDrawingAnswer("submit");
             return;
           }
-          const answer = answerInput.value.trim();
-          if (!answer) { setStatus("請先輸入答案。"); return; }
+          const answer = collectCurrentAnswer();
+          const answerMissing = typeof answer === "string"
+            ? !answer
+            : Object.values(answer).some((value) => !String(value || "").trim());
+          if (answerMissing) { setStatus("請完成所有答案欄位。"); return; }
           const data = await postAdaptive({ ...basePayload, session_id: state.sessionId, step_number: state.stepNumber, user_answer: answer });
           if (isTextboxAnswerCorrect(data) && !data.completed) {
             await handleCorrectAnswer(async () => {
@@ -4208,6 +4271,7 @@ input[type="range"] { accent-color: var(--accent) !important; }
 }
 
 </style>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
 </body>
 </html>
 

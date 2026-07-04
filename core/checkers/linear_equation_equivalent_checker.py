@@ -28,6 +28,7 @@ def _normalize_text(value: Any) -> str:
     for src, dst in replacements.items():
         text = text.replace(src, dst)
     text = text.replace(" ", "")
+    text = re.sub(r"(?i)^f\(x\)(?==)", "y", text)
     text = re.sub(r"([xyXY])/\(?([+-]?\d+)\)?", _normalize_variable_division, text)
     text = text.replace("+-", "-").replace("--", "+")
     return text

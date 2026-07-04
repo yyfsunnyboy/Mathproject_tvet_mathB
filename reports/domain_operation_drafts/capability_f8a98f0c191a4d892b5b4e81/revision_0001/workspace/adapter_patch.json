@@ -1,0 +1,4 @@
+{
+  "operation": "graph_based_tiered_linear_application_multi_part",
+  "route": "if op == 'graph_based_tiered_linear_application_multi_part': convert_to_payload()"
+}

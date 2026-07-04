@@ -2334,7 +2334,12 @@ def check_answer():
 
     # --- [Legacy Guard] Pre-flight: classify user_ans before calling mod.check() ---
     # Structurally invalid input → parse_error (not a student mistake)
-    _legacy_parse_fail = validate_answer_input(user_ans)
+    _legacy_contract = (
+        current.get("answer_contract")
+        if isinstance(current.get("answer_contract"), dict)
+        else None
+    )
+    _legacy_parse_fail = validate_answer_input(user_ans, _legacy_contract)
     if _legacy_parse_fail is not None:
         current_app.logger.info(
             "[PRACTICE legacy check] parse_error skill_id=%s error_code=%s",

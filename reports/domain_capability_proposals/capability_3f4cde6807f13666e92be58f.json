@@ -1,0 +1,68 @@
+{
+  "proposal_schema": "domain_capability_proposal.v1",
+  "proposal_id": "capability_3f4cde6807f13666e92be58f",
+  "skill_id": "future_unregistered_math_skill",
+  "component_id": "",
+  "problem_type_id": "unknown_absolute_value_capability",
+  "required_capabilities": [
+    "unknown_absolute_value_capability"
+  ],
+  "candidate_domains": [
+    {
+      "domain_key": "algebra.absolute_value",
+      "score": 0.5,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "absolute_value_inequality_integer_solution_count_choice",
+        "absolute_value_inequality_interval_interpretation",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_zero_center_basic",
+        "solve_basic_absolute_value_equation",
+        "solve_basic_absolute_value_equation_no_solution"
+      ],
+      "domain_module": "core.domain.absolute_value_domain",
+      "entrypoint": "build_absolute_value_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.distance_between_two_points",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "solve_unknown_coordinate_from_two_point_distance"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
+      "entrypoint": "build_distance_between_two_points_matrix"
+    },
+    {
+      "domain_key": "statistics.table_chart",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "read_category_value"
+      ],
+      "domain_module": "core.domain.statistics.table_chart_domain",
+      "entrypoint": "build_statistical_chart_reading_matrix"
+    }
+  ],
+  "best_reuse_domain": "algebra.absolute_value",
+  "missing_operation": "unknown_absolute_value_capability",
+  "source_example_ids": [],
+  "reuse_priority": [
+    "capability_alias",
+    "existing_operation_wrapper",
+    "new_generic_operation",
+    "new_domain"
+  ],
+  "recommended_action": "new_generic_operation",
+  "status": "proposed",
+  "production_publish_allowed": false,
+  "tracker_status_change": null,
+  "skill_ids": [
+    "future_unregistered_math_skill"
+  ],
+  "component_ids": []
+}

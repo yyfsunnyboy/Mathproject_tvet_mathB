@@ -26,9 +26,18 @@ SKILL_ID = ALLOWED_PRODUCTION_SKILL_ID
 COMPONENT_ID = "src_1"
 V2_LEGACY_CODE = "V2_LEGACY_CODE"
 PAYLOAD = {
-    "source_kind": "ex_1",
+    "source_kind": "example_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "problem_type_id": "point_slope",
+    "domain_operation": "point_slope",
+    "fixed_domain_key": "coordinate_geometry.line_equation",
+    "resolution_source": "derived_capability_match",
+    "binding_status": "derived",
+    "required_capabilities": ["point_slope"],
+    "matched_capabilities": ["point_slope"],
+    "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+    "entrypoint": "build_line_equation_matrix",
     "integrity_gate_passed": True,
     "integrity_gate_version": "v1",
 }
@@ -193,7 +202,7 @@ def test_publish_rejects_skill_without_authoritative_domain_binding(
     project_root, staging_root = isolated_publish_roots
     _setup_mock_project_root(project_root)
 
-    with pytest.raises(ValueError, match="DOMAIN_BINDING_MISSING"):
+    with pytest.raises(ValueError, match="no_textbook_examples"):
         publish_single_v3_skill_to_production(
             conn=memory_conn,
             skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers",

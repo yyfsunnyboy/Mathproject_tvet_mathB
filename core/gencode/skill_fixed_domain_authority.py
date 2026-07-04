@@ -941,6 +941,9 @@ def resolve_dynamic_fixed_domain_context(
         if pt2 and not induced_problem_type_id:
             problem_types.add(pt2)
 
+        if induced_caps:
+            continue
+
         hinted_caps = _text_capability_hints(text)
         if hinted_caps:
             _append_unique(resolver_path, "text_answer_capability_inference")
@@ -1001,10 +1004,30 @@ def resolve_dynamic_fixed_domain_context(
         resolved_problem_type_id = sorted(problem_types)[0]
 
     if not required_capabilities:
+        from core.gencode.domain_capability_proposal_service import (
+            create_or_reuse_capability_proposal,
+        )
+
+        source_example_id = int(
+            extra_data.get("source_example_id")
+            or extra_data.get("textbook_example_id")
+            or induced_spec.get("source_example_id")
+            or induced_spec.get("textbook_example_id")
+            or (textbook_example or {}).get("id")
+            or 0
+        )
+        proposal = create_or_reuse_capability_proposal(
+            skill_id=skill_id,
+            component_id=component_id,
+            problem_type_id=resolved_problem_type_id,
+            required_capabilities=[],
+            source_example_ids=[source_example_id] if source_example_id else [],
+        )
         raise SkillFixedDomainError(
             DOMAIN_CAPABILITY_UNRESOLVED,
             f"DOMAIN_CAPABILITY_UNRESOLVED: no_required_capabilities for skill {skill_id}",
-            details=_build_resolver_trace_details(
+            details={
+                **_build_resolver_trace_details(
                 skill_id=skill_id,
                 component_id=component_id,
                 problem_type_id=resolved_problem_type_id,
@@ -1016,7 +1039,9 @@ def resolve_dynamic_fixed_domain_context(
                 fallback_attempts=fallback_attempts,
                 original_exc=original_exc,
                 selection_meta={"reason": "no_required_capabilities"},
-            ),
+                ),
+                "capability_proposal": proposal,
+            },
         )
 
     selected_key, candidate_providers, selection_meta = _select_provider_by_capability_coverage(
@@ -1087,6 +1112,26 @@ def resolve_dynamic_fixed_domain_context(
         "domain_families": sorted(domain_families),
         "original_error": f"{original_exc.__class__.__name__}:{original_exc}",
     }
+    if error_code == DOMAIN_CAPABILITY_UNRESOLVED:
+        from core.gencode.domain_capability_proposal_service import (
+            create_or_reuse_capability_proposal,
+        )
+
+        source_example_id = int(
+            extra_data.get("source_example_id")
+            or extra_data.get("textbook_example_id")
+            or induced_spec.get("source_example_id")
+            or induced_spec.get("textbook_example_id")
+            or (textbook_example or {}).get("id")
+            or 0
+        )
+        trace_details["capability_proposal"] = create_or_reuse_capability_proposal(
+            skill_id=skill_id,
+            component_id=component_id,
+            problem_type_id=resolved_problem_type_id,
+            required_capabilities=required_capabilities,
+            source_example_ids=[source_example_id] if source_example_id else [],
+        )
     raise SkillFixedDomainError(error_code, message, details=trace_details)
 
 

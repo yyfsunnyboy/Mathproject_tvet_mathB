@@ -1,0 +1,4 @@
+{
+  "operation": "graph_based_linear_model_equation",
+  "route": "if op == 'graph_based_linear_model_equation': convert_to_payload()"
+}

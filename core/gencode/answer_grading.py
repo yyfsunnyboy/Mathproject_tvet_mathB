@@ -35,6 +35,23 @@ logger = logging.getLogger(__name__)
 _UNPARSEABLE_TYPES = (dict, list, set, frozenset, tuple, bytearray, bytes, memoryview)
 
 
+def _allows_structured_answer(answer_contract: dict[str, Any] | None) -> bool:
+    contract = answer_contract if isinstance(answer_contract, dict) else {}
+    answer_type = str(
+        contract.get("answer_type") or contract.get("answer_shape") or ""
+    ).strip().lower()
+    checker = str(
+        contract.get("checker") or contract.get("checker_key") or ""
+    ).strip().lower()
+    parts = contract.get("parts")
+    return (
+        answer_type in {"multi_part", "table_fill", "drawing", "multi_field", "multi_blank"}
+        or checker in {"multi_part_answer_checker", "free_response_drawing_checker"}
+        or "multi_part" in checker
+        or (isinstance(parts, list) and len(parts) > 0)
+    )
+
+
 def validate_answer_input(user_answer: Any, answer_contract: dict[str, Any] | None = None) -> dict[str, Any] | None:
     """Return a parse_error result dict if user_answer cannot be a valid answer input.
 
@@ -43,32 +60,29 @@ def validate_answer_input(user_answer: Any, answer_contract: dict[str, Any] | No
 
     Unparseable cases:
     - None
-    - dict / list / set / tuple (structured objects)
+    - dict / list / set / tuple (structured objects), unless answer_contract allows them
     - bytes / bytearray
     """
+    parse_error = {
+        "correct": False,
+        "status": "parse_error",
+        "error_code": "ANSWER_PARSE_FAILED",
+        "message": "答案格式不正確",
+    }
     if user_answer is None:
-        return {
-            "correct": False,
-            "status": "parse_error",
-            "error_code": "ANSWER_PARSE_FAILED",
-            "message": "答案格式不正確",
-        }
+        return dict(parse_error)
     if isinstance(user_answer, _UNPARSEABLE_TYPES):
-        return {
-            "correct": False,
-            "status": "parse_error",
-            "error_code": "ANSWER_PARSE_FAILED",
-            "message": "答案格式不正確",
-        }
+        if _allows_structured_answer(answer_contract) and isinstance(user_answer, (dict, list, tuple)):
+            if isinstance(user_answer, dict) and not user_answer:
+                return dict(parse_error)
+            if isinstance(user_answer, (list, tuple)) and len(user_answer) == 0:
+                return dict(parse_error)
+            return None
+        return dict(parse_error)
     # Empty string is technically parseable but semantically empty –
     # treat as parse_error (student has not entered anything).
     if isinstance(user_answer, str) and not user_answer.strip():
-        return {
-            "correct": False,
-            "status": "parse_error",
-            "error_code": "ANSWER_PARSE_FAILED",
-            "message": "答案格式不正確",
-        }
+        return dict(parse_error)
     return None
 
 
@@ -250,7 +264,12 @@ def grade_answer_for_current_question(
     if not should_use_contract_aware_grading(current):
         return None
     # --- Pre-flight: reject structurally invalid inputs before calling any checker ---
-    parse_fail = validate_answer_input(user_answer)
+    contract_preview = (
+        current.get("answer_contract")
+        if isinstance(current.get("answer_contract"), dict)
+        else None
+    )
+    parse_fail = validate_answer_input(user_answer, contract_preview)
     if parse_fail is not None:
         return parse_fail
     refreshed = refresh_runtime_question_session(current, skill_id=skill_id)

@@ -1,0 +1,106 @@
+{
+  "proposal_schema": "domain_capability_proposal.v1",
+  "proposal_id": "capability_4b5d332a222cf382a4e27872",
+  "skill_id": "vh_數學B1_LinearFunction",
+  "component_id": "src_4426",
+  "problem_type_id": "collinear_trisection_coordinate",
+  "required_capabilities": [
+    "collinear_trisection_coordinate"
+  ],
+  "candidate_domains": [
+    {
+      "domain_key": "coordinate_geometry.cartesian_coordinate",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "cartesian_coordinate_quadrant_symbol_reasoning"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.cartesian_coordinate_domain",
+      "entrypoint": "build_cartesian_coordinate_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.distance_between_two_points",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "compute_distance_between_two_points",
+        "solve_unknown_coordinate_from_two_point_distance"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.distance_between_two_points_domain",
+      "entrypoint": "build_distance_between_two_points_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.division_point_coordinates",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "centroid_coordinate",
+        "compute_centroid_coordinates",
+        "compute_internal_division_point_coordinates",
+        "compute_midpoint_coordinates",
+        "midpoint_coordinate"
+      ],
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload"
+    },
+    {
+      "domain_key": "coordinate_geometry.line_equation",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "coordinate_geometry_word_problem"
+      ],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_line_equation_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.parallel_lines_distance",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [],
+      "domain_module": "core.domain.coordinate_geometry.parallel_lines_distance_domain",
+      "entrypoint": "build_parallel_lines_distance_matrix"
+    },
+    {
+      "domain_key": "coordinate_geometry.point_line_distance",
+      "score": 0.333333,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [],
+      "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+      "entrypoint": "build_coordinate_geometry_matrix"
+    }
+  ],
+  "best_reuse_domain": "coordinate_geometry.cartesian_coordinate",
+  "missing_operation": "collinear_trisection_coordinate",
+  "source_example_ids": [
+    4426
+  ],
+  "reuse_priority": [
+    "capability_alias",
+    "existing_operation_wrapper",
+    "new_generic_operation",
+    "new_domain"
+  ],
+  "recommended_action": "new_generic_operation",
+  "status": "ready_for_human_review",
+  "production_publish_allowed": false,
+  "tracker_status_change": null,
+  "skill_ids": [
+    "vh_數學B1_LinearFunction"
+  ],
+  "component_ids": [
+    "src_4426"
+  ],
+  "reviewed_at": "2026-07-04T11:40:26.228281",
+  "reviewed_by": "auto_pipeline",
+  "proposal_hash": "9bafa1b843a66e2b72097e8bdb9c51d77f25bdda28bcc51c72550a56a8632d85",
+  "failed_gate": [],
+  "missing_artifacts": [],
+  "failed_source_example_ids": []
+}

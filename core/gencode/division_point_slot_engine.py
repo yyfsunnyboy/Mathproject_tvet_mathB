@@ -31,12 +31,92 @@ _TARGET_TASKS = frozenset(
         "inverse_centroid_vertex",
         "triangle_median_length",
         "multi_part_midpoint_application",
+        "graph_based_tiered_linear_application_multi_part",
     }
 )
 
 
 def is_division_point_target_task(target_task: str) -> bool:
     return str(target_task or "").strip() in _TARGET_TASKS
+
+
+def build_collinear_trisection_coordinate_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build two trisection points and ask for the second one."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    point_a = tuple(
+        normalized.get(
+            "point_a",
+            (rng.randint(-8, 8), rng.randint(-8, 8)),
+        )
+    )
+    step = tuple(
+        normalized.get(
+            "step",
+            rng.choice(
+                [
+                    (dx, dy)
+                    for dx in range(-4, 5)
+                    for dy in range(-4, 5)
+                    if (dx, dy) != (0, 0)
+                ]
+            ),
+        )
+    )
+    point_d = (point_a[0] + 3 * step[0], point_a[1] + 3 * step[1])
+    point_b = (
+        (2 * point_a[0] + point_d[0]) // 3,
+        (2 * point_a[1] + point_d[1]) // 3,
+    )
+    point_c = (
+        (point_a[0] + 2 * point_d[0]) // 3,
+        (point_a[1] + 2 * point_d[1]) // 3,
+    )
+    answer = f"({point_c[0]}, {point_c[1]})"
+    return {
+        "question": (
+            f"設 A{point_a}、B、C、D{point_d} 依序在同一直線上，"
+            "且 B、C 將線段 AD 三等分，求點 C 的坐標。"
+        ),
+        "givens": {
+            "point_a": point_a,
+            "point_d": point_d,
+            "trisection_point_b": point_b,
+            "trisection_point_c": point_c,
+        },
+        "answer": {"point": answer},
+        "semantic_answer": answer,
+        "distractors": [],
+        "explanation_steps": [
+            "B 以 1:2 內分 AD，所以 B=(2A+D)/3。",
+            "C 以 2:1 內分 AD，所以 C=(A+2D)/3。",
+        ],
+        "validation_facts": {
+            "point_a": point_a,
+            "point_b": point_b,
+            "point_c": point_c,
+            "point_d": point_d,
+            "ratios": {"AB:BD": "1:2", "AC:CD": "2:1"},
+            "collinear": True,
+            "uses_midpoint_formula": False,
+        },
+        "visual_spec": {
+            "kind": "collinear_points",
+            "ordered_points": [point_a, point_b, point_c, point_d],
+        },
+        "answer_type": "coordinate_pair",
+        "presentation_mode": "short_answer",
+        "topology_tags": [
+            "coordinate_geometry",
+            "collinear",
+            "equal_partition",
+            "internal_division",
+        ],
+    }
 
 
 def _rng(seed: int | None, problem_type_id: str) -> random.Random:
@@ -910,6 +990,25 @@ def _pack(
         "answer": answer,
         "correct_answer": answer,
         "explanation": explanation,
+        "target": answer,
+        "derivation": [explanation],
+        "template_variant": template_variant,
+        "template_id": template_variant,
+        "ratio_form": ratio_form,
+        "ratio_values": ratio_values,
+        "coordinate_pattern": sign,
+        "point_names": list(point_names),
+        "generation_coords": _coords_snapshot(coords),
+        "generator_contract": {
+            "sampling_strategy": gc.get("sampling_strategy", "weighted_random"),
+            "template_variant": template_variant,
+        },
+    }
+    return {
+        "question_text": question_text,
+        "answer": answer,
+        "correct_answer": answer,
+        "explanation": explanation,
         "template_variant": template_variant,
         "ratio_form": ratio_form,
         "ratio_values": ratio_values,
@@ -922,6 +1021,156 @@ def _pack(
     }
 
 
+# ── tiered linear application ─────────────────────────────────────────────────
+
+# Rotating contextual scenarios so question text is never hardcoded.
+# Each entry: (scenario_label, unit, question_template_fn(tier1_rate, tier2_rate, limit, val1, val2))
+_TIERED_LINEAR_SCENARIOS: list[tuple[str, str, Any]] = [
+    (
+        "通話費用",
+        "分鐘",
+        lambda r1, r2, lim, v1, v2: (
+            f"如右圖，某電信業者規定，通話時間在{lim}分鐘以內，每分鐘收費{r1}元；"
+            f"超過{lim}分鐘後，超出部分每分鐘收費{r2}元。"
+            f"（1）若通話{v1}分鐘，共需繳費多少元？"
+            f"（2）若通話{v2}分鐘，共需繳費多少元？"
+        ),
+    ),
+    (
+        "行李費用",
+        "公斤",
+        lambda r1, r2, lim, v1, v2: (
+            f"如右圖，某航空公司規定，行李重量在{lim}公斤以內，每公斤收費{r1}元；"
+            f"超過{lim}公斤後，超重部分每公斤收費{r2}元。"
+            f"（1）若行李重{v1}公斤，共需繳費多少元？"
+            f"（2）若行李重{v2}公斤，共需繳費多少元？"
+        ),
+    ),
+    (
+        "用電費用",
+        "度",
+        lambda r1, r2, lim, v1, v2: (
+            f"如右圖，電力公司規定，每月用電量在{lim}度以內，每度收費{r1}元；"
+            f"超過{lim}度後，超出部分每度收費{r2}元。"
+            f"（1）若當月用電{v1}度，應繳費用為多少元？"
+            f"（2）若當月用電{v2}度，應繳費用為多少元？"
+        ),
+    ),
+    (
+        "預算費用",
+        "單位",
+        lambda r1, r2, lim, v1, v2: (
+            f"如右圖，某服務方案規定，使用量在{lim}單位以內，每單位費用{r1}元；"
+            f"超過{lim}單位後，超出部分每單位費用改為{r2}元。"
+            f"（1）若使用{v1}單位，共需繳費多少元？"
+            f"（2）若使用{v2}單位，共需繳費多少元？"
+        ),
+    ),
+    (
+        "貨品費用",
+        "公斤",
+        lambda r1, r2, lim, v1, v2: (
+            f"如右圖，物流業者規定，貨品重量在{lim}公斤以內，每公斤費用為{r1}元；"
+            f"超過{lim}公斤後，超重部分每公斤費用改為{r2}元。"
+            f"（1）若貨品重{v1}公斤，共需繳費多少元？"
+            f"（2）若貨品重{v2}公斤，共需繳費多少元？"
+        ),
+    ),
+]
+
+
+def build_graph_based_tiered_linear_application_multi_part_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, Any]:
+    """Build a V3 matrix for graph-based tiered linear application (multi-part).
+
+    Mathematical logic:
+        ans1 = val1 * tier1_rate                                  (fully below threshold)
+        ans2 = limit * tier1_rate + (val2 - limit) * tier2_rate   (excess above threshold)
+
+    Invariants:
+        1 <= val1 < limit
+        val2 > limit
+        tier1_rate < tier2_rate
+        ans1 / ans2 match the formulas above
+    """
+    _ = constraints  # reserved for future sampling constraints
+    rng = random.Random(seed)
+    scenario_idx = rng.randrange(len(_TIERED_LINEAR_SCENARIOS))
+    label, unit, question_fn = _TIERED_LINEAR_SCENARIOS[scenario_idx]
+
+    tier1_rate: int = rng.randint(2, 4)
+    tier2_rate: int = rng.randint(tier1_rate + 2, tier1_rate + 5)
+    limit: int = rng.choice([5, 8, 10, 12, 15])
+    val1: int = rng.randint(1, limit - 1)
+    val2: int = rng.randint(limit + 1, limit + 5)
+
+    ans1: int = val1 * tier1_rate
+    ans2: int = limit * tier1_rate + (val2 - limit) * tier2_rate
+    if not (1 <= val1 < limit and val2 > limit and tier1_rate < tier2_rate):
+        raise ValueError("tiered_linear_invariant_violation")
+    if ans1 != val1 * tier1_rate:
+        raise ValueError("tiered_linear_ans1_mismatch")
+    if ans2 != limit * tier1_rate + (val2 - limit) * tier2_rate:
+        raise ValueError("tiered_linear_ans2_mismatch")
+
+    question_text: str = question_fn(tier1_rate, tier2_rate, limit, val1, val2)
+    canonical_answer: dict[str, int] = {"part_1": ans1, "part_2": ans2}
+    givens = {
+        "tier1_rate": tier1_rate,
+        "tier2_rate": tier2_rate,
+        "limit": limit,
+        "val1": val1,
+        "val2": val2,
+        "unit": unit,
+        "scenario_label": label,
+        "scenario_idx": scenario_idx,
+    }
+    return {
+        "givens": givens,
+        "answer": {"canonical_form": dict(canonical_answer)},
+        "distractors": [],
+        "explanation_steps": [
+            f"未達門檻時費用為用量 × 第一段單價。",
+            f"超過門檻時，門檻內以第一段單價計，超出部分以第二段單價計。",
+        ],
+        "validation_facts": {
+            **givens,
+            "ans1": ans1,
+            "ans2": ans2,
+            "domain_operation": "graph_based_tiered_linear_application_multi_part",
+        },
+        "visual_spec": {
+            "kind": "tiered_linear_graph",
+            "breakpoints": [
+                {"x": 0, "y": 0},
+                {"x": limit, "y": limit * tier1_rate},
+                {"x": val2, "y": ans2},
+            ],
+            "labels": {"x_axis": unit, "y_axis": "費用"},
+        },
+        "question": question_text,
+        "question_text": question_text,
+        "semantic_answer": dict(canonical_answer),
+        "answer_type": "multi_part",
+        "presentation_mode": "graph_multi_part",
+        "topology_tags": [
+            "graph_reading",
+            "tiered_linear",
+            "multi_part",
+            "application",
+        ],
+        "requested": ["part_1", "part_2"],
+    }
+
+
+def _generate_tiered_linear_application(seed: int | None) -> dict[str, Any]:
+    """Backward-compatible alias for the tiered-linear matrix builder."""
+    return build_graph_based_tiered_linear_application_multi_part_matrix(seed=seed)
+
+
 def generate_division_point_payload(
     skill_id: str,
     problem_type_id: str,
@@ -929,6 +1178,16 @@ def generate_division_point_payload(
     seed: int | None,
 ) -> dict[str, Any]:
     """Generate one problem payload from spec.generator_contract."""
+    if str(problem_type_id or "").strip() == "graph_based_tiered_linear_application_multi_part":
+        return build_graph_based_tiered_linear_application_multi_part_matrix(
+            seed=seed,
+            constraints=spec if isinstance(spec, dict) else None,
+        )
+    if str(problem_type_id or "").strip() == "collinear_trisection_coordinate":
+        return build_collinear_trisection_coordinate_matrix(
+            seed=seed,
+            constraints=spec if isinstance(spec, dict) else None,
+        )
     if skill_id == "vh_數學B1_MidpointCoordinates":
         induced = spec.get("v3_induced_spec") if isinstance(spec.get("v3_induced_spec"), dict) else {}
         source_example_id = (

@@ -1,0 +1,14 @@
+{
+  "proposal_id": "capability_64830fcffbb56fa709b9abad",
+  "target_domain": "coordinate_geometry.line_equation",
+  "promoted_files": {
+    "domain_spec": "core\\registry\\domain_operation_registry.py",
+    "domain_impl": "core\\domain\\coordinate_geometry\\line_equation_domain.py",
+    "adapter": "core\\gencode\\domain_matrix_adapter.py",
+    "test_file": "tests\\domain\\test_graph_intercepts_and_linear_equation.py"
+  },
+  "promoted_operation": "graph_intercepts_and_linear_equation",
+  "resolver_verified": true,
+  "consistency_checked": true,
+  "component_validator_verified": true
+}

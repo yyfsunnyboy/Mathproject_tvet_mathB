@@ -48,7 +48,14 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
-        "compare_point_to_line_distances",
+        "compare_point_to_line_distances", "graph_intercepts_and_linear_equation",
+        "draw_constant_function_graph",
+        "draw_linear_function_graph",
+        "graph_based_linear_application_inverse",
+        "linear_equation_from_two_points_choice",
+        "linear_graph_feasibility_choice",
+        "graph_based_linear_model_equation",
+        "robust_budget_feasibility_choice",
     }
 )
 
@@ -63,6 +70,46 @@ def build_line_equation_matrix(
 ) -> dict[str, object]:
     """Build a full problem matrix for a line-equation scenario."""
     normalized_type = str(line_type or "").strip()
+    if normalized_type == "graph_intercepts_and_linear_equation":
+        return build_graph_intercepts_and_linear_equation_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "draw_constant_function_graph":
+        return build_draw_constant_function_graph_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "draw_linear_function_graph":
+        return build_draw_linear_function_graph_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "graph_based_linear_application_inverse":
+        return build_graph_based_linear_application_inverse_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "linear_equation_from_two_points_choice":
+        return build_linear_equation_from_two_points_choice_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "linear_graph_feasibility_choice":
+        return build_linear_graph_feasibility_choice_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "graph_based_linear_model_equation":
+        return build_graph_based_linear_model_equation_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
+    if normalized_type == "robust_budget_feasibility_choice":
+        return build_robust_budget_feasibility_choice_matrix(
+            seed=seed,
+            constraints=constraints,
+        )
     if normalized_type not in _SUPPORTED_LINE_TYPES:
         raise ValueError(f"Unsupported line_type: {line_type!r}")
 
@@ -2168,5 +2215,958 @@ def build_coordinate_geometry_matrix(
         curriculum_profile=curriculum_profile,
         difficulty_profile=difficulty_profile,
         constraints=constraints,
+    )
+
+
+
+
+
+
+
+def _fraction(value: object, field: str) -> Fraction:
+    if isinstance(value, bool):
+        raise ValueError(f"{field}_must_be_rational")
+    try:
+        result = Fraction(value)
+    except (TypeError, ValueError, ZeroDivisionError) as exc:
+        raise ValueError(f"{field}_must_be_rational") from exc
+    return result
+
+
+def _plain(value: Fraction) -> str:
+    return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+
+def _signed_term(coefficient: Fraction, variable: str, *, first: bool) -> str:
+    if coefficient == 0:
+        return ""
+    sign = "-" if coefficient < 0 else ("" if first else "+")
+    magnitude = abs(coefficient)
+    coefficient_text = "" if magnitude == 1 else _plain(magnitude)
+    return f"{sign}{coefficient_text}{variable}"
+
+
+def _affine_expression(slope: Fraction, intercept: Fraction) -> str:
+    expression = _signed_term(slope, "x", first=True)
+    if intercept:
+        sign = "+" if intercept > 0 and expression else ""
+        expression += f"{sign}{_plain(intercept)}"
+    return expression or "0"
+
+
+def _axis_range(
+    x_intercept: Fraction | None,
+    y_intercept: Fraction | None,
+) -> dict[str, int]:
+    x_values = [Fraction(-2), Fraction(2)]
+    y_values = [Fraction(-2), Fraction(2)]
+    if x_intercept is not None:
+        x_values.extend([x_intercept - 2, x_intercept + 2])
+    if y_intercept is not None:
+        y_values.extend([y_intercept - 2, y_intercept + 2])
+    return {
+        "x_min": min(value.numerator // value.denominator for value in x_values),
+        "x_max": max(-((-value.numerator) // value.denominator) for value in x_values),
+        "y_min": min(value.numerator // value.denominator for value in y_values),
+        "y_max": max(-((-value.numerator) // value.denominator) for value in y_values),
+    }
+
+
+def _coefficients(
+    rng: random.Random,
+    constraints: dict[str, object],
+) -> tuple[Fraction, Fraction, Fraction]:
+    supplied = constraints.get("coefficients")
+    if supplied is not None:
+        if not isinstance(supplied, (list, tuple)) or len(supplied) != 3:
+            raise ValueError("coefficients_must_be_A_B_C")
+        return tuple(
+            _fraction(value, field)
+            for value, field in zip(supplied, ("A", "B", "C"))
+        )
+
+    line_kind = str(constraints.get("line_kind") or "oblique").strip().lower()
+    if line_kind not in {"oblique", "horizontal", "vertical", "random"}:
+        raise ValueError("unsupported_line_kind")
+    if line_kind == "random":
+        line_kind = rng.choice(["oblique", "horizontal", "vertical"])
+
+    if line_kind == "oblique":
+        if "x_intercept" in constraints or "y_intercept" in constraints:
+            x_intercept = _fraction(constraints.get("x_intercept"), "x_intercept")
+            y_intercept = _fraction(constraints.get("y_intercept"), "y_intercept")
+        else:
+            nonzero = [value for value in range(-8, 9) if value]
+            x_intercept = Fraction(rng.choice(nonzero))
+            y_intercept = Fraction(rng.choice(nonzero))
+        if x_intercept == 0 or y_intercept == 0:
+            raise ValueError("oblique_intercepts_must_be_nonzero")
+        return y_intercept, x_intercept, -(x_intercept * y_intercept)
+
+    offset = _fraction(
+        constraints.get("axis_offset", rng.choice([value for value in range(-8, 9) if value])),
+        "axis_offset",
+    )
+    if offset == 0:
+        raise ValueError("axis_coincident_line_is_degenerate")
+    if line_kind == "horizontal":
+        return Fraction(0), Fraction(1), -offset
+    return Fraction(1), Fraction(0), -offset
+
+
+def build_graph_intercepts_and_linear_equation_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a graph-reading matrix for a non-degenerate line."""
+    normalized_constraints = dict(constraints or {})
+    rng = random.Random(seed)
+    coefficient_a, coefficient_b, coefficient_c = _coefficients(rng, normalized_constraints)
+    if coefficient_a == 0 and coefficient_b == 0:
+        raise ValueError("invalid_line_zero_normal")
+
+    x_intercept = (
+        -coefficient_c / coefficient_a if coefficient_a != 0 else None
+    )
+    y_intercept = (
+        -coefficient_c / coefficient_b if coefficient_b != 0 else None
+    )
+    if coefficient_a == 0 and y_intercept == 0:
+        raise ValueError("axis_coincident_line_is_degenerate")
+    if coefficient_b == 0 and x_intercept == 0:
+        raise ValueError("axis_coincident_line_is_degenerate")
+
+    if coefficient_b == 0:
+        slope: Fraction | None = None
+        equation = f"x={_plain(x_intercept)}"
+        graph_kind = "vertical"
+    else:
+        slope = -coefficient_a / coefficient_b
+        intercept = -coefficient_c / coefficient_b
+        expression = _affine_expression(slope, intercept)
+        equation = f"f(x)={expression}"
+        graph_kind = "horizontal" if slope == 0 else "oblique"
+
+    canonical_answer = {
+        "x_intercept": _plain(x_intercept) if x_intercept is not None else None,
+        "y_intercept": _plain(y_intercept) if y_intercept is not None else None,
+        "function_equation": equation if graph_kind != "vertical" else None,
+        "line_equation": equation,
+    }
+    points: list[list[str]] = []
+    if x_intercept is not None:
+        points.append([_plain(x_intercept), "0"])
+    if y_intercept is not None:
+        point = ["0", _plain(y_intercept)]
+        if point not in points:
+            points.append(point)
+
+    visual_spec = {
+        "kind": "coordinate_line_graph",
+        "drawable_primitives": [
+            {
+                "type": "line",
+                "equation": {
+                    "A": _plain(coefficient_a),
+                    "B": _plain(coefficient_b),
+                    "C": _plain(coefficient_c),
+                },
+            },
+            {"type": "axes"},
+        ],
+        "axis_range": _axis_range(x_intercept, y_intercept),
+        "labels": {
+            "x_axis": "x",
+            "y_axis": "y",
+            "line": "y=f(x)" if graph_kind != "vertical" else equation,
+        },
+        "points": points,
+    }
+    requested = ["x_intercept", "y_intercept", "function_equation"]
+    if graph_kind == "vertical":
+        requested = ["x_intercept", "y_intercept", "line_equation"]
+
+    return {
+        "givens": {
+            "graph_type": "linear_function" if graph_kind != "vertical" else "linear_relation",
+            "coefficients": {
+                "A": _plain(coefficient_a),
+                "B": _plain(coefficient_b),
+                "C": _plain(coefficient_c),
+            },
+            "points": points,
+        },
+        "answer": {
+            "canonical_form": canonical_answer,
+            "general_form": {
+                "A": _plain(coefficient_a),
+                "B": _plain(coefficient_b),
+                "C": _plain(coefficient_c),
+            },
+            "coefficients": {
+                "A": _plain(coefficient_a),
+                "B": _plain(coefficient_b),
+                "C": _plain(coefficient_c),
+            },
+        },
+        "distractors": [],
+        "explanation_steps": [
+            "Read each finite axis intercept from the graph.",
+            "Use the line coefficients to derive the canonical equation.",
+        ],
+        "validation_facts": {
+            "line_kind": graph_kind,
+            "slope": _plain(slope) if slope is not None else None,
+            "x_intercept": canonical_answer["x_intercept"],
+            "y_intercept": canonical_answer["y_intercept"],
+            "equation": equation,
+        },
+        "visual_spec": visual_spec,
+        "question": "依圖回答：(1) 求 x、y 截距；(2) 求此直線的方程式。",
+        "semantic_answer": canonical_answer,
+        "answer_type": "multi_part",
+        "presentation_mode": "graph_multi_part",
+        "topology_tags": [
+            "graph_reading",
+            "two_axis_intercepts",
+            "equation_from_graph",
+            "multi_part",
+        ],
+        "requested": requested,
+    }
+
+
+def build_draw_constant_function_graph_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a canvas task for a constant function's horizontal graph."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    constant = int(
+        normalized.get(
+            "constant",
+            rng.choice([value for value in range(-6, 7) if value]),
+        )
+    )
+    extent = max(5, abs(constant) + 2)
+    equation = f"y={constant}"
+    expected_spec = {
+        "drawing_type": "line_graph",
+        "graph_kind": "constant_function",
+        "equation": equation,
+        "slope": 0,
+        "y_intercept": constant,
+        "expected_line": {
+            "points": [[-extent, constant], [extent, constant]],
+            "horizontal": True,
+            "spans_graph_width": True,
+        },
+        "required_elements": ["x_axis", "y_axis", "function_line"],
+        "axis_range": {
+            "x_min": -extent,
+            "x_max": extent,
+            "y_min": -extent,
+            "y_max": extent,
+        },
+        "tolerance": {"slope": 0.08, "y_intercept": 0.35},
+    }
+    return {
+        "question": f"請在坐標平面上畫出常數函數 $f(x)={constant}$ 的圖形。",
+        "givens": {
+            "constant": constant,
+            "constant_function_equation": equation,
+        },
+        "answer": expected_spec,
+        "semantic_answer": expected_spec,
+        "distractors": [],
+        "answer_type": "drawing",
+        "presentation_mode": "canvas",
+        "expected_drawing_spec": expected_spec,
+        "visual_spec": {
+            "kind": "cartesian_canvas",
+            "axis_range": dict(expected_spec["axis_range"]),
+            "show_grid": True,
+            "editable": True,
+        },
+        "explanation_steps": [
+            f"常數函數對所有 x 都有相同函數值 {constant}。",
+            f"圖形是通過 (0,{constant}) 且平行 x 軸的水平直線。",
+        ],
+        "validation_facts": {
+            "constant": constant,
+            "slope": 0,
+            "y_intercept": constant,
+            "horizontal": True,
+        },
+        "topology_tags": [
+            "graph_construction",
+            "horizontal_line",
+            "constant_function",
+        ],
+    }
+
+
+def build_draw_linear_function_graph_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a canvas task for a non-constant linear function graph."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    slope = int(
+        normalized.get("slope", rng.choice([-3, -2, -1, 1, 2, 3]))
+    )
+    intercept = int(normalized.get("intercept", rng.randint(-4, 4)))
+    if slope == 0:
+        raise ValueError("linear_function_slope_must_be_nonzero")
+    x_extent = 6
+    endpoint_values = [
+        slope * -x_extent + intercept,
+        slope * x_extent + intercept,
+    ]
+    y_extent = max(6, *(abs(value) + 2 for value in endpoint_values))
+    expression = f"{slope}x"
+    if intercept > 0:
+        expression += f"+{intercept}"
+    elif intercept < 0:
+        expression += str(intercept)
+    equation = f"y={expression}"
+    points = [[-x_extent, endpoint_values[0]], [x_extent, endpoint_values[1]]]
+    expected_spec = {
+        "drawing_type": "line_graph",
+        "graph_kind": "linear_function",
+        "equation": equation,
+        "slope": slope,
+        "y_intercept": intercept,
+        "expected_line": {
+            "points": points,
+            "horizontal": False,
+            "spans_graph_width": True,
+        },
+        "required_elements": ["x_axis", "y_axis", "function_line"],
+        "axis_range": {
+            "x_min": -x_extent,
+            "x_max": x_extent,
+            "y_min": -y_extent,
+            "y_max": y_extent,
+        },
+        "tolerance": {"slope": 0.08, "y_intercept": 0.35},
+    }
+    return {
+        "question": f"請在坐標平面上畫出一次函數 $f(x)={expression}$ 的圖形。",
+        "givens": {
+            "slope": slope,
+            "y_intercept": intercept,
+            "linear_function_equation": equation,
+        },
+        "answer": expected_spec,
+        "semantic_answer": expected_spec,
+        "distractors": [],
+        "answer_type": "drawing",
+        "presentation_mode": "canvas",
+        "expected_drawing_spec": expected_spec,
+        "visual_spec": {
+            "kind": "cartesian_canvas",
+            "axis_range": dict(expected_spec["axis_range"]),
+            "show_grid": True,
+            "editable": True,
+        },
+        "explanation_steps": [
+            f"圖形斜率為 {slope}，y 截距為 {intercept}。",
+            "取兩個符合函數式的點並連成直線。",
+        ],
+        "validation_facts": {
+            "slope": slope,
+            "y_intercept": intercept,
+            "points": points,
+            "collinear": True,
+        },
+        "topology_tags": [
+            "graph_construction",
+            "linear_function",
+            "two_point_plotting",
+        ],
+    }
+
+
+def build_graph_based_linear_application_inverse_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build an inverse-evaluation task from a non-constant linear model."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    slope = int(normalized.get("slope", rng.choice([2, 3, 4, 5])))
+    intercept = int(normalized.get("intercept", rng.randint(5, 30)))
+    input_min = int(normalized.get("input_min", 1))
+    input_max = int(normalized.get("input_max", 12))
+    if slope == 0 or input_min >= input_max:
+        raise ValueError("invalid_inverse_linear_model_constraints")
+    target_input = int(
+        normalized.get("target_input", rng.randint(input_min, input_max))
+    )
+    if not input_min <= target_input <= input_max:
+        raise ValueError("target_input_out_of_range")
+    known_output = slope * target_input + intercept
+    return {
+        "question": (
+            f"某方案的輸入量 x 與總費用 y 關係為 $y={slope}x+{intercept}$，"
+            f"其圖形如下。若總費用為 {known_output}，求輸入量 x。"
+        ),
+        "givens": {
+            "slope": slope,
+            "intercept": intercept,
+            "input_min": input_min,
+            "input_max": input_max,
+            "known_output": known_output,
+        },
+        "answer": {"canonical_form": target_input},
+        "semantic_answer": target_input,
+        "distractors": [],
+        "explanation_steps": [
+            f"由 {known_output}={slope}x+{intercept} 反解 x。",
+            f"x=({known_output}-{intercept})/{slope}={target_input}。",
+        ],
+        "validation_facts": {
+            "slope": slope,
+            "intercept": intercept,
+            "input_min": input_min,
+            "input_max": input_max,
+            "target_input": target_input,
+            "known_output": known_output,
+            "forward_output": slope * target_input + intercept,
+            "inverse_solution": (known_output - intercept) // slope,
+            "unique_solution": True,
+        },
+        "visual_spec": {
+            "kind": "linear_application_graph",
+            "x_range": [input_min, input_max],
+            "line": {
+                "slope": slope,
+                "intercept": intercept,
+                "points": [
+                    [input_min, slope * input_min + intercept],
+                    [input_max, slope * input_max + intercept],
+                ],
+            },
+            "known_output": known_output,
+        },
+        "answer_type": "numeric",
+        "presentation_mode": "graph_short_answer",
+        "topology_tags": [
+            "contextual_application",
+            "graph_reading",
+            "inverse_evaluation",
+        ],
+    }
+
+
+def build_linear_equation_from_two_points_choice_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a four-choice line equation task from two points."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    line_kind = str(
+        normalized.get(
+            "line_kind",
+            rng.choice(["vertical", "horizontal", "oblique"]),
+        )
+    )
+    offset = int(
+        normalized.get(
+            "offset",
+            rng.choice([value for value in range(-6, 7) if value]),
+        )
+    )
+    if line_kind == "vertical":
+        point_1, point_2 = (offset, -2), (offset, 3)
+        slope: int | None = None
+        equation = f"x={offset}"
+        option_values = [
+            equation,
+            f"y={offset}",
+            f"x={offset + 1}",
+            f"y={offset + 1}",
+        ]
+    elif line_kind == "horizontal":
+        point_1, point_2 = (-2, offset), (3, offset)
+        slope = 0
+        equation = f"y={offset}"
+        option_values = [
+            equation,
+            f"x={offset}",
+            f"y={offset + 1}",
+            f"x={offset + 1}",
+        ]
+    elif line_kind == "oblique":
+        slope = int(
+            normalized.get("slope", rng.choice([-3, -2, -1, 1, 2, 3]))
+        )
+        if slope == 0:
+            raise ValueError("oblique_slope_must_be_nonzero")
+        point_1 = (-2, slope * -2 + offset)
+        point_2 = (3, slope * 3 + offset)
+        expression = f"{slope}x"
+        if offset > 0:
+            expression += f"+{offset}"
+        elif offset < 0:
+            expression += str(offset)
+        equation = f"y={expression}"
+        option_values = [
+            equation,
+            f"y={slope + 1}x{offset:+d}",
+            f"y={slope}x{offset + 1:+d}",
+            f"y={-slope}x{offset:+d}",
+        ]
+    else:
+        raise ValueError("unsupported_line_kind")
+    if len(set(option_values)) != 4:
+        raise ValueError("choice_generation_not_unique")
+    rng.shuffle(option_values)
+    labels = ["A", "B", "C", "D"]
+    choices = [
+        {"label": label, "text": value, "value": value}
+        for label, value in zip(labels, option_values)
+    ]
+    correct_label = labels[option_values.index(equation)]
+    return {
+        "question": f"通過點 {point_1}、{point_2} 的直線方程式為何？",
+        "givens": {"point_1": point_1, "point_2": point_2},
+        "answer": {"correct_label": correct_label},
+        "semantic_answer": equation,
+        "distractors": [value for value in option_values if value != equation],
+        "choices": choices,
+        "explanation_steps": [
+            "由兩點判斷直線型態與斜率，再代入其中一點求方程式。"
+        ],
+        "validation_facts": {
+            "point_1": point_1,
+            "point_2": point_2,
+            "line_kind": line_kind,
+            "slope": slope,
+            "intercept": offset if line_kind != "vertical" else None,
+            "x_constant": offset if line_kind == "vertical" else None,
+            "equation": equation,
+            "correct_label": correct_label,
+            "choice_value_to_label": {
+                choice["value"]: choice["label"] for choice in choices
+            },
+            "unique_choices": True,
+            "unique_correct_choice": True,
+        },
+        "visual_spec": {"kind": "no_visual"},
+        "answer_type": "single_choice",
+        "presentation_mode": "single_choice",
+        "topology_tags": [
+            "two_points",
+            "slope_then_intercept",
+            "single_choice",
+        ],
+    }
+
+
+def build_linear_graph_feasibility_choice_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build graph candidates with exactly one violating a line-family condition."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    required_intercept = int(
+        normalized.get(
+            "required_intercept",
+            rng.choice([value for value in range(-6, 7) if value]),
+        )
+    )
+    feasible_slopes = rng.sample([-4, -3, -2, -1, 1, 2, 3, 4], 3)
+    wrong_intercept = required_intercept + rng.choice([-2, -1, 1, 2])
+    candidates = [
+        {
+            "equation": f"y={slope}x{required_intercept:+d}",
+            "slope": slope,
+            "y_intercept": required_intercept,
+            "feasible": True,
+        }
+        for slope in feasible_slopes
+    ]
+    impossible_slope = rng.choice([-4, -3, -2, -1, 1, 2, 3, 4])
+    impossible_equation = f"y={impossible_slope}x{wrong_intercept:+d}"
+    candidates.append(
+        {
+            "equation": impossible_equation,
+            "slope": impossible_slope,
+            "y_intercept": wrong_intercept,
+            "feasible": False,
+        }
+    )
+    rng.shuffle(candidates)
+    labels = ["A", "B", "C", "D"]
+    choices = [
+        {
+            "label": label,
+            "text": candidate["equation"],
+            "value": candidate["equation"],
+        }
+        for label, candidate in zip(labels, candidates)
+    ]
+    correct_label = next(
+        label
+        for label, candidate in zip(labels, candidates)
+        if not candidate["feasible"]
+    )
+    graph_condition = {
+        "required_y_intercept": required_intercept,
+        "slope_must_be_nonzero": True,
+    }
+    return {
+        "question": (
+            f"下列何者不可能是函數族 $f(x)=ax{required_intercept:+d}$"
+            "（a≠0）的圖形？"
+        ),
+        "givens": {"graph_condition": graph_condition},
+        "answer": {"correct_label": correct_label},
+        "semantic_answer": impossible_equation,
+        "distractors": [
+            candidate["equation"]
+            for candidate in candidates
+            if candidate["feasible"]
+        ],
+        "choices": choices,
+        "explanation_steps": [
+            f"此函數族所有圖形的 y 截距都必須是 {required_intercept}。",
+            f"{impossible_equation} 的 y 截距不符，因此不可能。",
+        ],
+        "validation_facts": {
+            "graph_condition": graph_condition,
+            "candidate_lines": candidates,
+            "feasibility_by_equation": {
+                candidate["equation"]: candidate["feasible"]
+                for candidate in candidates
+            },
+            "impossible_equation": impossible_equation,
+            "correct_label": correct_label,
+            "choice_value_to_label": {
+                choice["value"]: choice["label"] for choice in choices
+            },
+            "unique_choices": True,
+            "unique_correct_choice": True,
+        },
+        "visual_spec": {
+            "kind": "line_graph_choices",
+            "graph_condition": graph_condition,
+            "candidates": candidates,
+        },
+        "answer_type": "single_choice",
+        "presentation_mode": "graph_single_choice",
+        "topology_tags": [
+            "intercept_constraint",
+            "graph_family",
+            "feasibility",
+            "single_choice",
+        ],
+    }
+
+
+def build_robust_budget_feasibility_choice_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a choice whose one plan stays within budget under either price assignment."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    lower_cost = int(normalized.get("lower_cost", rng.randrange(80, 151, 10)))
+    higher_cost = int(
+        normalized.get("higher_cost", lower_cost + rng.randrange(20, 81, 10))
+    )
+    first_quantity = int(normalized.get("first_quantity", rng.randint(8, 20)))
+    second_quantity = int(normalized.get("second_quantity", rng.randint(8, 20)))
+
+    def assignment_costs(first: int, second: int) -> list[int]:
+        return [
+            lower_cost * first + higher_cost * second,
+            higher_cost * first + lower_cost * second,
+        ]
+
+    baseline_costs = assignment_costs(first_quantity, second_quantity)
+    budget = int(
+        normalized.get("budget", max(baseline_costs) + rng.randrange(lower_cost))
+    )
+    quantity_pairs = [
+        [first_quantity, second_quantity],
+        [first_quantity + 1, second_quantity + 1],
+        [first_quantity + 2, second_quantity + 2],
+        [first_quantity + 3, second_quantity + 3],
+    ]
+    rng.shuffle(quantity_pairs)
+    labels = ["A", "B", "C", "D"]
+    candidates: list[dict[str, object]] = []
+    choices: list[dict[str, str]] = []
+    for label, pair in zip(labels, quantity_pairs):
+        costs = assignment_costs(*pair)
+        robust_feasible = max(costs) <= budget
+        value = f"({pair[0]},{pair[1]})"
+        candidates.append(
+            {
+                "quantities": pair,
+                "assignment_costs": costs,
+                "worst_case_cost": max(costs),
+                "robust_feasible": robust_feasible,
+                "value": value,
+            }
+        )
+        choices.append({"label": label, "text": value, "value": value})
+    correct_index = next(
+        index
+        for index, candidate in enumerate(candidates)
+        if candidate["robust_feasible"]
+    )
+    correct_label = labels[correct_index]
+    semantic_answer = str(candidates[correct_index]["value"])
+    return {
+        "question": (
+            f"預算為 {budget} 元，兩種商品單價分別可能為 "
+            f"{lower_cost} 元與 {higher_cost} 元，但尚不確定何者較貴。"
+            "下列哪一組購買數量在兩種單價安排下都一定不超過預算？"
+        ),
+        "givens": {
+            "budget": budget,
+            "possible_unit_costs": [lower_cost, higher_cost],
+            "cost_model": "c1*x+c2*y",
+        },
+        "answer": {"correct_label": correct_label},
+        "semantic_answer": semantic_answer,
+        "choices": choices,
+        "distractors": [
+            candidate["value"]
+            for candidate in candidates
+            if not candidate["robust_feasible"]
+        ],
+        "explanation_steps": [
+            "每組數量都要計算兩種單價互換時的成本。",
+            f"{semantic_answer} 的最壞情況成本仍不超過預算。",
+        ],
+        "validation_facts": {
+            "budget_condition": {"operator": "<=", "limit": budget},
+            "cost_model": {
+                "possible_unit_costs": [lower_cost, higher_cost],
+                "assignments": [
+                    [lower_cost, higher_cost],
+                    [higher_cost, lower_cost],
+                ],
+            },
+            "candidate_plans": candidates,
+            "feasibility_by_value": {
+                str(candidate["value"]): candidate["robust_feasible"]
+                for candidate in candidates
+            },
+            "correct_label": correct_label,
+            "semantic_answer": semantic_answer,
+            "choice_value_to_label": {
+                choice["value"]: choice["label"] for choice in choices
+            },
+            "unique_choices": True,
+            "unique_correct_choice": True,
+        },
+        "visual_spec": {"kind": "no_visual"},
+        "answer_type": "single_choice",
+        "presentation_mode": "single_choice",
+        "topology_tags": [
+            "linear_inequality",
+            "uncertain_assignment",
+            "robust_feasibility",
+            "single_choice",
+        ],
+    }
+
+
+def _format_slope_intercept_equation(slope: Fraction, intercept: int) -> str:
+    slope_value = Fraction(slope).limit_denominator()
+    if slope_value == 1:
+        body = "x"
+    elif slope_value == -1:
+        body = "-x"
+    else:
+        body = f"{fraction_to_plain(slope_value)}x"
+    if intercept > 0:
+        return f"y={body}+{intercept}"
+    if intercept < 0:
+        return f"y={body}{intercept}"
+    return f"y={body}"
+
+
+def build_graph_based_linear_model_equation_matrix(
+    *,
+    seed: int | None = None,
+    constraints: dict[str, object] | None = None,
+) -> dict[str, object]:
+    """Build a contextual linear-model choice task from graph intercepts."""
+    normalized = dict(constraints or {})
+    rng = random.Random(seed)
+    intercept = int(
+        normalized.get(
+            "intercept",
+            rng.choice([40, 50, 60, 80]),
+        )
+    )
+    if intercept <= 0:
+        raise ValueError("graph_intercept_must_be_positive")
+    x_end = int(
+        normalized.get(
+            "x_end",
+            normalized.get("sample_x", rng.choice([200, 400, 500, 800])),
+        )
+    )
+    if x_end <= 0:
+        raise ValueError("graph_x_end_must_be_positive")
+    slope = Fraction(-intercept, x_end)
+    points = [[0, intercept], [x_end, 0]]
+    equation = _format_slope_intercept_equation(slope, intercept)
+    general_gcd = math.gcd(intercept, x_end)
+    coefficient_a = intercept // general_gcd
+    coefficient_b = x_end // general_gcd
+    constant_c = -(intercept * x_end) // general_gcd
+    general_form = f"{coefficient_a}x+{coefficient_b}y{constant_c:+d}=0"
+    distractor_slopes = [
+        -slope,
+        Fraction(-intercept * 2, x_end),
+        Fraction(-intercept, x_end * 2) if x_end > 1 else Fraction(-intercept - 1, x_end),
+    ]
+    option_values = [equation]
+    for distractor_slope in distractor_slopes:
+        candidate = _format_slope_intercept_equation(distractor_slope, intercept)
+        if candidate not in option_values:
+            option_values.append(candidate)
+        if len(option_values) == 4:
+            break
+    wrong_intercept = intercept + rng.choice([10, 20, -10])
+    if wrong_intercept == intercept or wrong_intercept <= 0:
+        wrong_intercept = intercept + 10
+    while len(option_values) < 4:
+        candidate = _format_slope_intercept_equation(slope, wrong_intercept)
+        if candidate not in option_values:
+            option_values.append(candidate)
+        wrong_intercept += 10
+        if wrong_intercept > intercept + 100:
+            raise ValueError("choice_generation_not_unique")
+    if len(set(option_values)) != 4:
+        raise ValueError("choice_generation_not_unique")
+    rng.shuffle(option_values)
+    labels = ["A", "B", "C", "D"]
+    choices = [
+        {"label": label, "text": value, "value": value}
+        for label, value in zip(labels, option_values)
+    ]
+    correct_label = labels[option_values.index(equation)]
+    x_pad = max(20, x_end // 10)
+    y_pad = max(5, intercept // 10)
+    axis_range = {
+        "x_min": -x_pad,
+        "x_max": x_end + x_pad,
+        "y_min": -y_pad,
+        "y_max": intercept + y_pad,
+    }
+    return {
+        "question": (
+            "汽車加滿油後開始行駛，圖中 x 表示行駛距離，y 表示剩餘油量。"
+            "依圖求 x 與 y 的關係式。"
+        ),
+        "givens": {
+            "context": "driving_distance_and_remaining_fuel",
+            "x_quantity": "行駛距離",
+            "y_quantity": "剩餘油量",
+            "graph_points": points,
+        },
+        "answer": {"correct_label": correct_label},
+        "semantic_answer": equation,
+        "distractors": [value for value in option_values if value != equation],
+        "choices": choices,
+        "explanation_steps": [
+            f"圖形通過 (0,{intercept}) 與 ({x_end},0)。",
+            f"斜率為 ({0}-{intercept})/({x_end}-0)={fraction_to_plain(slope)}。",
+            f"所以關係式為 {equation}。",
+        ],
+        "validation_facts": {
+            "graph_points": points,
+            "slope": fraction_to_plain(slope),
+            "intercept": intercept,
+            "x_end": x_end,
+            "equation": equation,
+            "general_form": general_form,
+            "correct_label": correct_label,
+            "choice_value_to_label": {
+                choice["value"]: choice["label"] for choice in choices
+            },
+            "unique_choices": True,
+            "unique_correct_choice": True,
+            "context": "driving_distance_and_remaining_fuel",
+        },
+        "visual_spec": {
+            "kind": "linear_application_graph",
+            "x_label": "行駛距離",
+            "y_label": "剩餘油量",
+            "points": points,
+            "line": {
+                "slope": fraction_to_plain(slope),
+                "intercept": intercept,
+            },
+            "axis_range": axis_range,
+            "drawable_primitives": [
+                {
+                    "type": "line",
+                    "equation": {
+                        "A": coefficient_a,
+                        "B": coefficient_b,
+                        "C": constant_c,
+                    },
+                },
+                {"type": "axes"},
+            ],
+        },
+        "answer_type": "single_choice",
+        "presentation_mode": "graph_single_choice",
+        "topology_tags": [
+            "contextual_application",
+            "graph_reading",
+            "equation_from_graph",
+            "single_choice",
+        ],
+    }
+
+
+
+
+
+def _equivalent_scalar(actual: object, expected: object) -> bool:
+    if actual is None or expected is None:
+        return actual is expected
+    try:
+        return Fraction(str(actual).strip()) == Fraction(str(expected).strip())
+    except (ValueError, ZeroDivisionError):
+        return str(actual).replace(" ", "") == str(expected).replace(" ", "")
+
+
+def check_multi_part_answer(
+    user_answer: object,
+    canonical_answer: dict[str, object],
+) -> bool:
+    if not isinstance(user_answer, dict):
+        return False
+    required = ("x_intercept", "y_intercept", "function_equation")
+    if canonical_answer.get("function_equation") is None:
+        required = ("x_intercept", "y_intercept", "line_equation")
+    return all(
+        key in user_answer
+        and _equivalent_scalar(user_answer.get(key), canonical_answer.get(key))
+        for key in required
     )
 
