@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any
 
 from core.gencode.v3_error_codes import CHOICE_CONTRACT_INCOMPLETE
+from core.gencode.choice_math_display import format_choice_math_display
 
 MIN_SINGLE_CHOICE_COUNT = 2
 MAX_SINGLE_CHOICE_COUNT = 8
@@ -61,12 +62,23 @@ def normalize_canonical_choices(choices: Any) -> list[dict[str, str]]:
                     "label": key,
                     "text": text,
                     "value": value,
+                    "display": str(
+                        item.get("display") or format_choice_math_display(text)
+                    ).strip(),
                 }
             )
             continue
         text = str(item or "").strip()
         key = chr(ord("A") + index)
-        normalized.append({"key": key, "label": key, "text": text, "value": text})
+        normalized.append(
+            {
+                "key": key,
+                "label": key,
+                "text": text,
+                "value": text,
+                "display": format_choice_math_display(text),
+            }
+        )
     return normalized
 
 

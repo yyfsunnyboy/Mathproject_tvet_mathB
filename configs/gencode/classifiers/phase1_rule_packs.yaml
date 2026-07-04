@@ -42,14 +42,74 @@ skills:
     skill_ch_name: 線型函數
     classifier_source: human_confirmed
     problem_types:
+      - problem_type_id: graph_intercepts_and_linear_equation
+        display_name: read intercepts and derive linear equation from graph
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: graph_based_tiered_linear_application_multi_part
+        display_name: graph-based tiered linear application
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: collinear_trisection_coordinate
+        display_name: collinear trisection coordinate
+        checker: coordinate_pair_checker
+        equivalence: coordinate_pair_equivalence
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: draw_constant_function_graph
+        display_name: draw constant function graph
+        checker: graph_spec_checker
+        equivalence: graph_equivalence
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: draw_linear_function_graph
+        display_name: draw linear function graph
+        checker: graph_spec_checker
+        equivalence: graph_equivalence
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: graph_based_linear_application_inverse
+        display_name: inverse evaluation from linear application graph
+        checker: numeric_checker
+        equivalence: numeric_equivalence
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: graph_based_linear_model_equation
+        display_name: derive contextual linear model from graph
+        checker: expression_equivalence_checker
+        equivalence: algebraic_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: robust_budget_feasibility_choice
+        display_name: robust budget feasibility choice
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: linear_equation_from_two_points_choice
+        display_name: choose linear equation through two points
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: linear_graph_feasibility_choice
+        display_name: choose impossible graph under intercept constraints
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
       - problem_type_id: integer_numeric_evaluate_function_notation
         display_name: 線型函數求值
         checker: integer_checker
         equivalence: numeric_exact
         runtime_candidate: true
         requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 合併為同一主要 problem_type。
+        merge_policy: legacy_fallback_only
+        notes: legacy fallback retained for compatibility
     classification_rules:
       - if_contains:
           - 函數圖形
@@ -62,26 +122,10 @@ skills:
       allow_single_problem_type: true
       allow_skill_default_problem_type: true
       default_problem_type_used: false
-      single_primary_problem_type: true
+      single_primary_problem_type: false
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4424
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4433
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4434
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4441
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4444
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4448
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4449
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
-      - example_id: 4516
-        matched_problem_type_id: integer_numeric_evaluate_function_notation
+    source_examples: []
 
   - skill_id: vh_數學B1_QuadraticFunctionGraph
     skill_ch_name: 二次函數的圖形

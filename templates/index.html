@@ -2049,6 +2049,8 @@
         }
     </style>
 
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/choice_math.js') }}"></script>
 </head>
 
 <body>
@@ -4862,7 +4864,10 @@
                             qmc.style.display = 'block';
                         }
                         saveState();
-                    } else if (data.visual_spec && Object.keys(data.visual_spec).length > 0) {
+                    } else if (
+                        window.VisualSpecRuntime
+                        && window.VisualSpecRuntime.requiresVisualRendering(data.visual_spec)
+                    ) {
                         // fallback: visual_spec 存在但無 base64，顯示提示
                         const qmc = document.getElementById('question-media-container');
                         if (qmc) {
@@ -4960,6 +4965,9 @@
         }
 
         function extractChoiceText(choice) {
+            if (window.ChoiceMathRuntime) {
+                return window.ChoiceMathRuntime.choiceDisplay(choice);
+            }
             if (typeof choice === 'string') return choice;
             if (choice && typeof choice === 'object') return String(choice.text || choice.value || '');
             return String(choice || '');
@@ -5100,7 +5108,10 @@
                 });
                 questionChoices.appendChild(button);
             });
-            requestAnimationFrame(() => updateChoiceGridLayout(payload));
+            requestAnimationFrame(() => {
+                updateChoiceGridLayout(payload);
+                renderMathContent(questionChoices);
+            });
         }
 
         function stripEmbeddedAbcdChoicesFromStem(text) {

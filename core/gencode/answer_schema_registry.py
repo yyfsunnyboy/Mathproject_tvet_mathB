@@ -41,6 +41,9 @@ ANSWER_SCHEMAS: dict[str, dict[str, frozenset[str]]] = {
     "multi_part_equation_area": {
         "required_fields": frozenset({"equation", "area"}),
     },
+    "multi_part_scalar": {
+        "required_fields": frozenset({"canonical_form"}),
+    },
     "numeric_scalar": {
         "required_fields": frozenset({"canonical_form"}),
     },
@@ -118,6 +121,13 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "compute_internal_division_point_coordinates": "coordinate_pair",
     "solve_point_from_section_ratio": "coordinate_pair",
     "compute_section_point_distance_from_origin": "distance_scalar",
+    "midpoint_coordinate": "coordinate_pair",
+    "midpoint_distance_from_origin": "distance_scalar",
+    "parallelogram_fourth_vertex": "coordinate_pair",
+    "centroid_coordinate": "coordinate_pair",
+    "inverse_centroid_vertex": "coordinate_pair",
+    "triangle_median_length": "choice_label",
+    "multi_part_midpoint_application": "multi_part_scalar",
     "solve_basic_absolute_value_equation": "parameter_solution_set",
     "solve_basic_absolute_value_equation_no_solution": "parameter_solution_set",
     "number_line_distance_between_two_points": "distance_scalar",

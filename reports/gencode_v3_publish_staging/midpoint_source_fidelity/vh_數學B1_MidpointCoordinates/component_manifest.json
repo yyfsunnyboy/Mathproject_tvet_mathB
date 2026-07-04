@@ -1,0 +1,117 @@
+{
+  "skill_id": "vh_數學B1_MidpointCoordinates",
+  "compiled_at": "2026-07-04T01:51:13.796734+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4418",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4418",
+      "textbook_example_id": 4418,
+      "line_type": "multi_part_midpoint_application",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4418"
+    },
+    {
+      "component_id": "src_4422",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4422",
+      "textbook_example_id": 4422,
+      "line_type": "parallelogram_fourth_vertex",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4422"
+    },
+    {
+      "component_id": "src_4428",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4428",
+      "textbook_example_id": 4428,
+      "line_type": "midpoint_distance_from_origin",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4428"
+    },
+    {
+      "component_id": "src_4429",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4429",
+      "textbook_example_id": 4429,
+      "line_type": "parallelogram_fourth_vertex",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4429"
+    },
+    {
+      "component_id": "src_4439",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4439",
+      "textbook_example_id": 4439,
+      "line_type": "midpoint_distance_from_origin",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4439"
+    },
+    {
+      "component_id": "src_4440",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4440",
+      "textbook_example_id": 4440,
+      "line_type": "parallelogram_fourth_vertex",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4440"
+    },
+    {
+      "component_id": "src_4443",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4443",
+      "textbook_example_id": 4443,
+      "line_type": "centroid_coordinate",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4443"
+    },
+    {
+      "component_id": "src_4447",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4447",
+      "textbook_example_id": 4447,
+      "line_type": "inverse_centroid_vertex",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4447"
+    },
+    {
+      "component_id": "src_4511",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4511",
+      "textbook_example_id": 4511,
+      "line_type": "triangle_median_length",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4511"
+    },
+    {
+      "component_id": "src_4514",
+      "status": "verified",
+      "presentation_mode": "single_choice",
+      "source_kind": "ex_4514",
+      "textbook_example_id": 4514,
+      "line_type": "multi_part_midpoint_application",
+      "domain_module": "core.gencode.division_point_slot_engine",
+      "entrypoint": "generate_division_point_payload",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\midpoint_source_fidelity\\vh_數學B1_MidpointCoordinates\\components\\src_4514"
+    }
+  ]
+}

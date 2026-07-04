@@ -1,0 +1,168 @@
+{
+  "schema_version": "source_graph_spec.v1",
+  "source_example_id": 4424,
+  "source_ref": "src_4424",
+  "problem_type_id": "graph_intercepts_and_linear_equation",
+  "source_graph_status": "source_graph_confirmed",
+  "source_graph": {
+    "graph_type": "linear_function",
+    "points": [
+      [
+        4,
+        0
+      ],
+      [
+        0,
+        -2
+      ]
+    ],
+    "x_intercept": 4,
+    "y_intercept": -2,
+    "two_points": [
+      [
+        4,
+        0
+      ],
+      [
+        0,
+        -2
+      ]
+    ],
+    "slope": "1/2",
+    "equation": "f(x)=1/2*x-2",
+    "display_equation": "f(x)=1/2x-2",
+    "axis_range": {
+      "x_min": -2,
+      "x_max": 6,
+      "y_min": -4,
+      "y_max": 2
+    },
+    "labels": {
+      "x_axis": "x",
+      "y_axis": "y",
+      "x_intercept_point": "(4,0)",
+      "y_intercept_point": "(0,-2)",
+      "line": "y=f(x)"
+    },
+    "requested": [
+      "x_intercept",
+      "y_intercept",
+      "function_equation"
+    ],
+    "presentation_mode": "graph_multi_part",
+    "answer_schema": "multi_part_intercepts_and_expression",
+    "topology": [
+      "read_two_intercepts_from_graph",
+      "derive_linear_function_equation"
+    ],
+    "semantic_answer": {
+      "x_intercept": 4,
+      "y_intercept": -2,
+      "function_equation": "f(x)=1/2x-2"
+    }
+  },
+  "traceability": {
+    "database": {
+      "path": "instance/kumon_math.db",
+      "table": "textbook_examples",
+      "row_id": 4424,
+      "has_correct_answer": false,
+      "has_detailed_solution": false,
+      "has_notes": false,
+      "image_asset_tables_found": []
+    },
+    "searched_locations": [
+      "uploads/",
+      "datasource/",
+      "artifacts/",
+      "figures/",
+      "reports/tmp_vision_ocr/",
+      "reports/b1_import_debug/"
+    ],
+    "source_provenance": {
+      "kind": "user_provided_original_textbook_figure",
+      "confirmation": "User confirmed the intercepts, points, slope, and equation from the original textbook figure.",
+      "confirmed_fields": [
+        "x_intercept",
+        "y_intercept",
+        "points",
+        "slope",
+        "equation"
+      ]
+    },
+    "matched_source_asset": "user_provided_original_textbook_figure",
+    "original_values_recoverable": true
+  },
+  "generator_template": {
+    "kind": "same_topology_template",
+    "is_source_graph_data": false,
+    "may_claim_original_values": false,
+    "presentation_mode": "graph_multi_part",
+    "answer_schema": "multi_part_intercepts_and_expression",
+    "required_givens": [
+      "generated_linear_function_graph"
+    ],
+    "requested_quantity": [
+      "x_intercept",
+      "y_intercept",
+      "linear_function_equation"
+    ],
+    "topology_tags": [
+      "graph_reading",
+      "two_axis_intercepts",
+      "equation_from_graph",
+      "multi_part"
+    ],
+    "parameters": {
+      "x_intercept": {
+        "type": "integer",
+        "minimum": -8,
+        "maximum": 8,
+        "exclude": [
+          0
+        ]
+      },
+      "y_intercept": {
+        "type": "integer",
+        "minimum": -8,
+        "maximum": 8,
+        "exclude": [
+          0
+        ]
+      },
+      "slope": {
+        "constraint": "nonzero",
+        "derived_as": "-y_intercept/x_intercept"
+      }
+    },
+    "derived_graph_spec": {
+      "x_intercept": "p",
+      "y_intercept": "q",
+      "two_points": [
+        [
+          "p",
+          0
+        ],
+        [
+          0,
+          "q"
+        ]
+      ],
+      "slope": "-q/p",
+      "equation": "y=(-q/p)x+q",
+      "axis_range": {
+        "x_min": "min(-2,p-2)",
+        "x_max": "max(2,p+2)",
+        "y_min": "min(-2,q-2)",
+        "y_max": "max(2,q+2)"
+      },
+      "labels": {
+        "x_axis": "x",
+        "y_axis": "y",
+        "x_intercept_point": "(p,0)",
+        "y_intercept_point": "(0,q)",
+        "line": "y=f(x)"
+      }
+    }
+  }
+}

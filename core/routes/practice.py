@@ -272,6 +272,11 @@ def _finalize_practice_question_api_fields(data: dict[str, Any], *, skill_id: st
     out["question_text"] = stem
     out["new_question_text"] = stem
     out["answer_contract"] = _canonicalize_answer_contract_for_api(out)
+    from core.gencode.choice_math_display import normalize_choice_displays
+
+    if isinstance(out.get("choices"), list) and out["choices"]:
+        out["choices"] = normalize_choice_displays(out["choices"])
+        out["choices_display"] = list(out["choices"])
     return out
 
 

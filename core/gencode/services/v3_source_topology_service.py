@@ -133,6 +133,22 @@ def build_source_topology_from_textbook_row(row: dict[str, Any]) -> dict[str, An
     choices = list(row.get("choices") or [])
     if not choices and has_abcd_choice_group(problem_text):
         choices = parse_abcd_choices_from_text(problem_text)
+    if str(row.get("skill_id") or "") == "vh_數學B1_MidpointCoordinates":
+        from core.gencode.midpoint_source_fidelity import get_source_spec
+
+        source_spec = get_source_spec(example_id)
+        return {
+            **source_spec,
+            "source_example_id": example_id,
+            "exact_task_operation": source_spec["problem_type_id"],
+            "source_question_text": problem_text,
+            "source_choices": choices,
+            "source_answer": str(row.get("correct_answer") or ""),
+            "source_explanation": str(row.get("detailed_solution") or ""),
+            "source_description": str(row.get("source_description") or ""),
+            "source_problem_type": str(row.get("problem_type") or ""),
+            "source_notes": notes,
+        }
     preset = dict(_STAT_CHART_SOURCE_TOPOLOGY.get(example_id) or {})
     if not preset:
         return {
@@ -179,9 +195,14 @@ def build_domain_params_from_topology(topology: dict[str, Any]) -> dict[str, Any
     ):
         if key in topology and topology[key] is not None:
             params[key] = topology[key]
-    params["exact_task_operation"] = str(
+    exact_operation = str(
         topology.get("exact_task_operation") or topology.get("domain_operation") or ""
     ).strip()
+    params["exact_task_operation"] = exact_operation
+    if exact_operation:
+        params["line_type"] = exact_operation
+        params["problem_type_id"] = exact_operation
+        params["target_task"] = exact_operation
     return params
 
 

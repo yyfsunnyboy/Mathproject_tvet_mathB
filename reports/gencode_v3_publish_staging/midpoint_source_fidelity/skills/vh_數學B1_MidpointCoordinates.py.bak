@@ -1,0 +1,60 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from core.gencode.runtime_skill_wrapper import (
+    dispatch_check,
+    dispatch_generate,
+    dispatch_get_hint,
+)
+
+SKILL_ID = 'vh_數學B1_MidpointCoordinates'
+GENERATOR_KEYS = ['src_4418', 'src_4422', 'src_4428', 'src_4429', 'src_4439', 'src_4440', 'src_4443', 'src_4447', 'src_4511', 'src_4514']
+GENERATOR_SPECS = [{'textbook_example_id': 4418, 'component_id': 'src_4418', 'generator_key': 'src_4418', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'compute_midpoint_coordinates', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'compute_midpoint_coordinates', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4418, 'source_order': 4418, 'sampling_weight': 10.0}, {'textbook_example_id': 4422, 'component_id': 'src_4422', 'generator_key': 'src_4422', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'compute_midpoint_coordinates', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'compute_midpoint_coordinates', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4422, 'source_order': 4422, 'sampling_weight': 10.0}, {'textbook_example_id': 4428, 'component_id': 'src_4428', 'generator_key': 'src_4428', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'midpoint_distance_from_origin', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'midpoint_distance_from_origin', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4428, 'source_order': 4428, 'sampling_weight': 10.0}, {'textbook_example_id': 4429, 'component_id': 'src_4429', 'generator_key': 'src_4429', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'parallelogram_fourth_vertex', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'parallelogram_fourth_vertex', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4429, 'source_order': 4429, 'sampling_weight': 10.0}, {'textbook_example_id': 4439, 'component_id': 'src_4439', 'generator_key': 'src_4439', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'midpoint_distance_from_origin', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'midpoint_distance_from_origin', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4439, 'source_order': 4439, 'sampling_weight': 10.0}, {'textbook_example_id': 4440, 'component_id': 'src_4440', 'generator_key': 'src_4440', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'parallelogram_fourth_vertex', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'parallelogram_fourth_vertex', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4440, 'source_order': 4440, 'sampling_weight': 10.0}, {'textbook_example_id': 4443, 'component_id': 'src_4443', 'generator_key': 'src_4443', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'centroid_coordinate', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'centroid_coordinate', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4443, 'source_order': 4443, 'sampling_weight': 10.0}, {'textbook_example_id': 4447, 'component_id': 'src_4447', 'generator_key': 'src_4447', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'compute_centroid_coordinates', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'compute_centroid_coordinates', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4447, 'source_order': 4447, 'sampling_weight': 10.0}, {'textbook_example_id': 4511, 'component_id': 'src_4511', 'generator_key': 'src_4511', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'compute_midpoint_coordinates', 'answer_type': 'choice', 'answer_value_type': 'choice', 'problem_type_id': 'compute_midpoint_coordinates', 'checker_key': 'choice_label_checker', 'equivalence_type': None, 'display_order': 4511, 'source_order': 4511, 'sampling_weight': 10.0}, {'textbook_example_id': 4514, 'component_id': 'src_4514', 'generator_key': 'src_4514', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'test', 'line_type': 'compute_centroid_coordinates', 'answer_type': 'coordinate_pair', 'answer_value_type': 'coordinate_pair', 'problem_type_id': 'compute_centroid_coordinates', 'checker_key': 'coordinate_pair_checker', 'equivalence_type': None, 'display_order': 4514, 'source_order': 4514, 'sampling_weight': 10.0}]
+
+
+def _resolve_v3_package_root() -> str:
+    """Resolve V3 house root from this facade location: skills/ -> <root>/agent_skills_v3."""
+    return str((Path(__file__).resolve().parent.parent / "agent_skills_v3").resolve())
+
+
+def generate(
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: int | str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    return dispatch_generate(
+        SKILL_ID,
+        GENERATOR_KEYS,
+        GENERATOR_SPECS,
+        v3_package_root=_resolve_v3_package_root(),
+        level=level,
+        seed=seed,
+        difficulty=difficulty,
+        **kwargs,
+    )
+
+
+def check(
+    user_answer: Any,
+    correct_answer: Any,
+    question_payload: dict[str, Any] | None = None,
+) -> Any:
+    return dispatch_check(
+        user_answer,
+        correct_answer,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )
+
+
+def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
+    return dispatch_get_hint(
+        step,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )

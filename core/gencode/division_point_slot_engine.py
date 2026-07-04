@@ -24,6 +24,13 @@ _TARGET_TASKS = frozenset(
         "compute_centroid_coordinates",
         "compute_midpoint_coordinates",
         "solve_point_from_section_ratio",
+        "midpoint_coordinate",
+        "midpoint_distance_from_origin",
+        "parallelogram_fourth_vertex",
+        "centroid_coordinate",
+        "inverse_centroid_vertex",
+        "triangle_median_length",
+        "multi_part_midpoint_application",
     }
 )
 
@@ -922,6 +929,17 @@ def generate_division_point_payload(
     seed: int | None,
 ) -> dict[str, Any]:
     """Generate one problem payload from spec.generator_contract."""
+    if skill_id == "vh_數學B1_MidpointCoordinates":
+        induced = spec.get("v3_induced_spec") if isinstance(spec.get("v3_induced_spec"), dict) else {}
+        source_example_id = (
+            spec.get("source_example_id")
+            or induced.get("source_example_id")
+            or induced.get("textbook_example_id")
+        )
+        if source_example_id:
+            from core.gencode.midpoint_source_fidelity import generate_source_faithful_payload
+
+            return generate_source_faithful_payload(int(source_example_id), seed)
     target = _resolve_forward_coordinate_target_task(spec)
     rng = _rng(seed, problem_type_id)
     if target == "compute_centroid_coordinates":

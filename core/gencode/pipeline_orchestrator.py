@@ -901,7 +901,19 @@ def _classify_examples_with_rulepack(
         text = _source_text(ex)
         text_l = text.lower()
         chosen = ""
+        topology_match: dict[str, Any] | None = None
+        from core.gencode.source_topology_rules import classify_source_topology
+
+        candidate_topology = classify_source_topology(ex)
+        if (
+            isinstance(candidate_topology, dict)
+            and str(candidate_topology.get("problem_type_id") or "") in pt_by_id
+        ):
+            topology_match = candidate_topology
+            chosen = str(candidate_topology["problem_type_id"])
         for r in rules:
+            if chosen:
+                break
             if not isinstance(r, dict):
                 continue
             toks = r.get("if_contains", []) if isinstance(r.get("if_contains"), list) else []
@@ -932,6 +944,7 @@ def _classify_examples_with_rulepack(
                 "semantic_audit_status": "review_required" if needs_human else "ok",
                 "generator_status": "manual_review" if needs_human else "ready_for_draft",
                 "manual_review_reason": str(cfg.get("notes", "")).strip() if needs_human else "",
+                **(topology_match or {}),
             }
         )
     return rows
@@ -4732,8 +4745,9 @@ def _build_v3_phase1_induced_spec(
     classification_source: str,
     presentation_mode: str,
     answer_contract: dict[str, str],
+    source_topology: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    result = {
         "classification_status": "resolved",
         "skill_id": str(skill_id or "").strip(),
         "source_example_id": int(textbook_example_id),
@@ -4746,6 +4760,13 @@ def _build_v3_phase1_induced_spec(
         "answer_contract": dict(answer_contract or {}),
         "answer_type": str((answer_contract or {}).get("answer_type") or "expression"),
     }
+    if isinstance(source_topology, dict) and source_topology:
+        result["source_topology"] = dict(source_topology)
+        result["required_givens"] = list(source_topology.get("required_givens") or [])
+        result["requested_quantity"] = list(source_topology.get("requested_quantity") or [])
+        result["topology_tags"] = list(source_topology.get("topology_tags") or [])
+        result["answer_schema"] = str(source_topology.get("answer_schema") or "")
+    return result
 
 
 def _phase1_induced_spec_is_reusable(spec: dict[str, Any], *, source_hash: str) -> bool:
@@ -4858,6 +4879,10 @@ def run_v3_no_llm_phase1_for_example(
             if not caps:
                 caps = [problem_type_id]
             answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
+            entry_mode = str(entry.get("presentation_mode") or presentation_mode)
+            for key in ("answer_type", "checker_key", "equivalence_type"):
+                if entry.get(key):
+                    answer_contract[key] = str(entry.get(key))
             return _build_v3_phase1_induced_spec(
                 skill_id=skill_key,
                 textbook_example_id=example_id,
@@ -4865,8 +4890,9 @@ def run_v3_no_llm_phase1_for_example(
                 problem_type_id=problem_type_id,
                 required_capabilities=caps,
                 classification_source="phase1_rule_pack",
-                presentation_mode=presentation_mode,
+                presentation_mode=entry_mode,
                 answer_contract=answer_contract,
+                source_topology=entry.get("source_topology") if isinstance(entry.get("source_topology"), dict) else None,
             )
 
     # ── Python classifier dispatch ────────────────────────────────────────────
@@ -6074,6 +6100,14 @@ def build_v3_component_draft_from_skill(
         answer_type = str(classification["answer_type"])
     else:
         answer_type = str(inferred.get("answer_type") or "expression")
+    topology_presentation = str(source_topology.get("presentation_mode") or "").strip()
+    topology_answer_schema = str(source_topology.get("answer_schema") or "").strip()
+    if topology_presentation:
+        presentation_mode = topology_presentation
+    if topology_presentation == "single_choice":
+        answer_type = "choice"
+    elif topology_answer_schema:
+        answer_type = topology_answer_schema
     if domain_ctx.fixed_domain_key == "statistics.descriptive_statistics":
         extra.update(_v3_extract_dispersion_constraints(row))
         extra["presentation_mode"] = presentation_mode
