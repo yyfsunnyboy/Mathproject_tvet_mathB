@@ -73,6 +73,20 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
         "icon": "🟡",
         "is_clickable": True,
     },
+    "completed_pending_publish": {
+        "status_key": "completed_pending_publish",
+        "label": "已完成待發布",
+        "badge_class": "teacher-v3-completed-pending-publish",
+        "icon": "🔵",
+        "is_clickable": True,
+    },
+    "partial": {
+        "status_key": "partial",
+        "label": "部分完成",
+        "badge_class": "teacher-v3-partial",
+        "icon": "🟡",
+        "is_clickable": True,
+    },
     "generation_incomplete": {
         "status_key": "generation_incomplete",
         "label": "生成未完成",
@@ -926,15 +940,21 @@ def build_admin_skill_gencode_status_view(
         "is_clickable": True,
     }
 
-    if published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
+    if failed_count > 0:
+        teacher_status = _teacher_status_payload("failed")
+    elif published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
         teacher_status = _teacher_status_payload("published")
-        teacher_status["label"] = "全部上線"
+        teacher_status["label"] = "已上線"
     elif published_count > 0:
         teacher_status = partially_published_payload
+        teacher_status["label"] = f"部分完成 ({published_count}/{total_examples})"
     elif failed_count > 0 and verified_count == 0:
         teacher_status = _teacher_status_payload("failed")
+    elif verified_count == total_examples and total_examples > 0:
+        teacher_status = _teacher_status_payload("completed_pending_publish")
     elif verified_count > 0:
-        teacher_status = _teacher_status_payload("generated_not_packaged")
+        teacher_status = _teacher_status_payload("partial")
+        teacher_status["label"] = f"部分完成 ({verified_count}/{total_examples})"
     elif bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")):
         teacher_status = _teacher_status_payload("generated_not_packaged")
     elif any(str(row.get("status")) in {"generating", "pending"} for row in rows):
@@ -1111,6 +1131,44 @@ def _batch_inspect_skill_production_files(
     return result
 
 
+def _inspect_published_manifest(skill_id: str, production_root: Path) -> dict[str, object]:
+    """Read production manifest evidence without mutating tracker state."""
+    manifest_path = production_root / skill_id / "component_manifest.json"
+    empty = {"manifest_exists": manifest_path.is_file(), "manifest_component_count": 0, "components": {}, "valid": False}
+    if not manifest_path.is_file():
+        return empty
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return empty
+    if not isinstance(payload, dict) or str(payload.get("skill_id") or "") != skill_id:
+        return empty
+    raw_components = payload.get("components") or []
+    if not isinstance(raw_components, list):
+        return empty
+    components: dict[int, str] = {}
+    for item in raw_components:
+        if not isinstance(item, dict):
+            return empty
+        try:
+            example_id = int(item.get("textbook_example_id"))
+        except (TypeError, ValueError):
+            return empty
+        component_id = str(item.get("component_id") or "").strip()
+        if not component_id or example_id in components:
+            return empty
+        if not (production_root / skill_id / "components" / component_id / "generate.py").is_file():
+            return empty
+        components[example_id] = component_id
+    declared_count = int(payload.get("component_count") or 0)
+    return {
+        "manifest_exists": True,
+        "manifest_component_count": declared_count,
+        "components": components,
+        "valid": declared_count == len(components),
+    }
+
+
 def _lite_published_component_count(
     skill_key: str,
     tracker_rows: list[dict[str, object]],
@@ -1193,6 +1251,34 @@ def _build_skill_list_gencode_status_view(
         if isinstance(row, dict) and row.get("status") == "missing_tracker"
     ]
     published_count = _lite_published_component_count(skill_id, tracker_rows, production_root)
+    manifest_info = _inspect_published_manifest(skill_id, production_root)
+    expected_example_ids = {
+        int(row["textbook_example_id"])
+        for row in coverage.get("examples", [])
+        if isinstance(row, dict) and row.get("textbook_example_id") is not None
+    }
+    manifest_components = manifest_info.get("components", {})
+    manifest_complete = bool(
+        manifest_info.get("valid")
+        and expected_example_ids
+        and set(manifest_components) == expected_example_ids
+        and bool(prod_info.get("production_wrapper_exists"))
+        and bool(prod_info.get("v3_package_exists"))
+    )
+    # A FULL restore can legitimately omit the raw tracker table while leaving
+    # the already-published package intact.  Treat a complete, exact production
+    # manifest as read-only deployment evidence; tracker failures still win.
+    stale_count = sum(
+        1
+        for row in tracker_rows
+        if str(row.get("status") or "").strip() in {"stale", "needs_human_review"}
+    )
+    repair_required = failed_count > 0 or stale_count > 0
+    # Fallback is exclusively for a missing tracker.  A present tracker remains
+    # the diagnostic authority even when the production package is complete.
+    if not tracker_rows and manifest_complete and not repair_required:
+        published_count = total_examples
+        verified_count = total_examples
     generated_not_packaged_count = max(0, verified_count - published_count)
     coverage_warnings = build_coverage_warnings(coverage)
 
@@ -1243,7 +1329,7 @@ def _build_skill_list_gencode_status_view(
     teacher_status = _resolve_skill_level_teacher_status(
         total_examples=total_examples,
         verified_count=verified_count,
-        failed_count=failed_count,
+        failed_count=failed_count + stale_count,
         published_count=published_count,
         generated_not_packaged_count=generated_not_packaged_count,
         tracker_rows=tracker_rows,
@@ -1270,8 +1356,13 @@ def _build_skill_list_gencode_status_view(
         "published_count": published_count,
         "generated_not_packaged_count": generated_not_packaged_count,
         "failed_count": failed_count,
+        "stale_count": stale_count,
+        "repair_required": repair_required,
         "unsupported_count": int(coverage.get("unsupported_count") or 0),
         "missing_tracker_count": len(missing_tracker_ids),
+        "manifest_component_count": int(manifest_info.get("manifest_component_count") or 0),
+        "manifest_complete": manifest_complete,
+        "status_evidence": "production_manifest" if manifest_complete else "tracker",
         "coverage_missing_ids": missing_tracker_ids,
         "coverage_warnings": coverage_warnings,
         "publish_ready": bool(coverage.get("publish_ready")),

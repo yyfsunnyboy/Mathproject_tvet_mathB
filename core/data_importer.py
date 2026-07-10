@@ -14,6 +14,7 @@ from core.backup.backup_registry import (
     get_core_table_names,
     get_table_spec,
 )
+from core.secret_policy import should_skip_system_setting_restore
 from models import (
     db,
     SkillInfo,
@@ -653,6 +654,10 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                         continue
 
                     data = clean_excel_row(data)
+                    if table_name == "system_settings" and should_skip_system_setting_restore(data.get("key")):
+                        skipped_count += 1
+                        results.append("INFO: ignored environment-managed secret setting ai_gemini_api_key")
+                        continue
                     if table_name == "skills_info":
                         data = _normalize_skills_info_defaults(data)
                     existing = _find_existing_instance(model, data)

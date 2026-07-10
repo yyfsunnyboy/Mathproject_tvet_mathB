@@ -87,7 +87,7 @@
                     <span class="section-desc" style="margin:0; font-size:0.85em;">切換系統運行模式，並檢查 runtime 實際生效狀態。</span>
                     <div class="api-key-global" id="global-api-key-container" style="flex-shrink:0; display:flex; align-items:center; gap:8px;">
                         <label id="key-label" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;"><i class="bi bi-key-fill"></i> Gemini API Key</label>
-                        <input type="password" id="gemini-api-key" placeholder="Enter API Key" oninput="checkApiKey()" style="width:180px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none; font-family:monospace;">
+                        <input type="password" id="gemini-api-key" placeholder="Enter API Key" oninput="checkApiKey()" autocomplete="new-password" style="width:180px; padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none; font-family:monospace;">
                         <div id="cloud-model-container" style="display:flex; align-items:center; gap:6px;">
                             <label for="cloud-model-select" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;">Cloud 模型</label>
                             <select id="cloud-model-select" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none;">
@@ -96,8 +96,9 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <span id="api_key_status" class="req-key-hint">尚未輸入 Key</span>
+                        <span id="api_key_status" class="req-key-hint">由環境變數管理</span>
                         <button id="btn-mode-action" class="btn btn-primary" onclick="testAndSaveMode()" style="padding:4px 10px; font-size:0.8em; min-height:unset; height:auto;"><i class="bi bi-check-circle"></i> 測試並儲存</button>
+                        <button class="btn btn-outline-danger" onclick="clearApiKey()" style="padding:4px 10px; font-size:0.8em; min-height:unset; height:auto;">清除 API Key</button>
                     </div>
                 </div>
                 <div class="dashboard-meta" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -344,11 +345,8 @@
             }
 
             if (keyStatus && currentMode !== "edge") {
-                const val = (document.getElementById("gemini-api-key")?.value || "").trim();
-                if (!val && !keyStatus.innerText.includes("✔")) {
-                    keyStatus.style.color = "#d97706";
-                    keyStatus.innerText = "尚未填寫 Key";
-                }
+                keyStatus.style.color = "#475569";
+                keyStatus.innerText = window.apiKeyStatusText || "未設定";
             }
         }
 
@@ -403,16 +401,6 @@
                 return;
             }
 
-            const apiKey = (document.getElementById("gemini-api-key")?.value || "").trim();
-            if (!apiKey) {
-                if (statusText) {
-                    statusText.style.color = "#dc2626";
-                    statusText.innerText = "✖ 請先輸入 API Key";
-                }
-                showAlert("請先輸入 API Key", false);
-                return;
-            }
-
             btn.innerHTML = `<i class="bi bi-hourglass-split"></i> 測試中...`;
             btn.disabled = true;
             if (statusText) {
@@ -425,14 +413,14 @@
                 const testRes = await fetch("/test_api_key", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ api_key: apiKey, cloud_model: cloudModel })
+                    body: JSON.stringify({ api_key: (document.getElementById("gemini-api-key")?.value || "").trim(), cloud_model: cloudModel })
                 });
                 const testData = await testRes.json();
                 
                 if (!testData.success) {
                     if (statusText) {
                         statusText.style.color = "#dc2626";
-                        statusText.innerText = testData.error_type === "model_not_found" ? "✖ 模型不可用" : "✖ Key 無效";
+                        statusText.innerText = testData.error_type === "model_not_found" ? "✖ 模型不可用" : "✖ 環境 Key 無效或未設定";
                     }
                     throw new Error(testData.message || "API Key 測試失敗或無效");
                 }
@@ -457,7 +445,7 @@
                     throw new Error(saveData.message || "模式儲存失敗");
                 }
                 
-                showAlert(`已驗證 Key，且模式成功切換為 ${getModeDisplayName(currentMode)}`, true);
+                showAlert(`已驗證環境設定，且模式成功切換為 ${getModeDisplayName(currentMode)}`, true);
                 if (selectedBadge) {
                     selectedBadge.className = "badge badge-success";
                     selectedBadge.innerHTML = `<i class="bi bi-check-circle-fill"></i> 已套用：${getModeDisplayName(currentMode)}`;
@@ -474,6 +462,21 @@
                 btn.innerHTML = originalBtnText;
                 btn.disabled = false;
             }
+        }
+
+        async function clearApiKey() {
+            if (!confirm("確定要清除專案 .env 中的 Gemini API Key？")) return;
+            const res = await fetch("/admin/ai_prompt_settings/clear_api_key", { method: "POST" });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                showAlert(data.message || "清除失敗", false);
+                return;
+            }
+            const input = document.getElementById("gemini-api-key");
+            if (input) input.value = "";
+            const status = document.getElementById("api_key_status");
+            if (status) status.innerText = "未設定";
+            showAlert("API Key 已清除", true);
         }
 
         function selectMode(mode) {
@@ -611,6 +614,9 @@
                     ensureCloudModelOption();
                     if (cloudModelSelect) cloudModelSelect.value = cloudModel;
                     document.getElementById("prompt-editor").value = data.prompt || "";
+                    window.apiKeyStatusText = data.has_gemini_api_key
+                        ? `已設定（${data.masked_gemini_api_key || "****"}）`
+                        : "未設定";
                     currentMode = data.ai_mode || "cloud";
                     modelMappingCache[currentMode] = data.ai_model_roles || {};
                     ["cloud", "edge", "hybrid"].forEach(m => {

@@ -185,7 +185,7 @@ from core.textbook_filename_parser import (
     resolve_upload_filenames,
 )
 from core.textbook_structure_parser import get_structure_map
-from core.ai_wrapper import resolve_gemini_api_key, mask_api_key
+from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, mask_api_key_last4
 from core.session_safety import (
     get_large_result_from_server_store,
     put_large_result_in_server_store,
@@ -1688,6 +1688,14 @@ def db_maintenance():
                             df = pd.DataFrame()
                             current_app.logger.warning(f"??穿???萄??謘潔??謅??撖⊥??蝞???Sheet: {table}")
                     df = sanitize_dataframe_for_excel(df)
+                    # Full backups may include system_settings, but credentials
+                    # are environment-managed and must never leave this host.
+                    if table == "system_settings" and "key" in df.columns:
+                        from core.secret_policy import is_secret_setting_key, redact_system_settings_records
+                        secret_rows = df["key"].map(is_secret_setting_key)
+                        if bool(secret_rows.any()):
+                            df = pd.DataFrame(redact_system_settings_records(df.to_dict("records")), columns=df.columns)
+                            current_app.logger.info("INFO: redacted environment-managed secret settings from export")
                     # ?????object ????????對??殉???橫???float/bool ????怨?謒?re.sub ???芰???
                     for col in df.columns:
                         if str(df[col].dtype) == "object":
@@ -4393,8 +4401,8 @@ def _build_ai_settings_payload(prompt, updated_at):
 
     available_models = get_available_model_presets()
     model_roles = _generate_model_roles(ai_mode, available_models, cloud_model=cloud_model)
-    gemini_key_row = SystemSetting.query.filter_by(key=SETTING_GEMINI_API_KEY).first()
-    has_gemini_api_key = bool(gemini_key_row and str(gemini_key_row.value or "").strip())
+    gemini_api_key, _gemini_key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(gemini_api_key)
 
     return {
         'success': True,
@@ -4407,6 +4415,7 @@ def _build_ai_settings_payload(prompt, updated_at):
         'ai_model_roles': model_roles,
         'available_models': available_models,
         'has_gemini_api_key': has_gemini_api_key,
+        'masked_gemini_api_key': mask_api_key_last4(gemini_api_key),
     }
 
 
@@ -4716,6 +4725,21 @@ def check_gemini_api_key_masked_status():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
+@core_bp.route('/admin/ai_prompt_settings/clear_api_key', methods=['POST'])
+@login_required
+def clear_gemini_api_key():
+    """Clear the project-local environment key without touching database settings."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'success': False, 'message': 'Permission denied'}), 403
+    try:
+        from core.env_secrets import update_gemini_api_key
+        update_gemini_api_key(None)
+        return jsonify({'success': True, 'has_api_key': False, 'masked_key': None})
+    except Exception:
+        current_app.logger.exception("Failed to clear environment-managed Gemini API key")
+        return jsonify({'success': False, 'message': 'Failed to clear API key'}), 500
+
+
 @core_bp.route('/admin/ai_prompt_settings/update', methods=['POST'])
 @login_required
 def update_ai_prompt_setting():
@@ -4736,25 +4760,6 @@ def update_ai_prompt_setting():
             if '{context}' not in new_prompt or '{prereq_text}' not in new_prompt:
                 return jsonify({'success': False, 'message': 'Prompt must include {context} and {prereq_text}'}), 400
             set_system_setting_value('ai_analyzer_prompt', new_prompt, 'AI analyzer prompt')
-
-        raw_api_key = data.get('api_key')
-        if raw_api_key is None:
-            raw_api_key = data.get('gemini_api_key')
-        if raw_api_key is None:
-            raw_api_key = form_data.get('api_key')
-        if raw_api_key is None:
-            raw_api_key = form_data.get('gemini_api_key')
-        if raw_api_key is None:
-            raw_api_key = session.get("GEMINI_API_KEY")
-        if raw_api_key is not None:
-            api_key_value = str(raw_api_key).strip()
-            if api_key_value:
-                set_system_setting_value(
-                    SETTING_GEMINI_API_KEY,
-                    api_key_value,
-                    'Gemini API key for cloud runtime'
-                )
-                current_app.logger.info("[AI KEY] source=db")
 
         cloud_model_input = data.get('cloud_model')
         if cloud_model_input is None:

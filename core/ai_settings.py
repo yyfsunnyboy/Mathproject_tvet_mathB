@@ -172,6 +172,8 @@ def _get_system_setting_value(key: str) -> str | None:
 
 def set_system_setting_value(key: str, value: Any, description: str = "") -> None:
     """Upsert one SystemSetting row. Caller controls commit/rollback."""
+    if str(key or "").strip().lower() == SETTING_GEMINI_API_KEY:
+        raise ValueError("ai_gemini_api_key is environment-managed and cannot be persisted")
     from models import SystemSetting
 
     text_value = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)

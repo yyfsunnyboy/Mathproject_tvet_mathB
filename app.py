@@ -337,7 +337,8 @@ def create_app():
         import google.generativeai as genai
 
         data = request.get_json(silent=True) or {}
-        api_key = (data.get("api_key") or "").strip()
+        submitted_key = str(data.get("api_key") or "").strip()
+        api_key = submitted_key or resolve_gemini_api_key()[0]
         model_input = data.get("cloud_model") or data.get("model_id") or data.get("model")
 
         if not api_key:
@@ -345,7 +346,7 @@ def create_app():
                 "success": False,
                 "ok": False,
                 "error_type": "api_key_empty",
-                "message": "API key is empty"
+                "message": "GEMINI_API_KEY or GOOGLE_API_KEY is not configured in the environment"
             })
 
         try:
@@ -368,19 +369,20 @@ def create_app():
             model = genai.GenerativeModel(model_name)
             _ = model.generate_content("1+1=?")
 
+            if submitted_key:
+                from core.env_secrets import update_gemini_api_key
+                update_gemini_api_key(submitted_key)
+
             # 測試成功後存入 session
-            session["GEMINI_API_KEY"] = api_key
             session["AI_CLOUD_MODEL"] = model_name
             try:
                 app_db = None
                 from models import db as app_db
                 from core.ai_settings import (
                     SETTING_AI_CLOUD_MODEL,
-                    SETTING_GEMINI_API_KEY,
                     set_system_setting_value,
                 )
 
-                set_system_setting_value(SETTING_GEMINI_API_KEY, api_key, "Gemini API key for cloud runtime")
                 set_system_setting_value(SETTING_AI_CLOUD_MODEL, model_name, "Cloud Gemini model for cloud/hybrid runtime")
                 app_db.session.commit()
             except Exception as save_error:
@@ -400,7 +402,10 @@ def create_app():
             return jsonify({
                 "success": True,
                 "ok": True,
-                "message": "API key valid",
+                "message": (
+                    "API key valid and saved to environment"
+                    if submitted_key else "Existing environment API key is valid; no change made"
+                ),
                 "model": model_name
             })
 

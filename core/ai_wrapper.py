@@ -18,7 +18,7 @@ import json
 import logging
 from flask import current_app, has_app_context, has_request_context, session
 from config import Config
-from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config, SETTING_GEMINI_API_KEY
+from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config
 
 # --- SDK Import Strategy ---
 # Priority: New SDK (google.genai) > Old SDK (google.generativeai)
@@ -52,6 +52,12 @@ def mask_api_key(api_key):
     if len(key) <= 8:
         return "*" * len(key)
     return f"{key[:4]}{'*' * (len(key) - 8)}{key[-4:]}"
+
+
+def mask_api_key_last4(api_key):
+    """UI-safe key status: reveal only the final four characters."""
+    key = str(api_key or "").strip()
+    return f"****{key[-4:]}" if key else None
 
 
 def _looks_like_gemini_key(api_key):
@@ -434,38 +440,11 @@ class LocalAIClient:
 
 def resolve_gemini_api_key():
     """
-    Resolve Gemini API key with strict priority:
-    1) DB SystemSetting
-    2) runtime current_app.config
-    3) config.py (Config)
-    4) environment (GOOGLE_API_KEY)
+    Resolve Gemini API key exclusively from environment variables.
+
+    ``.env`` loaders populate ``os.environ`` before application startup, so this
+    deliberately has no database, session, request, or backup dependency.
     """
-    # 1) DB SystemSetting
-    if has_app_context():
-        try:
-            from models import SystemSetting
-
-            row = SystemSetting.query.filter_by(key=SETTING_GEMINI_API_KEY).first()
-            if row and row.value and str(row.value).strip():
-                return str(row.value).strip(), "db"
-        except Exception:
-            pass
-
-    # 2) runtime app config
-    if has_app_context():
-        try:
-            runtime_key = current_app.config.get("GEMINI_API_KEY") or current_app.config.get("GOOGLE_API_KEY")
-            if runtime_key:
-                return str(runtime_key).strip(), "runtime"
-        except Exception:
-            pass
-
-    # 3) static Config
-    cfg_key = getattr(Config, "GEMINI_API_KEY", None) or getattr(Config, "GOOGLE_API_KEY", None)
-    if cfg_key:
-        return str(cfg_key).strip(), "config"
-
-    # 4) environment
     env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if env_key:
         return str(env_key).strip(), "env"

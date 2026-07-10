@@ -1,0 +1,3736 @@
+{
+  "vh_數學B1_AbsoluteValue": {
+    "db_example_ids": [
+      4398,
+      4399,
+      4408,
+      4412
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 4,
+    "manifest_component_ids": [
+      "src_4398",
+      "src_4399",
+      "src_4408",
+      "src_4412"
+    ],
+    "manifest_example_ids": [
+      4398,
+      4399,
+      4408,
+      4412
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_4398",
+      "src_4399",
+      "src_4408",
+      "src_4412"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 4,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_AbsoluteValueInequality": {
+    "db_example_ids": [
+      4400,
+      4402,
+      4403,
+      4404,
+      4405,
+      4406,
+      4407,
+      4409,
+      4413,
+      4499
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 10,
+      "production_component_count": 10
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 10,
+    "manifest_component_ids": [
+      "src_4400",
+      "src_4402",
+      "src_4403",
+      "src_4404",
+      "src_4405",
+      "src_4406",
+      "src_4407",
+      "src_4409",
+      "src_4413",
+      "src_4499"
+    ],
+    "manifest_example_ids": [
+      4400,
+      4402,
+      4403,
+      4404,
+      4405,
+      4406,
+      4407,
+      4409,
+      4413,
+      4499
+    ],
+    "actual_gen_py_count": 10,
+    "actual_gen_py_comps": [
+      "src_4400",
+      "src_4402",
+      "src_4403",
+      "src_4404",
+      "src_4405",
+      "src_4406",
+      "src_4407",
+      "src_4409",
+      "src_4413",
+      "src_4499"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 10,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning": {
+    "db_example_ids": [
+      4411,
+      4415,
+      4416
+    ],
+    "db_example_count": 3,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 3,
+      "production_component_count": 3
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 3,
+    "manifest_component_ids": [
+      "src_4411",
+      "src_4415",
+      "src_4416"
+    ],
+    "manifest_example_ids": [
+      4411,
+      4415,
+      4416
+    ],
+    "actual_gen_py_count": 3,
+    "actual_gen_py_comps": [
+      "src_4411",
+      "src_4415",
+      "src_4416"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 3,
+    "view_total_examples": 3,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_CartesianCoordinateSystemEstablishment": {
+    "db_example_ids": [
+      4417,
+      4435,
+      4509,
+      4510
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 4,
+    "manifest_component_ids": [
+      "src_4417",
+      "src_4435",
+      "src_4509",
+      "src_4510"
+    ],
+    "manifest_example_ids": [
+      4417,
+      4435,
+      4509,
+      4510
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_4417",
+      "src_4435",
+      "src_4509",
+      "src_4510"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 4,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_CompletingTheSquare": {
+    "db_example_ids": [
+      4468,
+      4501
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_DistanceBetweenPointAndLine": {
+    "db_example_ids": [
+      4568,
+      4569,
+      4575,
+      4576,
+      4586,
+      4587,
+      4607
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 7,
+      "production_component_count": 7
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 7,
+    "manifest_component_ids": [
+      "src_4568",
+      "src_4569",
+      "src_4575",
+      "src_4576",
+      "src_4586",
+      "src_4587",
+      "src_4607"
+    ],
+    "manifest_example_ids": [
+      4568,
+      4569,
+      4575,
+      4576,
+      4586,
+      4587,
+      4607
+    ],
+    "actual_gen_py_count": 7,
+    "actual_gen_py_comps": [
+      "src_4568",
+      "src_4569",
+      "src_4575",
+      "src_4576",
+      "src_4586",
+      "src_4587",
+      "src_4607"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 7,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_DistanceBetweenTwoParallelLines": {
+    "db_example_ids": [
+      4570,
+      4571,
+      4577,
+      4578,
+      4579,
+      4580,
+      4583,
+      4584,
+      4588,
+      4589,
+      4608
+    ],
+    "db_example_count": 11,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 11,
+      "production_component_count": 11
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 11,
+    "manifest_component_ids": [
+      "src_4570",
+      "src_4571",
+      "src_4577",
+      "src_4578",
+      "src_4579",
+      "src_4580",
+      "src_4583",
+      "src_4584",
+      "src_4588",
+      "src_4589",
+      "src_4608"
+    ],
+    "manifest_example_ids": [
+      4570,
+      4571,
+      4577,
+      4578,
+      4579,
+      4580,
+      4583,
+      4584,
+      4588,
+      4589,
+      4608
+    ],
+    "actual_gen_py_count": 11,
+    "actual_gen_py_comps": [
+      "src_4570",
+      "src_4571",
+      "src_4577",
+      "src_4578",
+      "src_4579",
+      "src_4580",
+      "src_4583",
+      "src_4584",
+      "src_4588",
+      "src_4589",
+      "src_4608"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 11,
+    "view_total_examples": 11,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_DistanceBetweenTwoPointsInPlane": {
+    "db_example_ids": [
+      4419,
+      4432,
+      4436,
+      4437
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 4,
+    "manifest_component_ids": [
+      "src_4419",
+      "src_4432",
+      "src_4436",
+      "src_4437"
+    ],
+    "manifest_example_ids": [
+      4419,
+      4432,
+      4436,
+      4437
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_4419",
+      "src_4432",
+      "src_4436",
+      "src_4437"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 4,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_DivisionPointCoordinates": {
+    "db_example_ids": [
+      4420,
+      4421,
+      4423,
+      4427,
+      4438,
+      4512,
+      4513
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 7,
+      "production_component_count": 7
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 7,
+    "manifest_component_ids": [
+      "src_4420",
+      "src_4421",
+      "src_4423",
+      "src_4427",
+      "src_4438",
+      "src_4512",
+      "src_4513"
+    ],
+    "manifest_example_ids": [
+      4420,
+      4421,
+      4423,
+      4427,
+      4438,
+      4512,
+      4513
+    ],
+    "actual_gen_py_count": 7,
+    "actual_gen_py_comps": [
+      "src_4420",
+      "src_4421",
+      "src_4423",
+      "src_4427",
+      "src_4438",
+      "src_4512",
+      "src_4513"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 7,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_FactorTheorem": {
+    "db_example_ids": [
+      4646,
+      4647,
+      4648,
+      4649,
+      4650,
+      4651,
+      4652,
+      4653,
+      4654,
+      4655,
+      4660,
+      4661,
+      4662,
+      4663,
+      4710,
+      4711,
+      4712
+    ],
+    "db_example_count": 17,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 17,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_FunctionConcept": {
+    "db_example_ids": [
+      4430,
+      4431
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_GeneralFormOfLinearEquation": {
+    "db_example_ids": [
+      4565,
+      4566,
+      4567,
+      4572,
+      4573,
+      4574,
+      4581,
+      4582,
+      4585,
+      4592,
+      4593,
+      4594,
+      4595,
+      4596,
+      4597,
+      4598,
+      4599
+    ],
+    "db_example_count": 17,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 17,
+      "production_component_count": 17
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 17,
+    "manifest_component_ids": [
+      "src_4565",
+      "src_4566",
+      "src_4567",
+      "src_4572",
+      "src_4573",
+      "src_4574",
+      "src_4581",
+      "src_4582",
+      "src_4585",
+      "src_4592",
+      "src_4593",
+      "src_4594",
+      "src_4595",
+      "src_4596",
+      "src_4597",
+      "src_4598",
+      "src_4599"
+    ],
+    "manifest_example_ids": [
+      4565,
+      4566,
+      4567,
+      4572,
+      4573,
+      4574,
+      4581,
+      4582,
+      4585,
+      4592,
+      4593,
+      4594,
+      4595,
+      4596,
+      4597,
+      4598,
+      4599
+    ],
+    "actual_gen_py_count": 17,
+    "actual_gen_py_comps": [
+      "src_4565",
+      "src_4566",
+      "src_4567",
+      "src_4572",
+      "src_4573",
+      "src_4574",
+      "src_4581",
+      "src_4582",
+      "src_4585",
+      "src_4592",
+      "src_4593",
+      "src_4594",
+      "src_4595",
+      "src_4596",
+      "src_4597",
+      "src_4598",
+      "src_4599"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 17,
+    "view_total_examples": 17,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_HorizontalAndVerticalLineEquations": {
+    "db_example_ids": [
+      4544,
+      4553,
+      4562,
+      4591
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [
+      "src_4544",
+      "src_4553",
+      "src_4562",
+      "src_4591"
+    ],
+    "manifest_example_ids": [
+      4544,
+      4553,
+      4562,
+      4591
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_4544",
+      "src_4553",
+      "src_4562",
+      "src_4591"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_InterceptForm": {
+    "db_example_ids": [
+      4547,
+      4548,
+      4555,
+      4558,
+      4559,
+      4564,
+      4604
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 7,
+      "production_component_count": 7
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 7,
+    "manifest_component_ids": [
+      "src_4547",
+      "src_4548",
+      "src_4555",
+      "src_4558",
+      "src_4559",
+      "src_4564",
+      "src_4604"
+    ],
+    "manifest_example_ids": [
+      4547,
+      4548,
+      4555,
+      4558,
+      4559,
+      4564,
+      4604
+    ],
+    "actual_gen_py_count": 7,
+    "actual_gen_py_comps": [
+      "src_4547",
+      "src_4548",
+      "src_4555",
+      "src_4558",
+      "src_4559",
+      "src_4564",
+      "src_4604"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 7,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_LinearFunction": {
+    "db_example_ids": [
+      4424,
+      4425,
+      4426,
+      4433,
+      4434,
+      4441,
+      4442,
+      4444,
+      4445,
+      4446,
+      4448,
+      4449,
+      4500,
+      4515,
+      4516
+    ],
+    "db_example_count": 15,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 15,
+      "production_component_count": 15
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 15,
+    "manifest_component_ids": [
+      "src_4424",
+      "src_4425",
+      "src_4426",
+      "src_4433",
+      "src_4434",
+      "src_4441",
+      "src_4442",
+      "src_4444",
+      "src_4445",
+      "src_4446",
+      "src_4448",
+      "src_4449",
+      "src_4500",
+      "src_4515",
+      "src_4516"
+    ],
+    "manifest_example_ids": [
+      4424,
+      4425,
+      4426,
+      4433,
+      4434,
+      4441,
+      4442,
+      4444,
+      4445,
+      4446,
+      4448,
+      4449,
+      4500,
+      4515,
+      4516
+    ],
+    "actual_gen_py_count": 15,
+    "actual_gen_py_comps": [
+      "src_4424",
+      "src_4425",
+      "src_4426",
+      "src_4433",
+      "src_4434",
+      "src_4441",
+      "src_4442",
+      "src_4444",
+      "src_4445",
+      "src_4446",
+      "src_4448",
+      "src_4449",
+      "src_4500",
+      "src_4515",
+      "src_4516"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 15,
+    "view_total_examples": 15,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_MidpointCoordinates": {
+    "db_example_ids": [
+      4418,
+      4422,
+      4428,
+      4429,
+      4439,
+      4440,
+      4443,
+      4447,
+      4511,
+      4514
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 10,
+      "production_component_count": 10
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 10,
+    "manifest_component_ids": [
+      "src_4418",
+      "src_4422",
+      "src_4428",
+      "src_4429",
+      "src_4439",
+      "src_4440",
+      "src_4443",
+      "src_4447",
+      "src_4511",
+      "src_4514"
+    ],
+    "manifest_example_ids": [
+      4418,
+      4422,
+      4428,
+      4429,
+      4439,
+      4440,
+      4443,
+      4447,
+      4511,
+      4514
+    ],
+    "actual_gen_py_count": 10,
+    "actual_gen_py_comps": [
+      "src_4418",
+      "src_4422",
+      "src_4428",
+      "src_4429",
+      "src_4439",
+      "src_4440",
+      "src_4443",
+      "src_4447",
+      "src_4511",
+      "src_4514"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 10,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_NumberLine": {
+    "db_example_ids": [
+      4401
+    ],
+    "db_example_count": 1,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 1,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PointSlopeForm": {
+    "db_example_ids": [
+      4540,
+      4541,
+      4542,
+      4543,
+      4546,
+      4549,
+      4550,
+      4551,
+      4552,
+      4556,
+      4557,
+      4560,
+      4561,
+      4606
+    ],
+    "db_example_count": 14,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 14,
+      "production_component_count": 14
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [
+      "src_4540",
+      "src_4541",
+      "src_4542",
+      "src_4543",
+      "src_4546",
+      "src_4549",
+      "src_4550",
+      "src_4551",
+      "src_4552",
+      "src_4556",
+      "src_4557",
+      "src_4560",
+      "src_4561",
+      "src_4606"
+    ],
+    "manifest_example_ids": [
+      4540,
+      4541,
+      4542,
+      4543,
+      4546,
+      4549,
+      4550,
+      4551,
+      4552,
+      4556,
+      4557,
+      4560,
+      4561,
+      4606
+    ],
+    "actual_gen_py_count": 14,
+    "actual_gen_py_comps": [
+      "src_4540",
+      "src_4541",
+      "src_4542",
+      "src_4543",
+      "src_4546",
+      "src_4549",
+      "src_4550",
+      "src_4551",
+      "src_4552",
+      "src_4556",
+      "src_4557",
+      "src_4560",
+      "src_4561",
+      "src_4606"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 14,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PolynomialArithmeticOperations": {
+    "db_example_ids": [
+      4612,
+      4613,
+      4614,
+      4615,
+      4616,
+      4617,
+      4622,
+      4623,
+      4624,
+      4625,
+      4626,
+      4627,
+      4628,
+      4633,
+      4634,
+      4635,
+      4636,
+      4637,
+      4706,
+      4718,
+      4719,
+      4720
+    ],
+    "db_example_count": 22,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 22,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PolynomialBasicConcepts": {
+    "db_example_ids": [
+      4609,
+      4610,
+      4618,
+      4619,
+      4620,
+      4629,
+      4630,
+      4631,
+      4716
+    ],
+    "db_example_count": 9,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 9,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PolynomialEquality": {
+    "db_example_ids": [
+      4611,
+      4621,
+      4632,
+      4717
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PolynomialFactoring": {
+    "db_example_ids": [
+      4671,
+      4672,
+      4673,
+      4674,
+      4675,
+      4681,
+      4682,
+      4683,
+      4684,
+      4685,
+      4694,
+      4695,
+      4696,
+      4697,
+      4701,
+      4713,
+      4714,
+      4715
+    ],
+    "db_example_count": 18,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 18,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PropertiesOfParallelLines": {
+    "db_example_ids": [
+      4530,
+      4535,
+      4600,
+      4602
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_PropertiesOfPerpendicularLines": {
+    "db_example_ids": [
+      4526,
+      4527,
+      4531,
+      4532,
+      4536,
+      4537,
+      4538,
+      4539
+    ],
+    "db_example_count": 8,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 8,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_QuadraticFunctionExtremum": {
+    "db_example_ids": [
+      4454,
+      4455,
+      4457,
+      4458,
+      4459,
+      4463,
+      4464,
+      4465,
+      4469,
+      4470,
+      4471,
+      4472,
+      4502
+    ],
+    "db_example_count": 13,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 13,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_QuadraticFunctionGraph": {
+    "db_example_ids": [
+      4450,
+      4460,
+      4466,
+      4503
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_QuadraticInequalityAndFactoring": {
+    "db_example_ids": [
+      4473,
+      4480,
+      4490
+    ],
+    "db_example_count": 3,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 3,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_QuadraticInequalitySolution": {
+    "db_example_ids": [
+      4474,
+      4475,
+      4476,
+      4477,
+      4478,
+      4479,
+      4481,
+      4482,
+      4483,
+      4484,
+      4485,
+      4486,
+      4487,
+      4488,
+      4489,
+      4491,
+      4492,
+      4493,
+      4494,
+      4495,
+      4496,
+      4497,
+      4498,
+      4505,
+      4506,
+      4507,
+      4508,
+      4517,
+      4518
+    ],
+    "db_example_count": 29,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 29,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_RationalEquation": {
+    "db_example_ids": [
+      4678,
+      4679,
+      4680,
+      4687,
+      4688,
+      4689,
+      4690,
+      4693,
+      4698,
+      4699,
+      4700,
+      4705,
+      4723,
+      4724
+    ],
+    "db_example_count": 14,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 14,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_RationalExpressionArithmeticOperations": {
+    "db_example_ids": [
+      4676,
+      4677,
+      4686,
+      4691,
+      4692,
+      4702,
+      4703,
+      4704
+    ],
+    "db_example_count": 8,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 8,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_RemainderTheorem": {
+    "db_example_ids": [
+      4638,
+      4639,
+      4640,
+      4641,
+      4642,
+      4643,
+      4644,
+      4645,
+      4656,
+      4657,
+      4658,
+      4659,
+      4664,
+      4665,
+      4666,
+      4667,
+      4668,
+      4669,
+      4670,
+      4707,
+      4708,
+      4709,
+      4721,
+      4722
+    ],
+    "db_example_count": 24,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 24,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_SlopeInterceptForm": {
+    "db_example_ids": [
+      4545,
+      4554,
+      4563,
+      4603,
+      4605
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 5,
+      "production_component_count": 5
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [
+      "src_4545",
+      "src_4554",
+      "src_4563",
+      "src_4603",
+      "src_4605"
+    ],
+    "manifest_example_ids": [
+      4545,
+      4554,
+      4563,
+      4603,
+      4605
+    ],
+    "actual_gen_py_count": 5,
+    "actual_gen_py_comps": [
+      "src_4545",
+      "src_4554",
+      "src_4563",
+      "src_4603",
+      "src_4605"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B1_SlopeOfALine": {
+    "db_example_ids": [
+      4519,
+      4520,
+      4521,
+      4522,
+      4523,
+      4524,
+      4525,
+      4529,
+      4533,
+      4534,
+      4590,
+      4601
+    ],
+    "db_example_count": 12,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 12,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_SubSection332": {
+    "db_example_ids": [],
+    "db_example_count": 0,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 0,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B1_VertexFormOfQuadraticFunction": {
+    "db_example_ids": [
+      4451,
+      4452,
+      4453,
+      4456,
+      4504
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_AdditionPrinciple": {
+    "db_example_ids": [
+      3618,
+      3619,
+      3620,
+      3668
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_ApplicationsOfExpectation": {
+    "db_example_ids": [
+      3749,
+      3750,
+      3751,
+      3752,
+      3753,
+      3754,
+      3755,
+      3756,
+      3757,
+      3758
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_BasicConceptsOfSets": {
+    "db_example_ids": [
+      3693,
+      3694,
+      3695,
+      3696,
+      3697,
+      3698,
+      3699,
+      3700,
+      3701,
+      3880
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_BinomialCoefficientIdentities": {
+    "db_example_ids": [
+      3665,
+      3666,
+      3667
+    ],
+    "db_example_count": 3,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 3,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_BinomialTheorem": {
+    "db_example_ids": [
+      3656,
+      3657,
+      3658,
+      3659,
+      3660,
+      3661,
+      3662,
+      3663,
+      3664,
+      3690,
+      3691,
+      3692
+    ],
+    "db_example_count": 12,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 12,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_CentralTendencyMeasures": {
+    "db_example_ids": [
+      3835,
+      3836,
+      3837,
+      3838,
+      3839,
+      3840,
+      3841,
+      3887,
+      3888,
+      3889,
+      3890
+    ],
+    "db_example_count": 11,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 11,
+      "production_component_count": 11
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 11,
+    "manifest_component_ids": [
+      "src_3835",
+      "src_3836",
+      "src_3837",
+      "src_3838",
+      "src_3839",
+      "src_3840",
+      "src_3841",
+      "src_3887",
+      "src_3888",
+      "src_3889",
+      "src_3890"
+    ],
+    "manifest_example_ids": [
+      3835,
+      3836,
+      3837,
+      3838,
+      3839,
+      3840,
+      3841,
+      3887,
+      3888,
+      3889,
+      3890
+    ],
+    "actual_gen_py_count": 11,
+    "actual_gen_py_comps": [
+      "src_3835",
+      "src_3836",
+      "src_3837",
+      "src_3838",
+      "src_3839",
+      "src_3840",
+      "src_3841",
+      "src_3887",
+      "src_3888",
+      "src_3889",
+      "src_3890"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 11,
+    "view_total_examples": 11,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_Combination": {
+    "db_example_ids": [
+      3683,
+      3684,
+      3685,
+      3686,
+      3687,
+      3688,
+      3689
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_CombinationApplications": {
+    "db_example_ids": [
+      3648,
+      3649,
+      3650,
+      3651,
+      3652,
+      3653,
+      3654
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_CombinationDefinition": {
+    "db_example_ids": [
+      3643,
+      3645
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_CombinationProperties": {
+    "db_example_ids": [
+      3646,
+      3647
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_ConditionalProbability": {
+    "db_example_ids": [
+      3731,
+      3732,
+      3733,
+      3734,
+      3735
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_CumulativeFrequencyTablesAndGraphs": {
+    "db_example_ids": [
+      3830,
+      3831,
+      3832,
+      3833,
+      3834
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 5,
+      "production_component_count": 5
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 5,
+    "manifest_component_ids": [
+      "src_3830",
+      "src_3831",
+      "src_3832",
+      "src_3833",
+      "src_3834"
+    ],
+    "manifest_example_ids": [
+      3830,
+      3831,
+      3832,
+      3833,
+      3834
+    ],
+    "actual_gen_py_count": 5,
+    "actual_gen_py_comps": [
+      "src_3830",
+      "src_3831",
+      "src_3832",
+      "src_3833",
+      "src_3834"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 5,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_DataOrganizationAndCharts": {
+    "db_example_ids": [
+      3821
+    ],
+    "db_example_count": 1,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 1,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_DispersionMeasures": {
+    "db_example_ids": [
+      3845,
+      3846,
+      3847,
+      3891,
+      3892
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 5,
+      "production_component_count": 5
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 5,
+    "manifest_component_ids": [
+      "src_3845",
+      "src_3846",
+      "src_3847",
+      "src_3891",
+      "src_3892"
+    ],
+    "manifest_example_ids": [
+      3845,
+      3846,
+      3847,
+      3891,
+      3892
+    ],
+    "actual_gen_py_count": 5,
+    "actual_gen_py_comps": [
+      "src_3845",
+      "src_3846",
+      "src_3847",
+      "src_3891",
+      "src_3892"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 5,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_FactorialNotation": {
+    "db_example_ids": [
+      3628,
+      3629,
+      3630,
+      3631
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_FrequencyDistributionTableConstruction": {
+    "db_example_ids": [
+      3822,
+      3823,
+      3824,
+      3825
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 4,
+    "manifest_component_ids": [
+      "src_3822",
+      "src_3823",
+      "src_3824",
+      "src_3825"
+    ],
+    "manifest_example_ids": [
+      3822,
+      3823,
+      3824,
+      3825
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_3822",
+      "src_3823",
+      "src_3824",
+      "src_3825"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 4,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_HistogramsAndFrequencyPolygons": {
+    "db_example_ids": [
+      3826,
+      3827,
+      3828,
+      3829
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 4,
+      "production_component_count": 4
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 4,
+    "manifest_component_ids": [
+      "src_3826",
+      "src_3827",
+      "src_3828",
+      "src_3829"
+    ],
+    "manifest_example_ids": [
+      3826,
+      3827,
+      3828,
+      3829
+    ],
+    "actual_gen_py_count": 4,
+    "actual_gen_py_comps": [
+      "src_3826",
+      "src_3827",
+      "src_3828",
+      "src_3829"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 4,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_IndependentEvents": {
+    "db_example_ids": [
+      3736,
+      3737,
+      3738,
+      3739
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_LinearTransformationOfData": {
+    "db_example_ids": [
+      3852,
+      3853,
+      3854,
+      3855,
+      3893,
+      3894,
+      3895,
+      3896
+    ],
+    "db_example_count": 8,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 7,
+      "production_component_count": 8
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 8,
+    "manifest_component_ids": [
+      "src_3852",
+      "src_3853",
+      "src_3854",
+      "src_3855",
+      "src_3893",
+      "src_3894",
+      "src_3895",
+      "src_3896"
+    ],
+    "manifest_example_ids": [
+      3852,
+      3853,
+      3854,
+      3855,
+      3893,
+      3894,
+      3895,
+      3896
+    ],
+    "actual_gen_py_count": 8,
+    "actual_gen_py_comps": [
+      "src_3852",
+      "src_3853",
+      "src_3854",
+      "src_3855",
+      "src_3893",
+      "src_3894",
+      "src_3895",
+      "src_3896"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 8,
+    "view_total_examples": 8,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_MathematicalExpectation": {
+    "db_example_ids": [
+      3774,
+      3775,
+      3776,
+      3777,
+      3778
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_MathematicalExpectationDefinition": {
+    "db_example_ids": [
+      3740,
+      3741,
+      3742,
+      3743,
+      3744,
+      3745,
+      3746,
+      3747,
+      3748
+    ],
+    "db_example_count": 9,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 9,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_MultiplicationPrinciple": {
+    "db_example_ids": [
+      3621,
+      3622,
+      3623,
+      3624,
+      3625,
+      3626,
+      3627,
+      3669,
+      3670,
+      3671
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_NormalDistributionAndEmpiricalRule": {
+    "db_example_ids": [
+      3856,
+      3857,
+      3858,
+      3859,
+      3897,
+      3898
+    ],
+    "db_example_count": 6,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 0,
+      "production_component_count": 6
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 6,
+    "manifest_component_ids": [
+      "src_3856",
+      "src_3857",
+      "src_3858",
+      "src_3859",
+      "src_3897",
+      "src_3898"
+    ],
+    "manifest_example_ids": [
+      3856,
+      3857,
+      3858,
+      3859,
+      3897,
+      3898
+    ],
+    "actual_gen_py_count": 6,
+    "actual_gen_py_comps": [
+      "src_3856",
+      "src_3857",
+      "src_3858",
+      "src_3859",
+      "src_3897",
+      "src_3898"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 6,
+    "view_total_examples": 6,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_OpinionPollInterpretation": {
+    "db_example_ids": [
+      3860,
+      3861
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 2,
+      "production_component_count": 2
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 2,
+    "manifest_component_ids": [
+      "src_3860",
+      "src_3861"
+    ],
+    "manifest_example_ids": [
+      3860,
+      3861
+    ],
+    "actual_gen_py_count": 2,
+    "actual_gen_py_comps": [
+      "src_3860",
+      "src_3861"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 2,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_PascalTriangle": {
+    "db_example_ids": [
+      3655
+    ],
+    "db_example_count": 1,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 1,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_PermutationOfDistinctObjects": {
+    "db_example_ids": [
+      3599,
+      3600,
+      3601,
+      3602,
+      3603,
+      3604,
+      3605,
+      3606,
+      3607,
+      3608,
+      3609,
+      3672,
+      3673,
+      3674,
+      3675,
+      3676,
+      3677,
+      3678
+    ],
+    "db_example_count": 18,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 18,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_PermutationOfNonDistinctObjects": {
+    "db_example_ids": [
+      3610,
+      3611,
+      3612,
+      3613,
+      3679,
+      3680
+    ],
+    "db_example_count": 6,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 6,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_PermutationWithRepetition": {
+    "db_example_ids": [
+      3681,
+      3682
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_ProbabilityDefinition": {
+    "db_example_ids": [
+      3709,
+      3710,
+      3711,
+      3712,
+      3713,
+      3714,
+      3715,
+      3716,
+      3717,
+      3718,
+      3719,
+      3720,
+      3721,
+      3722,
+      3723
+    ],
+    "db_example_count": 15,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 15,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_ProbabilityOperations": {
+    "db_example_ids": [
+      3765,
+      3766,
+      3767,
+      3768,
+      3769,
+      3770,
+      3771,
+      3772,
+      3773
+    ],
+    "db_example_count": 9,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 9,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_ProbabilityProperties": {
+    "db_example_ids": [
+      3724,
+      3725,
+      3726,
+      3727,
+      3728,
+      3729,
+      3730
+    ],
+    "db_example_count": 7,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 7,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_RepeatedPermutation": {
+    "db_example_ids": [
+      3632,
+      3633,
+      3634,
+      3635,
+      3636,
+      3637,
+      3638,
+      3639,
+      3640,
+      3641
+    ],
+    "db_example_count": 10,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 10,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_SampleSpaceAndEvents": {
+    "db_example_ids": [
+      3702,
+      3703,
+      3704,
+      3705,
+      3706,
+      3707,
+      3708,
+      3759,
+      3760,
+      3761,
+      3762,
+      3763,
+      3764
+    ],
+    "db_example_count": 13,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 13,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_SamplingMethods": {
+    "db_example_ids": [
+      3790,
+      3791,
+      3792,
+      3793,
+      3794,
+      3795,
+      3796,
+      3797,
+      3798,
+      3799,
+      3800,
+      3801,
+      3881,
+      3882,
+      3883
+    ],
+    "db_example_count": 15,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 15,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_SamplingSurvey": {
+    "db_example_ids": [
+      3788,
+      3789
+    ],
+    "db_example_count": 2,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 2,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_StatisticalBasicConcepts": {
+    "db_example_ids": [],
+    "db_example_count": 0,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 0,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_StatisticalChartReading": {
+    "db_example_ids": [
+      3884,
+      3885,
+      3886
+    ],
+    "db_example_count": 3,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 3,
+      "production_component_count": 3
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 3,
+    "manifest_component_ids": [
+      "src_3884",
+      "src_3885",
+      "src_3886"
+    ],
+    "manifest_example_ids": [
+      3884,
+      3885,
+      3886
+    ],
+    "actual_gen_py_count": 3,
+    "actual_gen_py_comps": [
+      "src_3884",
+      "src_3885",
+      "src_3886"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 3,
+    "view_total_examples": 3,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_TreeDiagramCounting": {
+    "db_example_ids": [
+      3614,
+      3615,
+      3616,
+      3617
+    ],
+    "db_example_count": 4,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": false,
+      "v3_package_exists": false,
+      "generator_specs_count": 0,
+      "production_component_count": 0
+    },
+    "manifest_name": null,
+    "manifest_exists": false,
+    "manifest_component_count": 0,
+    "manifest_component_ids": [],
+    "manifest_example_ids": [],
+    "actual_gen_py_count": 0,
+    "actual_gen_py_comps": [],
+    "skills_wrapper_exists": false,
+    "view_status": "not_created",
+    "view_published_count": 0,
+    "view_total_examples": 4,
+    "view_teacher_status": {
+      "status_key": "not_generated",
+      "label": "尚待驗證或尚未生成",
+      "badge_class": "teacher-v3-not-generated",
+      "icon": "⚪",
+      "is_clickable": true
+    },
+    "dispatch_ok": false,
+    "dispatch_error": null
+  },
+  "vh_數學B4_VarianceAndStandardDeviation": {
+    "db_example_ids": [
+      3848,
+      3849,
+      3850,
+      3851,
+      3899
+    ],
+    "db_example_count": 5,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 5,
+      "production_component_count": 5
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 5,
+    "manifest_component_ids": [
+      "src_3848",
+      "src_3849",
+      "src_3850",
+      "src_3851",
+      "src_3899"
+    ],
+    "manifest_example_ids": [
+      3848,
+      3849,
+      3850,
+      3851,
+      3899
+    ],
+    "actual_gen_py_count": 5,
+    "actual_gen_py_comps": [
+      "src_3848",
+      "src_3849",
+      "src_3850",
+      "src_3851",
+      "src_3899"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 5,
+    "view_total_examples": 5,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  },
+  "vh_數學B4_WeightedMean": {
+    "db_example_ids": [
+      3842,
+      3843,
+      3844
+    ],
+    "db_example_count": 3,
+    "tracker_total": 0,
+    "tracker_verified": 0,
+    "tracker_failed": 0,
+    "prod_info": {
+      "production_wrapper_exists": true,
+      "v3_package_exists": true,
+      "generator_specs_count": 3,
+      "production_component_count": 3
+    },
+    "manifest_name": "component_manifest.json",
+    "manifest_exists": true,
+    "manifest_component_count": 3,
+    "manifest_component_ids": [
+      "src_3842",
+      "src_3843",
+      "src_3844"
+    ],
+    "manifest_example_ids": [
+      3842,
+      3843,
+      3844
+    ],
+    "actual_gen_py_count": 3,
+    "actual_gen_py_comps": [
+      "src_3842",
+      "src_3843",
+      "src_3844"
+    ],
+    "skills_wrapper_exists": true,
+    "view_status": "not_created",
+    "view_published_count": 3,
+    "view_total_examples": 3,
+    "view_teacher_status": {
+      "status_key": "published",
+      "label": "全部上線",
+      "badge_class": "teacher-v3-published",
+      "icon": "🟢",
+      "is_clickable": true
+    },
+    "dispatch_ok": true,
+    "dispatch_error": null
+  }
+}

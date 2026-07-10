@@ -175,6 +175,33 @@ def test_verified_tracker_must_not_render_zero_over_zero(b4_status_env):
         assert view["teacher_status"]["status_key"] != "not_generated"
 
 
+def test_complete_production_manifest_recovers_status_after_tracker_restore_loss(b4_status_env):
+    app, _, project_root = b4_status_env
+    manifest = {
+        "skill_id": SKILL_A,
+        "component_count": 4,
+        "components": [
+            {"component_id": f"src_{example_id}", "textbook_example_id": example_id}
+            for example_id in (3822, 3823, 3824, 3825)
+        ],
+    }
+    (project_root / "agent_skills_v3" / SKILL_A / "component_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+    with app.app_context():
+        conn = db.engine.raw_connection()
+        try:
+            conn.execute("DELETE FROM gencode_component_tracker WHERE skill_id = ?", (SKILL_A,))
+            conn.commit()
+            view = build_admin_skills_gencode_status_map(conn, [SKILL_A], project_root=project_root)[SKILL_A]
+        finally:
+            conn.close()
+    assert view["available_count"] == 4
+    assert view["published_count"] == 4
+    assert view["manifest_complete"] is True
+    assert view["teacher_status"]["status_key"] == "published"
+
+
 def test_production_wrapper_must_not_show_not_generated(b4_status_env):
     app, _, project_root = b4_status_env
     with app.app_context():

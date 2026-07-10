@@ -161,6 +161,7 @@ def build_absolute_value_matrix(
             "canonical_form": canonical_str,
             "general_form": canonical_str,
             "coefficients": sol_set,
+            "solutions": sol_set,
         }
 
         if len(sol_set) == 2:
@@ -191,6 +192,7 @@ def build_absolute_value_matrix(
             "canonical_form": canonical_str,
             "general_form": canonical_str,
             "coefficients": sol_set,
+            "solutions": sol_set,
         }
         distractors = ["0", "-1, 1", "2"]
 
@@ -218,6 +220,7 @@ def build_absolute_value_matrix(
             "canonical_form": str(dist),
             "general_form": str(dist),
             "coefficients": [dist],
+            "distance": dist,
         }
         distractors = [str(dist + 1), str(abs(dist - 1)), str(dist + 2)]
 

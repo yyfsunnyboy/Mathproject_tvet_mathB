@@ -1055,6 +1055,40 @@ def _build_choice_options(
     return choices, correct_label
 
 
+def _prepare_choice_label_matrix_answer(
+    matrix: dict[str, Any],
+    *,
+    domain_operation: str,
+    component_id: str | None,
+    answer_schema_key: str | None,
+    problem_type_id: str | None,
+) -> dict[str, Any]:
+    """Inject ``correct_label`` before schema validation for choice-label matrices."""
+    from core.gencode.answer_schema_registry import resolve_answer_schema_key
+
+    op = str(domain_operation or "").strip()
+    schema_key = resolve_answer_schema_key(
+        answer_schema_key=answer_schema_key,
+        domain_operation=op,
+        problem_type_id=problem_type_id,
+    )
+    if schema_key != "choice_label":
+        return matrix
+    answer = matrix.get("answer")
+    if not isinstance(answer, dict) or answer.get("correct_label"):
+        return matrix
+    display_answer = str(answer.get("canonical_form", answer.get("value", "")))
+    _, correct_label = _build_choice_options(
+        display_answer,
+        matrix.get("distractors", []),
+        seed_text=f"{op}|{display_answer}|{component_id or ''}",
+    )
+    prepared = dict(matrix)
+    prepared["answer"] = dict(answer)
+    prepared["answer"]["correct_label"] = correct_label
+    return prepared
+
+
 def _format_point_for_question(value: Any) -> str:
     if isinstance(value, dict):
         return f"$({value.get('x')}, {value.get('y')})$"
@@ -2086,6 +2120,13 @@ def convert_domain_matrix_to_question_payload(
             **kwargs,
         ))
 
+    matrix = _prepare_choice_label_matrix_answer(
+        matrix,
+        domain_operation=op,
+        component_id=component_id,
+        answer_schema_key=answer_schema_key,
+        problem_type_id=problem_type_id,
+    )
     normalized = normalize_domain_matrix(
         matrix,
         answer_schema_key=answer_schema_key,
