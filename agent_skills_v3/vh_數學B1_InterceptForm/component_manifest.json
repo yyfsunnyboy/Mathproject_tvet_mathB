@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B1_InterceptForm",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_4547",
+      "textbook_example_id": 4547,
+      "status": "verified",
+      "problem_type_id": "intercept_form_equation_and_triangle_area",
+      "domain_operation": "intercept_form_equation_and_triangle_area",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "ex_4547",
+      "generate_py": "components/src_4547/generate.py"
+    },
+    {
+      "component_id": "src_4548",
+      "textbook_example_id": 4548,
+      "status": "verified",
+      "problem_type_id": "intercept_form_from_intercept_sum_and_slope",
+      "domain_operation": "intercept_form_from_intercept_sum_and_slope",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "ex_4548",
+      "generate_py": "components/src_4548/generate.py"
+    },
+    {
+      "component_id": "src_4555",
+      "textbook_example_id": 4555,
+      "status": "verified",
+      "problem_type_id": "intercept_form_equation_and_triangle_area",
+      "domain_operation": "intercept_form_equation_and_triangle_area",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "ex_4555",
+      "generate_py": "components/src_4555/generate.py"
+    },
+    {
+      "component_id": "src_4558",
+      "textbook_example_id": 4558,
+      "status": "verified",
+      "problem_type_id": "triangle_area_bisector_line_equation",
+      "domain_operation": "triangle_area_bisector_line_equation",
+      "presentation_mode": "short_answer",
+      "answer_type": "linear_equation",
+      "source_kind": "ex_4558",
+      "generate_py": "components/src_4558/generate.py"
+    },
+    {
+      "component_id": "src_4559",
+      "textbook_example_id": 4559,
+      "status": "verified",
+      "problem_type_id": "parabola_secant_parallel_line_choice",
+      "domain_operation": "parabola_secant_parallel_line_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "ex_4559",
+      "generate_py": "components/src_4559/generate.py"
+    },
+    {
+      "component_id": "src_4564",
+      "textbook_example_id": 4564,
+      "status": "verified",
+      "problem_type_id": "intercept_form_equation_and_triangle_area",
+      "domain_operation": "intercept_form_equation_and_triangle_area",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "ex_4564",
+      "generate_py": "components/src_4564/generate.py"
+    },
+    {
+      "component_id": "src_4604",
+      "textbook_example_id": 4604,
+      "status": "verified",
+      "problem_type_id": "intercept_form_triangle_area",
+      "domain_operation": "intercept_form_triangle_area",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "ex_4604",
+      "generate_py": "components/src_4604/generate.py"
+    }
+  ]
+}

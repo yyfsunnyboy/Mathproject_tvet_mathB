@@ -1,0 +1,128 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_4570",
+      "textbook_example_id": 4570,
+      "status": "verified",
+      "problem_type_id": "distance_between_parallel_lines",
+      "domain_operation": "distance_between_parallel_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4570/generate.py"
+    },
+    {
+      "component_id": "src_4571",
+      "textbook_example_id": 4571,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_parallel_distance",
+      "domain_operation": "solve_parameter_from_parallel_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4571/generate.py"
+    },
+    {
+      "component_id": "src_4577",
+      "textbook_example_id": 4577,
+      "status": "verified",
+      "problem_type_id": "distance_between_parallel_lines",
+      "domain_operation": "distance_between_parallel_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4577/generate.py"
+    },
+    {
+      "component_id": "src_4578",
+      "textbook_example_id": 4578,
+      "status": "verified",
+      "problem_type_id": "distance_between_parallel_lines",
+      "domain_operation": "distance_between_parallel_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4578/generate.py"
+    },
+    {
+      "component_id": "src_4579",
+      "textbook_example_id": 4579,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_parallel_distance",
+      "domain_operation": "solve_parameter_from_parallel_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4579/generate.py"
+    },
+    {
+      "component_id": "src_4580",
+      "textbook_example_id": 4580,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_parallel_distance",
+      "domain_operation": "solve_parameter_from_parallel_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4580/generate.py"
+    },
+    {
+      "component_id": "src_4583",
+      "textbook_example_id": 4583,
+      "status": "verified",
+      "problem_type_id": "area_using_parallel_distance",
+      "domain_operation": "area_using_parallel_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4583/generate.py"
+    },
+    {
+      "component_id": "src_4584",
+      "textbook_example_id": 4584,
+      "status": "verified",
+      "problem_type_id": "parallel_lines_distance_single_choice",
+      "domain_operation": "parallel_lines_distance_single_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_4584/generate.py"
+    },
+    {
+      "component_id": "src_4588",
+      "textbook_example_id": 4588,
+      "status": "verified",
+      "problem_type_id": "distance_between_parallel_lines",
+      "domain_operation": "distance_between_parallel_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4588/generate.py"
+    },
+    {
+      "component_id": "src_4589",
+      "textbook_example_id": 4589,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_parallel_distance",
+      "domain_operation": "solve_parameter_from_parallel_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4589/generate.py"
+    },
+    {
+      "component_id": "src_4608",
+      "textbook_example_id": 4608,
+      "status": "verified",
+      "problem_type_id": "distance_between_parallel_lines",
+      "domain_operation": "distance_between_parallel_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "test",
+      "generate_py": "components/src_4608/generate.py"
+    }
+  ]
+}

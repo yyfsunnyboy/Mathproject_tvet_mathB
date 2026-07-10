@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_4568",
+      "textbook_example_id": 4568,
+      "status": "verified",
+      "problem_type_id": "compare_point_to_line_distances",
+      "domain_operation": "compare_point_to_line_distances",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4568/generate.py"
+    },
+    {
+      "component_id": "src_4569",
+      "textbook_example_id": 4569,
+      "status": "verified",
+      "problem_type_id": "distance_from_point_to_line_parameter",
+      "domain_operation": "distance_from_point_to_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4569/generate.py"
+    },
+    {
+      "component_id": "src_4575",
+      "textbook_example_id": 4575,
+      "status": "verified",
+      "problem_type_id": "distance_from_point_to_line",
+      "domain_operation": "distance_from_point_to_line",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4575/generate.py"
+    },
+    {
+      "component_id": "src_4576",
+      "textbook_example_id": 4576,
+      "status": "verified",
+      "problem_type_id": "distance_from_point_to_line_parameter",
+      "domain_operation": "distance_from_point_to_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4576/generate.py"
+    },
+    {
+      "component_id": "src_4586",
+      "textbook_example_id": 4586,
+      "status": "verified",
+      "problem_type_id": "compare_point_to_line_distances",
+      "domain_operation": "compare_point_to_line_distances",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4586/generate.py"
+    },
+    {
+      "component_id": "src_4587",
+      "textbook_example_id": 4587,
+      "status": "verified",
+      "problem_type_id": "distance_from_point_to_line_parameter",
+      "domain_operation": "distance_from_point_to_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4587/generate.py"
+    },
+    {
+      "component_id": "src_4607",
+      "textbook_example_id": 4607,
+      "status": "verified",
+      "problem_type_id": "distance_from_point_to_line_parameter_single_choice_scalar",
+      "domain_operation": "distance_from_point_to_line_parameter_single_choice_scalar",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_4607/generate.py"
+    }
+  ]
+}
