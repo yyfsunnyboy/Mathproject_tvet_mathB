@@ -182,6 +182,11 @@ def create_app():
     app.register_blueprint(core_bp)
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
     app.register_blueprint(live_show_bp) # 註冊科展展演用的 blueprint
+
+    # [公開唯讀 Demo 模式] 註冊 demo blueprint：/demo, /demo/practice, /demo/teacher-overview
+    # 全部使用固定假資料、無需登入、不提供任何寫入操作，與既有登入/教師權限邏輯完全獨立。
+    from core.routes.demo import demo_bp
+    app.register_blueprint(demo_bp)
     
     # [自適應複習 API] 導入並註冊自適應複習模式 blueprint
     try:

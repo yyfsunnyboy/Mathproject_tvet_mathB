@@ -1,0 +1,109 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/demo_practice.html
+功能說明 (Description): 公開 Demo 模式 - 固定題目練習展示（唯讀，無需登入）
+後端呼叫 (Backend Call): core/routes/demo.py -> practice / practice_check / practice_hint
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>練習展示 - 公開展示模式</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background: #f7f6f2;
+            color: #2f3a32;
+            padding: 40px 20px;
+        }
+        .wrap { max-width: 640px; margin: 0 auto; }
+        .banner {
+            background: #fff4df;
+            color: #8a5a1f;
+            border: 1px solid #f0d9a8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #dde5d8;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .skill-tag { color: #55735c; font-size: 13px; margin-bottom: 8px; }
+        .question { font-size: 18px; margin-bottom: 20px; }
+        input[type=text] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dde5d8;
+            border-radius: 8px;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        button {
+            background: #6b8f71;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        button.secondary { background: #ede6d9; color: #2f3a32; }
+        #result, #hint {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        #result.correct { background: #edf6f0; color: #4a7c59; border: 1px solid #b8d9c3; display: block; }
+        #result.wrong { background: #fdecea; color: #a13d3d; border: 1px solid #f0bcbc; display: block; }
+        #hint.show { background: #eef4ea; color: #2f3a32; border: 1px solid #dfe8dc; display: block; }
+        a.back { display: inline-block; margin-top: 24px; color: #55735c; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="banner">{{ banner }}</div>
+        <div class="card">
+            <div class="skill-tag">{{ question.skill_ch_name }}</div>
+            <div class="question">{{ question.question_text }}</div>
+            <input type="text" id="answer-input" placeholder="輸入答案（示範用，例如：4）">
+            <div>
+                <button id="submit-btn" type="button">送出答案</button>
+                <button id="hint-btn" type="button" class="secondary">AI 助教提示</button>
+            </div>
+            <div id="result"></div>
+            <div id="hint"></div>
+        </div>
+        <a class="back" href="{{ url_for('demo.index') }}">← 回到展示首頁</a>
+    </div>
+    <script>
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            const answer = document.getElementById('answer-input').value;
+            const resp = await fetch("{{ url_for('demo.practice_check') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer })
+            });
+            const data = await resp.json();
+            const el = document.getElementById('result');
+            el.className = data.correct ? 'correct' : 'wrong';
+            el.textContent = (data.correct ? '✅ 正確！' : '❌ 再試一次。') + '　' + data.explanation;
+        });
+        document.getElementById('hint-btn').addEventListener('click', async () => {
+            const resp = await fetch("{{ url_for('demo.practice_hint') }}", { method: 'POST' });
+            const data = await resp.json();
+            const el = document.getElementById('hint');
+            el.className = 'show';
+            el.textContent = data.hint;
+        });
+    </script>
+</body>
+</html>

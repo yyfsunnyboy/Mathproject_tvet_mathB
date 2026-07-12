@@ -1,0 +1,65 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/demo_index.html
+功能說明 (Description): 公開 Demo 模式入口頁（唯讀展示，無需登入）
+後端呼叫 (Backend Call): core/routes/demo.py -> index
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>公開展示模式 - 自適應性教學系統</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background: #f7f6f2;
+            color: #2f3a32;
+            padding: 40px 20px;
+        }
+        .wrap { max-width: 720px; margin: 0 auto; }
+        .banner {
+            background: #fff4df;
+            color: #8a5a1f;
+            border: 1px solid #f0d9a8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        h1 { margin-bottom: 12px; }
+        p.lead { color: #4a544d; margin-bottom: 28px; }
+        .cards { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+        .card {
+            background: #fff;
+            border: 1px solid #dde5d8;
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 8px; }
+        .card p { color: #7b857d; font-size: 14px; }
+        @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="banner">{{ banner }}</div>
+        <h1>公開展示模式</h1>
+        <p class="lead">以下頁面皆使用固定假資料展示，不需登入即可瀏覽，且無法新增、修改、刪除或匯入任何真實資料。</p>
+        <div class="cards">
+            <a class="card" href="{{ url_for('demo.practice') }}">
+                <h2>學生練習展示</h2>
+                <p>瀏覽固定數學題目、模擬作答、批改與 AI 助教流程。</p>
+            </a>
+            <a class="card" href="{{ url_for('demo.teacher_overview') }}">
+                <h2>教師總覽展示</h2>
+                <p>檢視唯讀的假資料教學儀表板。</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
