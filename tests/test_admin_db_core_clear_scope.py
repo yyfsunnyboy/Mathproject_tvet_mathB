@@ -10,6 +10,7 @@ from sqlalchemy import inspect, text
 from app import create_app
 from core.models.prompt_template import PromptTemplate
 from core.routes.admin import (
+    CORE_CLEAR_CONFIRM_TOKEN,
     _build_full_clear_table_plan,
     _clear_core_textbook_data,
     _preview_core_textbook_data,
@@ -577,7 +578,12 @@ def test_all_mode_clear_allowed_and_flash_includes_mode_all(app_ctx):
         _login(client, admin_id)
         r = client.post(
             "/db_maintenance",
-            data={"action": "clear_all_data", "mode": "core", "core_scope_mode": "all"},
+            data={
+                "action": "clear_all_data",
+                "mode": "core",
+                "core_scope_mode": "all",
+                "core_clear_confirm": CORE_CLEAR_CONFIRM_TOKEN,
+            },
             follow_redirects=True,
         )
         text = r.get_data(as_text=True)

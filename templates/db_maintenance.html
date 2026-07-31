@@ -53,45 +53,54 @@
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-            <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header"><i class="bi bi-bell"></i> 本次操作結果</div>
+            <div class="card-body" style="padding: 15px 20px;">
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="margin-bottom: 10px;">
+                    <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> {{ message }}
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="mode-note" style="margin: 0;">尚無本次操作訊息。匯入以外的操作（例如 DELETE_CORE）僅在此顯示 flash 結果。</p>
+                {% endif %}
 
-        {% if import_result_missing %}
-        <div class="alert alert-warning">
-            <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> 找不到上次匯入結果
+                {% if show_import_as_current %}
+                {% if import_result_missing %}
+                <div class="alert alert-warning" style="margin-bottom: 0;">
+                    <i class="bi bi-info-circle-fill" style="margin-right: 5px;"></i> 找不到本次匯入結果（job {{ last_import_job_id }}）
+                </div>
+                {% elif last_import_summary %}
+                {% set import_status = last_import_summary.status or last_import_summary.final_status or ('completed' if last_import_summary.success else 'failed') %}
+                {% if import_status == 'completed' %}
+                    {% set import_status_text = 'Import completed successfully' %}
+                    {% set import_alert_class = 'alert-success' %}
+                {% elif import_status == 'completed_with_warnings' %}
+                    {% set import_status_text = 'Import completed with warnings' %}
+                    {% set import_alert_class = 'alert-warning' %}
+                {% else %}
+                    {% set import_status_text = 'Import failed' %}
+                    {% set import_alert_class = 'alert-danger' %}
+                {% endif %}
+                <div class="alert {{ import_alert_class }}" style="margin-bottom: 0;" data-current-op="import">
+                    <strong>本次匯入結果 · job {{ last_import_job_id }}</strong><br>
+                    status={{ import_status }} ({{ import_status_text }}),
+                    tables={{ last_import_summary.table_count }},
+                    source_rows={{ last_import_summary.source_rows }},
+                    imported={{ last_import_summary.imported_rows }},
+                    failed_rows={{ last_import_summary.failed_rows }},
+                    warning_count={{ last_import_summary.warning_count or 0 }},
+                    error_count={{ last_import_summary.error_count or 0 }},
+                    fatal_errors={{ last_import_summary.fatal_errors or 0 }},
+                    orphan_skill_curriculum_count={{ last_import_summary.orphan_skill_curriculum_count or 0 }}
+                    {% if last_import_summary.final_status_reason %}<br>final_status_reason={{ last_import_summary.final_status_reason }}{% endif %}
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
         </div>
-        {% elif last_import_summary %}
-        {% set import_status = last_import_summary.status or last_import_summary.final_status or ('completed' if last_import_summary.success else 'failed') %}
-        {% if import_status == 'completed' %}
-            {% set import_status_text = 'Import completed successfully' %}
-            {% set import_alert_class = 'alert-success' %}
-        {% elif import_status == 'completed_with_warnings' %}
-            {% set import_status_text = 'Import completed with warnings' %}
-            {% set import_alert_class = 'alert-warning' %}
-        {% else %}
-            {% set import_status_text = 'Import failed' %}
-            {% set import_alert_class = 'alert-danger' %}
-        {% endif %}
-        <div class="alert {{ import_alert_class }}">
-            <strong>Import job {{ last_import_job_id }}</strong><br>
-            status={{ import_status }} ({{ import_status_text }}),
-            tables={{ last_import_summary.table_count }},
-            source_rows={{ last_import_summary.source_rows }},
-            imported={{ last_import_summary.imported_rows }},
-            failed_rows={{ last_import_summary.failed_rows }},
-            warning_count={{ last_import_summary.warning_count or 0 }},
-            error_count={{ last_import_summary.error_count or 0 }},
-            fatal_errors={{ last_import_summary.fatal_errors or 0 }},
-            orphan_skill_curriculum_count={{ last_import_summary.orphan_skill_curriculum_count or 0 }}
-            {% if last_import_summary.final_status_reason %}<br>final_status_reason={{ last_import_summary.final_status_reason }}{% endif %}
-        </div>
-        {% endif %}
+        {% endwith %}
 
         <div class="card">
             <div class="card-header">
@@ -106,13 +115,13 @@
                 <div class="operation-grid">
                     <div class="operation-item" style="border-top: 3px solid #3498db;">
                         <h3><i class="bi bi-download" style="color: #3498db;"></i> 備份資料庫</h3>
-                        <p>將目前資料匯出成 Excel（.xlsx），可選擇 core 或 full 匯出。</p>
+                        <p>將目前資料匯出成 Excel（.xlsx），可選擇 core 或 full 匯出。core 含教材、帳號／班級與學習紀錄表。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST">
                             <input type="hidden" name="action" value="export_db">
                             <div class="form-group">
                                 <label>匯出模式</label>
                                 <select name="mode">
-                                    <option value="core" selected>core（教材核心資料）</option>
+                                    <option value="core" selected>core（教材＋帳號班級＋學習紀錄）</option>
                                     <option value="full">full（完整資料庫）</option>
                                 </select>
                             </div>
@@ -132,7 +141,7 @@
                             <div class="form-group">
                                 <label>匯入模式</label>
                                 <select id="importMode" name="mode">
-                                    <option value="core" selected>core（教材核心資料）</option>
+                                    <option value="core" selected>core（教材＋帳號班級＋學習紀錄）</option>
                                     <option value="full">full（完整資料庫）</option>
                                 </select>
                             </div>
@@ -150,13 +159,18 @@
                         <!-- test keyword: 清空指定範圍教材資料 -->
                         <h3><i class="bi bi-trash" style="color: #e74c3c;"></i> 清空教材資料（core）</h3>
                         <p>
-                            清除高職數學 B 系列核心教材資料：
-                            textbook_examples、skill_curriculum、skills_info、skill_prerequisites 中符合
-                            vh_數學B% / outline_vocational_數學B% / source_volume=數學B% / vocational 的資料。
-                            保留 users、students、teachers、system_settings、prompt_templates，並保留 jh_數學 bridge。
+                            <strong>core 範圍：</strong>教材核心、帳號／班級，以及學習紀錄
+                            （progress、quiz_attempts、student_abilities、mistake／adaptive／exam 等帳號依賴表）。
+                            <br>
+                            <strong>全部＋ DELETE_CORE：</strong>
+                            此操作會刪除全部國中、普通高中及高職教材資料，並刪除所有學生帳號、班級、班級成員與學生學習紀錄；管理員、教師帳號、system_settings、prompt_templates 將保留。
+                            另清除 textbook_examples、skill_curriculum、skills_info、skill_prerequisites、skill_family_bridge、gencode_component_tracker
+                            中符合 vh_數學B% / outline_vocational_數學B% / source_volume=數學B% / vocational 的資料。
+                            保留 system_settings、prompt_templates，並保留 jh_數學 bridge。
+                            篩選模式僅清除選定範圍教材，不會清空帳號／班級／學習紀錄。
                         </p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                              onsubmit="event.preventDefault(); showModal('確認要清空高職數學 B 系列核心教材資料嗎？\n\n此操作會保留 users、prompt templates、system settings。', this, false);">
+                              onsubmit="event.preventDefault(); (function(form){ var modeEl=document.getElementById('coreScopeMode'); var isAll=!modeEl || modeEl.value!=='filtered'; var msg=isAll ? '確認執行 DELETE_CORE？\n\n此操作會刪除全部國中、普通高中及高職教材資料，並刪除所有學生帳號、班級、班級成員與學生學習紀錄；管理員、教師帳號、system_settings、prompt_templates 將保留。\n\n請確認已輸入 DELETE_CORE。' : '確認要依條件清空選定範圍的教材資料嗎？\n\n此操作不會刪除 users／classes／class_students／學習紀錄。'; showModal(msg, form, isAll); })(this);">
                             <input type="hidden" name="action" value="clear_all_data" id="coreActionField">
                             <input type="hidden" name="mode" value="core">
                             <div class="form-group">
@@ -221,6 +235,46 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="card" id="recent-import-history" data-section="import-history">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> 最近匯入紀錄
+            </div>
+            <div class="card-body">
+                <p class="mode-note" style="margin-top: 0;">此區僅列歷史 import job，不會代表目前非匯入操作（例如 DELETE_CORE）的成敗。</p>
+                {% if recent_import_jobs %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.92em;">
+                        <thead>
+                            <tr style="text-align: left; border-bottom: 1px solid #e9ecef;">
+                                <th style="padding: 8px;">時間 (UTC)</th>
+                                <th style="padding: 8px;">Job ID</th>
+                                <th style="padding: 8px;">狀態</th>
+                                <th style="padding: 8px;">檔名</th>
+                                <th style="padding: 8px;">摘要</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in recent_import_jobs %}
+                            <tr style="border-bottom: 1px solid #f0f0f0;" data-import-job-id="{{ job.job_id }}">
+                                <td style="padding: 8px; white-space: nowrap;">{{ job.created_at }}</td>
+                                <td style="padding: 8px; font-family: ui-monospace, monospace;">{{ job.job_id }}</td>
+                                <td style="padding: 8px;">{{ job.status }}{% if job.final_status_reason %} ({{ job.final_status_reason }}){% endif %}</td>
+                                <td style="padding: 8px;">{{ job.filename or '-' }}</td>
+                                <td style="padding: 8px;">
+                                    source={{ job.source_rows }}, imported={{ job.imported_rows }},
+                                    failed={{ job.failed_rows }}, fatal={{ job.fatal_errors }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="mode-note" style="margin: 0;">尚無匯入紀錄。</p>
+                {% endif %}
             </div>
         </div>
     </div>

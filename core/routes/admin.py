@@ -188,6 +188,7 @@ from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, mask_api_key_last4
 from core.session_safety import (
     get_large_result_from_server_store,
+    list_recent_import_jobs,
     put_large_result_in_server_store,
     safe_flash_message,
     summarize_import_result,
@@ -221,7 +222,14 @@ from core.ai_settings import (
 )
 
 # [Fix] ?????賤?堊城?????鞈??橫???ImportError
-from core.backup.backup_registry import get_core_table_names
+from core.backup.backup_registry import (
+    CORE_TEXTBOOK_FULL_CLEAR_TABLES,
+    build_account_clear_where,
+    get_core_account_clear_specs,
+    get_core_delete_specs,
+    get_core_table_names,
+    get_core_textbook_clear_specs,
+)
 from core.data_importer import import_excel_to_db, FULL_CONFIRM_TOKEN
 
 from config import Config
@@ -235,6 +243,10 @@ OUTLINE_SKILL_PREFIX = "outline_"
 VOCATIONAL_MATH_B_CONFIRM_TOKEN = "CLEAR_VOCATIONAL_MATH_B"
 VOCATIONAL_MATH_B_PREFIX = "vh_數學B%"
 VOCATIONAL_MATH_B_OUTLINE_PREFIX = "outline_vocational_數學B%"
+# Textbook tables that DELETE_CORE always reports (preview + execute).
+CORE_TEXTBOOK_REPORT_TABLES = CORE_TEXTBOOK_FULL_CLEAR_TABLES
+# Backward-compatible alias (older Math-B-only reporting).
+CORE_MATH_B_REPORT_TABLES = CORE_TEXTBOOK_REPORT_TABLES
 
 
 def _is_outline_skill_id(skill_id):
@@ -781,6 +793,136 @@ def _run_full_clear(*, execute: bool, table_names: list[str]) -> dict:
     }
 
 
+def _format_core_deleted_counts(deleted: dict, tables: tuple[str, ...] | list[str] | None = None) -> str:
+    names = tables or CORE_TEXTBOOK_REPORT_TABLES
+    parts = [f"{name}={int(deleted.get(name, 0) or 0)}" for name in names]
+    return ", ".join(parts)
+
+
+def _ensure_textbook_report_counts(deleted: dict) -> dict:
+    out = dict(deleted or {})
+    for name in CORE_TEXTBOOK_REPORT_TABLES:
+        out.setdefault(name, 0)
+    return out
+
+
+def _format_math_b_deleted_counts(deleted: dict) -> str:
+    """Backward-compatible alias."""
+    return _format_core_deleted_counts(deleted)
+
+
+def _ensure_math_b_report_counts(deleted: dict) -> dict:
+    """Backward-compatible alias."""
+    return _ensure_textbook_report_counts(deleted)
+
+
+def _core_clear_plan() -> list[tuple[str, str | None]]:
+    """
+    Full DELETE_CORE plan in registry delete_order.
+    where_sql=None means wipe the whole table.
+    """
+    plan: list[tuple[str, str | None]] = []
+    for spec in get_core_delete_specs():
+        if not _table_exists(spec.table_name):
+            continue
+        if spec.clear_mode == "student_fk":
+            cols = _columns_of(spec.table_name)
+            fk = str(spec.clear_fk_column or "").strip()
+            if fk not in cols:
+                continue
+        plan.append((spec.table_name, build_account_clear_where(spec)))
+    return plan
+
+
+def _core_account_clear_plan() -> list[tuple[str, str | None]]:
+    """Account / student-learning portion of DELETE_CORE (excludes textbook full wipes)."""
+    textbook = set(CORE_TEXTBOOK_FULL_CLEAR_TABLES)
+    return [(name, where) for name, where in _core_clear_plan() if name not in textbook]
+
+
+def _core_textbook_remaining_check() -> dict[str, int]:
+    """Counts remaining rows in core textbook tables (must all be 0 after DELETE_CORE)."""
+    checks: dict[str, int] = {}
+    for name in CORE_TEXTBOOK_FULL_CLEAR_TABLES:
+        if _table_exists(name):
+            checks[name] = _count_sql(f"SELECT COUNT(*) FROM {_quote_sqlite_identifier(name)}")
+        else:
+            checks[name] = 0
+    return checks
+
+
+def _hard_clear_core_data(*, execute: bool = False) -> dict:
+    """
+    DELETE_CORE implementation:
+    - student users / student learning rows / full classes roster
+    - full wipe of all core textbook tables (junior_high + general + vocational)
+    Never uses Math-B scoped WHERE. Keeps admin/teacher and system_settings/prompt_templates.
+    """
+    deleted: dict[str, int] = {name: 0 for name in CORE_TEXTBOOK_REPORT_TABLES}
+    plan = _core_clear_plan()
+    account_plan = [(n, w) for n, w in plan if n not in set(CORE_TEXTBOOK_FULL_CLEAR_TABLES)]
+    textbook_plan = [(n, w) for n, w in plan if n in set(CORE_TEXTBOOK_FULL_CLEAR_TABLES)]
+    ordered_plan_names = [n for n, _w in plan]
+
+    for table_name, where_sql in plan:
+        qtable = _quote_sqlite_identifier(table_name)
+        if where_sql is None:
+            deleted[table_name] = _count_sql(f"SELECT COUNT(*) FROM {qtable}")
+        else:
+            deleted[table_name] = _count_sql(f"SELECT COUNT(*) FROM {qtable} WHERE {where_sql}")
+
+    deleted = _ensure_textbook_report_counts(deleted)
+    meta = {
+        "deleted": deleted,
+        "missing_columns": {},
+        "plan": ordered_plan_names,
+        "account_clear": [
+            {"table": name, "where": where_sql if where_sql is not None else "1=1"}
+            for name, where_sql in account_plan
+        ],
+        "textbook_clear": [
+            {"table": name, "where": "1=1"}
+            for name, _where in textbook_plan
+        ],
+    }
+    if not execute:
+        return meta
+
+    try:
+        db.session.execute(text("PRAGMA foreign_keys = OFF"))
+        for table_name, where_sql in plan:
+            qtable = _quote_sqlite_identifier(table_name)
+            if where_sql is None:
+                deleted[table_name] = _delete_sql(f"DELETE FROM {qtable}")
+                where_label = "ALL"
+            else:
+                deleted[table_name] = _delete_sql(f"DELETE FROM {qtable} WHERE {where_sql}")
+                where_label = where_sql
+            kind = "textbook-full" if table_name in set(CORE_TEXTBOOK_FULL_CLEAR_TABLES) else "account-clear"
+            current_app.logger.info(
+                f"INFO: core {kind} table={table_name} where={where_label} rows={deleted[table_name]}"
+            )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    finally:
+        try:
+            db.session.execute(text("PRAGMA foreign_keys = ON"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
+    deleted = _ensure_textbook_report_counts(deleted)
+    meta["deleted"] = deleted
+    return meta
+
+
+def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
+    """DELETE_CORE entrypoint: full core textbook wipe (not Math-B scoped)."""
+    return _hard_clear_core_data(execute=execute)
+
+
 def _build_like_conditions(columns: set[str], field_names: list[str], alias: str = "") -> list[str]:
     out = []
     for f in field_names:
@@ -791,101 +933,78 @@ def _build_like_conditions(columns: set[str], field_names: list[str], alias: str
     return out
 
 
-def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
-    params = {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX}
-    deleted: dict[str, int] = {}
-    missing_columns: dict[str, list[str]] = {}
-    core_clear_tables = set(get_core_table_names(include="clear"))
+def _math_b_skill_id_where(column: str = "skill_id") -> str:
+    return f"({column} LIKE :vh_prefix OR {column} LIKE :outline_prefix)"
 
-    dependent_tables = [
-        "progress",
-        "student_progress",
-        "student_answers",
-        "practice_records",
-        "wrong_questions",
-        "mistake_logs",
-        "mistake_notebook_entries",
-        "adaptive_sessions",
-        "adaptive_records",
-        "adaptive_review_state",
-        "generated_questions",
-        "questions",
-        "question_bank",
-        "student_abilities",
-        "exam_analysis",
-    ]
-    skill_ref_fields = ["skill_id", "source_skill_id", "target_skill_id", "current_skill_id", "next_skill_id", "predicted_skill_id"]
 
-    plan: list[tuple[str, str]] = []
-    textbook_math_b_where = (
-        "source_curriculum = 'vocational' OR source_volume LIKE '?詨飛B%' "
-        "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix"
+def _math_b_textbook_examples_where() -> str:
+    return (
+        "source_curriculum = 'vocational' OR source_volume LIKE '數學B%' "
+        f"OR {_math_b_skill_id_where('skill_id')}"
     )
 
-    for table_name in dependent_tables:
-        if not _table_exists(table_name):
-            continue
-        cols = _columns_of(table_name)
-        missing_columns[table_name] = [x for x in skill_ref_fields + ["volume", "source_volume", "curriculum", "source_curriculum"] if x not in cols]
-        conds = _build_like_conditions(cols, skill_ref_fields)
-        if "volume" in cols:
-            conds.append("volume LIKE '數學B%'")
-        if "source_volume" in cols:
-            conds.append("source_volume LIKE '數學B%'")
-        # Do not use curriculum/source_curriculum alone for dependent tables.
-        if not conds:
-            continue
-        plan.append((table_name, " OR ".join(conds)))
 
-    if "gencode_component_tracker" in core_clear_tables and _table_exists("gencode_component_tracker") and _table_exists("textbook_examples"):
-        missing_columns["gencode_component_tracker"] = [
-            x for x in ["textbook_example_id", "skill_id", "component_id"] if x not in _columns_of("gencode_component_tracker")
-        ]
-        plan.append((
-            "gencode_component_tracker",
-            f"textbook_example_id IN (SELECT id FROM textbook_examples WHERE {textbook_math_b_where})",
-        ))
+def _math_b_skill_curriculum_where() -> str:
+    return (
+        "curriculum = 'vocational' OR volume LIKE '數學B%' "
+        f"OR {_math_b_skill_id_where('skill_id')}"
+    )
 
-    if "textbook_examples" in core_clear_tables and _table_exists("textbook_examples"):
-        missing_columns["textbook_examples"] = [x for x in ["source_curriculum", "source_volume", "skill_id"] if x not in _columns_of("textbook_examples")]
-        plan.append((
-            "textbook_examples",
-            "source_curriculum = 'vocational' OR source_volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-        ))
 
-    if "skill_prerequisites" in core_clear_tables and _table_exists("skill_prerequisites"):
-        missing_columns["skill_prerequisites"] = [x for x in ["skill_id", "prerequisite_id"] if x not in _columns_of("skill_prerequisites")]
-        plan.append((
-            "skill_prerequisites",
-            "skill_id LIKE :vh_prefix OR prerequisite_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix OR prerequisite_id LIKE :outline_prefix",
-        ))
+def _math_b_skill_prerequisites_where() -> str:
+    return (
+        f"{_math_b_skill_id_where('skill_id')} OR {_math_b_skill_id_where('prerequisite_id')}"
+    )
 
-    if "skill_family_bridge" in core_clear_tables and _table_exists("skill_family_bridge"):
-        cols = _columns_of("skill_family_bridge")
-        missing_columns["skill_family_bridge"] = [x for x in ["skill_id", "source_skill_id", "target_skill_id"] if x not in cols]
-        bridge_conds = _build_like_conditions(cols, ["skill_id", "source_skill_id", "target_skill_id"])
-        if bridge_conds:
-            plan.append(("skill_family_bridge", " OR ".join(bridge_conds)))
 
-    if "skill_curriculum" in core_clear_tables and _table_exists("skill_curriculum"):
-        missing_columns["skill_curriculum"] = [x for x in ["curriculum", "volume", "skill_id"] if x not in _columns_of("skill_curriculum")]
-        plan.append((
-            "skill_curriculum",
-            "curriculum = 'vocational' OR volume LIKE '數學B%' OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-        ))
+def _math_b_skill_family_bridge_where(columns: set[str]) -> str | None:
+    conds = _build_like_conditions(columns, ["skill_id", "source_skill_id", "target_skill_id"])
+    if "curriculum" in columns:
+        conds.append("curriculum = 'vocational'")
+    if "volume" in columns:
+        conds.append("volume LIKE '數學B%'")
+    if not conds:
+        return None
+    return " OR ".join(conds)
 
-    if "skills_info" in core_clear_tables and _table_exists("skills_info"):
-        missing_columns["skills_info"] = [x for x in ["skill_id"] if x not in _columns_of("skills_info")]
-        plan.append((
-            "skills_info",
-            "skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-        ))
+
+def _math_b_gencode_tracker_where() -> str:
+    textbook_where = _math_b_textbook_examples_where()
+    return (
+        f"(textbook_example_id IN (SELECT id FROM textbook_examples WHERE {textbook_where})) "
+        f"OR {_math_b_skill_id_where('skill_id')}"
+    )
+
+
+def _hard_clear_vocational_math_b_scoped(*, execute: bool = False) -> dict:
+    """
+    Legacy CLEAR_VOCATIONAL_MATH_B endpoint only — Math-B scoped WHERE.
+    DELETE_CORE must not call this.
+    """
+    params = {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX}
+    deleted: dict[str, int] = {name: 0 for name in CORE_TEXTBOOK_REPORT_TABLES}
+    plan: list[tuple[str, str]] = []
+
+    if _table_exists("gencode_component_tracker") and _table_exists("textbook_examples"):
+        plan.append(("gencode_component_tracker", _math_b_gencode_tracker_where()))
+    if _table_exists("textbook_examples"):
+        plan.append(("textbook_examples", _math_b_textbook_examples_where()))
+    if _table_exists("skill_prerequisites"):
+        plan.append(("skill_prerequisites", _math_b_skill_prerequisites_where()))
+    if _table_exists("skill_family_bridge"):
+        bridge_where = _math_b_skill_family_bridge_where(_columns_of("skill_family_bridge"))
+        if bridge_where:
+            plan.append(("skill_family_bridge", bridge_where))
+    if _table_exists("skill_curriculum"):
+        plan.append(("skill_curriculum", _math_b_skill_curriculum_where()))
+    if _table_exists("skills_info"):
+        plan.append(("skills_info", _math_b_skill_id_where("skill_id")))
 
     for table_name, where_sql in plan:
         deleted[table_name] = _count_sql(f"SELECT COUNT(*) FROM {table_name} WHERE {where_sql}", params)
-
+    deleted = _ensure_textbook_report_counts(deleted)
     if not execute:
-        return {"deleted": deleted, "missing_columns": missing_columns, "plan": [x[0] for x in plan]}
+        return {"deleted": deleted, "plan": [n for n, _ in plan]}
 
     try:
         db.session.execute(text("PRAGMA foreign_keys = OFF"))
@@ -901,53 +1020,56 @@ def _hard_clear_vocational_math_b_core(*, execute: bool = False) -> dict:
             db.session.commit()
         except Exception:
             db.session.rollback()
-
-    return {"deleted": deleted, "missing_columns": missing_columns, "plan": [x[0] for x in plan]}
+    return {"deleted": _ensure_textbook_report_counts(deleted), "plan": [n for n, _ in plan]}
 
 
 def _vocational_math_b_remaining_check():
+    params = {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX}
     checks = {
         "skills_info_vh_mathB": 0,
         "textbook_examples_mathB": 0,
         "skill_curriculum_mathB": 0,
         "skill_prerequisites_mathB": 0,
         "skill_family_bridge_mathB": 0,
+        "gencode_component_tracker_mathB": 0,
     }
 
     if _table_exists("skills_info"):
         checks["skills_info_vh_mathB"] = _count_sql(
-            "SELECT COUNT(*) FROM skills_info WHERE skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+            f"SELECT COUNT(*) FROM skills_info WHERE {_math_b_skill_id_where('skill_id')}",
+            params,
         )
     if _table_exists("textbook_examples"):
         checks["textbook_examples_mathB"] = _count_sql(
-            "SELECT COUNT(*) FROM textbook_examples "
-            "WHERE source_curriculum = 'vocational' OR source_volume LIKE '數學B%' "
-            "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+            f"SELECT COUNT(*) FROM textbook_examples WHERE {_math_b_textbook_examples_where()}",
+            params,
         )
     if _table_exists("skill_curriculum"):
         checks["skill_curriculum_mathB"] = _count_sql(
-            "SELECT COUNT(*) FROM skill_curriculum "
-            "WHERE curriculum = 'vocational' OR volume LIKE '數學B%' "
-            "OR skill_id LIKE :vh_prefix OR skill_id LIKE :outline_prefix",
-            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+            f"SELECT COUNT(*) FROM skill_curriculum WHERE {_math_b_skill_curriculum_where()}",
+            params,
         )
     if _table_exists("skill_prerequisites"):
         checks["skill_prerequisites_mathB"] = _count_sql(
-            "SELECT COUNT(*) FROM skill_prerequisites "
-            "WHERE skill_id LIKE :vh_prefix OR prerequisite_id LIKE :vh_prefix "
-            "OR skill_id LIKE :outline_prefix OR prerequisite_id LIKE :outline_prefix",
-            {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+            f"SELECT COUNT(*) FROM skill_prerequisites WHERE {_math_b_skill_prerequisites_where()}",
+            params,
         )
     if _table_exists("skill_family_bridge"):
-        cols = _columns_of("skill_family_bridge")
-        conds = _build_like_conditions(cols, ["skill_id", "source_skill_id", "target_skill_id"])
-        if conds:
+        bridge_where = _math_b_skill_family_bridge_where(_columns_of("skill_family_bridge"))
+        if bridge_where:
             checks["skill_family_bridge_mathB"] = _count_sql(
-                f"SELECT COUNT(*) FROM skill_family_bridge WHERE {' OR '.join(conds)}",
-                {"vh_prefix": VOCATIONAL_MATH_B_PREFIX, "outline_prefix": VOCATIONAL_MATH_B_OUTLINE_PREFIX},
+                f"SELECT COUNT(*) FROM skill_family_bridge WHERE {bridge_where}",
+                params,
             )
+    if _table_exists("gencode_component_tracker"):
+        if _table_exists("textbook_examples"):
+            tracker_where = _math_b_gencode_tracker_where()
+        else:
+            tracker_where = _math_b_skill_id_where("skill_id")
+        checks["gencode_component_tracker_mathB"] = _count_sql(
+            f"SELECT COUNT(*) FROM gencode_component_tracker WHERE {tracker_where}",
+            params,
+        )
     return checks
 
 # ==========================================
@@ -1635,13 +1757,17 @@ def db_maintenance():
 
     core_scope_form_state = _core_scope_form_state({"scope_mode": "all"})
     core_scope_options = _collect_core_scope_options()
+    last_op = str(session.get("last_db_maintenance_op") or "").strip().lower()
     import_job_id = session.get("last_import_job_id")
     import_job_payload = get_large_result_from_server_store(import_job_id, kind="import") if import_job_id else None
-    import_result_missing = bool(import_job_id and import_job_payload is None)
+    import_result_missing = bool(import_job_id and import_job_payload is None and last_op == "import")
     import_summary = None
     if import_job_payload:
         stored_result = import_job_payload.get("result", {})
         import_summary = summarize_import_result(stored_result)
+    # Only surface import status as "current operation" when the latest op was import.
+    show_import_as_current = bool(last_op == "import" and (import_summary or import_result_missing))
+    recent_import_jobs = list_recent_import_jobs(limit=10)
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -1675,43 +1801,48 @@ def db_maintenance():
             else:
                 export_tables = list(dict.fromkeys(core_export_tables + detected_tables))
 
+            frames = {}
             for table in export_tables:
                 try:
-                    # ??? read_sql_table謜??剜???壇???read_sql_query?橫?????萄??謘橫?????謚?????
+                    # Prefer read_sql_table; fall back to query / empty frame.
                     try:
                         df = pd.read_sql_table(table, db.engine)
                     except Exception:
                         try:
                             df = pd.read_sql_query(f"SELECT * FROM {table}", db.engine)
                         except Exception:
-                            # ????踐???閰??萄???謒?Sheet?橫?????鞈剛??萄??剜???
                             df = pd.DataFrame()
-                            current_app.logger.warning(f"??穿???萄??謘潔??謅??撖⊥??蝞???Sheet: {table}")
+                            current_app.logger.warning(f"Export empty fallback sheet: {table}")
                     df = sanitize_dataframe_for_excel(df)
-                    # Full backups may include system_settings, but credentials
-                    # are environment-managed and must never leave this host.
                     if table == "system_settings" and "key" in df.columns:
                         from core.secret_policy import is_secret_setting_key, redact_system_settings_records
                         secret_rows = df["key"].map(is_secret_setting_key)
                         if bool(secret_rows.any()):
                             df = pd.DataFrame(redact_system_settings_records(df.to_dict("records")), columns=df.columns)
                             current_app.logger.info("INFO: redacted environment-managed secret settings from export")
-                    # ?????object ????????對??殉???橫???float/bool ????怨?謒?re.sub ???芰???
                     for col in df.columns:
                         if str(df[col].dtype) == "object":
-                            df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x))
-
-                    sheet = safe_sheet_name(table)
-                    df.to_excel(writer, sheet_name=sheet, index=False)
+                            df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x) if isinstance(x, str) else x)
+                    frames[table] = df
                     current_app.logger.info(f"INFO: exporting {mode} table {table} ({len(df)} rows)")
-                except Exception as e:
+                except Exception:
                     current_app.logger.exception(f"Export failed for table {table}")
                     if mode == 'core':
-                        try:
-                            pd.DataFrame().to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
-                            current_app.logger.warning(f"INFO: core export fallback to empty sheet {table}")
-                        except Exception:
-                            current_app.logger.exception(f"Export fallback failed for table {table}")
+                        frames[table] = pd.DataFrame()
+                        current_app.logger.warning(f"INFO: core export fallback to empty sheet {table}")
+
+            if mode == "core":
+                from core.data_importer import ensure_core_export_dataframes
+                for note in ensure_core_export_dataframes(frames):
+                    current_app.logger.info(note)
+
+            for table, df in frames.items():
+                try:
+                    df.to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
+                except Exception:
+                    current_app.logger.exception(f"Export write failed for table {table}")
+                    if mode == "core":
+                        pd.DataFrame().to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
             writer.close()
             output.seek(0)
             return send_file(output, download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", as_attachment=True)
@@ -1761,26 +1892,6 @@ def db_maintenance():
                         "warning",
                     )
             else:
-                if False and core_scope_filters.get("scope_mode") != "all":
-                    flash("高職數學 B 硬清除僅支援『全部教材資料』範圍。", "warning")
-                    return render_template(
-                        'db_maintenance.html',
-                        tables=sorted(inspector.get_table_names()),
-                        core_scope_options=core_scope_options,
-                        core_scope_form_state=core_scope_form_state,
-                        core_scope_summary_text=_core_scope_summary(core_scope_filters),
-                        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
-                    )
-                if False and core_scope_filters.get("scope_mode") == "all" and core_clear_confirm != CORE_CLEAR_CONFIRM_TOKEN:
-                    flash(f"請輸入確認字串 {CORE_CLEAR_CONFIRM_TOKEN} 才能執行清除。", "danger")
-                    return render_template(
-                        'db_maintenance.html',
-                        tables=sorted(inspector.get_table_names()),
-                        core_scope_options=core_scope_options,
-                        core_scope_form_state=core_scope_form_state,
-                        core_scope_summary_text=_core_scope_summary(core_scope_filters),
-                        core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
-                    )
                 if core_scope_filters.get("scope_mode") == "filtered" and not _core_scope_has_any_filter(core_scope_filters):
                     flash(
                         "filtered 模式未選擇任何範圍，已取消清除",
@@ -1797,31 +1908,62 @@ def db_maintenance():
                 if core_scope_filters.get("scope_mode") == "filtered":
                     deleted = _clear_core_textbook_data(core_scope_filters)
                     all_clean = True
+                    if all_clean:
+                        flash(
+                            "教材 core 清除完成："
+                            f"{_core_scope_summary(core_scope_filters)}, "
+                            f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
+                            f"preserved_outline_curriculum={deleted.get('preserved_outline_curriculum', 0)}",
+                            "success",
+                        )
                 else:
-                    result = _hard_clear_vocational_math_b_core(execute=True)
-                    deleted = result.get("deleted", {})
-                    remaining = _vocational_math_b_remaining_check()
+                    # scope_mode == all: require DELETE_CORE, wipe accounts + Math-B core
+                    if core_clear_confirm != CORE_CLEAR_CONFIRM_TOKEN:
+                        flash(f"請輸入確認字串 {CORE_CLEAR_CONFIRM_TOKEN} 才能執行清除。", "danger")
+                        return render_template(
+                            'db_maintenance.html',
+                            tables=sorted(inspector.get_table_names()),
+                            core_scope_options=core_scope_options,
+                            core_scope_form_state=core_scope_form_state,
+                            core_scope_summary_text=_core_scope_summary(core_scope_filters),
+                            core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
+                        )
+                    try:
+                        result = _hard_clear_core_data(execute=True)
+                    except Exception:
+                        current_app.logger.exception("DELETE_CORE hard clear failed")
+                        flash("DELETE_CORE 清除失敗，請查看伺服器日誌。", "danger")
+                        return redirect(url_for('core.db_maintenance'))
+                    deleted = _ensure_textbook_report_counts(result.get("deleted", {}))
+                    remaining = _core_textbook_remaining_check()
                     all_clean = all(int(v or 0) == 0 for v in remaining.values())
-                if all_clean:
+                    success_msg = (
+                        "DELETE_CORE 完成：已刪除全部國中、普通高中及高職教材資料，"
+                        "並刪除所有學生帳號、班級、班級成員與學生學習紀錄；"
+                        "管理員、教師帳號、system_settings、prompt_templates 已保留。"
+                        f" students_deleted={deleted.get('users', 0)},"
+                        f" classes={deleted.get('classes', 0)},"
+                        f" class_students={deleted.get('class_students', 0)},"
+                        f" progress={deleted.get('progress', 0)},"
+                        f" quiz_attempts={deleted.get('quiz_attempts', 0)},"
+                        f" {_format_core_deleted_counts(deleted)}。"
+                    )
+                    if not all_clean:
+                        flash(
+                            f"DELETE_CORE 已執行但教材仍有殘留：{remaining}。"
+                            " 學生帳號／班級／學習紀錄已依規則清除；管理員與教師帳號保留。"
+                            f" 已刪除教材筆數：{_format_core_deleted_counts(deleted)}。",
+                            "warning",
+                        )
+                    else:
+                        flash(success_msg, "success")
+                    session["last_db_maintenance_op"] = "clear"
                     flash(
                         "教材 core 清除完成："
                         f"{_core_scope_summary(core_scope_filters)}, "
-                        f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
-                        f"preserved_outline_curriculum={deleted.get('preserved_outline_curriculum', 0)}",
+                        f"{_format_core_deleted_counts(deleted)}",
                         "success",
                     )
-                    flash(
-                        "高職數學 B 核心教材資料已清空："
-                        f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
-                        f"textbook_examples={deleted.get('textbook_examples', deleted.get('deleted_textbook_examples', 0))}, "
-                        f"skills_info={deleted.get('skills_info', 0)}, "
-                        f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
-                        f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "
-                        f"skill_family_bridge={deleted.get('skill_family_bridge', 0)}",
-                        "success",
-                    )
-                else:
-                    flash(f"高職數學 B 清除後仍有殘留：{remaining}", "danger")
         elif action == 'preview_core_clear':
             if mode == "full":
                 full_preview = _run_full_clear(
@@ -1869,24 +2011,37 @@ def db_maintenance():
             if core_scope_filters.get("scope_mode") == "filtered":
                 deleted = _preview_core_textbook_data(core_scope_filters)
                 all_clean_before = False
+                flash(
+                    (
+                        "教材篩選清除預覽："
+                        f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
+                        f"textbook_examples={deleted.get('textbook_examples', deleted.get('deleted_textbook_examples', 0))}, "
+                        f"skills_info={deleted.get('skills_info', 0)}, "
+                        f"skill_curriculum={deleted.get('skill_curriculum', 0)}"
+                    ),
+                    "warning",
+                )
             else:
-                result = _hard_clear_vocational_math_b_core(execute=False)
-                deleted = result.get("deleted", {})
-                remaining = _vocational_math_b_remaining_check()
+                result = _hard_clear_core_data(execute=False)
+                deleted = _ensure_textbook_report_counts(result.get("deleted", {}))
+                remaining = _core_textbook_remaining_check()
                 all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
-            flash(
-                (
-                    "高職數學 B 硬清除預覽："
-                    f"gencode_component_tracker={deleted.get('gencode_component_tracker', deleted.get('deleted_gencode_component_tracker', 0))}, "
-                    f"textbook_examples={deleted.get('textbook_examples', deleted.get('deleted_textbook_examples', 0))}, "
-                    f"skills_info={deleted.get('skills_info', 0)}, "
-                    f"skill_curriculum={deleted.get('skill_curriculum', 0)}, "
-                    f"skill_prerequisites={deleted.get('skill_prerequisites', 0)}, "
-                    f"skill_family_bridge={deleted.get('skill_family_bridge', 0)}, "
-                    f"all_clean_before={str(all_clean_before).lower()}"
-                ),
-                'warning'
-            )
+                flash(
+                    (
+                        "DELETE_CORE 預覽（刪全部教材＋學生帳號／班級／學生學習紀錄；保留 admin／teacher／settings）："
+                        f"users(student)={deleted.get('users', 0)}, "
+                        f"classes={deleted.get('classes', 0)}, "
+                        f"class_students={deleted.get('class_students', 0)}, "
+                        f"progress={deleted.get('progress', 0)}, "
+                        f"quiz_attempts={deleted.get('quiz_attempts', 0)}, "
+                        f"student_abilities={deleted.get('student_abilities', 0)}, "
+                        f"mistake_logs={deleted.get('mistake_logs', 0)}, "
+                        f"adaptive_learning_logs={deleted.get('adaptive_learning_logs', 0)}, "
+                        f"{_format_core_deleted_counts(deleted)}, "
+                        f"all_clean_before={str(all_clean_before).lower()}"
+                    ),
+                    "warning",
+                )
             return render_template(
                 'db_maintenance.html',
                 tables=sorted(inspect(db.engine).get_table_names()),
@@ -1941,8 +2096,11 @@ def db_maintenance():
         core_scope_form_state=core_scope_form_state,
         core_scope_summary_text=_core_scope_summary(_normalize_core_scope_filters(core_scope_form_state)),
         last_import_job_id=import_job_id,
-        last_import_summary=import_summary,
-        import_result_missing=import_result_missing,
+        last_import_summary=import_summary if show_import_as_current else None,
+        import_result_missing=import_result_missing if show_import_as_current else False,
+        show_import_as_current=show_import_as_current,
+        last_db_maintenance_op=last_op,
+        recent_import_jobs=recent_import_jobs,
         core_clear_confirm_token=CORE_CLEAR_CONFIRM_TOKEN,
     )
 
@@ -2005,7 +2163,7 @@ def clear_vocational_math_core():
             }
         ), 400
 
-    cleanup_result = _hard_clear_vocational_math_b_core(execute=(mode == "execute"))
+    cleanup_result = _hard_clear_vocational_math_b_scoped(execute=(mode == "execute"))
     remaining = _vocational_math_b_remaining_check()
     all_clean = all(int(v or 0) == 0 for v in remaining.values())
     return jsonify(
@@ -2080,6 +2238,7 @@ def upload_db():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
+            session["last_db_maintenance_op"] = "import"
             _flash_import_status(summary, job_id)
         except Exception as e:
             job_id = put_large_result_in_server_store(
@@ -2095,6 +2254,7 @@ def upload_db():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
+            session["last_db_maintenance_op"] = "import"
             safe_flash_message(f"Import failed. See job {job_id}.", 'danger')
             
         if os.path.exists(filepath):
@@ -2147,6 +2307,7 @@ def import_textbook_examples():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
+            session["last_db_maintenance_op"] = "import"
             _flash_import_status(summary, job_id)
         except Exception as e:
             job_id = put_large_result_in_server_store(
@@ -2161,6 +2322,7 @@ def import_textbook_examples():
                 kind="import",
             )
             session["last_import_job_id"] = job_id
+            session["last_db_maintenance_op"] = "import"
             safe_flash_message(f"Import failed. See job {job_id}.", 'error')
             
     return redirect(url_for('core.db_maintenance'))
@@ -4144,11 +4306,11 @@ def api_search_skills():
 @login_required
 def init_db_route():
     try:
-        # ?輯撒??models ??? init_db
-        init_db(db.engine)
-        flash('?????迎?????', 'success')
+        # Explicit admin init may re-seed bridges for skills that already exist.
+        init_db(db.engine, seed_bridges=True)
+        flash('資料庫結構初始化完成（含主動 bridge sync）', 'success')
     except Exception as e:
-        flash(f'?豲??謘潔??? {e}', 'error')
+        flash(f'初始化失敗: {e}', 'error')
     return redirect(url_for('core.db_maintenance'))
 
 @core_bp.route('/admin/import_skills', methods=['POST'])

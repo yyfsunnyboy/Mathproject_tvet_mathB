@@ -9,6 +9,7 @@ from sqlalchemy import text
 from sqlalchemy import UniqueConstraint
 
 from core.backup.backup_registry import (
+    get_account_ref_checks,
     get_core_optional_table_names,
     get_core_required_table_names,
     get_core_table_names,
@@ -17,6 +18,21 @@ from core.backup.backup_registry import (
 from core.secret_policy import should_skip_system_setting_restore
 from models import (
     db,
+    User,
+    Class,
+    ClassStudent,
+    Progress,
+    StudentAbility,
+    Question,
+    QuizAttempt,
+    AdaptiveLearningLog,
+    MistakeLog,
+    MistakeNotebookEntry,
+    ExamAnalysis,
+    StudentUploadedQuestion,
+    NodeCompetency,
+    LearningDiagnosis,
+    B4Chap2VisibilityAuditLog,
     SkillInfo,
     SkillCurriculum,
     TextbookExample,
@@ -71,17 +87,38 @@ SYSTEM_TABLES = [
 FULL_CONFIRM_TOKEN = "YES_DELETE_ALL"
 
 
+def ensure_core_export_dataframes(frames: dict[str, pd.DataFrame]) -> list[str]:
+    """
+    Make core export workbook referentially complete before writing Excel.
+    Adds missing parent rows (skills_info / users) referenced by child sheets.
+    """
+    # Reuse workbook augmenter (operates in-place on dict of DataFrames).
+    return _augment_core_workbook_missing_parents(frames)
+
+
+
 def _get_primary_key_columns(model):
     return [column.name for column in model.__mapper__.primary_key]
 
 
-def _find_existing_instance(model, data):
+def _find_existing_instance(model, data, *, pk_only: bool = False):
+    """
+    Locate an existing row for restore/upsert.
+
+    When pk_only=True (core restore with explicit PKs), match by primary key only.
+    Matching on UniqueConstraint (e.g. users.username) remaps identities and breaks FKs.
+    """
     pk_columns = _get_primary_key_columns(model)
     if pk_columns and all(data.get(column) is not None for column in pk_columns):
         identity = tuple(data[column] for column in pk_columns)
         existing = db.session.get(model, identity[0] if len(identity) == 1 else identity)
         if existing is not None:
             return existing
+        if pk_only:
+            return None
+
+    if pk_only:
+        return None
 
     unique_constraints = [
         constraint
@@ -105,6 +142,201 @@ def _find_existing_instance(model, data):
                 return existing
 
     return None
+
+
+def _resolve_unique_conflicts_for_pk_insert(model, data) -> list[str]:
+    """
+    Before inserting a row with an explicit PK, rename conflicting unique values
+    on *other* rows so the restore can keep workbook primary keys.
+    """
+    notes: list[str] = []
+    pk_columns = _get_primary_key_columns(model)
+    if not pk_columns or any(data.get(c) is None for c in pk_columns):
+        return notes
+    pk_identity = tuple(data[c] for c in pk_columns)
+
+    unique_constraints = [
+        constraint
+        for constraint in model.__table__.constraints
+        if isinstance(constraint, UniqueConstraint)
+    ]
+    with db.session.no_autoflush:
+        for constraint in unique_constraints:
+            unique_columns = [column.name for column in constraint.columns]
+            if not unique_columns:
+                continue
+            if any(data.get(column) is None for column in unique_columns):
+                continue
+            query = db.session.query(model)
+            for column in unique_columns:
+                query = query.filter(getattr(model, column) == data[column])
+            conflict = query.first()
+            if conflict is None:
+                continue
+            conflict_identity = tuple(getattr(conflict, c) for c in pk_columns)
+            if conflict_identity == pk_identity:
+                continue
+            for column in unique_columns:
+                col = model.__table__.columns.get(column)
+                if col is None or not hasattr(col.type, "python_type"):
+                    continue
+                try:
+                    py = col.type.python_type
+                except NotImplementedError:
+                    continue
+                if py is not str:
+                    continue
+                old_val = getattr(conflict, column)
+                new_val = f"{old_val}__pre_restore_{conflict_identity[0]}"
+                # Ensure renamed value is also unique.
+                n = 0
+                while db.session.query(model).filter(getattr(model, column) == new_val).first() is not None:
+                    n += 1
+                    new_val = f"{old_val}__pre_restore_{conflict_identity[0]}_{n}"
+                setattr(conflict, column, new_val)
+                notes.append(
+                    f"INFO: renamed conflicting {model.__tablename__}.{column} "
+                    f"{old_val!r} -> {new_val!r} (kept pk={conflict_identity})"
+                )
+            db.session.flush()
+    return notes
+
+
+def _excel_int_ids(series) -> set[int]:
+    out: set[int] = set()
+    if series is None:
+        return out
+    for value in series.tolist():
+        if value is None or (isinstance(value, float) and pd.isna(value)):
+            continue
+        try:
+            if hasattr(value, "item"):
+                value = value.item()
+            if isinstance(value, float) and float(value).is_integer():
+                value = int(value)
+            elif isinstance(value, str) and value.strip().lstrip("-").isdigit():
+                value = int(value.strip())
+            if isinstance(value, int):
+                out.add(value)
+        except Exception:
+            continue
+    return out
+
+
+def _excel_str_ids(series) -> set[str]:
+    out: set[str] = set()
+    if series is None:
+        return out
+    for value in series.tolist():
+        if value is None or (isinstance(value, float) and pd.isna(value)):
+            continue
+        s = str(value).strip()
+        if s and s.lower() != "nan":
+            out.add(s)
+    return out
+
+
+def _augment_core_workbook_missing_parents(xls: dict) -> list[str]:
+    """
+    Core backups may already contain orphan child FKs (export of inconsistent DB).
+    Materialize missing parent rows into the workbook so restore can keep all child
+    rows and still pass PRAGMA foreign_key_check — without deleting orphans.
+    """
+    notes: list[str] = []
+
+    # --- skills_info stubs for curriculum / examples / bridges / tracker ---
+    required_skills: set[str] = set()
+    for sheet, col in (
+        ("skill_curriculum", "skill_id"),
+        ("textbook_examples", "skill_id"),
+        ("skill_family_bridge", "skill_id"),
+        ("skill_prerequisites", "skill_id"),
+        ("skill_prerequisites", "prerequisite_id"),
+        ("gencode_component_tracker", "skill_id"),
+        ("progress", "skill_id"),
+        ("questions", "skill_id"),
+    ):
+        if sheet in xls and col in xls[sheet].columns:
+            required_skills |= _excel_str_ids(xls[sheet][col])
+
+    if "skills_info" not in xls:
+        xls["skills_info"] = pd.DataFrame(columns=["skill_id", "skill_en_name", "skill_ch_name", "description", "gemini_prompt"])
+    si_df = xls["skills_info"]
+    existing_skills = _excel_str_ids(si_df["skill_id"]) if "skill_id" in si_df.columns else set()
+    missing_skills = sorted(required_skills - existing_skills)
+    if missing_skills:
+        stub_rows = []
+        for sid in missing_skills:
+            stub_rows.append(
+                {
+                    "skill_id": sid,
+                    "skill_en_name": sid.split("_")[-1] if "_" in sid else sid,
+                    "skill_ch_name": sid,
+                    "category": "restore_stub",
+                    "description": "Auto-materialized parent for core restore referential integrity",
+                    "input_type": "text",
+                    "gemini_prompt": "",
+                    "consecutive_correct_required": 3,
+                    "is_active": True,
+                    "order_index": 0,
+                    "importance": 1,
+                }
+            )
+        xls["skills_info"] = pd.concat([si_df, pd.DataFrame(stub_rows)], ignore_index=True)
+        notes.append(f"INFO: materialized {len(missing_skills)} missing skills_info parents for core restore")
+
+    # --- users stubs for account / learning FKs ---
+    required_users: set[int] = set()
+    user_fk_cols = (
+        ("classes", "teacher_id"),
+        ("class_students", "student_id"),
+        ("progress", "user_id"),
+        ("student_abilities", "user_id"),
+        ("quiz_attempts", "user_id"),
+        ("adaptive_learning_logs", "student_id"),
+        ("mistake_logs", "user_id"),
+        ("mistake_notebook_entries", "student_id"),
+        ("exam_analysis", "user_id"),
+        ("student_uploaded_questions", "student_id"),
+        ("node_competency", "user_id"),
+        ("learning_diagnosis", "student_id"),
+        ("b4_chap2_visibility_audit_logs", "student_id"),
+    )
+    for sheet, col in user_fk_cols:
+        if sheet in xls and col in xls[sheet].columns:
+            required_users |= _excel_int_ids(xls[sheet][col])
+
+    if "users" not in xls:
+        xls["users"] = pd.DataFrame(columns=["id", "username", "password_hash", "role"])
+    users_df = xls["users"]
+    existing_users = _excel_int_ids(users_df["id"]) if "id" in users_df.columns else set()
+    missing_users = sorted(required_users - existing_users)
+    if missing_users:
+        stub_rows = []
+        existing_names = set()
+        if "username" in users_df.columns:
+            existing_names = {str(v).strip() for v in users_df["username"].dropna().tolist()}
+        for uid in missing_users:
+            uname = f"__restore_stub_{uid}"
+            n = 0
+            while uname in existing_names:
+                n += 1
+                uname = f"__restore_stub_{uid}_{n}"
+            existing_names.add(uname)
+            stub_rows.append(
+                {
+                    "id": uid,
+                    "username": uname,
+                    "password_hash": "!",
+                    "role": "student",
+                    "email": None,
+                    "is_active": True,
+                }
+            )
+        xls["users"] = pd.concat([users_df, pd.DataFrame(stub_rows)], ignore_index=True)
+        notes.append(f"INFO: materialized {len(missing_users)} missing users parents for core restore")
+
+    return notes
 
 
 def _apply_data_to_instance(instance, data, preserve_existing_primary_key=False):
@@ -139,6 +371,21 @@ def get_model_mapping():
         logger.error(f"Error generating model mapping: {e}")
 
     # Explicit fallback mapping for core tables.
+    mapping["users"] = User
+    mapping["classes"] = Class
+    mapping["class_students"] = ClassStudent
+    mapping["progress"] = Progress
+    mapping["student_abilities"] = StudentAbility
+    mapping["questions"] = Question
+    mapping["quiz_attempts"] = QuizAttempt
+    mapping["adaptive_learning_logs"] = AdaptiveLearningLog
+    mapping["mistake_logs"] = MistakeLog
+    mapping["mistake_notebook_entries"] = MistakeNotebookEntry
+    mapping["exam_analysis"] = ExamAnalysis
+    mapping["student_uploaded_questions"] = StudentUploadedQuestion
+    mapping["node_competency"] = NodeCompetency
+    mapping["learning_diagnosis"] = LearningDiagnosis
+    mapping["b4_chap2_visibility_audit_logs"] = B4Chap2VisibilityAuditLog
     mapping["skills_info"] = SkillInfo
     mapping["skill_curriculum"] = SkillCurriculum
     mapping["textbook_examples"] = TextbookExample
@@ -157,6 +404,7 @@ def clean_excel_row(row_dict):
         "last_practiced",
         "review_date",
         "login_time",
+        "joined_at",
     ]
 
     for key, value in row_dict.items():
@@ -197,6 +445,42 @@ def clean_excel_row(row_dict):
             cleaned[key] = value
 
     return cleaned
+
+
+def _coerce_model_row_types(model, data):
+    """Coerce Excel/pandas scalars to SQLAlchemy column Python types (esp. int PKs/FKs)."""
+    out = dict(data or {})
+    for col in model.__table__.columns:
+        if col.name not in out:
+            continue
+        value = out[col.name]
+        if value is None or isinstance(value, bool):
+            continue
+        try:
+            python_type = col.type.python_type
+        except NotImplementedError:
+            continue
+        if python_type is int:
+            # pandas/numpy ints (and whole floats) must become plain Python int for SQLite PKs.
+            try:
+                if hasattr(value, "item"):
+                    value = value.item()
+                if isinstance(value, float) and not float(value).is_integer():
+                    continue
+                if isinstance(value, (int, float, str)):
+                    out[col.name] = int(value)
+            except (TypeError, ValueError, OverflowError):
+                pass
+        elif python_type is float:
+            try:
+                if hasattr(value, "item"):
+                    value = value.item()
+                out[col.name] = float(value)
+            except (TypeError, ValueError, OverflowError):
+                pass
+        elif python_type is bool and isinstance(value, (int, float)):
+            out[col.name] = bool(int(value))
+    return out
 
 
 def _is_blank_value(val):
@@ -486,10 +770,91 @@ def _validate_core_restore_after_import(xls, row_stats, strict_mode=False):
             fatal_error_count += int(st.get("failed", 0) or 0)
             lines.append(f"❌ Table {table}: failed rows = {st.get('failed', 0)}")
 
+    # Account / learning-record integrity + SQLite FK check.
+    sheet_names = {str(name).strip() for name in xls.keys()}
+    account_sheets = {
+        "users",
+        "classes",
+        "class_students",
+        "progress",
+        "student_abilities",
+        "questions",
+        "quiz_attempts",
+        "adaptive_learning_logs",
+        "mistake_logs",
+        "mistake_notebook_entries",
+        "exam_analysis",
+        "student_uploaded_questions",
+        "node_competency",
+        "learning_diagnosis",
+        "b4_chap2_visibility_audit_logs",
+    }
+    if sheet_names & account_sheets:
+        users_count = db.session.query(User).count()
+        classes_count = db.session.query(Class).count()
+        class_students_count = db.session.query(ClassStudent).count()
+        lines.append(
+            f"DB counts: users={users_count}, classes={classes_count}, class_students={class_students_count}"
+        )
+        for table in sorted(sheet_names & account_sheets):
+            st = row_stats.get(table, {})
+            source_rows = int(st.get("source_rows", 0) or 0)
+            imported = int(st.get("imported", 0) or 0)
+            if source_rows > 0 and imported < source_rows:
+                ok = False
+                fatal_error_count += 1
+                lines.append(f"FATAL: {table} restore incomplete ({imported} < {source_rows}).")
+
+    account_orphan_total = 0
+    for table_name, fk_col, parent_table, parent_col, nullable_ok in get_account_ref_checks():
+        if not _table_exists(table_name) or not _table_exists(parent_table):
+            continue
+        if nullable_ok:
+            orphan_sql = (
+                f'SELECT COUNT(*) FROM "{table_name}" AS child '
+                f'LEFT JOIN "{parent_table}" AS parent ON parent."{parent_col}" = child."{fk_col}" '
+                f'WHERE child."{fk_col}" IS NOT NULL AND parent."{parent_col}" IS NULL'
+            )
+        else:
+            orphan_sql = (
+                f'SELECT COUNT(*) FROM "{table_name}" AS child '
+                f'LEFT JOIN "{parent_table}" AS parent ON parent."{parent_col}" = child."{fk_col}" '
+                f'WHERE parent."{parent_col}" IS NULL'
+            )
+        orphan_n = int(db.session.execute(text(orphan_sql)).scalar() or 0)
+        lines.append(f"orphan {table_name}.{fk_col}: {orphan_n}")
+        if orphan_n:
+            account_orphan_total += orphan_n
+            warning_count += orphan_n
+            lines.append(f"WARNING: orphan {table_name}.{fk_col} rows: {orphan_n}")
+            if strict_mode:
+                ok = False
+                fatal_error_count += 1
+                lines.append(f"FATAL: strict mode treats orphan {table_name}.{fk_col} as fatal.")
+
+    # Always run SQLite foreign_key_check after core restore.
+    try:
+        db.session.execute(text("PRAGMA foreign_keys = ON"))
+        fk_rows = db.session.execute(text("PRAGMA foreign_key_check")).fetchall()
+        fk_count = len(fk_rows)
+        lines.append(f"PRAGMA foreign_key_check violations: {fk_count}")
+        if fk_count:
+            warning_count += fk_count
+            ok = False
+            fatal_error_count += fk_count
+            for row in fk_rows[:20]:
+                lines.append(f"FK violation: {tuple(row)}")
+    except Exception as e:
+        warning_count += 1
+        lines.append(f"WARNING: PRAGMA foreign_key_check failed: {e}")
+
+    lines.append(f"account_orphan_total: {account_orphan_total}")
+
     return ok, lines, {
         "warning_count": warning_count,
         "fatal_error_count": fatal_error_count,
         "orphan_skill_curriculum_count": orphan_count,
+        "account_orphan_total": account_orphan_total,
     }
 
 
@@ -569,7 +934,23 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                 if not model:
                     return False, "\n".join(results)
 
-        for sheet_name, df in xls.items():
+        # Preserve FK-safe order for core (registry restore_order); full keeps workbook order.
+        if mode == "core":
+            parent_notes = _augment_core_workbook_missing_parents(xls)
+            results.extend(parent_notes)
+            restore_order = {name: idx for idx, name in enumerate(get_core_table_names(include="import"))}
+            ordered_sheets = sorted(
+                xls.items(),
+                key=lambda item: restore_order.get(str(item[0]).strip(), 10_000),
+            )
+            results.append(
+                "INFO: core restore order="
+                + ",".join(str(name).strip() for name, _df in ordered_sheets if str(name).strip() in restore_order)
+            )
+        else:
+            ordered_sheets = list(xls.items())
+
+        for sheet_name, df in ordered_sheets:
             sheet_name_clean = sheet_name.strip()
             if allowed_tables is not None and sheet_name_clean not in allowed_tables:
                 results.append(f"INFO: ignored non-core sheet {sheet_name_clean}")
@@ -628,6 +1009,7 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
             df = df.where(pd.notnull(df), None)
             model_columns = model.__table__.columns.keys()
             pk_columns = set(_get_primary_key_columns(model))
+            pk_only = mode == "core" and bool(pk_columns)
 
             source_rows = len(df)
             imported_count = 0
@@ -654,16 +1036,20 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
                         continue
 
                     data = clean_excel_row(data)
+                    data = _coerce_model_row_types(model, data)
                     if table_name == "system_settings" and should_skip_system_setting_restore(data.get("key")):
                         skipped_count += 1
                         results.append("INFO: ignored environment-managed secret setting ai_gemini_api_key")
                         continue
                     if table_name == "skills_info":
                         data = _normalize_skills_info_defaults(data)
-                    existing = _find_existing_instance(model, data)
+                    existing = _find_existing_instance(model, data, pk_only=pk_only)
                     if existing is not None:
                         _apply_data_to_instance(existing, data, preserve_existing_primary_key=bool(pk_columns))
                     else:
+                        if pk_only:
+                            for note in _resolve_unique_conflicts_for_pk_insert(model, data):
+                                results.append(note)
                         instance = model()
                         _apply_data_to_instance(instance, data)
                         db.session.add(instance)

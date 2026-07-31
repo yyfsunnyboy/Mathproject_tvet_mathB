@@ -32,6 +32,7 @@ KEEP_SESSION_KEYS = {
     "recent_question_uids",
     "last_import_job_id",
     "last_db_maintenance_job_id",
+    "last_db_maintenance_op",
     "last_maintenance_job_id",
     "selected_curriculum",
     "curriculum",
@@ -343,3 +344,42 @@ def get_large_result_from_server_store(job_id: str, *, kind: str = "job") -> dic
         return None
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def list_recent_import_jobs(*, limit: int = 10) -> list[dict[str, Any]]:
+    """Return recent import job summaries for the maintenance history panel."""
+    SERVER_RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    items: list[dict[str, Any]] = []
+    for path in SERVER_RESULT_DIR.glob("import_*.json"):
+        try:
+            with path.open("r", encoding="utf-8") as f:
+                payload = json.load(f)
+        except Exception:
+            continue
+        if str(payload.get("kind") or "") != "import":
+            continue
+        result = payload.get("result") or {}
+        summary = result.get("summary")
+        if not isinstance(summary, dict):
+            summary = summarize_import_result(result)
+        status = (
+            summary.get("status")
+            or summary.get("final_status")
+            or ("completed" if summary.get("success") else "failed")
+        )
+        items.append(
+            {
+                "job_id": payload.get("job_id") or path.stem.replace("import_", "", 1),
+                "created_at": payload.get("created_at") or "",
+                "status": status,
+                "final_status_reason": summary.get("final_status_reason") or "",
+                "filename": result.get("filename") or "",
+                "mode": result.get("mode") or "",
+                "source_rows": summary.get("source_rows"),
+                "imported_rows": summary.get("imported_rows"),
+                "failed_rows": summary.get("failed_rows"),
+                "fatal_errors": summary.get("fatal_errors"),
+            }
+        )
+    items.sort(key=lambda row: str(row.get("created_at") or ""), reverse=True)
+    return items[: max(1, int(limit or 10))]

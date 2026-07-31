@@ -70,10 +70,12 @@ def _read_bridge_catalog_rows() -> list[dict[str, str]]:
     raise RuntimeError(f"Failed to read bridge catalog {BRIDGE_CATALOG_PATH}: {last_error}")
 
 
-def _sync_skill_family_bridge(conn):
+def _sync_skill_family_bridge(conn, *, force: bool = False):
     """
-    ? skill_breakpoint_catalog.csv ????????????
-    ?????????????????????
+    Sync skill_family_bridge from skill_breakpoint_catalog.csv.
+
+    Guard: when skills_info is empty (e.g. after DELETE_CORE), do not auto-seed
+    catalog bridges on normal app startup. Pass force=True from explicit admin init.
     """
     c = conn.cursor()
     c.execute("""
@@ -105,6 +107,16 @@ def _sync_skill_family_bridge(conn):
     c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_skill_id ON skill_family_bridge(skill_id)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_family_id ON skill_family_bridge(family_id)')
     c.execute('CREATE INDEX IF NOT EXISTS idx_skill_family_bridge_curriculum ON skill_family_bridge(curriculum)')
+
+    try:
+        skill_count = int(c.execute("SELECT COUNT(*) FROM skills_info").fetchone()[0] or 0)
+    except Exception:
+        skill_count = 0
+    if not force and skill_count == 0:
+        print("[RAG SOURCE] skip bridge auto-seed: skills_info is empty (force=False)")
+        conn.commit()
+        return
+
     c.execute("DELETE FROM skill_family_bridge WHERE source = 'skill_breakpoint_catalog.csv'")
 
     rows = _read_bridge_catalog_rows()
@@ -132,6 +144,15 @@ def _sync_skill_family_bridge(conn):
         if not skill_id or not family_id or not skill_name or not family_name or not subskill_nodes:
             continue
 
+        # Only seed bridges for skills that exist in skills_info (no ghost curriculum).
+        skill_row = c.execute("""
+            SELECT skill_ch_name, skill_en_name
+            FROM skills_info
+            WHERE skill_id = ?
+        """, (skill_id,)).fetchone()
+        if not skill_row:
+            continue
+
         curriculum_row = curriculum_map.get(skill_id)
         curriculum = curriculum_row[1] if curriculum_row else None
         grade = curriculum_row[2] if curriculum_row else None
@@ -140,11 +161,6 @@ def _sync_skill_family_bridge(conn):
         section = curriculum_row[5] if curriculum_row else None
         paragraph = curriculum_row[6] if curriculum_row else None
 
-        skill_row = c.execute("""
-            SELECT skill_ch_name, skill_en_name
-            FROM skills_info
-            WHERE skill_id = ?
-        """, (skill_id,)).fetchone()
         skill_ch_name = skill_row[0] if skill_row and skill_row[0] else skill_name
         skill_en_name = skill_row[1] if skill_row and skill_row[1] else None
 
@@ -187,10 +203,14 @@ def _sync_skill_family_bridge(conn):
 
     conn.commit()
 
-def init_db(engine):
+
+def init_db(engine, *, seed_bridges: bool = False):
     """
     初始化資料庫結構 (v9.0 Update)。
     包含新表格 skill_gencode_prompt 與 experiment_log 的新欄位。
+
+    seed_bridges: when True (admin explicit init), force re-seed bridges from catalog
+    if matching skills_info rows exist. Normal app startup leaves empty DB empty.
     """
     conn = engine.raw_connection()
     c = conn.cursor()
@@ -609,7 +629,7 @@ def init_db(engine):
         )
     ''')
 
-    _sync_skill_family_bridge(conn)
+    _sync_skill_family_bridge(conn, force=seed_bridges)
 
     from core.gencode.schema.gencode_component_tracker_inspection import (
         ensure_gencode_component_tracker_table,
