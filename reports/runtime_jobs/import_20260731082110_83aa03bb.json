@@ -1,0 +1,38 @@
+{
+  "job_id": "20260731082110_83aa03bb",
+  "kind": "import",
+  "created_at": "2026-07-31T08:21:10.160014+00:00",
+  "result": {
+    "route": "upload_db",
+    "filename": "kumon_math_backup_20260731_1511.xlsx",
+    "mode": "core",
+    "success": true,
+    "message": "偵測到 models: 30\nimport mode: core\nINFO: materialized 28 missing skills_info parents for core restore\nINFO: materialized 362 missing users parents for core restore\nINFO: core restore order=users,classes,class_students,skills_info,skill_curriculum,questions,progress,student_abilities,quiz_attempts,adaptive_learning_logs,mistake_logs,mistake_notebook_entries,exam_analysis,student_uploaded_questions,node_competency,learning_diagnosis,b4_chap2_visibility_audit_logs,textbook_examples,skill_family_bridge,skill_prerequisites,gencode_component_tracker\nTable users: source_rows=395, imported=395, failed=0, skipped=0\nTable classes: source_rows=1, imported=1, failed=0, skipped=0\nTable class_students: source_rows=33, imported=33, failed=0, skipped=0\nTable skills_info: source_rows=496, imported=496, failed=0, skipped=0\nTable skill_curriculum: source_rows=507, imported=507, failed=0, skipped=0\nTable questions: source_rows=0, imported=0, failed=0, skipped=0\nTable progress: source_rows=98, imported=98, failed=0, skipped=0\nTable student_abilities: source_rows=0, imported=0, failed=0, skipped=0\nTable quiz_attempts: source_rows=0, imported=0, failed=0, skipped=0\nTable adaptive_learning_logs: source_rows=338, imported=338, failed=0, skipped=0\nTable mistake_logs: source_rows=0, imported=0, failed=0, skipped=0\nTable mistake_notebook_entries: source_rows=0, imported=0, failed=0, skipped=0\nTable exam_analysis: source_rows=0, imported=0, failed=0, skipped=0\nTable student_uploaded_questions: source_rows=0, imported=0, failed=0, skipped=0\nTable node_competency: source_rows=0, imported=0, failed=0, skipped=0\nTable learning_diagnosis: source_rows=0, imported=0, failed=0, skipped=0\nTable b4_chap2_visibility_audit_logs: source_rows=220, imported=220, failed=0, skipped=0\nTable textbook_examples: source_rows=4228, imported=4228, failed=0, skipped=0\nTable skill_family_bridge: source_rows=67, imported=67, failed=0, skipped=0\nTable skill_prerequisites: source_rows=0, imported=0, failed=0, skipped=0\nTable gencode_component_tracker: source_rows=133, imported=133, failed=0, skipped=0\nDB counts: skills_info=496, skill_curriculum=507\nskills_info by prefix: B1=45, B4=40\norphan skill_curriculum rows: 0\ntracker restore: source_rows=133, imported=133, db_count=133\norphan gencode_component_tracker rows: 0\ntracker skill mismatch rows: 0\nduplicate tracker (skill_id, component_id) groups: 0\nDB counts: users=396, classes=1, class_students=33\norphan classes.teacher_id: 0\norphan class_students.class_id: 0\norphan class_students.student_id: 0\norphan progress.user_id: 0\norphan student_abilities.user_id: 0\norphan quiz_attempts.user_id: 0\norphan quiz_attempts.question_id: 0\norphan adaptive_learning_logs.student_id: 0\norphan mistake_logs.user_id: 0\norphan mistake_notebook_entries.student_id: 0\norphan exam_analysis.user_id: 0\norphan student_uploaded_questions.student_id: 0\norphan node_competency.user_id: 0\norphan learning_diagnosis.student_id: 0\norphan b4_chap2_visibility_audit_logs.student_id: 0\nPRAGMA foreign_key_check violations: 0\naccount_orphan_total: 0\nfinal_status: completed\nfinal_status_reason: all_rows_imported_without_warnings\nwarning_count: 0\nfatal_errors: 0\norphan_skill_curriculum_count: 0",
+    "summary": {
+      "success": true,
+      "status": "completed",
+      "final_status": "completed",
+      "final_status_reason": "all_rows_imported_without_warnings",
+      "line_count": 56,
+      "table_count": 21,
+      "source_rows": 6516,
+      "imported_rows": 6516,
+      "failed_rows": 0,
+      "fatal_errors": 0,
+      "warning_count": 0,
+      "error_count": 0,
+      "orphan_skill_curriculum_count": 0,
+      "preview": [
+        "偵測到 models: 30",
+        "import mode: core",
+        "INFO: materialized 28 missing skills_info parents for core restore",
+        "INFO: materialized 362 missing users parents for core restore",
+        "INFO: core restore order=users,classes,class_students,skills_info,skill_curriculum,questions,progress,student_abilities,quiz_attempts,adaptive_learning_logs,mistake_logs,mistake_notebook_entries,exam_analysis,student_uploaded_questions,node_competency,learning_diagnosis,b4_chap2_visibility_audit_logs,textbook_examples,skill_family_bridge,skill_prerequisites,gencode_component_tracker",
+        "Table users: source_rows=395, imported=395, failed=0, skipped=0",
+        "Table classes: source_rows=1, imported=1, failed=0, skipped=0",
+        "Table class_students: source_rows=33, imported=33, failed=0, skipped=0"
+      ],
+      "message": "偵測到 models: 30\nimport mode: core\nINFO: materialized 28 missing skills_info parents for core restore\nINFO: materialized 362 missing users parents for core restore\nINFO: core restore order=users,classes,class_students,skills_info,skill_curriculum,questions,progress,student_abilities,quiz_attempts,adaptive_learning_logs,mistake_logs,mistake_notebook_entries,exam_analysis,student_uploaded_questions,node_competency,learning_diagnosis,b4_chap2_visibility_audit_logs,textbook_examples,skill_family_bridge,skill_prerequisites,gencode_component_tracker\nTable users: source_rows=395, imported=395, failed=0, skipped=0\nTable classes: source_rows=1, imported=1, failed=0, skipped=0\nTable class_students: source_rows=33, imported=33, failed=0, skipped=0"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+偵測到 models: 30
+import mode: core
+INFO: materialized 28 missing skills_info parents for core restore
+INFO: materialized 362 missing users parents for core restore
+INFO: core restore order=users,classes,class_students,skills_info,skill_curriculum,questions,progress,student_abilities,quiz_attempts,adaptive_learning_logs,mistake_logs,mistake_notebook_entries,exam_analysis,student_uploaded_questions,node_competency,learning_diagnosis,b4_chap2_visibility_audit_logs,textbook_examples,skill_family_bridge,skill_prerequisites,gencode_component_tracker
+INFO: renamed conflicting users.username 'admin' -> 'admin__pre_restore_2589' (kept pk=(2589,))
+Table users: source_rows=395, imported=395, failed=0, skipped=0
+Table classes: source_rows=1, imported=1, failed=0, skipped=0
+Table class_students: source_rows=33, imported=33, failed=0, skipped=0
+Table skills_info: source_rows=496, imported=496, failed=0, skipped=0
+Table skill_curriculum: source_rows=507, imported=507, failed=0, skipped=0
+Table questions: source_rows=0, imported=0, failed=0, skipped=0
+Table progress: source_rows=98, imported=98, failed=0, skipped=0
+Table student_abilities: source_rows=0, imported=0, failed=0, skipped=0
+Table quiz_attempts: source_rows=0, imported=0, failed=0, skipped=0
+Table adaptive_learning_logs: source_rows=338, imported=338, failed=0, skipped=0
+Table mistake_logs: source_rows=0, imported=0, failed=0, skipped=0
+Table mistake_notebook_entries: source_rows=0, imported=0, failed=0, skipped=0
+Table exam_analysis: source_rows=0, imported=0, failed=0, skipped=0
+Table student_uploaded_questions: source_rows=0, imported=0, failed=0, skipped=0
+Table node_competency: source_rows=0, imported=0, failed=0, skipped=0
+Table learning_diagnosis: source_rows=0, imported=0, failed=0, skipped=0
+Table b4_chap2_visibility_audit_logs: source_rows=220, imported=220, failed=0, skipped=0
+Table textbook_examples: source_rows=4228, imported=4228, failed=0, skipped=0
+Table skill_family_bridge: source_rows=67, imported=67, failed=0, skipped=0
+Table skill_prerequisites: source_rows=0, imported=0, failed=0, skipped=0
+Table gencode_component_tracker: source_rows=133, imported=133, failed=0, skipped=0
+DB counts: skills_info=496, skill_curriculum=507
+skills_info by prefix: B1=45, B4=40
+orphan skill_curriculum rows: 0
+tracker restore: source_rows=133, imported=133, db_count=133
+orphan gencode_component_tracker rows: 0
+tracker skill mismatch rows: 0
+duplicate tracker (skill_id, component_id) groups: 0
+DB counts: users=396, classes=1, class_students=33
+orphan classes.teacher_id: 0
+orphan class_students.class_id: 0
+orphan class_students.student_id: 0
+orphan progress.user_id: 0
+orphan student_abilities.user_id: 0
+orphan quiz_attempts.user_id: 0
+orphan quiz_attempts.question_id: 0
+orphan adaptive_learning_logs.student_id: 0
+orphan mistake_logs.user_id: 0
+orphan mistake_notebook_entries.student_id: 0
+orphan exam_analysis.user_id: 0
+orphan student_uploaded_questions.student_id: 0
+orphan node_competency.user_id: 0
+orphan learning_diagnosis.student_id: 0
+orphan b4_chap2_visibility_audit_logs.student_id: 0
+PRAGMA foreign_key_check violations: 0
+account_orphan_total: 0
+final_status: completed
+final_status_reason: all_rows_imported_without_warnings
+warning_count: 0
+fatal_errors: 0
+orphan_skill_curriculum_count: 0
