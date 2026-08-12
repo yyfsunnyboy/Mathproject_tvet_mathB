@@ -35,11 +35,16 @@ def _requires_sympy_semantic_validation(
 
     if _is_linear_equation_contract(answer_contract):
         return False
-    is_math = (
-        raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction", "interval", "solution_set"}
-        or "expression" in checker_key
-        or "solution_set" in checker_key
+    # Interval / solution-set answers are validated by dedicated checkers, not sympy.
+    if (
+        raw_answer_type in {"interval", "solution_set", "interval_set"}
         or "interval" in checker_key
+        or "solution_set" in checker_key
+    ):
+        return False
+    is_math = (
+        raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction"}
+        or "expression" in checker_key
     )
     return is_math and (
         payload.get("answer") is not None or payload.get("correct_answer") is not None

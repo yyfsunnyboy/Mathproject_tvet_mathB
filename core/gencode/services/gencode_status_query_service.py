@@ -66,6 +66,13 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
         "icon": "🔵",
         "is_clickable": True,
     },
+    "deployed_pending_revalidation": {
+        "status_key": "deployed_pending_revalidation",
+        "label": "已部署，待重新驗證",
+        "badge_class": "teacher-v3-deployed-pending-revalidation",
+        "icon": "🟡",
+        "is_clickable": True,
+    },
     "generated_not_packaged": {
         "status_key": "generated_not_packaged",
         "label": "已驗證／尚未封裝",
@@ -96,14 +103,14 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
     },
     "failed": {
         "status_key": "failed",
-        "label": "生成失敗",
+        "label": "驗證失敗",
         "badge_class": "teacher-v3-failed",
         "icon": "🔴",
         "is_clickable": True,
     },
     "published": {
         "status_key": "published",
-        "label": "已經上線",
+        "label": "已上線",
         "badge_class": "teacher-v3-published",
         "icon": "🟢",
         "is_clickable": True,
@@ -131,14 +138,30 @@ def resolve_teacher_facing_v3_status(
     integrity_gate_passed: bool | None = None,
     has_error: bool = False,
     production_contains_latest: bool = False,
+    hash_evidence_stale: bool = False,
+    active_generation_job: bool | None = None,
+    deployed_without_tracker: bool = False,
 ) -> dict[str, object]:
     status = str(gencode_status or "").strip()
     if status == "unsupported":
         return _teacher_status_payload("unsupported")
     if has_error or status == "failed":
         return _teacher_status_payload("failed")
-    if status in {"generating", "pending", "running", "queued"}:
+
+    # 「生成中」僅用於真正進行中的 generation job。
+    if active_generation_job is True or status in {"generating", "running", "queued"}:
         return _teacher_status_payload("generating")
+
+    if hash_evidence_stale and (
+        status in {"verified", "smoke_passed"}
+        or production_contains_latest
+        or has_generated_artifact
+    ):
+        return _teacher_status_payload("deployed_pending_revalidation")
+
+    if deployed_without_tracker and (has_component or has_generated_artifact or production_contains_latest):
+        return _teacher_status_payload("deployed_pending_revalidation")
+
     if status == "draft_written":
         if production_contains_latest:
             return _teacher_status_payload("published")
@@ -149,7 +172,12 @@ def resolve_teacher_facing_v3_status(
         if production_contains_latest:
             return _teacher_status_payload("published")
         return _teacher_status_payload("generated_not_packaged")
-    if status in {"draft", "pending"} or status.startswith("draft"):
+    if status == "pending":
+        # pending without an active job is lifecycle incomplete, not "generating".
+        if production_contains_latest or has_generated_artifact:
+            return _teacher_status_payload("deployed_pending_revalidation")
+        return _teacher_status_payload("not_generated")
+    if status in {"draft"} or status.startswith("draft"):
         return _teacher_status_payload("not_generated")
     if has_tracker and (has_generated_artifact or has_component):
         if production_contains_latest:
@@ -159,7 +187,7 @@ def resolve_teacher_facing_v3_status(
         return _teacher_status_payload("not_generated")
     if status in {"not_created", "", "none"}:
         return _teacher_status_payload("not_generated")
-    return _teacher_status_payload("generating")
+    return _teacher_status_payload("generation_incomplete")
 
 
 def _payload_integrity_gate_passed(payload_raw: Any) -> bool | None:
@@ -651,16 +679,19 @@ def build_admin_example_gencode_status_view(
         textbook_example_id,
         dict(NOT_CREATED_STATUS),
     )
+    component_id = str(tracker_status.get("component_id") or "").strip() or None
+    if not component_id:
+        component_id = f"src_{int(textbook_example_id)}"
     file_status = inspect_gencode_files(
         skill_id=skill_id,
-        component_id=str(tracker_status.get("component_id") or "") or None,
+        component_id=component_id,
         dryrun_base_dir=dryrun_base_dir,
         production_base_dir=production_base_dir,
         project_root=project_root,
     )
     sync_status = inspect_component_production_sync(
         skill_id=skill_id,
-        component_id=str(tracker_status.get("component_id") or "") or None,
+        component_id=component_id,
         textbook_example_id=textbook_example_id,
         tracker_payload=tracker_status.get("induced_spec_payload"),
         tracker_updated_at=tracker_status.get("updated_at"),
@@ -672,8 +703,14 @@ def build_admin_example_gencode_status_view(
     v_hash = sync_status.get("verified_component_hash")
     payload = _parse_payload_dict(tracker_status.get("induced_spec_payload"))
     p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
-    if status in {"verified", "smoke_passed"} and p_hash and v_hash and p_hash != v_hash:
-        status = "pending"
+    published_hash = str(payload.get("published_generate_sha256") or "").strip() or None
+    production_hash = sync_status.get("production_component_hash")
+    hash_evidence_stale = False
+    if status in {"verified", "smoke_passed"}:
+        if p_hash and v_hash and p_hash != v_hash:
+            hash_evidence_stale = True
+        if published_hash and production_hash and published_hash != production_hash:
+            hash_evidence_stale = True
     error_log = tracker_status.get("error_log")
     payload_raw = tracker_status.get("induced_spec_payload")
     from core.gencode.services.v3_skill_coverage_service import _payload_error_code
@@ -683,6 +720,9 @@ def build_admin_example_gencode_status_view(
         status = "unsupported"
     has_payload = bool(tracker_status.get("has_payload"))
     has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
+    deployed_without_tracker = (not has_tracker) and bool(
+        file_status.get("production_generate_exists") or file_status.get("dryrun_generate_exists")
+    )
     teacher_status = resolve_teacher_facing_v3_status(
         gencode_status=status,
         has_tracker=has_tracker,
@@ -691,6 +731,9 @@ def build_admin_example_gencode_status_view(
         integrity_gate_passed=_payload_integrity_gate_passed(tracker_status.get("induced_spec_payload")),
         has_error=bool(tracker_status.get("error_log")),
         production_contains_latest=bool(sync_status.get("production_contains_latest")),
+        hash_evidence_stale=hash_evidence_stale,
+        active_generation_job=(status in {"generating", "running", "queued"}),
+        deployed_without_tracker=deployed_without_tracker,
     )
     return {
         **tracker_status,
@@ -698,6 +741,7 @@ def build_admin_example_gencode_status_view(
         **sync_status,
         "teacher_status": teacher_status,
         "status_label": format_gencode_status_label(status),
+        "hash_evidence_stale": hash_evidence_stale,
         "has_payload_label": "有" if has_payload else "無",
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
         "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),
@@ -717,16 +761,19 @@ def build_admin_examples_gencode_status_map(
     status_map: dict[int, dict[str, object]] = {}
     for example_id, skill_id in examples:
         tracker_status = base_map.get(example_id, dict(NOT_CREATED_STATUS))
+        component_id = str(tracker_status.get("component_id") or "").strip() or None
+        if not component_id:
+            component_id = f"src_{int(example_id)}"
         file_status = inspect_gencode_files(
             skill_id=skill_id,
-            component_id=str(tracker_status.get("component_id") or "") or None,
+            component_id=component_id,
             dryrun_base_dir=dryrun_base_dir,
             production_base_dir=production_base_dir,
             project_root=project_root,
         )
         sync_status = inspect_component_production_sync(
             skill_id=skill_id,
-            component_id=str(tracker_status.get("component_id") or "") or None,
+            component_id=component_id,
             textbook_example_id=example_id,
             tracker_payload=tracker_status.get("induced_spec_payload"),
             tracker_updated_at=tracker_status.get("updated_at"),
@@ -738,8 +785,14 @@ def build_admin_examples_gencode_status_map(
         v_hash = sync_status.get("verified_component_hash")
         payload = _parse_payload_dict(tracker_status.get("induced_spec_payload"))
         p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
-        if status in {"verified", "smoke_passed"} and p_hash and v_hash and p_hash != v_hash:
-            status = "pending"
+        published_hash = str(payload.get("published_generate_sha256") or "").strip() or None
+        production_hash = sync_status.get("production_component_hash")
+        hash_evidence_stale = False
+        if status in {"verified", "smoke_passed"}:
+            if p_hash and v_hash and p_hash != v_hash:
+                hash_evidence_stale = True
+            if published_hash and production_hash and published_hash != production_hash:
+                hash_evidence_stale = True
         error_log = tracker_status.get("error_log")
         payload_raw = tracker_status.get("induced_spec_payload")
         from core.gencode.services.v3_skill_coverage_service import _payload_error_code
@@ -749,6 +802,9 @@ def build_admin_examples_gencode_status_map(
             status = "unsupported"
         has_payload = bool(tracker_status.get("has_payload"))
         has_tracker = bool(tracker_status.get("component_id")) or status not in {"not_created", ""}
+        deployed_without_tracker = (not has_tracker) and bool(
+            file_status.get("production_generate_exists") or file_status.get("dryrun_generate_exists")
+        )
         teacher_status = resolve_teacher_facing_v3_status(
             gencode_status=status,
             has_tracker=has_tracker,
@@ -757,6 +813,9 @@ def build_admin_examples_gencode_status_map(
             integrity_gate_passed=_payload_integrity_gate_passed(tracker_status.get("induced_spec_payload")),
             has_error=bool(tracker_status.get("error_log")),
             production_contains_latest=bool(sync_status.get("production_contains_latest")),
+            hash_evidence_stale=hash_evidence_stale,
+            active_generation_job=(status in {"generating", "running", "queued"}),
+            deployed_without_tracker=deployed_without_tracker,
         )
         status_map[example_id] = {
             **tracker_status,
@@ -764,6 +823,7 @@ def build_admin_examples_gencode_status_map(
             **sync_status,
             "teacher_status": teacher_status,
             "status_label": format_gencode_status_label(status),
+            "hash_evidence_stale": hash_evidence_stale,
             "has_payload_label": "有" if has_payload else "無",
             "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
             "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),
@@ -920,8 +980,12 @@ def build_admin_skill_gencode_status_view(
             v_hash = sync_status.get("verified_component_hash")
             payload = _parse_payload_dict(row.get("induced_spec_payload"))
             p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
-            if p_hash and v_hash and p_hash != v_hash:
-                row_status = "pending"
+            published_hash = str(payload.get("published_generate_sha256") or "").strip() or None
+            production_hash = sync_status.get("production_component_hash")
+            if (p_hash and v_hash and p_hash != v_hash) or (
+                published_hash and production_hash and published_hash != production_hash
+            ):
+                row_status = "stale_hash"
                 stale_count += 1
         if row_status != "verified":
             continue
@@ -931,6 +995,7 @@ def build_admin_skill_gencode_status_view(
     published_count = len(published_component_ids)
     generated_not_packaged_count = max(0, verified_count - published_count)
     failed_count = sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log"))
+    missing_tracker_count = len(missing_tracker_ids)
     # Map 'partially_published' status payload
     partially_published_payload = {
         "status_key": "partially_published",
@@ -942,6 +1007,10 @@ def build_admin_skill_gencode_status_view(
 
     if failed_count > 0:
         teacher_status = _teacher_status_payload("failed")
+    elif missing_tracker_count > 0 or stale_count > 0:
+        teacher_status = _teacher_status_payload("deployed_pending_revalidation")
+        pending_n = max(missing_tracker_count, stale_count)
+        teacher_status["label"] = f"已部署，待重新驗證 ({pending_n}/{total_examples})"
     elif published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
         teacher_status = _teacher_status_payload("published")
         teacher_status["label"] = "已上線"
@@ -956,8 +1025,8 @@ def build_admin_skill_gencode_status_view(
         teacher_status = _teacher_status_payload("partial")
         teacher_status["label"] = f"部分完成 ({verified_count}/{total_examples})"
     elif bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")):
-        teacher_status = _teacher_status_payload("generated_not_packaged")
-    elif any(str(row.get("status")) in {"generating", "pending"} for row in rows):
+        teacher_status = _teacher_status_payload("deployed_pending_revalidation")
+    elif any(str(row.get("status")) in {"generating", "running", "queued"} for row in rows):
         teacher_status = _teacher_status_payload("generating")
     elif rows:
         teacher_status = _teacher_status_payload("generation_incomplete")
@@ -1196,6 +1265,9 @@ def _resolve_skill_level_teacher_status(
     tracker_rows: list[dict[str, object]],
     prod_info: dict[str, object],
     file_status: dict[str, object],
+    missing_tracker_count: int = 0,
+    stale_hash_count: int = 0,
+    manifest_complete: bool = False,
 ) -> dict[str, object]:
     partially_published_payload = {
         "status_key": "partially_published",
@@ -1204,6 +1276,15 @@ def _resolve_skill_level_teacher_status(
         "icon": "🟡",
         "is_clickable": True,
     }
+    # Missing tracker or stale verification evidence must not be labeled fully online.
+    if missing_tracker_count > 0 or stale_hash_count > 0:
+        if manifest_complete or bool(prod_info.get("v3_package_exists")) or bool(
+            file_status.get("production_generate_exists")
+        ):
+            teacher_status = _teacher_status_payload("deployed_pending_revalidation")
+            pending_n = max(missing_tracker_count, stale_hash_count)
+            teacher_status["label"] = f"已部署，待重新驗證 ({pending_n}/{total_examples})"
+            return teacher_status
     if published_count == total_examples and total_examples > 0 and generated_not_packaged_count == 0:
         teacher_status = _teacher_status_payload("published")
         teacher_status["label"] = "全部上線"
@@ -1214,8 +1295,8 @@ def _resolve_skill_level_teacher_status(
     elif verified_count > 0:
         teacher_status = _teacher_status_payload("generated_not_packaged")
     elif bool(file_status.get("dryrun_generate_exists") or file_status.get("production_generate_exists")):
-        teacher_status = _teacher_status_payload("generated_not_packaged")
-    elif any(str(row.get("status")) in {"generating", "pending"} for row in tracker_rows):
+        teacher_status = _teacher_status_payload("deployed_pending_revalidation")
+    elif any(str(row.get("status")) in {"generating", "running", "queued"} for row in tracker_rows):
         teacher_status = _teacher_status_payload("generating")
     elif tracker_rows:
         teacher_status = _teacher_status_payload("generation_incomplete")
@@ -1265,20 +1346,38 @@ def _build_skill_list_gencode_status_view(
         and bool(prod_info.get("production_wrapper_exists"))
         and bool(prod_info.get("v3_package_exists"))
     )
-    # A FULL restore can legitimately omit the raw tracker table while leaving
-    # the already-published package intact.  Treat a complete, exact production
-    # manifest as read-only deployment evidence; tracker failures still win.
+    # Manifest completeness is deployment evidence only. It must NOT inflate
+    # verified/published counts or label the skill as fully online when tracker
+    # rows are missing or hash evidence is stale.
     stale_count = sum(
         1
         for row in tracker_rows
         if str(row.get("status") or "").strip() in {"stale", "needs_human_review"}
     )
-    repair_required = failed_count > 0 or stale_count > 0
-    # Fallback is exclusively for a missing tracker.  A present tracker remains
-    # the diagnostic authority even when the production package is complete.
-    if not tracker_rows and manifest_complete and not repair_required:
-        published_count = total_examples
-        verified_count = total_examples
+    stale_hash_count = 0
+    for row in tracker_rows:
+        if str(row.get("status") or "").strip() not in {"verified", "smoke_passed"}:
+            continue
+        component_key = str(row.get("component_id") or "").strip()
+        if not component_key:
+            continue
+        payload = _parse_payload_dict(row.get("induced_spec_payload"))
+        p_hash = str(payload.get("verified_generate_sha256") or "").strip() or None
+        published_hash = str(payload.get("published_generate_sha256") or "").strip() or None
+        dry_path = dryrun_root / skill_id / "components" / component_key / "generate.py"
+        prod_path = production_root / skill_id / "components" / component_key / "generate.py"
+        dry_hash = _file_sha256(dry_path)
+        prod_hash = _file_sha256(prod_path)
+        if p_hash and dry_hash and p_hash != dry_hash:
+            stale_hash_count += 1
+            continue
+        if published_hash and prod_hash and published_hash != prod_hash:
+            stale_hash_count += 1
+    repair_required = failed_count > 0 or stale_count > 0 or stale_hash_count > 0
+    # Keep published_count based on tracker-verified rows only.
+    if stale_hash_count > 0:
+        published_count = max(0, published_count - stale_hash_count)
+        verified_count = max(0, verified_count - stale_hash_count)
     generated_not_packaged_count = max(0, verified_count - published_count)
     coverage_warnings = build_coverage_warnings(coverage)
 
@@ -1297,6 +1396,9 @@ def _build_skill_list_gencode_status_view(
             project_root=project_root,
             include_manifest=False,
         )
+        if manifest_complete or int(prod_info.get("production_component_count") or 0) > 0:
+            file_status["production_component_exists"] = True
+            file_status["production_generate_exists"] = True
     else:
         primary = max(tracker_rows, key=lambda row: _STATUS_PRIORITY.get(str(row["status"]), 0))
         status = str(primary["status"])
@@ -1311,8 +1413,8 @@ def _build_skill_list_gencode_status_view(
             "dryrun_component_exists": False,
             "dryrun_generate_exists": False,
             "dryrun_manifest_exists": False,
-            "production_component_exists": published_count > 0,
-            "production_generate_exists": published_count > 0,
+            "production_component_exists": published_count > 0 or manifest_complete,
+            "production_generate_exists": published_count > 0 or manifest_complete,
             "production_manifest_exists": prod_info.get("v3_package_exists", False),
         }
         for row in tracker_rows:
@@ -1335,6 +1437,9 @@ def _build_skill_list_gencode_status_view(
         tracker_rows=tracker_rows,
         prod_info=prod_info,
         file_status=file_status,
+        missing_tracker_count=len(missing_tracker_ids),
+        stale_hash_count=stale_hash_count,
+        manifest_complete=manifest_complete,
     )
 
     return {
@@ -1357,12 +1462,17 @@ def _build_skill_list_gencode_status_view(
         "generated_not_packaged_count": generated_not_packaged_count,
         "failed_count": failed_count,
         "stale_count": stale_count,
+        "stale_hash_count": stale_hash_count,
         "repair_required": repair_required,
         "unsupported_count": int(coverage.get("unsupported_count") or 0),
         "missing_tracker_count": len(missing_tracker_ids),
         "manifest_component_count": int(manifest_info.get("manifest_component_count") or 0),
         "manifest_complete": manifest_complete,
-        "status_evidence": "production_manifest" if manifest_complete else "tracker",
+        "status_evidence": (
+            "tracker"
+            if tracker_rows
+            else ("production_manifest_pending_revalidation" if manifest_complete else "tracker")
+        ),
         "coverage_missing_ids": missing_tracker_ids,
         "coverage_warnings": coverage_warnings,
         "publish_ready": bool(coverage.get("publish_ready")),

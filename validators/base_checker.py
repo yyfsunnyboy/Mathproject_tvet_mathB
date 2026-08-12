@@ -136,37 +136,65 @@ class BaseChecker:
                 return False, error
             return True, {}
 
-        # 4. Sympy parsing check: parse_error
+        # 4. Interval / solution-set: do not force sympy expression parsing.
         checker_key = str(answer_contract.get("checker") or answer_contract.get("checker_key") or "").strip()
-        is_math = (
-            raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction", "interval", "solution_set"}
-            or "expression" in checker_key
-            or "solution_set" in checker_key
+        is_interval_like = (
+            raw_answer_type in {"interval", "solution_set", "interval_set"}
             or "interval" in checker_key
+            or "solution_set" in checker_key
+        )
+        if is_interval_like and correct_answer is not None:
+            ans_str = str(correct_answer).strip()
+            if not ans_str:
+                return False, {
+                    "can_continue": False,
+                    "error_type": "parse_error",
+                    "expected": "non-empty interval or solution set",
+                    "actual": "",
+                }
+            # Lightweight structural gate; official interval_checker handles semantics.
+            if any(token in ans_str for token in ("<", ">", "≤", "≥", "[", "]", "(", ")", "∞", "∪", "或", ",")):
+                return True, {}
+            if ans_str in {"空集合", "∅", "无解", "所有實數", "R", "ℝ"}:
+                return True, {}
+            return False, {
+                "can_continue": False,
+                "error_type": "parse_error",
+                "expected": "interval/solution-set notation",
+                "actual": ans_str,
+            }
+
+        # 5. Sympy parsing check: parse_error (expressions / numeric radicals)
+        is_math = (
+            raw_answer_type in {"expression", "numeric_or_radical", "rational", "fraction"}
+            or "expression" in checker_key
         )
         if is_math and correct_answer is not None:
             ans_str = str(correct_answer).strip()
             parts = [ans_str]
-            if raw_answer_type in {"solution_set", "interval"} or "set" in checker_key or "interval" in checker_key:
-                parts = [p.strip() for p in ans_str.replace("或", ",").split(",") if p.strip()]
-            
             for part in parts:
-                if raw_answer_type in {"solution_set", "interval"} or "set" in checker_key or "interval" in checker_key:
-                    clean_part = part.strip("()[] ")
-                else:
-                    clean_part = part.strip()
+                clean_part = part.strip()
                 if "\\" not in part:
                     clean_part = clean_part.strip("{} ")
-                else:
-                    clean_part = clean_part.strip()
                 if not clean_part:
                     continue
+                # Factored forms like (x+1)(x-2) need an explicit multiply for sympy.
+                clean_part = re.sub(r"\)\s*\(", ")*(", clean_part)
                 try:
                     from sympy import sqrt
-                    from sympy.parsing.sympy_parser import parse_expr
+                    from sympy.parsing.sympy_parser import (
+                        parse_expr,
+                        standard_transformations,
+                        implicit_multiplication_application,
+                    )
                     from core.checkers.expression_equivalence_checker import normalize_math_expression
                     norm_part = normalize_math_expression(clean_part)
-                    parse_expr(norm_part, local_dict={"sqrt": sqrt})
+                    transformations = standard_transformations + (implicit_multiplication_application,)
+                    parse_expr(
+                        norm_part,
+                        local_dict={"sqrt": sqrt},
+                        transformations=transformations,
+                    )
                 except ModuleNotFoundError as exc:
                     if "sympy" in str(exc):
                         error = {

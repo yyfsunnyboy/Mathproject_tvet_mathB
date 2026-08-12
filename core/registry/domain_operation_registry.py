@@ -801,3 +801,32 @@ register_domain_spec(DomainCapabilitySpec(
 ))
 
 
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="algebra.function_concept",
+    domain_module="core.domain.function_concept_domain",
+    entrypoint="build_function_concept_matrix",
+    capabilities=frozenset({
+        "free_fall_function_value_choice",
+        "piecewise_utility_bill_savings_choice",
+        "function_concept_free_fall_evaluation",
+        "function_concept_piecewise_evaluation",
+    }),
+    operations={
+        "free_fall_function_value_choice": _op(
+            "free_fall_function_value_choice",
+            "build_function_concept_matrix",
+            supported_answer_types=("single_choice", "choice"),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("free_fall_function_value_choice",),
+        ),
+        "piecewise_utility_bill_savings_choice": _op(
+            "piecewise_utility_bill_savings_choice",
+            "build_function_concept_matrix",
+            supported_answer_types=("single_choice", "choice"),
+            supported_presentation_modes=("single_choice",),
+            provided_capabilities=("piecewise_utility_bill_savings_choice",),
+        ),
+    },
+))
+
+

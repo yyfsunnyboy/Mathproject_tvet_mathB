@@ -52,7 +52,7 @@ def test_teacher_status_failed_is_generation_failed():
         has_component=True,
     )
     assert status["status_key"] == "failed"
-    assert status["label"] == "生成失敗"
+    assert status["label"] == "驗證失敗"
 
 
 def test_teacher_status_published_only_when_latest_component_is_synced():
@@ -63,7 +63,7 @@ def test_teacher_status_published_only_when_latest_component_is_synced():
         production_contains_latest=True,
     )
     assert status["status_key"] == "published"
-    assert status["label"] == "已經上線"
+    assert status["label"] == "已上線"
 
 
 def test_production_sync_requires_matching_component_hash(tmp_path: Path):

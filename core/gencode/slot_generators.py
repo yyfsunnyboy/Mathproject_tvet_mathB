@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+import re
 from fractions import Fraction
 from typing import Any, Callable
 
@@ -89,6 +90,20 @@ def _build_choice_payload(
         "correct_answer": ans,
         "answer_type": answer_type,
         "checker_type": checker_type,
+        "checker_key": checker_type,
+        "answer_contract": {
+            "answer_type": answer_type,
+            "answer_shape": "choice_label",
+            "answer_equivalence": "choice_label",
+            "equivalence_type": "choice_label",
+            "checker": checker_type,
+            "checker_key": checker_type,
+            "presentation_mode": "single_choice",
+            "choices_required": True,
+            "choice_count": len(choices),
+            "correct_choice_count": 1,
+            "frontend_render_choices": True,
+        },
         "explanation": explanation,
         "diagnosis_tags": diagnosis_tags,
         "metadata": metadata,
@@ -1864,7 +1879,7 @@ def _slot_solve_quadratic_inequality_parameter_range(
             f"若不等式 ${poly}{op}0$ 對於任意實數 $x$ 均成立，求 ${param}$ 的範圍。",
             f"求使 ${poly}{op}0$ 恆成立之 ${param}$ 的範圍。",
         ]
-        answer = f"{param}>{boundary}" if strict else f"{param}>={boundary}"
+        answer = f"({boundary},∞)" if strict else f"[{boundary},∞)"
         explanation = (
             f"開口向上且需判別式 $D=4-4{param}<0$，得 ${param}>{boundary}$。"
         )
@@ -1880,7 +1895,7 @@ def _slot_solve_quadratic_inequality_parameter_range(
             f"若不等式 ${poly}{op}0$ 對於任意實數 $x$ 均成立，求 ${param}$ 的範圍。",
             f"求使 ${poly}{op}0$ 恆成立之 ${param}$ 的範圍。",
         ]
-        answer = f"{param}<{boundary}" if strict else f"{param}<={boundary}"
+        answer = f"(-∞,{boundary})" if strict else f"(-∞,{boundary}]"
         explanation = (
             f"開口向下且需判別式 $D=16+8{param}<0$，得 ${param}<{boundary}$。"
         )
@@ -1897,6 +1912,16 @@ def _slot_solve_quadratic_inequality_parameter_range(
         "correct_answer": answer,
         "answer_type": "interval",
         "checker_type": "interval_checker",
+        "checker_key": "interval_checker",
+        "answer_contract": {
+            "answer_type": "interval",
+            "answer_shape": "parameter_interval",
+            "answer_equivalence": "interval_equivalence",
+            "equivalence_type": "interval_equivalence",
+            "checker": "interval_checker",
+            "checker_key": "interval_checker",
+            "presentation_mode": "short_answer",
+        },
         "explanation": explanation,
         "diagnosis_tags": ["quadratic_inequality", "parameter_range", template_variant],
         "metadata": {
@@ -2286,6 +2311,78 @@ def _slot_quadratic_standard_to_vertex_properties(
         explanation=explanation,
         seed=seed,
     )
+
+
+def _vertex_form_expression_answer(a: int, h: int, k: int) -> str:
+    """Sympy-friendly vertex expression built from `_quadratic_vertex_form`."""
+    raw = _quadratic_vertex_form(a, h, k)
+    expr = raw[2:] if raw.startswith("y=") else raw
+    expr = expr.replace("^", "**")
+    # Coefficient juxtaposition like 2(x-1) is not sympy-safe; insert explicit *.
+    expr = re.sub(r"(?<=\d)\(", "*(", expr)
+    return expr
+
+
+def _slot_complete_square_to_vertex_expression(
+    skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
+) -> dict[str, Any]:
+    """Rewrite ax^2+bx+c into vertex / a(x+m)^2+n form via completing the square."""
+    rng = random.Random(f"{seed}|complete_square_to_vertex|{pt}")
+    a = rng.choice([-3, -2, -1, 1, 2, 3])
+    h = rng.choice([i for i in range(-5, 6) if i != 0])
+    k = rng.randint(-6, 6)
+
+    standard_raw = _quadratic_standard_form_from_vertex(a, h, k)
+    vertex_raw = _quadratic_vertex_form(a, h, k)
+    answer = _vertex_form_expression_answer(a, h, k)
+    standard_display = _quadratic_standard_form_display(a, h, k)
+    vertex_display = _quadratic_vertex_form_display(a, h, k)
+    b = -2 * a * h
+    c = a * h * h + k
+
+    stem_templates = [
+        f"請用配方法，將 {standard_display} 改寫為 $a(x+m)^2+n$／頂點式。",
+        f"請利用配方法，把二次式 {standard_display} 化成頂點式 $a(x-h)^2+k$。",
+        f"將 {standard_display} 配方成 $a(x+m)^2+n$ 的形式。",
+    ]
+    stem = rng.choice(stem_templates)
+    explanation = (
+        f"對 {standard_display} 配方："
+        f"先整理一次項得頂點橫座標 $h={h}$，"
+        f"再寫成 {vertex_display}。"
+    )
+    return {
+        "skill_id": skill_id,
+        "problem_type_id": pt,
+        "question_text": stem,
+        "question": stem,
+        "choices": [],
+        "answer": answer,
+        "correct_answer": answer,
+        "answer_type": "expression",
+        "checker_type": "expression_checker",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "answer_contract": dict(get_answer_contract(spec)),
+        "explanation": explanation,
+        "diagnosis_tags": ["quadratic_complete_square", "completing_the_square", "quadratic_vertex_form"],
+        "metadata": {
+            "givens": [f"standard_form={standard_raw}", f"a={a}", f"b={b}", f"c={c}"],
+            "target": "vertex_form_expression",
+            "derivation": [
+                f"h={h}",
+                f"k={k}",
+                f"complete_square:{standard_raw}->{vertex_raw}",
+                f"expression_answer={answer}",
+            ],
+            "template_slot": "complete_square_to_vertex_expression",
+            "problem_type_id": pt,
+            "coefficients": {"a": a, "b": b, "c": c, "h": h, "k": k},
+            "vertex_form": vertex_raw,
+        },
+        "source": "gencode_slot_generator",
+    }
 
 
 def _slot_quadratic_vertex_or_parameter_computation(
@@ -2678,6 +2775,10 @@ SLOT_REGISTRY: dict[str, GeneratorFn] = {
     "quadratic_standard_to_vertex_properties": _slot_quadratic_standard_to_vertex_properties,
     "quadratic_vertex_or_parameter_computation": _slot_quadratic_vertex_or_parameter_computation,
     "quadratic_vertex_form_translation_to_new_function": _slot_quadratic_vertex_form_translation_to_new_function,
+    "complete_square_to_vertex_expression": _slot_complete_square_to_vertex_expression,
+    "completing_the_square": _slot_complete_square_to_vertex_expression,
+    "quadratic_complete_square": _slot_complete_square_to_vertex_expression,
+    "complete_square_to_vertex": _slot_complete_square_to_vertex_expression,
     "factor_quadratic_by_cross_multiplication": _slot_factor_quadratic_by_cross_multiplication,
     "solve_quadratic_inequality": _slot_solve_quadratic_inequality,
     "solve_quadratic_inequality_special_cases": _slot_solve_quadratic_inequality_special_cases,
@@ -2695,6 +2796,10 @@ TARGET_TASK_GENERATOR_REGISTRY: dict[str, GeneratorFn] = {
     "solve_point_from_section_ratio": _slot_division_point_coordinates,
     "factor_quadratic_by_cross_multiplication": _slot_factor_quadratic_by_cross_multiplication,
     "solve_quadratic_by_factoring": _slot_factor_quadratic_by_cross_multiplication,
+    "complete_square_to_vertex_expression": _slot_complete_square_to_vertex_expression,
+    "completing_the_square": _slot_complete_square_to_vertex_expression,
+    "quadratic_complete_square": _slot_complete_square_to_vertex_expression,
+    "complete_square_to_vertex": _slot_complete_square_to_vertex_expression,
     "solve_quadratic_inequality": _slot_solve_quadratic_inequality,
     "interpret_quadratic_inequality_solution_set": _slot_solve_quadratic_inequality,
     "solve_quadratic_inequality_special_cases": _slot_solve_quadratic_inequality_special_cases,

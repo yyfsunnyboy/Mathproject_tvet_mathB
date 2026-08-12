@@ -50,6 +50,10 @@ TASK_FAMILY_TO_SLOT: dict[str, str] = {
     "quadratic_vertex_form_properties": "quadratic_vertex_form_properties",
     "factor_quadratic_by_cross_multiplication": "factor_quadratic_by_cross_multiplication",
     "solve_quadratic_by_factoring": "factor_quadratic_by_cross_multiplication",
+    "complete_square_to_vertex_expression": "complete_square_to_vertex_expression",
+    "completing_the_square": "complete_square_to_vertex_expression",
+    "quadratic_complete_square": "complete_square_to_vertex_expression",
+    "complete_square_to_vertex": "complete_square_to_vertex_expression",
     "solve_quadratic_inequality": "solve_quadratic_inequality",
     "interpret_quadratic_inequality_solution_set": "solve_quadratic_inequality",
     "solve_quadratic_inequality_special_cases": "solve_quadratic_inequality_special_cases",
@@ -99,6 +103,7 @@ SLOT_COMPATIBLE_FAMILIES: dict[str, frozenset[str]] = {
         {"text_short", "short_answer", "expression"}
     ),
     "factor_quadratic_by_cross_multiplication": frozenset({"expression", "short_answer"}),
+    "complete_square_to_vertex_expression": frozenset({"expression", "short_answer"}),
     "solve_quadratic_inequality": frozenset({"interval", "short_answer"}),
     "solve_quadratic_inequality_special_cases": frozenset({"text_short", "short_answer"}),
     "solve_quadratic_inequality_parameter_range": frozenset({"interval", "short_answer"}),

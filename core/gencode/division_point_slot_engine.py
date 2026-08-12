@@ -1003,21 +1003,15 @@ def _pack(
             "sampling_strategy": gc.get("sampling_strategy", "weighted_random"),
             "template_variant": template_variant,
         },
-    }
-    return {
-        "question_text": question_text,
-        "answer": answer,
-        "correct_answer": answer,
-        "explanation": explanation,
-        "template_variant": template_variant,
-        "ratio_form": ratio_form,
-        "ratio_values": ratio_values,
-        "coordinate_pattern": sign,
-        "point_names": list(point_names),
         "metadata": meta,
         "answer_contract": dict(ac),
         "checker": str(ac.get("checker", "coordinate_pair_checker")),
-        "equivalence": str(ac.get("answer_equivalence", ac.get("equivalence_type", "coordinate_pair_equivalence"))),
+        "equivalence": str(
+            ac.get(
+                "answer_equivalence",
+                ac.get("equivalence_type", "coordinate_pair_equivalence"),
+            )
+        ),
     }
 
 

@@ -196,10 +196,12 @@ def test_complete_production_manifest_recovers_status_after_tracker_restore_loss
             view = build_admin_skills_gencode_status_map(conn, [SKILL_A], project_root=project_root)[SKILL_A]
         finally:
             conn.close()
-    assert view["available_count"] == 4
-    assert view["published_count"] == 4
+    # Manifest alone is deployment evidence, not a substitute for verified tracker.
     assert view["manifest_complete"] is True
-    assert view["teacher_status"]["status_key"] == "published"
+    assert view["missing_tracker_count"] == 4
+    assert view["published_count"] == 0
+    assert view["teacher_status"]["status_key"] == "deployed_pending_revalidation"
+    assert "已部署，待重新驗證" in str(view["teacher_status"]["label"])
 
 
 def test_production_wrapper_must_not_show_not_generated(b4_status_env):
