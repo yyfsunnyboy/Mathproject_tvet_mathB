@@ -10,13 +10,13 @@ IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 30
 DIFFICULTY_LEVEL: Final[str] = "hard"
-DOMAIN_OPERATION: Final[str] = "compute_midpoint_coordinates"
+DOMAIN_OPERATION: Final[str] = "triangle_median_length"
 ANSWER_SCHEMA_KEY: Final[str] = "choice_label"
-LINE_TYPE: Final[str] = "compute_midpoint_coordinates"
+LINE_TYPE: Final[str] = "triangle_median_length"
 
-TARGET_TASK: Final[str] = "compute_midpoint_coordinates"
-TEMPLATE_SLOT: Final[str] = "compute_midpoint_coordinates"
-PROBLEM_TYPE_ID: Final[str] = "compute_midpoint_coordinates"
+TARGET_TASK: Final[str] = "triangle_median_length"
+TEMPLATE_SLOT: Final[str] = "triangle_median_length"
+PROBLEM_TYPE_ID: Final[str] = "triangle_median_length"
 PRESENTATION_MODE: Final[str] = "single_choice"
 RESPONSE_MODE: Final[str] = "single_choice"
 INTERACTION_TYPE: Final[str] = "single_choice"

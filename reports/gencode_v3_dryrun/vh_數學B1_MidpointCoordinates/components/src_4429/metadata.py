@@ -10,13 +10,13 @@ IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 10
 DIFFICULTY_LEVEL: Final[str] = "easy"
-DOMAIN_OPERATION: Final[str] = "compute_midpoint_coordinates"
+DOMAIN_OPERATION: Final[str] = "parallelogram_fourth_vertex"
 ANSWER_SCHEMA_KEY: Final[str] = "coordinate_pair"
-LINE_TYPE: Final[str] = "compute_midpoint_coordinates"
+LINE_TYPE: Final[str] = "parallelogram_fourth_vertex"
 
-TARGET_TASK: Final[str] = "compute_midpoint_coordinates"
-TEMPLATE_SLOT: Final[str] = "compute_midpoint_coordinates"
-PROBLEM_TYPE_ID: Final[str] = "compute_midpoint_coordinates"
+TARGET_TASK: Final[str] = "parallelogram_fourth_vertex"
+TEMPLATE_SLOT: Final[str] = "parallelogram_fourth_vertex"
+PROBLEM_TYPE_ID: Final[str] = "parallelogram_fourth_vertex"
 PRESENTATION_MODE: Final[str] = "short_answer"
 RESPONSE_MODE: Final[str] = "short_answer"
 INTERACTION_TYPE: Final[str] = "short_answer"

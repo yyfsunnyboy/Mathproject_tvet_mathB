@@ -10,13 +10,13 @@ IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 10
 DIFFICULTY_LEVEL: Final[str] = "easy"
-DOMAIN_OPERATION: Final[str] = "compute_centroid_coordinates"
+DOMAIN_OPERATION: Final[str] = "centroid_coordinate"
 ANSWER_SCHEMA_KEY: Final[str] = "coordinate_pair"
-LINE_TYPE: Final[str] = "compute_centroid_coordinates"
+LINE_TYPE: Final[str] = "centroid_coordinate"
 
-TARGET_TASK: Final[str] = "compute_centroid_coordinates"
-TEMPLATE_SLOT: Final[str] = "compute_centroid_coordinates"
-PROBLEM_TYPE_ID: Final[str] = "compute_centroid_coordinates"
+TARGET_TASK: Final[str] = "centroid_coordinate"
+TEMPLATE_SLOT: Final[str] = "centroid_coordinate"
+PROBLEM_TYPE_ID: Final[str] = "centroid_coordinate"
 PRESENTATION_MODE: Final[str] = "short_answer"
 RESPONSE_MODE: Final[str] = "short_answer"
 INTERACTION_TYPE: Final[str] = "short_answer"

@@ -1,0 +1,143 @@
+{
+  "total_examples": 98,
+  "by_section": {
+    "1-2 平面坐標系與線型函數": 42,
+    "1-3 二次函數": 24,
+    "1-4 一元二次不等式": 32
+  },
+  "skill_summary": {
+    "vh_數學B1_CartesianCoordinateSystemEstablishment": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 4,
+      "published_count": 4,
+      "total_examples": 4,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_CompletingTheSquare": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 2,
+      "published_count": 2,
+      "total_examples": 2,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_DistanceBetweenTwoPointsInPlane": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 4,
+      "published_count": 4,
+      "total_examples": 4,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_DivisionPointCoordinates": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 7,
+      "published_count": 7,
+      "total_examples": 7,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_FunctionConcept": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 2,
+      "published_count": 2,
+      "total_examples": 2,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_LinearFunction": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 15,
+      "published_count": 15,
+      "total_examples": 15,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_MidpointCoordinates": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 10,
+      "published_count": 10,
+      "total_examples": 10,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_QuadraticFunctionExtremum": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 13,
+      "published_count": 13,
+      "total_examples": 13,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_QuadraticFunctionGraph": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 4,
+      "published_count": 4,
+      "total_examples": 4,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_QuadraticInequalityAndFactoring": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 3,
+      "published_count": 3,
+      "total_examples": 3,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_QuadraticInequalitySolution": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 29,
+      "published_count": 29,
+      "total_examples": 29,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    },
+    "vh_數學B1_VertexFormOfQuadraticFunction": {
+      "teacher_label": "全部上線",
+      "teacher_key": "published",
+      "verified_count": 5,
+      "published_count": 5,
+      "total_examples": 5,
+      "missing_tracker_count": 0,
+      "stale_hash_count": 0
+    }
+  },
+  "example_teacher_labels": {
+    "已上線": 98
+  },
+  "not_online_count": 0,
+  "not_online": [],
+  "section_skills": {
+    "1-2 平面坐標系與線型函數": {
+      "vh_數學B1_CartesianCoordinateSystemEstablishment": 4,
+      "vh_數學B1_MidpointCoordinates": 10,
+      "vh_數學B1_DistanceBetweenTwoPointsInPlane": 4,
+      "vh_數學B1_DivisionPointCoordinates": 7,
+      "vh_數學B1_LinearFunction": 15,
+      "vh_數學B1_FunctionConcept": 2
+    },
+    "1-3 二次函數": {
+      "vh_數學B1_QuadraticFunctionGraph": 4,
+      "vh_數學B1_VertexFormOfQuadraticFunction": 5,
+      "vh_數學B1_QuadraticFunctionExtremum": 13,
+      "vh_數學B1_CompletingTheSquare": 2
+    },
+    "1-4 一元二次不等式": {
+      "vh_數學B1_QuadraticInequalityAndFactoring": 3,
+      "vh_數學B1_QuadraticInequalitySolution": 29
+    }
+  }
+}

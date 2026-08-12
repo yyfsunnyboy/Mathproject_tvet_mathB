@@ -4,15 +4,17 @@ from typing import Any
 
 from core.gencode.division_point_slot_engine import generate_division_point_payload
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
+from core.gencode.midpoint_source_fidelity import generate_source_faithful_payload
 
 PRESENTATION_MODE = "single_choice"
 ANSWER_TYPE = "choice"
-PROBLEM_TYPE_ID = "compute_midpoint_coordinates"
+PROBLEM_TYPE_ID = "triangle_median_length"
 TEXTBOOK_EXAMPLE_ID = 4511
 DEFAULT_COMPONENT_ID = "src_4511" if TEXTBOOK_EXAMPLE_ID else ""
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
+    return generate_source_faithful_payload(TEXTBOOK_EXAMPLE_ID, seed)
     from core.gencode.pipeline_orchestrator import _v3_invoke_domain_entrypoint
     from core.gencode.domain_matrix_adapter import normalize_domain_payload_to_v3_matrix
 

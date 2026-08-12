@@ -1,0 +1,1974 @@
+{
+  "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+  "commit": true,
+  "project_root": "D:\\Python\\Mathproject_tvet_mathB",
+  "started_at": "2026-08-12T12:49:10",
+  "total": 14,
+  "passed_count": 14,
+  "failed_count": 0,
+  "synced_count": 14,
+  "all_passed": true,
+  "all_hashes_unchanged": true,
+  "components": [
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "textbook_example_id": 4398,
+      "component_id": "src_4398",
+      "tracker_before": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-06-29 14:35:04"
+      },
+      "dryrun_hash_before": "0fbabe5522993770223754980d2155c92e0fd023a5614c76b93f3078a74cca10",
+      "production_hash_before": "0fbabe5522993770223754980d2155c92e0fd023a5614c76b93f3078a74cca10",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4398",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4398",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4398
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4398",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4398",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4398
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "dryrun_hash_after": "0fbabe5522993770223754980d2155c92e0fd023a5614c76b93f3078a74cca10",
+      "production_hash_after": "0fbabe5522993770223754980d2155c92e0fd023a5614c76b93f3078a74cca10",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4398"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "textbook_example_id": 4399,
+      "component_id": "src_4399",
+      "tracker_before": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-06-29 14:35:04"
+      },
+      "dryrun_hash_before": "7f1248d946d8e82c6cbecda97b961d879cc012ed82e79d0080f074d68aedd727",
+      "production_hash_before": "7f1248d946d8e82c6cbecda97b961d879cc012ed82e79d0080f074d68aedd727",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "number_line_distance_between_two_points",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "integer",
+          "answer_value_type": "integer",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "integer",
+            "answer_type": "integer",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4399",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "number_line_distance_between_two_points",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "integer",
+          "line_type": "number_line_distance_between_two_points",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "integer",
+          "problem_type_id": "number_line_distance_between_two_points",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4399",
+          "target_task": "number_line_distance_between_two_points",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "number_line_distance_between_two_points",
+          "textbook_example_id": 4399
+        },
+        "sample_answer_type": "integer"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "number_line_distance_between_two_points",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "integer",
+          "answer_value_type": "integer",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "integer",
+            "answer_type": "integer",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4399",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "number_line_distance_between_two_points",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "integer",
+          "line_type": "number_line_distance_between_two_points",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "integer",
+          "problem_type_id": "number_line_distance_between_two_points",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4399",
+          "target_task": "number_line_distance_between_two_points",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "number_line_distance_between_two_points",
+          "textbook_example_id": 4399
+        },
+        "sample_answer_type": "integer"
+      },
+      "dryrun_hash_after": "7f1248d946d8e82c6cbecda97b961d879cc012ed82e79d0080f074d68aedd727",
+      "production_hash_after": "7f1248d946d8e82c6cbecda97b961d879cc012ed82e79d0080f074d68aedd727",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4399"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "textbook_example_id": 4408,
+      "component_id": "src_4408",
+      "tracker_before": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-06-29 14:35:04"
+      },
+      "dryrun_hash_before": "c2ed2d66f53b47ba920d199004e0404c3e9b61a42967c3d1e2ed8e563c023daa",
+      "production_hash_before": "c2ed2d66f53b47ba920d199004e0404c3e9b61a42967c3d1e2ed8e563c023daa",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4408",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4408",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4408
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4408",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "example",
+          "source_ref": "src_4408",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4408
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "dryrun_hash_after": "c2ed2d66f53b47ba920d199004e0404c3e9b61a42967c3d1e2ed8e563c023daa",
+      "production_hash_after": "c2ed2d66f53b47ba920d199004e0404c3e9b61a42967c3d1e2ed8e563c023daa",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4408"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "textbook_example_id": 4412,
+      "component_id": "src_4412",
+      "tracker_before": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-06-29 14:35:04"
+      },
+      "dryrun_hash_before": "a55fe0558ad6b7c6e4ca900417dbe1a37c453b3fed82b6b3b45f78cb5203cca9",
+      "production_hash_before": "a55fe0558ad6b7c6e4ca900417dbe1a37c453b3fed82b6b3b45f78cb5203cca9",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4412",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 20,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "quiz",
+          "source_ref": "src_4412",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4412
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "solve_basic_absolute_value_equation",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "solution_set",
+          "answer_value_type": "solution_set",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "solution_set",
+            "answer_type": "solution_set",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4412",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "solve_basic_absolute_value_equation",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "solution_set",
+          "line_type": "solve_basic_absolute_value_equation",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 20,
+          "presentation_mode": "multiple_inputs",
+          "problem_type_id": "solve_basic_absolute_value_equation",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValue",
+          "source_kind": "quiz",
+          "source_ref": "src_4412",
+          "target_task": "solve_basic_absolute_value_equation",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "solve_basic_absolute_value_equation",
+          "textbook_example_id": 4412
+        },
+        "sample_answer_type": "solution_set"
+      },
+      "dryrun_hash_after": "a55fe0558ad6b7c6e4ca900417dbe1a37c453b3fed82b6b3b45f78cb5203cca9",
+      "production_hash_after": "a55fe0558ad6b7c6e4ca900417dbe1a37c453b3fed82b6b3b45f78cb5203cca9",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4412"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4400,
+      "component_id": "src_4400",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "26b50680df06ea0d5bf69305b6a75819730aaaccd6d1524297b0bf0af09df7a1",
+      "production_hash_before": "26b50680df06ea0d5bf69305b6a75819730aaaccd6d1524297b0bf0af09df7a1",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4400",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4400",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4400
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4400",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4400",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4400
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "26b50680df06ea0d5bf69305b6a75819730aaaccd6d1524297b0bf0af09df7a1",
+      "production_hash_after": "26b50680df06ea0d5bf69305b6a75819730aaaccd6d1524297b0bf0af09df7a1",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4400"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4402,
+      "component_id": "src_4402",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "3b47fb8fd773a97a5677f8531444b43c2d5b0dc2308895bcba4e5ea67cc38eb2",
+      "production_hash_before": "3b47fb8fd773a97a5677f8531444b43c2d5b0dc2308895bcba4e5ea67cc38eb2",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_shifted_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4402",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_shifted_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_shifted_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_shifted_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4402",
+          "target_task": "absolute_value_inequality_shifted_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_shifted_basic",
+          "textbook_example_id": 4402
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_shifted_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4402",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_shifted_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_shifted_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_shifted_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4402",
+          "target_task": "absolute_value_inequality_shifted_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_shifted_basic",
+          "textbook_example_id": 4402
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "3b47fb8fd773a97a5677f8531444b43c2d5b0dc2308895bcba4e5ea67cc38eb2",
+      "production_hash_after": "3b47fb8fd773a97a5677f8531444b43c2d5b0dc2308895bcba4e5ea67cc38eb2",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4402"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4403,
+      "component_id": "src_4403",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "b04aa6a293904bbf491a7770e7e180e9557d76a22ef90b408361dbb288028ce8",
+      "production_hash_before": "b04aa6a293904bbf491a7770e7e180e9557d76a22ef90b408361dbb288028ce8",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_shifted_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4403",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_shifted_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_shifted_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_shifted_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4403",
+          "target_task": "absolute_value_inequality_shifted_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_shifted_basic",
+          "textbook_example_id": 4403
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_shifted_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4403",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_shifted_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_shifted_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_shifted_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4403",
+          "target_task": "absolute_value_inequality_shifted_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_shifted_basic",
+          "textbook_example_id": 4403
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "b04aa6a293904bbf491a7770e7e180e9557d76a22ef90b408361dbb288028ce8",
+      "production_hash_after": "b04aa6a293904bbf491a7770e7e180e9557d76a22ef90b408361dbb288028ce8",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4403"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4404,
+      "component_id": "src_4404",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "02ac5ba82db0547b22d777d31e013292baf34e87e1aaec2eb9bdf5c2bb420b97",
+      "production_hash_before": "02ac5ba82db0547b22d777d31e013292baf34e87e1aaec2eb9bdf5c2bb420b97",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4404",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4404",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4404
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4404",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4404",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4404
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "02ac5ba82db0547b22d777d31e013292baf34e87e1aaec2eb9bdf5c2bb420b97",
+      "production_hash_after": "02ac5ba82db0547b22d777d31e013292baf34e87e1aaec2eb9bdf5c2bb420b97",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4404"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4405,
+      "component_id": "src_4405",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "9f54bd6fd25c8d8b6db5a92199507d53708ae1869f7756c603be47ba1042e661",
+      "production_hash_before": "9f54bd6fd25c8d8b6db5a92199507d53708ae1869f7756c603be47ba1042e661",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4405",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4405",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4405
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4405",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4405",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4405
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "9f54bd6fd25c8d8b6db5a92199507d53708ae1869f7756c603be47ba1042e661",
+      "production_hash_after": "9f54bd6fd25c8d8b6db5a92199507d53708ae1869f7756c603be47ba1042e661",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4405"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4406,
+      "component_id": "src_4406",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "b58e6ddaaab7d71d56ad4a80b9b0f924c8c897e94825f9ba7a1e5f285cf1ff09",
+      "production_hash_before": "b58e6ddaaab7d71d56ad4a80b9b0f924c8c897e94825f9ba7a1e5f285cf1ff09",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4406",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4406",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4406
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4406",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4406",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4406
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "b58e6ddaaab7d71d56ad4a80b9b0f924c8c897e94825f9ba7a1e5f285cf1ff09",
+      "production_hash_after": "b58e6ddaaab7d71d56ad4a80b9b0f924c8c897e94825f9ba7a1e5f285cf1ff09",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4406"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4407,
+      "component_id": "src_4407",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "c32d2aa3b56cf29e38a2575ac85d585d3707ed98d7895e2069cefb2cb9d0de6f",
+      "production_hash_before": "c32d2aa3b56cf29e38a2575ac85d585d3707ed98d7895e2069cefb2cb9d0de6f",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4407",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4407",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4407
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_linear_expression_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4407",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_linear_expression_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_linear_expression_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4407",
+          "target_task": "absolute_value_inequality_linear_expression_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_linear_expression_basic",
+          "textbook_example_id": 4407
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "c32d2aa3b56cf29e38a2575ac85d585d3707ed98d7895e2069cefb2cb9d0de6f",
+      "production_hash_after": "c32d2aa3b56cf29e38a2575ac85d585d3707ed98d7895e2069cefb2cb9d0de6f",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4407"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4409,
+      "component_id": "src_4409",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "4a8621955a2431832bea9913901ade8933d139baf72a4256847912f38e226bdb",
+      "production_hash_before": "4a8621955a2431832bea9913901ade8933d139baf72a4256847912f38e226bdb",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4409",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4409",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4409
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4409",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 10,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "example",
+          "source_ref": "src_4409",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4409
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "4a8621955a2431832bea9913901ade8933d139baf72a4256847912f38e226bdb",
+      "production_hash_after": "4a8621955a2431832bea9913901ade8933d139baf72a4256847912f38e226bdb",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4409"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4413,
+      "component_id": "src_4413",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "f1c5670966f4eef889a303d900f19e62fe35ad028a5816ccb8627ff09a1e5861",
+      "production_hash_before": "f1c5670966f4eef889a303d900f19e62fe35ad028a5816ccb8627ff09a1e5861",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4413",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 20,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "quiz",
+          "source_ref": "src_4413",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4413
+        },
+        "sample_answer_type": "expression"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_zero_center_basic",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "answer_verification_type": {
+            "checker_key": "linear_equation_equivalent_checker",
+            "equivalence_type": "linear_equation_equivalent",
+            "response_mode": "expression",
+            "interaction_type": "expression",
+            "answer_value_type": "expression",
+            "answer_type": "expression",
+            "module": "core.checkers.linear_equation_equivalent_checker"
+          },
+          "component_id": "src_4413",
+          "difficulty_level": "easy",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_zero_center_basic",
+          "generator_readiness": "draft",
+          "interaction_type": "expression",
+          "is_required_core": false,
+          "legacy_answer_type": "expression",
+          "line_type": "absolute_value_inequality_zero_center_basic",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 20,
+          "presentation_mode": "short_answer",
+          "problem_type_id": "absolute_value_inequality_zero_center_basic",
+          "response_mode": "expression",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "quiz",
+          "source_ref": "src_4413",
+          "target_task": "absolute_value_inequality_zero_center_basic",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_zero_center_basic",
+          "textbook_example_id": 4413
+        },
+        "sample_answer_type": "expression"
+      },
+      "dryrun_hash_after": "f1c5670966f4eef889a303d900f19e62fe35ad028a5816ccb8627ff09a1e5861",
+      "production_hash_after": "f1c5670966f4eef889a303d900f19e62fe35ad028a5816ccb8627ff09a1e5861",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4413"
+      }
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "textbook_example_id": 4499,
+      "component_id": "src_4499",
+      "tracker_before": {
+        "exists": false,
+        "gencode_status": null,
+        "updated_at": null
+      },
+      "dryrun_hash_before": "7af1b13da881d669f0fb9c1d3d888160a6d0d5f5f1a93808653d2a441c8237d4",
+      "production_hash_before": "7af1b13da881d669f0fb9c1d3d888160a6d0d5f5f1a93808653d2a441c8237d4",
+      "hash_consistent_before": true,
+      "passed": true,
+      "blockers": [],
+      "dryrun_validation": {
+        "label": "dryrun",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "choice",
+          "answer_value_type": "choice",
+          "answer_verification_type": {
+            "checker_key": "choice_label_checker",
+            "equivalence_type": "choice_label",
+            "response_mode": "single_choice",
+            "interaction_type": "single_choice",
+            "answer_value_type": "choice",
+            "answer_type": "choice",
+            "module": "core.checkers.choice_label_checker"
+          },
+          "component_id": "src_4499",
+          "difficulty_level": "hard",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_integer_solution_count_choice",
+          "generator_readiness": "draft",
+          "interaction_type": "single_choice",
+          "is_required_core": false,
+          "legacy_answer_type": "choice",
+          "line_type": "absolute_value_inequality_integer_solution_count_choice",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 30,
+          "presentation_mode": "single_choice",
+          "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+          "response_mode": "single_choice",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "test",
+          "source_ref": "src_4499",
+          "target_task": "absolute_value_inequality_integer_solution_count_choice",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_integer_solution_count_choice",
+          "textbook_example_id": 4499
+        },
+        "sample_answer_type": "choice"
+      },
+      "production_validation": {
+        "label": "production",
+        "compile_passed": true,
+        "import_passed": true,
+        "smoke_passed": true,
+        "integrity_passed": true,
+        "checker_passed": true,
+        "payload_schema_passed": true,
+        "blockers": [],
+        "sample_problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+        "metadata_attrs": {
+          "answer_schema_key": "",
+          "answer_type": "choice",
+          "answer_value_type": "choice",
+          "answer_verification_type": {
+            "checker_key": "choice_label_checker",
+            "equivalence_type": "choice_label",
+            "response_mode": "single_choice",
+            "interaction_type": "single_choice",
+            "answer_value_type": "choice",
+            "answer_type": "choice",
+            "module": "core.checkers.choice_label_checker"
+          },
+          "component_id": "src_4499",
+          "difficulty_level": "hard",
+          "domain_library": [
+            "core.domain.absolute_value_domain.build_absolute_value_matrix"
+          ],
+          "domain_operation": "absolute_value_inequality_integer_solution_count_choice",
+          "generator_readiness": "draft",
+          "interaction_type": "single_choice",
+          "is_required_core": false,
+          "legacy_answer_type": "choice",
+          "line_type": "absolute_value_inequality_integer_solution_count_choice",
+          "math_objects": [
+            "absolute_value",
+            "equation"
+          ],
+          "order_weight": 30,
+          "presentation_mode": "single_choice",
+          "problem_type_id": "absolute_value_inequality_integer_solution_count_choice",
+          "response_mode": "single_choice",
+          "semantic_required_concepts": [
+            "絕對值",
+            "絕對值方程式"
+          ],
+          "skill_id": "vh_數學B1_AbsoluteValueInequality",
+          "source_kind": "test",
+          "source_ref": "src_4499",
+          "target_task": "absolute_value_inequality_integer_solution_count_choice",
+          "taxonomy_path": "algebra:absolute_value",
+          "template_slot": "absolute_value_inequality_integer_solution_count_choice",
+          "textbook_example_id": 4499
+        },
+        "sample_answer_type": "choice"
+      },
+      "dryrun_hash_after": "7af1b13da881d669f0fb9c1d3d888160a6d0d5f5f1a93808653d2a441c8237d4",
+      "production_hash_after": "7af1b13da881d669f0fb9c1d3d888160a6d0d5f5f1a93808653d2a441c8237d4",
+      "hashes_unchanged": true,
+      "production_file_changed": false,
+      "run_id": "23d0327592924bf7a4f4f0b83108a5df",
+      "commit_requested": true,
+      "tracker_synced": true,
+      "tracker_after": {
+        "exists": true,
+        "gencode_status": "verified",
+        "updated_at": "2026-08-12 12:49:10",
+        "component_id": "src_4499"
+      }
+    }
+  ]
+}

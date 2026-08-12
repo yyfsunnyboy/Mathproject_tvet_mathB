@@ -10,18 +10,18 @@ IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 20
 DIFFICULTY_LEVEL: Final[str] = "easy"
-DOMAIN_OPERATION: Final[str] = "compute_midpoint_coordinates"
-ANSWER_SCHEMA_KEY: Final[str] = "coordinate_pair"
-LINE_TYPE: Final[str] = "compute_midpoint_coordinates"
+DOMAIN_OPERATION: Final[str] = "midpoint_distance_from_origin"
+ANSWER_SCHEMA_KEY: Final[str] = "distance_scalar"
+LINE_TYPE: Final[str] = "midpoint_distance_from_origin"
 
-TARGET_TASK: Final[str] = "compute_midpoint_coordinates"
-TEMPLATE_SLOT: Final[str] = "compute_midpoint_coordinates"
-PROBLEM_TYPE_ID: Final[str] = "compute_midpoint_coordinates"
+TARGET_TASK: Final[str] = "midpoint_distance_from_origin"
+TEMPLATE_SLOT: Final[str] = "midpoint_distance_from_origin"
+PROBLEM_TYPE_ID: Final[str] = "midpoint_distance_from_origin"
 PRESENTATION_MODE: Final[str] = "short_answer"
 RESPONSE_MODE: Final[str] = "short_answer"
 INTERACTION_TYPE: Final[str] = "short_answer"
-ANSWER_VALUE_TYPE: Final[str] = "coordinate_pair"
-ANSWER_TYPE: Final[str] = "coordinate_pair"
+ANSWER_VALUE_TYPE: Final[str] = "radical_scalar"
+ANSWER_TYPE: Final[str] = "radical_scalar"
 LEGACY_ANSWER_TYPE: Final[str] = "coordinate_pair"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (

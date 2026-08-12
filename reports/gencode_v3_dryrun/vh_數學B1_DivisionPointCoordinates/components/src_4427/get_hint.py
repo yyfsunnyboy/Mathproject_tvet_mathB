@@ -1,0 +1,1 @@
+from agent_skills_v3.vh_數學B1_DivisionPointCoordinates.component_hint import get_component_hint as get_hint

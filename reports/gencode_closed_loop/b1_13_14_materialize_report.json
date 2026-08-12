@@ -1,0 +1,463 @@
+{
+  "started_at": "2026-08-12T13:39:23",
+  "commit": true,
+  "written_count": 56,
+  "failed_write": [],
+  "written": [
+    {
+      "textbook_example_id": 4468,
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "problem_type_id": "expression_complete_square_to_vertex",
+      "sample_answer": "-2*(x-1)**2-3",
+      "generate_sha256": "bbe8e07f7beb7528e1f7cb65353e0ff496d6220088e1c650e34776ab8857afb1",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4501,
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "problem_type_id": "integer_quadratic_graph_vertex_axis_choice",
+      "sample_answer": "A",
+      "generate_sha256": "b814e8bc845ddb566dfab8a508ad2a1d934c4e9c7404315b27818a8885660f07",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4450,
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "sample_answer": "向左 1、向上 1",
+      "generate_sha256": "15e5eb0ec8604e1b469d29e280e2ebc7a62f72dd36396fa781a4668e4fe108ae",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4460,
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "sample_answer": "向右 1、向下 1",
+      "generate_sha256": "fdf9cb37cbffe7e561ebea14a5bad32e0a583c07f6d0f1b34204f1b5db3967ed",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4466,
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "sample_answer": "向右 3、向下 1",
+      "generate_sha256": "47879e751beb851b8942177341d67baf3e7aed4a5ce19160acd1b2f375642846",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4503,
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "problem_type_id": "integer_quadratic_graph_properties_choice",
+      "sample_answer": "B",
+      "generate_sha256": "2c0f02a3942c3756ccc06929914b739f63b4e411c78061386e21350dfbdce4e0",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4451,
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "problem_type_id": "text_quadratic_graph_translation_fill_blank_short_answer",
+      "sample_answer": "向右 2、向下 2",
+      "generate_sha256": "cae33a28fbfbea131019f2375dae6134f037962d3e65232cb7da828422c8b58a",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4452,
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "problem_type_id": "text_quadratic_vertex_form_translation_to_new_function_short_answer",
+      "sample_answer": "y=2(x-3)^2-2",
+      "generate_sha256": "1a7f10c012f7eec76213890d0d4e4a4d50199acc69c30190a1d0b5319304cdc2",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4453,
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "problem_type_id": "single_choice_quadratic_vertex_form_properties_single_choice",
+      "sample_answer": "A",
+      "generate_sha256": "899b54dc93361ddd7e2db2f94b37a290fc9e29273eb920ab8fd90ed6c63e28c1",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4456,
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "problem_type_id": "numeric_quadratic_vertex_or_parameter_computation_short_answer",
+      "sample_answer": "-1/4",
+      "generate_sha256": "cbacbdeebee5a43daeea07361f3b928331c1ca99432a673c987d272e02d78fed",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4504,
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "problem_type_id": "numeric_quadratic_vertex_or_parameter_computation_single_choice",
+      "sample_answer": "C",
+      "generate_sha256": "cb267b341526dd2955ec34fa01b1528ef1d64f6708eb334aafdf276a26439895",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4454,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "23",
+      "generate_sha256": "8a2a8f4da7ebbb54db204223fbbdf659f4c137520be5d7fb76b2a1741188d2df",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4455,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "8",
+      "generate_sha256": "dff2f631a9e65e4202b26250b67e93ecec2438fa8154dfee2260fc48baf3b389",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4457,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "sample_answer": "3",
+      "generate_sha256": "3b3daa97af82d63d2cc529692508ac98be0d4d05c2f1c80972b8b55ddaacc7f1",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4458,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "2",
+      "generate_sha256": "8da05c26322c3d0b8ddda29b1447fabe487234af78d1b03344b3da0f061626e8",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4459,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "sample_answer": "9",
+      "generate_sha256": "7926ef067dbafcc651020a274f18cee2a12dc098d983d7cd86982d507e7a1d5c",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4463,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "23",
+      "generate_sha256": "366af560854bc1b4cc32868c709a0e07c18da1907643b87f74c67a1dd757fcb3",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4464,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "text_short_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "10/3",
+      "generate_sha256": "1c8218141534c251a9d52e1cc1708ea2210feb9e2be6911c7063083e0cddc1be",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4465,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "sample_answer": "1800",
+      "generate_sha256": "6fd5c27730546ddba5517599f3b13742ddf4cd6a59ecfe43417f0855a71b1cba",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4469,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "35",
+      "generate_sha256": "8076b94f14ba6d116c86c93cbf90d9627f92e05164b83e745ed7ae0acdf4f8aa",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4470,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "text_short_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "-59/16",
+      "generate_sha256": "9eeddfcf0c5c4458eea8f5150bfa87f6bfc53ef57ec4041df4f6710a4eae6fc2",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4471,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "sample_answer": "1250",
+      "generate_sha256": "1c18c4e971d6fc2384775dab85ad65edf543f88c84dc46c713812e8184c84a2f",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4472,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "sample_answer": "1",
+      "generate_sha256": "812513e566c28ca5f2c38b81f52c5f2de80a52c7aa375f9b8376ae4f84169551",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4502,
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "sample_answer": "-3",
+      "generate_sha256": "46c5d81c010985fe94f3b4433644158a7f08e283e1954d94aa7d0e61bca5f23b",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4473,
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+      "sample_answer": "(x+4)(x-4)",
+      "generate_sha256": "81c41e32f0ebe4370b8734081ef2fd31be3d5f65dc9b51379cdafa8abda23764",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4480,
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+      "sample_answer": "(x+5)(x-8)",
+      "generate_sha256": "3260f3187398402277466d404a8c598cf899b657ac2c193aa5843d16b7fda248",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4490,
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+      "sample_answer": "(4x-7)(x-2)",
+      "generate_sha256": "65320544c55ddffed23042cbe292ce8c352ff0909270031b4bdffcf52bd16da0",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4474,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "sample_answer": "-8",
+      "generate_sha256": "dfce19ad0ae44fbc2062008e82ad0980c660af28e513999e47e78cb73776c93e",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4475,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "x<-6 or x>6",
+      "generate_sha256": "0e61a385ba5dc0d4a5f917d36fefc121ebe544b41493007153a0600c91036c21",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4476,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "sample_answer": "1<x<4",
+      "generate_sha256": "8e84b3be7de80b42c678922cc1e3766f67437c72f7243d0089d67049cf9d9467",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4477,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "x<0 or x>7",
+      "generate_sha256": "795293d7bb2942f91f2011c484d52665c2966d1ced3cd29c7641df3a7c127008",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4478,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "x<-1 or x>6",
+      "generate_sha256": "a4578e65dc5fef84da16f6e8b15e5a339ebbe370c50ff7e3dd359535b3ba69fb",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4479,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "sample_answer": "[1,∞)",
+      "generate_sha256": "b7266fb65c033040767dbcb19d0e731124816012b95d5c973453598b6fe73ff3",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4481,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-6<=x<=4",
+      "generate_sha256": "330afa734f84aed2e56201e69243d0d57fb34da50a15f8339c7c13aaf3a9e8b1",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4482,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "sample_answer": "3",
+      "generate_sha256": "f813099854d014268d9e4ff9dfd9d2a89ecec71ad3902565de815bc98a2888a8",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4483,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-2<x<5",
+      "generate_sha256": "d1915684c82c0b26ec40df69520898e423bc746de4578bef8921ffa0734d360b",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4484,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "sample_answer": "3<x<9",
+      "generate_sha256": "2c1748832cbf3644cee4989b525fe6f5ad93bb1c865eda454506509d425804f0",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4485,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-6<x<-4",
+      "generate_sha256": "1380dbd61ad54f2c94b43ad70e2a535e9deaf37981e54ba6de759e6a8892e13b",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4486,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "1<x<6",
+      "generate_sha256": "1ab9ce150122edf706237d6b0bb7d754e9bde64f62f984be217b5c25d77fbdf7",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4487,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "sample_answer": "(1,∞)",
+      "generate_sha256": "4e14f4664716d90acffaedc6ced461e941288accef6b1b39f317495e89cf73da",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4488,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "sample_answer": "x<4 or x>8",
+      "generate_sha256": "0ae28f568a43c0e2ca2e7efdd986e0b64eb39d59e92e6005367646ffd35a5f9c",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4489,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-5<=x<=-3",
+      "generate_sha256": "08fea9449cecdcc253301b2359295e2348c703f62878a0a52e8a4f9d7fe721f6",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4491,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-4<=x<=-2",
+      "generate_sha256": "1c008b249a5db6405a3f13a48dc01686c22815e0df2d73ccb604e1d875ac874c",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4492,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-7<x<9",
+      "generate_sha256": "5ec15ce71f4d684e0881eefdb8197c56f8d65af8e9ab40827e7f2f2e46fe8908",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4493,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "sample_answer": "-1",
+      "generate_sha256": "07d595b0d0d5a334f629932bdd031ccc65df783ffeea25c705c93ec6282811b4",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4494,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "x<-5 or x>5",
+      "generate_sha256": "ae5444710f18dc65f9e90b5a578835bbb0b8eb7b5926a7bf9ab756f535a4abe2",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4495,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "sample_answer": "1<x<8",
+      "generate_sha256": "4ab7a66650875b1e003868473ae1229a652805fd3ab7cd4eb456fbd5836d4dff",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4496,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "x<1 or x>4",
+      "generate_sha256": "6f6c7df1093dbfd5bda9bd3b500af9707799cd0d6c576ba3d12605c5c1c7aea8",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4497,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "-4<x<2",
+      "generate_sha256": "e8e84cedb7669d888fd37e5d1d4683bdae176eac862a75cf3bfd4a938529633a",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4498,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "sample_answer": "(-∞,-2]",
+      "generate_sha256": "cebcb525535f719a629162115f0bb2cc569001b6e19270ae1e208299f9e4c96b",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4505,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "2<=x<=6",
+      "generate_sha256": "2980c5afbf977951c6188877a436595fe4dcdbfb31c04528ec2072bce2f184bc",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4506,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "sample_answer": "2<=x<=6",
+      "generate_sha256": "5ca2b226cb15256209e2d572d6816b0eb3fc79ae3101ed2adbacdaa1b192a7c8",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4507,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "sample_answer": "-6",
+      "generate_sha256": "86a252df28c7462a4e04a8ef40733377684092d884fcdfe843ec4081728b6afe",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4508,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+      "sample_answer": "無解",
+      "generate_sha256": "64720a1c816dcaff5c8142812c3f033fac6b5eb042ca34bbafdb0c1b0406b6e3",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4517,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "sample_answer": "x<3 or x>6",
+      "generate_sha256": "26ae0395d016e44cc0830424f1db5b8ef423ff37554da334ff4cf18f45008aeb",
+      "mirrored_to_production": true
+    },
+    {
+      "textbook_example_id": 4518,
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+      "sample_answer": "任意實數",
+      "generate_sha256": "3ddbbc7e5e9674117380c37385e501e16b314f0bb710874ce548af930955d239",
+      "mirrored_to_production": true
+    }
+  ],
+  "reconcile": {
+    "passed_count": 56,
+    "failed_count": 0,
+    "synced_count": 56,
+    "failed_ids": [],
+    "blockers": {}
+  }
+}

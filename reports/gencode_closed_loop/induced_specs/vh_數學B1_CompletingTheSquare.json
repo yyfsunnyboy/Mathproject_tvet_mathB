@@ -3,12 +3,12 @@
   "spec_source": "phase1_induced_draft",
   "items": [
     {
-      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "problem_type_id": "expression_complete_square_to_vertex",
       "skill_id": "vh_數學B1_CompletingTheSquare",
-      "target_task": "quadratic_vertex_or_parameter_computation",
+      "target_task": "complete_square_to_vertex_expression",
       "task_family": "quadratic_function_graph_family",
-      "display_name": "numeric / quadratic_vertex_or_parameter_computation",
-      "answer_format_hint": "rational",
+      "display_name": "expression / complete_square_to_vertex_expression",
+      "answer_format_hint": "",
       "answer_fields": null,
       "answer_separator": null,
       "source_example_ids": [
@@ -19,21 +19,20 @@
         "choice_count": null,
         "correct_choice_count": null,
         "frontend_render_choices": false,
-        "answer_type": "rational",
-        "answer_shape": "scalar",
-        "answer_equivalence": "rational_equivalent",
-        "equivalence_type": "rational_equivalent",
-        "checker": "rational_checker",
-        "checker_key": "rational_checker",
-        "presentation_mode": "short_answer",
         "source_has_choices": false,
-        "selected_checker": "rational_checker",
-        "checker_selection_reason": "quadratic_vertex_rational_capable",
+        "answer_type": "expression",
+        "answer_shape": "vertex_form_expression",
+        "answer_semantics": "algebraic_expression",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "checker": "expression_checker",
+        "checker_key": "expression_checker",
+        "presentation_mode": "short_answer",
+        "selected_checker": "expression_checker",
         "accepted_formats": [
-          "-9/8",
-          "3/2",
-          "-2",
-          "1.5"
+          "(x-3)**2-9",
+          "2*(x+1)**2+4",
+          "-3*(x-2)**2+5"
         ],
         "checker_capability_status": "ok",
         "checker_contract_blockers": [],
@@ -41,13 +40,13 @@
         "stem_contract": {
           "stem_must_not_embed_choices": true,
           "allowed_math_objects": [
-            "coordinate_point",
             "quadratic_equation",
-            "quadratic_vertex_form"
+            "quadratic_vertex_form",
+            "completing_the_square"
           ],
           "required_math_objects": [
-            "coordinate_point",
-            "quadratic_equation"
+            "quadratic_equation",
+            "quadratic_vertex_form"
           ],
           "forbidden_patterns": [
             "\\(A\\)",
@@ -63,7 +62,7 @@
         },
         "semantic_contract": {
           "reasoning_type": [
-            "numeric_computation"
+            "completing_the_square_reasoning"
           ],
           "reject_if": [
             "unused_condition",
@@ -79,7 +78,7 @@
             {
               "id": "default",
               "label": "default",
-              "stem_pattern": "依題意求解：{stem_hint}。",
+              "stem_pattern": "請用配方法將二次式改寫為頂點式：{stem_hint}。",
               "weight": 1.0,
               "enabled": true
             }
@@ -121,22 +120,20 @@
             "signature_fields": [
               "problem_type_id",
               "template_variant",
-              "ratio_form",
-              "ratio_values",
-              "coordinate_pattern",
+              "coefficients",
               "answer"
             ]
           },
           "validity_constraints": [
             "answer derivable from givens"
           ],
-          "answer_shape": "numeric",
+          "answer_shape": "expression",
           "explanation_variants": [
             "stepwise"
           ],
           "sampling_strategy": "weighted_random",
           "template_families": [
-            "quadratic_vertex_or_parameter_computation"
+            "complete_square_to_vertex_expression"
           ],
           "parameter_slots": {
             "seed": "integer",
@@ -148,15 +145,15 @@
           "avoid_llm_freeform_math": true,
           "use_domain_functions": true,
           "derivation_steps_required": true,
-          "template_slots": {
-            "stem": "quadratic_vertex_or_parameter_computation"
-          },
-          "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+          "problem_type_id": "expression_complete_square_to_vertex",
           "contract_validation_blockers": [],
           "contract_validation_warnings": [
             "single_template_variant_only",
             "variation_dimensions_below_recommended_minimum"
-          ]
+          ],
+          "template_slots": {
+            "stem": "complete_square_to_vertex_expression"
+          }
         },
         "validator_contract": {
           "static_checks": [
@@ -170,18 +167,18 @@
         },
         "order_matters": true,
         "accepted_format_notes": [],
-        "canonical_answer_schema": "rational"
+        "canonical_answer_schema": "expression"
       },
       "stem_contract": {
         "stem_must_not_embed_choices": true,
         "allowed_math_objects": [
-          "coordinate_point",
           "quadratic_equation",
-          "quadratic_vertex_form"
+          "quadratic_vertex_form",
+          "completing_the_square"
         ],
         "required_math_objects": [
-          "coordinate_point",
-          "quadratic_equation"
+          "quadratic_equation",
+          "quadratic_vertex_form"
         ],
         "forbidden_patterns": [
           "\\(A\\)",
@@ -197,7 +194,7 @@
       },
       "semantic_contract": {
         "reasoning_type": [
-          "numeric_computation"
+          "completing_the_square_reasoning"
         ],
         "reject_if": [
           "unused_condition",
@@ -213,7 +210,7 @@
           {
             "id": "default",
             "label": "default",
-            "stem_pattern": "依題意求解：{stem_hint}。",
+            "stem_pattern": "請用配方法將二次式改寫為頂點式：{stem_hint}。",
             "weight": 1.0,
             "enabled": true
           }
@@ -255,22 +252,20 @@
           "signature_fields": [
             "problem_type_id",
             "template_variant",
-            "ratio_form",
-            "ratio_values",
-            "coordinate_pattern",
+            "coefficients",
             "answer"
           ]
         },
         "validity_constraints": [
           "answer derivable from givens"
         ],
-        "answer_shape": "numeric",
+        "answer_shape": "expression",
         "explanation_variants": [
           "stepwise"
         ],
         "sampling_strategy": "weighted_random",
         "template_families": [
-          "quadratic_vertex_or_parameter_computation"
+          "complete_square_to_vertex_expression"
         ],
         "parameter_slots": {
           "seed": "integer",
@@ -282,15 +277,15 @@
         "avoid_llm_freeform_math": true,
         "use_domain_functions": true,
         "derivation_steps_required": true,
-        "template_slots": {
-          "stem": "quadratic_vertex_or_parameter_computation"
-        },
-        "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+        "problem_type_id": "expression_complete_square_to_vertex",
         "contract_validation_blockers": [],
         "contract_validation_warnings": [
           "single_template_variant_only",
           "variation_dimensions_below_recommended_minimum"
-        ]
+        ],
+        "template_slots": {
+          "stem": "complete_square_to_vertex_expression"
+        }
       },
       "validator_contract": {
         "static_checks": [
@@ -305,20 +300,20 @@
       "spec_source": "phase1_induced_draft",
       "grouping_reason": "split_by_feature_signature",
       "feature_signature": [
-        "numeric",
-        "quadratic_vertex_or_parameter_computation",
+        "expression",
+        "complete_square_to_vertex_expression",
         "short_answer",
         [
-          "numeric_computation"
+          "completing_the_square_reasoning"
         ],
         [
-          "coordinate_point",
-          "quadratic_equation"
+          "quadratic_equation",
+          "quadratic_vertex_form"
         ]
       ],
-      "canonical_base_problem_type_id": "quadratic_vertex_or_parameter_computation",
-      "value_type_prefix": "",
-      "_resolved_template_slot": "quadratic_vertex_or_parameter_computation"
+      "canonical_base_problem_type_id": "complete_square_to_vertex",
+      "value_type_prefix": "expression",
+      "_resolved_template_slot": "complete_square_to_vertex_expression"
     },
     {
       "problem_type_id": "integer_quadratic_graph_vertex_axis_choice",

@@ -10,18 +10,18 @@ IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 30
 DIFFICULTY_LEVEL: Final[str] = "hard"
-DOMAIN_OPERATION: Final[str] = "compute_centroid_coordinates"
-ANSWER_SCHEMA_KEY: Final[str] = "coordinate_pair"
-LINE_TYPE: Final[str] = "compute_centroid_coordinates"
+DOMAIN_OPERATION: Final[str] = "multi_part_midpoint_application"
+ANSWER_SCHEMA_KEY: Final[str] = "choice_label"
+LINE_TYPE: Final[str] = "multi_part_midpoint_application"
 
-TARGET_TASK: Final[str] = "compute_centroid_coordinates"
-TEMPLATE_SLOT: Final[str] = "compute_centroid_coordinates"
-PROBLEM_TYPE_ID: Final[str] = "compute_centroid_coordinates"
-PRESENTATION_MODE: Final[str] = "short_answer"
-RESPONSE_MODE: Final[str] = "short_answer"
-INTERACTION_TYPE: Final[str] = "short_answer"
-ANSWER_VALUE_TYPE: Final[str] = "coordinate_pair"
-ANSWER_TYPE: Final[str] = "coordinate_pair"
+TARGET_TASK: Final[str] = "multi_part_midpoint_application"
+TEMPLATE_SLOT: Final[str] = "multi_part_midpoint_application"
+PROBLEM_TYPE_ID: Final[str] = "multi_part_midpoint_application"
+PRESENTATION_MODE: Final[str] = "single_choice"
+RESPONSE_MODE: Final[str] = "single_choice"
+INTERACTION_TYPE: Final[str] = "single_choice"
+ANSWER_VALUE_TYPE: Final[str] = "choice"
+ANSWER_TYPE: Final[str] = "choice"
 LEGACY_ANSWER_TYPE: Final[str] = "coordinate_pair"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (

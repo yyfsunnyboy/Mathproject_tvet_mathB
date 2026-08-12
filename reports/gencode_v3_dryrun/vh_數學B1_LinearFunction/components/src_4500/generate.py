@@ -5,8 +5,8 @@ from typing import Any
 from core.domain.coordinate_geometry.line_equation_domain import build_line_equation_matrix
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
-PRESENTATION_MODE = "graph_short_answer"
-ANSWER_TYPE = "expression"
+PRESENTATION_MODE = "graph_single_choice"
+ANSWER_TYPE = "single_choice"
 PROBLEM_TYPE_ID = "graph_based_linear_model_equation"
 TEXTBOOK_EXAMPLE_ID = 4500
 DEFAULT_COMPONENT_ID = "src_4500" if TEXTBOOK_EXAMPLE_ID else ""
@@ -22,19 +22,54 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         "seed": seed,
         "curriculum_profile": "vocational_high_b",
         "difficulty_profile": "hard",
-        "answer_schema_key": "line_equation",
+        "answer_schema_key": "choice_label",
         "presentation_mode": PRESENTATION_MODE,
         "answer_type": ANSWER_TYPE,
         "fixed_domain_key": "coordinate_geometry.line_equation",
     }
 
-    constraints = dict({'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_LinearFunction', 'source_example_id': 4500, 'textbook_example_id': 4500, 'source_hash': 'ea56f5f8b678d4e395f6201261880ea4', 'problem_type_id': 'graph_based_linear_model_equation', 'required_capabilities': ['graph_based_linear_model_equation'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'graph_short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_equivalence_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression', 'source_topology': {'problem_type_id': 'graph_based_linear_model_equation', 'exact_task_operation': 'graph_based_linear_model_equation', 'required_givens': ['context_variables', 'linear_relation_graph'], 'requested_quantity': ['linear_model_equation'], 'topology_tags': ['contextual_application', 'graph_reading', 'equation_from_graph'], 'answer_schema': 'expression', 'presentation_mode': 'graph_short_answer'}, 'required_givens': ['context_variables', 'linear_relation_graph'], 'requested_quantity': ['linear_model_equation'], 'topology_tags': ['contextual_application', 'graph_reading', 'equation_from_graph'], 'answer_schema': 'expression'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_LinearFunction', 'source_example_id': 4500, 'textbook_example_id': 4500, 'source_hash': 'ea56f5f8b678d4e395f6201261880ea4', 'problem_type_id': 'graph_based_linear_model_equation', 'required_capabilities': ['graph_based_linear_model_equation'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'graph_short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_equivalence_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression', 'source_topology': {'problem_type_id': 'graph_based_linear_model_equation', 'exact_task_operation': 'graph_based_linear_model_equation', 'required_givens': ['context_variables', 'linear_relation_graph'], 'requested_quantity': ['linear_model_equation'], 'topology_tags': ['contextual_application', 'graph_reading', 'equation_from_graph'], 'answer_schema': 'expression', 'presentation_mode': 'graph_short_answer'}, 'required_givens': ['context_variables', 'linear_relation_graph'], 'requested_quantity': ['linear_model_equation'], 'topology_tags': ['contextual_application', 'graph_reading', 'equation_from_graph'], 'answer_schema': 'expression'}, 'problem_type_id': 'graph_based_linear_model_equation', 'required_capabilities': ['graph_based_linear_model_equation'], 'classification_source': 'phase1_rule_pack', 'source_hash': 'ea56f5f8b678d4e395f6201261880ea4', 'presentation_mode': 'graph_short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_equivalence_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 4500, 'answer_type': 'expression', 'exact_task_operation': '', 'domain_resolution': {'skill_id': 'vh_數學B1_LinearFunction', 'fixed_domain_key': 'coordinate_geometry.line_equation', 'resolution_source': 'derived_capability_match', 'binding_status': 'derived', 'required_capabilities': ['graph_based_linear_model_equation'], 'matched_capabilities': ['graph_based_linear_model_equation'], 'selected_operation': 'graph_based_linear_model_equation', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.coordinate_geometry.line_equation_domain', 'entrypoint': 'build_line_equation_matrix', 'allowed_operations': ['two_points', 'point_slope', 'horizontal_line', 'vertical_line', 'oblique_line', 'slope_intercept_equation', 'slope_intercept_find_x_intercept', 'slope_intercept_read_slope_and_intercept', 'intercept_form_equation', 'intercept_form_triangle_area', 'intercept_form_equation_and_triangle_area', 'intercept_form_from_intercept_sum_and_slope', 'parabola_secant_parallel_line_choice', 'triangle_area_bisector_line_equation', 'slope_from_general_or_intercept_form', 'slope_from_general_form', 'slope_of_horizontal_or_vertical_line', 'line_through_point_parallel_to_line', 'line_through_point_perpendicular_to_line', 'parallel_line_slope', 'perpendicular_line_slope', 'parallel_condition_parameter', 'perpendicular_condition_parameter', 'compare_line_slopes', 'line_through_intersection_parallel_to_line', 'line_through_point_perpendicular_to_segment', 'perpendicular_bisector_application', 'coordinate_geometry_word_problem', 'graph_intercepts_and_linear_equation', 'draw_constant_function_graph', 'draw_linear_function_graph', 'graph_based_linear_application_inverse', 'linear_equation_from_two_points_choice', 'linear_graph_feasibility_choice', 'graph_based_linear_model_equation'], 'curriculum_profile': 'vocational_high_b'}, 'skill_id': 'vh_數學B1_LinearFunction'})
-    constraints["skill_id"] = "vh_數學B1_LinearFunction"
+    constraints = {
+        "v3_induced_spec": {
+            "classification_status": "resolved",
+            "skill_id": "vh_數學B1_LinearFunction",
+            "source_example_id": 4500,
+            "textbook_example_id": 4500,
+            "problem_type_id": PROBLEM_TYPE_ID,
+            "required_capabilities": [PROBLEM_TYPE_ID],
+            "classification_source": "phase1_rule_pack",
+            "presentation_mode": PRESENTATION_MODE,
+            "answer_contract": {
+                "answer_type": ANSWER_TYPE,
+                "checker_key": "choice_label_checker",
+                "equivalence_type": "choice_label",
+            },
+            "answer_type": ANSWER_TYPE,
+            "source_topology": {
+                "problem_type_id": PROBLEM_TYPE_ID,
+                "exact_task_operation": PROBLEM_TYPE_ID,
+                "required_givens": ["context_variables", "linear_relation_graph"],
+                "requested_quantity": ["linear_model_equation"],
+                "topology_tags": [
+                    "contextual_application",
+                    "graph_reading",
+                    "equation_from_graph",
+                    "single_choice",
+                ],
+                "answer_schema": "choice_label",
+                "presentation_mode": PRESENTATION_MODE,
+            },
+        },
+        "problem_type_id": PROBLEM_TYPE_ID,
+        "required_capabilities": [PROBLEM_TYPE_ID],
+        "presentation_mode": PRESENTATION_MODE,
+        "answer_type": ANSWER_TYPE,
+        "skill_id": "vh_數學B1_LinearFunction",
+    }
 
     matrix = _v3_invoke_domain_entrypoint(
         build_line_equation_matrix,
         entrypoint_name="build_line_equation_matrix",
-        domain_operation="graph_based_linear_model_equation",
+        domain_operation=PROBLEM_TYPE_ID,
         seed=seed,
         curriculum_profile="vocational_high_b",
         difficulty_profile="hard",
@@ -50,8 +85,8 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
-        answer_schema_key="line_equation",
-        domain_operation="graph_based_linear_model_equation",
+        answer_schema_key="choice_label",
+        domain_operation=PROBLEM_TYPE_ID,
         seed=seed,
     )
     if component_id:

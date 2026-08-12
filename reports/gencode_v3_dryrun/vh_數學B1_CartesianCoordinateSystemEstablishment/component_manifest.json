@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_4417",
+      "textbook_example_id": 4417,
+      "status": "verified",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "domain_operation": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4417/generate.py"
+    },
+    {
+      "component_id": "src_4435",
+      "textbook_example_id": 4435,
+      "status": "verified",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "domain_operation": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4435/generate.py"
+    },
+    {
+      "component_id": "src_4509",
+      "textbook_example_id": 4509,
+      "status": "verified",
+      "problem_type_id": "axis_distance_coordinate_point_numerical_choice",
+      "domain_operation": "axis_distance_coordinate_point_numerical_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4509/generate.py"
+    },
+    {
+      "component_id": "src_4510",
+      "textbook_example_id": 4510,
+      "status": "verified",
+      "problem_type_id": "quadrant_statement_reasoning_choice",
+      "domain_operation": "quadrant_statement_reasoning_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4510/generate.py"
+    }
+  ]
+}
