@@ -218,6 +218,7 @@ def _config_role_to_preset_key(role: str) -> str | None:
 def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
     provider = _normalize_provider(provider)
     local_pref = {
+        "architect": "qwen3-8b",
         "coder": "qwen3-8b",
         "tutor": "qwen3-8b",
         "vision_analyzer": "qwen3-vl-8b",
@@ -229,6 +230,7 @@ def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
     if selected_cloud_key not in Config.CODER_PRESETS:
         selected_cloud_key = DEFAULT_AI_CLOUD_MODEL
     cloud_pref = {
+        "architect": selected_cloud_key,
         "coder": selected_cloud_key,
         "tutor": selected_cloud_key,
         "vision_analyzer": selected_cloud_key,

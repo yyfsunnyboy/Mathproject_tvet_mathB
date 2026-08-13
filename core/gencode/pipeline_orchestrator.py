@@ -6707,6 +6707,9 @@ def run_gencode_phase2_v3_shadow_bridge(
         "generation_finished_at": None,
         "old_artifact_hash": old_artifact_hash,
         "new_artifact_hash": None,
+        # component_draft_built: scaffold/domain draft builder ran (not an LLM HTTP call).
+        "component_draft_built": False,
+        # legacy alias kept for tracker/UI compatibility
         "model_generation_invoked": False,
     }
     if isinstance(extra.get("v3_induced_spec"), dict):
@@ -6813,7 +6816,8 @@ def run_gencode_phase2_v3_shadow_bridge(
 
     draft = None
     try:
-        generation_observation["model_generation_invoked"] = True
+        generation_observation["component_draft_built"] = True
+        generation_observation["model_generation_invoked"] = True  # legacy alias
         draft = build_v3_component_draft_from_skill(
             skill_id=skill_key,
             textbook_example_id=textbook_example_id,

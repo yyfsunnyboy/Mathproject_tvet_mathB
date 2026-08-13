@@ -3733,6 +3733,8 @@ def admin_run_skill_v3_dryrun(skill_id: str):
     mode = str(payload.get("mode") or request.args.get("mode") or "auto").strip()
     limit_raw = payload.get("limit", request.args.get("limit"))
     limit = int(limit_raw) if str(limit_raw or "").strip().isdigit() else None
+    # General UI must not send this. Reserved for controlled maintenance only.
+    maintenance_override = bool(payload.get("maintenance_override") is True)
 
     skill_key = str(skill_id or "").strip()
     if not skill_key:
@@ -3741,46 +3743,78 @@ def admin_run_skill_v3_dryrun(skill_id: str):
     from core.gencode.services.admin_gencode_action_service import (
         run_admin_v3_dryrun_publish_closed_loop_for_skill,
     )
+    from core.gencode.services.v3_skill_capability_preflight_service import (
+        CapabilityPreflightBlocked,
+        assert_skill_allows_v3_rebuild,
+    )
     from core.gencode.v3_production_publish_service import (
         resolve_and_validate_v3_publish_roots,
         V3PublishRootValidationError,
     )
 
-    try:
-        project_root_raw = str(payload.get("project_root", "") or "").strip()
-        staging_root_raw = str(payload.get("staging_root", "") or "").strip()
-        if not project_root_raw:
-            project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
-        if not staging_root_raw:
-            staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
-
-        project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
-        project_root = str(project_path)
-        staging_root = str(staging_path)
-    except V3PublishRootValidationError as exc:
-        res = {
-            "success": False,
-            "failed_stage": "publish_root_validation",
-            "error": exc.error_code,
-            "production_root_configured": exc.details.get("production_root_configured"),
-            "staging_root_configured": exc.details.get("staging_root_configured"),
-            "production_root_valid": exc.details.get("production_root_valid"),
-            "staging_root_valid": exc.details.get("staging_root_valid"),
-            "previous_production_preserved": True
-        }
-        return jsonify(res), 400
-    except ValueError as exc:
-        err_str = str(exc)
-        if "integrity_gate" in err_str:
-            return jsonify({
-                "status": "failed",
-                "reason": "integrity_gate_not_passed",
-                "details": err_str
-            }), 400
-        return jsonify({"ok": False, "error": err_str}), 400
-
     raw_conn = db.engine.raw_connection()
     try:
+        try:
+            capability = assert_skill_allows_v3_rebuild(
+                raw_conn,
+                skill_key,
+                maintenance_override=maintenance_override,
+            )
+        except CapabilityPreflightBlocked as blocked:
+            diagnostic = dict(blocked.diagnostic or {})
+            return jsonify(
+                {
+                    "ok": False,
+                    "success": False,
+                    "error": "capability_preflight_blocked",
+                    "error_code": "CAPABILITY_PREFLIGHT_BLOCKED",
+                    "capability_status": diagnostic.get("capability_status"),
+                    "allow_v3_rebuild": False,
+                    "next_action": diagnostic.get("next_action"),
+                    "diagnostic": diagnostic,
+                    "message": (
+                        "此技能尚未具備可重建的 domain 能力。"
+                        "Gencode V3 只會使用既有 domain 能力重新建置，不會自行建立新 API。"
+                    ),
+                    "generation_started": False,
+                    "tracker_written": False,
+                    "published": False,
+                }
+            ), 409
+
+        try:
+            project_root_raw = str(payload.get("project_root", "") or "").strip()
+            staging_root_raw = str(payload.get("staging_root", "") or "").strip()
+            if not project_root_raw:
+                project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+            if not staging_root_raw:
+                staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+
+            project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
+            project_root = str(project_path)
+            staging_root = str(staging_path)
+        except V3PublishRootValidationError as exc:
+            res = {
+                "success": False,
+                "failed_stage": "publish_root_validation",
+                "error": exc.error_code,
+                "production_root_configured": exc.details.get("production_root_configured"),
+                "staging_root_configured": exc.details.get("staging_root_configured"),
+                "production_root_valid": exc.details.get("production_root_valid"),
+                "staging_root_valid": exc.details.get("staging_root_valid"),
+                "previous_production_preserved": True
+            }
+            return jsonify(res), 400
+        except ValueError as exc:
+            err_str = str(exc)
+            if "integrity_gate" in err_str:
+                return jsonify({
+                    "status": "failed",
+                    "reason": "integrity_gate_not_passed",
+                    "details": err_str
+                }), 400
+            return jsonify({"ok": False, "error": err_str}), 400
+
         result = run_admin_v3_dryrun_publish_closed_loop_for_skill(
             conn=raw_conn,
             skill_id=skill_key,
@@ -3792,6 +3826,11 @@ def admin_run_skill_v3_dryrun(skill_id: str):
             mode=mode,
             limit=limit,
         )
+        result["capability"] = {
+            "capability_status": capability.get("capability_status"),
+            "allow_v3_rebuild": capability.get("allow_v3_rebuild"),
+            "maintenance_override": bool(capability.get("maintenance_override")),
+        }
     except V3PublishRootValidationError as exc:
         res = {
             "success": False,
@@ -3827,6 +3866,87 @@ def admin_run_skill_v3_dryrun(skill_id: str):
 
     status_code = 200 if result.get("success") else 207
     return jsonify({"ok": bool(result.get("success")), **result}), status_code
+
+
+@core_bp.route('/admin/skills/<skill_id>/v3_capability_preflight', methods=['GET'])
+@login_required
+def admin_skill_v3_capability_preflight(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.v3_skill_capability_preflight_service import (
+        evaluate_skill_v3_capability,
+    )
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    raw_conn = db.engine.raw_connection()
+    try:
+        preflight = evaluate_skill_v3_capability(raw_conn, skill_key, probe_examples=True)
+    finally:
+        raw_conn.close()
+    return jsonify({"ok": True, "preflight": preflight})
+
+
+@core_bp.route('/admin/skills/<skill_id>/v3_capability_handoff', methods=['POST'])
+@login_required
+def admin_skill_v3_capability_handoff(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.v3_capability_handoff_service import (
+        create_or_reuse_capability_handoff,
+    )
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    raw_conn = db.engine.raw_connection()
+    try:
+        result = create_or_reuse_capability_handoff(raw_conn, skill_key)
+    finally:
+        raw_conn.close()
+    return jsonify(result)
+
+
+@core_bp.route('/admin/skills/<skill_id>/v3_capability_ai_fill', methods=['POST'])
+@login_required
+def admin_skill_v3_capability_ai_fill(skill_id: str):
+    """Phase-1 system AI capability fill → isolated candidate only (no promotion)."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.services.v3_capability_ai_fill_service import (
+        CapabilityAiFillError,
+        run_system_ai_capability_fill,
+    )
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    payload = request.get_json(silent=True) or {}
+    force_new = bool(payload.get("force_new") is True)
+    raw_conn = db.engine.raw_connection()
+    try:
+        result = run_system_ai_capability_fill(
+            raw_conn,
+            skill_key,
+            force_new=force_new,
+        )
+    except CapabilityAiFillError as exc:
+        return jsonify(
+            {
+                "ok": False,
+                "error": exc.code,
+                "message": str(exc),
+                "details": exc.details,
+            }
+        ), 409
+    finally:
+        raw_conn.close()
+
+    status_code = 200 if result.get("ok") or result.get("reused") else 422
+    if result.get("status") == "awaiting_admin_confirm":
+        status_code = 200
+    return jsonify(result), status_code
 
 
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_publish', methods=['POST'])
@@ -4487,7 +4607,9 @@ def _cloud_preset_key_from_model(cloud_model):
 
 def _generate_model_roles(ai_mode, available_models, cloud_model=None):
     roles = {}
-    ROLE_LIST = ['vision_analyzer', 'coder', 'tutor', 'classifier', 'system_coder', 'default']
+    # architect must be in the formal role map (Edge local / Hybrid cloud-oriented).
+    # system_coder remains UI-compat only and is stripped by AI_ROLE_KEYS sanitize.
+    ROLE_LIST = ['architect', 'vision_analyzer', 'coder', 'tutor', 'classifier', 'system_coder', 'default']
     selected_cloud_preset = _cloud_preset_key_from_model(cloud_model)
     
     def pick_gemini_model():
@@ -4541,9 +4663,10 @@ def _generate_model_roles(ai_mode, available_models, cloud_model=None):
         e_model = pick_edge_model()
         for r in ROLE_LIST:
             roles[r] = e_model
-    else: # hybrid
+    else: # hybrid — role split at resolve time; no failure-time Cloud upgrade
         g_model = pick_gemini_model()
         q_model = pick_qwen_text_model()
+        roles['architect'] = g_model
         roles['vision_analyzer'] = g_model
         roles['coder'] = q_model
         roles['tutor'] = g_model

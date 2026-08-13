@@ -112,6 +112,7 @@ def test_batch_dryrun_skips_verified_unless_force(memory_conn, dryrun_root):
     assert skipped_rows[0]["cache_hit"] is True
     assert skipped_rows[0]["skip_reason"] == "verified_tracker_reused"
     assert skipped_rows[0]["model_generation_invoked"] is False
+    assert skipped_rows[0].get("component_draft_built", False) is False
 
     forced = run_admin_v3_dryrun_for_skill(
         memory_conn,
@@ -125,6 +126,7 @@ def test_batch_dryrun_skips_verified_unless_force(memory_conn, dryrun_root):
     assert all(row["cache_hit"] is False for row in forced["results"])
     assert all(row["generation_run_id"] for row in forced["results"])
     assert all(row["model_generation_invoked"] is True for row in forced["results"])
+    assert all(row.get("component_draft_built") is True for row in forced["results"])
 
 
 def test_force_regenerate_verified_component_updates_run_id_and_overwrites_generate(

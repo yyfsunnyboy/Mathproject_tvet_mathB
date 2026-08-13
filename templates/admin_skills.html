@@ -742,18 +742,45 @@
                                 </details>
                             </div>
                             <div class="v3-summary-info" style="font-size: 0.8rem; margin-top: 4px; color: #6c757d; line-height: 1.2;">
+                                {% set cap = gencode.get('capability') or {} %}
+                                {% set cap_status = gencode.get('capability_status') or cap.get('capability_status') or '' %}
+                                {% set cap_ui = gencode.get('capability_ui') or cap.get('ui') or {} %}
+                                <div title="{{ cap_ui.get('tooltip', 'Gencode V3會使用既有domain能力重新建置，不會自行建立新API。') }}">
+                                    出題能力：{{ cap_ui.get('status_label', '未評估') }}
+                                    {% if cap.get('textbook_example_count') is not none %}
+                                    （可解析 {{ cap.get('resolvable_example_count', 0) }}/{{ cap.get('textbook_example_count', 0) }}）
+                                    {% endif %}
+                                </div>
                                 可用題目：{{ verified_count }}/{{ total_examples }}<br>
                                 尚未加入技能包：{{ not_packaged_count }}<br>
                                 已更新到學生端：{{ published_count }}<br>
                                 生成失敗：{{ failed_count }}
                             </div>
                             <div class="v3-actions" style="margin-top: 6px;">
-                                {# 重新生成 — 任何狀態皆可用 #}
+                                {% set allow_rebuild = gencode.get('allow_v3_rebuild') %}
+                                {% if allow_rebuild %}
                                 <button type="button" class="btn btn-primary btn-sm"
-                                    title="重新建立此技能所有教材例題的 V3 component"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', 'regenerate', '重新生成')">
-                                    重新生成
+                                    title="Gencode V3會使用既有domain能力重新建置，不會自行建立新API。"
+                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', 'regenerate', '重新建置與驗證')">
+                                    重新建置與驗證
                                 </button>
+                                {% elif cap_status in ['partial', 'missing', 'invalid'] %}
+                                <button type="button" class="btn btn-primary btn-sm"
+                                    title="使用系統AI角色 architect／coder 產生隔離 candidate（不會寫入正式core）。"
+                                    onclick="startSkillCapabilityAiFill('{{ skill.skill_id }}')">
+                                    系統AI補全能力
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    title="匯出維護用診斷（非正式主流程）"
+                                    onclick="exportSkillCapabilityDiagnosis('{{ skill.skill_id }}')">
+                                    匯出診斷
+                                </button>
+                                {% else %}
+                                <button type="button" class="btn btn-secondary btn-sm" disabled
+                                    title="Gencode V3會使用既有domain能力重新建置，不會自行建立新API。">
+                                    能力評估中
+                                </button>
+                                {% endif %}
                                 {# 查看組件 — 有任何 component 資料時可用 #}
                                 {% if total_examples > 0 or tracker_count > 0 %}
                                 <a href="{{ url_for('core.admin_examples', f_curriculum=skill.curriculum, f_grade=skill.grade, f_volume=skill.volume, f_chapter=skill.chapter, f_section=skill.section) }}"
@@ -762,8 +789,8 @@
                                     查看組件
                                 </a>
                                 {% endif %}
-                                {# 更新到學生端 — 僅 publish_ready 時可用 #}
-                                {% if gencode.get('publish_ready') %}
+                                {# 更新到學生端 — 僅 publish_ready 且能力就緒時可用 #}
+                                {% if gencode.get('publish_ready') and allow_rebuild %}
                                 <button type="button" class="btn btn-danger btn-sm"
                                     title="使用目前已驗證題目重新編譯並發布 production wrapper"
                                     onclick="repackageSkillV3('{{ skill.skill_id }}')">
@@ -1256,8 +1283,8 @@
             }
         }
 
-        function runSkillV3BatchDryrun(skillId, mode = 'regenerate', actionLabel = '重新生成本技能題目') {
-            const confirmText = '重新建立此技能所有教材例題的 V3 component。是否繼續？';
+        function runSkillV3BatchDryrun(skillId, mode = 'regenerate', actionLabel = '重新建置與驗證') {
+            const confirmText = '將使用既有 domain 能力重新建置並驗證此技能的 V3 component（不會自行建立新 API）。是否繼續？';
             Swal.fire({
                 title: actionLabel,
                 text: confirmText,
@@ -1290,6 +1317,13 @@
                 })
                     .then(async (response) => {
                         const data = await response.json();
+                        if (response.status === 409) {
+                            const diag = data.diagnostic || {};
+                            throw new Error(
+                                data.message
+                                || `能力不足（${data.capability_status || diag.capability_status || 'blocked'}），未啟動重建。`
+                            );
+                        }
                         if (!response.ok && response.status !== 207) {
                             throw new Error(data.error || '批次 dryrun 失敗');
                         }
@@ -1303,7 +1337,7 @@
                             ? `<br>沿用既有：${data.skipped_count}（${(data.reused_components || []).join(', ')}）`
                             : '';
                         const title = data.user_message
-                            || (data.success ? '重新生成完成' : '重新生成未完全完成');
+                            || (data.success ? '重新建置完成' : '重新建置未完全完成');
                         Swal.fire({
                             title,
                             html: `${summary}${rebuiltSummary}${skippedSummary}<br>生成失敗：${data.failed_count}`,
@@ -1314,6 +1348,151 @@
                         Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });
                     });
             });
+        }
+
+        function inspectSkillCapability(skillId, kind = 'partial') {
+            const title = kind === 'invalid' ? '能力接線診斷' : '能力缺口';
+            Swal.fire({
+                title: `${title}讀取中...`,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            const targetUrl = "{{ url_for('core.admin_skill_v3_capability_preflight', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                .replace('SKILL_ID_PLACEHOLDER', skillId);
+            fetch(targetUrl)
+                .then(async (response) => {
+                    const data = await response.json();
+                    if (!response.ok || !data.ok) {
+                        throw new Error(data.error || '讀取失敗');
+                    }
+                    const p = data.preflight || {};
+                    const layers = (p.missing_layers || []).join(', ') || '-';
+                    const unresolved = (p.unresolved_example_ids || []).slice(0, 12).join(', ') || '-';
+                    Swal.fire({
+                        title,
+                        html: `
+                            <div style="text-align:left;font-size:0.92rem;line-height:1.5;">
+                              <div><b>狀態</b>：${p.capability_status || '-'}</div>
+                              <div><b>domain</b>：${p.domain_key || '-'}</div>
+                              <div><b>可解析</b>：${p.resolvable_example_count || 0}/${p.textbook_example_count || 0}</div>
+                              <div><b>缺少層級</b>：${layers}</div>
+                              <div><b>未解析題</b>：${unresolved}</div>
+                              <div style="margin-top:8px;color:#64748b;">缺口由系統AI補全隔離candidate；正式core不會自動修改。</div>
+                            </div>
+                        `,
+                        icon: kind === 'invalid' ? 'error' : 'warning',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: '系統AI補全能力',
+                        denyButtonText: '匯出診斷',
+                        cancelButtonText: '關閉'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            startSkillCapabilityAiFill(skillId);
+                        } else if (result.isDenied) {
+                            exportSkillCapabilityDiagnosis(skillId);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    Swal.fire({ title: '讀取失敗', text: error.message, icon: 'error' });
+                });
+        }
+
+        function startSkillCapabilityAiFill(skillId) {
+            Swal.fire({
+                title: '系統AI補全能力',
+                text: '將使用系統角色 architect／coder 產生隔離 candidate（不寫入正式core、不publish）。是否繼續？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '開始補全',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    return;
+                }
+                Swal.fire({
+                    title: '系統AI補全執行中...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                const targetUrl = "{{ url_for('core.admin_skill_v3_capability_ai_fill', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                    .replace('SKILL_ID_PLACEHOLDER', skillId);
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                })
+                    .then(async (response) => {
+                        const data = await response.json();
+                        if (response.status === 409 && data.error === 'capability_already_ready') {
+                            throw new Error(data.message || '此技能已就緒，請改用重新建置與驗證');
+                        }
+                        if (!response.ok && !data.reused && data.status !== 'awaiting_admin_confirm') {
+                            throw new Error(data.message || data.error || 'AI補全失敗');
+                        }
+                        const status = data.status || '-';
+                        const title = data.reused
+                            ? '已重用既有補全任務'
+                            : (status === 'awaiting_admin_confirm' ? '已產生候選，等待管理員確認' : '補全未通過');
+                        Swal.fire({
+                            title,
+                            html: `
+                                <div style="text-align:left;font-size:0.92rem;">
+                                  <div><b>status</b>：${status}</div>
+                                  <div><b>job_id</b>：${data.job_id || '-'}</div>
+                                  <div><b>fingerprint</b>：${data.gap_fingerprint || '-'}</div>
+                                  <div><b>路徑</b>：<code>${data.job_dir || '-'}</code></div>
+                                  <div style="margin-top:8px;color:#64748b;">未promotion、未寫入正式core／DB／tracker／production。</div>
+                                </div>
+                            `,
+                            icon: status === 'awaiting_admin_confirm' || data.reused ? 'success' : 'warning'
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });
+                    });
+            });
+        }
+
+        function exportSkillCapabilityDiagnosis(skillId) {
+            Swal.fire({
+                title: '匯出診斷中...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            const targetUrl = "{{ url_for('core.admin_skill_v3_capability_handoff', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                .replace('SKILL_ID_PLACEHOLDER', skillId);
+            fetch(targetUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            })
+                .then(async (response) => {
+                    const data = await response.json();
+                    if (!response.ok || !data.ok) {
+                        throw new Error(data.error || '診斷匯出失敗');
+                    }
+                    Swal.fire({
+                        title: data.reused ? '已重用既有診斷匯出' : '診斷已匯出',
+                        html: `
+                            <div style="text-align:left;font-size:0.92rem;">
+                              <div><b>fingerprint</b>：${data.gap_fingerprint || '-'}</div>
+                              <div><b>路徑</b>：<code>${data.handoff_md || data.handoff_dir || '-'}</code></div>
+                              <div style="margin-top:8px;color:#64748b;">維護用匯出；非正式主流程。</div>
+                            </div>
+                        `,
+                        icon: 'success'
+                    });
+                })
+                .catch((error) => {
+                    Swal.fire({ title: '匯出失敗', text: error.message, icon: 'error' });
+                });
+        }
+
+        // Backward-compatible alias (secondary export only)
+        function createSkillCapabilityHandoff(skillId) {
+            exportSkillCapabilityDiagnosis(skillId);
         }
 
         function repackageSkillV3(skillId) {

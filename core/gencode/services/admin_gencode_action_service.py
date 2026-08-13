@@ -470,7 +470,8 @@ def run_admin_v3_dryrun_for_skill(
                 "published_artifact_sha": None,
                 "run_id": run_id,
                 "skip_reason": "verified_tracker_reused",
-                "model_generation_invoked": False,
+                "component_draft_built": False,
+                "model_generation_invoked": False,  # legacy alias of component_draft_built
                 "error": gate.get("error"),
             }
             component_results.append(component_entry)
@@ -514,7 +515,8 @@ def run_admin_v3_dryrun_for_skill(
             "published_artifact_sha": None,
             "run_id": run_id,
             "rebuild_started_at": rebuild_started_at,
-            "model_generation_invoked": False,
+            "component_draft_built": False,
+            "model_generation_invoked": False,  # legacy alias of component_draft_built
         }
         try:
             dryrun_result = run_admin_v3_dryrun_for_example(
@@ -526,9 +528,11 @@ def run_admin_v3_dryrun_for_skill(
                 allow_non_mvp_skill=True,
                 force_regenerate=must_regenerate or bool(force),
             )
-            component_entry["model_generation_invoked"] = bool(
-                dryrun_result.get("model_generation_invoked")
+            draft_built = bool(
+                dryrun_result.get("component_draft_built", dryrun_result.get("model_generation_invoked"))
             )
+            component_entry["component_draft_built"] = draft_built
+            component_entry["model_generation_invoked"] = draft_built
             component_entry["generation_run_id"] = dryrun_result.get("generation_run_id")
             after_sha = dryrun_result.get("new_artifact_hash") or _sha256_file(generate_path)
             component_entry["after_sha"] = after_sha
@@ -660,7 +664,18 @@ def run_admin_v3_dryrun_for_skill(
                     "new_artifact_hash": dryrun_result.get("new_artifact_hash"),
                     "old_generate_mtime": dryrun_result.get("old_generate_mtime"),
                     "new_generate_mtime": dryrun_result.get("new_generate_mtime"),
-                    "model_generation_invoked": bool(dryrun_result.get("model_generation_invoked")),
+                    "component_draft_built": bool(
+                        dryrun_result.get(
+                            "component_draft_built",
+                            dryrun_result.get("model_generation_invoked"),
+                        )
+                    ),
+                    "model_generation_invoked": bool(
+                        dryrun_result.get(
+                            "component_draft_built",
+                            dryrun_result.get("model_generation_invoked"),
+                        )
+                    ),
                 }
             )
         except Exception as exc:
@@ -1063,7 +1078,8 @@ def run_admin_v3_dryrun_for_example(
             "generation_run_id": generation_run_id,
             "generation_started_at": generation_started_at,
             "generation_finished_at": _now_iso(),
-            "model_generation_invoked": False,
+            "component_draft_built": False,
+            "model_generation_invoked": False,  # legacy alias
         }
         if isinstance(error_details, dict):
             payload["error_details"] = error_details
@@ -1098,6 +1114,7 @@ def run_admin_v3_dryrun_for_example(
             "new_artifact_hash": old_artifact_hash,
             "old_generate_mtime": old_generate_mtime,
             "new_generate_mtime": old_generate_mtime,
+            "component_draft_built": False,
             "model_generation_invoked": False,
             "phase1_preflight": phase1_preflight,
         }
@@ -1161,7 +1178,18 @@ def run_admin_v3_dryrun_for_example(
         "new_artifact_hash": new_artifact_hash,
         "old_generate_mtime": old_generate_mtime,
         "new_generate_mtime": new_generate_mtime,
-        "model_generation_invoked": bool(bridge_payload.get("model_generation_invoked", True)),
+        "component_draft_built": bool(
+            bridge_payload.get(
+                "component_draft_built",
+                bridge_payload.get("model_generation_invoked", True),
+            )
+        ),
+        "model_generation_invoked": bool(
+            bridge_payload.get(
+                "component_draft_built",
+                bridge_payload.get("model_generation_invoked", True),
+            )
+        ),
         "phase1_preflight": {
             "reused": bool(phase1_preflight.get("reused")),
             "phase1_invoked": bool(phase1_preflight.get("phase1_invoked")),

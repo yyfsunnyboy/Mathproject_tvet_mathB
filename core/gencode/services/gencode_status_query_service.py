@@ -1522,8 +1522,13 @@ def build_admin_skills_gencode_status_map(
         production_base_dir=production_base_dir,
         project_root=project_root,
     )
-    return {
-        skill_key: _build_skill_list_gencode_status_view(
+    from core.gencode.services.v3_skill_capability_preflight_service import (
+        evaluate_skill_v3_capability,
+    )
+
+    result: dict[str, dict[str, object]] = {}
+    for skill_key in keys:
+        view = _build_skill_list_gencode_status_view(
             skill_id=skill_key,
             coverage=coverage_map.get(
                 skill_key,
@@ -1553,8 +1558,28 @@ def build_admin_skills_gencode_status_map(
             dryrun_base_dir=dryrun_base_dir,
             production_base_dir=production_base_dir,
         )
-        for skill_key in keys
-    }
+        try:
+            capability = evaluate_skill_v3_capability(conn, skill_key, probe_examples=True)
+        except Exception:
+            capability = {
+                "skill_id": skill_key,
+                "capability_status": "invalid",
+                "allow_v3_rebuild": False,
+                "next_action": "inspect_wiring_diagnosis",
+                "missing_layers": ["preflight_exception"],
+                "ui": {
+                    "status_label": "能力接線錯誤",
+                    "primary_action_label": "查看診斷",
+                    "tooltip": "Gencode V3會使用既有domain能力重新建置，不會自行建立新API。",
+                },
+            }
+        view["capability"] = capability
+        view["capability_status"] = capability.get("capability_status")
+        view["allow_v3_rebuild"] = bool(capability.get("allow_v3_rebuild"))
+        view["capability_next_action"] = capability.get("next_action")
+        view["capability_ui"] = capability.get("ui") or {}
+        result[skill_key] = view
+    return result
 
 
 def resolve_admin_project_root(app_root_path: str | Path | None = None) -> Path:
