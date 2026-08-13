@@ -14,6 +14,8 @@ uploads/
 /reports/backups/
 temp/
 reports/gencode_qwen_dryrun/_pytest/
+reports/gencode_capability_candidates/
+reports/ollama_qwen35_json_probe/
 
 # 忽略轉檔產生的暫存圖片資料夾
 media/
