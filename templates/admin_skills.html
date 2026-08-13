@@ -1428,10 +1428,23 @@
                         if (response.status === 409 && data.error === 'capability_already_ready') {
                             throw new Error(data.message || '此技能已就緒，請改用重新建置與驗證');
                         }
-                        if (!response.ok && !data.reused && data.status !== 'awaiting_admin_confirm') {
-                            throw new Error(data.message || data.error || 'AI補全失敗');
-                        }
                         const status = data.status || '-';
+                        const reason = data.block_reason || data.error || data.message || '';
+                        if (status === 'blocked' || (!response.ok && !data.reused && status !== 'awaiting_admin_confirm')) {
+                            Swal.fire({
+                                title: '補全未通過',
+                                html: `
+                                    <div style="text-align:left;font-size:0.92rem;">
+                                      <div><b>status</b>：${status || 'blocked'}</div>
+                                      <div><b>直接原因</b>：${reason || '-'}</div>
+                                      <div><b>job_id</b>：${data.job_id || '-'}</div>
+                                      <div><b>路徑</b>：<code>${data.job_dir || '-'}</code></div>
+                                    </div>
+                                `,
+                                icon: 'warning'
+                            });
+                            return;
+                        }
                         const title = data.reused
                             ? '已重用既有補全任務'
                             : (status === 'awaiting_admin_confirm' ? '已產生候選，等待管理員確認' : '補全未通過');
@@ -1440,6 +1453,7 @@
                             html: `
                                 <div style="text-align:left;font-size:0.92rem;">
                                   <div><b>status</b>：${status}</div>
+                                  <div><b>直接原因</b>：${reason || '-'}</div>
                                   <div><b>job_id</b>：${data.job_id || '-'}</div>
                                   <div><b>fingerprint</b>：${data.gap_fingerprint || '-'}</div>
                                   <div><b>路徑</b>：<code>${data.job_dir || '-'}</code></div>

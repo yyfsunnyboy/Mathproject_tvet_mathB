@@ -13,6 +13,7 @@
 # ==============================================================================
 
 import os
+import re
 import requests
 import json
 import logging
@@ -74,6 +75,78 @@ def sanitize_secret_text(text, secrets):
     return cleaned
 
 
+_THINK_BLOCK_RE = re.compile(r"<think>.*?</think>", flags=re.DOTALL | re.IGNORECASE)
+_THINK_OPEN_RE = re.compile(r"<think>.*", flags=re.DOTALL | re.IGNORECASE)
+
+
+class OllamaGenerateResponse:
+    """Local Ollama response. ``text`` is visible content only; never copy thinking into it."""
+
+    def __init__(
+        self,
+        text,
+        thinking="",
+        prompt_t=0,
+        comp_t=0,
+        lat_ms=0,
+        *,
+        empty_model_output=False,
+        http_ok=True,
+        http_status=200,
+    ):
+        self.text = str(text or "")
+        self.thinking = str(thinking or "")
+        self.latency_ms = lat_ms
+        self.http_ok = bool(http_ok)
+        self.http_status = int(http_status or 0)
+        self.empty_model_output = bool(empty_model_output or (self.http_ok and not self.text.strip()))
+        self.usage = type("Usage", (), {})()
+        self.usage.prompt_tokens = prompt_t
+        self.usage.completion_tokens = comp_t
+        self.usage.total_tokens = prompt_t + comp_t
+        self.prompt_tokens = prompt_t
+        self.completion_tokens = comp_t
+        self.total_tokens = prompt_t + comp_t
+
+    def __str__(self):
+        return self.text
+
+
+def extract_ollama_visible_and_thinking(result: dict, *, chat: bool = False) -> tuple[str, str]:
+    """Split Ollama JSON into visible content vs thinking. Never promote thinking to text."""
+    payload = result if isinstance(result, dict) else {}
+    if chat:
+        message = payload.get("message") or {}
+        raw_visible = message.get("content", "") if isinstance(message, dict) else ""
+        raw_thinking = ""
+        if isinstance(message, dict):
+            raw_thinking = message.get("thinking", "") or ""
+        raw_thinking = raw_thinking or payload.get("thinking", "") or ""
+    else:
+        raw_visible = payload.get("response", "")
+        raw_thinking = payload.get("thinking", "") or ""
+        # Some Ollama builds still nest chat-shaped messages on generate.
+        if not str(raw_visible or "").strip() and isinstance(payload.get("message"), dict):
+            raw_visible = payload["message"].get("content", "") or raw_visible
+            raw_thinking = payload["message"].get("thinking", "") or raw_thinking
+
+    visible = str(raw_visible or "")
+    thinking = str(raw_thinking or "")
+    tagged = _THINK_BLOCK_RE.findall(visible)
+    if tagged:
+        extracted = "\n".join(block.strip() for block in tagged if str(block).strip())
+        if extracted and not thinking.strip():
+            thinking = extracted
+        visible = _THINK_BLOCK_RE.sub("", visible)
+        visible = _THINK_OPEN_RE.sub("", visible)
+    elif _THINK_OPEN_RE.search(visible) and not _THINK_BLOCK_RE.search(visible):
+        # Unclosed <think> — treat entire body as thinking, no official text.
+        if not thinking.strip():
+            thinking = visible
+        visible = ""
+    return visible.strip(), thinking.strip()
+
+
 def _normalize_ollama_image_b64(raw: str) -> str:
     """
     Ollama /api/chat 需要純 base64，不可含 data URL 前綴。
@@ -117,11 +190,12 @@ class LocalAIClient:
     def _fallback_chat_url(self):
         return self._ollama_chat_url()
 
-    def _build_chat_payload(self, prompt, options, system_prompt=None, images=None, stream=False):
+    def _build_chat_payload(self, prompt, options, system_prompt=None, images=None, stream=False, think=None):
         """
         Ollama /api/chat 規範：
         - messages 為陣列
         - 視覺：user 訊息使用字串 content + images: [base64, ...]（純 base64，無 data: 前綴）
+        - think 為頂層欄位，不可放進 options
         """
         messages = []
         if system_prompt:
@@ -133,14 +207,17 @@ class LocalAIClient:
                 user_msg["images"] = norm
         messages.append(user_msg)
 
-        return {
+        payload = {
             "model": self.model,
             "messages": messages,
             "stream": stream,
             "options": options,
         }
+        if think is not None:
+            payload["think"] = think
+        return payload
 
-    def generate_content(self, prompt, image_path=None):
+    def generate_content(self, prompt, image_path=None, *, think=None):
         # [V4.0] Support Vision/Multi-modal
         images = []
         if image_path and os.path.exists(image_path):
@@ -182,22 +259,10 @@ class LocalAIClient:
                 system_prompt=system_prompt,
                 images=image_list,
                 stream=False,
+                think=think,
             )
             print("[VISION PAYLOAD KEYS]", list(payload.keys()))
             print("[VISION IMAGE LENGTH]", len(image_b64))
-
-            class _VisionMockResponse:
-                def __init__(self, text, thinking="", lat_ms=0, pt=0, ct=0):
-                    self.text = text
-                    self.thinking = thinking
-                    self.latency_ms = lat_ms
-                    self.usage = type("Usage", (), {})()
-                    self.usage.prompt_tokens = pt
-                    self.usage.completion_tokens = ct
-                    self.usage.total_tokens = pt + ct
-                    self.prompt_tokens = pt
-                    self.completion_tokens = ct
-                    self.total_tokens = pt + ct
 
             import time
             start_time = time.perf_counter()
@@ -211,7 +276,7 @@ class LocalAIClient:
             except requests.exceptions.RequestException as e:
                 err = f"Local AI (Ollama) Vision request failed: {e}\n{chat_url}"
                 logger.error(err)
-                return _VisionMockResponse(err)
+                return OllamaGenerateResponse(err, http_ok=False, http_status=0)
 
             end_time = time.perf_counter()
             latency_ms = int((end_time - start_time) * 1000)
@@ -222,7 +287,9 @@ class LocalAIClient:
                     f"Local AI (Ollama) Vision HTTP {response.status_code}: {body_preview}\n{chat_url}"
                 )
                 logger.error(err)
-                return _VisionMockResponse(err, lat_ms=latency_ms)
+                return OllamaGenerateResponse(
+                    err, lat_ms=latency_ms, http_ok=False, http_status=response.status_code
+                )
 
             try:
                 result = response.json()
@@ -230,16 +297,23 @@ class LocalAIClient:
                 print("[VISION OLLAMA] invalid JSON body[:500]=", body_preview)
                 err = f"Local AI (Ollama) Vision invalid JSON: {e}\n{body_preview}"
                 logger.error(err)
-                return _VisionMockResponse(err, lat_ms=latency_ms)
+                return OllamaGenerateResponse(
+                    err, lat_ms=latency_ms, http_ok=False, http_status=response.status_code
+                )
 
-            generated_text = (result.get("message") or {}).get("content", "")
-            thinking_text = (result.get("message") or {}).get("thinking", "") or result.get("thinking", "")
+            generated_text, thinking_text = extract_ollama_visible_and_thinking(result, chat=True)
             if not generated_text and thinking_text:
-                print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
+                logger.warning("Ollama visible text empty; thinking present but not used as output.")
             prompt_tokens = result.get("prompt_eval_count", 0)
             completion_tokens = result.get("eval_count", 0)
-            return _VisionMockResponse(
-                generated_text, thinking_text, latency_ms, prompt_tokens, completion_tokens
+            return OllamaGenerateResponse(
+                generated_text,
+                thinking_text,
+                prompt_tokens,
+                completion_tokens,
+                latency_ms,
+                http_ok=True,
+                http_status=response.status_code,
             )
 
         payload = {
@@ -248,6 +322,8 @@ class LocalAIClient:
             "stream": False,
             "options": options
         }
+        if think is not None:
+            payload["think"] = think
 
         if system_prompt:
             payload["system"] = system_prompt
@@ -277,6 +353,7 @@ class LocalAIClient:
                     system_prompt=system_prompt,
                     images=None,
                     stream=False,
+                    think=think,
                 )
                 response = requests.post(
                     request_url,
@@ -293,50 +370,27 @@ class LocalAIClient:
             # [DEBUG] Print raw result from Ollama
             # print(f"[DEBUG OLLAMA RAW]: {str(result)[:500]}")
 
-            # 取出 Ollama 回傳的真正內容與 token 計數
-            if using_chat_fallback:
-                generated_text = (result.get("message") or {}).get("content", "")
-            else:
-                generated_text = result.get("response", "")
-
-            # [Fallback] 如果 response 為空，保留空字串，不要將 thinking 倒進來
-            # 因為現在我們已經獨立將 thinking 透過 .thinking 屬性向外傳遞了
-            if using_chat_fallback:
-                thinking_text = (result.get("message") or {}).get("thinking", "") or result.get("thinking", "")
-            else:
-                thinking_text = result.get("thinking", "")
+            generated_text, thinking_text = extract_ollama_visible_and_thinking(
+                result, chat=using_chat_fallback
+            )
             if not generated_text and thinking_text:
-                print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
+                logger.warning("Ollama visible text empty; thinking present but not used as output.")
             prompt_tokens = result.get("prompt_eval_count", 0)
             completion_tokens = result.get("eval_count", 0)
-            
-            # 建立一個帶 usage 的 MockResponse（模擬 OpenAI / Gemini 風格）
-            class MockResponse:
-                def __init__(self, text, thinking, prompt_t, comp_t, lat_ms):
-                    self.text = text
-                    self.thinking = thinking  # [Qwen3] Raw thinking/reasoning content
-                    self.latency_ms = lat_ms # [V3.1] Expose latency_ms directly
-                    self.usage = type('Usage', (), {})()   # 簡單的 namespace
-                    self.usage.prompt_tokens = prompt_t
-                    self.usage.completion_tokens = comp_t
-                    self.usage.total_tokens = prompt_t + comp_t
-                    # [Compat] Also expose tokens directly on response for some extractors
-                    self.prompt_tokens = prompt_t
-                    self.completion_tokens = comp_t
-                    self.total_tokens = prompt_t + comp_t
-            
-            return MockResponse(generated_text, thinking_text, prompt_tokens, completion_tokens, latency_ms)
+            return OllamaGenerateResponse(
+                generated_text,
+                thinking_text,
+                prompt_tokens,
+                completion_tokens,
+                latency_ms,
+                http_ok=True,
+                http_status=response.status_code,
+            )
             
         except requests.exceptions.RequestException as e:
             error_msg = f"Local AI (Ollama) Error: {str(e)}\n請確認 Ollama 是否正在運行於 {self.api_url}"
             logger.error(error_msg)
-            class MockResponse:
-                def __init__(self, text): 
-                    self.text = error_msg
-                    self.usage = type('Usage', (), {})()
-                    self.usage.prompt_tokens = 0
-                    self.usage.completion_tokens = 0
-            return MockResponse(error_msg)
+            return OllamaGenerateResponse(error_msg, http_ok=False, http_status=0)
 
     def generate_content_stream(self, prompt):
         """

@@ -1,0 +1,23 @@
+# Version: v1-candidate
+# Domain Registry for Math Geometry Slope Calculation
+domain:
+  name: math_geometry
+  version: "v1-candidate"
+  description: Isolated candidate module to support skill vh_數學 B1_SlopeOfALine without touching production core.
+skills_supported:
+  - id: vh_數學 B1_SlopeOfALine
+    capabilities:
+      - parse_coordinate_points_from_text
+      - calculate_slope_formula_m_y2_minus_y1_over_x2_minus_x1
+      - handle_vertical_line_case_division_by_zero
+      - check_collinearity_condition_for_triangle_impossibility
+      - solve_linear_equation_for_unknown_variable_given_slope_and_point
+missing_layers_binding:
+  - layer: domain_registry_binding
+    status: implemented_in_candidate
+  - layer: math_geometry_coordinate_plane_parser_v1
+    status: implemented_in_candidate
+constraints_applied:
+  - no_production_db_modification
+  - no_core_api_route_updates
+  - unit_testing_required_before_promotion

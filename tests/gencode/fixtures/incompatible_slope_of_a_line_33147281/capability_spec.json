@@ -1,0 +1,64 @@
+{
+  "skill_id": "vh_數學 B1_SlopeOfALine",
+  "capability_status": "isolated_candidate_planned",
+  "domain_key_suggestion": "math_geometry_line_properties_slope_calculation",
+  "required_operations": [
+    "parse_coordinate_points_from_text",
+    "calculate_slope_formula_m_y2_minus_y1_over_x2_minus_x1",
+    "handle_vertical_line_case_division_by_zero",
+    "check_collinearity_condition_for_triangle_impossibility",
+    "solve_linear_equation_for_unknown_variable_given_slope_and_point"
+  ],
+  "missing_layers": [
+    "domain_registry_binding",
+    "math_geometry_coordinate_plane_parser_v1"
+  ],
+  "isomorphism_groups": [
+    {
+      "group_key": "slope_calculation_from_two_points",
+      "textbook_example_ids": [
+        4520,
+        4521
+      ]
+    },
+    {
+      "group_key": "collinearity_and_unknown_variable_resolution",
+      "textbook_example_ids": [
+        4523,
+        4529,
+        4601
+      ]
+    },
+    {
+      "group_key": "parallel_perpendicular_line_slope_relationships",
+      "textbook_example_ids": [
+        4525
+      ]
+    },
+    {
+      "group_key": "triangle_impossibility_vertical_line_detection",
+      "textbook_example_ids": [
+        4524,
+        4534
+      ]
+    }
+  ],
+  "candidate_plan": {
+    "files_list": [
+      "math_geometry_domain_registry_v1.yaml",
+      "slope_calculator_engine.py",
+      "isomorphism_mapping_table.json"
+    ],
+    "summary": "建立隔離候選模組 math_geometry，包含斜率計算核心引擎與同構群映射表。該模組僅用於補全 skill vh_數學 B1_SlopeOfALine 的缺失能力，不觸碰正式 core、DB 或 production tracker。所有邏輯封裝於 candidate 目錄下，待人工審查後再決定是否合併至主幹線。"
+  },
+  "constraints": [
+    "不得修改任何生產環境資料庫結構",
+    "不得更新正式核心 API 路由表",
+    "候選程式碼必須包含版本控制標籤 v1-candidate",
+    "所有數學運算邏輯需通過單元測試後方可提交審查",
+    "禁止自動寫入 production tracker 系統日誌"
+  ],
+  "origin": "architect",
+  "ai_generated": true,
+  "promotion_allowed": false
+}

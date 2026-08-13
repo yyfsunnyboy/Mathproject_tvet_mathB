@@ -1,0 +1,43 @@
+{
+  "version": "v1-candidate",
+  "domain_key_suggestion": "math_geometry_line_properties_slope_calculation",
+  "skill_id": "vh_數學 B1_SlopeOfALine",
+  "capability_status": "isolated_candidate_planned",
+  "isomorphism_groups": [
+    {
+      "group_key": "slope_calculation_from_two_points",
+      "textbook_example_ids": [4520, 4521],
+      "implemented_in": "slope_calculator_engine.py"
+    },
+    {
+      "group_key": "collinearity_and_unknown_variable_resolution",
+      "textbook_example_ids": [4523, 4529, 4601],
+      "implemented_in": "slope_calculator_engine.py"
+    },
+    {
+      "group_key": "parallel_perpendicular_line_slope_relationships",
+      "textbook_example_ids": [4525],
+      "status": "pending_implementation_or_mapping_update"
+    },
+    {
+      "group_key": "triangle_impossibility_vertical_line_detection",
+      "textbook_example_ids": [4524, 4634],
+      "implemented_in": "slope_calculator_engine.py"
+    }
+  ],
+  "missing_layers_mapping": [
+    {
+      "layer_name": "domain_registry_binding",
+      "resolved_by_file": "math_geometry_domain_registry_v1.yaml"
+    },
+    {
+      "layer_name": "math_geometry_coordinate_plane_parser_v1",
+      "resolved_by_method": "parse_coordinate_points_from_text in slope_calculator_engine.py"
+    }
+  ],
+  "constraints_acknowledged": [
+    "No production DB changes allowed.",
+    "Core API routes remain untouched.",
+    "All logic must pass unit tests before promotion."
+  ]
+}

@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
 import sqlite3
 import time
 import uuid
@@ -19,11 +20,20 @@ from typing import Any, Callable
 
 from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config
 from core.ai_wrapper import get_ai_client
+from core.gencode.services.v3_capability_compatibility_validator import (
+    ALLOWED_OFFICIAL_TARGETS,
+    BLOCK_INCOMPATIBLE,
+    official_matrix_fields,
+    parse_coder_contract as parse_official_coder_contract,
+    validate_architect_spec as validate_official_architect_spec,
+    validate_official_compatibility,
+)
 from core.gencode.services.v3_capability_handoff_service import compute_gap_fingerprint
 from core.gencode.services.v3_skill_capability_preflight_service import (
     CAPABILITY_READY,
     evaluate_skill_v3_capability,
 )
+from core.registry.domain_operation_registry import get_domain_spec, list_registered_domains
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CANDIDATE_ROOT = PROJECT_ROOT / "reports" / "gencode_capability_candidates"
@@ -36,16 +46,23 @@ STATE_VALIDATE_2 = "validating_round_2"
 STATE_AWAITING = "awaiting_admin_confirm"
 STATE_BLOCKED = "blocked"
 
-ACTIVE_STATES = frozenset(
+ORIGIN_ARCHITECT = "architect"
+ORIGIN_CODER = "coder"
+ORIGIN_DIAGNOSTIC_NON_AI = "diagnostic_non_ai_fallback"
+ORIGIN_FALLBACK_SPEC = "fallback_spec_from_preflight"
+ORIGIN_SCAFFOLD = "deterministic_scaffold"
+
+IN_FLIGHT_STATES = frozenset(
     {
         STATE_ARCHITECT,
         STATE_CODER_1,
         STATE_VALIDATE_1,
         STATE_CODER_2,
         STATE_VALIDATE_2,
-        STATE_AWAITING,
     }
 )
+
+ACTIVE_STATES = frozenset(IN_FLIGHT_STATES | {STATE_AWAITING})
 
 ClientFactory = Callable[[str], Any]
 
@@ -120,6 +137,22 @@ def assert_edge_roles_are_local() -> dict[str, Any]:
     return roles_meta
 
 
+FILL_LOCAL_THINK_ENABLED = False
+
+
+def _generate_content_for_fill(client: Any, prompt: str) -> Any:
+    """Call-level think=false for fill architect/coder only.
+
+    Other LocalAIClient callers omit think and keep default Ollama behavior.
+    Clients that reject the keyword (Google / older mocks) fall back.
+    """
+    generate = getattr(client, "generate_content")
+    try:
+        return generate(prompt, think=FILL_LOCAL_THINK_ENABLED)
+    except TypeError:
+        return generate(prompt)
+
+
 def _default_client_factory(role: str) -> Any:
     # Intentional: role-based factory only. Never resolve_gencode_ai_client.
     return get_ai_client(role=role)
@@ -181,10 +214,31 @@ def _find_reusable_job(
             continue
         if str(job.get("gap_fingerprint") or "") != fingerprint:
             continue
-        status = str(job.get("status") or "")
-        if status in ACTIVE_STATES:
-            return folder
+        if not _job_is_reusable(job):
+            continue
+        return folder
     return None
+
+
+def _job_is_reusable(job: dict[str, Any]) -> bool:
+    status = str(job.get("status") or "")
+    if status in IN_FLIGHT_STATES:
+        return True
+    if status != STATE_AWAITING:
+        return False
+    if job.get("ai_output_valid") is not True:
+        return False
+    if job.get("spec_origin") != ORIGIN_ARCHITECT:
+        return False
+    if job.get("candidate_origin") != ORIGIN_CODER:
+        return False
+    if job.get("validation_passed") is not True:
+        return False
+    if job.get("official_compatibility_passed") is not True:
+        return False
+    if str(job.get("block_reason") or "") == BLOCK_INCOMPATIBLE:
+        return False
+    return True
 
 
 def _write_json(path: Path, payload: dict[str, Any] | list[Any]) -> None:
@@ -234,6 +288,131 @@ def _extract_json_object(text: str) -> dict[str, Any]:
     return {}
 
 
+def _visible_text_from_response(resp: Any) -> tuple[str, bool, bool, bool]:
+    """Return (text, empty_model_output, thinking_present, http_ok). Never stringify the client object."""
+    raw = getattr(resp, "text", None)
+    text = "" if raw is None else str(raw)
+    thinking = str(getattr(resp, "thinking", "") or "")
+    http_ok = bool(getattr(resp, "http_ok", True))
+    flagged_empty = bool(getattr(resp, "empty_model_output", False))
+    empty = (not text.strip()) or flagged_empty
+    return text, empty, bool(thinking.strip()), http_ok
+
+
+def validate_architect_spec(
+    spec: dict[str, Any],
+    *,
+    skill_id: str,
+    example_ids: list[int] | None = None,
+) -> list[str]:
+    blockers: list[str] = []
+    if not isinstance(spec, dict) or not spec:
+        return ["architect_json_missing"]
+    origin = str(spec.get("origin") or spec.get("candidate_plan", {}).get("summary") or "")
+    if origin in (ORIGIN_FALLBACK_SPEC, ORIGIN_DIAGNOSTIC_NON_AI, ORIGIN_SCAFFOLD):
+        blockers.append("non_ai_spec_forbidden_in_official_fill")
+    blockers.extend(
+        validate_official_architect_spec(
+            spec,
+            skill_id=skill_id,
+            example_ids=list(example_ids or []),
+        )
+    )
+    plan = spec.get("candidate_plan")
+    if not isinstance(plan, dict):
+        blockers.append("spec_missing_candidate_plan")
+    elif not isinstance(plan.get("files"), list) and not str(plan.get("summary") or "").strip():
+        blockers.append("spec_missing_candidate_plan")
+    constraints = spec.get("constraints")
+    if constraints is not None and not isinstance(constraints, list):
+        blockers.append("spec_invalid_constraints")
+    groups = spec.get("isomorphism_groups")
+    if groups is not None and not isinstance(groups, list):
+        blockers.append("spec_invalid_isomorphism_groups")
+    return list(dict.fromkeys(blockers))
+
+
+def parse_coder_contract(
+    payload: dict[str, Any],
+    skill_id: str = "",
+) -> tuple[list[dict[str, Any]], list[str]]:
+    return parse_official_coder_contract(payload, skill_id=skill_id)
+
+
+def _assert_awaiting_allowed(
+    *,
+    spec: dict[str, Any],
+    spec_origin: str,
+    candidate_origin: str,
+    architect_ok: bool,
+    coder_ok: bool,
+    validator_passed: bool,
+) -> None:
+    blockers: list[str] = []
+    if spec_origin != ORIGIN_ARCHITECT:
+        blockers.append("spec_not_from_architect")
+    if candidate_origin != ORIGIN_CODER:
+        blockers.append("candidate_not_from_coder")
+    if not architect_ok:
+        blockers.append("architect_evidence_invalid")
+    if not coder_ok:
+        blockers.append("coder_evidence_invalid")
+    if not validator_passed:
+        blockers.append("validator_not_passed")
+    if spec.get("origin") in (ORIGIN_FALLBACK_SPEC, ORIGIN_DIAGNOSTIC_NON_AI, ORIGIN_SCAFFOLD):
+        blockers.append("non_ai_spec_cannot_await")
+    if spec.get("ai_generated") is not True:
+        blockers.append("spec_not_ai_generated")
+    if blockers:
+        raise CapabilityAiFillError(
+            "awaiting_gate_failed",
+            "awaiting_admin_confirm requires valid architect spec, coder candidate, evidence, and validator",
+            details={"blockers": blockers},
+        )
+
+
+def build_diagnostic_fallback_spec(preflight: dict[str, Any], *, skill_id: str) -> dict[str, Any]:
+    """Non-AI diagnostic spec only. Must never be used by official fill, and must not promote."""
+    return {
+        "skill_id": skill_id,
+        "capability_status": preflight.get("capability_status"),
+        "domain_key_suggestion": preflight.get("domain_key") or f"candidate_{skill_id}",
+        "required_operations": list(preflight.get("supported_operations") or []) or ["unresolved_operation"],
+        "missing_layers": list(preflight.get("missing_layers") or []),
+        "isomorphism_groups": [],
+        "candidate_plan": {"summary": ORIGIN_DIAGNOSTIC_NON_AI, "files": ["domain_module.py"]},
+        "constraints": ["isolated_candidate_only", "non_ai_diagnostic", "promotion_forbidden"],
+        "origin": ORIGIN_DIAGNOSTIC_NON_AI,
+        "promotion_allowed": False,
+        "ai_generated": False,
+    }
+
+
+def build_diagnostic_scaffold_files(spec: dict[str, Any]) -> list[dict[str, Any]]:
+    """Non-AI diagnostic files only. Must never be treated as coder output."""
+    return [
+        {
+            "path": "domain_module.py",
+            "content": (
+                '"""Isolated diagnostic scaffold (non-AI). Do not promote."""\n\n'
+                f"DOMAIN_KEY = {spec.get('domain_key_suggestion')!r}\n"
+                f"REQUIRED_OPERATIONS = {list(spec.get('required_operations') or [])!r}\n"
+                f"ORIGIN = {ORIGIN_DIAGNOSTIC_NON_AI!r}\n"
+                "PROMOTION_ALLOWED = False\n\n"
+                "def build_fixture_matrix():\n"
+                "    return {\"operations\": REQUIRED_OPERATIONS, \"origin\": ORIGIN}\n"
+            ),
+        },
+        {
+            "path": "README.md",
+            "content": (
+                "# Diagnostic non-AI scaffold\n\n"
+                "This is not architect/coder output. Promotion is forbidden.\n"
+            ),
+        },
+    ]
+
+
 def _call_role(
     *,
     role: str,
@@ -259,13 +438,25 @@ def _call_role(
     status = "ok"
     response_text = ""
     error = ""
+    empty_model_output = False
+    thinking_present = False
+    http_ok = True
     try:
-        resp = client.generate_content(prompt)
-        response_text = str(getattr(resp, "text", None) or resp or "")
+        resp = _generate_content_for_fill(client, prompt)
+        response_text, empty_model_output, thinking_present, http_ok = _visible_text_from_response(resp)
+        if not http_ok:
+            status = "error"
+            error = "model_http_failed"
+        elif empty_model_output:
+            status = "empty_model_output"
+            error = "empty_model_output"
+            response_text = ""
     except Exception as exc:
         status = "error"
         error = f"{type(exc).__name__}:{exc}"
         response_text = ""
+        empty_model_output = False
+        http_ok = False
     latency_ms = int((time.perf_counter() - started) * 1000)
 
     evidence = {
@@ -279,29 +470,78 @@ def _call_role(
         "latency_ms": latency_ms,
         "prompt_sha256": _sha256_text(prompt),
         "response_sha256": _sha256_text(response_text),
+        "empty_model_output": empty_model_output,
+        "thinking_present": thinking_present,
+        "thinking_enabled": FILL_LOCAL_THINK_ENABLED,
+        "http_ok": http_ok,
         "timestamp": started_at,
         "finished_at": _utc_now(),
         "validator_summary": validator_summary or {},
         "resolved_source": cfg.get("_resolved_source"),
     }
     _append_jsonl(job_dir / "model_call_evidence.jsonl", evidence)
+    if status == "empty_model_output":
+        raise CapabilityAiFillError(
+            "empty_model_output",
+            f"{role} HTTP succeeded but official text is empty",
+            details={k: evidence[k] for k in evidence if k not in ("prompt_sha256",)},
+        )
     if status != "ok":
         raise CapabilityAiFillError(
             "model_call_failed",
             f"{role} call failed: {error}",
-            details=evidence,
+            details={k: evidence[k] for k in evidence if k not in ("prompt_sha256",)},
         )
     return {"text": response_text, "evidence": evidence}
 
 
-def _architect_prompt(preflight: dict[str, Any], briefs: list[dict[str, Any]]) -> str:
+def _official_architecture_brief() -> dict[str, Any]:
+    domains: dict[str, Any] = {}
+    for key in list_registered_domains():
+        spec = get_domain_spec(key)
+        if spec is None:
+            continue
+        domains[key] = {
+            "domain_module": spec.domain_module,
+            "entrypoint": spec.entrypoint,
+            "operations": list(spec.allowed_operations),
+        }
+    return {
+        "matrix_required_fields": official_matrix_fields(),
+        "allowed_official_file_prefixes": list(ALLOWED_OFFICIAL_TARGETS),
+        "registered_domains": domains,
+        "rules": [
+            "skill_id must match the requested skill exactly",
+            "reuse an existing domain_key; never invent a new domain or registry format",
+            "operations must already exist or be proposed only as a patch to domain_operation_registry.py",
+            "candidate files must be mutations of official runtime-read paths plus focused tests and coverage_matrix",
+            "do not emit standalone helpers, unused YAML/JSON, placeholders, or pending mappings",
+        ],
+    }
+
+
+def _architect_prompt(preflight: dict[str, Any], briefs: list[dict[str, Any]], *, skill_id: str) -> str:
+    example_ids = [int(b.get("textbook_example_id") or 0) for b in briefs if int(b.get("textbook_example_id") or 0)]
     return (
-        "你是系統角色 architect。請分析整個 skill 題群，設計共用 domain capability。\n"
-        "只輸出 JSON（勿 markdown），欄位：\n"
-        "skill_id, capability_status, domain_key_suggestion, required_operations (list),\n"
-        "missing_layers, isomorphism_groups (list of {group_key, textbook_example_ids}),\n"
-        "candidate_plan (object: files list + summary), constraints (list).\n"
-        "硬限制：不得要求修改正式 core／DB／tracker／production；只規劃隔離 candidate。\n\n"
+        "你是系統角色 architect。請把缺口接到現有 Gencode V3 正式架構，禁止新建獨立 domain。\n"
+        "只輸出 JSON（勿 markdown），必填欄位：\n"
+        "skill_id (必須與請求完全一致),\n"
+        "domain_key (必須是已註冊 domain),\n"
+        "domain_module, entrypoint,\n"
+        "required_operations (現有 operations 或 registry_operation_proposals),\n"
+        "registry_operation_proposals (list，可空),\n"
+        "matrix_required_fields (必須等於官方 MATRIX_REQUIRED_FIELDS),\n"
+        "answer_schema (object: operation -> schema_key),\n"
+        "checker (object: operation -> checker_key),\n"
+        "example_coverage (list of {textbook_example_id, operation, answer_contract{checker_key, answer_type, answer_schema_key}}),\n"
+        "allowed_official_files (list，只能是正式 runtime／test 路徑),\n"
+        "regression_guards (list，至少一個既有 verified skill_id),\n"
+        "missing_layers, isomorphism_groups, candidate_plan, constraints.\n"
+        "硬限制：不得要求寫入 DB／tracker／production；只規劃隔離 candidate 的正式檔案 patch。\n"
+        "禁止自創 registry YAML 格式、runtime 未讀取的 mapping table、獨立 helper engine。\n\n"
+        f"requested_skill_id={json.dumps(skill_id, ensure_ascii=False)}\n"
+        f"required_example_ids={json.dumps(example_ids)}\n"
+        f"official_architecture={json.dumps(_official_architecture_brief(), ensure_ascii=False)}\n"
         f"preflight={json.dumps(preflight, ensure_ascii=False)}\n"
         f"examples={json.dumps(briefs, ensure_ascii=False)}"
     )
@@ -310,11 +550,21 @@ def _architect_prompt(preflight: dict[str, Any], briefs: list[dict[str, Any]]) -
 def _coder_prompt(spec: dict[str, Any], *, round_no: int, validation: dict[str, Any] | None) -> str:
     repair = ""
     if round_no > 1 and validation:
-        repair = f"\n上一輪 validator 失敗：{json.dumps(validation, ensure_ascii=False)}\n請修正 candidate。\n"
+        repair = f"\n上一輪 validator 失敗：{json.dumps(validation, ensure_ascii=False)}\n請改成正式檔案 mutation proposal。\n"
     return (
-        "你是系統角色 coder。依 capability_spec 產生隔離 candidate 檔案內容。\n"
-        "只輸出 JSON：{ \"files\": [ {\"path\": \"relative/path.py\", \"content\": \"...\"} ], "
-        "\"notes\": \"...\" }\n"
+        "你是系統角色 coder。請輸出對現有正式檔案的 mutation proposal，不要寫獨立 helper。\n"
+        "只輸出 JSON：{\n"
+        '  "skill_id": "<exact skill_id>",\n'
+        '  "files": [ {"path": "relative/path", "target": "official/repo/path", '
+        '"mutation": "upsert_skill_binding|add_focused_tests|patch_existing_file", "content": "..."} ],\n'
+        '  "coverage_matrix": [ {"textbook_example_id": 0, "operation": "...", '
+        '"answer_contract": {"checker_key": "...", "answer_type": "...", "answer_schema_key": "..."}} ],\n'
+        '  "notes": "..."\n'
+        "}\n"
+        "target 必須是正式 runtime 會讀的檔，或 tests/gencode/ focused tests，"
+        "或 candidate_contract/coverage_matrix.json。\n"
+        "必須包含：taxonomy／registry 接線 patch、focused tests、12題 coverage_matrix。\n"
+        "禁止：獨立 calculator/engine、未載入 YAML/JSON、placeholder、pending、錯誤 skill_id、錯誤 source id。\n"
         "path 必須相對 candidate 根，禁止絕對路徑與 .. 跳出。\n"
         f"{repair}\n"
         f"capability_spec={json.dumps(spec, ensure_ascii=False)}"
@@ -333,6 +583,8 @@ def _sanitize_rel_path(raw: str) -> str | None:
 def _write_candidate_files(job_dir: Path, files: list[dict[str, Any]]) -> list[str]:
     written: list[str] = []
     cand_root = job_dir / "candidate"
+    if cand_root.exists():
+        shutil.rmtree(cand_root)
     cand_root.mkdir(parents=True, exist_ok=True)
     for item in files:
         if not isinstance(item, dict):
@@ -352,46 +604,37 @@ def _write_candidate_files(job_dir: Path, files: list[dict[str, Any]]) -> list[s
     return written
 
 
-def validate_candidate_workspace(job_dir: Path, spec: dict[str, Any]) -> dict[str, Any]:
-    """Structural validator only — no core/DB/production writes."""
-    blockers: list[str] = []
-    cand_root = job_dir / "candidate"
-    if not cand_root.is_dir():
-        blockers.append("missing_candidate_dir")
-    files = sorted(str(p.relative_to(cand_root)).replace("\\", "/") for p in cand_root.rglob("*") if p.is_file()) if cand_root.is_dir() else []
-    if not files:
-        blockers.append("no_candidate_files")
-
-    required_ops = list(spec.get("required_operations") or [])
-    if not required_ops:
-        blockers.append("spec_missing_required_operations")
-    if not str(spec.get("domain_key_suggestion") or spec.get("domain_key") or "").strip():
-        blockers.append("spec_missing_domain_key_suggestion")
-
-    # Syntax check for python candidate files
-    for rel in files:
-        if not rel.endswith(".py"):
-            continue
-        src = (cand_root / rel).read_text(encoding="utf-8")
-        try:
-            compile(src, rel, "exec")
-        except SyntaxError as exc:
-            blockers.append(f"python_syntax_error:{rel}:{exc.msg}")
-
-    # Guard: candidate tree must stay under allowed root
-    try:
-        cand_root.resolve().relative_to(job_dir.resolve())
-    except Exception:
-        blockers.append("candidate_escaped_job_dir")
-
-    passed = not blockers
+def validate_candidate_workspace(
+    job_dir: Path,
+    spec: dict[str, Any],
+    *,
+    skill_id: str = "",
+    example_ids: list[int] | None = None,
+) -> dict[str, Any]:
+    """Official compatibility validator — compile-only trees cannot pass."""
+    skill_key = str(skill_id or spec.get("skill_id") or "").strip()
+    ids = list(example_ids or [])
+    compatibility = validate_official_compatibility(
+        job_dir,
+        spec,
+        skill_id=skill_key,
+        example_ids=ids,
+    )
     result = {
-        "passed": passed,
-        "blockers": blockers,
-        "file_count": len(files),
-        "files": files,
+        "passed": bool(compatibility.get("passed")),
+        "blockers": list(compatibility.get("blockers") or []),
+        "file_count": compatibility.get("file_count"),
+        "files": compatibility.get("files") or [],
         "checked_at": _utc_now(),
+        "gate": "official_compatibility",
+        "runtime_mutation_count": compatibility.get("runtime_mutation_count"),
+        "focused_test_count": compatibility.get("focused_test_count"),
     }
+    if not result["passed"] and BLOCK_INCOMPATIBLE not in result["blockers"]:
+        result["blockers"] = [BLOCK_INCOMPATIBLE, *result["blockers"]]
+        result["block_reason"] = BLOCK_INCOMPATIBLE
+    elif not result["passed"]:
+        result["block_reason"] = BLOCK_INCOMPATIBLE
     _append_jsonl(job_dir / "validator_results.jsonl", result)
     return result
 
@@ -474,6 +717,7 @@ def run_system_ai_capability_fill(
             "gap_fingerprint": fingerprint,
             "skill_id": skill_key,
             "error": blocked.code,
+            "block_reason": blocked.code,
             "message": str(blocked),
             "preflight": preflight,
         }
@@ -502,30 +746,34 @@ def run_system_ai_capability_fill(
     _write_json(job_dir / "job.json", job)
 
     briefs = _load_example_briefs(conn, skill_key)
+    example_ids = [
+        int(b.get("textbook_example_id") or 0)
+        for b in briefs
+        if int(b.get("textbook_example_id") or 0)
+    ]
 
     try:
         _update_job(job_dir, status=STATE_ARCHITECT)
         arch = _call_role(
             role="architect",
-            prompt=_architect_prompt(preflight, briefs),
+            prompt=_architect_prompt(preflight, briefs, skill_id=skill_key),
             job_dir=job_dir,
             client_factory=factory,
         )
         spec = _extract_json_object(arch["text"])
-        if not spec:
-            spec = {
-                "skill_id": skill_key,
-                "capability_status": preflight.get("capability_status"),
-                "domain_key_suggestion": preflight.get("domain_key") or f"candidate_{skill_key}",
-                "required_operations": list(preflight.get("supported_operations") or []) or ["unresolved_operation"],
-                "missing_layers": list(preflight.get("missing_layers") or []),
-                "isomorphism_groups": [],
-                "candidate_plan": {"summary": "fallback_spec_from_preflight", "files": ["domain_module.py"]},
-                "constraints": ["isolated_candidate_only"],
-                "raw_architect_text_sha256": _sha256_text(arch["text"]),
-            }
-        spec.setdefault("skill_id", skill_key)
+        spec_blockers = validate_architect_spec(spec, skill_id=skill_key, example_ids=example_ids)
+        if spec_blockers:
+            raise CapabilityAiFillError(
+                "architect_invalid_spec",
+                "architect output is not a valid capability spec",
+                details={"blockers": spec_blockers},
+            )
+        spec["skill_id"] = skill_key
+        spec["origin"] = ORIGIN_ARCHITECT
+        spec["ai_generated"] = True
+        spec["promotion_allowed"] = False
         _write_json(job_dir / "capability_spec.json", spec)
+        _update_job(job_dir, spec_origin=ORIGIN_ARCHITECT, architect_evidence_ok=True)
 
         # Round 1 coder + validate
         _update_job(job_dir, status=STATE_CODER_1)
@@ -536,32 +784,54 @@ def run_system_ai_capability_fill(
             client_factory=factory,
         )
         payload1 = _extract_json_object(coder1["text"])
-        files1 = list(payload1.get("files") or [])
-        if not files1:
-            # Minimal deterministic scaffold if model returned prose
-            files1 = [
-                {
-                    "path": "domain_module.py",
-                    "content": (
-                        '"""Isolated capability candidate (phase-1)."""\n\n'
-                        f"DOMAIN_KEY = {spec.get('domain_key_suggestion')!r}\n"
-                        f"REQUIRED_OPERATIONS = {list(spec.get('required_operations') or [])!r}\n\n"
-                        "def build_fixture_matrix():\n"
-                        "    return {\"operations\": REQUIRED_OPERATIONS}\n"
-                    ),
-                },
-                {
-                    "path": "README.md",
-                    "content": "# Isolated candidate\n\nAwaiting admin confirm. Do not promote automatically.\n",
-                },
-            ]
+        files1, coder_blockers = parse_coder_contract(payload1, skill_id=skill_key)
+        if coder_blockers:
+            raise CapabilityAiFillError(
+                "coder_invalid_contract",
+                "coder output is not a valid candidate contract",
+                details={"blockers": coder_blockers, "round": 1},
+            )
         written = _write_candidate_files(job_dir, files1)
-        _write_json(job_dir / "candidate_manifest.json", {"round": 1, "files": written, "notes": payload1.get("notes")})
-
-        _update_job(job_dir, status=STATE_VALIDATE_1)
-        validation1 = validate_candidate_workspace(job_dir, spec)
+        _write_json(
+            job_dir / "candidate_manifest.json",
+            {
+                "round": 1,
+                "files": written,
+                "mutations": [
+                    {"path": item.get("path"), "target": item.get("target"), "mutation": item.get("mutation")}
+                    for item in files1
+                ],
+                "notes": payload1.get("notes"),
+                "origin": ORIGIN_CODER,
+                "ai_generated": True,
+                "promotion_allowed": False,
+            },
+        )
+        _update_job(job_dir, candidate_origin=ORIGIN_CODER, status=STATE_VALIDATE_1)
+        validation1 = validate_candidate_workspace(
+            job_dir, spec, skill_id=skill_key, example_ids=example_ids
+        )
         if validation1.get("passed"):
-            job = _update_job(job_dir, status=STATE_AWAITING, validation_passed=True, coder_rounds_used=1)
+            _assert_awaiting_allowed(
+                spec=spec,
+                spec_origin=ORIGIN_ARCHITECT,
+                candidate_origin=ORIGIN_CODER,
+                architect_ok=True,
+                coder_ok=True,
+                validator_passed=True,
+            )
+            job = _update_job(
+                job_dir,
+                status=STATE_AWAITING,
+                validation_passed=True,
+                official_compatibility_passed=True,
+                coder_rounds_used=1,
+                ai_output_valid=True,
+                spec_origin=ORIGIN_ARCHITECT,
+                candidate_origin=ORIGIN_CODER,
+                block_reason="",
+                promotion_allowed=False,
+            )
             return {
                 "ok": True,
                 "reused": False,
@@ -571,10 +841,13 @@ def run_system_ai_capability_fill(
                 "gap_fingerprint": fingerprint,
                 "skill_id": skill_key,
                 "coder_rounds_used": 1,
+                "ai_output_valid": True,
+                "spec_origin": ORIGIN_ARCHITECT,
+                "candidate_origin": ORIGIN_CODER,
                 "preflight": preflight,
             }
 
-        # Round 2 (one repair only)
+        # Round 2 (one repair only) — only when round-1 contract was valid
         _update_job(job_dir, status=STATE_CODER_2)
         coder2 = _call_role(
             role="coder",
@@ -584,18 +857,55 @@ def run_system_ai_capability_fill(
             validator_summary={"round": 1, "passed": False, "blockers": validation1.get("blockers")},
         )
         payload2 = _extract_json_object(coder2["text"])
-        files2 = list(payload2.get("files") or [])
-        if files2:
-            written2 = _write_candidate_files(job_dir, files2)
-            _write_json(
-                job_dir / "candidate_manifest.json",
-                {"round": 2, "files": written2, "notes": payload2.get("notes")},
+        files2, coder_blockers2 = parse_coder_contract(payload2, skill_id=skill_key)
+        if coder_blockers2:
+            raise CapabilityAiFillError(
+                "coder_invalid_contract",
+                "coder repair output is not a valid candidate contract",
+                details={"blockers": coder_blockers2, "round": 2},
             )
+        written2 = _write_candidate_files(job_dir, files2)
+        _write_json(
+            job_dir / "candidate_manifest.json",
+            {
+                "round": 2,
+                "files": written2,
+                "mutations": [
+                    {"path": item.get("path"), "target": item.get("target"), "mutation": item.get("mutation")}
+                    for item in files2
+                ],
+                "notes": payload2.get("notes"),
+                "origin": ORIGIN_CODER,
+                "ai_generated": True,
+                "promotion_allowed": False,
+            },
+        )
 
         _update_job(job_dir, status=STATE_VALIDATE_2)
-        validation2 = validate_candidate_workspace(job_dir, spec)
+        validation2 = validate_candidate_workspace(
+            job_dir, spec, skill_id=skill_key, example_ids=example_ids
+        )
         if validation2.get("passed"):
-            job = _update_job(job_dir, status=STATE_AWAITING, validation_passed=True, coder_rounds_used=2)
+            _assert_awaiting_allowed(
+                spec=spec,
+                spec_origin=ORIGIN_ARCHITECT,
+                candidate_origin=ORIGIN_CODER,
+                architect_ok=True,
+                coder_ok=True,
+                validator_passed=True,
+            )
+            job = _update_job(
+                job_dir,
+                status=STATE_AWAITING,
+                validation_passed=True,
+                official_compatibility_passed=True,
+                coder_rounds_used=2,
+                ai_output_valid=True,
+                spec_origin=ORIGIN_ARCHITECT,
+                candidate_origin=ORIGIN_CODER,
+                block_reason="",
+                promotion_allowed=False,
+            )
             return {
                 "ok": True,
                 "reused": False,
@@ -605,16 +915,24 @@ def run_system_ai_capability_fill(
                 "gap_fingerprint": fingerprint,
                 "skill_id": skill_key,
                 "coder_rounds_used": 2,
+                "ai_output_valid": True,
+                "spec_origin": ORIGIN_ARCHITECT,
+                "candidate_origin": ORIGIN_CODER,
                 "preflight": preflight,
             }
 
+        fail_reason = BLOCK_INCOMPATIBLE if BLOCK_INCOMPATIBLE in (validation2.get("blockers") or []) else "validator_failed_after_repair"
         job = _update_job(
             job_dir,
             status=STATE_BLOCKED,
             validation_passed=False,
-            block_reason="validator_failed_after_repair",
+            official_compatibility_passed=False,
+            block_reason=fail_reason,
+            error_message="validator failed after one coder repair",
             coder_rounds_used=2,
             last_validation=validation2,
+            ai_output_valid=False,
+            promotion_allowed=False,
         )
         return {
             "ok": False,
@@ -625,7 +943,9 @@ def run_system_ai_capability_fill(
             "gap_fingerprint": fingerprint,
             "skill_id": skill_key,
             "coder_rounds_used": 2,
-            "error": "validator_failed_after_repair",
+            "error": fail_reason,
+            "block_reason": fail_reason,
+            "message": "validator failed after one coder repair",
             "last_validation": validation2,
             "preflight": preflight,
         }
@@ -636,6 +956,8 @@ def run_system_ai_capability_fill(
             block_reason=exc.code,
             block_details=exc.details,
             error_message=str(exc),
+            ai_output_valid=False,
+            promotion_allowed=False,
         )
         return {
             "ok": False,
@@ -646,6 +968,7 @@ def run_system_ai_capability_fill(
             "gap_fingerprint": fingerprint,
             "skill_id": skill_key,
             "error": exc.code,
+            "block_reason": exc.code,
             "message": str(exc),
             "preflight": preflight,
         }
@@ -655,6 +978,7 @@ def run_system_ai_capability_fill(
             status=STATE_BLOCKED,
             block_reason="unexpected_error",
             error_message=f"{type(exc).__name__}:{exc}",
+            ai_output_valid=False,
         )
         return {
             "ok": False,
@@ -665,6 +989,7 @@ def run_system_ai_capability_fill(
             "gap_fingerprint": fingerprint,
             "skill_id": skill_key,
             "error": "unexpected_error",
+            "block_reason": "unexpected_error",
             "message": str(exc),
             "preflight": preflight,
         }
