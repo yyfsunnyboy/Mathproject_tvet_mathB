@@ -13,6 +13,7 @@ uploads/
 /instance/backups/
 /reports/backups/
 temp/
+reports/gencode_qwen_dryrun/_pytest/
 
 # 忽略轉檔產生的暫存圖片資料夾
 media/
