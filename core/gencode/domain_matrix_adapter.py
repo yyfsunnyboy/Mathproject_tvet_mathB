@@ -393,56 +393,12 @@ def _prepare_line_equation_visual_spec_for_practice(visual_spec: dict[str, Any])
 
     kind = str(spec.get("kind") or spec.get("type") or "").strip()
     if kind == "coordinate_plane_multi_figure":
-        points: list[dict[str, Any]] = []
-        lines: list[dict[str, Any]] = []
-        for fig in spec.get("figures") or []:
-            if not isinstance(fig, dict):
-                continue
-            fig_points = fig.get("points") or []
-            if isinstance(fig_points, list):
-                for pt in fig_points:
-                    if isinstance(pt, (list, tuple)) and len(pt) >= 2:
-                        points.append(
-                            {
-                                "x": pt[0],
-                                "y": pt[1],
-                                "label": str(fig.get("label") or fig.get("id") or ""),
-                            }
-                        )
-                if len(fig_points) >= 2:
-                    lines.append(
-                        {
-                            "through_points": [list(fig_points[0]), list(fig_points[1])],
-                            "label": str(fig.get("id") or fig.get("label") or ""),
-                        }
-                    )
-        for cmp in spec.get("comparisons") or []:
-            if not isinstance(cmp, dict):
-                continue
-            for key in ("L1", "L2"):
-                seg = cmp.get(key)
-                if not isinstance(seg, dict):
-                    continue
-                seg_points = seg.get("points") or []
-                if isinstance(seg_points, list) and len(seg_points) >= 2:
-                    lines.append(
-                        {
-                            "through_points": [list(seg_points[0]), list(seg_points[1])],
-                            "label": str(cmp.get("id") or key),
-                        }
-                    )
-                    for pt in seg_points:
-                        if isinstance(pt, (list, tuple)) and len(pt) >= 2:
-                            points.append({"x": pt[0], "y": pt[1]})
-        spec = {
-            "kind": "coordinate_plane",
-            "render_required": True,
-            "points": points,
-            "lines": lines,
-            "x_range": spec.get("x_range", [-10, 10]),
-            "y_range": spec.get("y_range", [-10, 10]),
-            "source_visual_kind": "coordinate_plane_multi_figure",
-        }
+        figures = spec.get("figures") or []
+        comparisons = spec.get("comparisons") or []
+        if isinstance(figures, list) and figures and isinstance(comparisons, list) and comparisons:
+            spec["render_required"] = True
+            spec["kind"] = "coordinate_plane_multi_figure"
+            return spec
         return spec
 
     drawable_keys = ("points", "lines", "segments", "figures", "comparisons")

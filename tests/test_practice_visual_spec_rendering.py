@@ -73,7 +73,7 @@ def test_drawable_graph_and_chart_specs_require_rendering() -> None:
             },
         ]
     )
-    assert results == [True, True, True]
+    assert results == [False, True, True]
 
 
 def test_midpoint_text_components_do_not_require_visual_rendering() -> None:
@@ -91,9 +91,10 @@ def test_midpoint_text_components_do_not_require_visual_rendering() -> None:
 def test_practice_template_uses_shared_visual_render_predicate() -> None:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     assert "js/visual_spec.js" in template
+    assert "js/scratchpad_layers.js" in template
     assert "function renderReadonlyVisualSpec(visualSpec)" in template
-    assert "runtime.requiresVisualRendering(visualSpec)" in template
-    assert "runtime.renderToCanvas(readonlyCanvas, visualSpec)" in template
+    assert "runtime.isVisualSpecRenderable(visualSpec)" in template
+    assert "layer.setVisualSpecBackground(visualSpec, backgroundCtx" in template
     assert "data.visual_spec && Object.keys(data.visual_spec).length > 0" not in template
     assert "圖表資料需由伺服器渲染" not in template
 

@@ -2050,6 +2050,7 @@
     </style>
 
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}"></script>
 </head>
 
@@ -2612,13 +2613,105 @@
         let blankCanvas = null;
         let currentContext = "";  // 儲存題目 context，用於 AI 助教
 
-        // [V9.6 新增] 用來儲存當前題目的圖片物件
-        let currentQuestionImage = null;
-        // [hideQuestionImage] 追蹤已成功載入 canvas 背景的圖片 src；null 表示尚未載入或已重設
-        let _canvasQImageSrc = null;
+        let backgroundCanvas = null;
+        let backgroundCtx = null;
 
-        // [V9.7 新增] 紀錄題目圖片在畫布上的確切位置與大小，給橡皮擦用
-        let imgDestX = 0, imgDestY = 0, imgDestW = 0, imgDestH = 0;
+        function getScratchpadBackgroundLayer() {
+            return window.ScratchpadBackgroundLayer || null;
+        }
+
+        function redrawScratchpadQuestionBackground() {
+            const layer = getScratchpadBackgroundLayer();
+            if (!layer || !backgroundCtx) return false;
+            const size = resolveScratchpadCssSize();
+            if (layer.hasQuestionBackground()) {
+                return layer.redrawQuestionBackground(backgroundCtx, size.cw, size.ch, window.VisualSpecRuntime);
+            }
+            layer.clearBackgroundCanvas(backgroundCtx, size.cw, size.ch);
+            return false;
+        }
+
+        function resetScratchpadForNextQuestion() {
+            const layer = getScratchpadBackgroundLayer();
+            if (layer) layer.resetQuestionBackground();
+            const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
+            const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
+            if (layer && backgroundCtx) {
+                layer.clearBackgroundCanvas(backgroundCtx, cw, ch);
+            }
+            if (canvas && ctx) {
+                getScratchpadBackgroundLayer()?.clearInkLayer(ctx, cw, ch);
+            }
+        }
+
+        function resolveScratchpadCssSize() {
+            if (currentGeometry.cssWidth > 0 && currentGeometry.cssHeight > 0) {
+                return {
+                    cw: currentGeometry.cssWidth,
+                    ch: currentGeometry.cssHeight
+                };
+            }
+            const wrap = canvas ? canvas.parentElement : null;
+            if (wrap) {
+                const rect = wrap.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    return {
+                        cw: Math.max(1, Math.floor(rect.width)),
+                        ch: Math.max(1, Math.floor(rect.height))
+                    };
+                }
+            }
+            return {
+                cw: Math.max(300, canvas?.clientWidth || 300),
+                ch: Math.max(200, canvas?.clientHeight || 200)
+            };
+        }
+
+        function applyQuestionScratchpadBackground(payload) {
+            scheduleResizeCanvas();
+            const layer = getScratchpadBackgroundLayer();
+            const qmc = document.getElementById('question-media-container');
+            if (!layer || !backgroundCtx) {
+                return Promise.resolve(false);
+            }
+            const size = resolveScratchpadCssSize();
+            const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
+            if (bgInfo.kind === 'none') {
+                layer.resetQuestionBackground();
+                layer.clearBackgroundCanvas(backgroundCtx, size.cw, size.ch);
+                return Promise.resolve(false);
+            }
+            if (bgInfo.kind === 'visual_spec') {
+                const ok = layer.setVisualSpecBackground(
+                    bgInfo.visualSpec,
+                    backgroundCtx,
+                    size.cw,
+                    size.ch,
+                    window.VisualSpecRuntime
+                );
+                if (ok) {
+                    layer.hideQuestionMediaContainer(qmc);
+                }
+                return Promise.resolve(ok);
+            }
+            const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
+            return layer.loadImageBackground(imgSource)
+                .then((img) => {
+                    const ok = layer.setImageBackground(img, imgSource, backgroundCtx, size.cw, size.ch);
+                    if (ok) {
+                        layer.hideQuestionMediaContainer(qmc);
+                    }
+                    return ok;
+                })
+                .catch((err) => {
+                    console.warn('[scratchpad] question image background load failed', err);
+                    if (qmc) {
+                        qmc.innerHTML = '<div class="question-media-error">⚠️ 圖表載入失敗，請重新整理頁面</div>';
+                        qmc.style.display = 'block';
+                    }
+                    return false;
+                });
+        }
 
         // === 通用函式：呼叫 MathJax 渲染指定元素 ===
         function renderMathContent(element) {
@@ -3156,46 +3249,6 @@
             };
         }
 
-        // === [HiDPI Fix] Step-1: 計算圖片 Geometry（只算座標，不繪製）===
-        // 所有座標均以 CSS px 為單位；DPR 縮放由 resizeCanvas 的 setTransform 統一處理
-        function calculateQuestionImageGeometry() {
-            if (!currentQuestionImage || !canvas) return;
-            const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
-            const ch = currentGeometry.cssHeight || canvas.clientHeight || 150;
-            if (cw <= 0 || ch <= 0) return;
-
-            const availableWidth  = cw * 0.82;
-            const availableHeight = ch * 0.85;
-
-            const scale = Math.min(
-                availableWidth  / currentQuestionImage.naturalWidth,
-                availableHeight / currentQuestionImage.naturalHeight
-            );
-
-            const drawWidth  = currentQuestionImage.naturalWidth  * scale;
-            const drawHeight = currentQuestionImage.naturalHeight * scale;
-            const x = (cw - drawWidth) / 2;
-            const y = Math.max(16, ch * 0.03);
-
-            imgDestX = x;
-            imgDestY = y;
-            imgDestW = drawWidth;
-            imgDestH = drawHeight;
-        }
-
-        // === [HiDPI Fix] Step-2: 繪製背景圖（須先呼叫 calculateQuestionImageGeometry）===
-        function drawQuestionImageBackground() {
-            if (!currentQuestionImage || !backgroundCtx || imgDestW <= 0 || imgDestH <= 0) return;
-            backgroundCtx.drawImage(currentQuestionImage, imgDestX, imgDestY, imgDestW, imgDestH);
-        }
-
-        // [V9.6 新增] 向後相容 wrapper：計算 geometry 後立即繪製背景
-        function drawQuestionImage() {
-            if (!currentQuestionImage || !backgroundCtx || !canvas) return;
-            calculateQuestionImageGeometry();
-            drawQuestionImageBackground();
-        }
-
         function updateAppViewportMetrics() {
             const nav = document.querySelector('.student-navbar');
             const navH = nav ? Math.ceil(nav.getBoundingClientRect().height) : 52;
@@ -3262,12 +3315,7 @@
             const cw = canvas.clientWidth || canvas.width;
             const ch = canvas.clientHeight || canvas.height;
             ctx.clearRect(0, 0, cw, ch);
-            if (backgroundCtx) {
-                backgroundCtx.setTransform(1, 0, 0, 1, 0, 0);
-                backgroundCtx.clearRect(0, 0, cw, ch);
-                backgroundCtx.fillStyle = 'white';
-                backgroundCtx.fillRect(0, 0, cw, ch);
-            }
+            redrawScratchpadQuestionBackground();
             blankCanvas = canvas.toDataURL();
             saveState();
             updateUndoRedoButtons();
@@ -3306,42 +3354,17 @@
             // 清理與重新設定狀態
             ctx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
             setPenStyle();
-
-            if (backgroundCtx) {
-                backgroundCtx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
-                backgroundCtx.fillStyle = 'white';
-                backgroundCtx.fillRect(0, 0, geometry.cssWidth, geometry.cssHeight);
-            }
-
-            // [關鍵] 先更新 imgDest* geometry，橡皮擦補圖位置在 resize 後立即正確
-            if (currentQuestionImage) {
-                calculateQuestionImageGeometry();
-            }
-
-            console.log("[CANVAS ALIGN DEBUG]", {
-                bgRect: backgroundCanvas ? backgroundCanvas.getBoundingClientRect() : null,
-                drawRect: canvas.getBoundingClientRect(),
-                bgSize: backgroundCanvas ? [backgroundCanvas.width, backgroundCanvas.height] : null,
-                drawSize: [canvas.width, canvas.height],
-                dpr: geometry.dpr
-            });
+            redrawScratchpadQuestionBackground();
 
             if (previousSnapshot) {
-                if (currentQuestionImage) {
-                    drawQuestionImageBackground();
-                }
                 const img = new Image();
                 img.onload = () => {
                     const dpr2 = window.devicePixelRatio || 1;
                     ctx.setTransform(dpr2, 0, 0, dpr2, 0, 0);
                     ctx.clearRect(0, 0, geometry.cssWidth, geometry.cssHeight);
-                    // 快照以 CSS px 座標還原，transform 自動縮放至物理像素
                     ctx.drawImage(img, 0, 0, geometry.cssWidth, geometry.cssHeight);
                 };
                 img.src = previousSnapshot;
-            } else if (currentQuestionImage) {
-                // 無快照：geometry 已算好，直接繪製背景
-                drawQuestionImageBackground();
             }
         }
 
@@ -3471,8 +3494,6 @@
                 const cw = canvas.clientWidth || canvas.width;
                 const ch = canvas.clientHeight || canvas.height;
                 ctx.clearRect(0, 0, cw, ch);
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, cw, ch);
                 ctx.drawImage(img, 0, 0, cw, ch);
                 updateUndoRedoButtons();
             };
@@ -3487,8 +3508,6 @@
                 const cw = canvas.clientWidth || canvas.width;
                 const ch = canvas.clientHeight || canvas.height;
                 ctx.clearRect(0, 0, cw, ch);
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, cw, ch);
                 ctx.drawImage(img, 0, 0, cw, ch);
                 undoStack.push(nextSnapshot);
                 redoStack.pop();
@@ -3501,15 +3520,12 @@
             showCustomConfirm('確定要清除所有計算步驟？', () => {
                 const cw = canvas.clientWidth || canvas.width;
                 const ch = canvas.clientHeight || canvas.height;
-
-                ctx.clearRect(0, 0, cw, ch);
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, cw, ch);
-
-                if (currentQuestionImage) {
-                    drawQuestionImage();
+                const layer = getScratchpadBackgroundLayer();
+                if (layer) {
+                    layer.clearInkLayer(ctx, cw, ch);
+                } else {
+                    ctx.clearRect(0, 0, cw, ch);
                 }
-
                 undoStack = [];
                 redoStack = [];
                 saveState();
@@ -4377,26 +4393,15 @@
 
         function renderReadonlyVisualSpec(visualSpec) {
             const runtime = window.VisualSpecRuntime;
-            const qmc = document.getElementById('question-media-container');
-            if (!qmc || !runtime || !runtime.requiresVisualRendering(visualSpec)) {
+            const layer = getScratchpadBackgroundLayer();
+            if (!layer || !runtime || !runtime.isVisualSpecRenderable(visualSpec)) {
                 return false;
             }
-            qmc.innerHTML = '';
-            const readonlyCanvas = document.createElement('canvas');
-            readonlyCanvas.setAttribute('aria-label', '題目圖形');
-            readonlyCanvas.style.width = '100%';
-            readonlyCanvas.style.maxWidth = '640px';
-            readonlyCanvas.style.height = '360px';
-            readonlyCanvas.style.display = 'block';
-            readonlyCanvas.style.margin = '8px auto';
-            readonlyCanvas.style.border = '1px solid #e5e7eb';
-            readonlyCanvas.style.borderRadius = '8px';
-            readonlyCanvas.style.background = '#fff';
-            qmc.appendChild(readonlyCanvas);
-            qmc.style.display = 'block';
-            const paint = () => runtime.renderToCanvas(readonlyCanvas, visualSpec);
-            requestAnimationFrame(() => requestAnimationFrame(paint));
-            return true;
+            const qmc = document.getElementById('question-media-container');
+            layer.hideQuestionMediaContainer(qmc);
+            const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
+            const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
+            return layer.setVisualSpecBackground(visualSpec, backgroundCtx, cw, ch, runtime);
         }
 
         function applyMultiPartUiContract(payload) {
@@ -4845,77 +4850,14 @@
                     // [V9.5 Debug] 印出後端回傳的所有資料，讓我們看看有沒有圖片
                     console.log("🔍 Backend Data Received:", data);
 
-                    // === [V9.6 修改] 圖片處理邏輯：畫到 Canvas 上 ===
-
-                    // 1. 先重置畫布與圖片變數，並清空 media container
-                    currentQuestionImage = null;
-                    _canvasQImageSrc = null; // [hideQuestionImage] 切換題目時重設，避免沿用上一題狀態
-                    imgDestX = 0; imgDestY = 0; imgDestW = 0; imgDestH = 0;
-                    ctx.clearRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
-                    if (backgroundCtx) {
-                        backgroundCtx.fillStyle = 'white';
-                        backgroundCtx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height);
-                    }
+                    // === 手寫區底圖：visual_spec 或正式題圖進 background layer ===
+                    resetScratchpadForNextQuestion();
                     undoStack = [];
                     redoStack = [];
-                    // 清空上一題圖片
                     const _qmcEl = document.getElementById('question-media-container');
                     if (_qmcEl) { _qmcEl.innerHTML = ''; _qmcEl.style.display = 'none'; }
 
-                    // 2. 抓取圖片資料（優先順序：image_base64 > visual_aids > visual_spec）
-                    let rawImage = data.image_base64;
-                    if (!rawImage && data.visual_aids) {
-                        if (typeof data.visual_aids === 'string') rawImage = data.visual_aids;
-                        else if (data.visual_aids.plot_base64) rawImage = data.visual_aids.plot_base64;
-                        else if (Array.isArray(data.visual_aids)) {
-                            const imgObj = data.visual_aids.find(x => x.type === 'image/png');
-                            if (imgObj) rawImage = imgObj.value;
-                        }
-                    }
-
-                    // 3. 如果有圖片，(a) 顯示在題目區塊內 (b) 同時畫到 Canvas 背景
-                    if (rawImage && rawImage.trim() !== "") {
-                        let imgSource = normalizeQuestionImageSource(rawImage);
-
-                        // (a) inline 顯示於題目與選項之間
-                        const qmc = document.getElementById('question-media-container');
-                        if (qmc) {
-                            const inlineImg = document.createElement('img');
-                            inlineImg.alt = '統計圖表';
-                            inlineImg.title = '統計圖表';
-                            inlineImg.onerror = function() {
-                                qmc.innerHTML = '<div class="question-media-error">⚠️ 圖表載入失敗，請重新整理頁面</div>';
-                                qmc.style.display = 'block';
-                            };
-                            inlineImg.onload = function() { qmc.style.display = 'block'; };
-                            inlineImg.src = imgSource;
-                            qmc.innerHTML = '';
-                            qmc.appendChild(inlineImg);
-                        }
-
-                        // (b) 建立 Canvas 背景圖物件（保留原有手寫畫布邏輯）
-                        const img = new Image();
-                        img.onload = function () {
-                            currentQuestionImage = img;
-                            drawQuestionImage();
-                            saveState();
-                            // [hideQuestionImage] 三項同時成立時隱藏題幹圖片容器：
-                            //   hasQuestionImage && canvasVisible && sameQuestionImageLoadedInCanvas
-                            _canvasQImageSrc = imgSource;
-                            const _scratchpad = document.getElementById('scratchpad-container');
-                            const _qmcHide = document.getElementById('question-media-container');
-                            const canvasVisible = _scratchpad && _scratchpad.style.display !== 'none';
-                            const sameImageInCanvas = (_canvasQImageSrc === imgSource);
-                            if (canvasVisible && sameImageInCanvas && _qmcHide) {
-                                _qmcHide.style.display = 'none';
-                            }
-                        };
-                        img.onerror = function () {
-                            // canvas 載圖失敗：保留題幹圖片顯示，不隱藏
-                            console.warn('[hideQuestionImage] Canvas bg image load failed; keeping question-media-container visible.');
-                        };
-                        img.src = imgSource;
-                    } else if (isTableFillQuestion(data)) {
+                    if (isTableFillQuestion(data)) {
                         const qmc = document.getElementById('question-media-container');
                         renderTableQuestion(qmc, data);
                         saveState();
@@ -4933,10 +4875,10 @@
                             qmc.style.display = 'block';
                         }
                         saveState();
-                    } else if (renderReadonlyVisualSpec(data.visual_spec)) {
-                        saveState();
                     } else {
-                        saveState(); // 沒圖片也要存初始狀態
+                        applyQuestionScratchpadBackground(data).then(() => {
+                            saveState();
+                        });
                     }
 
                     // 3. MathJax 排版
