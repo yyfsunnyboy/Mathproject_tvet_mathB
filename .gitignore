@@ -17,6 +17,18 @@ reports/gencode_qwen_dryrun/_pytest/
 reports/gencode_capability_candidates/
 reports/ollama_qwen35_json_probe/
 
+# Gencode / publish 本機診斷與 dryrun 產物（保留檔案，不進版控）
+reports/_inventory_visual_kinds.json
+reports/gencode_qwen_dryrun/_probe_preflight/
+reports/gencode_v3_dryrun/_slope_of_a_line_probe/
+reports/gencode_v3_dryrun/vh_數學B1_SlopeOfALine/
+reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfParallelLines/
+reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfPerpendicularLines/
+runtime/v3_publish_staging/
+scripts/_probe_*.py
+scripts/_repair_slope_of_aline_5.py
+skills/*.py.bak
+
 # 忽略轉檔產生的暫存圖片資料夾
 media/
 
