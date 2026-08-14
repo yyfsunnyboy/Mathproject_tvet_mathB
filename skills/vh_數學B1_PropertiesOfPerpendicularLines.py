@@ -1,91 +1,60 @@
 from __future__ import annotations
 
-import importlib.util
-import random
-import re
 from pathlib import Path
 from typing import Any
 
-from core.checkers.choice_label_checker import check_choice_label
-from core.checkers.interval_checker import check_interval_answer
-from fractions import Fraction
+from core.gencode.runtime_skill_wrapper import (
+    dispatch_check,
+    dispatch_generate,
+    dispatch_get_hint,
+)
 
-def _find_project_root() -> Path:
-    p = Path(__file__).resolve()
-    for parent in p.parents:
-        if (parent / "skills").exists() or (parent / "generated_candidates").exists():
-            return parent
-    return p.parents[1]
-
-PROJECT_ROOT = _find_project_root()
-SKILL_ID = "vh_數學B1_PropertiesOfPerpendicularLines"
-VERIFIED_CANDIDATE_MODULES = {
-    'perpendicular_lines_properties': 'generated_candidates/vocational_math_b1/section_2_1/perpendicular_lines_properties/candidate_v1.py',
-    'perpendicular_line_equation': 'generated_candidates/vocational_math_b1/section_2_1/perpendicular_line_equation/candidate_v1.py',
-    'triangle_right_angle_verification': 'generated_candidates/vocational_math_b1/section_2_1/triangle_right_angle_verification/candidate_v1.py'
-}
-MANUAL_REVIEW_EXCLUSIONS = []
-_STATE = {"idx": 0}
+SKILL_ID = 'vh_數學B1_PropertiesOfPerpendicularLines'
+GENERATOR_KEYS = ['src_4526', 'src_4527', 'src_4531', 'src_4532', 'src_4536', 'src_4537', 'src_4538', 'src_4539']
+GENERATOR_SPECS = [{'textbook_example_id': 4526, 'component_id': 'src_4526', 'generator_key': 'src_4526', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'parallel_and_perpendicular_slopes_from_reference', 'answer_type': 'expression', 'answer_value_type': 'expression', 'problem_type_id': 'parallel_and_perpendicular_slopes_from_reference', 'checker_key': 'expression_checker', 'equivalence_type': None, 'display_order': 4526, 'source_order': 4526, 'sampling_weight': 10.0}, {'textbook_example_id': 4527, 'component_id': 'src_4527', 'generator_key': 'src_4527', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'triangle_right_angle_verification', 'answer_type': 'expression', 'answer_value_type': 'expression', 'problem_type_id': 'triangle_right_angle_verification', 'checker_key': 'expression_checker', 'equivalence_type': None, 'display_order': 4527, 'source_order': 4527, 'sampling_weight': 10.0}, {'textbook_example_id': 4531, 'component_id': 'src_4531', 'generator_key': 'src_4531', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'perpendicular_segments_parameter', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'perpendicular_segments_parameter', 'checker_key': 'integer_checker', 'equivalence_type': None, 'display_order': 4531, 'source_order': 4531, 'sampling_weight': 10.0}, {'textbook_example_id': 4532, 'component_id': 'src_4532', 'generator_key': 'src_4532', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'parallel_and_perpendicular_slopes_from_reference', 'answer_type': 'expression', 'answer_value_type': 'expression', 'problem_type_id': 'parallel_and_perpendicular_slopes_from_reference', 'checker_key': 'expression_checker', 'equivalence_type': None, 'display_order': 4532, 'source_order': 4532, 'sampling_weight': 10.0}, {'textbook_example_id': 4536, 'component_id': 'src_4536', 'generator_key': 'src_4536', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'perpendicular_segments_parameter', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'perpendicular_segments_parameter', 'checker_key': 'integer_checker', 'equivalence_type': None, 'display_order': 4536, 'source_order': 4536, 'sampling_weight': 10.0}, {'textbook_example_id': 4537, 'component_id': 'src_4537', 'generator_key': 'src_4537', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'perpendicular_two_point_lines_parameter', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'perpendicular_two_point_lines_parameter', 'checker_key': 'integer_checker', 'equivalence_type': None, 'display_order': 4537, 'source_order': 4537, 'sampling_weight': 10.0}, {'textbook_example_id': 4538, 'component_id': 'src_4538', 'generator_key': 'src_4538', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'example', 'line_type': 'perpendicular_slope_quadrant_choice', 'answer_type': 'choice', 'answer_value_type': 'choice', 'problem_type_id': 'perpendicular_slope_quadrant_choice', 'checker_key': 'choice_label_checker', 'equivalence_type': None, 'display_order': 4538, 'source_order': 4538, 'sampling_weight': 10.0}, {'textbook_example_id': 4539, 'component_id': 'src_4539', 'generator_key': 'src_4539', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'parallel_and_perpendicular_slopes_from_reference', 'answer_type': 'expression', 'answer_value_type': 'expression', 'problem_type_id': 'parallel_and_perpendicular_slopes_from_reference', 'checker_key': 'expression_checker', 'equivalence_type': None, 'display_order': 4539, 'source_order': 4539, 'sampling_weight': 10.0}]
 
 
-def _load_candidate(module_rel_path: str):
-    abs_path = PROJECT_ROOT / module_rel_path
-    spec = importlib.util.spec_from_file_location("cand_" + abs_path.stem + str(abs_path), str(abs_path))
-    if not spec or not spec.loader:
-        raise RuntimeError(f"Cannot import candidate: {module_rel_path}")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def _resolve_v3_package_root() -> str:
+    """Resolve V3 house root from this facade location: skills/ -> <root>/agent_skills_v3."""
+    return str((Path(__file__).resolve().parent.parent / "agent_skills_v3").resolve())
 
 
-def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:
-    pts = [pt for pt in VERIFIED_CANDIDATE_MODULES.keys() if pt not in set(MANUAL_REVIEW_EXCLUSIONS)]
-    if not pts:
-        raise RuntimeError("No verified deterministic problem types available.")
-    if seed is None:
-        idx = _STATE["idx"] % len(pts)
-        _STATE["idx"] += 1
-    else:
-        idx = random.Random(seed).randint(0, len(pts) - 1)
-    pt = pts[idx]
-    mod = _load_candidate(VERIFIED_CANDIDATE_MODULES[pt])
-    payload = mod.generate(level=level, seed=seed, difficulty=difficulty)
-    if not isinstance(payload, dict):
-        raise RuntimeError("candidate.generate must return dict")
-    payload["skill_id"] = SKILL_ID
-    payload["metadata"] = payload.get("metadata", {})
-    payload["metadata"]["verified_problem_types"] = pts
-    payload["metadata"]["manual_review_exclusions"] = MANUAL_REVIEW_EXCLUSIONS
-    payload["metadata"]["source"] = "gencode_runtime_binding"
-    return payload
+def generate(
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: int | str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    return dispatch_generate(
+        SKILL_ID,
+        GENERATOR_KEYS,
+        GENERATOR_SPECS,
+        v3_package_root=_resolve_v3_package_root(),
+        level=level,
+        seed=seed,
+        difficulty=difficulty,
+        **kwargs,
+    )
 
 
-def check(user_answer: object, correct_answer: object, current_question: dict[str, Any] | None = None) -> dict[str, Any]:
-    cq = current_question or {}
-    pt = cq.get("problem_type_id")
-    if pt in VERIFIED_CANDIDATE_MODULES:
-        try:
-            mod = _load_candidate(VERIFIED_CANDIDATE_MODULES[pt])
-            if hasattr(mod, "check"):
-                return mod.check(user_answer, correct_answer, cq)
-        except Exception:
-            pass
+def check(
+    user_answer: Any,
+    correct_answer: Any,
+    question_payload: dict[str, Any] | None = None,
+) -> Any:
+    return dispatch_check(
+        user_answer,
+        correct_answer,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )
 
-    contract = cq.get("answer_contract", {}) if isinstance(cq, dict) else {}
-    eq = str((contract or {}).get("equivalence_type", "")).strip()
-    if eq == "interval_set":
-        def _norm(v: object) -> str:
-            s = str(v)
-            def _repl(m):
-                try:
-                    return str(float(Fraction(m.group(0))))
-                except Exception:
-                    return m.group(0)
-            return re.sub(r"-?\d+/\d+", _repl, s)
-        return {"correct": bool(check_interval_answer(_norm(user_answer), _norm(correct_answer)))}
-    if eq == "choice_label":
-        choices = list(cq.get("choices", [])) if isinstance(cq, dict) else []
-        if not choices:
-            choices = ["A", "B", "C", "D"]
-        return {"correct": bool(check_choice_label(user_answer, correct_answer, choices))}
-    return {"correct": str(user_answer).strip() == str(correct_answer).strip()}
+
+def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
+    return dispatch_get_hint(
+        step,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )

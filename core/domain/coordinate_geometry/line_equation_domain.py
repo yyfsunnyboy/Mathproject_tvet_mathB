@@ -55,6 +55,12 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "perpendicular_segments_parameter",
         "slopes_of_named_segments",
         "classify_and_compare_figure_slopes",
+        "parallel_segments_parameter_choice",
+        "parallel_two_point_lines_parameter_choice",
+        "parallel_and_perpendicular_slopes_from_reference",
+        "triangle_right_angle_verification",
+        "perpendicular_two_point_lines_parameter",
+        "perpendicular_slope_quadrant_choice",
         # New distance V3 types:
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
@@ -253,6 +259,30 @@ def build_line_equation_matrix(
         )
     elif normalized_type == "classify_and_compare_figure_slopes":
         givens, answer, actual_type = _build_classify_and_compare_figure_slopes(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_segments_parameter_choice":
+        givens, answer, actual_type = _build_parallel_segments_parameter_choice(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_two_point_lines_parameter_choice":
+        givens, answer, actual_type = _build_parallel_two_point_lines_parameter_choice(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_and_perpendicular_slopes_from_reference":
+        givens, answer, actual_type = _build_parallel_and_perpendicular_slopes_from_reference(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "triangle_right_angle_verification":
+        givens, answer, actual_type = _build_triangle_right_angle_verification(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_two_point_lines_parameter":
+        givens, answer, actual_type = _build_perpendicular_two_point_lines_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_slope_quadrant_choice":
+        givens, answer, actual_type = _build_perpendicular_slope_quadrant_choice(
             rng, coord_min, coord_max, extra
         )
     elif normalized_type == "line_through_intersection_parallel_to_line":
@@ -1567,6 +1597,44 @@ def _build_explanation_steps(
             "建立參數方程式並求解",
             f"得 {canonical}",
         ]
+    if line_type == "parallel_segments_parameter_choice":
+        return [
+            "平行線段斜率相等",
+            "建立參數方程式並求解",
+            "對照選項得答案",
+            f"得 {canonical}",
+        ]
+    if line_type == "parallel_two_point_lines_parameter_choice":
+        return [
+            "分別求兩直線斜率",
+            "平行時斜率相等",
+            "對照選項得答案",
+            f"得 {canonical}",
+        ]
+    if line_type == "parallel_and_perpendicular_slopes_from_reference":
+        return [
+            "平行線斜率相同",
+            "垂直線斜率乘積為 -1",
+            f"得 {canonical}",
+        ]
+    if line_type == "triangle_right_angle_verification":
+        return [
+            "計算各邊斜率",
+            "檢查是否存在兩斜率乘積為 -1",
+            f"得 {canonical}",
+        ]
+    if line_type == "perpendicular_two_point_lines_parameter":
+        return [
+            "分別求兩直線斜率",
+            "垂直時斜率乘積為 -1",
+            f"得 {canonical}",
+        ]
+    if line_type == "perpendicular_slope_quadrant_choice":
+        return [
+            "L2 與 L1 垂直 ⇒ m2 = -1/m1",
+            "判斷 (m1, m2) 所在象限",
+            f"得 {canonical}",
+        ]
     if line_type == "point_slope":
         return [
             "寫出點斜式",
@@ -2677,6 +2745,404 @@ def _build_classify_and_compare_figure_slopes(
         "slope": figures[0]["slope_token"],
         "intercept": None,
         "distractors": ["m>0", "m=0", "m不存在", "m<0", "m1>m2", "m1<m2"],
+    }
+    return givens, answer, "oblique_line"
+
+
+def _wrap_choice_from_scalar(
+    rng: random.Random,
+    givens: dict[str, object],
+    answer: dict[str, object],
+    actual_type: str,
+    *,
+    source_choices: list[dict[str, object]] | None = None,
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Attach ABCD choice labels to a scalar parameter answer."""
+    target = int(answer["parameter"])
+    if source_choices:
+        choice_rows = [
+            {"label": str(row.get("label") or ""), "text": str(row.get("text") or ""), "value": row.get("value")}
+            for row in source_choices
+            if isinstance(row, dict)
+        ]
+        labels = [str(r["label"]) for r in choice_rows if r.get("label")]
+        correct_label = next(
+            (str(r["label"]) for r in choice_rows if str(r.get("text", "")).strip() == str(target)),
+            "",
+        )
+        if not correct_label and labels:
+            # Match by parsed numeric text
+            for row in choice_rows:
+                try:
+                    if int(str(row.get("text", "")).strip()) == target:
+                        correct_label = str(row["label"])
+                        break
+                except ValueError:
+                    continue
+        if not correct_label:
+            values = [target]
+            distractors = [target + d for d in (-3, -2, -1, 1, 2, 3, 4) if target + d != target]
+            for value in distractors:
+                if value not in values:
+                    values.append(value)
+                if len(values) == 4:
+                    break
+            rng.shuffle(values)
+            labels = ["A", "B", "C", "D"]
+            choice_rows = [
+                {"label": label, "text": str(value), "value": value}
+                for label, value in zip(labels, values, strict=True)
+            ]
+            correct_label = labels[values.index(target)]
+    else:
+        distractors = [target + d for d in (-3, -2, -1, 1, 2, 3, 4) if target + d != target]
+        values = [target]
+        for value in distractors:
+            if value not in values:
+                values.append(value)
+            if len(values) == 4:
+                break
+        rng.shuffle(values)
+        labels = ["A", "B", "C", "D"]
+        choice_rows = [
+            {"label": label, "text": str(value), "value": value}
+            for label, value in zip(labels, values, strict=True)
+        ]
+        correct_label = labels[values.index(target)]
+    givens["choices"] = choice_rows
+    answer["canonical_form"] = correct_label
+    answer["correct_label"] = correct_label
+    answer["choices"] = choice_rows
+    answer["value"] = str(target)
+    answer["semantic_answer"] = str(target)
+    answer["parameter"] = target
+    answer["distractors"] = [str(v) for v in choice_rows if str(v.get("label")) != correct_label]
+    return givens, answer, actual_type
+
+
+def _build_parallel_segments_parameter_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    givens, answer, actual_type = _build_parallel_segments_parameter(
+        rng, coord_min, coord_max, constraints
+    )
+    source_choices = constraints.get("source_choices")
+    choices = list(source_choices) if isinstance(source_choices, list) else None
+    return _wrap_choice_from_scalar(rng, givens, answer, actual_type, source_choices=choices)
+
+
+def _build_parallel_two_point_lines_parameter_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Two lines each through two points; second line has unknown coordinate; parallel."""
+    param_name = str(constraints.get("parameter_name") or "a")
+    x1 = rng.randint(coord_min, coord_max)
+    y1 = rng.randint(coord_min, coord_max)
+    x2 = rng.randint(coord_min, coord_max)
+    while x2 == x1:
+        x2 = rng.randint(coord_min, coord_max)
+    y2 = rng.randint(coord_min, coord_max)
+    m = Fraction(y2 - y1, x2 - x1)
+
+    x3 = rng.randint(coord_min, coord_max)
+    y3 = rng.randint(coord_min, coord_max)
+    x4 = rng.randint(coord_min, coord_max)
+    while x4 == x3:
+        x4 = rng.randint(coord_min, coord_max)
+    a_val = Fraction(y3) + m * Fraction(x4 - x3)
+    attempts = 0
+    while a_val.denominator != 1 and attempts < 25:
+        y3 = rng.randint(coord_min, coord_max)
+        a_val = Fraction(y3) + m * Fraction(x4 - x3)
+        attempts += 1
+    if a_val.denominator != 1:
+        m = Fraction(rng.choice([-3, -2, -1, 1, 2, 3]), 1)
+        y2 = y1 + int(m)
+        x2 = x1 + 1
+        a_val = Fraction(y3) + m * Fraction(x4 - x3)
+    a_int = int(a_val)
+    y4 = a_int
+    coeffs = _line_coefficients_through_points(x3, y3, x4, y4)
+    givens = {
+        "line_1_points": [[x1, y1], [x2, y2]],
+        "line_2_points": [[x3, y3], [x4, param_name]],
+        "line_1_display": (
+            f"\\left( {x1},{y1} \\right)、\\left( {x2},{y2} \\right)"
+        ),
+        "line_2_display": (
+            f"\\left( {x3},{y3} \\right)、\\left( {x4},{param_name} \\right)"
+        ),
+        "parameter_name": param_name,
+        "relation": "parallel",
+    }
+    answer = {
+        "canonical_form": str(a_int),
+        "parameter": a_int,
+        "parameter_name": param_name,
+        "slope": _format_number(m),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    source_choices = constraints.get("source_choices")
+    choices = list(source_choices) if isinstance(source_choices, list) else None
+    return _wrap_choice_from_scalar(rng, givens, answer, "oblique_line", source_choices=choices)
+
+
+def _build_parallel_and_perpendicular_slopes_from_reference(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Given reference line slope, find parallel and perpendicular slopes."""
+    fixed = constraints.get("reference_slope")
+    if fixed is not None:
+        m1 = _parse_fraction(str(fixed))
+    else:
+        m1 = _pick_slope(rng, allow_fraction=True)
+        while m1 == 0:
+            m1 = _pick_slope(rng, allow_fraction=True)
+    m2 = m1
+    m3 = Fraction(-1, 1) / m1
+    part_answers = {
+        "part_1": _format_number(m2),
+        "part_2": _format_number(m3),
+    }
+    ordered = [part_answers["part_1"], part_answers["part_2"]]
+    coeffs = _line_coefficients_through_points(0, 0, int(m1.numerator), int(m1.denominator))
+    givens = {
+        "reference_slope": _format_number(m1),
+        "reference_line": "L1",
+        "parallel_line": "L2",
+        "perpendicular_line": "L3",
+    }
+    answer = {
+        "canonical_form": "；".join(ordered),
+        "parts": part_answers,
+        "parallel_slope": _format_number(m2),
+        "perpendicular_slope": _format_number(m3),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "slope": _format_number(m1),
+        "intercept": None,
+        "distractors": ["-1", "0", "1", "2", "-2", "1/2", "-1/2"],
+    }
+    return givens, answer, "oblique_line"
+
+
+def _triangle_has_right_angle(
+    ax: int, ay: int, bx: int, by: int, cx: int, cy: int,
+) -> tuple[bool, str | None]:
+    """Return (is_right, vertex_label) checking slopes at A, B, C."""
+    vertices = (
+        ("A", ax, ay, bx, by, cx, cy),
+        ("B", bx, by, ax, ay, cx, cy),
+        ("C", cx, cy, ax, ay, bx, by),
+    )
+    for label, vx, vy, u1x, u1y, u2x, u2y in vertices:
+        dx1, dy1 = u1x - vx, u1y - vy
+        dx2, dy2 = u2x - vx, u2y - vy
+        if dx1 == 0 or dy1 == 0 or dx2 == 0 or dy2 == 0:
+            continue
+        if Fraction(dy1, dx1) * Fraction(dy2, dx2) == -1:
+            return True, label
+    return False, None
+
+
+def _build_triangle_right_angle_verification(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Decide whether triangle ABC is a right triangle via slope product."""
+    force = constraints.get("force_right_angle")
+    if force is None:
+        is_right = rng.choice([True, False])
+    else:
+        is_right = bool(force)
+
+    for _ in range(60):
+        if is_right:
+            vx = rng.randint(coord_min, coord_max)
+            vy = rng.randint(coord_min, coord_max)
+            rise = rng.choice([x for x in range(-4, 5) if x != 0])
+            run = rng.choice([x for x in range(-4, 5) if x != 0])
+            ux, uy = vx + run, vy + rise
+            wx, wy = vx - rise, vy + run
+            ax, ay, bx, by, cx, cy = vx, vy, ux, uy, wx, wy
+        else:
+            ax = rng.randint(coord_min, coord_max)
+            ay = rng.randint(coord_min, coord_max)
+            bx = rng.randint(coord_min, coord_max)
+            by = rng.randint(coord_min, coord_max)
+            cx = rng.randint(coord_min, coord_max)
+            cy = rng.randint(coord_min, coord_max)
+            while (ax, ay) == (bx, by) or (bx, by) == (cx, cy) or (ax, ay) == (cx, cy):
+                cx = rng.randint(coord_min, coord_max)
+                cy = rng.randint(coord_min, coord_max)
+
+        found, vertex = _triangle_has_right_angle(ax, ay, bx, by, cx, cy)
+        if found == is_right:
+            break
+    else:
+        ax, ay, bx, by, cx, cy = 2, 1, 1, 3, 4, 2
+        is_right = True
+        vertex = "A"
+
+    answer_text = "是" if is_right else "否"
+    coeffs = _line_coefficients_through_points(ax, ay, bx, by)
+    givens = {
+        "point_a": [ax, ay],
+        "point_b": [bx, by],
+        "point_c": [cx, cy],
+        "point_a_display": f"({ax},{ay})",
+        "point_b_display": f"({bx},{by})",
+        "point_c_display": f"({cx},{cy})",
+        "right_vertex": vertex if is_right else None,
+    }
+    answer = {
+        "canonical_form": answer_text,
+        "is_right_triangle": is_right,
+        "right_vertex": vertex,
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "slope": answer_text,
+        "intercept": None,
+        "distractors": ["否"] if is_right else ["是"],
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_perpendicular_two_point_lines_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """L1 through parametric points, L2 through fixed points; perpendicular ⇒ solve k."""
+    param_name = str(constraints.get("parameter_name") or "k")
+
+    for _ in range(80):
+        x_c = rng.randint(coord_min, coord_max)
+        y_c = rng.randint(coord_min, coord_max)
+        x_d = rng.randint(coord_min, coord_max)
+        while x_d == x_c:
+            x_d = rng.randint(coord_min, coord_max)
+        y_d = rng.randint(coord_min, coord_max)
+        m2 = Fraction(y_d - y_c, x_d - x_c)
+        if m2 == 0:
+            continue
+
+        x_a = rng.randint(coord_min, coord_max)
+        y_b = rng.randint(coord_min, coord_max)
+        # Target m1 = -1/m2; choose integer k so A(x_a, k+1), B(-k, y_b) works.
+        for k_int in range(coord_min, coord_max + 1):
+            if k_int == -x_a:
+                continue
+            y_a = k_int + 1
+            x_b = -k_int
+            if x_b == x_a:
+                continue
+            m1 = Fraction(y_b - y_a, x_b - x_a)
+            if m1 * m2 == -1:
+                coeffs = _line_coefficients_through_points(x_c, y_c, x_d, y_d)
+                givens = {
+                    "line_1_points": [[x_a, f"{param_name}+1"], [f"-{param_name}", y_b]],
+                    "line_2_points": [[x_c, y_c], [x_d, y_d]],
+                    "line_1_display": (
+                        f"A\\left( {x_a},{param_name}+1 \\right)、"
+                        f"B\\left( -{param_name},{y_b} \\right)"
+                    ),
+                    "line_2_display": (
+                        f"C\\left( {x_c},{y_c} \\right)、D\\left( {x_d},{y_d} \\right)"
+                    ),
+                    "parameter_name": param_name,
+                    "relation": "perpendicular",
+                }
+                answer = {
+                    "canonical_form": str(k_int),
+                    "parameter": k_int,
+                    "parameter_name": param_name,
+                    "slope_line_1": _format_number(m1),
+                    "slope_line_2": _format_number(m2),
+                    "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+                    "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+                }
+                return givens, answer, "oblique_line"
+
+    # Textbook-faithful fallback (4537)
+    k_int = -17
+    x_a, y_b = 3, 5
+    y_a = k_int + 1
+    x_b = -k_int
+    x_c, y_c, x_d, y_d = 4, -3, -2, 1
+    m1 = Fraction(y_b - y_a, x_b - x_a)
+    m2 = Fraction(y_d - y_c, x_d - x_c)
+    coeffs = _line_coefficients_through_points(x_c, y_c, x_d, y_d)
+    givens = {
+        "line_1_points": [[x_a, f"{param_name}+1"], [f"-{param_name}", y_b]],
+        "line_2_points": [[x_c, y_c], [x_d, y_d]],
+        "line_1_display": (
+            f"A\\left( {x_a},{param_name}+1 \\right)、B\\left( -{param_name},{y_b} \\right)"
+        ),
+        "line_2_display": f"C\\left( {x_c},{y_c} \\right)、D\\left( {x_d},{y_d} \\right)",
+        "parameter_name": param_name,
+        "relation": "perpendicular",
+    }
+    answer = {
+        "canonical_form": str(k_int),
+        "parameter": k_int,
+        "parameter_name": param_name,
+        "slope_line_1": _format_number(m1),
+        "slope_line_2": _format_number(m2),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_perpendicular_slope_quadrant_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """m1>0 line in Q1/Q3; L2 perp L1; locate quadrant of (m1,m2)."""
+    m1 = _pick_slope(rng, allow_fraction=True)
+    while m1 <= 0:
+        m1 = _pick_slope(rng, allow_fraction=True)
+    m2 = Fraction(-1, 1) / m1
+    # (m1, m2): x>0, y<0 ⇒ quadrant IV
+    quadrant_labels = {"A": "一", "B": "二", "C": "三", "D": "四"}
+    correct_label = "D"
+    choice_rows = [
+        {"label": label, "text": text, "value": label}
+        for label, text in quadrant_labels.items()
+    ]
+    coeffs = _line_coefficients_through_points(1, int(m1), 2, int(m1) * 2)
+    givens = {
+        "reference_slope": _format_number(m1),
+        "perpendicular_slope": _format_number(m2),
+        "point_slopes": [_format_number(m1), _format_number(m2)],
+        "choices": choice_rows,
+        "exam_tag": "112統測B",
+    }
+    answer = {
+        "canonical_form": correct_label,
+        "correct_label": correct_label,
+        "choices": choice_rows,
+        "value": "四",
+        "semantic_answer": "四",
+        "quadrant": "四",
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "slope": _format_number(m1),
+        "intercept": None,
+        "distractors": ["A", "B", "C"],
     }
     return givens, answer, "oblique_line"
 

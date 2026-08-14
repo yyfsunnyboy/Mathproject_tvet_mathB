@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_4530",
+      "textbook_example_id": 4530,
+      "status": "verified",
+      "problem_type_id": "parallel_segments_parameter",
+      "domain_operation": "parallel_segments_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4530/generate.py"
+    },
+    {
+      "component_id": "src_4535",
+      "textbook_example_id": 4535,
+      "status": "verified",
+      "problem_type_id": "parallel_segments_parameter",
+      "domain_operation": "parallel_segments_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4535/generate.py"
+    },
+    {
+      "component_id": "src_4600",
+      "textbook_example_id": 4600,
+      "status": "verified",
+      "problem_type_id": "parallel_segments_parameter_choice",
+      "domain_operation": "parallel_segments_parameter_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_4600/generate.py"
+    },
+    {
+      "component_id": "src_4602",
+      "textbook_example_id": 4602,
+      "status": "verified",
+      "problem_type_id": "parallel_two_point_lines_parameter_choice",
+      "domain_operation": "parallel_two_point_lines_parameter_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_4602/generate.py"
+    }
+  ]
+}

@@ -1,71 +1,60 @@
 from __future__ import annotations
 
-import importlib.util
-import random
-import re
 from pathlib import Path
 from typing import Any
 
-from core.checkers.choice_label_checker import check_choice_label
-from core.checkers.interval_checker import check_interval_answer
-from fractions import Fraction
+from core.gencode.runtime_skill_wrapper import (
+    dispatch_check,
+    dispatch_generate,
+    dispatch_get_hint,
+)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SKILL_ID = "vh_數學B1_PropertiesOfParallelLines"
-VERIFIED_CANDIDATE_MODULES = {'parallel_lines_properties': 'generated_candidates/vocational_math_b1/section_2_1/parallel_lines_properties/candidate_v1.py'}
-MANUAL_REVIEW_EXCLUSIONS = []
-_STATE = {"idx": 0}
-
-
-def _load_candidate(module_rel_path: str):
-    abs_path = PROJECT_ROOT / module_rel_path
-    spec = importlib.util.spec_from_file_location("cand_" + abs_path.stem + str(abs_path), str(abs_path))
-    if not spec or not spec.loader:
-        raise RuntimeError(f"Cannot import candidate: {module_rel_path}")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+SKILL_ID = 'vh_數學B1_PropertiesOfParallelLines'
+GENERATOR_KEYS = ['src_4530', 'src_4535', 'src_4600', 'src_4602']
+GENERATOR_SPECS = [{'textbook_example_id': 4530, 'component_id': 'src_4530', 'generator_key': 'src_4530', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'example', 'line_type': 'parallel_segments_parameter', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'parallel_segments_parameter', 'checker_key': 'integer_checker', 'equivalence_type': None, 'display_order': 4530, 'source_order': 4530, 'sampling_weight': 10.0}, {'textbook_example_id': 4535, 'component_id': 'src_4535', 'generator_key': 'src_4535', 'presentation_mode': 'short_answer', 'response_mode': 'short_answer', 'interaction_type': 'short_answer', 'source_kind': 'quiz', 'line_type': 'parallel_segments_parameter', 'answer_type': 'integer', 'answer_value_type': 'integer', 'problem_type_id': 'parallel_segments_parameter', 'checker_key': 'integer_checker', 'equivalence_type': None, 'display_order': 4535, 'source_order': 4535, 'sampling_weight': 10.0}, {'textbook_example_id': 4600, 'component_id': 'src_4600', 'generator_key': 'src_4600', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'parallel_segments_parameter_choice', 'answer_type': 'choice', 'answer_value_type': 'choice', 'problem_type_id': 'parallel_segments_parameter_choice', 'checker_key': 'choice_label_checker', 'equivalence_type': None, 'display_order': 4600, 'source_order': 4600, 'sampling_weight': 10.0}, {'textbook_example_id': 4602, 'component_id': 'src_4602', 'generator_key': 'src_4602', 'presentation_mode': 'single_choice', 'response_mode': 'single_choice', 'interaction_type': 'single_choice', 'source_kind': 'test', 'line_type': 'parallel_two_point_lines_parameter_choice', 'answer_type': 'choice', 'answer_value_type': 'choice', 'problem_type_id': 'parallel_two_point_lines_parameter_choice', 'checker_key': 'choice_label_checker', 'equivalence_type': None, 'display_order': 4602, 'source_order': 4602, 'sampling_weight': 10.0}]
 
 
-def generate(level: int = 1, seed: int | None = None, difficulty: int | None = None) -> dict[str, Any]:
-    pts = [pt for pt in VERIFIED_CANDIDATE_MODULES.keys() if pt not in set(MANUAL_REVIEW_EXCLUSIONS)]
-    if not pts:
-        raise RuntimeError("No verified deterministic problem types available.")
-    if seed is None:
-        idx = _STATE["idx"] % len(pts)
-        _STATE["idx"] += 1
-    else:
-        idx = random.Random(seed).randint(0, len(pts) - 1)
-    pt = pts[idx]
-    mod = _load_candidate(VERIFIED_CANDIDATE_MODULES[pt])
-    payload = mod.generate(level=level, seed=seed, difficulty=difficulty)
-    if not isinstance(payload, dict):
-        raise RuntimeError("candidate.generate must return dict")
-    payload["skill_id"] = SKILL_ID
-    payload["metadata"] = payload.get("metadata", {})
-    payload["metadata"]["verified_problem_types"] = pts
-    payload["metadata"]["manual_review_exclusions"] = MANUAL_REVIEW_EXCLUSIONS
-    payload["metadata"]["source"] = "gencode_runtime_binding"
-    return payload
+def _resolve_v3_package_root() -> str:
+    """Resolve V3 house root from this facade location: skills/ -> <root>/agent_skills_v3."""
+    return str((Path(__file__).resolve().parent.parent / "agent_skills_v3").resolve())
 
 
-def check(user_answer: object, correct_answer: object, current_question: dict[str, Any] | None = None) -> dict[str, Any]:
-    cq = current_question or {}
-    contract = cq.get("answer_contract", {}) if isinstance(cq, dict) else {}
-    eq = str((contract or {}).get("equivalence_type", "")).strip()
-    if eq == "interval_set":
-        def _norm(v: object) -> str:
-            s = str(v)
-            def _repl(m):
-                try:
-                    return str(float(Fraction(m.group(0))))
-                except Exception:
-                    return m.group(0)
-            return re.sub(r"-?\d+/\d+", _repl, s)
-        return {"correct": bool(check_interval_answer(_norm(user_answer), _norm(correct_answer)))}
-    if eq == "choice_label":
-        choices = list(cq.get("choices", [])) if isinstance(cq, dict) else []
-        if not choices:
-            choices = ["A", "B", "C", "D"]
-        return {"correct": bool(check_choice_label(user_answer, correct_answer, choices))}
-    return {"correct": str(user_answer).strip() == str(correct_answer).strip()}
+def generate(
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: int | str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    return dispatch_generate(
+        SKILL_ID,
+        GENERATOR_KEYS,
+        GENERATOR_SPECS,
+        v3_package_root=_resolve_v3_package_root(),
+        level=level,
+        seed=seed,
+        difficulty=difficulty,
+        **kwargs,
+    )
+
+
+def check(
+    user_answer: Any,
+    correct_answer: Any,
+    question_payload: dict[str, Any] | None = None,
+) -> Any:
+    return dispatch_check(
+        user_answer,
+        correct_answer,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )
+
+
+def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
+    return dispatch_get_hint(
+        step,
+        question_payload=question_payload,
+        v3_package_root=_resolve_v3_package_root(),
+        skill_id=SKILL_ID,
+    )

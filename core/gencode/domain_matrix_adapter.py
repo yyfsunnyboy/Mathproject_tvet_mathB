@@ -294,7 +294,11 @@ def _build_line_equation_answer_contract(
                 },
             ],
         }
-    if task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+    if task_type in (
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
+        "parallel_and_perpendicular_slopes_from_reference",
+    ):
         parts_map = semantic_answer if isinstance(semantic_answer, dict) else {}
         part_rows = []
         for key, expected in parts_map.items():
@@ -512,7 +516,11 @@ def convert_line_equation_matrix_to_question_payload(
     question_text = _build_line_equation_question_text(givens, validation_facts)
     mode = str(presentation_mode or "short_answer").strip()
     task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
-    if task_type in {"slopes_of_named_segments", "classify_and_compare_figure_slopes"}:
+    if task_type in {
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
+        "parallel_and_perpendicular_slopes_from_reference",
+    }:
         mode = "short_answer"
     elif task_type in {
         "compare_line_slopes",
@@ -544,9 +552,16 @@ def convert_line_equation_matrix_to_question_payload(
     elif task_type in (
         "solve_parameter_from_known_slope_choice",
         "collinear_three_points_parameter_choice",
+        "parallel_segments_parameter_choice",
+        "parallel_two_point_lines_parameter_choice",
+        "perpendicular_slope_quadrant_choice",
     ):
         default_answer_type = "single_choice"
-    elif task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+    elif task_type in (
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
+        "parallel_and_perpendicular_slopes_from_reference",
+    ):
         default_answer_type = "multi_part"
     elif task_type == "intercept_form_triangle_area":
         default_answer_type = "rational"
@@ -582,7 +597,11 @@ def convert_line_equation_matrix_to_question_payload(
         resolved_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
         resolved_answer_type = "multi_part"
-    elif task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+    elif task_type in (
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
+        "parallel_and_perpendicular_slopes_from_reference",
+    ):
         resolved_answer_type = "multi_part"
         parts_map = answer.get("parts")
         if isinstance(parts_map, dict):
@@ -871,7 +890,13 @@ def _build_line_equation_question_text(
         "non_triangle_collinear_parameter",
         "parallel_segments_parameter",
         "perpendicular_segments_parameter",
+        "perpendicular_two_point_lines_parameter",
+        "triangle_right_angle_verification",
         "collinear_three_points_parameter_choice",
+        "parallel_segments_parameter_choice",
+        "parallel_two_point_lines_parameter_choice",
+        "parallel_and_perpendicular_slopes_from_reference",
+        "perpendicular_slope_quadrant_choice",
         "slopes_of_named_segments",
         "classify_and_compare_figure_slopes",
         "distance_from_point_to_line",
@@ -1151,6 +1176,59 @@ def _build_line_equation_question_text(
         param = givens.get("parameter_name") or "x"
         return (
             f"設 A{pa}、B{pb}、C{pc}、D{pd}，若線段 AB 與 CD 垂直，試求 {param} 之值。"
+        )
+
+    if task_type == "parallel_segments_parameter_choice":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        pd = givens.get("point_d_display") or _format_point_for_question(givens.get("point_d"))
+        param = givens.get("parameter_name") or "x"
+        return (
+            f"已知平面上四點 A{pa}、B{pb}、C{pc}、D{pd}。"
+            f"若直線 AB 與直線 CD 平行，則 {param} ="
+        )
+
+    if task_type == "parallel_two_point_lines_parameter_choice":
+        l1 = givens.get("line_1_display") or ""
+        l2 = givens.get("line_2_display") or ""
+        param = givens.get("parameter_name") or "a"
+        return (
+            f"平面上過兩點 ${l1}$ 的直線和過另兩點 ${l2}$ 的直線平行，"
+            f"則 {param} ="
+        )
+
+    if task_type == "parallel_and_perpendicular_slopes_from_reference":
+        m1 = givens.get("reference_slope") or "m1"
+        return (
+            f"已知直線 L1 的斜率為 {_latex_dollar(str(m1))}，試問："
+            f"(1) 若直線 L2 平行 L1，試求 L2 的斜率。"
+            f"(2) 若直線 L3 垂直 L1，試求 L3 的斜率。"
+        )
+
+    if task_type == "triangle_right_angle_verification":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        return (
+            f"已知坐標平面上三點 A{pa}、B{pb} 及 C{pc}，"
+            f"試問 △ABC 是否為直角三角形？"
+        )
+
+    if task_type == "perpendicular_two_point_lines_parameter":
+        l1 = givens.get("line_1_display") or ""
+        l2 = givens.get("line_2_display") or ""
+        param = givens.get("parameter_name") or "k"
+        return (
+            f"設直線 L1 通過 {l1} 兩點，直線 L2 通過 {l2} 兩點，"
+            f"若直線 L1 垂直 L2，試求 {param} 之值。"
+        )
+
+    if task_type == "perpendicular_slope_quadrant_choice":
+        return (
+            "已知 m1 與 m2 分別為直線 L1 與直線 L2 的斜率，且 m1、m2 皆不為 0。"
+            "若直線 L1 通過第一、三象限，而直線 L2 與直線 L1 垂直，"
+            "則點 (m1, m2) 落在第幾象限？"
         )
 
     if task_type == "slopes_of_named_segments":
@@ -2381,7 +2459,13 @@ def convert_domain_matrix_to_question_payload(
         "non_triangle_collinear_parameter",
         "parallel_segments_parameter",
         "perpendicular_segments_parameter",
+        "perpendicular_two_point_lines_parameter",
+        "triangle_right_angle_verification",
         "collinear_three_points_parameter_choice",
+        "parallel_segments_parameter_choice",
+        "parallel_two_point_lines_parameter_choice",
+        "parallel_and_perpendicular_slopes_from_reference",
+        "perpendicular_slope_quadrant_choice",
         "slopes_of_named_segments",
         "classify_and_compare_figure_slopes",
         "distance_from_point_to_line",

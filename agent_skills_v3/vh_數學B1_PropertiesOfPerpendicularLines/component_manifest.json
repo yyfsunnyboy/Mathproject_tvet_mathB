@@ -1,0 +1,95 @@
+{
+  "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_4526",
+      "textbook_example_id": 4526,
+      "status": "verified",
+      "problem_type_id": "parallel_and_perpendicular_slopes_from_reference",
+      "domain_operation": "parallel_and_perpendicular_slopes_from_reference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4526/generate.py"
+    },
+    {
+      "component_id": "src_4527",
+      "textbook_example_id": 4527,
+      "status": "verified",
+      "problem_type_id": "triangle_right_angle_verification",
+      "domain_operation": "triangle_right_angle_verification",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4527/generate.py"
+    },
+    {
+      "component_id": "src_4531",
+      "textbook_example_id": 4531,
+      "status": "verified",
+      "problem_type_id": "perpendicular_segments_parameter",
+      "domain_operation": "perpendicular_segments_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4531/generate.py"
+    },
+    {
+      "component_id": "src_4532",
+      "textbook_example_id": 4532,
+      "status": "verified",
+      "problem_type_id": "parallel_and_perpendicular_slopes_from_reference",
+      "domain_operation": "parallel_and_perpendicular_slopes_from_reference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4532/generate.py"
+    },
+    {
+      "component_id": "src_4536",
+      "textbook_example_id": 4536,
+      "status": "verified",
+      "problem_type_id": "perpendicular_segments_parameter",
+      "domain_operation": "perpendicular_segments_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4536/generate.py"
+    },
+    {
+      "component_id": "src_4537",
+      "textbook_example_id": 4537,
+      "status": "verified",
+      "problem_type_id": "perpendicular_two_point_lines_parameter",
+      "domain_operation": "perpendicular_two_point_lines_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4537/generate.py"
+    },
+    {
+      "component_id": "src_4538",
+      "textbook_example_id": 4538,
+      "status": "verified",
+      "problem_type_id": "perpendicular_slope_quadrant_choice",
+      "domain_operation": "perpendicular_slope_quadrant_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4538/generate.py"
+    },
+    {
+      "component_id": "src_4539",
+      "textbook_example_id": 4539,
+      "status": "verified",
+      "problem_type_id": "parallel_and_perpendicular_slopes_from_reference",
+      "domain_operation": "parallel_and_perpendicular_slopes_from_reference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4539/generate.py"
+    }
+  ]
+}

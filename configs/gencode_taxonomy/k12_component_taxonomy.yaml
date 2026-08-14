@@ -6,6 +6,8 @@ mvp_scope:
     - vh_數學B1_InterceptForm
     - vh_數學B1_GeneralFormOfLinearEquation
     - vh_數學B1_SlopeOfALine
+    - vh_數學B1_PropertiesOfParallelLines
+    - vh_數學B1_PropertiesOfPerpendicularLines
     - vh_數學B1_DistanceBetweenPointAndLine
     - vh_數學B1_DistanceBetweenTwoParallelLines
     - vh_數學B4_StatisticalChartReading
@@ -78,6 +80,28 @@ skills:
       - collinear_three_points_parameter_choice
       - slopes_of_named_segments
       - classify_and_compare_figure_slopes
+  vh_數學B1_PropertiesOfParallelLines:
+    fixed_domain_key: coordinate_geometry.line_equation
+    domain_module: core.domain.coordinate_geometry.line_equation_domain
+    entrypoint: build_line_equation_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - parallel_segments_parameter
+      - parallel_segments_parameter_choice
+      - parallel_two_point_lines_parameter_choice
+  vh_數學B1_PropertiesOfPerpendicularLines:
+    fixed_domain_key: coordinate_geometry.line_equation
+    domain_module: core.domain.coordinate_geometry.line_equation_domain
+    entrypoint: build_line_equation_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - parallel_and_perpendicular_slopes_from_reference
+      - triangle_right_angle_verification
+      - perpendicular_segments_parameter
+      - perpendicular_two_point_lines_parameter
+      - perpendicular_slope_quadrant_choice
   vh_數學B1_DistanceBetweenPointAndLine:
     fixed_domain_key: coordinate_geometry.point_line_distance
     domain_module: core.domain.coordinate_geometry.line_equation_domain

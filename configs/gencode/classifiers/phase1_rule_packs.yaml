@@ -328,83 +328,143 @@ skills:
     skill_ch_name: 兩平行線的性質
     classifier_source: human_confirmed
     problem_types:
-      - problem_type_id: parallel_lines_properties
-        display_name: 平行線斜率性質
-        checker: integer_checker
-        equivalence: numeric_exact
+      - problem_type_id: parallel_segments_parameter
+        display_name: 平行線段求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
         runtime_candidate: true
         requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 合併為同一主要 problem_type。
+        merge_policy: split_by_contract_diff
+      - problem_type_id: parallel_segments_parameter_choice
+        display_name: 平行線段求參數（選擇題）
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: parallel_two_point_lines_parameter_choice
+        display_name: 兩直線平行求參數（選擇題）
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
     classification_rules:
       - if_contains:
+          - 過兩點
           - 平行
-          - 直線
-          - 斜率
-        prefer_problem_type_id: parallel_lines_properties
+        prefer_problem_type_id: parallel_two_point_lines_parameter_choice
+      - if_contains:
+          - 平行
+          - 則
+        prefer_problem_type_id: parallel_segments_parameter_choice
+      - if_contains:
+          - 平行
+        prefer_problem_type_id: parallel_segments_parameter
     source_policy:
       source_count_threshold_for_split: 999
       small_skill_merge_allowed: true
       min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
       default_problem_type_used: false
-      single_primary_problem_type: true
+      single_primary_problem_type: false
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
     source_examples:
       - example_id: 4530
-        matched_problem_type_id: parallel_lines_properties
+        matched_problem_type_id: parallel_segments_parameter
       - example_id: 4535
-        matched_problem_type_id: parallel_lines_properties
+        matched_problem_type_id: parallel_segments_parameter
       - example_id: 4600
-        matched_problem_type_id: parallel_lines_properties
+        matched_problem_type_id: parallel_segments_parameter_choice
       - example_id: 4602
-        matched_problem_type_id: parallel_lines_properties
+        matched_problem_type_id: parallel_two_point_lines_parameter_choice
 
   - skill_id: vh_數學B1_PropertiesOfPerpendicularLines
     skill_ch_name: 兩垂直線的性質
     classifier_source: human_confirmed
     problem_types:
-      - problem_type_id: perpendicular_lines_properties
-        display_name: 垂直線斜率性質
+      - problem_type_id: parallel_and_perpendicular_slopes_from_reference
+        display_name: 已知斜率求平行/垂直斜率
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: triangle_right_angle_verification
+        display_name: 直角三角形判定
+        checker: expression_checker
+        equivalence: algebraic_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: perpendicular_segments_parameter
+        display_name: 垂直線段求參數
         checker: rational_checker
         equivalence: rational_equivalent
         runtime_candidate: true
         requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 合併為同一主要 problem_type。
+        merge_policy: split_by_contract_diff
+      - problem_type_id: perpendicular_two_point_lines_parameter
+        display_name: 兩直線垂直求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: perpendicular_slope_quadrant_choice
+        display_name: 垂直斜率象限（選擇題）
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
     classification_rules:
       - if_contains:
+          - 直角三角形
+        prefer_problem_type_id: triangle_right_angle_verification
+      - if_contains:
+          - 象限
+        prefer_problem_type_id: perpendicular_slope_quadrant_choice
+      - if_contains:
+          - 斜率為
+          - 試求
+        prefer_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+      - if_contains:
           - 垂直
-          - 直線
-          - 斜率
-        prefer_problem_type_id: perpendicular_lines_properties
+          - 試求k
+        prefer_problem_type_id: perpendicular_two_point_lines_parameter
+      - if_contains:
+          - 垂直
+        prefer_problem_type_id: perpendicular_segments_parameter
     source_policy:
       source_count_threshold_for_split: 999
       small_skill_merge_allowed: true
       min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
       default_problem_type_used: false
-      single_primary_problem_type: true
+      single_primary_problem_type: false
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
     source_examples:
       - example_id: 4526
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+      - example_id: 4527
+        matched_problem_type_id: triangle_right_angle_verification
       - example_id: 4531
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: perpendicular_segments_parameter
       - example_id: 4532
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
       - example_id: 4536
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: perpendicular_segments_parameter
       - example_id: 4537
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: perpendicular_two_point_lines_parameter
       - example_id: 4538
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: perpendicular_slope_quadrant_choice
       - example_id: 4539
-        matched_problem_type_id: perpendicular_lines_properties
+        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
 
   - skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
     skill_ch_name: 平面兩點距離
