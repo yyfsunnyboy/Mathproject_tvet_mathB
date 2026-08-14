@@ -38,7 +38,9 @@ def _ordered_generator_keys() -> list[str]:
 
 def _load_component_module(component_id: str, module_filename: str) -> Any:
     path = _V3_ROOT / "components" / component_id / module_filename
-    module_name = f"v3_{SKILL_ID}_{component_id}_{module_filename.replace('.py', '')}"
+    module_name = (
+        f"v3_{SKILL_ID}_{component_id}_{module_filename.replace('.py', '')}_{path.stat().st_mtime_ns}"
+    )
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"component_module_not_found:{component_id}")

@@ -149,6 +149,22 @@
         context.strokeStyle = '#1565c0';
         context.lineWidth = 2.5;
         lines.forEach(function (line) {
+            if (Array.isArray(line.through_points) && line.through_points.length >= 2) {
+                const p1 = line.through_points[0];
+                const p2 = line.through_points[1];
+                const x1 = Number(Array.isArray(p1) ? p1[0] : p1.x);
+                const y1 = Number(Array.isArray(p1) ? p1[1] : p1.y);
+                const x2 = Number(Array.isArray(p2) ? p2[0] : p2.x);
+                const y2 = Number(Array.isArray(p2) ? p2[1] : p2.y);
+                if (![x1, y1, x2, y2].every(Number.isFinite)) {
+                    return;
+                }
+                context.beginPath();
+                context.moveTo(mapX(x1), mapY(y1));
+                context.lineTo(mapX(x2), mapY(y2));
+                context.stroke();
+                return;
+            }
             const equation = line.equation || line;
             const coefficientA = Number(equation.A ?? equation.a);
             const coefficientB = Number(equation.B ?? equation.b);

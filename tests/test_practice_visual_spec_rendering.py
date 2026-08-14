@@ -66,9 +66,10 @@ def test_drawable_graph_and_chart_specs_require_rendering() -> None:
                 "data_points": [[10, 2], [20, 8]],
             },
             {
-                "kind": "coordinate_plane_spec",
+                "kind": "coordinate_plane",
                 "render_required": True,
-                "lines": [{"type": "horizontal", "y": 3}],
+                "points": [{"x": 1, "y": 2, "label": "A"}],
+                "lines": [{"through_points": [[0, 0], [2, 2]], "label": "AB"}],
             },
         ]
     )
@@ -97,11 +98,11 @@ def test_practice_template_uses_shared_visual_render_predicate() -> None:
     assert "圖表資料需由伺服器渲染" not in template
 
 
-def test_practice_template_renders_answer_contract_parts_and_hides_non_drawing_canvas() -> None:
+def test_practice_template_renders_answer_contract_parts_and_handwriting_canvas() -> None:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     assert "function resolveMultiPartFields(payload)" in template
     assert "contract.parts" in template
     assert "input.dataset.fieldKey = fieldKey" in template
     assert "payload.user_answer = collected" in template
     assert "isDrawingQuestion(cq)" in template
-    assert 'scratchpad.style.display = \'none\'' in template or 'scratchpad.style.display = "none"' in template
+    assert "uiContract.handwritingEnabled && uiContract.canvasRequired" in template

@@ -27,6 +27,7 @@ import os
 import random
 import hashlib
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 # 撘 Blueprint
@@ -181,9 +182,19 @@ def get_skill(skill_id, *, reload_module: bool = False):
         return None
     try:
         module_path = f"skills.{skill_id}"
+        skill_path = Path(__file__).resolve().parents[2] / "skills" / f"{skill_id}.py"
+        if skill_path.is_file() and module_path in sys.modules:
+            current_mtime = skill_path.stat().st_mtime_ns
+            cached = sys.modules[module_path]
+            if getattr(cached, "__runtime_mtime_ns__", None) != current_mtime:
+                reload_module = True
         if reload_module and module_path in sys.modules:
-            return importlib.reload(sys.modules[module_path])
-        return importlib.import_module(module_path)
+            mod = importlib.reload(sys.modules[module_path])
+        else:
+            mod = importlib.import_module(module_path)
+        if skill_path.is_file():
+            mod.__runtime_mtime_ns__ = skill_path.stat().st_mtime_ns
+        return mod
     except Exception:
         return None
 

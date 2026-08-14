@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import random
 import re
+import sys
 from typing import Any
 
 from core.gencode.answer_payload import (
@@ -613,6 +614,20 @@ def check_answer(
     return ua == ca
 
 
+def _purge_stale_v3_runtime_modules(skill_id: str, init_path: Path) -> None:
+    """Drop cached V3 router/component modules after publish or hotfix updates."""
+    stamp = init_path.stat().st_mtime_ns
+    attr = f"_v3_runtime_mtime_{skill_id}"
+    previous = getattr(_purge_stale_v3_runtime_modules, attr, None)
+    if previous == stamp:
+        return
+    prefixes = (f"v3_{skill_id}_", f"_v3_skill_router_")
+    for name in list(sys.modules):
+        if any(name.startswith(prefix) for prefix in prefixes):
+            del sys.modules[name]
+    setattr(_purge_stale_v3_runtime_modules, attr, stamp)
+
+
 def _load_v3_skill_router(skill_id: str, v3_package_root: str) -> Any:
     import importlib.util
     from pathlib import Path
@@ -620,7 +635,8 @@ def _load_v3_skill_router(skill_id: str, v3_package_root: str) -> Any:
     init_path = Path(v3_package_root) / skill_id / "__init__.py"
     if not init_path.is_file():
         raise RuntimeError(f"v3_skill_router_missing:{skill_id}")
-    module_name = f"_v3_skill_router_{abs(hash((skill_id, str(init_path.resolve()))))}"
+    _purge_stale_v3_runtime_modules(skill_id, init_path)
+    module_name = f"_v3_skill_router_{skill_id}_{init_path.stat().st_mtime_ns}"
     spec = importlib.util.spec_from_file_location(module_name, init_path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"v3_skill_router_load_failed:{skill_id}")

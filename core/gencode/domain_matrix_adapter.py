@@ -357,6 +357,122 @@ def _build_line_equation_answer_contract(
     }
 
 
+def _line_equation_handwriting_ui_contract(presentation_mode: str) -> dict[str, Any]:
+    """Shared practice surface for B1 line-equation payloads (non-drawing)."""
+    base: dict[str, Any] = {
+        "handwriting_enabled": True,
+        "canvas_required": True,
+        "ai_check_required": False,
+        "allow_image_upload": False,
+        "allow_text_answer": True,
+    }
+    if presentation_mode == "single_choice":
+        return {
+            **base,
+            "response_mode": "single_choice",
+            "text_input_enabled": False,
+            "normal_submit_enabled": True,
+        }
+    return {
+        **base,
+        "response_mode": "text",
+        "text_input_enabled": True,
+        "normal_submit_enabled": True,
+    }
+
+
+def _prepare_line_equation_visual_spec_for_practice(visual_spec: dict[str, Any]) -> dict[str, Any]:
+    """Mark coordinate-plane visuals renderable on the practice page."""
+    spec = dict(visual_spec or {})
+    if not spec or str(spec.get("kind") or "").strip() == "no_visual":
+        return spec
+
+    kind = str(spec.get("kind") or spec.get("type") or "").strip()
+    if kind == "coordinate_plane_multi_figure":
+        points: list[dict[str, Any]] = []
+        lines: list[dict[str, Any]] = []
+        for fig in spec.get("figures") or []:
+            if not isinstance(fig, dict):
+                continue
+            fig_points = fig.get("points") or []
+            if isinstance(fig_points, list):
+                for pt in fig_points:
+                    if isinstance(pt, (list, tuple)) and len(pt) >= 2:
+                        points.append(
+                            {
+                                "x": pt[0],
+                                "y": pt[1],
+                                "label": str(fig.get("label") or fig.get("id") or ""),
+                            }
+                        )
+                if len(fig_points) >= 2:
+                    lines.append(
+                        {
+                            "through_points": [list(fig_points[0]), list(fig_points[1])],
+                            "label": str(fig.get("id") or fig.get("label") or ""),
+                        }
+                    )
+        for cmp in spec.get("comparisons") or []:
+            if not isinstance(cmp, dict):
+                continue
+            for key in ("L1", "L2"):
+                seg = cmp.get(key)
+                if not isinstance(seg, dict):
+                    continue
+                seg_points = seg.get("points") or []
+                if isinstance(seg_points, list) and len(seg_points) >= 2:
+                    lines.append(
+                        {
+                            "through_points": [list(seg_points[0]), list(seg_points[1])],
+                            "label": str(cmp.get("id") or key),
+                        }
+                    )
+                    for pt in seg_points:
+                        if isinstance(pt, (list, tuple)) and len(pt) >= 2:
+                            points.append({"x": pt[0], "y": pt[1]})
+        spec = {
+            "kind": "coordinate_plane",
+            "render_required": True,
+            "points": points,
+            "lines": lines,
+            "x_range": spec.get("x_range", [-10, 10]),
+            "y_range": spec.get("y_range", [-10, 10]),
+            "source_visual_kind": "coordinate_plane_multi_figure",
+        }
+        return spec
+
+    drawable_keys = ("points", "lines", "segments", "figures", "comparisons")
+    if any(isinstance(spec.get(key), list) and spec.get(key) for key in drawable_keys):
+        spec["render_required"] = True
+        if kind.endswith("_spec") or kind == "coordinate_plane_segments":
+            spec["kind"] = "coordinate_plane"
+    return spec
+
+
+def _apply_line_equation_practice_surface(payload: dict[str, Any]) -> dict[str, Any]:
+    """Attach handwriting canvas + renderable visuals for line-equation practice."""
+    out = dict(payload)
+    mode = str(out.get("presentation_mode") or "short_answer").strip()
+    ui_contract = _line_equation_handwriting_ui_contract(mode)
+    answer_contract = dict(out.get("answer_contract") or {})
+    answer_contract["ui_contract"] = {
+        **dict(answer_contract.get("ui_contract") or {}),
+        **ui_contract,
+    }
+    out["answer_contract"] = answer_contract
+    out["ui_contract"] = ui_contract
+    out["requires_handwriting"] = True
+
+    visual_spec = _prepare_line_equation_visual_spec_for_practice(
+        dict(out.get("visual_spec") or {})
+    )
+    if visual_spec:
+        out["visual_spec"] = visual_spec
+        if visual_spec.get("render_required"):
+            out["visual_backed"] = True
+    return out
+
+
 def convert_line_equation_matrix_to_question_payload(
     matrix: dict[str, Any],
     *,
@@ -520,7 +636,16 @@ def convert_line_equation_matrix_to_question_payload(
                 if choice["label"] == correct_label:
                     correct_choice_text = str(choice["text"])
                     break
-            semantic_answer = correct_choice_text
+            if task_type == "collinear_three_points_parameter_choice":
+                semantic_answer = str(
+                    answer.get("semantic_answer")
+                    or answer.get("value")
+                    or answer.get("parameter")
+                    or correct_choice_text
+                    or ""
+                ).strip()
+            else:
+                semantic_answer = correct_choice_text
         elif task_type == "parabola_secant_parallel_line_choice":
             choices = _normalize_labeled_choices(answer.get("choices"))
             correct_label = str(answer.get("correct_label") or "").strip()
@@ -622,7 +747,8 @@ def convert_line_equation_matrix_to_question_payload(
         payload["source_kind"] = source_kind
     if generator_key or component_id:
         payload["generator_key"] = generator_key or component_id
-    return payload
+    metadata["semantic_answer"] = semantic_answer
+    return _apply_line_equation_practice_surface(payload)
 
 
 def _normalize_value(value: Any) -> Any:

@@ -4551,9 +4551,11 @@
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
-                // Non-drawing questions must not show the handwriting canvas.
-                const isDrawing = drawing || isDrawingQuestion(cq);
-                if (isDrawing) {
+                const showScratchpad =
+                    drawing ||
+                    isDrawingQuestion(cq) ||
+                    (uiContract.handwritingEnabled && uiContract.canvasRequired);
+                if (showScratchpad) {
                     scratchpad.style.display = '';
                     scheduleResizeCanvas();
                 } else {

@@ -2353,7 +2353,9 @@
         textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
         normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
         aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
-        canvasRequired: drawing ? (ui.canvas_required !== false) : false,
+        canvasRequired: drawing
+          ? (ui.canvas_required !== false)
+          : (ui.handwriting_enabled !== false && ui.canvas_required !== false),
         allowImageUpload: ui.allow_image_upload !== false,
         allowTextAnswer: ui.allow_text_answer === true,
       };
