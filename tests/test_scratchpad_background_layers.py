@@ -54,17 +54,144 @@ def _run_node(script: str, *args: str) -> str:
     return (completed.stdout or "").strip()
 
 
-def test_visual_spec_compute_contain_rect_centers_without_cropping() -> None:
+def test_compute_question_background_region_uses_top_left_quarter() -> None:
+    script = (
+        "const layers=require(process.argv[1]);"
+        "const region=layers.computeQuestionBackgroundRegion(800,600);"
+        "process.stdout.write(JSON.stringify(region));"
+    )
+    region = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert region["x"] == region["edgePadding"]
+    assert region["y"] == region["edgePadding"]
+    assert abs(region["quadrantWidth"] - 400) < 0.01
+    assert abs(region["quadrantHeight"] - 300) < 0.01
+    assert region["width"] <= region["quadrantWidth"]
+    assert region["height"] <= region["quadrantHeight"]
+
+
+def test_visual_spec_equal_unit_scale_keeps_square_grid_cells() -> None:
     script = (
         "const runtime=require(process.argv[1]);"
-        "const rect=runtime.computeContainRect(800,400,300,200,20);"
+        "const mapper=runtime.buildEqualScalePlotMapper({x:0,y:0,width:200,height:200,showLabel:false},-5,5,-5,5,{padding:10});"
+        "const dx=Math.abs(mapper.mapX(1)-mapper.mapX(0));"
+        "const dy=Math.abs(mapper.mapY(1)-mapper.mapY(0));"
+        "process.stdout.write(JSON.stringify({dx,dy,unitScale:mapper.unitScale,unitScaleX:mapper.unitScaleX,unitScaleY:mapper.unitScaleY,scaleMode:mapper.scaleMode}));"
+    )
+    payload = json.loads(_run_node(script, str(VISUAL_SPEC_PATH)))
+    assert abs(payload["dx"] - payload["dy"]) < 0.01
+    assert payload["unitScale"] > 0
+    assert payload["unitScaleX"] == payload["unitScaleY"]
+    assert payload["scaleMode"] == "cartesian_equal_units"
+
+
+def test_visual_spec_independent_axes_allows_different_unit_scales() -> None:
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const mapper=runtime.buildIndependentAxesPlotMapper({x:0,y:0,width:240,height:160,showLabel:false},0,100,0,50,{padding:10});"
+        "const dx=Math.abs(mapper.mapX(10)-mapper.mapX(0));"
+        "const dy=Math.abs(mapper.mapY(10)-mapper.mapY(0));"
+        "process.stdout.write(JSON.stringify({dx,dy,unitScaleX:mapper.unitScaleX,unitScaleY:mapper.unitScaleY,scaleMode:mapper.scaleMode}));"
+    )
+    payload = json.loads(_run_node(script, str(VISUAL_SPEC_PATH)))
+    assert payload["scaleMode"] == "chart_independent_axes"
+    assert abs(payload["unitScaleX"] - payload["unitScaleY"]) > 0.01
+
+
+def _resolve_scale_mode_for_component(skill_id: str, component_id: str) -> dict:
+    if component_id == "src_4520":
+        from tests.domain.test_slope_of_a_line_domain import _build
+        from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
+
+        matrix = _build("classify_and_compare_figure_slopes", seed=4)
+        payload = convert_line_equation_matrix_to_question_payload(
+            matrix,
+            presentation_mode="short_answer",
+            domain_operation="classify_and_compare_figure_slopes",
+            answer_type="multi_part",
+        )
+    else:
+        mod = importlib.import_module(
+            f"agent_skills_v3.{skill_id}.components.{component_id}.generate"
+        )
+        from core.gencode.domain_matrix_adapter import _apply_line_equation_practice_surface
+
+        payload = mod.generate(seed=1, component_id=component_id)
+        if skill_id.startswith("vh_數學B1_PropertiesOf") or skill_id.startswith("vh_數學B1_SlopeOf"):
+            payload = _apply_line_equation_practice_surface(payload)
+    visual_spec = payload["visual_spec"]
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const spec=JSON.parse(process.argv[2]);"
+        "const normalized=runtime.normalizeVisualSpecForRendering(spec);"
+        "process.stdout.write(JSON.stringify({"
+        "scaleMode:runtime.resolveScaleMode(spec),"
+        "normalizedScaleMode:normalized && normalized.scale_mode,"
+        "kind:runtime.getVisualKind(spec)"
+        "}));"
+    )
+    return json.loads(_run_node(script, str(VISUAL_SPEC_PATH), json.dumps(visual_spec)))
+
+
+def test_4536_4424_4520_use_cartesian_equal_units_scale_mode() -> None:
+    cases = [
+        ("vh_數學B1_PropertiesOfPerpendicularLines", "src_4536"),
+        ("vh_數學B1_LinearFunction", "src_4424"),
+        ("vh_數學B1_SlopeOfALine", "src_4520"),
+    ]
+    for skill_id, component_id in cases:
+        result = _resolve_scale_mode_for_component(skill_id, component_id)
+        assert result["scaleMode"] == "cartesian_equal_units", component_id
+
+
+def test_3884_uses_chart_independent_axes_scale_mode() -> None:
+    result = _resolve_scale_mode_for_component(
+        "vh_數學B4_StatisticalChartReading", "src_3884"
+    )
+    assert result["scaleMode"] == "chart_independent_axes"
+    assert result["normalizedScaleMode"] == "chart_independent_axes"
+
+
+def test_4445_tiered_linear_with_mixed_axis_labels_uses_independent_axes() -> None:
+    result = _resolve_scale_mode_for_component("vh_數學B1_LinearFunction", "src_4445")
+    assert result["scaleMode"] == "chart_independent_axes"
+    assert result["normalizedScaleMode"] == "chart_independent_axes"
+
+
+def test_render_meta_reports_equal_units_for_cartesian_and_not_for_chart() -> None:
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const cartesian={kind:'coordinate_plane',render_required:true,"
+        "points:[{x:1,y:2}],lines:[{through_points:[[0,0],[2,2]]}],x_range:[-5,5],y_range:[-5,5]};"
+        "const chart={kind:'cumulative_frequency_chart',render_required:true,scale_mode:'chart_independent_axes',"
+        "data_points:[{x:10,y:2},{x:20,y:5},{x:30,y:8}]};"
+        "const ctx={fillRect(){},clearRect(){},setTransform(){},beginPath(){},moveTo(){},"
+        "lineTo(){},stroke(){},arc(){},fill(){},canvas:{width:320,height:220}};"
+        "runtime.renderToContext(ctx,cartesian,320,220,{padding:20,visualOpacity:0.62,backgroundFill:'#ffffff'});"
+        "const cartMeta=runtime.getLastRenderMeta();"
+        "runtime.renderToContext(ctx,chart,320,220,{padding:20,visualOpacity:0.62,backgroundFill:'#ffffff'});"
+        "const chartMeta=runtime.getLastRenderMeta();"
+        "process.stdout.write(JSON.stringify({cartMeta,chartMeta}));"
+    )
+    payload = json.loads(_run_node(script, str(VISUAL_SPEC_PATH)))
+    assert payload["cartMeta"]["scaleMode"] == "cartesian_equal_units"
+    assert payload["cartMeta"]["equalUnits"] is True
+    assert payload["cartMeta"]["unitScaleX"] == payload["cartMeta"]["unitScaleY"]
+    assert payload["chartMeta"]["scaleMode"] == "chart_independent_axes"
+    assert payload["chartMeta"]["equalUnits"] is False
+    assert payload["chartMeta"]["unitScaleX"] != payload["chartMeta"]["unitScaleY"]
+
+
+def test_visual_spec_compute_contain_rect_centers_within_region() -> None:
+    script = (
+        "const layers=require(process.argv[1]);"
+        "const rect=layers.computeContainRect(800,400,300,200,14,14,14);"
         "process.stdout.write(JSON.stringify(rect));"
     )
-    rect = json.loads(_run_node(script, str(VISUAL_SPEC_PATH)))
-    assert rect["width"] <= 260
-    assert rect["height"] <= 160
-    assert abs(rect["x"] + rect["width"] / 2 - 150) < 0.01
-    assert abs(rect["y"] + rect["height"] / 2 - 100) < 0.01
+    rect = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert rect["x"] >= 14
+    assert rect["y"] >= 14
+    assert rect["width"] <= 300
+    assert rect["height"] <= 200
 
 
 def test_visual_spec_renders_faded_coordinate_plane_to_fixed_canvas() -> None:
@@ -168,13 +295,12 @@ def test_4520_mobile_grid_uses_two_columns() -> None:
     )
     script = (
         "const runtime=require(process.argv[1]);"
-        "const spec=JSON.parse(process.argv[2]);"
-        "const grid=runtime.computeMultiFigureGrid(6,390,640,16);"
-        "process.stdout.write(JSON.stringify({cols:grid.cols,rows:grid.rows}));"
+        "const layers=require(process.argv[2]);"
+        "const region=layers.computeQuestionBackgroundRegion(390,844);"
+        "const grid=runtime.computeMultiFigureGrid(6,region.width,region.height,region.edgePadding);"
+        "process.stdout.write(JSON.stringify({cols:grid.cols,rows:grid.rows,region}));"
     )
-    result = json.loads(
-        _run_node(script, str(VISUAL_SPEC_PATH), json.dumps(payload["visual_spec"]))
-    )
+    result = json.loads(_run_node(script, str(VISUAL_SPEC_PATH), str(SCRATCHPAD_LAYERS_PATH)))
     assert result["cols"] == 2
     assert result["rows"] == 3
 

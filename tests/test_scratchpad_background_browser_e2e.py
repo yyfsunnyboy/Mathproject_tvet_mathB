@@ -20,75 +20,73 @@ from playwright.sync_api import sync_playwright
 PORT = 5105
 BASE = f"http://127.0.0.1:{PORT}"
 
-APPLY_QUESTION_JS = """
+MEASURE_LAYOUT_JS = """
 async ({ skillId, componentId }) => {
   const fetchUrl = `/get_next_question?skill=${encodeURIComponent(skillId)}&component_id=${encodeURIComponent(componentId)}&level=1`;
   const resp = await fetch(fetchUrl);
   const data = await resp.json();
-  if (data.error) {
-    throw new Error(data.error);
-  }
-  if (typeof scheduleResizeCanvas === 'function') {
-    scheduleResizeCanvas();
-  } else if (typeof resizeCanvas === 'function') {
-    resizeCanvas();
-  }
-  if (typeof resetScratchpadForNextQuestion === 'function') {
-    resetScratchpadForNextQuestion();
-  }
-  if (typeof undoStack !== 'undefined') {
-    undoStack = [];
-    redoStack = [];
-  }
+  if (data.error) throw new Error(data.error);
+  if (typeof scheduleResizeCanvas === 'function') scheduleResizeCanvas();
+  else if (typeof resizeCanvas === 'function') resizeCanvas();
+  if (typeof resetScratchpadForNextQuestion === 'function') resetScratchpadForNextQuestion();
+  if (typeof undoStack !== 'undefined') { undoStack = []; redoStack = []; }
   if (typeof applyQuestionScratchpadBackground === 'function') {
     await applyQuestionScratchpadBackground(data);
   }
-  if (typeof saveState === 'function') {
-    saveState();
-  }
   const bg = document.getElementById('drawing-background-canvas');
   const ink = document.getElementById('handwriting-canvas');
-  const runtime = window.VisualSpecRuntime;
   const layer = window.ScratchpadBackgroundLayer;
-  const bgCtx = bg ? bg.getContext('2d') : null;
+  const runtime = window.VisualSpecRuntime;
+  const cw = bg.clientWidth || bg.width;
+  const ch = bg.clientHeight || bg.height;
+  const region = layer.computeQuestionBackgroundRegion(cw, ch);
+  const ctx = bg.getContext('2d');
+  const bounds = layer.getLastRenderBounds() || layer.measureBackgroundContentBounds(ctx, cw, ch);
+  const renderMeta = layer.getLastRenderMeta && layer.getLastRenderMeta();
+  const validation = bounds ? layer.validateQuadrantBounds(bounds, cw, ch, region.edgePadding, region) : null;
   const sample = (canvas, x, y) => {
-    if (!canvas) return null;
-    const ctx = canvas.getContext('2d');
-    const px = Math.max(0, Math.min(canvas.width - 1, Math.floor(x)));
-    const py = Math.max(0, Math.min(canvas.height - 1, Math.floor(y)));
-    const d = ctx.getImageData(px, py, 1, 1).data;
+    const scaleX = canvas.width / (canvas.clientWidth || canvas.width || 1);
+    const scaleY = canvas.height / (canvas.clientHeight || canvas.height || 1);
+    const px = Math.max(0, Math.min(canvas.width - 1, Math.floor(x * scaleX)));
+    const py = Math.max(0, Math.min(canvas.height - 1, Math.floor(y * scaleY)));
+    const d = canvas.getContext('2d').getImageData(px, py, 1, 1).data;
     return { r: d[0], g: d[1], b: d[2], a: d[3] };
   };
   const isNonWhite = (px) => px && (px.r < 248 || px.g < 248 || px.b < 248) && px.a > 0;
+  const lowerRight = sample(bg, cw * 0.75, ch * 0.75);
+  const upperLeft = sample(bg, region.x + 8, region.y + 8);
   const gridInfo = runtime && runtime.isMultiFigureSpec && runtime.isMultiFigureSpec(data.visual_spec)
     ? runtime.computeMultiFigureGrid(
         runtime.buildMultiFigurePanels(data.visual_spec).length,
-        bg.clientWidth || bg.width,
-        bg.clientHeight || bg.height,
-        16
+        region.width,
+        region.height,
+        region.edgePadding
       )
     : null;
-  const panelSamples = (gridInfo && gridInfo.cells || []).map((cell) => {
-    const x = (cell.x + cell.width / 2) * (bg.width / (bg.clientWidth || bg.width || 1));
-    const y = (cell.y + cell.height / 2) * (bg.height / (bg.clientHeight || bg.height || 1));
-    return isNonWhite(sample(bg, x, y));
-  });
   return {
     skillId,
     componentId,
     renderable: runtime ? runtime.isVisualSpecRenderable(data.visual_spec) : false,
-    hasBg: layer ? layer.hasQuestionBackground() : false,
+    hasBg: layer.hasQuestionBackground(),
+    bounds,
+    region,
+    renderMeta,
+    scaleMode: renderMeta ? renderMeta.scaleMode : null,
+    validation,
+    validationChecks: validation,
+    lowerRightWhite: !isNonWhite(lowerRight),
+    upperLeftNonWhite: isNonWhite(upperLeft),
     multiFigure: runtime ? runtime.isMultiFigureSpec(data.visual_spec) : false,
     panelCount: runtime && runtime.buildMultiFigurePanels ? runtime.buildMultiFigurePanels(data.visual_spec || {}).length : 0,
     gridCols: gridInfo ? gridInfo.cols : null,
     gridRows: gridInfo ? gridInfo.rows : null,
-    panelSamples,
-    centerNonWhite: isNonWhite(sample(bg, bg.width / 2, bg.height / 2)),
     qmcHidden: (() => {
       const qmc = document.getElementById('question-media-container');
       return !qmc || qmc.style.display === 'none' || qmc.hidden;
     })(),
-    visualKind: (data.visual_spec && data.visual_spec.kind) || '',
+    inkMatchesBgSize: (ink.clientWidth || ink.width) === cw && (ink.clientHeight || ink.height) === ch,
+    canvasWidth: cw,
+    canvasHeight: ch,
   };
 }
 """
@@ -120,21 +118,48 @@ async () => {
 
 RESIZE_JS = """
 async () => {
-  if (typeof scheduleResizeCanvas === 'function') {
-    scheduleResizeCanvas();
-  } else if (typeof resizeCanvas === 'function') {
-    resizeCanvas();
-  }
+  if (typeof scheduleResizeCanvas === 'function') scheduleResizeCanvas();
+  else if (typeof resizeCanvas === 'function') resizeCanvas();
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   const layer = window.ScratchpadBackgroundLayer;
   const bg = document.getElementById('drawing-background-canvas');
+  const cw = bg.clientWidth || bg.width;
+  const ch = bg.clientHeight || bg.height;
+  const ctx = bg.getContext('2d');
+  const bounds = layer.getLastRenderBounds() || layer.measureBackgroundContentBounds(ctx, cw, ch);
+  const region = layer.computeQuestionBackgroundRegion(cw, ch);
+  const validation = bounds ? layer.validateQuadrantBounds(bounds, cw, ch, region.edgePadding, region) : null;
   return {
     hasBg: layer.hasQuestionBackground(),
     bgWidth: bg ? bg.width : 0,
     bgHeight: bg ? bg.height : 0,
+    bounds,
+    validation,
   };
 }
 """
+
+
+def _assert_quadrant_layout(result: dict) -> None:
+    assert result["hasBg"] is True
+    assert result["bounds"] is not None
+    assert result["validation"] is not None
+    if not result["validation"]["ok"]:
+        failed = {k: v for k, v in result["validation"].items() if k != "ok" and v is False}
+        pytest.fail(f"quadrant validation failed: {failed}, bounds={result.get('bounds')}, region={result.get('region')}")
+    assert result["lowerRightWhite"] is True
+    assert result["inkMatchesBgSize"] is True
+    pad = result["region"]["edgePadding"]
+    bounds = result["bounds"]
+    region = result["region"]
+    cw = result["canvasWidth"]
+    ch = result["canvasHeight"]
+    assert bounds["minX"] >= region["x"] - 2
+    assert bounds["minY"] >= region["y"] - 2
+    assert bounds["width"] <= region["quadrantWidth"] + 1
+    assert bounds["height"] <= region["quadrantHeight"] + 1
+    assert bounds["maxX"] <= region["x"] + region["width"] + 2
+    assert bounds["maxY"] <= region["y"] + region["height"] + 2
 
 
 @pytest.fixture(scope="module")
@@ -199,12 +224,12 @@ def test_4536_background_survives_clear_across_pages(browser_env, page_kind, pat
     page.wait_for_function("window.VisualSpecRuntime && window.ScratchpadBackgroundLayer")
 
     result = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_PropertiesOfPerpendicularLines", "componentId": "src_4536"},
     )
     assert result["renderable"] is True
-    assert result["hasBg"] is True
-    assert result["centerNonWhite"] is True
+    assert result["scaleMode"] == "cartesian_equal_units"
+    _assert_quadrant_layout(result)
 
     cleared = page.evaluate(CLEAR_INK_JS)
     assert cleared["hasBg"] is True
@@ -220,7 +245,7 @@ def test_4520_renders_six_panel_grid_desktop_and_mobile(browser_env) -> None:
     page.set_viewport_size({"width": 1366, "height": 900})
     _open_practice_page(page, "vh_數學B1_SlopeOfALine")
     desktop = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_SlopeOfALine", "componentId": "src_4520"},
     )
     assert desktop["renderable"] is True
@@ -228,20 +253,21 @@ def test_4520_renders_six_panel_grid_desktop_and_mobile(browser_env) -> None:
     assert desktop["panelCount"] == 6
     assert desktop["gridCols"] == 3
     assert desktop["gridRows"] == 2
-    assert desktop["hasBg"] is True
-    assert desktop["visualKind"] == "coordinate_plane_multi_figure"
+    assert desktop["scaleMode"] == "cartesian_equal_units"
+    _assert_quadrant_layout(desktop)
     page.close()
 
     mobile = context.new_page()
     mobile.set_viewport_size({"width": 390, "height": 844})
     _open_practice_page(mobile, "vh_數學B1_SlopeOfALine")
     phone = mobile.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_SlopeOfALine", "componentId": "src_4520"},
     )
     assert phone["gridCols"] == 2
     assert phone["gridRows"] == 3
     assert phone["panelCount"] == 6
+    _assert_quadrant_layout(phone)
     mobile.close()
 
 
@@ -251,12 +277,12 @@ def test_4526_keeps_blank_scratchpad_without_fake_axes(browser_env) -> None:
     page.set_viewport_size({"width": 1366, "height": 900})
     _open_practice_page(page, "vh_數學B1_PropertiesOfPerpendicularLines")
     result = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_PropertiesOfPerpendicularLines", "componentId": "src_4526"},
     )
     assert result["renderable"] is False
     assert result["hasBg"] is False
-    assert result["centerNonWhite"] is False
+    assert result["bounds"] is None
     page.close()
 
 
@@ -267,14 +293,14 @@ def test_next_question_replaces_background_and_clears_ink(browser_env) -> None:
     _open_practice_page(page, "vh_數學B1_PropertiesOfPerpendicularLines")
 
     first = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_PropertiesOfPerpendicularLines", "componentId": "src_4536"},
     )
-    assert first["hasBg"] is True
+    _assert_quadrant_layout(first)
     page.evaluate(CLEAR_INK_JS)
 
     second = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_PropertiesOfPerpendicularLines", "componentId": "src_4526"},
     )
     assert second["hasBg"] is False
@@ -288,7 +314,7 @@ def test_resize_keeps_background_and_panel_layout(browser_env) -> None:
     page.set_viewport_size({"width": 1280, "height": 800})
     _open_practice_page(page, "vh_數學B1_SlopeOfALine")
     page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": "vh_數學B1_SlopeOfALine", "componentId": "src_4520"},
     )
     page.set_viewport_size({"width": 1024, "height": 768})
@@ -296,33 +322,38 @@ def test_resize_keeps_background_and_panel_layout(browser_env) -> None:
     assert resized["hasBg"] is True
     assert resized["bgWidth"] > 0
     assert resized["bgHeight"] > 0
+    assert resized["validation"] is not None
+    assert resized["validation"]["ok"] is True
     page.close()
 
 
 @pytest.mark.parametrize(
-    ("skill_id", "component_id", "expect_bg", "require_pixels"),
+    ("skill_id", "component_id", "expect_bg", "require_quadrant", "expected_scale_mode"),
     [
-        ("vh_數學B1_LinearFunction", "src_4424", True, True),
-        ("vh_數學B4_StatisticalChartReading", "src_3884", True, True),
-        ("vh_數學B4_HistogramsAndFrequencyPolygons", "src_3826", True, False),
-        ("vh_數學B4_NormalDistributionAndEmpiricalRule", "src_3859", True, False),
-        ("vh_數學B1_LinearFunction", "src_4433", False, False),
+        ("vh_數學B1_LinearFunction", "src_4424", True, True, "cartesian_equal_units"),
+        ("vh_數學B4_StatisticalChartReading", "src_3884", True, True, "chart_independent_axes"),
+        ("vh_數學B4_HistogramsAndFrequencyPolygons", "src_3826", True, True, "image_contain"),
+        ("vh_數學B4_NormalDistributionAndEmpiricalRule", "src_3859", True, True, "image_contain"),
+        ("vh_數學B1_LinearFunction", "src_4433", False, False, None),
     ],
 )
-def test_production_visual_kinds_render_background(
-    browser_env, skill_id, component_id, expect_bg, require_pixels
+@pytest.mark.parametrize("viewport", [(1366, 900), (390, 844)])
+def test_production_visual_kinds_quadrant_layout(
+    browser_env, skill_id, component_id, expect_bg, require_quadrant, expected_scale_mode, viewport
 ) -> None:
     context = browser_env["context"]
     page = context.new_page()
-    page.set_viewport_size({"width": 1366, "height": 900})
+    page.set_viewport_size({"width": viewport[0], "height": viewport[1]})
     _open_practice_page(page, skill_id)
     result = page.evaluate(
-        APPLY_QUESTION_JS,
+        MEASURE_LAYOUT_JS,
         {"skillId": skill_id, "componentId": component_id},
     )
     assert result["hasBg"] is expect_bg
-    if expect_bg and require_pixels:
-        assert result["centerNonWhite"] is True
+    if expected_scale_mode:
+        assert result["scaleMode"] == expected_scale_mode
     if expect_bg:
         assert result["qmcHidden"] is True
+        if require_quadrant:
+            _assert_quadrant_layout(result)
     page.close()

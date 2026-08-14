@@ -9,28 +9,131 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function (root) {
     'use strict';
 
-    const DEFAULT_PADDING = 20;
+    const REGION_EDGE_PADDING = 14;
+    const REGION_WIDTH_RATIO = 0.5;
+    const REGION_HEIGHT_RATIO = 0.5;
     const IMAGE_OPACITY = 0.72;
 
     let storedVisualSpec = null;
     let storedQuestionImage = null;
     let storedImageSource = null;
+    let lastRenderBounds = null;
+    let lastRenderMeta = null;
 
-    function computeContainRect(naturalWidth, naturalHeight, containerWidth, containerHeight, padding) {
-        const pad = Number.isFinite(padding) ? padding : DEFAULT_PADDING;
-        const innerWidth = Math.max(1, containerWidth - pad * 2);
-        const innerHeight = Math.max(1, containerHeight - pad * 2);
+    function computeQuestionBackgroundRegion(canvasWidth, canvasHeight, edgePadding) {
+        const pad = Number.isFinite(edgePadding) ? edgePadding : REGION_EDGE_PADDING;
+        const cw = Math.max(1, Number(canvasWidth) || 1);
+        const ch = Math.max(1, Number(canvasHeight) || 1);
+        const quadrantWidth = cw * REGION_WIDTH_RATIO;
+        const quadrantHeight = ch * REGION_HEIGHT_RATIO;
+        return {
+            x: pad,
+            y: pad,
+            width: Math.max(1, quadrantWidth - pad),
+            height: Math.max(1, quadrantHeight - pad),
+            edgePadding: pad,
+            quadrantWidth: quadrantWidth,
+            quadrantHeight: quadrantHeight,
+            canvasWidth: cw,
+            canvasHeight: ch
+        };
+    }
+
+    function computeContainRect(naturalWidth, naturalHeight, regionWidth, regionHeight, innerPadding, regionOffsetX, regionOffsetY) {
+        const pad = Number.isFinite(innerPadding) ? innerPadding : REGION_EDGE_PADDING;
+        const baseX = Number.isFinite(regionOffsetX) ? regionOffsetX : 0;
+        const baseY = Number.isFinite(regionOffsetY) ? regionOffsetY : 0;
+        const innerWidth = Math.max(1, regionWidth - pad * 2);
+        const innerHeight = Math.max(1, regionHeight - pad * 2);
         const nw = Math.max(1, Number(naturalWidth) || 1);
         const nh = Math.max(1, Number(naturalHeight) || 1);
         const scale = Math.min(innerWidth / nw, innerHeight / nh);
         const drawWidth = nw * scale;
         const drawHeight = nh * scale;
         return {
-            x: (containerWidth - drawWidth) / 2,
-            y: (containerHeight - drawHeight) / 2,
+            x: baseX + pad + (innerWidth - drawWidth) / 2,
+            y: baseY + pad + (innerHeight - drawHeight) / 2,
             width: drawWidth,
             height: drawHeight,
             scale: scale
+        };
+    }
+
+    function setLastRenderBounds(bounds) {
+        lastRenderBounds = bounds || null;
+    }
+
+    function getLastRenderBounds() {
+        return lastRenderBounds;
+    }
+
+    function getLastRenderMeta() {
+        return lastRenderMeta;
+    }
+
+    function setLastRenderMeta(meta) {
+        lastRenderMeta = meta || null;
+    }
+
+    function measureBackgroundContentBounds(ctx, cssWidth, cssHeight, threshold) {
+        if (!ctx || !ctx.canvas || typeof ctx.getImageData !== 'function') {
+            return null;
+        }
+        const canvas = ctx.canvas;
+        let sampleW = Math.max(1, Math.floor(cssWidth));
+        let sampleH = Math.max(1, Math.floor(cssHeight));
+        let sampleCtx = ctx;
+        if (sampleW !== canvas.width || sampleH !== canvas.height) {
+            if (typeof document !== 'undefined' && document.createElement) {
+                const off = document.createElement('canvas');
+                off.width = sampleW;
+                off.height = sampleH;
+                const offCtx = off.getContext('2d');
+                if (!offCtx) {
+                    return null;
+                }
+                offCtx.drawImage(canvas, 0, 0, sampleW, sampleH);
+                sampleCtx = offCtx;
+            } else {
+                sampleW = canvas.width;
+                sampleH = canvas.height;
+            }
+        }
+        let imageData;
+        try {
+            imageData = sampleCtx.getImageData(0, 0, sampleW, sampleH);
+        } catch (_err) {
+            return null;
+        }
+        const data = imageData.data;
+        const limit = Number.isFinite(threshold) ? threshold : 248;
+        let minX = sampleW;
+        let minY = sampleH;
+        let maxX = 0;
+        let maxY = 0;
+        let found = false;
+        for (let y = 0; y < sampleH; y += 1) {
+            for (let x = 0; x < sampleW; x += 1) {
+                const index = (y * sampleW + x) * 4;
+                if (data[index] < limit || data[index + 1] < limit || data[index + 2] < limit) {
+                    found = true;
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+            }
+        }
+        if (!found) {
+            return null;
+        }
+        return {
+            minX: minX,
+            minY: minY,
+            maxX: maxX,
+            maxY: maxY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1
         };
     }
 
@@ -38,6 +141,8 @@
         storedVisualSpec = null;
         storedQuestionImage = null;
         storedImageSource = null;
+        lastRenderBounds = null;
+        lastRenderMeta = null;
     }
 
     function hasQuestionBackground() {
@@ -48,7 +153,9 @@
         return {
             visualSpec: storedVisualSpec,
             questionImage: storedQuestionImage,
-            imageSource: storedImageSource
+            imageSource: storedImageSource,
+            lastRenderBounds: lastRenderBounds,
+            lastRenderMeta: lastRenderMeta
         };
     }
 
@@ -62,12 +169,15 @@
         if (!storedQuestionImage || !ctx) {
             return false;
         }
+        const region = computeQuestionBackgroundRegion(cssWidth, cssHeight);
         const rect = computeContainRect(
             storedQuestionImage.naturalWidth,
             storedQuestionImage.naturalHeight,
-            cssWidth,
-            cssHeight,
-            DEFAULT_PADDING
+            region.width,
+            region.height,
+            region.edgePadding,
+            region.x,
+            region.y
         );
         ctx.save();
         ctx.globalAlpha = IMAGE_OPACITY;
@@ -79,6 +189,19 @@
             rect.height
         );
         ctx.restore();
+        setLastRenderBounds({
+            minX: rect.x,
+            minY: rect.y,
+            maxX: rect.x + rect.width,
+            maxY: rect.y + rect.height,
+            width: rect.width,
+            height: rect.height
+        });
+        setLastRenderMeta({
+            scaleMode: 'image_contain',
+            equalUnits: false,
+            imageScale: rect.scale
+        });
         return true;
     }
 
@@ -87,14 +210,28 @@
         if (!storedVisualSpec || !runtime || !runtime.renderToCanvas || !ctx) {
             return false;
         }
-        return runtime.renderToCanvas(ctx.canvas, storedVisualSpec, {
+        const region = computeQuestionBackgroundRegion(cssWidth, cssHeight);
+        const ok = runtime.renderToCanvas(ctx.canvas, storedVisualSpec, {
             width: cssWidth,
             height: cssHeight,
-            padding: DEFAULT_PADDING,
+            layoutRegion: region,
+            padding: Math.min(region.edgePadding, 10),
             manageCanvasSize: false,
-            backgroundFill: '#ffffff',
+            backgroundFill: null,
             visualOpacity: 0.62
         });
+        const measured = measureBackgroundContentBounds(ctx, cssWidth, cssHeight);
+        const tracked = runtime.getLastRenderBounds && runtime.getLastRenderBounds();
+        const trackedMeta = runtime.getLastRenderMeta && runtime.getLastRenderMeta();
+        if (tracked) {
+            setLastRenderBounds(tracked);
+        } else if (measured) {
+            setLastRenderBounds(measured);
+        }
+        if (trackedMeta) {
+            setLastRenderMeta(trackedMeta);
+        }
+        return ok;
     }
 
     function redrawQuestionBackground(backgroundCtx, cssWidth, cssHeight, visualRuntime) {
@@ -110,6 +247,8 @@
         if (storedQuestionImage) {
             return drawStoredImageBackground(backgroundCtx, width, height);
         }
+        setLastRenderBounds(null);
+        setLastRenderMeta(null);
         return false;
     }
 
@@ -120,6 +259,8 @@
         const width = Math.max(1, Number(cssWidth) || backgroundCtx.canvas.clientWidth || 1);
         const height = Math.max(1, Number(cssHeight) || backgroundCtx.canvas.clientHeight || 1);
         paintBackgroundBase(backgroundCtx, width, height);
+        setLastRenderBounds(null);
+        setLastRenderMeta(null);
     }
 
     function setVisualSpecBackground(visualSpec, backgroundCtx, cssWidth, cssHeight, visualRuntime) {
@@ -235,10 +376,37 @@
         ctx.clearRect(0, 0, width, height);
     }
 
+    function validateQuadrantBounds(bounds, cssWidth, cssHeight, edgePadding, layoutRegion) {
+        if (!bounds) {
+            return { ok: false, reason: 'missing-bounds' };
+        }
+        const region = layoutRegion || computeQuestionBackgroundRegion(cssWidth, cssHeight, edgePadding);
+        const pad = region.edgePadding;
+        const checks = {
+            minXAtLeastPadding: bounds.minX >= region.x - 2,
+            minYAtLeastPadding: bounds.minY >= region.y - 2,
+            widthWithinHalf: bounds.width <= region.quadrantWidth + 1,
+            heightWithinHalf: bounds.height <= region.quadrantHeight + 1,
+            maxXWithinQuadrant: bounds.maxX <= region.x + region.width + 2,
+            maxYWithinQuadrant: bounds.maxY <= region.y + region.height + 2
+        };
+        checks.ok = Object.keys(checks).every(function (key) {
+            return key === 'ok' || checks[key] === true;
+        });
+        return checks;
+    }
+
     return {
-        DEFAULT_PADDING: DEFAULT_PADDING,
+        REGION_EDGE_PADDING: REGION_EDGE_PADDING,
+        REGION_WIDTH_RATIO: REGION_WIDTH_RATIO,
+        REGION_HEIGHT_RATIO: REGION_HEIGHT_RATIO,
         IMAGE_OPACITY: IMAGE_OPACITY,
+        computeQuestionBackgroundRegion: computeQuestionBackgroundRegion,
         computeContainRect: computeContainRect,
+        measureBackgroundContentBounds: measureBackgroundContentBounds,
+        validateQuadrantBounds: validateQuadrantBounds,
+        getLastRenderBounds: getLastRenderBounds,
+        getLastRenderMeta: getLastRenderMeta,
         resetQuestionBackground: resetQuestionBackground,
         hasQuestionBackground: hasQuestionBackground,
         getStoredBackground: getStoredBackground,

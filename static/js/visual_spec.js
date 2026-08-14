@@ -120,6 +120,7 @@
                 label: String(fig.label || fig.id || ('圖' + (index + 1))),
                 spec: {
                     kind: 'coordinate_plane',
+                    scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                     points: points,
                     lines: lines,
                     x_range: xRange,
@@ -163,6 +164,7 @@
                 label: String(cmp.label || cmp.id || ('比較' + (index + 1))),
                 spec: {
                     kind: 'coordinate_plane',
+                    scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                     points: points,
                     lines: lines,
                     x_range: xRange,
@@ -175,12 +177,12 @@
     }
 
     function computeMultiFigureGrid(panelCount, width, height, padding) {
-        const outerPad = Number.isFinite(padding) ? padding : 16;
-        const gap = width >= 768 ? 10 : 8;
+        const outerPad = Math.max(4, Math.min(Number.isFinite(padding) ? padding : 16, width * 0.06, height * 0.06));
+        const gap = width >= 360 ? 8 : (width >= 180 ? 5 : 3);
         let cols;
-        if (width >= 768) {
+        if (width >= 360) {
             cols = 3;
-        } else if (width >= 300) {
+        } else if (width >= 160) {
             cols = 2;
         } else {
             cols = 1;
@@ -201,7 +203,7 @@
                 height: cellHeight
             });
         }
-        return { cols: cols, rows: rows, gap: gap, cells: cells };
+        return { cols: cols, rows: rows, gap: gap, cells: cells, outerPad: outerPad };
     }
 
     function parseFractionLike(value) {
@@ -276,6 +278,32 @@
         'table'
     ];
 
+    const SCALE_MODE = {
+        CARTESIAN_EQUAL_UNITS: 'cartesian_equal_units',
+        CHART_INDEPENDENT_AXES: 'chart_independent_axes',
+        IMAGE_CONTAIN: 'image_contain'
+    };
+
+    const CARTESIAN_EQUAL_KINDS = [
+        'coordinate_plane',
+        'coordinate_plane_spec',
+        'coordinate_plane_multi_figure',
+        'coordinate_line_graph',
+        'function_graph',
+        'linear_application_graph',
+        'collinear_points'
+    ];
+
+    const CHART_INDEPENDENT_KINDS = [
+        'cumulative_frequency_chart',
+        'cumulative_frequency_polygon',
+        'cumulative_frequency_graph',
+        'histogram',
+        'frequency_polygon',
+        'statistical_chart',
+        'line_chart'
+    ];
+
     function getVisualKind(visualSpec) {
         if (!visualSpec || typeof visualSpec !== 'object') {
             return '';
@@ -330,6 +358,73 @@
         return points;
     }
 
+    function normalizeExplicitScaleMode(value) {
+        const mode = String(value || '').trim();
+        if (mode === SCALE_MODE.CARTESIAN_EQUAL_UNITS
+            || mode === SCALE_MODE.CHART_INDEPENDENT_AXES
+            || mode === SCALE_MODE.IMAGE_CONTAIN) {
+            return mode;
+        }
+        return '';
+    }
+
+    function resolveTieredLinearScaleMode(visualSpec) {
+        const explicit = normalizeExplicitScaleMode(visualSpec.scale_mode);
+        if (explicit) {
+            return explicit;
+        }
+        const axisSemantics = visualSpec.axis_semantics || visualSpec.axisSemantics || {};
+        const explicitSemantic = normalizeExplicitScaleMode(axisSemantics.scale_mode);
+        if (explicitSemantic) {
+            return explicitSemantic;
+        }
+        if (axisSemantics.equal_units === true || axisSemantics.same_coordinate_plane === true) {
+            return SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        }
+        if (axisSemantics.equal_units === false || axisSemantics.independent_axes === true) {
+            return SCALE_MODE.CHART_INDEPENDENT_AXES;
+        }
+        const labels = visualSpec.labels || {};
+        const xAxis = String(labels.x_axis || labels.xAxis || axisSemantics.x_unit || '').trim();
+        const yAxis = String(labels.y_axis || labels.yAxis || axisSemantics.y_unit || '').trim();
+        const xSem = String(visualSpec.x_axis_semantics || axisSemantics.x || axisSemantics.x_axis || '').trim();
+        const ySem = String(visualSpec.y_axis_semantics || axisSemantics.y || axisSemantics.y_axis || '').trim();
+        if ((xAxis && yAxis && xAxis !== yAxis) || (xSem && ySem && xSem !== ySem)) {
+            return SCALE_MODE.CHART_INDEPENDENT_AXES;
+        }
+        if (xAxis || yAxis || xSem || ySem) {
+            return SCALE_MODE.CHART_INDEPENDENT_AXES;
+        }
+        return SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+    }
+
+    function resolveScaleMode(visualSpec) {
+        if (!visualSpec || typeof visualSpec !== 'object') {
+            return null;
+        }
+        const explicit = normalizeExplicitScaleMode(visualSpec.scale_mode);
+        if (explicit) {
+            return explicit;
+        }
+        if (visualSpec.image_base64 && !hasDrawablePrimitives(visualSpec)) {
+            return SCALE_MODE.IMAGE_CONTAIN;
+        }
+        const kind = getVisualKind(visualSpec);
+        if (kind === 'tiered_linear_graph') {
+            return resolveTieredLinearScaleMode(visualSpec);
+        }
+        if (CHART_INDEPENDENT_KINDS.indexOf(kind) >= 0 || kind.indexOf('cumulative_frequency') >= 0) {
+            return SCALE_MODE.CHART_INDEPENDENT_AXES;
+        }
+        if (CARTESIAN_EQUAL_KINDS.indexOf(kind) >= 0 || kind.indexOf('coordinate_plane') >= 0) {
+            return SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        }
+        if (isMultiFigureSpec(visualSpec)) {
+            return SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        }
+        return null;
+    }
+
     function computeNumericRange(values, fallbackMin, fallbackMax, padRatio) {
         const finite = values.filter(Number.isFinite);
         if (!finite.length) {
@@ -359,6 +454,7 @@
             return {
                 kind: 'coordinate_plane',
                 render_required: true,
+                scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                 points: points,
                 lines: []
                     .concat(Array.isArray(visualSpec.lines) ? visualSpec.lines : [])
@@ -370,6 +466,7 @@
         }
         if (kind === 'tiered_linear_graph') {
             const breakpoints = normalizeStringPoints(visualSpec.breakpoints);
+            const scaleMode = resolveTieredLinearScaleMode(visualSpec);
             const lines = [];
             for (let index = 0; index < breakpoints.length - 1; index += 1) {
                 const start = breakpoints[index];
@@ -384,10 +481,12 @@
             const xs = breakpoints.map(function (point) { return point.x; });
             const ys = breakpoints.map(function (point) { return point.y; });
             return {
-                kind: 'coordinate_plane',
+                kind: 'line_chart',
                 render_required: true,
+                scale_mode: scaleMode,
                 points: breakpoints,
                 lines: lines,
+                labels: visualSpec.labels || {},
                 x_range: computeNumericRange(xs, 0, 10, 0.12),
                 y_range: computeNumericRange(ys, 0, 10, 0.12)
             };
@@ -418,6 +517,7 @@
             return {
                 kind: 'coordinate_plane',
                 render_required: true,
+                scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                 points: points,
                 lines: lines,
                 x_range: xRange,
@@ -437,6 +537,7 @@
             return {
                 kind: 'coordinate_plane',
                 render_required: true,
+                scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                 points: points,
                 lines: lines,
                 x_range: computeNumericRange(points.map(function (point) { return point.x; }), -10, 10, 0.12),
@@ -455,23 +556,110 @@
             return {
                 kind: 'cumulative_frequency_chart',
                 render_required: true,
+                scale_mode: SCALE_MODE.CHART_INDEPENDENT_AXES,
                 data_points: dataPoints,
                 title: visualSpec.title || '',
                 x_label: visualSpec.x_label || '',
-                y_label: visualSpec.y_label || ''
+                y_label: visualSpec.y_label || '',
+                x_axis_semantics: visualSpec.x_axis_semantics || '',
+                y_axis_semantics: visualSpec.y_axis_semantics || ''
             };
+        }
+        const resolvedMode = resolveScaleMode(visualSpec);
+        if (resolvedMode && !visualSpec.scale_mode) {
+            return Object.assign({}, visualSpec, { scale_mode: resolvedMode });
         }
         return visualSpec;
     }
 
+    function isLineChartSpec(visualSpec) {
+        const kind = getVisualKind(visualSpec);
+        return kind === 'line_chart'
+            || kind === 'cumulative_frequency_chart'
+            || (Array.isArray(visualSpec.data_points) && visualSpec.data_points.length >= 2);
+    }
+
     function isChartSpec(visualSpec) {
-        return getVisualKind(visualSpec) === 'cumulative_frequency_chart';
+        return isLineChartSpec(visualSpec)
+            && resolveScaleMode(visualSpec) === SCALE_MODE.CHART_INDEPENDENT_AXES;
     }
 
     function chartSpecIsRenderable(visualSpec) {
-        return isChartSpec(visualSpec)
-            && Array.isArray(visualSpec.data_points)
-            && visualSpec.data_points.length >= 2;
+        if (isLineChartSpec(visualSpec)) {
+            const dataPoints = normalizeDataPoints(visualSpec.data_points);
+            if (dataPoints.length >= 2) {
+                return true;
+            }
+            if (buildCumulativeDataPointsFromRows(visualSpec).length >= 2) {
+                return true;
+            }
+        }
+        const points = Array.isArray(visualSpec.points) ? visualSpec.points : [];
+        const lines = Array.isArray(visualSpec.lines) ? visualSpec.lines : [];
+        return points.length >= 2 || lines.some(function (line) {
+            return lineIsDrawable(line, points);
+        });
+    }
+
+    function isVisualSpecRenderable(visualSpec) {
+        if (!visualSpec || typeof visualSpec !== 'object' || Array.isArray(visualSpec)) {
+            return false;
+        }
+        const kind = getVisualKind(visualSpec);
+        if (INTENTIONALLY_BLANK_KINDS.indexOf(kind) >= 0) {
+            return false;
+        }
+        if (visualSpec.image_base64 && !hasDrawablePrimitives(visualSpec)) {
+            return false;
+        }
+        const normalized = normalizeVisualSpecForRendering(visualSpec);
+        if (!normalized) {
+            return false;
+        }
+        const scaleMode = normalized.scale_mode || resolveScaleMode(normalized);
+        if (scaleMode === SCALE_MODE.CHART_INDEPENDENT_AXES && chartSpecIsRenderable(normalized)) {
+            return true;
+        }
+        if (scaleMode === SCALE_MODE.CARTESIAN_EQUAL_UNITS && isMultiFigureSpec(normalized)) {
+            const panels = buildMultiFigurePanels(normalized);
+            return panels.length >= 6 && panels.every(function (panel) {
+                return panelSpecIsRenderable(panel.spec);
+            });
+        }
+        if (!hasRenderKind(normalized) && !hasRenderKind(visualSpec)) {
+            return false;
+        }
+        if (!hasDrawablePrimitives(normalized) && !hasDrawablePrimitives(visualSpec)) {
+            if (!chartSpecIsRenderable(normalized)) {
+                return false;
+            }
+        }
+        if (isMultiFigureSpec(normalized)) {
+            const panels = buildMultiFigurePanels(normalized);
+            return panels.length >= 6 && panels.every(function (panel) {
+                return panelSpecIsRenderable(panel.spec);
+            });
+        }
+        if (isLineChartSpec(normalized) && chartSpecIsRenderable(normalized)) {
+            return true;
+        }
+        const points = Array.isArray(normalized.points) ? normalized.points : [];
+        const lines = []
+            .concat(Array.isArray(normalized.lines) ? normalized.lines : [])
+            .concat(Array.isArray(normalized.segments) ? normalized.segments : [])
+            .concat(
+                Array.isArray(normalized.drawable_primitives)
+                    ? normalized.drawable_primitives.filter(function (item) {
+                        return item && item.type === 'line';
+                    })
+                    : []
+            );
+        if (!lines.length) {
+            return false;
+        }
+        return lines.some(function (line) {
+            return lineIsDrawable(line, points);
+        });
     }
 
     function lineIsDrawable(line, points) {
@@ -515,55 +703,6 @@
         });
     }
 
-    function isVisualSpecRenderable(visualSpec) {
-        if (!visualSpec || typeof visualSpec !== 'object' || Array.isArray(visualSpec)) {
-            return false;
-        }
-        const kind = getVisualKind(visualSpec);
-        if (INTENTIONALLY_BLANK_KINDS.indexOf(kind) >= 0) {
-            return false;
-        }
-        if (visualSpec.image_base64 && !hasDrawablePrimitives(visualSpec)) {
-            return false;
-        }
-        const normalized = normalizeVisualSpecForRendering(visualSpec);
-        if (!normalized) {
-            return false;
-        }
-        if (chartSpecIsRenderable(normalized)) {
-            return true;
-        }
-        if (!hasRenderKind(normalized) && !hasRenderKind(visualSpec)) {
-            return false;
-        }
-        if (!hasDrawablePrimitives(normalized) && !hasDrawablePrimitives(visualSpec)) {
-            return false;
-        }
-        if (isMultiFigureSpec(normalized)) {
-            const panels = buildMultiFigurePanels(normalized);
-            return panels.length >= 6 && panels.every(function (panel) {
-                return panelSpecIsRenderable(panel.spec);
-            });
-        }
-        const points = Array.isArray(normalized.points) ? normalized.points : [];
-        const lines = []
-            .concat(Array.isArray(normalized.lines) ? normalized.lines : [])
-            .concat(Array.isArray(normalized.segments) ? normalized.segments : [])
-            .concat(
-                Array.isArray(normalized.drawable_primitives)
-                    ? normalized.drawable_primitives.filter(function (item) {
-                        return item && item.type === 'line';
-                    })
-                    : []
-            );
-        if (!lines.length) {
-            return false;
-        }
-        return lines.some(function (line) {
-            return lineIsDrawable(line, points);
-        });
-    }
-
     function requiresVisualRendering(visualSpec) {
         return isVisualSpecRenderable(visualSpec);
     }
@@ -577,12 +716,58 @@
             manageCanvasSize: opts.manageCanvasSize !== false,
             backgroundFill: opts.backgroundFill !== undefined ? opts.backgroundFill : '#ffffff',
             visualOpacity: Number.isFinite(opts.visualOpacity) ? opts.visualOpacity : 0.62,
+            layoutRegion: opts.layoutRegion || null,
             devicePixelRatio: Number(
                 opts.devicePixelRatio
                 || (typeof globalThis !== 'undefined' && globalThis.devicePixelRatio)
                 || 1
             )
         };
+    }
+
+    let lastRenderBounds = null;
+    let lastRenderMeta = null;
+
+    function setLastRenderBounds(bounds) {
+        lastRenderBounds = bounds || null;
+    }
+
+    function getLastRenderBounds() {
+        return lastRenderBounds;
+    }
+
+    function setLastRenderMeta(meta) {
+        lastRenderMeta = meta || null;
+    }
+
+    function getLastRenderMeta() {
+        return lastRenderMeta;
+    }
+
+    function mergeRenderBounds(existing, next) {
+        if (!next) {
+            return existing;
+        }
+        if (!existing) {
+            return next;
+        }
+        const minX = Math.min(existing.minX, next.minX);
+        const minY = Math.min(existing.minY, next.minY);
+        const maxX = Math.max(existing.maxX, next.maxX);
+        const maxY = Math.max(existing.maxY, next.maxY);
+        return {
+            minX: minX,
+            minY: minY,
+            maxX: maxX,
+            maxY: maxY,
+            width: maxX - minX + 1,
+            height: maxY - minY + 1
+        };
+    }
+
+    function trackRenderBounds(next) {
+        lastRenderBounds = mergeRenderBounds(lastRenderBounds, next);
+        return next;
     }
 
     function resolveCanvasSize(canvas, options) {
@@ -627,6 +812,102 @@
         context.stroke();
     }
 
+    function buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
+        const opts = normalizeOptions(options);
+        const width = Math.max(1, destRect.width);
+        const height = Math.max(1, destRect.height);
+        const labelHeight = destRect.showLabel === false ? 0 : (width < 180 ? 12 : 14);
+        const padding = Math.max(6, Math.min(opts.padding, Math.min(width, height) * 0.12));
+        const plotTop = destRect.y + labelHeight;
+        const plotHeight = Math.max(1, height - labelHeight);
+        const innerWidth = Math.max(1, width - padding * 2);
+        const innerHeight = Math.max(1, plotHeight - padding * 2);
+        const xSpan = Math.max(1e-6, xMax - xMin);
+        const ySpan = Math.max(1e-6, yMax - yMin);
+        const scaleX = innerWidth / xSpan;
+        const scaleY = innerHeight / ySpan;
+        const unitScale = Math.min(scaleX, scaleY);
+        const usedWidth = xSpan * unitScale;
+        const usedHeight = ySpan * unitScale;
+        const plotLeft = destRect.x + padding + (innerWidth - usedWidth) / 2;
+        const plotBottom = plotTop + plotHeight - padding - (innerHeight - usedHeight) / 2;
+        return {
+            scaleMode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
+            labelHeight: labelHeight,
+            padding: padding,
+            plotTop: plotTop,
+            plotHeight: plotHeight,
+            plotLeft: plotLeft,
+            plotBottom: plotBottom,
+            unitScale: unitScale,
+            unitScaleX: unitScale,
+            unitScaleY: unitScale,
+            usedWidth: usedWidth,
+            usedHeight: usedHeight,
+            mapX: function (value) {
+                return plotLeft + (Number(value) - xMin) * unitScale;
+            },
+            mapY: function (value) {
+                return plotBottom - (Number(value) - yMin) * unitScale;
+            }
+        };
+    }
+
+    function buildIndependentAxesPlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
+        const opts = normalizeOptions(options);
+        const width = Math.max(1, destRect.width);
+        const height = Math.max(1, destRect.height);
+        const labelHeight = destRect.showLabel === false ? 0 : (width < 180 ? 12 : 14);
+        const padding = Math.max(6, Math.min(opts.padding, Math.min(width, height) * 0.12));
+        const plotTop = destRect.y + labelHeight;
+        const plotHeight = Math.max(1, height - labelHeight);
+        const innerWidth = Math.max(1, width - padding * 2);
+        const innerHeight = Math.max(1, plotHeight - padding * 2);
+        const xSpan = Math.max(1e-6, xMax - xMin);
+        const ySpan = Math.max(1e-6, yMax - yMin);
+        const unitScaleX = innerWidth / xSpan;
+        const unitScaleY = innerHeight / ySpan;
+        const plotLeft = destRect.x + padding;
+        const plotBottom = plotTop + plotHeight - padding;
+        return {
+            scaleMode: SCALE_MODE.CHART_INDEPENDENT_AXES,
+            labelHeight: labelHeight,
+            padding: padding,
+            plotTop: plotTop,
+            plotHeight: plotHeight,
+            plotLeft: plotLeft,
+            plotBottom: plotBottom,
+            unitScale: null,
+            unitScaleX: unitScaleX,
+            unitScaleY: unitScaleY,
+            usedWidth: innerWidth,
+            usedHeight: innerHeight,
+            mapX: function (value) {
+                return plotLeft + (Number(value) - xMin) * unitScaleX;
+            },
+            mapY: function (value) {
+                return plotBottom - (Number(value) - yMin) * unitScaleY;
+            }
+        };
+    }
+
+    function buildPlotMapper(destRect, xMin, xMax, yMin, yMax, options, scaleMode) {
+        if (scaleMode === SCALE_MODE.CHART_INDEPENDENT_AXES) {
+            return buildIndependentAxesPlotMapper(destRect, xMin, xMax, yMin, yMax, options);
+        }
+        return buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options);
+    }
+
+    function recordPlotRenderMeta(plot, visualSpec) {
+        setLastRenderMeta({
+            scaleMode: plot.scaleMode || resolveScaleMode(visualSpec) || null,
+            unitScaleX: plot.unitScaleX,
+            unitScaleY: plot.unitScaleY,
+            unitScale: plot.unitScale,
+            equalUnits: plot.unitScaleX === plot.unitScaleY
+        });
+    }
+
     function renderCoordinatePlaneInRect(context, visualSpec, destRect, options) {
         const opts = normalizeOptions(options);
         const axis = visualSpec.axis_range || {};
@@ -642,40 +923,39 @@
 
         const width = Math.max(1, destRect.width);
         const height = Math.max(1, destRect.height);
-        const labelHeight = destRect.showLabel === false ? 0 : 16;
-        const padding = Math.max(8, Math.min(opts.padding, Math.min(width, height) * 0.16));
-        const plotTop = destRect.y + labelHeight;
-        const plotHeight = Math.max(1, height - labelHeight);
-        const plotWidth = Math.max(1, width - padding * 2);
-        const innerPlotHeight = Math.max(1, plotHeight - padding * 2);
+        const scaleMode = visualSpec.scale_mode || resolveScaleMode(visualSpec) || SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        const plot = buildPlotMapper(destRect, xMin, xMax, yMin, yMax, opts, scaleMode);
+        const mapX = plot.mapX;
+        const mapY = plot.mapY;
         const opacity = opts.visualOpacity;
-        const mapX = function (value) {
-            return destRect.x + padding + (Number(value) - xMin) / (xMax - xMin) * plotWidth;
-        };
-        const mapY = function (value) {
-            return plotTop + plotHeight - padding - (Number(value) - yMin) / (yMax - yMin) * innerPlotHeight;
-        };
+        const plotTop = plot.plotTop;
+        const plotHeight = plot.plotHeight;
+        const padding = plot.padding;
+        const gridLeft = plot.plotLeft;
+        const gridRight = plot.plotLeft + plot.usedWidth;
+        const gridTop = plotTop + padding;
+        const gridBottom = plot.plotBottom;
 
         if (destRect.label) {
             context.fillStyle = applyFadedColor('#374151', Math.min(1, opacity + 0.2));
-            context.font = '600 12px sans-serif';
+            context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
             context.textAlign = 'center';
             context.textBaseline = 'top';
-            context.fillText(destRect.label, destRect.x + width / 2, destRect.y + 2);
+            context.fillText(destRect.label, destRect.x + width / 2, destRect.y + 1);
         }
 
         context.strokeStyle = applyFadedColor('#e5e7eb', Math.min(1, opacity + 0.15));
         context.lineWidth = 1;
         for (let value = Math.ceil(xMin); value <= Math.floor(xMax); value += 1) {
             context.beginPath();
-            context.moveTo(mapX(value), plotTop + padding);
-            context.lineTo(mapX(value), plotTop + plotHeight - padding);
+            context.moveTo(mapX(value), gridTop);
+            context.lineTo(mapX(value), gridBottom);
             context.stroke();
         }
         for (let value = Math.ceil(yMin); value <= Math.floor(yMax); value += 1) {
             context.beginPath();
-            context.moveTo(destRect.x + padding, mapY(value));
-            context.lineTo(destRect.x + width - padding, mapY(value));
+            context.moveTo(gridLeft, mapY(value));
+            context.lineTo(gridRight, mapY(value));
             context.stroke();
         }
 
@@ -683,14 +963,14 @@
         context.lineWidth = 1.5;
         if (xMin <= 0 && xMax >= 0) {
             context.beginPath();
-            context.moveTo(mapX(0), plotTop + padding);
-            context.lineTo(mapX(0), plotTop + plotHeight - padding);
+            context.moveTo(mapX(0), gridTop);
+            context.lineTo(mapX(0), gridBottom);
             context.stroke();
         }
         if (yMin <= 0 && yMax >= 0) {
             context.beginPath();
-            context.moveTo(destRect.x + padding, mapY(0));
-            context.lineTo(destRect.x + width - padding, mapY(0));
+            context.moveTo(gridLeft, mapY(0));
+            context.lineTo(gridRight, mapY(0));
             context.stroke();
         }
 
@@ -774,20 +1054,24 @@
                 return;
             }
             context.beginPath();
-            context.arc(mapX(xValue), mapY(yValue), 3.5, 0, Math.PI * 2);
+            context.arc(mapX(xValue), mapY(yValue), width < 180 ? 2.5 : 3.5, 0, Math.PI * 2);
             context.fill();
         });
+        trackRenderBounds({
+            minX: plot.plotLeft,
+            minY: destRect.y + (destRect.showLabel === false ? 0 : plot.labelHeight),
+            maxX: plot.plotLeft + plot.usedWidth,
+            maxY: plot.plotBottom,
+            width: plot.usedWidth,
+            height: plot.plotBottom - (destRect.y + (destRect.showLabel === false ? 0 : plot.labelHeight)) + 1
+        });
+        recordPlotRenderMeta(plot, visualSpec);
         return true;
     }
 
-    function renderCoordinatePlane(context, visualSpec, width, height, options) {
-        return renderCoordinatePlaneInRect(context, visualSpec, {
-            x: 0,
-            y: 0,
-            width: width,
-            height: height,
-            showLabel: false
-        }, options);
+    function renderCoordinatePlane(context, visualSpec, width, height, options, destRect) {
+        const rect = destRect || { x: 0, y: 0, width: width, height: height, showLabel: false };
+        return renderCoordinatePlaneInRect(context, visualSpec, rect, options);
     }
 
     function renderMultiFigureGrid(context, visualSpec, width, height, options) {
@@ -795,61 +1079,73 @@
         if (!panels.length) {
             return false;
         }
-        const grid = computeMultiFigureGrid(panels.length, width, height, options && options.padding);
+        const opts = normalizeOptions(options);
+        const offsetX = Number.isFinite(opts.offsetX) ? opts.offsetX : 0;
+        const offsetY = Number.isFinite(opts.offsetY) ? opts.offsetY : 0;
+        const grid = computeMultiFigureGrid(panels.length, width, height, opts.padding);
+        let bounds = null;
         panels.forEach(function (panel, index) {
             const cell = grid.cells[index];
             if (!cell) {
                 return;
             }
             renderCoordinatePlaneInRect(context, panel.spec, {
-                x: cell.x,
-                y: cell.y,
+                x: offsetX + cell.x,
+                y: offsetY + cell.y,
                 width: cell.width,
                 height: cell.height,
                 label: panel.label,
                 showLabel: true
-            }, Object.assign({}, options, { padding: 12 }));
+            }, Object.assign({}, opts, { padding: Math.max(4, Math.min(opts.padding, 8)) }));
+            bounds = mergeRenderBounds(bounds, getLastRenderBounds());
         });
+        trackRenderBounds(bounds);
         return true;
     }
 
-    function renderCumulativeFrequencyChart(context, visualSpec, width, height, options) {
+    function renderLineChartInRect(context, visualSpec, destRect, options) {
         const opts = normalizeOptions(options);
-        const dataPoints = normalizeDataPoints(visualSpec.data_points);
+        let dataPoints = normalizeDataPoints(visualSpec.data_points);
+        if (dataPoints.length < 2) {
+            dataPoints = buildCumulativeDataPointsFromRows(visualSpec);
+        }
+        if (dataPoints.length < 2) {
+            const points = Array.isArray(visualSpec.points) ? visualSpec.points : [];
+            dataPoints = points.map(function (point) {
+                return {
+                    x: Number(Array.isArray(point) ? point[0] : point.x),
+                    y: Number(Array.isArray(point) ? point[1] : point.y)
+                };
+            }).filter(function (point) {
+                return Number.isFinite(point.x) && Number.isFinite(point.y);
+            });
+        }
         if (dataPoints.length < 2) {
             return false;
         }
-        const cssWidth = Math.max(1, Number(width) || 1);
-        const cssHeight = Math.max(1, Number(height) || 1);
-        const padding = Math.max(12, Math.min(opts.padding, Math.min(cssWidth, cssHeight) * 0.16));
-        const plotLeft = padding;
-        const plotTop = padding + 12;
-        const plotWidth = Math.max(1, cssWidth - padding * 2);
-        const plotHeight = Math.max(1, cssHeight - padding * 2 - 12);
-        const xValues = dataPoints.map(function (point) { return point.x; });
-        const yValues = dataPoints.map(function (point) { return point.y; });
-        const xRange = computeNumericRange(xValues, 0, 10, 0.08);
-        const yRange = computeNumericRange(yValues, 0, 10, 0.08);
+        const xRange = Array.isArray(visualSpec.x_range) && visualSpec.x_range.length >= 2
+            ? [Number(visualSpec.x_range[0]), Number(visualSpec.x_range[1])]
+            : computeNumericRange(dataPoints.map(function (point) { return point.x; }), 0, 10, 0.08);
+        const yRange = Array.isArray(visualSpec.y_range) && visualSpec.y_range.length >= 2
+            ? [Number(visualSpec.y_range[0]), Number(visualSpec.y_range[1])]
+            : computeNumericRange(dataPoints.map(function (point) { return point.y; }), 0, 10, 0.08);
+        const plot = buildIndependentAxesPlotMapper(destRect, xRange[0], xRange[1], yRange[0], yRange[1], opts);
+        const mapX = plot.mapX;
+        const mapY = plot.mapY;
         const opacity = opts.visualOpacity;
-        const mapX = function (value) {
-            return plotLeft + (Number(value) - xRange[0]) / (xRange[1] - xRange[0]) * plotWidth;
-        };
-        const mapY = function (value) {
-            return plotTop + plotHeight - (Number(value) - yRange[0]) / (yRange[1] - yRange[0]) * plotHeight;
-        };
 
         context.strokeStyle = applyFadedColor('#e5e7eb', Math.min(1, opacity + 0.15));
         context.lineWidth = 1;
         for (let tick = Math.ceil(xRange[0]); tick <= Math.floor(xRange[1]); tick += 1) {
             context.beginPath();
-            context.moveTo(mapX(tick), plotTop);
-            context.lineTo(mapX(tick), plotTop + plotHeight);
+            context.moveTo(mapX(tick), plot.plotTop + plot.padding);
+            context.lineTo(mapX(tick), plot.plotBottom);
             context.stroke();
         }
         for (let tick = Math.ceil(yRange[0]); tick <= Math.floor(yRange[1]); tick += 1) {
             context.beginPath();
-            context.moveTo(plotLeft, mapY(tick));
-            context.lineTo(plotLeft + plotWidth, mapY(tick));
+            context.moveTo(plot.plotLeft, mapY(tick));
+            context.lineTo(plot.plotLeft + plot.usedWidth, mapY(tick));
             context.stroke();
         }
 
@@ -862,7 +1158,7 @@
         context.stroke();
 
         context.strokeStyle = applyFadedColor('#1565c0', opacity);
-        context.lineWidth = 2.4;
+        context.lineWidth = 2.2;
         context.beginPath();
         dataPoints.forEach(function (point, index) {
             const xPos = mapX(point.x);
@@ -875,13 +1171,42 @@
         });
         context.stroke();
 
+        const lines = Array.isArray(visualSpec.lines) ? visualSpec.lines : [];
+        lines.forEach(function (line) {
+            if (!hasNumericThroughPoints(line, dataPoints)) {
+                return;
+            }
+            const p1 = resolvePointReference(line.through_points[0], dataPoints);
+            const p2 = resolvePointReference(line.through_points[1], dataPoints);
+            if (!p1 || !p2) {
+                return;
+            }
+            context.beginPath();
+            context.moveTo(mapX(p1.x), mapY(p1.y));
+            context.lineTo(mapX(p2.x), mapY(p2.y));
+            context.stroke();
+        });
+
         context.fillStyle = applyFadedColor('#dc2626', opacity);
         dataPoints.forEach(function (point) {
             context.beginPath();
-            context.arc(mapX(point.x), mapY(point.y), 3.5, 0, Math.PI * 2);
+            context.arc(mapX(point.x), mapY(point.y), destRect.width < 180 ? 2.5 : 3.5, 0, Math.PI * 2);
             context.fill();
         });
+        trackRenderBounds({
+            minX: plot.plotLeft,
+            minY: plot.plotTop,
+            maxX: plot.plotLeft + plot.usedWidth,
+            maxY: plot.plotBottom,
+            width: plot.usedWidth,
+            height: plot.plotBottom - plot.plotTop + 1
+        });
+        recordPlotRenderMeta(plot, visualSpec);
         return true;
+    }
+
+    function renderCumulativeFrequencyChartInRect(context, visualSpec, destRect, options) {
+        return renderLineChartInRect(context, visualSpec, destRect, options);
     }
 
     function renderToContext(context, visualSpec, width, height, options) {
@@ -892,19 +1217,42 @@
         const opts = normalizeOptions(options);
         const cssWidth = Math.max(1, Number(width) || 1);
         const cssHeight = Math.max(1, Number(height) || 1);
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.clearRect(0, 0, cssWidth, cssHeight);
-        if (opts.backgroundFill) {
-            context.fillStyle = opts.backgroundFill;
-            context.fillRect(0, 0, cssWidth, cssHeight);
+        const region = opts.layoutRegion || {
+            x: 0,
+            y: 0,
+            width: cssWidth,
+            height: cssHeight
+        };
+        setLastRenderBounds(null);
+        setLastRenderMeta(null);
+        if (!opts.layoutRegion) {
+            context.setTransform(1, 0, 0, 1, 0, 0);
+            context.clearRect(0, 0, cssWidth, cssHeight);
+            if (opts.backgroundFill) {
+                context.fillStyle = opts.backgroundFill;
+                context.fillRect(0, 0, cssWidth, cssHeight);
+            }
         }
-        if (isChartSpec(normalized)) {
-            return renderCumulativeFrequencyChart(context, normalized, cssWidth, cssHeight, opts);
+        const scaleMode = normalized.scale_mode || resolveScaleMode(normalized);
+        if (scaleMode === SCALE_MODE.CHART_INDEPENDENT_AXES && chartSpecIsRenderable(normalized)) {
+            return renderLineChartInRect(context, normalized, region, opts);
         }
         if (isMultiFigureSpec(normalized)) {
-            return renderMultiFigureGrid(context, normalized, cssWidth, cssHeight, opts);
+            return renderMultiFigureGrid(
+                context,
+                normalized,
+                region.width,
+                region.height,
+                Object.assign({}, opts, { offsetX: region.x, offsetY: region.y })
+            );
         }
-        return renderCoordinatePlane(context, normalized, cssWidth, cssHeight, opts);
+        return renderCoordinatePlaneInRect(context, normalized, {
+            x: region.x,
+            y: region.y,
+            width: region.width,
+            height: region.height,
+            showLabel: false
+        }, opts);
     }
 
     function renderToCanvas(canvas, visualSpec, options) {
@@ -944,14 +1292,22 @@
     }
 
     return {
+        SCALE_MODE: SCALE_MODE,
         hasDrawablePrimitives: hasDrawablePrimitives,
         getVisualKind: getVisualKind,
+        resolveScaleMode: resolveScaleMode,
         normalizeVisualSpecForRendering: normalizeVisualSpecForRendering,
         isVisualSpecRenderable: isVisualSpecRenderable,
         requiresVisualRendering: requiresVisualRendering,
         isMultiFigureSpec: isMultiFigureSpec,
+        isChartSpec: isChartSpec,
         buildMultiFigurePanels: buildMultiFigurePanels,
         computeMultiFigureGrid: computeMultiFigureGrid,
+        buildEqualScalePlotMapper: buildEqualScalePlotMapper,
+        buildIndependentAxesPlotMapper: buildIndependentAxesPlotMapper,
+        buildPlotMapper: buildPlotMapper,
+        getLastRenderBounds: getLastRenderBounds,
+        getLastRenderMeta: getLastRenderMeta,
         renderToContext: renderToContext,
         renderToCanvas: renderToCanvas,
         computeContainRect: computeContainRect
