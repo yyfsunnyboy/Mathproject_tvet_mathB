@@ -289,6 +289,76 @@ def _classify_frequency_distribution_domain(
     }
 
 
+def _slope_source_block_reason(text: str) -> str | None:
+    """Detect incomplete/corrupt SlopeOfALine textbook stems (content-based)."""
+    compact = re.sub(r"\s+", "", text or "")
+    # Missing coordinates: consecutive commas after 設, or empty math slots $$
+    if "設、、" in text or "設,," in compact:
+        return "missing_point_coordinates"
+    if re.search(r"[A-Za-z]\([^)]*\)、\$\$、", text) or re.search(r"[A-Za-z]\([^)]*\),\$\$,", compact):
+        return "missing_point_coordinates"
+    if "$$" in text and re.search(r"[A-Za-z]\([^)]*\)、\$\$", text):
+        return "missing_point_coordinates"
+    # Figure-fill slope questions without embedded numeric coordinates for each figure slot
+    if (
+        ("m = 0" in text or "m=0" in compact or "m不存在" in text)
+        and any(tok in text for tok in ("①", "②", "圖形", "如圖"))
+        and "A(" not in compact
+        and "A\\left(" not in compact
+    ):
+        return "missing_figure_assets_for_slope_fill"
+    # Claimed three collinear points but four distinct point labels appear
+    if "三點" in text and "共線" in text:
+        labels = set(re.findall(r"([A-Z])\s*(?:\\left)?\(", text))
+        if len(labels) >= 4:
+            return "corrupt_collinear_point_set_three_vs_four"
+    return None
+
+
+def _deterministic_classify_slope_of_a_line(source: TextbookExampleSource) -> dict[str, Any] | None:
+    if "SlopeOfALine" not in str(source.skill_id or ""):
+        return None
+    text = str(source.question_text or "")
+    block_reason = _slope_source_block_reason(text)
+    if block_reason:
+        return None
+    has_choice = bool(source.choices) or bool(re.search(r"\([A-D]\)", text))
+    compact = text.replace(" ", "")
+    if "填入下列各圖形" in text or ("m不存在" in text and ("m>0" in compact or "m > 0" in text) and "①" in text):
+        op = "classify_and_compare_figure_slopes"
+    elif "無法連結成一個三角形" in text or "無法連成一個三角形" in text:
+        op = "non_triangle_collinear_parameter"
+    elif ("為共線之三點" in text or ("共線" in text and has_choice)):
+        op = "collinear_three_points_parameter_choice" if has_choice else "collinear_three_points_parameter"
+    elif "共線" in text or "同一直線" in text:
+        op = "collinear_three_points_parameter"
+    elif "平行" in text and ("線段" in text or "overline" in text or "AB" in text):
+        op = "parallel_segments_parameter"
+    elif "垂直" in text and ("線段" in text or "overline" in text):
+        op = "perpendicular_segments_parameter"
+    elif ("斜率為" in text or "斜率是" in text) and has_choice:
+        op = "solve_parameter_from_known_slope_choice"
+    elif "斜率為" in text or ("斜率" in text and ("試求" in text) and re.search(r"[akx]\s*(?:之值|的值|=)", text)):
+        op = "solve_parameter_from_known_slope"
+    elif "下列直線的斜率" in text and ("直線AB" in text or "直線AP" in text or "(1)" in text):
+        op = "slopes_of_named_segments"
+    elif "斜率" in text and ("兩點" in text or "過下列" in text or "A(" in text.replace(" ", "") or r"A\left" in text):
+        op = "slope_from_two_points"
+    else:
+        return None
+    return {
+        "selected_operation": op,
+        "problem_type_id": op,
+        "math_family": "line_equation",
+        "task_intent": "slope_of_a_line",
+        "presentation_mode": "single_choice" if op.endswith("_choice") else "short_answer",
+        "answer_type": "single_choice" if op.endswith("_choice") else ("multi_part" if op in {"slopes_of_named_segments", "classify_and_compare_figure_slopes"} else "rational"),
+        "required_domain_capabilities": [op],
+        "confidence": 1.0,
+        "classification_source": "deterministic",
+    }
+
+
 def _deterministic_classify(
     source: TextbookExampleSource,
     taxonomy_entry: dict[str, Any] | None = None,
@@ -303,6 +373,10 @@ def _deterministic_classify(
     structural = _classify_number_line_distance(text)
     if structural is not None:
         return structural
+
+    slope_of_line = _deterministic_classify_slope_of_a_line(source)
+    if slope_of_line is not None:
+        return slope_of_line
 
     if fixed_domain_key == "statistics.table_chart":
         example_id = int(getattr(source, "textbook_example_id", 0) or 0)

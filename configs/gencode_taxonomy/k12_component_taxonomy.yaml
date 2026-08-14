@@ -5,6 +5,7 @@ mvp_scope:
     - vh_數學B1_SlopeInterceptForm
     - vh_數學B1_InterceptForm
     - vh_數學B1_GeneralFormOfLinearEquation
+    - vh_數學B1_SlopeOfALine
     - vh_數學B1_DistanceBetweenPointAndLine
     - vh_數學B1_DistanceBetweenTwoParallelLines
     - vh_數學B4_StatisticalChartReading
@@ -60,6 +61,23 @@ skills:
       - line_through_point_perpendicular_to_segment
       - perpendicular_bisector_application
       - coordinate_geometry_word_problem
+  vh_數學B1_SlopeOfALine:
+    fixed_domain_key: coordinate_geometry.line_equation
+    domain_module: core.domain.coordinate_geometry.line_equation_domain
+    entrypoint: build_line_equation_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - slope_from_two_points
+      - solve_parameter_from_known_slope
+      - solve_parameter_from_known_slope_choice
+      - collinear_three_points_parameter
+      - non_triangle_collinear_parameter
+      - parallel_segments_parameter
+      - perpendicular_segments_parameter
+      - collinear_three_points_parameter_choice
+      - slopes_of_named_segments
+      - classify_and_compare_figure_slopes
   vh_數學B1_DistanceBetweenPointAndLine:
     fixed_domain_key: coordinate_geometry.point_line_distance
     domain_module: core.domain.coordinate_geometry.line_equation_domain

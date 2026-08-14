@@ -44,6 +44,17 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "line_through_point_perpendicular_to_segment",
         "perpendicular_bisector_application",
         "coordinate_geometry_word_problem",
+        # SlopeOfALine V3 types:
+        "slope_from_two_points",
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter",
+        "collinear_three_points_parameter_choice",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
         # New distance V3 types:
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
@@ -204,6 +215,46 @@ def build_line_equation_matrix(
         givens, answer, actual_type = _build_compare_line_slopes(
             rng, coord_min, coord_max, extra
         )
+    elif normalized_type == "slope_from_two_points":
+        givens, answer, actual_type = _build_slope_from_two_points(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "solve_parameter_from_known_slope":
+        givens, answer, actual_type = _build_solve_parameter_from_known_slope(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "solve_parameter_from_known_slope_choice":
+        givens, answer, actual_type = _build_solve_parameter_from_known_slope_choice(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "collinear_three_points_parameter":
+        givens, answer, actual_type = _build_collinear_three_points_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "collinear_three_points_parameter_choice":
+        givens, answer, actual_type = _build_collinear_three_points_parameter_choice(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "non_triangle_collinear_parameter":
+        givens, answer, actual_type = _build_non_triangle_collinear_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "parallel_segments_parameter":
+        givens, answer, actual_type = _build_parallel_segments_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "perpendicular_segments_parameter":
+        givens, answer, actual_type = _build_perpendicular_segments_parameter(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slopes_of_named_segments":
+        givens, answer, actual_type = _build_slopes_of_named_segments(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "classify_and_compare_figure_slopes":
+        givens, answer, actual_type = _build_classify_and_compare_figure_slopes(
+            rng, coord_min, coord_max, extra
+        )
     elif normalized_type == "line_through_intersection_parallel_to_line":
         givens, answer, actual_type = _build_line_through_intersection_parallel_to_line(
             rng, coord_min, coord_max, extra
@@ -262,6 +313,11 @@ def build_line_equation_matrix(
         x_range=x_range,
         y_range=y_range,
     )
+    override = givens.pop("visual_spec_override", None)
+    if isinstance(override, dict):
+        visual_spec = override
+        visual_spec.setdefault("x_range", x_range)
+        visual_spec.setdefault("y_range", y_range)
     distractors = _build_distractors(
         rng=rng,
         answer=answer,
@@ -1230,9 +1286,13 @@ def _build_visual_spec(
         pa = givens["point_a"]
         pb = givens["point_b"]
         if isinstance(pa, (list, tuple)) and isinstance(pb, (list, tuple)):
-            points.append({"x": int(pa[0]), "y": int(pa[1]), "label": "A"})
-            points.append({"x": int(pb[0]), "y": int(pb[1]), "label": "B"})
-            lines.append({"through_points": ["A", "B"], "label": "L"})
+            try:
+                points.append({"x": int(pa[0]), "y": int(pa[1]), "label": "A"})
+                points.append({"x": int(pb[0]), "y": int(pb[1]), "label": "B"})
+                lines.append({"through_points": ["A", "B"], "label": "L"})
+            except (TypeError, ValueError):
+                # Parametric / symbolic coordinates: keep equation-only visual.
+                lines.append({"label": "L"})
     elif "point" in givens:
         pt = givens["point"]
         if isinstance(pt, (list, tuple)):
@@ -1303,6 +1363,13 @@ def _build_distractors(
         "intercept_form_triangle_area",
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
+        "slope_from_two_points",
+        "solve_parameter_from_known_slope",
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+        "slopes_of_named_segments",
     }
 
     if "或" in canonical:
@@ -1342,7 +1409,7 @@ def _build_distractors(
         ]
         for p in perturbations:
             candidates.append(fraction_to_plain(p))
-        candidates.extend(["無", "0", "1", "-1"])
+        candidates.extend(["不存在", "無", "0", "1", "-1"])
 
     if actual_type == "vertical_line":
         if "=" in canonical:
@@ -1351,7 +1418,7 @@ def _build_distractors(
                 candidates.append(f"x = {x_val + delta}")
             candidates.extend([f"y = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
         else:
-            candidates = ["0", "1", "-1", "2"]
+            candidates = ["不存在", "無", "0", "1", "-1", "2"]
     elif actual_type == "horizontal_line":
         if "=" in canonical:
             y_val = _extract_horizontal_k(canonical)
@@ -1359,7 +1426,7 @@ def _build_distractors(
                 candidates.append(f"y = {y_val + delta}")
             candidates.extend([f"x = {rng.randint(coord_min, coord_max)}" for _ in range(3)])
         else:
-            candidates = ["無", "1", "-1", "2"]
+            candidates = ["不存在", "無", "1", "-1", "2"]
     else:
         slope = answer.get("slope")
         intercept = answer.get("intercept")
@@ -1445,6 +1512,60 @@ def _build_explanation_steps(
             "以兩點座標計算斜率或判斷是否為水平/鉛直線",
             "代入點斜式或特殊式整理",
             f"化簡得 {canonical}",
+        ]
+    if line_type == "slopes_of_named_segments":
+        return [
+            "依各線段兩端點座標計算斜率",
+            "若兩點 x 座標相同則斜率不存在",
+            f"得 {canonical}",
+        ]
+    if line_type == "classify_and_compare_figure_slopes":
+        return [
+            "依圖形判斷斜率為正、零、負或不存在",
+            "比較兩直線斜率大小",
+            f"得 {canonical}",
+        ]
+    if line_type == "collinear_three_points_parameter_choice":
+        return [
+            "三點共線時斜率相等",
+            "建立參數方程式並求解",
+            f"得 {canonical}",
+        ]
+    if line_type == "slope_from_two_points":
+        return [
+            "由兩點座標計算斜率 m = (y2 - y1)/(x2 - x1)",
+            "若 x1 = x2，則斜率不存在",
+            f"得 {canonical}",
+        ]
+    if line_type in {
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice",
+    }:
+        return [
+            "將已知斜率代入兩點斜率公式",
+            "整理方程式求參數",
+            f"得 {canonical}",
+        ]
+    if line_type in {
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+    }:
+        return [
+            "三點共線時斜率相等（或無法構成三角形）",
+            "建立參數方程式並求解",
+            f"得 {canonical}",
+        ]
+    if line_type == "parallel_segments_parameter":
+        return [
+            "平行線段斜率相等",
+            "建立參數方程式並求解",
+            f"得 {canonical}",
+        ]
+    if line_type == "perpendicular_segments_parameter":
+        return [
+            "垂直線段斜率乘積為 -1",
+            "建立參數方程式並求解",
+            f"得 {canonical}",
         ]
     if line_type == "point_slope":
         return [
@@ -1817,6 +1938,745 @@ def _build_compare_line_slopes(
         "coefficients": {"A": 1, "B": -1, "C": 0},
         "slope": max_val,
         "intercept": 0,
+    }
+    return givens, answer, "oblique_line"
+
+
+def _slope_between_points(x1: int, y1: int, x2: int, y2: int) -> Fraction | str:
+    if x1 == x2:
+        return "不存在"
+    return Fraction(y2 - y1, x2 - x1)
+
+
+def _format_slope_answer(slope: Fraction | str) -> str:
+    if isinstance(slope, str):
+        return "不存在" if slope in {"無", "不存在"} else slope
+    return _format_number(slope)
+
+
+def _line_coefficients_through_points(x1: int, y1: int, x2: int, y2: int) -> tuple[int, int, int]:
+    if x1 == x2:
+        return _normalize_coefficients(1, 0, -x1)
+    if y1 == y2:
+        return _normalize_coefficients(0, 1, -y1)
+    return _normalize_coefficients(y1 - y2, x2 - x1, x1 * y2 - x2 * y1)
+
+
+def _rand_nonzero(rng: random.Random, lo: int, hi: int) -> int:
+    value = rng.randint(lo, hi)
+    while value == 0:
+        value = rng.randint(lo, hi)
+    return value
+
+
+def _build_slope_from_two_points(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    kind = str(constraints.get("line_kind") or rng.choice(["oblique", "horizontal", "vertical"]))
+    if kind == "vertical":
+        x0 = rng.randint(coord_min, coord_max)
+        y1 = rng.randint(coord_min, coord_max)
+        y2 = rng.randint(coord_min, coord_max)
+        while y2 == y1:
+            y2 = rng.randint(coord_min, coord_max)
+        x1, y1, x2, y2 = x0, y1, x0, y2
+        actual_type = "vertical_line"
+        slope: Fraction | str = "不存在"
+        canonical = "不存在"
+    elif kind == "horizontal":
+        y0 = rng.randint(coord_min, coord_max)
+        x1 = rng.randint(coord_min, coord_max)
+        x2 = rng.randint(coord_min, coord_max)
+        while x2 == x1:
+            x2 = rng.randint(coord_min, coord_max)
+        y1 = y2 = y0
+        actual_type = "horizontal_line"
+        slope = Fraction(0, 1)
+        canonical = "0"
+    else:
+        x1 = rng.randint(coord_min, coord_max)
+        y1 = rng.randint(coord_min, coord_max)
+        x2 = rng.randint(coord_min, coord_max)
+        while x2 == x1:
+            x2 = rng.randint(coord_min, coord_max)
+        y2 = rng.randint(coord_min, coord_max)
+        while y2 == y1:
+            y2 = rng.randint(coord_min, coord_max)
+        actual_type = "oblique_line"
+        slope = Fraction(y2 - y1, x2 - x1)
+        canonical = _format_number(slope)
+
+    a_int, b_int, c_int = _line_coefficients_through_points(x1, y1, x2, y2)
+    givens = {
+        "point_a": [x1, y1],
+        "point_b": [x2, y2],
+    }
+    answer = {
+        "canonical_form": canonical,
+        "slope": canonical if isinstance(slope, str) else _format_number(slope),
+        "coefficients": {"A": a_int, "B": b_int, "C": c_int},
+        "intercept": None if b_int == 0 else _format_number(Fraction(-c_int, b_int)),
+    }
+    return givens, answer, actual_type
+
+
+def _build_solve_parameter_from_known_slope(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Solve parameter so the line through two parametric points has a given slope."""
+    param_name = str(constraints.get("parameter_name") or "a")
+    m = _pick_slope(rng, allow_fraction=True)
+    while m == 0:
+        m = _pick_slope(rng, allow_fraction=True)
+
+    template = str(constraints.get("template") or rng.choice(["y_param", "cross_param", "cross_xy_param"]))
+    if template == "cross_xy_param":
+        # Points (p, a) and (a, r) with slope m → (r - a)/(a - p) = m
+        # r - a = m*a - m*p → r + m*p = a*(m + 1) → a = (r + m*p)/(m+1)
+        p = rng.randint(coord_min, coord_max)
+        r = rng.randint(coord_min, coord_max)
+        if m == -1:
+            template = "y_param"
+        else:
+            a_val = Fraction(r + m * p, m + 1)
+            attempts = 0
+            while (a_val.denominator != 1 or a_val == p) and attempts < 20:
+                p = rng.randint(coord_min, coord_max)
+                r = rng.randint(coord_min, coord_max)
+                a_val = Fraction(r + m * p, m + 1)
+                attempts += 1
+            if a_val.denominator == 1 and int(a_val) != p:
+                a_int = int(a_val)
+                x1, y1 = p, a_int
+                x2, y2 = a_int, r
+                coeffs = _line_coefficients_through_points(x1, y1, x2, y2)
+                givens = {
+                    "point_a": [p, param_name],
+                    "point_b": [param_name, r],
+                    "point_a_display": f"({p},{param_name})",
+                    "point_b_display": f"({param_name},{r})",
+                    "slope": _format_number(m),
+                    "parameter_name": param_name,
+                }
+                answer = {
+                    "canonical_form": str(a_int),
+                    "parameter": a_int,
+                    "parameter_name": param_name,
+                    "slope": _format_number(m),
+                    "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+                    "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+                }
+                return givens, answer, "oblique_line"
+            template = "y_param"
+    if template == "cross_param":
+        # Points (p, a) and (q - a, r) with slope m  →  (r - a)/((q - a) - p) = m
+        p = rng.randint(coord_min, coord_max)
+        q = rng.randint(coord_min, coord_max)
+        while q == p:
+            q = rng.randint(coord_min, coord_max)
+        r = rng.randint(coord_min, coord_max)
+        # (r - a) = m * (q - a - p) = m*(q-p) - m*a
+        # r - a = m*(q-p) - m*a
+        # -a + m*a = m*(q-p) - r
+        # a*(m - 1) = m*(q-p) - r
+        if m == 1:
+            # fall back to y_param template
+            template = "y_param"
+        else:
+            a_val = Fraction(m * (q - p) - r, m - 1)
+            # Prefer integer parameter answers for cleaner pedagogy.
+            if a_val.denominator != 1:
+                template = "y_param"
+            else:
+                a_int = int(a_val)
+                # Concrete points after substitution
+                x1, y1 = p, a_int
+                x2, y2 = q - a_int, r
+                if x1 == x2:
+                    template = "y_param"
+                else:
+                    point_a_display = f"({p},{param_name})"
+                    point_b_display = f"({q}-{param_name},{r})"
+                    givens = {
+                        "point_a": [p, param_name],
+                        "point_b": [f"{q}-{param_name}", r],
+                        "point_a_display": point_a_display,
+                        "point_b_display": point_b_display,
+                        "slope": _format_number(m),
+                        "parameter_name": param_name,
+                    }
+                    coeffs = _line_coefficients_through_points(x1, y1, x2, y2)
+                    answer = {
+                        "canonical_form": str(a_int),
+                        "parameter": a_int,
+                        "parameter_name": param_name,
+                        "slope": _format_number(m),
+                        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+                        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+                    }
+                    return givens, answer, "oblique_line"
+
+    # Default: points (x1, y1) and (x2, a) with slope m → a = y1 + m*(x2-x1)
+    x1 = rng.randint(coord_min, coord_max)
+    y1 = rng.randint(coord_min, coord_max)
+    x2 = rng.randint(coord_min, coord_max)
+    while x2 == x1:
+        x2 = rng.randint(coord_min, coord_max)
+    a_val = Fraction(y1) + m * Fraction(x2 - x1)
+    if a_val.denominator != 1:
+        # Force integer by choosing integer slope
+        m = Fraction(rng.choice([-3, -2, -1, 1, 2, 3]), 1)
+        a_val = Fraction(y1) + m * Fraction(x2 - x1)
+    a_int = int(a_val)
+    y2 = a_int
+    coeffs = _line_coefficients_through_points(x1, y1, x2, y2)
+    givens = {
+        "point_a": [x1, y1],
+        "point_b": [x2, param_name],
+        "point_a_display": f"({x1},{y1})",
+        "point_b_display": f"({x2},{param_name})",
+        "slope": _format_number(m),
+        "parameter_name": param_name,
+    }
+    answer = {
+        "canonical_form": str(a_int),
+        "parameter": a_int,
+        "parameter_name": param_name,
+        "slope": _format_number(m),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_solve_parameter_from_known_slope_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    givens, answer, actual_type = _build_solve_parameter_from_known_slope(
+        rng, coord_min, coord_max, constraints
+    )
+    target = int(answer["parameter"])
+    distractors = [target + d for d in (-3, -2, -1, 1, 2, 3, 4) if target + d != target]
+    values = [target]
+    for value in distractors:
+        if value not in values:
+            values.append(value)
+        if len(values) == 4:
+            break
+    rng.shuffle(values)
+    labels = ["A", "B", "C", "D"]
+    correct_label = labels[values.index(target)]
+    choice_rows = [
+        {"label": label, "text": str(value), "value": value}
+        for label, value in zip(labels, values, strict=True)
+    ]
+    givens["choices"] = choice_rows
+    answer["canonical_form"] = correct_label
+    answer["correct_label"] = correct_label
+    answer["choices"] = choice_rows
+    answer["value"] = str(target)
+    answer["distractors"] = [str(v) for v in values if v != target]
+    return givens, answer, actual_type
+
+
+def _build_collinear_three_points_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Three points collinear; solve for the free coordinate parameter."""
+    param_name = str(constraints.get("parameter_name") or "k")
+    # A(x1,y1), B(x2,k), C(x3,y3) with distinct x to keep unique solution.
+    x1 = rng.randint(coord_min, coord_max)
+    y1 = rng.randint(coord_min, coord_max)
+    x2 = rng.randint(coord_min, coord_max)
+    while x2 == x1:
+        x2 = rng.randint(coord_min, coord_max)
+    x3 = rng.randint(coord_min, coord_max)
+    while x3 in (x1, x2):
+        x3 = rng.randint(coord_min, coord_max)
+    y3 = rng.randint(coord_min, coord_max)
+    # Collinear: (x2-x1)*(y3-y1) = (x3-x1)*(k-y1)
+    # k - y1 = (x2-x1)*(y3-y1)/(x3-x1)
+    k_val = Fraction(y1) + Fraction(x2 - x1) * Fraction(y3 - y1, x3 - x1)
+    # Prefer integer k
+    attempts = 0
+    while k_val.denominator != 1 and attempts < 20:
+        y3 = rng.randint(coord_min, coord_max)
+        k_val = Fraction(y1) + Fraction(x2 - x1) * Fraction(y3 - y1, x3 - x1)
+        attempts += 1
+    if k_val.denominator != 1:
+        # Force integer slope between A and C
+        m = Fraction(rng.choice([-3, -2, -1, 1, 2, 3]), 1)
+        y3 = int(Fraction(y1) + m * Fraction(x3 - x1))
+        k_val = Fraction(y1) + m * Fraction(x2 - x1)
+    k_int = int(k_val)
+    y2 = k_int
+    coeffs = _line_coefficients_through_points(x1, y1, x3, y3)
+    givens = {
+        "point_a": [x1, y1],
+        "point_b": [x2, param_name],
+        "point_c": [x3, y3],
+        "point_a_display": f"({x1},{y1})",
+        "point_b_display": f"({x2},{param_name})",
+        "point_c_display": f"({x3},{y3})",
+        "parameter_name": param_name,
+    }
+    answer = {
+        "canonical_form": str(k_int),
+        "parameter": k_int,
+        "parameter_name": param_name,
+        "slope": "不存在" if coeffs[1] == 0 else _format_number(Fraction(-coeffs[0], coeffs[1])),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    return givens, answer, "oblique_line" if coeffs[1] != 0 else "vertical_line"
+
+
+def _build_non_triangle_collinear_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Cannot form a triangle ⇔ three points collinear; reuse collinear kernel."""
+    return _build_collinear_three_points_parameter(rng, coord_min, coord_max, constraints)
+
+
+def _build_parallel_segments_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    param_name = str(constraints.get("parameter_name") or "a")
+    # Fixed CD with defined slope; AB has B.x = a
+    x_c = rng.randint(coord_min, coord_max)
+    y_c = rng.randint(coord_min, coord_max)
+    x_d = rng.randint(coord_min, coord_max)
+    while x_d == x_c:
+        x_d = rng.randint(coord_min, coord_max)
+    y_d = rng.randint(coord_min, coord_max)
+    while y_d == y_c:
+        y_d = rng.randint(coord_min, coord_max)
+    m_cd = Fraction(y_d - y_c, x_d - x_c)
+
+    x_a = rng.randint(coord_min, coord_max)
+    y_a = rng.randint(coord_min, coord_max)
+    y_b = rng.randint(coord_min, coord_max)
+    while y_b == y_a and m_cd == 0:
+        y_b = rng.randint(coord_min, coord_max)
+    # m_ab = (y_b - y_a)/(a - x_a) = m_cd  ⇒  a = x_a + (y_b - y_a)/m_cd
+    if m_cd == 0:
+        # Horizontal CD ⇒ AB horizontal ⇒ y_b must equal y_a; choose a freely ≠ x_a
+        y_b = y_a
+        a_int = x_a + _rand_nonzero(rng, -4, 4)
+    else:
+        a_val = Fraction(x_a) + Fraction(y_b - y_a) / m_cd
+        attempts = 0
+        while a_val.denominator != 1 and attempts < 25:
+            y_b = rng.randint(coord_min, coord_max)
+            a_val = Fraction(x_a) + Fraction(y_b - y_a) / m_cd
+            attempts += 1
+        if a_val.denominator != 1:
+            # Force: choose integer rise matching m_cd
+            rise = int(m_cd.numerator)
+            run = int(m_cd.denominator)
+            y_b = y_a + rise
+            a_val = Fraction(x_a + run)
+        a_int = int(a_val)
+        if a_int == x_a:
+            a_int = x_a + int(m_cd.denominator)
+            y_b = y_a + int(m_cd.numerator)
+
+    coeffs = _line_coefficients_through_points(x_a, y_a, a_int, y_b)
+    givens = {
+        "point_a": [x_a, y_a],
+        "point_b": [param_name, y_b],
+        "point_c": [x_c, y_c],
+        "point_d": [x_d, y_d],
+        "point_a_display": f"({x_a},{y_a})",
+        "point_b_display": f"({param_name},{y_b})",
+        "point_c_display": f"({x_c},{y_c})",
+        "point_d_display": f"({x_d},{y_d})",
+        "parameter_name": param_name,
+        "relation": "parallel",
+    }
+    answer = {
+        "canonical_form": str(a_int),
+        "parameter": a_int,
+        "parameter_name": param_name,
+        "slope": _format_number(m_cd),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    return givens, answer, "oblique_line" if coeffs[1] != 0 else "horizontal_line"
+
+
+def _build_perpendicular_segments_parameter(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    param_name = str(constraints.get("parameter_name") or "x")
+    # Fixed AB with defined nonzero slope; CD has C.y = x
+    x_a = rng.randint(coord_min, coord_max)
+    y_a = rng.randint(coord_min, coord_max)
+    x_b = rng.randint(coord_min, coord_max)
+    while x_b == x_a:
+        x_b = rng.randint(coord_min, coord_max)
+    y_b = rng.randint(coord_min, coord_max)
+    while y_b == y_a:
+        y_b = rng.randint(coord_min, coord_max)
+    m_ab = Fraction(y_b - y_a, x_b - x_a)
+
+    x_c = rng.randint(coord_min, coord_max)
+    x_d = rng.randint(coord_min, coord_max)
+    while x_d == x_c:
+        x_d = rng.randint(coord_min, coord_max)
+    y_d = rng.randint(coord_min, coord_max)
+    # m_cd = (y_d - x)/(x_d - x_c) ; m_ab * m_cd = -1
+    # (y_d - x)/(x_d - x_c) = -1/m_ab
+    # y_d - x = (-1/m_ab)*(x_d - x_c)
+    # x = y_d + (x_d - x_c)/m_ab
+    x_param = Fraction(y_d) + Fraction(x_d - x_c) / m_ab
+    attempts = 0
+    while x_param.denominator != 1 and attempts < 25:
+        y_d = rng.randint(coord_min, coord_max)
+        x_param = Fraction(y_d) + Fraction(x_d - x_c) / m_ab
+        attempts += 1
+    if x_param.denominator != 1:
+        # Force: m_ab integer, choose delta_x = m_ab so division is exact
+        m_ab = Fraction(rng.choice([-3, -2, -1, 1, 2, 3]), 1)
+        y_b = y_a + int(m_ab)
+        x_b = x_a + 1
+        x_param = Fraction(y_d) + Fraction(x_d - x_c) / m_ab
+        if x_param.denominator != 1:
+            x_d = x_c + int(m_ab)
+            x_param = Fraction(y_d + 1)
+            # Recompute: x = y_d + (x_d-x_c)/m_ab = y_d + m_ab/m_ab = y_d+1
+    x_int = int(x_param)
+    y_c = x_int
+    m_cd = _slope_between_points(x_c, y_c, x_d, y_d)
+    coeffs = _line_coefficients_through_points(x_c, y_c, x_d, y_d)
+    givens = {
+        "point_a": [x_a, y_a],
+        "point_b": [x_b, y_b],
+        "point_c": [x_c, param_name],
+        "point_d": [x_d, y_d],
+        "point_a_display": f"({x_a},{y_a})",
+        "point_b_display": f"({x_b},{y_b})",
+        "point_c_display": f"({x_c},{param_name})",
+        "point_d_display": f"({x_d},{y_d})",
+        "parameter_name": param_name,
+        "relation": "perpendicular",
+    }
+    answer = {
+        "canonical_form": str(x_int),
+        "parameter": x_int,
+        "parameter_name": param_name,
+        "slope": "不存在" if isinstance(m_cd, str) else _format_number(m_cd),
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "intercept": None if coeffs[1] == 0 else _format_number(Fraction(-coeffs[2], coeffs[1])),
+    }
+    return givens, answer, "oblique_line" if coeffs[1] != 0 else "vertical_line"
+
+
+def _build_collinear_three_points_parameter_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    givens, answer, actual_type = _build_collinear_three_points_parameter(
+        rng, coord_min, coord_max, constraints
+    )
+    target = int(answer["parameter"])
+    distractors = [target + d for d in (-3, -2, -1, 1, 2, 3, 4) if target + d != target]
+    values = [target]
+    for value in distractors:
+        if value not in values:
+            values.append(value)
+        if len(values) == 4:
+            break
+    rng.shuffle(values)
+    labels = ["A", "B", "C", "D"]
+    correct_label = labels[values.index(target)]
+    choice_rows = [
+        {"label": label, "text": str(value), "value": value}
+        for label, value in zip(labels, values, strict=True)
+    ]
+    givens["choices"] = choice_rows
+    answer["canonical_form"] = correct_label
+    answer["correct_label"] = correct_label
+    answer["choices"] = choice_rows
+    answer["value"] = str(target)
+    answer["parameter"] = target
+    answer["semantic_answer"] = str(target)
+    answer["distractors"] = [str(v) for v in values if v != target]
+    return givens, answer, actual_type
+
+
+def _build_slopes_of_named_segments(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Compute slopes of multiple named segments (shared by 4519/4533-style items)."""
+    segment_count = int(constraints.get("segment_count") or 4)
+    kinds = list(
+        constraints.get("segment_kinds")
+        or ["oblique_neg", "oblique_pos", "horizontal", "vertical"]
+    )
+    while len(kinds) < segment_count:
+        kinds.append(rng.choice(["oblique_pos", "oblique_neg", "horizontal", "vertical"]))
+    kinds = kinds[:segment_count]
+
+    points: dict[str, list[int]] = {}
+    labels = [chr(ord("A") + i) for i in range(max(6, segment_count + 2))]
+    # Shared pool of points; generate distinct points then wire segments.
+    for label in labels:
+        points[label] = [rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max)]
+
+    segments: list[dict[str, object]] = []
+    part_answers: dict[str, str] = {}
+    segment_answers: dict[str, str] = {}
+    ordered_values: list[str] = []
+    used_pairs: set[tuple[str, str]] = set()
+
+    def _fresh_pair() -> tuple[str, str]:
+        for _ in range(40):
+            a_lbl = rng.choice(labels[:6])
+            b_lbl = rng.choice(labels[:6])
+            if a_lbl == b_lbl:
+                continue
+            key = (a_lbl, b_lbl)
+            if key in used_pairs or (b_lbl, a_lbl) in used_pairs:
+                continue
+            used_pairs.add(key)
+            return a_lbl, b_lbl
+        return "A", "B"
+
+    for idx, kind in enumerate(kinds):
+        a_lbl, b_lbl = _fresh_pair()
+        if kind == "vertical":
+            x0 = rng.randint(coord_min, coord_max)
+            y1 = rng.randint(coord_min, coord_max)
+            y2 = rng.randint(coord_min, coord_max)
+            while y2 == y1:
+                y2 = rng.randint(coord_min, coord_max)
+            points[a_lbl] = [x0, y1]
+            points[b_lbl] = [x0, y2]
+        elif kind == "horizontal":
+            y0 = rng.randint(coord_min, coord_max)
+            x1 = rng.randint(coord_min, coord_max)
+            x2 = rng.randint(coord_min, coord_max)
+            while x2 == x1:
+                x2 = rng.randint(coord_min, coord_max)
+            points[a_lbl] = [x1, y0]
+            points[b_lbl] = [x2, y0]
+        elif kind == "oblique_neg":
+            x1 = rng.randint(coord_min, coord_max - 1)
+            y1 = rng.randint(coord_min + 1, coord_max)
+            run = rng.randint(1, 4)
+            rise = -rng.randint(1, 4)
+            points[a_lbl] = [x1, y1]
+            points[b_lbl] = [x1 + run, y1 + rise]
+        else:
+            x1 = rng.randint(coord_min, coord_max - 1)
+            y1 = rng.randint(coord_min, coord_max - 1)
+            run = rng.randint(1, 4)
+            rise = rng.randint(1, 4)
+            points[a_lbl] = [x1, y1]
+            points[b_lbl] = [x1 + run, y1 + rise]
+
+        x1, y1 = points[a_lbl]
+        x2, y2 = points[b_lbl]
+        slope = _slope_between_points(x1, y1, x2, y2)
+        slope_text = _format_slope_answer(slope)
+        seg_name = f"{a_lbl}{b_lbl}"
+        part_key = f"part_{idx + 1}"
+        segments.append(
+            {
+                "name": seg_name,
+                "label": seg_name,
+                "from": a_lbl,
+                "to": b_lbl,
+                "points": [[x1, y1], [x2, y2]],
+                "slope": slope_text,
+                "part_key": part_key,
+            }
+        )
+        part_answers[part_key] = slope_text
+        segment_answers[seg_name] = slope_text
+        ordered_values.append(slope_text)
+
+    first = segments[0]["points"]
+    coeffs = _line_coefficients_through_points(
+        int(first[0][0]), int(first[0][1]), int(first[1][0]), int(first[1][1])
+    )
+    used_labels = sorted({s["from"] for s in segments} | {s["to"] for s in segments})
+    givens = {
+        "points": {lbl: points[lbl] for lbl in used_labels},
+        "segments": [
+            {"name": s["name"], "from": s["from"], "to": s["to"], "points": s["points"]}
+            for s in segments
+        ],
+        "visual_spec_override": {
+            "kind": "coordinate_plane_segments",
+            "points": [
+                {"x": int(points[lbl][0]), "y": int(points[lbl][1]), "label": lbl}
+                for lbl in used_labels
+            ],
+            "lines": [
+                {
+                    "through_points": [s["from"], s["to"]],
+                    "label": s["name"],
+                    "slope": s["slope"],
+                }
+                for s in segments
+            ],
+            "x_range": [coord_min - 1, coord_max + 1],
+            "y_range": [coord_min - 1, coord_max + 1],
+        },
+    }
+    answer = {
+        "canonical_form": "；".join(ordered_values),
+        "parts": part_answers,
+        "segment_slopes": segment_answers,
+        "slopes": ordered_values,
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "slope": ordered_values[0],
+        "intercept": None,
+        "distractors": ["0", "1", "-1", "不存在", "2", "-2"],
+    }
+    return givens, answer, "oblique_line"
+
+
+def _build_classify_and_compare_figure_slopes(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Four figure slope classifications + two slope comparisons (6 answer slots)."""
+    class_order = list(
+        constraints.get("classification_order")
+        or ["m>0", "m=0", "m不存在", "m<0"]
+    )
+    compare_order = list(constraints.get("comparison_order") or ["m1>m2", "m1<m2"])
+
+    def _segment_for_class(kind: str) -> dict[str, object]:
+        if kind == "m=0":
+            y0 = rng.randint(coord_min, coord_max)
+            x1 = rng.randint(coord_min, coord_max - 2)
+            return {
+                "kind": kind,
+                "points": [[x1, y0], [x1 + 2, y0]],
+                "slope_token": "m=0",
+            }
+        if kind == "m不存在":
+            x0 = rng.randint(coord_min, coord_max)
+            y1 = rng.randint(coord_min, coord_max - 2)
+            return {
+                "kind": kind,
+                "points": [[x0, y1], [x0, y1 + 2]],
+                "slope_token": "m不存在",
+            }
+        if kind == "m<0":
+            x1 = rng.randint(coord_min, coord_max - 2)
+            y1 = rng.randint(coord_min + 2, coord_max)
+            return {
+                "kind": kind,
+                "points": [[x1, y1], [x1 + 2, y1 - 2]],
+                "slope_token": "m<0",
+            }
+        x1 = rng.randint(coord_min, coord_max - 2)
+        y1 = rng.randint(coord_min, coord_max - 2)
+        return {
+            "kind": kind,
+            "points": [[x1, y1], [x1 + 2, y1 + 2]],
+            "slope_token": "m>0",
+        }
+
+    def _pair_for_relation(relation: str) -> dict[str, object]:
+        # Distinct positive slopes for a clear inequality.
+        if relation == "m1>m2":
+            m1, m2 = Fraction(2, 1), Fraction(1, 2)
+        else:
+            m1, m2 = Fraction(1, 2), Fraction(2, 1)
+        base = rng.randint(coord_min, coord_max - 2)
+        l1 = {"points": [[base, base], [base + int(m1.denominator), base + int(m1.numerator)]], "slope": _format_number(m1)}
+        l2 = {"points": [[base, base - 1], [base + int(m2.denominator), base - 1 + int(m2.numerator)]], "slope": _format_number(m2)}
+        return {"relation": relation, "L1": l1, "L2": l2}
+
+    figures = [_segment_for_class(kind) for kind in class_order]
+    comparisons = [_pair_for_relation(rel) for rel in compare_order]
+
+    part_answers = {
+        "fig1": figures[0]["slope_token"],
+        "fig2": figures[1]["slope_token"],
+        "fig3": figures[2]["slope_token"],
+        "fig4": figures[3]["slope_token"],
+        "cmp1": comparisons[0]["relation"],
+        "cmp2": comparisons[1]["relation"],
+    }
+    ordered = [part_answers[k] for k in ("fig1", "fig2", "fig3", "fig4", "cmp1", "cmp2")]
+    coeffs = _line_coefficients_through_points(
+        int(figures[0]["points"][0][0]),
+        int(figures[0]["points"][0][1]),
+        int(figures[0]["points"][1][0]),
+        int(figures[0]["points"][1][1]),
+    )
+    givens = {
+        "figures": figures,
+        "comparisons": comparisons,
+        "classification_labels": ["m>0", "m=0", "m不存在", "m<0"],
+        "comparison_labels": ["m1>m2", "m1<m2"],
+        "visual_spec_override": {
+            "kind": "coordinate_plane_multi_figure",
+            "figures": [
+                {
+                    "id": f"fig{i + 1}",
+                    "label": f"①②③④"[i],
+                    "points": fig["points"],
+                    "slope_class": fig["slope_token"],
+                }
+                for i, fig in enumerate(figures)
+            ],
+            "comparisons": [
+                {
+                    "id": f"cmp{i + 1}",
+                    "label": f"比較{i + 1}",
+                    "L1": cmp["L1"],
+                    "L2": cmp["L2"],
+                    "relation": cmp["relation"],
+                }
+                for i, cmp in enumerate(comparisons)
+            ],
+            "x_range": [coord_min - 1, coord_max + 1],
+            "y_range": [coord_min - 1, coord_max + 1],
+        },
+    }
+    answer = {
+        "canonical_form": "；".join(ordered),
+        "parts": part_answers,
+        "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
+        "slope": figures[0]["slope_token"],
+        "intercept": None,
+        "distractors": ["m>0", "m=0", "m不存在", "m<0", "m1>m2", "m1<m2"],
     }
     return givens, answer, "oblique_line"
 
@@ -2207,7 +3067,7 @@ def build_coordinate_geometry_matrix(
     difficulty_profile: str,
     constraints: dict[str, object] | None = None,
 ) -> dict[str, object]:
-    """Domain entrypoint keyed by domain_operation (no skill_id branching)."""
+    """Domain entrypoint keyed by domain_operation (no administrative skill branching)."""
     line_type = resolve_line_type_for_domain_operation(domain_operation)
     return build_line_equation_matrix(
         seed=seed,

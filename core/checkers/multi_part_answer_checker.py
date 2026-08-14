@@ -18,6 +18,16 @@ SUPPORTED_PART_CHECKERS = frozenset(
     }
 )
 
+_UNDEFINED_SLOPE_TOKENS = frozenset({"無", "不存在", "斜率不存在", "m不存在"})
+_CLASS_SLOPE_TOKENS = frozenset({"m>0", "m<0", "m=0", "m不存在", "m1>m2", "m1<m2"})
+
+
+def _normalize_slope_token(value: Any) -> str:
+    text = str(value or "").strip().replace(" ", "")
+    if text in _UNDEFINED_SLOPE_TOKENS:
+        return "不存在"
+    return text
+
 
 def _part_key(part: dict[str, Any], index: int) -> str:
     return str(part.get("key") or part.get("id") or f"part_{index + 1}").strip()
@@ -58,6 +68,15 @@ def _check_part(
 ) -> bool:
     checker_key = checker.strip()
     equiv = equivalence_type.strip()
+    student_token = _normalize_slope_token(student_answer)
+    expected_token = _normalize_slope_token(expected_answer)
+    if (
+        student_token in _CLASS_SLOPE_TOKENS
+        or expected_token in _CLASS_SLOPE_TOKENS
+        or student_token == "不存在"
+        or expected_token == "不存在"
+    ):
+        return student_token == expected_token and bool(student_token)
     if checker_key == "decimal_tolerance_checker" or equiv == "decimal_tolerance":
         from core.gencode.answer_payload import grade_numeric_contract_answer
 

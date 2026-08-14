@@ -38,6 +38,20 @@ def validate_source_completeness(source_text: str, problem_type_id: str) -> dict
             blockers.append("source_incomplete:missing_parameter_symbol")
         if "距離" not in text and "distance" not in text.lower():
             blockers.append("source_incomplete:missing_distance_value")
+    if problem_type in {
+        "slope_from_two_points",
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+    }:
+        from core.gencode.services.v3_example_semantic_classifier import _slope_source_block_reason
+
+        reason = _slope_source_block_reason(text)
+        if reason:
+            blockers.append(f"source_incomplete:{reason}")
     return {"passed": not blockers, "blockers": blockers}
 
 

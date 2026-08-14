@@ -294,6 +294,38 @@ def _build_line_equation_answer_contract(
                 },
             ],
         }
+    if task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+        parts_map = semantic_answer if isinstance(semantic_answer, dict) else {}
+        part_rows = []
+        for key, expected in parts_map.items():
+            expected_text = str(expected)
+            uses_class_token = any(
+                tok in expected_text for tok in ("m>", "m<", "m=", "m1", "不存在", "無")
+            )
+            checker = "expression_equivalence_checker" if uses_class_token or expected_text in {"不存在", "無"} else "rational_checker"
+            equiv = "algebraic_equivalent" if checker == "expression_equivalence_checker" else "rational_equivalent"
+            part_rows.append(
+                {
+                    "key": key,
+                    "label": key,
+                    "checker": checker,
+                    "equivalence_type": equiv,
+                    "expected_answer": expected_text,
+                    "display_answer": expected_text,
+                }
+            )
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence_type": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "semantic_answer": parts_map,
+            "parts": part_rows,
+        }
     if answer_type == "numeric_or_radical":
         return {
             "presentation_mode": "short_answer",
@@ -364,6 +396,14 @@ def convert_line_equation_matrix_to_question_payload(
     question_text = _build_line_equation_question_text(givens, validation_facts)
     mode = str(presentation_mode or "short_answer").strip()
     task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
+    if task_type in {"slopes_of_named_segments", "classify_and_compare_figure_slopes"}:
+        mode = "short_answer"
+    elif task_type in {
+        "compare_line_slopes",
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter_choice",
+    } or answer.get("choices") or givens.get("choices"):
+        mode = "single_choice"
     if mode == "single_choice":
         default_answer_type = "single_choice"
     elif task_type in (
@@ -372,10 +412,26 @@ def convert_line_equation_matrix_to_question_payload(
         "slope_from_general_form",
         "parallel_line_slope",
         "perpendicular_line_slope",
+        "slope_from_two_points",
     ):
         default_answer_type = "numeric_or_undefined"
-    elif task_type in ("perpendicular_condition_parameter", "parallel_condition_parameter"):
+    elif task_type in (
+        "perpendicular_condition_parameter",
+        "parallel_condition_parameter",
+        "solve_parameter_from_known_slope",
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+    ):
         default_answer_type = "rational"
+    elif task_type in (
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter_choice",
+    ):
+        default_answer_type = "single_choice"
+    elif task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+        default_answer_type = "multi_part"
     elif task_type == "intercept_form_triangle_area":
         default_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
@@ -410,6 +466,11 @@ def convert_line_equation_matrix_to_question_payload(
         resolved_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
         resolved_answer_type = "multi_part"
+    elif task_type in ("slopes_of_named_segments", "classify_and_compare_figure_slopes"):
+        resolved_answer_type = "multi_part"
+        parts_map = answer.get("parts")
+        if isinstance(parts_map, dict):
+            semantic_answer = parts_map
     elif task_type in (
         "distance_between_parallel_lines",
         "solve_parameter_from_parallel_distance",
@@ -677,6 +738,16 @@ def _build_line_equation_question_text(
         "line_through_intersection_parallel_to_line",
         "perpendicular_bisector_application",
         "line_through_point_perpendicular_to_segment",
+        "slope_from_two_points",
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+        "collinear_three_points_parameter_choice",
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
@@ -902,6 +973,88 @@ def _build_line_equation_question_text(
         if "choices" not in givens:
             raise ValueError("required_line_task_slot_missing:compare_line_slopes:lines")
         return "下列各直線方程式中，具有最大斜率的直線為"
+
+    if task_type == "slope_from_two_points":
+        if "point_a" not in givens or "point_b" not in givens:
+            raise ValueError("required_line_task_slot_missing:slope_from_two_points:points")
+        pa = givens.get("point_a_display") or _format_point_for_question(givens["point_a"])
+        pb = givens.get("point_b_display") or _format_point_for_question(givens["point_b"])
+        return f"試求過兩點 A{pa}、B{pb} 的直線斜率。"
+
+    if task_type in ("solve_parameter_from_known_slope", "solve_parameter_from_known_slope_choice"):
+        if "slope" not in givens:
+            raise ValueError("required_line_task_slot_missing:solve_parameter_from_known_slope:slope")
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        slope = givens["slope"]
+        param = givens.get("parameter_name") or "a"
+        return (
+            f"若直線通過點 {pa} 與 {pb}，且其斜率為 {_latex_dollar(str(slope))}，"
+            f"試求 {param} 之值。"
+        )
+
+    if task_type == "collinear_three_points_parameter":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        param = givens.get("parameter_name") or "k"
+        return f"若 A{pa}、B{pb}、C{pc} 三點共線，試求 {param} 之值。"
+
+    if task_type == "non_triangle_collinear_parameter":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        param = givens.get("parameter_name") or "k"
+        return f"若 A{pa}、B{pb}、C{pc} 三點無法連結成一個三角形，試求 {param} 之值。"
+
+    if task_type == "parallel_segments_parameter":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        pd = givens.get("point_d_display") or _format_point_for_question(givens.get("point_d"))
+        param = givens.get("parameter_name") or "a"
+        return (
+            f"設 A{pa}、B{pb}、C{pc}、D{pd}，若線段 AB 與 CD 平行，試求 {param} 之值。"
+        )
+
+    if task_type == "perpendicular_segments_parameter":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        pd = givens.get("point_d_display") or _format_point_for_question(givens.get("point_d"))
+        param = givens.get("parameter_name") or "x"
+        return (
+            f"設 A{pa}、B{pb}、C{pc}、D{pd}，若線段 AB 與 CD 垂直，試求 {param} 之值。"
+        )
+
+    if task_type == "slopes_of_named_segments":
+        points = givens.get("points") if isinstance(givens.get("points"), dict) else {}
+        segments = givens.get("segments") if isinstance(givens.get("segments"), list) else []
+        point_bits = []
+        for label, coords in points.items():
+            point_bits.append(f"{label}{_format_point_for_question(coords)}")
+        seg_bits = []
+        for idx, seg in enumerate(segments):
+            if not isinstance(seg, dict):
+                continue
+            name = str(seg.get("name") or f"L{idx + 1}")
+            seg_bits.append(f"({idx + 1})直線{name}")
+        joined_points = "、".join(point_bits) if point_bits else "已知各點"
+        joined_segs = " ".join(seg_bits) if seg_bits else "各線段"
+        return f"設{joined_points}，試求下列直線的斜率。{joined_segs}。"
+
+    if task_type == "classify_and_compare_figure_slopes":
+        return (
+            "(1) 請將 m = 0、m不存在、m > 0、m < 0，填入下列各圖形的斜率。"
+            "(2) 設 m1、m2 分別為直線 L1、L2 的斜率，試比較各圖中 m1 與 m2 的大小。"
+        )
+
+    if task_type == "collinear_three_points_parameter_choice":
+        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pc = givens.get("point_c_display") or _format_point_for_question(givens.get("point_c"))
+        param = givens.get("parameter_name") or "a"
+        return f"設 {pa}、{pb}、{pc} 為共線之三點，則 {param} ="
 
     if task_type == "perpendicular_line_slope":
         if "equation" not in givens:
@@ -2095,6 +2248,16 @@ def convert_domain_matrix_to_question_payload(
         "line_through_point_perpendicular_to_segment",
         "perpendicular_bisector_application",
         "coordinate_geometry_word_problem",
+        "slope_from_two_points",
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice",
+        "collinear_three_points_parameter",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "perpendicular_segments_parameter",
+        "collinear_three_points_parameter_choice",
+        "slopes_of_named_segments",
+        "classify_and_compare_figure_slopes",
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",

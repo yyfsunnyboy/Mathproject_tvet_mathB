@@ -170,57 +170,159 @@ skills:
     skill_ch_name: 直線的斜率
     classifier_source: human_confirmed
     problem_types:
-      - problem_type_id: text_short_slope_of_line_problems
-        display_name: 直線的斜率與應用
+      - problem_type_id: slope_from_two_points
+        display_name: 兩點求斜率
         checker: rational_checker
         equivalence: rational_equivalent
         runtime_candidate: true
         requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 合併為同一主要 problem_type。
+        merge_policy: split_by_contract_diff
+        notes: 含水平線斜率0與鉛直線斜率不存在。
+      - problem_type_id: solve_parameter_from_known_slope
+        display_name: 已知斜率求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: solve_parameter_from_known_slope_choice
+        display_name: 已知斜率求參數（選擇題）
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: collinear_three_points_parameter
+        display_name: 三點共線求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: non_triangle_collinear_parameter
+        display_name: 無法形成三角形求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: parallel_segments_parameter
+        display_name: 平行線段求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: perpendicular_segments_parameter
+        display_name: 垂直線段求參數
+        checker: rational_checker
+        equivalence: rational_equivalent
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: slopes_of_named_segments
+        display_name: 多線段斜率
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: classify_and_compare_figure_slopes
+        display_name: 圖形斜率分類與比較
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: collinear_three_points_parameter_choice
+        display_name: 三點共線求參數（選擇題）
+        checker: choice_label_checker
+        equivalence: choice_label
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
     classification_rules:
       - if_contains:
+          - 填入下列各圖形
+        prefer_problem_type_id: classify_and_compare_figure_slopes
+      - if_contains:
+          - m不存在
+          - m > 0
+        prefer_problem_type_id: classify_and_compare_figure_slopes
+      - if_contains:
+          - 無法連結成一個三角形
+        prefer_problem_type_id: non_triangle_collinear_parameter
+      - if_contains:
+          - 為共線之三點
+        prefer_problem_type_id: collinear_three_points_parameter_choice
+      - if_contains:
+          - 三點共線
+        prefer_problem_type_id: collinear_three_points_parameter
+      - if_contains:
+          - 同一直線
+        prefer_problem_type_id: collinear_three_points_parameter
+      - if_contains:
+          - 平行
+          - 線段
+        prefer_problem_type_id: parallel_segments_parameter
+      - if_contains:
+          - 垂直
+          - 線段
+        prefer_problem_type_id: perpendicular_segments_parameter
+      - if_contains:
+          - 斜率為
+          - 試求
+        prefer_problem_type_id: solve_parameter_from_known_slope
+      - if_contains:
+          - 斜率為
+          - 則
+        prefer_problem_type_id: solve_parameter_from_known_slope_choice
+      - if_contains:
+          - 下列直線的斜率
+        prefer_problem_type_id: slopes_of_named_segments
+      - if_contains:
+          - 兩點
           - 斜率
-          - 共線
-          - 畫出圖形
-          - 直線
-          - 三角形
-        prefer_problem_type_id: text_short_slope_of_line_problems
+        prefer_problem_type_id: slope_from_two_points
+      - if_contains:
+          - 過下列各組
+          - 斜率
+        prefer_problem_type_id: slope_from_two_points
     source_policy:
       source_count_threshold_for_split: 999
       small_skill_merge_allowed: true
       min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
       default_problem_type_used: false
-      single_primary_problem_type: true
+      single_primary_problem_type: false
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
     source_examples:
       - example_id: 4519
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: slopes_of_named_segments
       - example_id: 4520
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: classify_and_compare_figure_slopes
       - example_id: 4521
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: slope_from_two_points
       - example_id: 4522
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: solve_parameter_from_known_slope
       - example_id: 4523
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: collinear_three_points_parameter
       - example_id: 4524
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: non_triangle_collinear_parameter
       - example_id: 4525
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: parallel_segments_parameter
       - example_id: 4529
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: collinear_three_points_parameter
       - example_id: 4533
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: slopes_of_named_segments
       - example_id: 4534
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: non_triangle_collinear_parameter
       - example_id: 4590
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: solve_parameter_from_known_slope_choice
       - example_id: 4601
-        matched_problem_type_id: text_short_slope_of_line_problems
+        matched_problem_type_id: collinear_three_points_parameter_choice
 
   - skill_id: vh_數學B1_PropertiesOfParallelLines
     skill_ch_name: 兩平行線的性質

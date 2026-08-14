@@ -1,0 +1,139 @@
+{
+  "skill_id": "vh_數學B1_SlopeOfALine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 12,
+  "components": [
+    {
+      "component_id": "src_4519",
+      "textbook_example_id": 4519,
+      "status": "verified",
+      "problem_type_id": "slopes_of_named_segments",
+      "domain_operation": "slopes_of_named_segments",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4519/generate.py"
+    },
+    {
+      "component_id": "src_4520",
+      "textbook_example_id": 4520,
+      "status": "verified",
+      "problem_type_id": "classify_and_compare_figure_slopes",
+      "domain_operation": "classify_and_compare_figure_slopes",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4520/generate.py"
+    },
+    {
+      "component_id": "src_4521",
+      "textbook_example_id": 4521,
+      "status": "verified",
+      "problem_type_id": "slope_from_two_points",
+      "domain_operation": "slope_from_two_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4521/generate.py"
+    },
+    {
+      "component_id": "src_4522",
+      "textbook_example_id": 4522,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_known_slope",
+      "domain_operation": "solve_parameter_from_known_slope",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4522/generate.py"
+    },
+    {
+      "component_id": "src_4523",
+      "textbook_example_id": 4523,
+      "status": "verified",
+      "problem_type_id": "collinear_three_points_parameter",
+      "domain_operation": "collinear_three_points_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4523/generate.py"
+    },
+    {
+      "component_id": "src_4524",
+      "textbook_example_id": 4524,
+      "status": "verified",
+      "problem_type_id": "non_triangle_collinear_parameter",
+      "domain_operation": "non_triangle_collinear_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4524/generate.py"
+    },
+    {
+      "component_id": "src_4525",
+      "textbook_example_id": 4525,
+      "status": "verified",
+      "problem_type_id": "parallel_segments_parameter",
+      "domain_operation": "parallel_segments_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4525/generate.py"
+    },
+    {
+      "component_id": "src_4529",
+      "textbook_example_id": 4529,
+      "status": "verified",
+      "problem_type_id": "collinear_three_points_parameter",
+      "domain_operation": "collinear_three_points_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4529/generate.py"
+    },
+    {
+      "component_id": "src_4533",
+      "textbook_example_id": 4533,
+      "status": "verified",
+      "problem_type_id": "slopes_of_named_segments",
+      "domain_operation": "slopes_of_named_segments",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4533/generate.py"
+    },
+    {
+      "component_id": "src_4534",
+      "textbook_example_id": 4534,
+      "status": "verified",
+      "problem_type_id": "non_triangle_collinear_parameter",
+      "domain_operation": "non_triangle_collinear_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4534/generate.py"
+    },
+    {
+      "component_id": "src_4590",
+      "textbook_example_id": 4590,
+      "status": "verified",
+      "problem_type_id": "solve_parameter_from_known_slope_choice",
+      "domain_operation": "solve_parameter_from_known_slope_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_4590/generate.py"
+    },
+    {
+      "component_id": "src_4601",
+      "textbook_example_id": 4601,
+      "status": "verified",
+      "problem_type_id": "collinear_three_points_parameter_choice",
+      "domain_operation": "collinear_three_points_parameter_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_4601/generate.py"
+    }
+  ]
+}

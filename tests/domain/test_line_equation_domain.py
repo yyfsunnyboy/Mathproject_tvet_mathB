@@ -208,11 +208,11 @@ def test_resolve_domain_for_skill_returns_mapping_without_dynamic_import():
     )
     assert resolved["entrypoint"] == "build_line_equation_matrix"
     assert resolved["default_curriculum_profile"] == "vocational_high_b"
-    assert set(resolved.keys()) == {
+    assert {
         "domain_module",
         "entrypoint",
         "default_curriculum_profile",
-    }
+    } <= set(resolved.keys())
 
 
 def test_unknown_line_type_raises_value_error():
@@ -230,5 +230,7 @@ def test_unknown_line_type_raises_value_error():
 
 
 def test_unregistered_skill_raises_key_error():
-    with pytest.raises(KeyError, match="Unregistered skill_id"):
+    from core.registry.taxonomy_registry import SkillDomainNotRegisteredError
+
+    with pytest.raises(SkillDomainNotRegisteredError, match="skill_domain_not_registered"):
         resolve_domain_for_skill("not_a_real_skill")

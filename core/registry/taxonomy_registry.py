@@ -59,6 +59,13 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
     },
+    "vh_數學B1_SlopeOfALine": {
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "domain": "coordinate_geometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_slope_of_a_line",
+    },
     "vh_數學B1_DistanceBetweenPointAndLine": {
         "fixed_domain_key": "coordinate_geometry.point_line_distance",
         "domain": "coordinate_geometry",
@@ -159,6 +166,24 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "line_through_point_perpendicular_to_segment",
             "perpendicular_bisector_application",
             "coordinate_geometry_word_problem",
+        ],
+    },
+    "vh_數學B1_SlopeOfALine": {
+        "fixed_domain_key": "coordinate_geometry.line_equation",
+        "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+        "entrypoint": "build_line_equation_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "slope_from_two_points",
+            "solve_parameter_from_known_slope",
+            "solve_parameter_from_known_slope_choice",
+            "collinear_three_points_parameter",
+            "non_triangle_collinear_parameter",
+            "parallel_segments_parameter",
+            "perpendicular_segments_parameter",
+            "collinear_three_points_parameter_choice",
+            "slopes_of_named_segments",
+            "classify_and_compare_figure_slopes",
         ],
     },
     "vh_數學B1_DistanceBetweenPointAndLine": {

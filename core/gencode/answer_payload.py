@@ -504,6 +504,14 @@ def grade_numeric_contract_answer(
     require_integer = answer_type == "integer"
     canonical = ac.get("canonical_answer", correct_answer)
 
+    undef = {"無", "不存在", "斜率不存在", "m不存在"}
+    user_token = str(user_answer or "").strip().replace(" ", "")
+    canon_token = str(canonical or "").strip().replace(" ", "")
+    if user_token in undef or canon_token in undef:
+        normalized_user = "不存在" if user_token in undef else user_token
+        normalized_canon = "不存在" if canon_token in undef else canon_token
+        return {"correct": normalized_user == normalized_canon and bool(normalized_user)}
+
     if checker_key == "decimal_tolerance_checker":
         tolerance = ac.get("tolerance")
         if tolerance is None:

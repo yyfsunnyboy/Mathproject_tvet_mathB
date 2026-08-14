@@ -890,6 +890,18 @@ def _classify_examples_with_rulepack(
 ) -> list[dict[str, Any]]:
     problem_types = pack.get("problem_types", []) if isinstance(pack.get("problem_types"), list) else []
     rules = pack.get("classification_rules", []) if isinstance(pack.get("classification_rules"), list) else []
+    source_examples = pack.get("source_examples", []) if isinstance(pack.get("source_examples"), list) else []
+    explicit_by_id: dict[int, dict[str, Any]] = {}
+    for item in source_examples:
+        if not isinstance(item, dict):
+            continue
+        try:
+            eid = int(item.get("example_id") or 0)
+        except (TypeError, ValueError):
+            continue
+        if eid <= 0:
+            continue
+        explicit_by_id[eid] = item
     pt_by_id = {
         str(x.get("problem_type_id", "")).strip(): x
         for x in problem_types
@@ -902,15 +914,32 @@ def _classify_examples_with_rulepack(
         text_l = text.lower()
         chosen = ""
         topology_match: dict[str, Any] | None = None
+        try:
+            example_id = int(ex.get("id") or 0)
+        except (TypeError, ValueError):
+            example_id = 0
+        explicit = explicit_by_id.get(example_id)
+        if isinstance(explicit, dict):
+            explicit_pt = str(explicit.get("matched_problem_type_id") or "").strip()
+            if explicit_pt in pt_by_id:
+                chosen = explicit_pt
+                topology_match = {
+                    "classification_rule_id": "rule_pack.source_examples",
+                    "classification_reason": "matched_registered_source_example_map",
+                }
+                block_reason = str(explicit.get("block_reason") or "").strip()
+                if block_reason:
+                    topology_match["block_reason"] = block_reason
         from core.gencode.source_topology_rules import classify_source_topology
 
-        candidate_topology = classify_source_topology(ex)
-        if (
-            isinstance(candidate_topology, dict)
-            and str(candidate_topology.get("problem_type_id") or "") in pt_by_id
-        ):
-            topology_match = candidate_topology
-            chosen = str(candidate_topology["problem_type_id"])
+        if not chosen:
+            candidate_topology = classify_source_topology(ex)
+            if (
+                isinstance(candidate_topology, dict)
+                and str(candidate_topology.get("problem_type_id") or "") in pt_by_id
+            ):
+                topology_match = candidate_topology
+                chosen = str(candidate_topology["problem_type_id"])
         for r in rules:
             if chosen:
                 break
@@ -927,6 +956,7 @@ def _classify_examples_with_rulepack(
         checker = str(cfg.get("checker", "")).strip()
         eq = str(cfg.get("equivalence", "")).strip()
         needs_human = bool(cfg.get("requires_human_action", False))
+        runtime_candidate = bool(cfg.get("runtime_candidate", not needs_human))
         rows.append(
             {
                 "example_id": ex.get("id"),
@@ -936,14 +966,16 @@ def _classify_examples_with_rulepack(
                 "skill_id": skill_id,
                 "subskill_id": pt,
                 "problem_type_id": pt,
-                "runtime_category": "manual_review" if needs_human else "deterministic_choice" if checker == "choice_label_checker" else "deterministic_expression",
+                "runtime_category": "manual_review" if needs_human or not runtime_candidate else "deterministic_choice" if checker == "choice_label_checker" else "deterministic_expression",
                 "classification_rule_id": "rule_pack.yaml",
                 "classification_reason": "matched_registered_yaml_rule_pack",
                 "classifier_confidence": "high",
                 "semantic_risk_flags": [],
-                "semantic_audit_status": "review_required" if needs_human else "ok",
-                "generator_status": "manual_review" if needs_human else "ready_for_draft",
-                "manual_review_reason": str(cfg.get("notes", "")).strip() if needs_human else "",
+                "semantic_audit_status": "review_required" if needs_human or not runtime_candidate else "ok",
+                "generator_status": "manual_review" if needs_human or not runtime_candidate else "ready_for_draft",
+                "manual_review_reason": str(cfg.get("notes", "")).strip() if needs_human or not runtime_candidate else "",
+                "runtime_candidate": runtime_candidate,
+                "requires_human_action": needs_human or not runtime_candidate,
                 **(topology_match or {}),
             }
         )
@@ -4875,11 +4907,36 @@ def run_v3_no_llm_phase1_for_example(
             problem_type_id = str(entry.get("problem_type_id") or entry.get("subskill_id") or "").strip()
             if not problem_type_id or problem_type_id.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
                 continue
+            runtime_candidate = entry.get("runtime_candidate")
+            requires_human = bool(entry.get("requires_human_action"))
+            if runtime_candidate is False or requires_human or str(entry.get("runtime_category") or "") == "manual_review":
+                block_reason = str(
+                    entry.get("block_reason")
+                    or entry.get("manual_review_reason")
+                    or "source_blocked_incomplete_or_manual_review"
+                ).strip()
+                return {
+                    "classification_status": "unresolved",
+                    "classification_status_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+                    "skill_id": skill_key,
+                    "source_example_id": example_id,
+                    "textbook_example_id": example_id,
+                    "source_hash": source_hash,
+                    "problem_type_id": "",
+                    "required_capabilities": [],
+                    "classification_source": "phase1_rule_pack_blocked",
+                    "presentation_mode": presentation_mode,
+                    "answer_contract": {},
+                    "reason": f"BLOCKED:{block_reason}",
+                    "block_reason": block_reason,
+                }
             caps = list(entry.get("required_domain_capabilities") or entry.get("required_capabilities") or [])
             if not caps:
                 caps = [problem_type_id]
             answer_contract = _infer_answer_contract_from_row(textbook_row, presentation_mode=presentation_mode)
             entry_mode = str(entry.get("presentation_mode") or presentation_mode)
+            if problem_type_id.endswith("_choice") or str(entry.get("runtime_category") or "") == "deterministic_choice":
+                entry_mode = "single_choice"
             for key in ("answer_type", "checker_key", "equivalence_type"):
                 if entry.get(key):
                     answer_contract[key] = str(entry.get(key))
