@@ -1,0 +1,686 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/student_diagnosis.html
+功能說明 (Description): 學生學習診斷
+後端呼叫 (Backend Call): core/routes/analysis.py -> student_diagnosis
+版本資訊 (Version): V2.0
+更新日期 (Date): 2026-01-13
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習診斷 - 自適應性教學系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        /* 繼承 admin_prerequisites.html 的風格 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar 樣式改由 _student_navbar.html 提供，避免頁面覆寫 */
+
+        /* Container & Layout */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: #fff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Radar Chart Container */
+        .radar-container {
+            position: relative;
+            height: 400px;
+            padding: 20px;
+        }
+
+        /* Button Styles */
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Content Sections */
+        .ai-comment {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .recommended-unit {
+            background: #e8f4fc;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .recommended-unit h5 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .recommended-unit p {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        /* Error Message */
+        .error-card {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .error-card h4 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        .error-card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        /* Analysis Time */
+        .analysis-time {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="color: #555; font-weight: 500;">AI 正在分析您的學習記錄...</div>
+    </div>
+
+    <!--
+=============================================================================
+模組名稱 (Module Name): templates/_student_navbar.html
+功能說明 (Description): 學生端共用導覽列（student-facing 頁面 include）
+後端呼叫 (Backend Call): Include File
+版本資訊 (Version): V3.1 — 文案／無障礙／登出間距
+更新日期 (Date): 2026-04-16
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+/* ── Student Navbar — 板書風 / 黑板綠 v3 ── */
+.student-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100%;
+    min-height: 52px;
+    margin: 0 !important;
+    box-sizing: border-box;
+    background: #35553a;
+    border-bottom: 2px solid #263f2f;
+    box-shadow: 0 2px 10px rgba(30,60,35,0.25);
+}
+.student-navbar__inner {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 8px 20px;
+    overflow: hidden;
+}
+.student-navbar__brand {
+    color: #f2ede0;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.97rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.35;
+    font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+.student-navbar__brand strong { color: #ffffff; }
+.student-navbar__brand:hover { color: #ffffff; }
+
+.student-navbar__menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 5px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+}
+.student-navbar__menu::-webkit-scrollbar { display: none; }
+
+.student-navbar__primary {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow-x: visible;
+}
+.student-navbar__account {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.18);
+    flex-shrink: 0;
+}
+
+/* ── 膠囊按鈕：統一淡色紙本風 ── */
+.student-navbar__pill {
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-size: 0.83rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* 統一底色：米白 */
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(255,255,255,0.28) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.student-navbar__pill-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.student-navbar__pill-icon { font-size: 1em; line-height: 1; }
+.student-navbar__pill-text { line-height: 1.2; }
+
+/* 所有 --color 變體清除彩色 */
+.student-navbar a.student-navbar__pill,
+.student-navbar a.student-navbar__pill--home,
+.student-navbar a.student-navbar__pill--exam,
+.student-navbar a.student-navbar__pill--mistake,
+.student-navbar a.student-navbar__pill--learn,
+.student-navbar a.student-navbar__pill--kg,
+.student-navbar a.student-navbar__pill--sim,
+.student-navbar a.student-navbar__pill--upload,
+.student-navbar a.student-navbar__pill--teacher {
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(195,220,201,0.55) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+/* hover：淡綠提亮 */
+.student-navbar a.student-navbar__pill:hover,
+.student-navbar a.student-navbar__pill--home:hover,
+.student-navbar a.student-navbar__pill--exam:hover,
+.student-navbar a.student-navbar__pill--mistake:hover,
+.student-navbar a.student-navbar__pill--learn:hover,
+.student-navbar a.student-navbar__pill--kg:hover,
+.student-navbar a.student-navbar__pill--sim:hover,
+.student-navbar a.student-navbar__pill--upload:hover,
+.student-navbar a.student-navbar__pill--teacher:hover {
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border-color: rgba(255,255,255,0.7) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* active：暖白底 + 深墨綠字 + 輕微陰影 */
+.student-navbar a.student-navbar__pill.student-navbar__pill--active {
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border: 1px solid rgba(255,255,255,0.85) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.5) !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
+}
+.student-navbar a.student-navbar__pill.student-navbar__pill--active span { font-weight: 700; }
+.student-navbar a.student-navbar__pill.student-navbar__pill--active:hover {
+    background: #fff !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* 教師模式：略帶沙黃 */
+.student-navbar a.student-navbar__pill--teacher {
+    background: #f6eedb !important;
+    color: #5a3e1b !important;
+    border-color: rgba(200,168,80,0.45) !important;
+    padding: 0 13px !important;
+}
+.student-navbar a.student-navbar__pill--teacher:hover {
+    background: #fdf5e1 !important;
+    color: #3d2a0d !important;
+    border-color: rgba(200,168,80,0.7) !important;
+}
+
+/* 登出：低調 */
+.student-navbar a.student-navbar__pill--logout {
+    background: transparent !important;
+    color: rgba(240,235,220,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+}
+.student-navbar a.student-navbar__pill--logout:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: #f2ede0 !important;
+    border-color: rgba(255,255,255,0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 小螢幕：水平捲動 */
+@media (max-width: 960px) {
+    .student-navbar__inner { padding: 7px 14px; }
+    .student-navbar__menu { gap: 4px; overflow-x: auto; }
+    .student-navbar__pill { font-size: 0.78rem; padding: 0 8px; height: 30px; }
+}
+</style>
+
+<div class="student-navbar" role="navigation" aria-label="學生端主選單">
+    <div class="student-navbar__inner">
+    <a href="/dashboard" class="logo student-navbar__brand">
+        自適應性教學系統 ( <strong>test_student</strong>！ )
+    </a>
+    <div class="student-navbar__menu">
+        <div class="student-navbar__primary">
+        <a href="/dashboard"
+           class="student-navbar__pill student-navbar__pill--home"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🏠</span><span class="student-navbar__pill-text">學生主頁</span></span>
+        </a>
+        <a href="/exam_upload_page"
+           class="student-navbar__pill student-navbar__pill--exam"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📝</span><span class="student-navbar__pill-text">考卷診斷</span></span>
+        </a>
+        <a href="/mistake-notebook"
+           class="student-navbar__pill student-navbar__pill--mistake"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📘</span><span class="student-navbar__pill-text">錯題本</span></span>
+        </a>
+        <a href="/student/diagnosis"
+           class="student-navbar__pill student-navbar__pill--learn student-navbar__pill--active"
+           aria-current="page">
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📊</span><span class="student-navbar__pill-text">學習診斷</span></span>
+        </a>
+        <a href="/knowledge-graph"
+           class="student-navbar__pill student-navbar__pill--kg"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🌳</span><span class="student-navbar__pill-text">知識圖譜</span></span>
+        </a>
+        <a href="/practice/similar_questions"
+           class="student-navbar__pill student-navbar__pill--sim"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🧩</span><span class="student-navbar__pill-text">類題練習</span></span>
+        </a>
+        <a href="/practice/custom_upload"
+           class="student-navbar__pill student-navbar__pill--upload"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📷</span><span class="student-navbar__pill-text">上傳題目</span></span>
+        </a>
+        
+        </div>
+        <div class="student-navbar__account">
+        <a href="/logout" class="student-navbar__pill student-navbar__pill--logout">
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-text">登出</span></span>
+        </a>
+        </div>
+    </div>
+    </div>
+</div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                <i class="bi bi-graph-up" style="color: #3498db;"></i> 學習診斷報告
+            </h1>
+        </div>
+
+        <!-- 診斷結果 -->
+        <div id="diagnosis-result" style="display: none;">
+            <!-- 雷達圖 -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="bi bi-radar"></i> 單元熟練度分析</span>
+                    <div>
+                        <span id="cache-indicator" class="badge" style="display: none;">快取資料</span>
+                        <button class="btn" onclick="refreshAnalysis()">
+                            <i class="bi bi-arrow-clockwise"></i> 重新分析
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body radar-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- AI 評語 -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="bi bi-chat-left-text"></i> AI 學習評語</span>
+                </div>
+                <div class="card-body">
+                    <div class="ai-comment" id="ai-comment">
+                        載入中...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 建議加強單元 -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="bi bi-bullseye"></i> 建議優先加強</span>
+                </div>
+                <div class="card-body">
+                    <div class="recommended-unit">
+                        <h5 id="recommended-unit">載入中...</h5>
+                        <p>建議您優先複習此單元,鞏固基礎概念</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分析時間 -->
+            <div class="analysis-time">
+                分析時間: <span id="analysis-time">-</span>
+            </div>
+        </div>
+
+        <!-- 錯誤訊息 -->
+        <div id="error-message" class="card" style="display: none;">
+            <div class="card-body error-card">
+                <h4><i class="bi bi-exclamation-triangle"></i> 無法載入診斷報告</h4>
+                <p id="error-text"></p>
+                <button class="btn" onclick="loadDiagnosis(false)">重試</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let radarChart = null;
+
+        // 頁面載入時自動執行診斷
+        window.addEventListener('DOMContentLoaded', function () {
+            loadDiagnosis(false);
+        });
+
+        // 載入診斷資料
+        function loadDiagnosis(forceRefresh) {
+            // 顯示載入中
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('diagnosis-result').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+
+            // 呼叫 API
+            fetch('/student/analyze_weakness', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    force_refresh: forceRefresh
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    if (data.success) {
+                        displayDiagnosis(data.data, data.cached);
+                    } else {
+                        showError(data.error || '分析失敗');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    showError('網路錯誤,請稍後再試');
+                });
+        }
+
+        // 顯示診斷結果
+        function displayDiagnosis(data, isCached) {
+            document.getElementById('diagnosis-result').style.display = 'block';
+
+            // 顯示快取指示器
+            if (isCached) {
+                document.getElementById('cache-indicator').style.display = 'inline-block';
+            } else {
+                document.getElementById('cache-indicator').style.display = 'none';
+            }
+
+            // 顯示 AI 評語
+            document.getElementById('ai-comment').textContent = data.ai_comment || '暫無評語';
+
+            // 顯示建議單元
+            document.getElementById('recommended-unit').textContent = data.recommended_unit || '暫無建議';
+
+            // 顯示分析時間
+            document.getElementById('analysis-time').textContent = data.created_at || '-';
+
+            // 繪製雷達圖
+            drawRadarChart(data.radar_chart_data);
+        }
+
+        // 繪製雷達圖
+        function drawRadarChart(masteryScores) {
+            const labels = Object.keys(masteryScores);
+            const scores = Object.values(masteryScores);
+
+            // 如果已有圖表,先銷毀
+            if (radarChart) {
+                radarChart.destroy();
+            }
+
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '熟練度分數',
+                        data: scores,
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 顯示錯誤訊息
+        function showError(message) {
+            document.getElementById('diagnosis-result').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('error-text').textContent = message;
+        }
+
+        // 重新分析
+        function refreshAnalysis() {
+            if (confirm('確定要重新分析嗎?這將使用最新的學習記錄進行診斷。')) {
+                loadDiagnosis(true);
+            }
+        }
+    </script>
+</body>
+
+</html>

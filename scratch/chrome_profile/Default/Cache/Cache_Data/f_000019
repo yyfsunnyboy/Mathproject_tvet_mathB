@@ -1,0 +1,1289 @@
+<!--
+=============================================================================
+模組名稱 (Module Name): templates/dashboard.html
+功能說明 (Description): 學生/教師儀表板
+後端呼叫 (Backend Call): app.py -> dashboard
+版本資訊 (Version): V2.0
+更新日期 (Date): 2026-01-13
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>學習儀表板 - 自適應性教學系統</title>
+    <style>
+        /* ── Design Tokens ─────────────────────────────────────────────── */
+        :root {
+            --paper-bg:      #f7f6f2;
+            --paper-soft:    #fbfaf7;
+            --card-bg:       #ffffff;
+            --card-warm:     #fcfbf8;
+
+            --ink:           #2f3a32;
+            --ink-soft:      #5e6a61;
+            --muted:         #6a7569;
+
+            --green-main:    #6b8f71;
+            --green-deep:    #55735c;
+            --green-soft:    #dfe8dc;
+            --green-pale:    #eef4ea;
+            --green-ring:    rgba(107,143,113,0.24);
+
+            --chalkboard:    #31533a;
+            --chalkboard-dk: #263f2f;
+            --chalk:         #f8f7ef;
+            --chalk-dim:     rgba(248,247,239,0.7);
+            --wood:          #9a7448;
+            --wood-soft:     #d7b98e;
+
+            --sand:          #ede6d9;
+            --sand-soft:     #f6f1e8;
+
+            --border:        #dde5d8;
+            --border-soft:   #edf1e8;
+
+            --ok:            #4a7c59;
+            --ok-bg:         #edf6f0;
+
+            --shadow-soft:   0 8px 28px rgba(68,83,70,0.08);
+            --shadow-card:   0 2px 12px rgba(68,83,70,0.07);
+            --shadow-xs:     0 1px 4px rgba(68,83,70,0.06);
+
+            --r-sm: 6px;
+            --r-md: 10px;
+            --r-lg: 14px;
+            --r-xl: 18px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --dur: 0.15s;
+        }
+
+        /* ── Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(180deg, #f7f6f2 0%, #f4f5ef 100%);
+            min-height: 100vh;
+            color: #2f3a32;
+            -webkit-font-smoothing: antialiased;
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        /* Navbar 樣式由 _student_navbar.html 提供 */
+
+        /* ── Dashboard Shell ── */
+        .dashboard-shell {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 18px 22px 36px;
+        }
+
+        /* ── Flash alerts ── */
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            border-radius: var(--r-md);
+            background: var(--ok-bg);
+            color: var(--ok);
+            border: 1px solid #b8d9c3;
+            font-size: 14px;
+        }
+        .alert-warning {
+            background: #fff8e8;
+            color: #8a5a1f;
+            border-color: #e0c87a;
+        }
+        .skill-card mjx-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        /* ── Dashboard Header Row ── */
+        .dashboard-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .dashboard-header-row h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ink);
+            white-space: nowrap;
+        }
+        .curriculum-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .curriculum-pill-wrap {
+            display: inline-flex;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+        .curriculum-pill-wrap a {
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+        }
+        .curriculum-pill-wrap a.cpill-name {
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .curriculum-pill-wrap a.cpill-active {
+            background: var(--green-main);
+            color: #fff;
+        }
+        .curriculum-pill-wrap a.cpill-inactive {
+            background: #91a897;
+            color: #fff;
+        }
+        .curriculum-pill-wrap a:hover {
+            filter: brightness(1.1);
+        }
+        .header-actions {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-header {
+            padding: 7px 15px;
+            border-radius: var(--r-md);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+            border: 1px solid var(--border);
+        }
+        .btn-header-primary {
+            background: var(--green-main);
+            color: #fff;
+            border-color: var(--green-deep);
+        }
+        .btn-header-primary:hover { background: var(--green-deep); }
+        .btn-header-muted {
+            background: var(--paper-soft);
+            color: var(--ink-soft);
+        }
+        .btn-header-muted:hover { background: var(--green-pale); color: var(--ink); }
+        .btn-header-active {
+            background: var(--ok-bg);
+            color: var(--ok);
+            border-color: var(--green-soft);
+        }
+
+        /* ── Chalkboard Hero ── */
+        .chalkboard-hero {
+            background: var(--chalkboard);
+            border: 3px solid var(--wood);
+            border-radius: var(--r-lg);
+            padding: 0 32px;
+            margin-bottom: 14px;
+            min-height: 130px;
+            max-height: 162px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(30,60,35,0.22), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        /* chalk texture overlay */
+        .chalkboard-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255,255,255,0.012) 3px,
+                    rgba(255,255,255,0.012) 4px
+                );
+            pointer-events: none;
+        }
+        /* decorative left icon */
+        .chalkboard-hero::after {
+            content: "📗";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 64px;
+            opacity: 0.08;
+            pointer-events: none;
+            user-select: none;
+        }
+        /* wood frame top/bottom sheen */
+        .chalkboard-hero-inner {
+            position: relative;
+            z-index: 1;
+            padding: 24px 0;
+        }
+        .chalkboard-hero-inner h3 {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--chalk);
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .chalkboard-hero-inner p {
+            font-size: 14px;
+            color: var(--chalk-dim);
+            line-height: 1.6;
+        }
+        .chalk-deco {
+            position: absolute;
+            right: 36px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 48px;
+            opacity: 0.09;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* ── Student Class Panel ── */
+        .student-class-panel {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .student-class-panel .class-join-card,
+        .student-class-panel .class-list-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--r-lg);
+            padding: 14px 18px;
+            box-shadow: var(--shadow-xs);
+        }
+        .student-class-panel .class-join-card { flex: 1; min-width: 200px; }
+        .student-class-panel .class-list-card { flex: 2; min-width: 260px; }
+        .student-class-panel h4 {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+        .class-join-form {
+            display: flex;
+            gap: 8px;
+        }
+        .class-join-input {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            font-size: 13px;
+            color: var(--ink);
+            background: var(--paper-soft);
+            font-family: inherit;
+        }
+        .class-join-input:focus {
+            outline: none;
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 3px var(--green-ring);
+        }
+        .class-join-btn {
+            background: var(--green-main);
+            color: #fff;
+            border: 1px solid var(--green-deep);
+            border-radius: var(--r-md);
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .class-join-btn:hover { background: var(--green-deep); }
+        .class-list { list-style: none; padding: 0; }
+        .class-list li { padding: 4px 0; border-bottom: 1px solid var(--border-soft); font-size: 13.5px; color: var(--ink-soft); }
+        .class-list li:last-child { border-bottom: none; }
+
+        /* ── Dev Tools Bar (自選/自適應 - 開發中) ── */
+        .dev-tools-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            background: var(--sand-soft);
+            border: 1px solid #e2d9c8;
+            border-radius: var(--r-md);
+            flex-wrap: wrap;
+        }
+        .dev-tools-label {
+            font-size: 11.5px;
+            color: var(--muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        /* override btn-practice when inside dev-tools-bar */
+        .dev-tools-bar a.btn-practice,
+        .dev-tools-bar .btn-practice {
+            background: var(--paper-soft) !important;
+            color: var(--ink-soft) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: var(--r-md) !important;
+            padding: 6px 13px !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            text-decoration: none !important;
+            box-shadow: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            line-height: 1.3 !important;
+            transition: background var(--dur) var(--ease) !important;
+        }
+        .dev-tools-bar a.btn-practice:hover,
+        .dev-tools-bar .btn-practice:hover {
+            background: var(--green-pale) !important;
+            color: var(--ink) !important;
+            border-color: var(--green-main) !important;
+        }
+        .dev-badge {
+            display: inline-block;
+            background: #e8dcc8;
+            color: #7a6040;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 1px 5px;
+            margin-left: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Breadcrumb ── */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 0;
+            font-size: 13px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .breadcrumb a {
+            color: #4d7a55;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .breadcrumb a:hover { text-decoration: underline; color: #2d5132; }
+        .breadcrumb span { color: #6a7569; }
+        .breadcrumb .current { color: #2f3a32; font-weight: 700; }
+
+        /* ── Grade Rows (volume list) ── */
+        .grade-section-title {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+        /* ── Grade Row — 教材入口卡 ── */
+        .grade-row {
+            display: flex !important;
+            align-items: center !important;
+            margin-bottom: 10px !important;
+            padding: 14px 20px 14px 16px !important;
+            border-bottom: none !important;
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft) !important;
+            border-left: 3px solid var(--green-soft) !important;
+            border-radius: var(--r-md) !important;
+            box-shadow: var(--shadow-card);
+            gap: 20px;
+            min-height: 100px;
+            transition: border-left-color var(--dur) var(--ease),
+                        box-shadow var(--dur) var(--ease);
+        }
+        .grade-row:hover {
+            border-left-color: var(--green-main) !important;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* ── Grade Label 左側年級標籤 ── */
+        .grade-label {
+            margin-right: 0 !important;
+            min-width: 84px !important;
+            max-width: 84px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        /* 📘 icon circle */
+        .grade-label::before {
+            content: "📘";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: var(--green-pale);
+            border: 1px solid var(--green-soft);
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .grade-label h4 {
+            font-size: 13.5px !important;
+            font-weight: 700 !important;
+            color: var(--ink-soft) !important;
+            white-space: nowrap;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Volume Grid (separator line) ── */
+        .level-grid.volumes-grid {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+            flex-grow: 0 !important;           /* 不撐滿空白 */
+            align-items: center;
+            grid-template-columns: none !important;
+            /* vertical divider from grade-label */
+            padding-left: 20px;
+            border-left: 1px solid var(--border-soft);
+        }
+
+        /* ── Volume Card 冊別入口卡 ── */
+        .level-card.volume-card {
+            width: auto !important;
+            min-width: 160px !important;
+            max-width: 220px !important;
+            height: 70px !important;
+            padding: 0 20px !important;
+            background: var(--card-warm) !important;
+            border: 1.5px solid var(--border) !important;
+            border-radius: var(--r-md) !important;   /* 10px — 卡片感非 pill */
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+            box-shadow: var(--shadow-xs) !important;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background var(--dur) var(--ease),
+                        border-color var(--dur) var(--ease),
+                        box-shadow var(--dur) var(--ease),
+                        transform var(--dur) var(--ease) !important;
+        }
+        /* 小書本裝飾（左側淡色） */
+        .level-card.volume-card::before {
+            content: "📖";
+            font-size: 22px;
+            opacity: 0.45;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .level-card.volume-card:hover {
+            background: var(--green-pale) !important;
+            border-color: var(--green-main) !important;
+            box-shadow: var(--shadow-card) !important;
+            transform: translateY(-2px) !important;
+        }
+        .level-card.volume-card h3 {
+            font-size: 17px !important;
+            font-weight: 700 !important;
+            color: var(--ink) !important;
+            margin: 0 !important;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── Chapter Grid ── */
+        .level-grid.chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            grid-auto-rows: 1fr;
+        }
+        .level-card.chapter-card {
+            background: #fffdf9 !important;
+            border: 1px solid #dde5d8 !important;
+            border-radius: 14px !important;
+            padding: 0 !important;
+            box-shadow: 0 2px 8px rgba(60,80,60,0.04) !important;
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease,
+                box-shadow 0.18s ease,
+                transform 0.18s ease !important;
+            height: 68px !important;
+        }
+        .level-card.chapter-card:hover {
+            background: linear-gradient(180deg, #fffefb 0%, #f3f8f1 100%) !important;
+            border-color: #89a889 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(70,100,70,0.09) !important;
+        }
+        .level-card.chapter-card:hover h3 {
+            font-weight: 700 !important;
+            color: #2d5132 !important;
+        }
+        .level-card.chapter-card h3 {
+            font-size: 13px !important;
+            color: var(--ink) !important;
+            margin: 0 !important;
+            transition: font-weight 0.18s ease, color 0.18s ease;
+        }
+
+        /* ── Categories grid ── */
+        .level-grid.categories-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            grid-auto-rows: 1fr;
+        }
+
+        /* base level-card override */
+        .level-card {
+            background: var(--card-warm);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+            box-shadow: var(--shadow-xs);
+        }
+        .level-card:hover {
+            border-color: var(--green-main);
+            background: var(--green-pale);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+        .level-card h3 {
+            margin: 0;
+            color: var(--green-deep);
+            font-size: 1.1em;
+        }
+
+        /* ── Skill Grid + Cards ── */
+        .skill-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .skill-grid.curriculum-skills {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            width: 100% !important;
+            grid-auto-flow: row !important;
+        }
+        .skill-card {
+            background: #fffdf9;
+            border: 1px solid #dde5d8;
+            border-radius: 18px;
+            box-shadow: 0 2px 10px rgba(60,80,60,0.04);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            transition:
+                transform 0.18s ease,
+                box-shadow 0.18s ease,
+                border-color 0.18s ease,
+                background 0.18s ease;
+        }
+        .skill-card:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(180deg, #fffefb 0%, #f6fbf4 100%);
+            border-color: #89a889;
+            box-shadow: 0 10px 24px rgba(70,100,70,0.10);
+        }
+        .skill-card:hover h3 {
+            font-weight: 700;
+            color: #2d5132;
+        }
+        .skill-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0;
+            margin-bottom: 6px;
+            color: var(--green-deep);
+            transition: font-weight 0.18s ease, color 0.18s ease;
+        }
+        .skill-card p {
+            font-size: 12.5px;
+            color: #5e6a61;
+            flex-grow: 1;
+            margin-bottom: 8px;
+        }
+        .progress-info {
+            font-size: 12px;
+            color: #5e6a61;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e6ede2;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7ea37f 0%, #5f7f68 100%);
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        /* btn-practice: 技能卡片 / 章節「開始練習」「單元練習」按鈕 */
+        .btn-practice {
+            display: block;
+            text-align: center;
+            background: #6f946f;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: var(--r-md);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition:
+                background 0.18s ease,
+                transform 0.18s ease;
+            margin-top: auto;
+            border: 1px solid #5a7d5a;
+        }
+        .btn-practice:hover {
+            background: #5f7f68;
+            transform: translateY(-1px);
+        }
+
+        /* ── Skill Section Group ── */
+        .skill-section-group {
+            margin-bottom: 18px;
+            margin-top: 20px;
+            padding: 18px 18px 14px;
+            background: rgba(255,255,255,0.55);
+            border-radius: 18px;
+            border-left: 4px solid #6f946f;
+            box-shadow: 0 1px 6px rgba(60,80,60,0.04);
+            width: 100%;
+        }
+        .skill-section-group:first-child { margin-top: 0; }
+        .skill-section-group h4 {
+            margin-top: 0;
+            color: #2d5132;
+            margin-bottom: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        /* ── Scrollbar ── */
+        * { scrollbar-width: thin; scrollbar-color: #c0d4bc transparent; }
+        *::-webkit-scrollbar { width: 4px; height: 4px; }
+        *::-webkit-scrollbar-track { background: transparent; }
+        *::-webkit-scrollbar-thumb { background: #c0d4bc; border-radius: 99px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 960px) {
+            .dashboard-shell { padding: 12px 14px 28px; }
+            .skill-grid, .skill-grid.curriculum-skills {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .level-grid.categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .level-grid.chapters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .chalkboard-hero { min-height: 100px; padding: 0 16px; }
+            .chalkboard-hero-inner h3 { font-size: 16px; }
+            .skill-grid, .skill-grid.curriculum-skills {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!--
+=============================================================================
+模組名稱 (Module Name): templates/_student_navbar.html
+功能說明 (Description): 學生端共用導覽列（student-facing 頁面 include）
+後端呼叫 (Backend Call): Include File
+版本資訊 (Version): V3.1 — 文案／無障礙／登出間距
+更新日期 (Date): 2026-04-16
+維護團隊 (Maintainer): Math AI Project Team
+=============================================================================
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+/* ── Student Navbar — 板書風 / 黑板綠 v3 ── */
+.student-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100%;
+    min-height: 52px;
+    margin: 0 !important;
+    box-sizing: border-box;
+    background: #35553a;
+    border-bottom: 2px solid #263f2f;
+    box-shadow: 0 2px 10px rgba(30,60,35,0.25);
+}
+.student-navbar__inner {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 8px 20px;
+    overflow: hidden;
+}
+.student-navbar__brand {
+    color: #f2ede0;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.97rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.35;
+    font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+.student-navbar__brand strong { color: #ffffff; }
+.student-navbar__brand:hover { color: #ffffff; }
+
+.student-navbar__menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 5px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+}
+.student-navbar__menu::-webkit-scrollbar { display: none; }
+
+.student-navbar__primary {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+    min-width: 0;
+    overflow-x: visible;
+}
+.student-navbar__account {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.18);
+    flex-shrink: 0;
+}
+
+/* ── 膠囊按鈕：統一淡色紙本風 ── */
+.student-navbar__pill {
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-size: 0.83rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+    /* 統一底色：米白 */
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(255,255,255,0.28) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.student-navbar__pill-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.student-navbar__pill-icon { font-size: 1em; line-height: 1; }
+.student-navbar__pill-text { line-height: 1.2; }
+
+/* 所有 --color 變體清除彩色 */
+.student-navbar a.student-navbar__pill,
+.student-navbar a.student-navbar__pill--home,
+.student-navbar a.student-navbar__pill--exam,
+.student-navbar a.student-navbar__pill--mistake,
+.student-navbar a.student-navbar__pill--learn,
+.student-navbar a.student-navbar__pill--kg,
+.student-navbar a.student-navbar__pill--sim,
+.student-navbar a.student-navbar__pill--upload,
+.student-navbar a.student-navbar__pill--teacher {
+    background: #f2ede0 !important;
+    color: #3a4c3d !important;
+    border: 1px solid rgba(195,220,201,0.55) !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+/* hover：淡綠提亮 */
+.student-navbar a.student-navbar__pill:hover,
+.student-navbar a.student-navbar__pill--home:hover,
+.student-navbar a.student-navbar__pill--exam:hover,
+.student-navbar a.student-navbar__pill--mistake:hover,
+.student-navbar a.student-navbar__pill--learn:hover,
+.student-navbar a.student-navbar__pill--kg:hover,
+.student-navbar a.student-navbar__pill--sim:hover,
+.student-navbar a.student-navbar__pill--upload:hover,
+.student-navbar a.student-navbar__pill--teacher:hover {
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border-color: rgba(255,255,255,0.7) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* active：暖白底 + 深墨綠字 + 輕微陰影 */
+.student-navbar a.student-navbar__pill.student-navbar__pill--active {
+    background: #ffffff !important;
+    color: #2f3a32 !important;
+    border: 1px solid rgba(255,255,255,0.85) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.5) !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
+}
+.student-navbar a.student-navbar__pill.student-navbar__pill--active span { font-weight: 700; }
+.student-navbar a.student-navbar__pill.student-navbar__pill--active:hover {
+    background: #fff !important;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* 教師模式：略帶沙黃 */
+.student-navbar a.student-navbar__pill--teacher {
+    background: #f6eedb !important;
+    color: #5a3e1b !important;
+    border-color: rgba(200,168,80,0.45) !important;
+    padding: 0 13px !important;
+}
+.student-navbar a.student-navbar__pill--teacher:hover {
+    background: #fdf5e1 !important;
+    color: #3d2a0d !important;
+    border-color: rgba(200,168,80,0.7) !important;
+}
+
+/* 登出：低調 */
+.student-navbar a.student-navbar__pill--logout {
+    background: transparent !important;
+    color: rgba(240,235,220,0.6) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+}
+.student-navbar a.student-navbar__pill--logout:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: #f2ede0 !important;
+    border-color: rgba(255,255,255,0.4) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 小螢幕：水平捲動 */
+@media (max-width: 960px) {
+    .student-navbar__inner { padding: 7px 14px; }
+    .student-navbar__menu { gap: 4px; overflow-x: auto; }
+    .student-navbar__pill { font-size: 0.78rem; padding: 0 8px; height: 30px; }
+}
+</style>
+
+<div class="student-navbar" role="navigation" aria-label="學生端主選單">
+    <div class="student-navbar__inner">
+    <a href="/dashboard" class="logo student-navbar__brand">
+        自適應性教學系統 ( <strong>test_student</strong>！ )
+    </a>
+    <div class="student-navbar__menu">
+        <div class="student-navbar__primary">
+        <a href="/dashboard"
+           class="student-navbar__pill student-navbar__pill--home student-navbar__pill--active"
+           aria-current="page">
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🏠</span><span class="student-navbar__pill-text">學生主頁</span></span>
+        </a>
+        <a href="/exam_upload_page"
+           class="student-navbar__pill student-navbar__pill--exam"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📝</span><span class="student-navbar__pill-text">考卷診斷</span></span>
+        </a>
+        <a href="/mistake-notebook"
+           class="student-navbar__pill student-navbar__pill--mistake"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📘</span><span class="student-navbar__pill-text">錯題本</span></span>
+        </a>
+        <a href="/student/diagnosis"
+           class="student-navbar__pill student-navbar__pill--learn"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📊</span><span class="student-navbar__pill-text">學習診斷</span></span>
+        </a>
+        <a href="/knowledge-graph"
+           class="student-navbar__pill student-navbar__pill--kg"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🌳</span><span class="student-navbar__pill-text">知識圖譜</span></span>
+        </a>
+        <a href="/practice/similar_questions"
+           class="student-navbar__pill student-navbar__pill--sim"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🧩</span><span class="student-navbar__pill-text">類題練習</span></span>
+        </a>
+        <a href="/practice/custom_upload"
+           class="student-navbar__pill student-navbar__pill--upload"
+           >
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📷</span><span class="student-navbar__pill-text">上傳題目</span></span>
+        </a>
+        
+        </div>
+        <div class="student-navbar__account">
+        <a href="/logout" class="student-navbar__pill student-navbar__pill--logout">
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-text">登出</span></span>
+        </a>
+        </div>
+    </div>
+    </div>
+</div>
+
+    <div class="dashboard-shell">
+
+        
+        
+        
+        
+
+        
+        <div class="dashboard-header-row">
+            <h2>學習儀表板</h2>
+            <div class="curriculum-pills">
+                
+                <div class="curriculum-pill-wrap">
+                    <a href="/dashboard?view=curriculum&amp;curriculum=junior_high"
+                       class="cpill-name cpill-active">
+                        國中
+                    </a>
+                    <a href="/adaptive_practice?mode=review&amp;curriculum=junior_high"
+                       title="國中總複習"
+                       class="cpill-review cpill-active"
+                       style="font-size:12px; padding:6px 9px;">
+                        複習
+                    </a>
+                </div>
+                
+                <div class="curriculum-pill-wrap">
+                    <a href="/dashboard?view=curriculum&amp;curriculum=general"
+                       class="cpill-name cpill-inactive">
+                        普高
+                    </a>
+                    <a href="/adaptive_practice?mode=review&amp;curriculum=general"
+                       title="普高總複習"
+                       class="cpill-review cpill-inactive"
+                       style="font-size:12px; padding:6px 9px;">
+                        複習
+                    </a>
+                </div>
+                
+                <div class="curriculum-pill-wrap">
+                    <a href="/dashboard?view=curriculum&amp;curriculum=vocational"
+                       class="cpill-name cpill-inactive">
+                        技高
+                    </a>
+                    <a href="/adaptive_practice?mode=review&amp;curriculum=vocational"
+                       title="技高總複習"
+                       class="cpill-review cpill-inactive"
+                       style="font-size:12px; padding:6px 9px;">
+                        複習
+                    </a>
+                </div>
+                
+            </div>
+            <div class="header-actions">
+                <a href="/adaptive-review" class="btn-header btn-header-primary">⚡ 自適應複習</a>
+                <a href="/dashboard?view=all"
+                   class="btn-header btn-header-muted">
+                    顯示所有
+                </a>
+            </div>
+        </div>
+
+        
+        <section class="chalkboard-hero">
+            <div class="chalkboard-hero-inner">
+                <h3>歡迎回來，test_student！</h3>
+                <p>今天也要一起穩扎穩打，持續進步！</p>
+            </div>
+            <span class="chalk-deco">💡</span>
+        </section>
+
+        
+        
+        <div class="student-class-panel">
+            <div class="class-join-card">
+                <h4>加入新班級</h4>
+                <form action="/class/join" method="POST" class="class-join-form">
+                    <input type="text" name="class_code" placeholder="請輸入班級代碼" required class="class-join-input">
+                    <button type="submit" class="class-join-btn">加入</button>
+                </form>
+            </div>
+            <div class="class-list-card">
+                <h4>我加入的班級</h4>
+                
+                <ul class="class-list">
+                    
+                    <li><strong>高職數B示範班</strong>（授課老師：test_teacher）</li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+        
+
+        
+        <!-- 麵包屑導航 -->
+        <div class="breadcrumb">
+            <a href="/dashboard?view=curriculum">課程首頁</a>
+            
+            
+            
+        </div>
+
+        
+        <!-- 開發中輔助工具列 -->
+        <div class="dev-tools-bar">
+            <span class="dev-tools-label">🔧 輔助工具</span>
+            <a href="/adaptive_selection?curriculum=junior_high" class="btn-practice">
+                <i class="fa fa-check-square"></i> 自選組合練習
+                <span class="dev-badge">開發中</span>
+            </a>
+            <!-- 自適應評量按鈕由 JS 在此 a 後方插入 -->
+        </div>
+        
+        
+        <p class="grade-section-title">國中 — 請選擇冊別：</p>
+        
+        <div class="grade-row">
+            <div class="grade-label">
+                <h4>七年級</h4>
+            </div>
+            <div class="level-grid volumes-grid">
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B81%E4%B8%8A"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學1上</h3>
+                    </div>
+                </a>
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B81%E4%B8%8B"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學1下</h3>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+        
+        <div class="grade-row">
+            <div class="grade-label">
+                <h4>八年級</h4>
+            </div>
+            <div class="level-grid volumes-grid">
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B82%E4%B8%8A"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學2上</h3>
+                    </div>
+                </a>
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B82%E4%B8%8B"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學2下</h3>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+        
+        <div class="grade-row">
+            <div class="grade-label">
+                <h4>九年級</h4>
+            </div>
+            <div class="level-grid volumes-grid">
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B83%E4%B8%8A"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學3上</h3>
+                    </div>
+                </a>
+                
+                <a href="/dashboard?view=curriculum&amp;curriculum=junior_high&amp;volume=%E6%95%B8%E5%AD%B83%E4%B8%8B"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>數學3下</h3>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+        
+        
+        
+    </div><!-- /.dashboard-shell -->
+
+    <script>
+        (function () {
+            const selfPracticeBtn = document.querySelector("a[href*='adaptive_selection']");
+            if (!selfPracticeBtn || !selfPracticeBtn.parentElement) return;
+
+            const adaptiveBtn = document.createElement("a");
+            adaptiveBtn.href = "/adaptive_learning_entry";
+            adaptiveBtn.className = "btn-practice";
+            adaptiveBtn.style.backgroundColor = "#e67e22";
+            adaptiveBtn.style.display = "inline-block";
+            adaptiveBtn.style.padding = "10px 25px";
+            adaptiveBtn.style.fontSize = "1.1em";
+            adaptiveBtn.style.marginLeft = "12px";
+            adaptiveBtn.innerHTML = '<i class="fa fa-sitemap"></i> 自適應評量與教學 <span class="dev-badge">開發中</span>';
+
+            selfPracticeBtn.insertAdjacentElement("afterend", adaptiveBtn);
+        })();
+    </script>
+
+    <script>
+        window.MathJax = window.MathJax || {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' }
+        };
+
+        function renderMathInElement(el) {
+            if (!el) return;
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([el]).catch(function (err) {
+                    console.warn('MathJax render error:', err);
+                });
+            }
+        }
+
+        function skillCardMathContainer() {
+            return document.querySelector('.skills-grid')
+                || document.querySelector('.skill-grid.curriculum-skills')
+                || document.querySelector('.skill-grid')
+                || document.querySelector('.dashboard-shell')
+                || document.body;
+        }
+
+        function ensureMathJaxThenTypeset() {
+            var container = skillCardMathContainer();
+            if (!container) return;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                renderMathInElement(container);
+                return;
+            }
+
+            if (document.querySelector("script[data-dashboard-mathjax-loader='1']")) return;
+
+            var script = document.createElement("script");
+            script.defer = true;
+            script.id = "mathjax-dashboard-loader";
+            script.setAttribute("data-dashboard-mathjax-loader", "1");
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js";
+            script.onload = function () {
+                renderMathInElement(container);
+            };
+            document.head.appendChild(script);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            ensureMathJaxThenTypeset();
+            var container = skillCardMathContainer();
+            if (!container || typeof MutationObserver === 'undefined') return;
+            var observer = new MutationObserver(function () {
+                renderMathInElement(container);
+            });
+            observer.observe(container, { childList: true, subtree: true });
+        });
+    </script>
+
+    </div>
+</body>
+
+</html>

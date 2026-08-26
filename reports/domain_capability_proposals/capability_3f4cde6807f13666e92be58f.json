@@ -26,6 +26,17 @@
       "entrypoint": "build_absolute_value_matrix"
     },
     {
+      "domain_key": "algebra.function_concept",
+      "score": 0.25,
+      "reuse_mode": "new_generic_operation",
+      "capability_aliases": [],
+      "reusable_operations": [
+        "free_fall_function_value_choice"
+      ],
+      "domain_module": "core.domain.function_concept_domain",
+      "entrypoint": "build_function_concept_matrix"
+    },
+    {
       "domain_key": "coordinate_geometry.distance_between_two_points",
       "score": 0.25,
       "reuse_mode": "new_generic_operation",
@@ -64,5 +75,7 @@
   "skill_ids": [
     "future_unregistered_math_skill"
   ],
-  "component_ids": []
+  "component_ids": [
+    ""
+  ]
 }

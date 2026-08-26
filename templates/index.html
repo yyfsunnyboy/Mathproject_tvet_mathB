@@ -1588,8 +1588,8 @@
             grid-template-rows: auto minmax(0, 1fr);
             gap: 0;
             width: 100%;
-            height: auto;
-            min-height: 0;
+            height: 100%;
+            min-height: 220px;
             max-height: none;
             overflow: hidden;
             padding: 0 16px 12px;
@@ -1599,7 +1599,7 @@
         .canvas-wrap {
             position: relative;
             width: 100%;
-            min-height: 0;
+            min-height: 160px;
             height: 100%;
             overflow: hidden;
             border: 1px solid #ced4da;
@@ -1748,7 +1748,7 @@
 
             .practice-area {
                 display: grid;
-                grid-template-rows: auto minmax(0, auto) auto minmax(0, 1fr);
+                grid-template-rows: auto minmax(0, auto) auto minmax(220px, 1fr);
                 grid-template-areas:
                     "header"
                     "question"
@@ -1784,8 +1784,11 @@
             #scratchpad-container {
                 grid-area: canvas;
                 padding: 0 16px 8px;
-                min-height: 0;
-                height: auto;
+                min-height: 220px;
+                height: 100%;
+                display: grid;
+                grid-template-rows: auto minmax(0, 1fr);
+                overflow: hidden;
             }
 
             .chat-area {
@@ -4522,16 +4525,11 @@
 
         function applyAnalyzeButtonVisibility(aiCheckRequired) {
             if (!analyzeBtn) return;
-            if (aiCheckRequired) {
-                analyzeBtn.hidden = false;
-                analyzeBtn.removeAttribute('aria-hidden');
-                analyzeBtn.style.removeProperty('display');
-                analyzeBtn.disabled = false;
-            } else {
-                analyzeBtn.hidden = true;
-                analyzeBtn.setAttribute('aria-hidden', 'true');
-                analyzeBtn.disabled = true;
-            }
+            // Always keep AI check button visible and enabled for student scratchpad / drawing
+            analyzeBtn.hidden = false;
+            analyzeBtn.removeAttribute('aria-hidden');
+            analyzeBtn.style.removeProperty('display');
+            analyzeBtn.disabled = false;
         }
 
         function applyDrawingUiContract() {
@@ -4560,6 +4558,7 @@
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
+<<<<<<< Updated upstream
                 const showScratchpad =
                     drawing ||
                     isDrawingQuestion(cq) ||
@@ -4570,6 +4569,10 @@
                 } else {
                     scratchpad.style.display = 'none';
                 }
+=======
+                scratchpad.style.display = '';
+                scheduleResizeCanvas();
+>>>>>>> Stashed changes
             }
         }
 
