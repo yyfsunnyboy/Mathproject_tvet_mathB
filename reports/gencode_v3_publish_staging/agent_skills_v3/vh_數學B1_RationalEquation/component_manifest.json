@@ -1,0 +1,128 @@
+{
+  "skill_id": "vh_數學B1_RationalEquation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_4678",
+      "textbook_example_id": 4678,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4678/generate.py"
+    },
+    {
+      "component_id": "src_4679",
+      "textbook_example_id": 4679,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4679/generate.py"
+    },
+    {
+      "component_id": "src_4687",
+      "textbook_example_id": 4687,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4687/generate.py"
+    },
+    {
+      "component_id": "src_4688",
+      "textbook_example_id": 4688,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4688/generate.py"
+    },
+    {
+      "component_id": "src_4689",
+      "textbook_example_id": 4689,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4689/generate.py"
+    },
+    {
+      "component_id": "src_4690",
+      "textbook_example_id": 4690,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4690/generate.py"
+    },
+    {
+      "component_id": "src_4693",
+      "textbook_example_id": 4693,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4693/generate.py"
+    },
+    {
+      "component_id": "src_4698",
+      "textbook_example_id": 4698,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4698/generate.py"
+    },
+    {
+      "component_id": "src_4699",
+      "textbook_example_id": 4699,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4699/generate.py"
+    },
+    {
+      "component_id": "src_4700",
+      "textbook_example_id": 4700,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4700/generate.py"
+    },
+    {
+      "component_id": "src_4705",
+      "textbook_example_id": 4705,
+      "status": "verified",
+      "problem_type_id": "rational_equation_solve",
+      "domain_operation": "rational_equation_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4705/generate.py"
+    }
+  ]
+}

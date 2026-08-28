@@ -10,8 +10,8 @@
     'use strict';
 
     const REGION_EDGE_PADDING = 14;
-    const REGION_WIDTH_RATIO = 0.5;
-    const REGION_HEIGHT_RATIO = 0.5;
+    const REGION_WIDTH_RATIO = 0.7;
+    const REGION_HEIGHT_RATIO = 0.68;
     const IMAGE_OPACITY = 0.72;
 
     let storedVisualSpec = null;
@@ -34,6 +34,23 @@
             edgePadding: pad,
             quadrantWidth: quadrantWidth,
             quadrantHeight: quadrantHeight,
+            canvasWidth: cw,
+            canvasHeight: ch
+        };
+    }
+
+    function computeFullCanvasRegion(canvasWidth, canvasHeight, edgePadding) {
+        const pad = Number.isFinite(edgePadding) ? edgePadding : REGION_EDGE_PADDING;
+        const cw = Math.max(1, Number(canvasWidth) || 1);
+        const ch = Math.max(1, Number(canvasHeight) || 1);
+        return {
+            x: pad,
+            y: pad,
+            width: Math.max(1, cw - pad * 2),
+            height: Math.max(1, ch - pad * 2),
+            edgePadding: pad,
+            quadrantWidth: cw,
+            quadrantHeight: ch,
             canvasWidth: cw,
             canvasHeight: ch
         };
@@ -210,15 +227,18 @@
         if (!storedVisualSpec || !runtime || !runtime.renderToCanvas || !ctx) {
             return false;
         }
-        const region = computeQuestionBackgroundRegion(cssWidth, cssHeight);
+        const isMulti = runtime.isMultiFigureSpec && runtime.isMultiFigureSpec(storedVisualSpec);
+        const region = isMulti
+            ? computeFullCanvasRegion(cssWidth, cssHeight)
+            : computeQuestionBackgroundRegion(cssWidth, cssHeight);
         const ok = runtime.renderToCanvas(ctx.canvas, storedVisualSpec, {
             width: cssWidth,
             height: cssHeight,
             layoutRegion: region,
-            padding: Math.min(region.edgePadding, 10),
+            padding: isMulti ? 12 : Math.min(region.edgePadding, 10),
             manageCanvasSize: false,
             backgroundFill: null,
-            visualOpacity: 0.62
+            visualOpacity: isMulti ? 0.95 : 0.88
         });
         const measured = measureBackgroundContentBounds(ctx, cssWidth, cssHeight);
         const tracked = runtime.getLastRenderBounds && runtime.getLastRenderBounds();
@@ -402,6 +422,7 @@
         REGION_HEIGHT_RATIO: REGION_HEIGHT_RATIO,
         IMAGE_OPACITY: IMAGE_OPACITY,
         computeQuestionBackgroundRegion: computeQuestionBackgroundRegion,
+        computeFullCanvasRegion: computeFullCanvasRegion,
         computeContainRect: computeContainRect,
         measureBackgroundContentBounds: measureBackgroundContentBounds,
         validateQuadrantBounds: validateQuadrantBounds,

@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B1_FactorTheorem",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_4646",
+      "textbook_example_id": 4646,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4646/generate.py"
+    },
+    {
+      "component_id": "src_4647",
+      "textbook_example_id": 4647,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4647/generate.py"
+    },
+    {
+      "component_id": "src_4648",
+      "textbook_example_id": 4648,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4648/generate.py"
+    },
+    {
+      "component_id": "src_4649",
+      "textbook_example_id": 4649,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4649/generate.py"
+    },
+    {
+      "component_id": "src_4650",
+      "textbook_example_id": 4650,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4650/generate.py"
+    },
+    {
+      "component_id": "src_4651",
+      "textbook_example_id": 4651,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4651/generate.py"
+    },
+    {
+      "component_id": "src_4652",
+      "textbook_example_id": 4652,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4652/generate.py"
+    },
+    {
+      "component_id": "src_4653",
+      "textbook_example_id": 4653,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4653/generate.py"
+    },
+    {
+      "component_id": "src_4654",
+      "textbook_example_id": 4654,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4654/generate.py"
+    },
+    {
+      "component_id": "src_4660",
+      "textbook_example_id": 4660,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4660/generate.py"
+    },
+    {
+      "component_id": "src_4661",
+      "textbook_example_id": 4661,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4661/generate.py"
+    },
+    {
+      "component_id": "src_4662",
+      "textbook_example_id": 4662,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4662/generate.py"
+    },
+    {
+      "component_id": "src_4663",
+      "textbook_example_id": 4663,
+      "status": "verified",
+      "problem_type_id": "factor_theorem_root_factor",
+      "domain_operation": "factor_theorem_root_factor",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4663/generate.py"
+    }
+  ]
+}

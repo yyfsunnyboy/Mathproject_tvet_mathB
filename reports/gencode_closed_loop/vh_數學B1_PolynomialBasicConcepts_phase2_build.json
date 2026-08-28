@@ -1,0 +1,261 @@
+{
+  "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+  "phase": "phase2_build",
+  "final_status": "FOUNDATION_REPAIR_REQUIRED",
+  "input_phase1_report": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PolynomialBasicConcepts_phase1_audit.json",
+  "build_mode": "normal",
+  "generated_problem_types": [],
+  "verified_problem_types": [],
+  "failed_problem_types": [],
+  "pending_implementation": [],
+  "manual_review_problem_types": [],
+  "future_ai_judged_problem_types": [],
+  "checker_implementation_summary": {
+    "missing_checker_key_problem_types": []
+  },
+  "answer_contract_summary": {
+    "polynomial_degree_product_sum": null,
+    "polynomial_descending_power_properties": null,
+    "polynomial_descending_power_table": null,
+    "polynomial_param_degree_constraint": null,
+    "zero_polynomial_find_coeffs": null
+  },
+  "registry_merge_summary": {
+    "mode": "non_destructive",
+    "updated": false
+  },
+  "wrapper_summary": {},
+  "bootstrap_summary": {
+    "bootstrap_mode": false,
+    "bootstrap_source_skill_id": "",
+    "source_coverage_status": "",
+    "allowed_problem_types": []
+  },
+  "blocking_reasons": [
+    "foundation_missing_components"
+  ],
+  "warnings": [],
+  "artifact_paths": {
+    "phase2_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PolynomialBasicConcepts_phase2_build.json",
+    "phase2_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PolynomialBasicConcepts_phase2_build.md"
+  },
+  "timestamp": "2026-08-27T07:26:19.447012+00:00",
+  "build_dependency_plan": {
+    "foundation_ready": false,
+    "required_checkers": [],
+    "existing_checkers": [
+      "algebraic_equivalence_checker",
+      "choice_checker",
+      "choice_label_checker",
+      "coordinate_pair_checker",
+      "exact_string_checker",
+      "expression_equivalence_checker",
+      "free_response_drawing_checker",
+      "integer_checker",
+      "interval_checker",
+      "line_label_checker",
+      "linear_equation_equivalent_checker",
+      "multi_part_answer_checker",
+      "numeric_checker",
+      "quadrant_checker",
+      "rational_checker",
+      "solution_set_checker",
+      "structured_text_checker",
+      "text_short_checker"
+    ],
+    "missing_checkers": [],
+    "required_verifiers": [],
+    "missing_verifiers": [],
+    "required_domain_functions": [],
+    "missing_domain_functions": [],
+    "required_generators": [
+      "polynomial_degree_product_sum",
+      "polynomial_descending_power_properties",
+      "polynomial_descending_power_table",
+      "polynomial_param_degree_constraint",
+      "zero_polynomial_find_coeffs"
+    ],
+    "missing_generators": [
+      "polynomial_degree_product_sum",
+      "polynomial_descending_power_properties",
+      "polynomial_descending_power_table",
+      "polynomial_param_degree_constraint",
+      "zero_polynomial_find_coeffs"
+    ],
+    "excluded_manual_review_problem_types": [],
+    "buildable_problem_types": [
+      "polynomial_degree_product_sum",
+      "polynomial_descending_power_properties",
+      "polynomial_descending_power_table",
+      "polynomial_param_degree_constraint",
+      "zero_polynomial_find_coeffs"
+    ],
+    "blocked_problem_types": [],
+    "preflight_status": "REPAIR_REQUIRED"
+  },
+  "preflight_status": "REPAIR_REQUIRED",
+  "build_execution_status": "SKIPPED",
+  "candidate_discovery_summary": {
+    "discovered_candidates": [],
+    "missing_candidate_files": [],
+    "unsupported_candidate_problem_types": [],
+    "verified_candidates": [],
+    "failed_candidates": [],
+    "candidate_failure_reasons": {},
+    "sample_count": 0
+  },
+  "build_execution_summary": {
+    "execution_attempted": false,
+    "execution_status": "SKIPPED",
+    "verified_problem_types": [],
+    "failed_problem_types": [],
+    "pending_problem_types": [],
+    "failure_reasons": []
+  },
+  "build_gap_summary": {
+    "has_build_gaps": true,
+    "gap_types": [
+      "missing_generator"
+    ],
+    "problem_type_gaps": {
+      "polynomial_degree_product_sum": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "missing_generator"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "建立 deterministic generator"
+        ],
+        "severity": "high"
+      },
+      "polynomial_descending_power_properties": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "missing_generator"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "建立 deterministic generator"
+        ],
+        "severity": "high"
+      },
+      "polynomial_descending_power_table": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "missing_generator"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "建立 deterministic generator"
+        ],
+        "severity": "high"
+      },
+      "polynomial_param_degree_constraint": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "missing_generator"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "建立 deterministic generator"
+        ],
+        "severity": "high"
+      },
+      "zero_polynomial_find_coeffs": {
+        "answer_type": "",
+        "equivalence_type": "",
+        "checker_key": "",
+        "gap_types": [
+          "missing_generator"
+        ],
+        "recommended_components": [],
+        "suggested_next_actions": [
+          "建立 deterministic generator"
+        ],
+        "severity": "high"
+      }
+    }
+  },
+  "repair_plan": {
+    "recommended_next_action": "fix_build_gaps_then_rerun_phase2",
+    "steps": [
+      {
+        "step_id": "S1",
+        "title": "建立或驗證 checker/verifier",
+        "action_type": "implement_or_register_checker",
+        "target": "equivalence_type 對應 checker/verifier",
+        "reason": "優先打通答案等價判分",
+        "depends_on": [],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      },
+      {
+        "step_id": "S2",
+        "title": "建立 domain function",
+        "action_type": "implement_domain_function",
+        "target": "interval/solution_set/algebraic 題型 domain solver",
+        "reason": "支援非單純數值題型",
+        "depends_on": [
+          "S1"
+        ],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      },
+      {
+        "step_id": "S3",
+        "title": "建立 deterministic generators",
+        "action_type": "implement_generator",
+        "target": "failed deterministic problem types",
+        "reason": "補齊可生成題型",
+        "depends_on": [
+          "S1",
+          "S2"
+        ],
+        "safe_to_auto_generate": false,
+        "requires_human_review": true
+      },
+      {
+        "step_id": "S4",
+        "title": "修復 wrapper candidates",
+        "action_type": "fix_wrapper_candidate_linking",
+        "target": "verified candidates / wrapper pipeline",
+        "reason": "避免 wrapper verify fail",
+        "depends_on": [
+          "S3"
+        ],
+        "safe_to_auto_generate": false,
+        "requires_human_review": true
+      },
+      {
+        "step_id": "S5",
+        "title": "重跑 Phase 2",
+        "action_type": "rerun_phase2",
+        "target": "scripts/gencode_pipeline_phase2_build.py",
+        "reason": "驗證缺口是否修復",
+        "depends_on": [
+          "S4"
+        ],
+        "safe_to_auto_generate": true,
+        "requires_human_review": false
+      }
+    ]
+  },
+  "repair_plan_status": "GENERATED",
+  "next_action": {
+    "next_action_type": "repair_gap",
+    "gap": "missing_generator",
+    "command": "python scripts\\gencode_repair_build_gap.py --skill-id vh_數學B1_PolynomialBasicConcepts --gap missing_generator",
+    "reason": "foundation components are ready, but missing_generators remains.",
+    "should_run_phase3": false,
+    "requires_human_review": false
+  }
+}

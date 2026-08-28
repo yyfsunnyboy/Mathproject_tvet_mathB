@@ -1,0 +1,1751 @@
+{
+  "skill": "vh_數學B1_FactorTheorem",
+  "ok": 17,
+  "total": 17,
+  "results": [
+    {
+      "id": 4646,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4647,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4648,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4649,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4650,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4651,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4652,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4653,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4654,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4655,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4660,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4661,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4662,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4663,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4710,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4711,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4712,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "partial_published",
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "verified_component_count": 13,
+    "component_count": 13,
+    "coverage": {
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "total_examples": 17,
+      "verified_count": 13,
+      "missing_tracker_count": 0,
+      "failed_count": 4,
+      "unsupported_count": 0,
+      "domain_gap_count": 4,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 13,
+      "needs_human_review_count": 0,
+      "unverified_count": 4,
+      "publish_ready": false,
+      "examples": [
+        {
+          "textbook_example_id": 4646,
+          "component_id": "src_4646",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4647,
+          "component_id": "src_4647",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4648,
+          "component_id": "src_4648",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4649,
+          "component_id": "src_4649",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4650,
+          "component_id": "src_4650",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4651,
+          "component_id": "src_4651",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4652,
+          "component_id": "src_4652",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4653,
+          "component_id": "src_4653",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4654,
+          "component_id": "src_4654",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4655,
+          "component_id": "src_4655",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4655\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4660,
+          "component_id": "src_4660",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4661,
+          "component_id": "src_4661",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4662,
+          "component_id": "src_4662",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4663,
+          "component_id": "src_4663",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4710,
+          "component_id": "src_4710",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4710\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4711,
+          "component_id": "src_4711",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4711\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4712,
+          "component_id": "src_4712",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4712\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": false,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_FactorTheorem",
+        "total_examples": 17,
+        "verified_count": 13,
+        "missing_tracker_count": 0,
+        "failed_count": 4,
+        "unsupported_count": 0,
+        "domain_gap_count": 4,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 13,
+        "needs_human_review_count": 0,
+        "unverified_count": 4,
+        "publish_ready": false,
+        "examples": [
+          {
+            "textbook_example_id": 4646,
+            "component_id": "src_4646",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4647,
+            "component_id": "src_4647",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4648,
+            "component_id": "src_4648",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4649,
+            "component_id": "src_4649",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4650,
+            "component_id": "src_4650",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4651,
+            "component_id": "src_4651",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4652,
+            "component_id": "src_4652",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4653,
+            "component_id": "src_4653",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4654,
+            "component_id": "src_4654",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4655,
+            "component_id": "src_4655",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4655\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4660,
+            "component_id": "src_4660",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4661,
+            "component_id": "src_4661",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4662,
+            "component_id": "src_4662",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4663,
+            "component_id": "src_4663",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4710,
+            "component_id": "src_4710",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4710\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4711,
+            "component_id": "src_4711",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4711\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4712,
+            "component_id": "src_4712",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4712\nproblem_type_id=factor_theorem_root_factor\ndomain_operation=factor_theorem_root_factor\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          }
+        ]
+      },
+      "eligible_component_count": 13,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 13,
+      "review_hints": []
+    },
+    "warnings": [
+      "V3 coverage incomplete: 13/17 verified, failed examples: 4655, 4710, 4711, 4712",
+      "publish_ready=False: publish will only include verified tracker components, not all textbook_examples"
+    ],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "component_results": {
+        "src_4646": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4646",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4646",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4646",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4646",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4646",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4647": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4647",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4647",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4647",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4647",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4647",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4648": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4648",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4648",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4648",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4648",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4648",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4649": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4649",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4649",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4649",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4649",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4649",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4650": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4650",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4650",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4650",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4650",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4650",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4651": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4651",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4651",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4651",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4651",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4651",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4652": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4652",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4652",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4652",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4652",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4652",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4653": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4653",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4653",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4653",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4653",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4653",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4654": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4654",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4654",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4654",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4654",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4654",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4660": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4660",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4660",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4660",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4660",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4660",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4661": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4661",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4661",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4661",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4661",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4661",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4662": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4662",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4662",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4662",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4662",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4662",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4663": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4663",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4663",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4663",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4663",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4663",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "component_count": 13,
+      "generator_keys": [
+        "src_4646",
+        "src_4647",
+        "src_4648",
+        "src_4649",
+        "src_4650",
+        "src_4651",
+        "src_4652",
+        "src_4653",
+        "src_4654",
+        "src_4660",
+        "src_4661",
+        "src_4662",
+        "src_4663"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4646,
+          "component_id": "src_4646",
+          "generator_key": "src_4646",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4646,
+          "source_order": 4646,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4647,
+          "component_id": "src_4647",
+          "generator_key": "src_4647",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4647,
+          "source_order": 4647,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4648,
+          "component_id": "src_4648",
+          "generator_key": "src_4648",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4648,
+          "source_order": 4648,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4649,
+          "component_id": "src_4649",
+          "generator_key": "src_4649",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4649,
+          "source_order": 4649,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4650,
+          "component_id": "src_4650",
+          "generator_key": "src_4650",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4650,
+          "source_order": 4650,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4651,
+          "component_id": "src_4651",
+          "generator_key": "src_4651",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4651,
+          "source_order": 4651,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4652,
+          "component_id": "src_4652",
+          "generator_key": "src_4652",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4652,
+          "source_order": 4652,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4653,
+          "component_id": "src_4653",
+          "generator_key": "src_4653",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4653,
+          "source_order": 4653,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4654,
+          "component_id": "src_4654",
+          "generator_key": "src_4654",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4654,
+          "source_order": 4654,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4660,
+          "component_id": "src_4660",
+          "generator_key": "src_4660",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4660,
+          "source_order": 4660,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4661,
+          "component_id": "src_4661",
+          "generator_key": "src_4661",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4661,
+          "source_order": 4661,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4662,
+          "component_id": "src_4662",
+          "generator_key": "src_4662",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4662,
+          "source_order": 4662,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4663,
+          "component_id": "src_4663",
+          "generator_key": "src_4663",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "factor_theorem_root_factor",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "factor_theorem_root_factor",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4663,
+          "source_order": 4663,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_FactorTheorem\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_FactorTheorem\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_FactorTheorem.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_FactorTheorem.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:42:19.315131+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4646,
+        "component_id": "src_4646",
+        "published_generate_sha256": "ebaf4d970ff0fc5d4447d4684b4a9d5ae7b52f6ab30d39d126ecbc6a83888e00",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4646\\generate.py"
+      },
+      {
+        "textbook_example_id": 4647,
+        "component_id": "src_4647",
+        "published_generate_sha256": "f7d7933e7a1a35be3fa063732a15362035b7fcfeb3c5eedb4146755ad66680c8",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4647\\generate.py"
+      },
+      {
+        "textbook_example_id": 4648,
+        "component_id": "src_4648",
+        "published_generate_sha256": "a2d934eebbdf2454206cc3cd893ac0ec75af5b680c9c52766b65026d1dd605db",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4648\\generate.py"
+      },
+      {
+        "textbook_example_id": 4649,
+        "component_id": "src_4649",
+        "published_generate_sha256": "ed4056c8457cfa19c858ed134ef03d6591317017f2ef0a6adc1d8dd91f435553",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4649\\generate.py"
+      },
+      {
+        "textbook_example_id": 4650,
+        "component_id": "src_4650",
+        "published_generate_sha256": "dad23f508eac95d2a61f7f9f35a002b0859a104379e4a90be31b998dc61120bc",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4650\\generate.py"
+      },
+      {
+        "textbook_example_id": 4651,
+        "component_id": "src_4651",
+        "published_generate_sha256": "757298658b437ebe5321f6c60161f9a09ab7d7b2a2ceee78f23c72d1f131768a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4651\\generate.py"
+      },
+      {
+        "textbook_example_id": 4652,
+        "component_id": "src_4652",
+        "published_generate_sha256": "3b5571ae3b9f9d9f3497d1d5ca59217e55ee59ba2c642f9d7821dda6b5141ebf",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4652\\generate.py"
+      },
+      {
+        "textbook_example_id": 4653,
+        "component_id": "src_4653",
+        "published_generate_sha256": "833e360cf45a3fbddb1c1bc7eed26b22b82f7152686d836b672cf60269b8e9f7",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4653\\generate.py"
+      },
+      {
+        "textbook_example_id": 4654,
+        "component_id": "src_4654",
+        "published_generate_sha256": "fedb043437013371ae392a16b3547ef3a5dfcaf187d52b256eae16b6662a579d",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4654\\generate.py"
+      },
+      {
+        "textbook_example_id": 4660,
+        "component_id": "src_4660",
+        "published_generate_sha256": "9cf75b63927303a09635f9947c00d6b60343684c1932cef523a32c57bb5803cf",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4660\\generate.py"
+      },
+      {
+        "textbook_example_id": 4661,
+        "component_id": "src_4661",
+        "published_generate_sha256": "c0f1b5143c0c8ea02b73277b0528da090beecf272616f2f8f01b72839f96dfbf",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4661\\generate.py"
+      },
+      {
+        "textbook_example_id": 4662,
+        "component_id": "src_4662",
+        "published_generate_sha256": "031b845ecf93430bfd8904e7934bcd54b4bc5c6df486959e7e3ca3e464e5ba91",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4662\\generate.py"
+      },
+      {
+        "textbook_example_id": 4663,
+        "component_id": "src_4663",
+        "published_generate_sha256": "1863b6c60e5061df75c21b0d23a80141e265f12a36d0868bcf32123100733618",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem\\components\\src_4663\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "partial_published",
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 13,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_FactorTheorem",
+        "component_count": 13,
+        "generator_keys": [
+          "src_4646",
+          "src_4647",
+          "src_4648",
+          "src_4649",
+          "src_4650",
+          "src_4651",
+          "src_4652",
+          "src_4653",
+          "src_4654",
+          "src_4660",
+          "src_4661",
+          "src_4662",
+          "src_4663"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4646,
+            "component_id": "src_4646",
+            "generator_key": "src_4646",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4646,
+            "source_order": 4646,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4647,
+            "component_id": "src_4647",
+            "generator_key": "src_4647",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4647,
+            "source_order": 4647,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4648,
+            "component_id": "src_4648",
+            "generator_key": "src_4648",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4648,
+            "source_order": 4648,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4649,
+            "component_id": "src_4649",
+            "generator_key": "src_4649",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4649,
+            "source_order": 4649,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4650,
+            "component_id": "src_4650",
+            "generator_key": "src_4650",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4650,
+            "source_order": 4650,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4651,
+            "component_id": "src_4651",
+            "generator_key": "src_4651",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4651,
+            "source_order": 4651,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4652,
+            "component_id": "src_4652",
+            "generator_key": "src_4652",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4652,
+            "source_order": 4652,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4653,
+            "component_id": "src_4653",
+            "generator_key": "src_4653",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4653,
+            "source_order": 4653,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4654,
+            "component_id": "src_4654",
+            "generator_key": "src_4654",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4654,
+            "source_order": 4654,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4660,
+            "component_id": "src_4660",
+            "generator_key": "src_4660",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4660,
+            "source_order": 4660,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4661,
+            "component_id": "src_4661",
+            "generator_key": "src_4661",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4661,
+            "source_order": 4661,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4662,
+            "component_id": "src_4662",
+            "generator_key": "src_4662",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4662,
+            "source_order": 4662,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4663,
+            "component_id": "src_4663",
+            "generator_key": "src_4663",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "factor_theorem_root_factor",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "factor_theorem_root_factor",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4663,
+            "source_order": 4663,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_FactorTheorem\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_FactorTheorem\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_FactorTheorem.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_FactorTheorem.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_FactorTheorem",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:42:19.315131+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 0,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4646": {
+          "component_id": "src_4646",
+          "textbook_example_id": 4646,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4647": {
+          "component_id": "src_4647",
+          "textbook_example_id": 4647,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4648": {
+          "component_id": "src_4648",
+          "textbook_example_id": 4648,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4649": {
+          "component_id": "src_4649",
+          "textbook_example_id": 4649,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4650": {
+          "component_id": "src_4650",
+          "textbook_example_id": 4650,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4651": {
+          "component_id": "src_4651",
+          "textbook_example_id": 4651,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4652": {
+          "component_id": "src_4652",
+          "textbook_example_id": 4652,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4653": {
+          "component_id": "src_4653",
+          "textbook_example_id": 4653,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4654": {
+          "component_id": "src_4654",
+          "textbook_example_id": 4654,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4660": {
+          "component_id": "src_4660",
+          "textbook_example_id": 4660,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4661": {
+          "component_id": "src_4661",
+          "textbook_example_id": 4661,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4662": {
+          "component_id": "src_4662",
+          "textbook_example_id": 4662,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4663": {
+          "component_id": "src_4663",
+          "textbook_example_id": 4663,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        }
+      }
+    }
+  }
+}

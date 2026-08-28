@@ -2633,62 +2633,66 @@ def _build_slopes_of_named_segments(
     return givens, answer, "oblique_line"
 
 
+def _line_through_origin_points(slope: Fraction, span: int = 3) -> list[list[float]]:
+    x1, x2 = -float(span), float(span)
+    return [[x1, float(slope * x1)], [x2, float(slope * x2)]]
+
+
 def _build_classify_and_compare_figure_slopes(
     rng: random.Random,
     coord_min: int,
     coord_max: int,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object], str]:
-    """Four figure slope classifications + two slope comparisons (6 answer slots)."""
+    """Textbook-style slope classification + comparison figures (6 answer slots)."""
     class_order = list(
         constraints.get("classification_order")
         or ["m>0", "m=0", "m不存在", "m<0"]
     )
     compare_order = list(constraints.get("comparison_order") or ["m1>m2", "m1<m2"])
+    span = 3
 
     def _segment_for_class(kind: str) -> dict[str, object]:
         if kind == "m=0":
-            y0 = rng.randint(coord_min, coord_max)
-            x1 = rng.randint(coord_min, coord_max - 2)
+            y0 = max(2, rng.randint(2, 3))
             return {
                 "kind": kind,
-                "points": [[x1, y0], [x1 + 2, y0]],
+                "points": [[-span, y0], [span, y0]],
+                "right_angle": {"at": [0, y0], "axes": "y"},
                 "slope_token": "m=0",
             }
         if kind == "m不存在":
-            x0 = rng.randint(coord_min, coord_max)
-            y1 = rng.randint(coord_min, coord_max - 2)
+            x0 = max(2, rng.randint(2, 3))
             return {
                 "kind": kind,
-                "points": [[x0, y1], [x0, y1 + 2]],
+                "points": [[x0, -span], [x0, span]],
+                "right_angle": {"at": [x0, 0], "axes": "x"},
                 "slope_token": "m不存在",
             }
         if kind == "m<0":
-            x1 = rng.randint(coord_min, coord_max - 2)
-            y1 = rng.randint(coord_min + 2, coord_max)
             return {
                 "kind": kind,
-                "points": [[x1, y1], [x1 + 2, y1 - 2]],
+                "points": _line_through_origin_points(Fraction(-1, 1), span),
                 "slope_token": "m<0",
             }
-        x1 = rng.randint(coord_min, coord_max - 2)
-        y1 = rng.randint(coord_min, coord_max - 2)
         return {
             "kind": kind,
-            "points": [[x1, y1], [x1 + 2, y1 + 2]],
+            "points": _line_through_origin_points(Fraction(1, 1), span),
             "slope_token": "m>0",
         }
 
     def _pair_for_relation(relation: str) -> dict[str, object]:
-        # Distinct positive slopes for a clear inequality.
+        # 圖①：兩條正斜率，L1 較陡 → m1>m2。
+        # 圖②：兩條負斜率，L1 較陡（更負）→ m1<m2。
         if relation == "m1>m2":
             m1, m2 = Fraction(2, 1), Fraction(1, 2)
         else:
-            m1, m2 = Fraction(1, 2), Fraction(2, 1)
-        base = rng.randint(coord_min, coord_max - 2)
-        l1 = {"points": [[base, base], [base + int(m1.denominator), base + int(m1.numerator)]], "slope": _format_number(m1)}
-        l2 = {"points": [[base, base - 1], [base + int(m2.denominator), base - 1 + int(m2.numerator)]], "slope": _format_number(m2)}
-        return {"relation": relation, "L1": l1, "L2": l2}
+            m1, m2 = Fraction(-2, 1), Fraction(-1, 2)
+        return {
+            "relation": relation,
+            "L1": {"points": _line_through_origin_points(m1, span), "slope": _format_number(m1)},
+            "L2": {"points": _line_through_origin_points(m2, span), "slope": _format_number(m2)},
+        }
 
     figures = [_segment_for_class(kind) for kind in class_order]
     comparisons = [_pair_for_relation(rel) for rel in compare_order]
@@ -2718,8 +2722,15 @@ def _build_classify_and_compare_figure_slopes(
             "figures": [
                 {
                     "id": f"fig{i + 1}",
-                    "label": f"①②③④"[i],
-                    "points": fig["points"],
+                    "label": "①②③④"[i],
+                    "points": [{"x": 0, "y": 0, "label": "O"}],
+                    "lines": [
+                        {
+                            "through_points": fig["points"],
+                            "extend": True,
+                        }
+                    ],
+                    "right_angle_marks": [fig["right_angle"]] if fig.get("right_angle") else [],
                     "slope_class": fig["slope_token"],
                 }
                 for i, fig in enumerate(figures)
@@ -2727,15 +2738,15 @@ def _build_classify_and_compare_figure_slopes(
             "comparisons": [
                 {
                     "id": f"cmp{i + 1}",
-                    "label": f"比較{i + 1}",
+                    "label": f"圖{'①②'[i]}",
                     "L1": cmp["L1"],
                     "L2": cmp["L2"],
                     "relation": cmp["relation"],
                 }
                 for i, cmp in enumerate(comparisons)
             ],
-            "x_range": [coord_min - 1, coord_max + 1],
-            "y_range": [coord_min - 1, coord_max + 1],
+            "x_range": [-4, 4],
+            "y_range": [-4, 4],
         },
     }
     answer = {

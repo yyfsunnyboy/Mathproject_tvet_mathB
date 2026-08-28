@@ -30,7 +30,7 @@ _CAPABILITY_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"樣本標準差|sample\s*standard\s*deviation|\bs(?!²)\b", re.I), "sample_standard_deviation"),
     (re.compile(r"方差|variance|σ\^?2", re.I), "variance"),
     (re.compile(r"標準差|standard\s*deviation|σ(?!²)", re.I), "standard_deviation"),
-    (re.compile(r"完成下表|填寫.*表|統計量.*表", re.I), "descriptive_statistics_table_completion"),
+    (re.compile(r"統計量.{0,16}(?:完成下表|填寫|下表)|(?:完成下表|填寫|下表).{0,16}統計量", re.I), "descriptive_statistics_table_completion"),
     (re.compile(r"常態分配|常態分布|常態分佈|經驗法則|empirical\s*rule|normal\s*distribution", re.I), "empirical_rule_probability"),
 )
 
@@ -177,7 +177,7 @@ def _infer_task_classification(
         if re.search(r"母體標準差|標準差", text) and re.search(r"\d", stem):
             return "standard_deviation_computation", ["standard_deviation"]
 
-    if any(hint in stem for hint in _TABLE_TEXT_HINTS) and re.search(r"表|統計量", stem):
+    if any(hint in stem for hint in ("完成下表", "下表", "填寫")) and re.search(r"統計量", stem):
         return "descriptive_statistics_table_completion", ["descriptive_statistics_table_completion"]
 
     has_iqr = bool(re.search(r"IQR|四分位距", text, re.I))

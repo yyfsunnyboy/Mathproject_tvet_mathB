@@ -1,0 +1,128 @@
+{
+  "skill_id": "vh_數學B1_RationalEquation",
+  "compiled_at": "2026-08-27T07:42:41.521844+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4678",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4678",
+      "textbook_example_id": 4678,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4678"
+    },
+    {
+      "component_id": "src_4679",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4679",
+      "textbook_example_id": 4679,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4679"
+    },
+    {
+      "component_id": "src_4687",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4687",
+      "textbook_example_id": 4687,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4687"
+    },
+    {
+      "component_id": "src_4688",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4688",
+      "textbook_example_id": 4688,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4688"
+    },
+    {
+      "component_id": "src_4689",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4689",
+      "textbook_example_id": 4689,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4689"
+    },
+    {
+      "component_id": "src_4690",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4690",
+      "textbook_example_id": 4690,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4690"
+    },
+    {
+      "component_id": "src_4693",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4693",
+      "textbook_example_id": 4693,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4693"
+    },
+    {
+      "component_id": "src_4698",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4698",
+      "textbook_example_id": 4698,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4698"
+    },
+    {
+      "component_id": "src_4699",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4699",
+      "textbook_example_id": 4699,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4699"
+    },
+    {
+      "component_id": "src_4700",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4700",
+      "textbook_example_id": 4700,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4700"
+    },
+    {
+      "component_id": "src_4705",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4705",
+      "textbook_example_id": 4705,
+      "line_type": "rational_equation_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_RationalEquation\\components\\src_4705"
+    }
+  ]
+}

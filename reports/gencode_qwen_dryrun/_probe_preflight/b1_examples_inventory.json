@@ -2793,9 +2793,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4519,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4519",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4520,
@@ -2812,9 +2817,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4520,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4520",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4521,
@@ -2831,9 +2841,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4521,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4521",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4522,
@@ -2850,9 +2865,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4522,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4522",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4523,
@@ -2869,9 +2889,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4523,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4523",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4524,
@@ -2888,9 +2913,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4524,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4524",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4525,
@@ -2907,9 +2937,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4525,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4525",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4526,
@@ -2926,9 +2961,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4526,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4526",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4527,
@@ -2945,9 +2985,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4527,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4527",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4529,
@@ -2964,9 +3009,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4529,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4529",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4530,
@@ -2983,9 +3033,14 @@
       "category": "2-1 斜率",
       "order_index": 2
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4530,
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "component_id": "src_4530",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4531,
@@ -3002,9 +3057,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4531,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4531",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4532,
@@ -3021,9 +3081,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4532,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4532",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4533,
@@ -3040,9 +3105,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4533,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4533",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4534,
@@ -3059,9 +3129,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4534,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4534",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4535,
@@ -3078,9 +3153,14 @@
       "category": "2-1 斜率",
       "order_index": 2
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4535,
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "component_id": "src_4535",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4536,
@@ -3097,9 +3177,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4536,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4536",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4537,
@@ -3116,9 +3201,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4537,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4537",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4538,
@@ -3135,9 +3225,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4538,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4538",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4539,
@@ -3154,9 +3249,14 @@
       "category": "2-1 斜率",
       "order_index": 3
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4539,
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "component_id": "src_4539",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4540,
@@ -4373,9 +4473,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4590,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4590",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4591,
@@ -4608,9 +4713,14 @@
       "category": "2-1 斜率",
       "order_index": 2
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4600,
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "component_id": "src_4600",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4601,
@@ -4627,9 +4737,14 @@
       "category": "2-1 斜率",
       "order_index": 1
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4601,
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4601",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4602,
@@ -4646,9 +4761,14 @@
       "category": "2-1 斜率",
       "order_index": 2
     },
-    "tracker": null,
-    "in_production": false,
-    "in_dryrun": false
+    "tracker": {
+      "textbook_example_id": 4602,
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "component_id": "src_4602",
+      "gencode_status": "verified"
+    },
+    "in_production": true,
+    "in_dryrun": true
   },
   {
     "id": 4603,

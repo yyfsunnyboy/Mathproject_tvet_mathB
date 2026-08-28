@@ -1,0 +1,58 @@
+{
+  "vh_數學B1_PolynomialBasicConcepts": {
+    "ui": "published",
+    "pub": 9,
+    "ver": 9,
+    "fail": 0,
+    "comp": 9
+  },
+  "vh_數學B1_PolynomialArithmeticOperations": {
+    "ui": "partially_published",
+    "pub": 18,
+    "ver": 18,
+    "fail": 4,
+    "comp": 22
+  },
+  "vh_數學B1_PolynomialEquality": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  },
+  "vh_數學B1_RemainderTheorem": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  },
+  "vh_數學B1_FactorTheorem": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  },
+  "vh_數學B1_PolynomialFactoring": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  },
+  "vh_數學B1_RationalExpressionArithmeticOperations": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  },
+  "vh_數學B1_RationalEquation": {
+    "ui": "not_generated",
+    "pub": 0,
+    "ver": 0,
+    "fail": 0,
+    "comp": 0
+  }
+}

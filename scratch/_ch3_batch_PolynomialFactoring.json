@@ -1,0 +1,2258 @@
+{
+  "skill": "vh_數學B1_PolynomialFactoring",
+  "ok": 18,
+  "total": 18,
+  "results": [
+    {
+      "id": 4671,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4672,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4673,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4674,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4675,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4681,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4682,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4683,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4684,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4685,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4694,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4695,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4696,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4697,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4701,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4713,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4714,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4715,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "production_published",
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "verified_component_count": 18,
+    "component_count": 18,
+    "coverage": {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "total_examples": 18,
+      "verified_count": 18,
+      "missing_tracker_count": 0,
+      "failed_count": 0,
+      "unsupported_count": 0,
+      "domain_gap_count": 0,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 18,
+      "needs_human_review_count": 0,
+      "unverified_count": 0,
+      "publish_ready": true,
+      "examples": [
+        {
+          "textbook_example_id": 4671,
+          "component_id": "src_4671",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4672,
+          "component_id": "src_4672",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4673,
+          "component_id": "src_4673",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4674,
+          "component_id": "src_4674",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4675,
+          "component_id": "src_4675",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4681,
+          "component_id": "src_4681",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4682,
+          "component_id": "src_4682",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4683,
+          "component_id": "src_4683",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4684,
+          "component_id": "src_4684",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4685,
+          "component_id": "src_4685",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4694,
+          "component_id": "src_4694",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4695,
+          "component_id": "src_4695",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4696,
+          "component_id": "src_4696",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4697,
+          "component_id": "src_4697",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4701,
+          "component_id": "src_4701",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4713,
+          "component_id": "src_4713",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4714,
+          "component_id": "src_4714",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4715,
+          "component_id": "src_4715",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": true,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_PolynomialFactoring",
+        "total_examples": 18,
+        "verified_count": 18,
+        "missing_tracker_count": 0,
+        "failed_count": 0,
+        "unsupported_count": 0,
+        "domain_gap_count": 0,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 18,
+        "needs_human_review_count": 0,
+        "unverified_count": 0,
+        "publish_ready": true,
+        "examples": [
+          {
+            "textbook_example_id": 4671,
+            "component_id": "src_4671",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4672,
+            "component_id": "src_4672",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4673,
+            "component_id": "src_4673",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4674,
+            "component_id": "src_4674",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4675,
+            "component_id": "src_4675",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4681,
+            "component_id": "src_4681",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4682,
+            "component_id": "src_4682",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4683,
+            "component_id": "src_4683",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4684,
+            "component_id": "src_4684",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4685,
+            "component_id": "src_4685",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4694,
+            "component_id": "src_4694",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4695,
+            "component_id": "src_4695",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4696,
+            "component_id": "src_4696",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4697,
+            "component_id": "src_4697",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4701,
+            "component_id": "src_4701",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4713,
+            "component_id": "src_4713",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4714,
+            "component_id": "src_4714",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4715,
+            "component_id": "src_4715",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          }
+        ]
+      },
+      "eligible_component_count": 18,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 18,
+      "review_hints": []
+    },
+    "warnings": [],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "component_results": {
+        "src_4671": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4671",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4671",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4671",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4671",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4671",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4672": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4672",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4672",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4672",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4672",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4672",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4673": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4673",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4673",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4673",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4673",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4673",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4674": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4674",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4674",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4674",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4674",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4674",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4675": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4675",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4675",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4675",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4675",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4675",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4681": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4681",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4681",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4681",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4681",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4681",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4682": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4682",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4682",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4682",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4682",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4682",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4683": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4683",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4683",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4683",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4683",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4683",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4684": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4684",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4684",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4684",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4684",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4684",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4685": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4685",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4685",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4685",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4685",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4685",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4694": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4694",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4694",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4694",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4694",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4694",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4695": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4695",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4695",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4695",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4695",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4695",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4696": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4696",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4696",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4696",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4696",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4696",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4697": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4697",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4697",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4697",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4697",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4697",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4701": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4701",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4701",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4701",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4701",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4701",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4713": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4713",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4713",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4713",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4713",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4713",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4714": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4714",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4714",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4714",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4714",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4714",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4715": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4715",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4715",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4715",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4715",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4715",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "component_count": 18,
+      "generator_keys": [
+        "src_4671",
+        "src_4672",
+        "src_4673",
+        "src_4674",
+        "src_4675",
+        "src_4681",
+        "src_4682",
+        "src_4683",
+        "src_4684",
+        "src_4685",
+        "src_4694",
+        "src_4695",
+        "src_4696",
+        "src_4697",
+        "src_4701",
+        "src_4713",
+        "src_4714",
+        "src_4715"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4671,
+          "component_id": "src_4671",
+          "generator_key": "src_4671",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4671,
+          "source_order": 4671,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4672,
+          "component_id": "src_4672",
+          "generator_key": "src_4672",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4672,
+          "source_order": 4672,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4673,
+          "component_id": "src_4673",
+          "generator_key": "src_4673",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4673,
+          "source_order": 4673,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4674,
+          "component_id": "src_4674",
+          "generator_key": "src_4674",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4674,
+          "source_order": 4674,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4675,
+          "component_id": "src_4675",
+          "generator_key": "src_4675",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4675,
+          "source_order": 4675,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4681,
+          "component_id": "src_4681",
+          "generator_key": "src_4681",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4681,
+          "source_order": 4681,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4682,
+          "component_id": "src_4682",
+          "generator_key": "src_4682",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4682,
+          "source_order": 4682,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4683,
+          "component_id": "src_4683",
+          "generator_key": "src_4683",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4683,
+          "source_order": 4683,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4684,
+          "component_id": "src_4684",
+          "generator_key": "src_4684",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4684,
+          "source_order": 4684,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4685,
+          "component_id": "src_4685",
+          "generator_key": "src_4685",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4685,
+          "source_order": 4685,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4694,
+          "component_id": "src_4694",
+          "generator_key": "src_4694",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4694,
+          "source_order": 4694,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4695,
+          "component_id": "src_4695",
+          "generator_key": "src_4695",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4695,
+          "source_order": 4695,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4696,
+          "component_id": "src_4696",
+          "generator_key": "src_4696",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4696,
+          "source_order": 4696,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4697,
+          "component_id": "src_4697",
+          "generator_key": "src_4697",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4697,
+          "source_order": 4697,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4701,
+          "component_id": "src_4701",
+          "generator_key": "src_4701",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4701,
+          "source_order": 4701,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4713,
+          "component_id": "src_4713",
+          "generator_key": "src_4713",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4713,
+          "source_order": 4713,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4714,
+          "component_id": "src_4714",
+          "generator_key": "src_4714",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4714,
+          "source_order": 4714,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4715,
+          "component_id": "src_4715",
+          "generator_key": "src_4715",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "polynomial_factoring",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_factoring",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4715,
+          "source_order": 4715,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialFactoring.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialFactoring.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:42:31.172966+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4671,
+        "component_id": "src_4671",
+        "published_generate_sha256": "46138edd3e9bfe806eb684bb8e2a330dc80d44172d231124c78b661d80646603",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4671\\generate.py"
+      },
+      {
+        "textbook_example_id": 4672,
+        "component_id": "src_4672",
+        "published_generate_sha256": "17352711a935003be0822e15a3c3532dadcb6820473eefb530835dbc8be134be",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4672\\generate.py"
+      },
+      {
+        "textbook_example_id": 4673,
+        "component_id": "src_4673",
+        "published_generate_sha256": "640d374cb4cb1cdd599cef9f4643f8075d177decd6e5273aa0fc2365801b85df",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4673\\generate.py"
+      },
+      {
+        "textbook_example_id": 4674,
+        "component_id": "src_4674",
+        "published_generate_sha256": "fd7231671931ff418c888f6abf0e98039c403fe39834436380bb32dd1c91d00a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4674\\generate.py"
+      },
+      {
+        "textbook_example_id": 4675,
+        "component_id": "src_4675",
+        "published_generate_sha256": "11539d8c8360469f6b4521eb949c772d9f16d9e36c1445204476239e37076a6c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4675\\generate.py"
+      },
+      {
+        "textbook_example_id": 4681,
+        "component_id": "src_4681",
+        "published_generate_sha256": "350ca9a6c06a2f9a30dcd5e3cd8a69aebd97f973608bdd7a7e9373e3cf07be09",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4681\\generate.py"
+      },
+      {
+        "textbook_example_id": 4682,
+        "component_id": "src_4682",
+        "published_generate_sha256": "6a75ce89601168a0d46c427d72736f4d7f33150d5d6e941b0dd98e9d370a55fb",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4682\\generate.py"
+      },
+      {
+        "textbook_example_id": 4683,
+        "component_id": "src_4683",
+        "published_generate_sha256": "6a702f80657a2a017c1220f652f87057baca92560a97278e45e80fb4a1634f64",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4683\\generate.py"
+      },
+      {
+        "textbook_example_id": 4684,
+        "component_id": "src_4684",
+        "published_generate_sha256": "e64f391c058874b7200cab5d0f28aff0fc93c3396f72e1ff2f9e3678513456d3",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4684\\generate.py"
+      },
+      {
+        "textbook_example_id": 4685,
+        "component_id": "src_4685",
+        "published_generate_sha256": "44f334b3a9ea4e5b47414e4bef7a763c0fa1511dc38543046cacd9e8cae7a27f",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4685\\generate.py"
+      },
+      {
+        "textbook_example_id": 4694,
+        "component_id": "src_4694",
+        "published_generate_sha256": "a4c7cdd15c7ea7cd015a7f86c889520e16cbc9643d7abc60b9c30dfd4680e1fd",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4694\\generate.py"
+      },
+      {
+        "textbook_example_id": 4695,
+        "component_id": "src_4695",
+        "published_generate_sha256": "54f509efd12e0f1fdf1de521c39111c4024433b0ece34d0ac1892b6944dcc6e7",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4695\\generate.py"
+      },
+      {
+        "textbook_example_id": 4696,
+        "component_id": "src_4696",
+        "published_generate_sha256": "2293ae074dd0a47e978b92b3d2830acac9601fd3ce5dc7ac2fec227b576f7d74",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4696\\generate.py"
+      },
+      {
+        "textbook_example_id": 4697,
+        "component_id": "src_4697",
+        "published_generate_sha256": "3768c3c93a53cedcf3a841e84cbcd15a5c12f8225e741b05bfc7bf09f6b9bb2a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4697\\generate.py"
+      },
+      {
+        "textbook_example_id": 4701,
+        "component_id": "src_4701",
+        "published_generate_sha256": "558aa4aa24bfff69a06d6a61fc04cff4ed870b2a233e3e15527d768d0bdd1180",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4701\\generate.py"
+      },
+      {
+        "textbook_example_id": 4713,
+        "component_id": "src_4713",
+        "published_generate_sha256": "70244d9ed82612fee4af351d6f51634d5087656014af4d6185f9a500679a0ff0",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4713\\generate.py"
+      },
+      {
+        "textbook_example_id": 4714,
+        "component_id": "src_4714",
+        "published_generate_sha256": "24da878f2d9c5758a15741abb63750c6af8514260424e5e9107bed968f16671c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4714\\generate.py"
+      },
+      {
+        "textbook_example_id": 4715,
+        "component_id": "src_4715",
+        "published_generate_sha256": "fcf1602d5bfc21e2645a3091cdb867c65fa0333032915a5a7e7fdad570374c3a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\components\\src_4715\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "production_published",
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 18,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_PolynomialFactoring",
+        "component_count": 18,
+        "generator_keys": [
+          "src_4671",
+          "src_4672",
+          "src_4673",
+          "src_4674",
+          "src_4675",
+          "src_4681",
+          "src_4682",
+          "src_4683",
+          "src_4684",
+          "src_4685",
+          "src_4694",
+          "src_4695",
+          "src_4696",
+          "src_4697",
+          "src_4701",
+          "src_4713",
+          "src_4714",
+          "src_4715"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4671,
+            "component_id": "src_4671",
+            "generator_key": "src_4671",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4671,
+            "source_order": 4671,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4672,
+            "component_id": "src_4672",
+            "generator_key": "src_4672",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4672,
+            "source_order": 4672,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4673,
+            "component_id": "src_4673",
+            "generator_key": "src_4673",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4673,
+            "source_order": 4673,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4674,
+            "component_id": "src_4674",
+            "generator_key": "src_4674",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4674,
+            "source_order": 4674,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4675,
+            "component_id": "src_4675",
+            "generator_key": "src_4675",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4675,
+            "source_order": 4675,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4681,
+            "component_id": "src_4681",
+            "generator_key": "src_4681",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4681,
+            "source_order": 4681,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4682,
+            "component_id": "src_4682",
+            "generator_key": "src_4682",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4682,
+            "source_order": 4682,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4683,
+            "component_id": "src_4683",
+            "generator_key": "src_4683",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4683,
+            "source_order": 4683,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4684,
+            "component_id": "src_4684",
+            "generator_key": "src_4684",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4684,
+            "source_order": 4684,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4685,
+            "component_id": "src_4685",
+            "generator_key": "src_4685",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4685,
+            "source_order": 4685,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4694,
+            "component_id": "src_4694",
+            "generator_key": "src_4694",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4694,
+            "source_order": 4694,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4695,
+            "component_id": "src_4695",
+            "generator_key": "src_4695",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4695,
+            "source_order": 4695,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4696,
+            "component_id": "src_4696",
+            "generator_key": "src_4696",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4696,
+            "source_order": 4696,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4697,
+            "component_id": "src_4697",
+            "generator_key": "src_4697",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4697,
+            "source_order": 4697,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4701,
+            "component_id": "src_4701",
+            "generator_key": "src_4701",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4701,
+            "source_order": 4701,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4713,
+            "component_id": "src_4713",
+            "generator_key": "src_4713",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4713,
+            "source_order": 4713,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4714,
+            "component_id": "src_4714",
+            "generator_key": "src_4714",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4714,
+            "source_order": 4714,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4715,
+            "component_id": "src_4715",
+            "generator_key": "src_4715",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "polynomial_factoring",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_factoring",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4715,
+            "source_order": 4715,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialFactoring\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialFactoring.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialFactoring.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialFactoring",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:42:31.172966+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 0,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4671": {
+          "component_id": "src_4671",
+          "textbook_example_id": 4671,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4672": {
+          "component_id": "src_4672",
+          "textbook_example_id": 4672,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4673": {
+          "component_id": "src_4673",
+          "textbook_example_id": 4673,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4674": {
+          "component_id": "src_4674",
+          "textbook_example_id": 4674,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4675": {
+          "component_id": "src_4675",
+          "textbook_example_id": 4675,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4681": {
+          "component_id": "src_4681",
+          "textbook_example_id": 4681,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4682": {
+          "component_id": "src_4682",
+          "textbook_example_id": 4682,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4683": {
+          "component_id": "src_4683",
+          "textbook_example_id": 4683,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4684": {
+          "component_id": "src_4684",
+          "textbook_example_id": 4684,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4685": {
+          "component_id": "src_4685",
+          "textbook_example_id": 4685,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4694": {
+          "component_id": "src_4694",
+          "textbook_example_id": 4694,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4695": {
+          "component_id": "src_4695",
+          "textbook_example_id": 4695,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4696": {
+          "component_id": "src_4696",
+          "textbook_example_id": 4696,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4697": {
+          "component_id": "src_4697",
+          "textbook_example_id": 4697,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4701": {
+          "component_id": "src_4701",
+          "textbook_example_id": 4701,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4713": {
+          "component_id": "src_4713",
+          "textbook_example_id": 4713,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4714": {
+          "component_id": "src_4714",
+          "textbook_example_id": 4714,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4715": {
+          "component_id": "src_4715",
+          "textbook_example_id": 4715,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        }
+      }
+    }
+  }
+}

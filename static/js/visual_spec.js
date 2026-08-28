@@ -87,6 +87,49 @@
         return null;
     }
 
+    function fitPanelAxisRange(points, fallbackX, fallbackY) {
+        const fbX = Array.isArray(fallbackX) && fallbackX.length >= 2 ? fallbackX : [-5, 5];
+        const fbY = Array.isArray(fallbackY) && fallbackY.length >= 2 ? fallbackY : [-5, 5];
+        if (!Array.isArray(points) || !points.length) {
+            return { x_range: fbX, y_range: fbY };
+        }
+        let xMin = Math.min.apply(null, points.map(function (point) { return point.x; }));
+        let xMax = Math.max.apply(null, points.map(function (point) { return point.x; }));
+        let yMin = Math.min.apply(null, points.map(function (point) { return point.y; }));
+        let yMax = Math.max.apply(null, points.map(function (point) { return point.y; }));
+        if (xMin === xMax) {
+            xMin -= 1;
+            xMax += 1;
+        }
+        if (yMin === yMax) {
+            yMin -= 1;
+            yMax += 1;
+        }
+        xMin = Math.min(xMin, 0);
+        xMax = Math.max(xMax, 0);
+        yMin = Math.min(yMin, 0);
+        yMax = Math.max(yMax, 0);
+        const padX = Math.max(1.6, (xMax - xMin) * 0.55);
+        const padY = Math.max(1.6, (yMax - yMin) * 0.55);
+        return {
+            x_range: [xMin - padX, xMax + padX],
+            y_range: [yMin - padY, yMax + padY]
+        };
+    }
+
+    function collectFitPoints(points, lines) {
+        const fitPoints = (points || []).slice();
+        (lines || []).forEach(function (line) {
+            (line.through_points || []).forEach(function (pt) {
+                const normalized = normalizePointEntry(pt);
+                if (normalized && Number.isFinite(normalized.x) && Number.isFinite(normalized.y)) {
+                    fitPoints.push(normalized);
+                }
+            });
+        });
+        return fitPoints;
+    }
+
     function buildMultiFigurePanels(visualSpec) {
         const axis = visualSpec.axis_range || {};
         const xRange = visualSpec.x_range || [axis.x_min, axis.x_max];
@@ -100,21 +143,41 @@
             const rawPoints = Array.isArray(fig.points) ? fig.points : [];
             const points = [];
             rawPoints.forEach(function (pt, ptIndex) {
-                const normalized = normalizePointEntry(pt, String.fromCharCode(65 + ptIndex));
+                const fallback = (Array.isArray(pt) || (pt && pt.label)) ? (pt && pt.label) || '' : String.fromCharCode(65 + ptIndex);
+                const normalized = normalizePointEntry(pt, fallback);
                 if (normalized && Number.isFinite(normalized.x) && Number.isFinite(normalized.y)) {
                     points.push(normalized);
                 }
             });
             const lines = [];
-            if (points.length >= 2) {
-                lines.push({
-                    through_points: [
-                        [points[0].x, points[0].y],
-                        [points[1].x, points[1].y]
-                    ],
-                    label: String(fig.id || fig.label || ('fig' + (index + 1)))
+            const rawLines = Array.isArray(fig.lines) ? fig.lines : [];
+            if (rawLines.length) {
+                rawLines.forEach(function (line) {
+                    if (!line || typeof line !== 'object') {
+                        return;
+                    }
+                    lines.push({
+                        through_points: line.through_points,
+                        extend: line.extend !== false,
+                        label: String(line.label || '')
+                    });
                 });
+            } else {
+                const endpoints = points.filter(function (point) {
+                    return point.label !== 'O';
+                });
+                if (endpoints.length >= 2) {
+                    lines.push({
+                        through_points: [
+                            [endpoints[0].x, endpoints[0].y],
+                            [endpoints[1].x, endpoints[1].y]
+                        ],
+                        extend: true,
+                        label: ''
+                    });
+                }
             }
+            const fitted = fitPanelAxisRange(collectFitPoints(points, lines), xRange, yRange);
             panels.push({
                 id: String(fig.id || ('fig' + (index + 1))),
                 label: String(fig.label || fig.id || ('圖' + (index + 1))),
@@ -123,8 +186,10 @@
                     scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                     points: points,
                     lines: lines,
-                    x_range: xRange,
-                    y_range: yRange
+                    right_angle_marks: Array.isArray(fig.right_angle_marks) ? fig.right_angle_marks : [],
+                    hide_unlabeled_points: true,
+                    x_range: fitted.x_range,
+                    y_range: fitted.y_range
                 }
             });
         });
@@ -155,20 +220,26 @@
                             [resolved[0].x, resolved[0].y],
                             [resolved[1].x, resolved[1].y]
                         ],
+                        extend: true,
                         label: key
                     });
                 }
             });
+            if (!points.some(function (point) { return point.label === 'O'; })) {
+                points.push({ x: 0, y: 0, label: 'O' });
+            }
+            const fitted = fitPanelAxisRange(points, xRange, yRange);
             panels.push({
                 id: String(cmp.id || ('cmp' + (index + 1))),
-                label: String(cmp.label || cmp.id || ('比較' + (index + 1))),
+                label: String(cmp.label || cmp.id || ('圖' + (index + 1))),
                 spec: {
                     kind: 'coordinate_plane',
                     scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
                     points: points,
                     lines: lines,
-                    x_range: xRange,
-                    y_range: yRange
+                    hide_unlabeled_points: true,
+                    x_range: fitted.x_range,
+                    y_range: fitted.y_range
                 }
             });
         });
@@ -179,6 +250,83 @@
     function computeMultiFigureGrid(panelCount, width, height, padding) {
         const outerPad = Math.max(4, Math.min(Number.isFinite(padding) ? padding : 16, width * 0.06, height * 0.06));
         const gap = width >= 360 ? 8 : (width >= 180 ? 5 : 3);
+        if (panelCount === 4 && width >= 360) {
+            const cols = 2;
+            const rows = 2;
+            const innerWidth = Math.max(1, width - outerPad * 2 - gap);
+            const innerHeight = Math.max(1, height - outerPad * 2 - gap);
+            const cellWidth = innerWidth / cols;
+            const cellHeight = innerHeight / rows;
+            const cells = [];
+            for (let index = 0; index < 4; index += 1) {
+                const row = Math.floor(index / cols);
+                const col = index % cols;
+                cells.push({
+                    x: outerPad + col * (cellWidth + gap),
+                    y: outerPad + row * (cellHeight + gap),
+                    width: cellWidth,
+                    height: cellHeight
+                });
+            }
+            return { cols: cols, rows: rows, gap: gap, cells: cells, outerPad: outerPad };
+        }
+        if (panelCount === 2 && width >= 280) {
+            const cols = 2;
+            const rows = 1;
+            const innerWidth = Math.max(1, width - outerPad * 2 - gap);
+            const innerHeight = Math.max(1, height - outerPad * 2);
+            const cellWidth = innerWidth / cols;
+            const cells = [];
+            for (let index = 0; index < 2; index += 1) {
+                cells.push({
+                    x: outerPad + index * (cellWidth + gap),
+                    y: outerPad,
+                    width: cellWidth,
+                    height: innerHeight
+                });
+            }
+            return { cols: cols, rows: rows, gap: gap, cells: cells, outerPad: outerPad };
+        }
+        if (panelCount === 6 && width >= 720) {
+            const cols = 3;
+            const rows = 2;
+            const innerWidth = Math.max(1, width - outerPad * 2 - gap * (cols - 1));
+            const innerHeight = Math.max(1, height - outerPad * 2 - gap);
+            const cellWidth = innerWidth / cols;
+            const cellHeight = innerHeight / rows;
+            const cells = [];
+            for (let index = 0; index < panelCount; index += 1) {
+                const row = Math.floor(index / cols);
+                const col = index % cols;
+                cells.push({
+                    x: outerPad + col * (cellWidth + gap),
+                    y: outerPad + row * (cellHeight + gap),
+                    width: cellWidth,
+                    height: cellHeight
+                });
+            }
+            return { cols: cols, rows: rows, gap: gap, cells: cells, outerPad: outerPad };
+        }
+        if (panelCount === 6 && width >= 160) {
+            const cols = 2;
+            const rows = 3;
+            const innerWidth = Math.max(1, width - outerPad * 2 - gap);
+            const innerHeight = Math.max(1, height - outerPad * 2 - gap * (rows - 1));
+            const cellWidth = innerWidth / cols;
+            const cellHeight = innerHeight / rows;
+            const cells = [];
+            for (let index = 0; index < panelCount; index += 1) {
+                const row = Math.floor(index / cols);
+                const col = index % cols;
+                cells.push({
+                    x: outerPad + col * (cellWidth + gap),
+                    y: outerPad + row * (cellHeight + gap),
+                    width: cellWidth,
+                    height: cellHeight
+                });
+            }
+            return { cols: cols, rows: rows, gap: gap, cells: cells, outerPad: outerPad };
+        }
         let cols;
         if (width >= 360) {
             cols = 3;
@@ -715,7 +863,7 @@
             padding: Number.isFinite(opts.padding) ? opts.padding : 20,
             manageCanvasSize: opts.manageCanvasSize !== false,
             backgroundFill: opts.backgroundFill !== undefined ? opts.backgroundFill : '#ffffff',
-            visualOpacity: Number.isFinite(opts.visualOpacity) ? opts.visualOpacity : 0.62,
+            visualOpacity: Number.isFinite(opts.visualOpacity) ? opts.visualOpacity : 0.88,
             layoutRegion: opts.layoutRegion || null,
             devicePixelRatio: Number(
                 opts.devicePixelRatio
@@ -802,14 +950,139 @@
         return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
     }
 
-    function drawLineSegment(context, mapX, mapY, x1, y1, x2, y2) {
+    function clipPixelLine(x1, y1, x2, y2, box) {
+        if (!box) {
+            return { x1: x1, y1: y1, x2: x2, y2: y2 };
+        }
+        const minX = box.minX;
+        const minY = box.minY;
+        const maxX = box.maxX;
+        const maxY = box.maxY;
+        function outCode(x, y) {
+            let code = 0;
+            if (x < minX) code |= 1;
+            if (x > maxX) code |= 2;
+            if (y < minY) code |= 4;
+            if (y > maxY) code |= 8;
+            return code;
+        }
+        let c1 = outCode(x1, y1);
+        let c2 = outCode(x2, y2);
+        for (let step = 0; step < 8; step += 1) {
+            if (!(c1 | c2)) {
+                return { x1: x1, y1: y1, x2: x2, y2: y2 };
+            }
+            if (c1 & c2) {
+                return null;
+            }
+            const code = c1 || c2;
+            let x = x1;
+            let y = y1;
+            if (c2 - c1 === 0 && x2 === x1 && y2 === y1) {
+                return null;
+            }
+            if (code & 8) {
+                x = x1 + (x2 - x1) * (maxY - y1) / ((y2 - y1) || 1e-9);
+                y = maxY;
+            } else if (code & 4) {
+                x = x1 + (x2 - x1) * (minY - y1) / ((y2 - y1) || 1e-9);
+                y = minY;
+            } else if (code & 2) {
+                y = y1 + (y2 - y1) * (maxX - x1) / ((x2 - x1) || 1e-9);
+                x = maxX;
+            } else {
+                y = y1 + (y2 - y1) * (minX - x1) / ((x2 - x1) || 1e-9);
+                x = minX;
+            }
+            if (code === c1) {
+                x1 = x;
+                y1 = y;
+                c1 = outCode(x1, y1);
+            } else {
+                x2 = x;
+                y2 = y;
+                c2 = outCode(x2, y2);
+            }
+        }
+        return null;
+    }
+
+    function drawLineSegment(context, mapX, mapY, x1, y1, x2, y2, clipBox) {
         if (![x1, y1, x2, y2].every(Number.isFinite)) {
             return;
         }
+        const clipped = clipPixelLine(mapX(x1), mapY(y1), mapX(x2), mapY(y2), clipBox);
+        if (!clipped) {
+            return;
+        }
         context.beginPath();
-        context.moveTo(mapX(x1), mapY(y1));
-        context.lineTo(mapX(x2), mapY(y2));
+        context.moveTo(clipped.x1, clipped.y1);
+        context.lineTo(clipped.x2, clipped.y2);
         context.stroke();
+    }
+
+    function extendLineToBounds(p1, p2, xMin, xMax, yMin, yMax) {
+        if (!p1 || !p2) {
+            return null;
+        }
+        if (Math.abs(p1.x - p2.x) < 1e-9) {
+            return { x1: p1.x, y1: yMin, x2: p1.x, y2: yMax };
+        }
+        if (Math.abs(p1.y - p2.y) < 1e-9) {
+            return { x1: xMin, y1: p1.y, x2: xMax, y2: p1.y };
+        }
+        const slope = (p2.y - p1.y) / (p2.x - p1.x);
+        const intercept = p1.y - slope * p1.x;
+        return {
+            x1: xMin,
+            y1: slope * xMin + intercept,
+            x2: xMax,
+            y2: slope * xMax + intercept
+        };
+    }
+
+    function drawRightAngleMark(context, mapX, mapY, mark, opacity) {
+        if (!mark) {
+            return;
+        }
+        const at = mark.at || mark;
+        const ax = Number(Array.isArray(at) ? at[0] : at.x);
+        const ay = Number(Array.isArray(at) ? at[1] : at.y);
+        if (!Number.isFinite(ax) || !Number.isFinite(ay)) {
+            return;
+        }
+        const size = Number.isFinite(Number(mark.size)) ? Number(mark.size) : 0.45;
+        const axes = String(mark.axes || mark.orientation || '').toLowerCase();
+        let dx = size;
+        let dy = size;
+        if (axes === 'y' || axes === 'horizontal') {
+            dx = size;
+            dy = ay >= 0 ? -size : size;
+        } else {
+            dx = ax >= 0 ? -size : size;
+            dy = size;
+        }
+        context.strokeStyle = applyFadedColor('#374151', Math.min(1, opacity + 0.2));
+        context.lineWidth = 1.4;
+        context.beginPath();
+        context.moveTo(mapX(ax + dx), mapY(ay));
+        context.lineTo(mapX(ax + dx), mapY(ay + dy));
+        context.lineTo(mapX(ax), mapY(ay + dy));
+        context.stroke();
+    }
+
+    function drawLineLabel(context, mapX, mapY, x1, y1, x2, y2, label, color, opacity) {
+        if (!label) {
+            return;
+        }
+        const t = 0.78;
+        const x = x1 + (x2 - x1) * t;
+        const y = y1 + (y2 - y1) * t;
+        context.fillStyle = applyFadedColor(color || '#1565c0', Math.min(1, opacity + 0.25));
+        context.font = '600 11px sans-serif';
+        context.textAlign = 'left';
+        context.textBaseline = 'bottom';
+        context.fillText(label, mapX(x) + 4, mapY(y) - 2);
     }
 
     function buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
@@ -944,6 +1217,22 @@
             context.fillText(destRect.label, destRect.x + width / 2, destRect.y + 1);
         }
 
+        const clipBox = {
+            minX: destRect.x + 1,
+            minY: destRect.y + (destRect.label ? 13 : 1),
+            maxX: destRect.x + width - 1,
+            maxY: destRect.y + height - 1
+        };
+        const canClip = typeof context.save === 'function' && typeof context.restore === 'function';
+        if (canClip) {
+            context.save();
+            if (typeof context.rect === 'function' && typeof context.clip === 'function') {
+                context.beginPath();
+                context.rect(clipBox.minX, clipBox.minY, Math.max(1, clipBox.maxX - clipBox.minX), Math.max(1, clipBox.maxY - clipBox.minY));
+                context.clip();
+            }
+        }
+
         context.strokeStyle = applyFadedColor('#e5e7eb', Math.min(1, opacity + 0.15));
         context.lineWidth = 1;
         for (let value = Math.ceil(xMin); value <= Math.floor(xMax); value += 1) {
@@ -974,6 +1263,11 @@
             context.stroke();
         }
 
+        const marks = Array.isArray(visualSpec.right_angle_marks) ? visualSpec.right_angle_marks : [];
+        marks.forEach(function (mark) {
+            drawRightAngleMark(context, mapX, mapY, mark, opacity);
+        });
+
         const primitives = Array.isArray(visualSpec.drawable_primitives)
             ? visualSpec.drawable_primitives
             : [];
@@ -985,27 +1279,20 @@
         const points = Array.isArray(visualSpec.points) ? visualSpec.points : [];
         const lineColors = ['#1565c0', '#c2410c'];
         lines.forEach(function (line, lineIndex) {
-            context.strokeStyle = applyFadedColor(lineColors[lineIndex % lineColors.length], opacity);
+            const color = lineColors[lineIndex % lineColors.length];
+            context.strokeStyle = applyFadedColor(color, opacity);
             context.lineWidth = 2.2;
             if (hasNumericThroughPoints(line, points)) {
                 const p1 = resolvePointReference(line.through_points[0], points);
                 const p2 = resolvePointReference(line.through_points[1], points);
                 if (p1 && p2) {
-                    drawLineSegment(context, mapX, mapY, p1.x, p1.y, p2.x, p2.y);
+                    const extended = line.extend === false
+                        ? { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y }
+                        : (extendLineToBounds(p1, p2, xMin, xMax, yMin, yMax) || { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y });
+                    drawLineSegment(context, mapX, mapY, extended.x1, extended.y1, extended.x2, extended.y2, clipBox);
+                    drawLineLabel(context, mapX, mapY, extended.x1, extended.y1, extended.x2, extended.y2, line.label, color, opacity);
                     return;
                 }
-                const raw1 = line.through_points[0];
-                const raw2 = line.through_points[1];
-                drawLineSegment(
-                    context,
-                    mapX,
-                    mapY,
-                    Number(Array.isArray(raw1) ? raw1[0] : raw1.x),
-                    Number(Array.isArray(raw1) ? raw1[1] : raw1.y),
-                    Number(Array.isArray(raw2) ? raw2[0] : raw2.x),
-                    Number(Array.isArray(raw2) ? raw2[1] : raw2.y)
-                );
-                return;
             }
             if (String(line.type || '').trim() === 'slope_intercept') {
                 const slope = parseFractionLike(line.m);
@@ -1020,7 +1307,8 @@
                         xMin,
                         slope * xMin + intercept,
                         xMax,
-                        slope * xMax + intercept
+                        slope * xMax + intercept,
+                        clipBox
                     );
                 }
                 return;
@@ -1032,31 +1320,50 @@
             if (![coefficientA, coefficientB, constantC].every(Number.isFinite)) {
                 return;
             }
-            context.beginPath();
             if (coefficientB !== 0) {
-                context.moveTo(mapX(xMin), mapY((-coefficientA * xMin - constantC) / coefficientB));
-                context.lineTo(mapX(xMax), mapY((-coefficientA * xMax - constantC) / coefficientB));
+                drawLineSegment(
+                    context,
+                    mapX,
+                    mapY,
+                    xMin,
+                    (-coefficientA * xMin - constantC) / coefficientB,
+                    xMax,
+                    (-coefficientA * xMax - constantC) / coefficientB,
+                    clipBox
+                );
             } else if (coefficientA !== 0) {
                 const xValue = -constantC / coefficientA;
-                context.moveTo(mapX(xValue), mapY(yMin));
-                context.lineTo(mapX(xValue), mapY(yMax));
-            } else {
-                return;
+                drawLineSegment(context, mapX, mapY, xValue, yMin, xValue, yMax, clipBox);
             }
-            context.stroke();
         });
 
-        context.fillStyle = applyFadedColor('#dc2626', opacity);
+        const hideUnlabeled = visualSpec.hide_unlabeled_points === true;
         points.forEach(function (point) {
             const xValue = Number(Array.isArray(point) ? point[0] : point.x);
             const yValue = Number(Array.isArray(point) ? point[1] : point.y);
+            const label = String(Array.isArray(point) ? '' : (point.label || ''));
             if (!Number.isFinite(xValue) || !Number.isFinite(yValue)) {
                 return;
             }
+            if (hideUnlabeled && !label) {
+                return;
+            }
+            context.fillStyle = applyFadedColor('#111827', opacity);
             context.beginPath();
-            context.arc(mapX(xValue), mapY(yValue), width < 180 ? 2.5 : 3.5, 0, Math.PI * 2);
+            context.arc(mapX(xValue), mapY(yValue), width < 180 ? 2 : 2.5, 0, Math.PI * 2);
             context.fill();
+            if (label) {
+                context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+                context.textAlign = xValue >= 0 ? 'left' : 'right';
+                context.textBaseline = yValue >= 0 ? 'top' : 'bottom';
+                const dx = xValue >= 0 ? 5 : -5;
+                const dy = yValue >= 0 ? 4 : -3;
+                context.fillText(label, mapX(xValue) + dx, mapY(yValue) + dy);
+            }
         });
+        if (canClip) {
+            context.restore();
+        }
         trackRenderBounds({
             minX: plot.plotLeft,
             minY: destRect.y + (destRect.showLabel === false ? 0 : plot.labelHeight),

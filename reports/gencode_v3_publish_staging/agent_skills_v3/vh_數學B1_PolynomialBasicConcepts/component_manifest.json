@@ -1,0 +1,106 @@
+{
+  "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_4609",
+      "textbook_example_id": 4609,
+      "status": "verified",
+      "problem_type_id": "polynomial_descending_power_properties",
+      "domain_operation": "polynomial_descending_power_properties",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4609/generate.py"
+    },
+    {
+      "component_id": "src_4610",
+      "textbook_example_id": 4610,
+      "status": "verified",
+      "problem_type_id": "polynomial_param_degree_constraint",
+      "domain_operation": "polynomial_param_degree_constraint",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4610/generate.py"
+    },
+    {
+      "component_id": "src_4618",
+      "textbook_example_id": 4618,
+      "status": "verified",
+      "problem_type_id": "polynomial_descending_power_table",
+      "domain_operation": "polynomial_descending_power_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4618/generate.py"
+    },
+    {
+      "component_id": "src_4619",
+      "textbook_example_id": 4619,
+      "status": "verified",
+      "problem_type_id": "polynomial_param_degree_constraint",
+      "domain_operation": "polynomial_param_degree_constraint",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4619/generate.py"
+    },
+    {
+      "component_id": "src_4620",
+      "textbook_example_id": 4620,
+      "status": "verified",
+      "problem_type_id": "zero_polynomial_find_coeffs",
+      "domain_operation": "zero_polynomial_find_coeffs",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4620/generate.py"
+    },
+    {
+      "component_id": "src_4629",
+      "textbook_example_id": 4629,
+      "status": "verified",
+      "problem_type_id": "polynomial_descending_power_table",
+      "domain_operation": "polynomial_descending_power_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4629/generate.py"
+    },
+    {
+      "component_id": "src_4630",
+      "textbook_example_id": 4630,
+      "status": "verified",
+      "problem_type_id": "polynomial_param_degree_constraint",
+      "domain_operation": "polynomial_param_degree_constraint",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4630/generate.py"
+    },
+    {
+      "component_id": "src_4631",
+      "textbook_example_id": 4631,
+      "status": "verified",
+      "problem_type_id": "zero_polynomial_find_coeffs",
+      "domain_operation": "zero_polynomial_find_coeffs",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4631/generate.py"
+    },
+    {
+      "component_id": "src_4716",
+      "textbook_example_id": 4716,
+      "status": "verified",
+      "problem_type_id": "polynomial_degree_product_sum",
+      "domain_operation": "polynomial_degree_product_sum",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_4716/generate.py"
+    }
+  ]
+}

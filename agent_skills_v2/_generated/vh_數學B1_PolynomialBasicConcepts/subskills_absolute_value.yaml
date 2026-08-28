@@ -1,0 +1,66 @@
+skill_id: "vh_數學B1_PolynomialBasicConcepts"
+subskills:
+  -
+    subskill_id: "polynomial_degree_product_sum"
+    observed: true
+    supporting_example_ids:
+      - 4716
+    suggested_problem_types:
+      - "polynomial_degree_product_sum"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "polynomial_descending_power_properties"
+    observed: true
+    supporting_example_ids:
+      - 4609
+    suggested_problem_types:
+      - "polynomial_descending_power_properties"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "polynomial_descending_power_table"
+    observed: true
+    supporting_example_ids:
+      - 4618
+      - 4629
+    suggested_problem_types:
+      - "polynomial_descending_power_table"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "polynomial_param_degree_constraint"
+    observed: true
+    supporting_example_ids:
+      - 4610
+      - 4619
+      - 4630
+    suggested_problem_types:
+      - "polynomial_param_degree_constraint"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"
+  -
+    subskill_id: "zero_polynomial_find_coeffs"
+    observed: true
+    supporting_example_ids:
+      - 4620
+      - 4631
+    suggested_problem_types:
+      - "zero_polynomial_find_coeffs"
+    runtime_category: "deterministic_expression"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+    diagnosis_tags:
+      - "absolute_value"

@@ -145,6 +145,11 @@ def test_figure_classify_compare_six_slot_contract():
     parts = payload["answer_contract"]["parts"]
     assert len(parts) == 6
     assert {p["key"] for p in parts} == {"fig1", "fig2", "fig3", "fig4", "cmp1", "cmp2"}
+    labels = {p["key"]: p["label"] for p in parts}
+    assert labels["fig1"] == "①"
+    assert labels["cmp1"] == "圖①"
+    assert parts[0].get("input_type") == "select"
+    assert "m>0" in (parts[0].get("choices") or [])
     assert check_multi_part_answer(
         payload["semantic_answer"],
         payload["correct_answer"],
@@ -157,6 +162,20 @@ def test_figure_classify_compare_six_slot_contract():
         payload["correct_answer"],
         answer_contract=payload["answer_contract"],
     )["overall_correct"]
+
+    fig1_pts = visual["figures"][0]["points"]
+    assert any(
+        (isinstance(pt, dict) and pt.get("label") == "O")
+        or (isinstance(pt, (list, tuple)) and pt[0] == 0 and pt[1] == 0)
+        for pt in fig1_pts
+    )
+    assert visual["figures"][1]["right_angle_marks"]
+    assert visual["figures"][2]["right_angle_marks"]
+    cmp1 = visual["comparisons"][0]
+    cmp2 = visual["comparisons"][1]
+    assert Fraction(str(cmp1["L1"]["slope"])) > Fraction(str(cmp1["L2"]["slope"])) > 0
+    assert Fraction(str(cmp2["L1"]["slope"])) < Fraction(str(cmp2["L2"]["slope"])) < 0
+    assert payload["semantic_answer"]["cmp2"] == "m1<m2"
 
 
 def test_collinear_and_non_triangle_share_kernel():

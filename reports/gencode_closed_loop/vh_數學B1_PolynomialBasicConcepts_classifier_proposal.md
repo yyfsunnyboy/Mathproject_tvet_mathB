@@ -1,0 +1,95 @@
+# Classifier Proposal: vh_數學B1_PolynomialBasicConcepts
+
+## proposal
+```json
+{
+  "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+  "proposed_problem_types": [
+    "absolute_value_inequality_malformed_source_review"
+  ],
+  "proposed_example_map": [
+    {
+      "example_id": 4609,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "設$f<=ft( x \\right)=4{{x}^{2}}-5{{x}^{3}}-x+3$，試求：(1) $f<=ft( x \\right)$依降冪排列 (2)$\\deg f<=ft( x \\right)$(3) $f<=ft( x \\right)$的首項係數 (4)$f<=ft( x \\right)$在x = −1時"
+    },
+    {
+      "example_id": 4610,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "(1) 設多項式$f<=ft( x \\right)=<=ft( a-2 \\right){{x}^{3}}+<=ft( b+3 \\right){{x}^{2}}-<=ft( a-b \\right)x+3$，且a、b為實數，若$\\deg f<=ft( x \\right)=1$，試求：①a、b之值 ②$f<=ft( x \\r"
+    },
+    {
+      "example_id": 4618,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "已知$f<=ft( x \\right)=2{{x}^{2}}+{{x}^{3}}-3x-5$，$g<=ft( x \\right)=-3{{x}^{2}}+{{x}^{4}}-2x+{{x}^{3}}+1$，試按降冪排列完成下表："
+    },
+    {
+      "example_id": 4619,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "多項式$f<=ft( x \\right)=<=ft( a-2 \\right){{x}^{4}}+<=ft( b+3 \\right){{x}^{3}}+<=ft( 2a-b \\right){{x}^{2}}+4x-5$，若$\\deg f<=ft( x \\right)=2$，試求：(1) a、b之值 (2)$f<=ft( "
+    },
+    {
+      "example_id": 4620,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "設$f<=ft( x \\right)=<=ft( a+2 \\right){{x}^{3}}+<=ft( b-1 \\right){{x}^{2}}+cx+d-5$為一零多項式，試求a、b、c、d之值。"
+    },
+    {
+      "example_id": 4629,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "已知$f<=ft( x \\right)=-5{{x}^{2}}+{{x}^{3}}-1$，$g<=ft( x \\right)=-3{{x}^{2}}-x+2{{x}^{3}}-1$，試按降冪排列完成下表："
+    },
+    {
+      "example_id": 4630,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "多項式$f<=ft( x \\right)=<=ft( 2a+2 \\right){{x}^{4}}+<=ft( b-1 \\right){{x}^{3}}+<=ft( a+2b \\right){{x}^{2}}-3x+1$，若$\\deg f<=ft( x \\right)=2$，試求：(1) a、b之值 (2)$f<=ft("
+    },
+    {
+      "example_id": 4631,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "設$g<=ft( x \\right)=<=ft( a+1 \\right){{x}^{2}}+<=ft( b-2 \\right)x+2c-4$為一零多項式，試求a、b、c之值。."
+    },
+    {
+      "example_id": 4716,
+      "proposed_problem_type_id": "absolute_value_inequality_malformed_source_review",
+      "reason": "heuristic_pattern_match",
+      "problem_preview": "設$f<=ft( x \\right)$為四次多項式，$g<=ft( x \\right)$為五次多項式，$h<=ft( x \\right)=f<=ft( x \\right)\\times g<=ft( x \\right)$，$k<=ft( x \\right)=f<=ft( x \\right)+g<=ft( x \\right"
+    }
+  ],
+  "proposed_answer_contracts": {
+    "absolute_value_inequality_malformed_source_review": {
+      "answer_type": "manual_review",
+      "equivalence_type": "manual_review_or_ai_judged",
+      "checker_key": "manual_review_checker",
+      "order_matters": false,
+      "accepted_format_notes": [
+        "requires source text correction before deterministic generation"
+      ],
+      "canonical_answer_schema": {
+        "type": "manual_review"
+      }
+    }
+  },
+  "manual_review_candidates": [
+    4609,
+    4610,
+    4618,
+    4619,
+    4620,
+    4629,
+    4630,
+    4631,
+    4716
+  ],
+  "risk_flags": [
+    "contains_malformed_or_unclassified_examples"
+  ]
+}
+```

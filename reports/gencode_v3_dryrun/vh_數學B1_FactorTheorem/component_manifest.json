@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B1_FactorTheorem",
+  "compiled_at": "2026-08-27T07:42:15.717034+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4646",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4646",
+      "textbook_example_id": 4646,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4646"
+    },
+    {
+      "component_id": "src_4647",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4647",
+      "textbook_example_id": 4647,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4647"
+    },
+    {
+      "component_id": "src_4648",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4648",
+      "textbook_example_id": 4648,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4648"
+    },
+    {
+      "component_id": "src_4649",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4649",
+      "textbook_example_id": 4649,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4649"
+    },
+    {
+      "component_id": "src_4650",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4650",
+      "textbook_example_id": 4650,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4650"
+    },
+    {
+      "component_id": "src_4651",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4651",
+      "textbook_example_id": 4651,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4651"
+    },
+    {
+      "component_id": "src_4652",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4652",
+      "textbook_example_id": 4652,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4652"
+    },
+    {
+      "component_id": "src_4653",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4653",
+      "textbook_example_id": 4653,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4653"
+    },
+    {
+      "component_id": "src_4654",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4654",
+      "textbook_example_id": 4654,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4654"
+    },
+    {
+      "component_id": "src_4660",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4660",
+      "textbook_example_id": 4660,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4660"
+    },
+    {
+      "component_id": "src_4661",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4661",
+      "textbook_example_id": 4661,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4661"
+    },
+    {
+      "component_id": "src_4662",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4662",
+      "textbook_example_id": 4662,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4662"
+    },
+    {
+      "component_id": "src_4663",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4663",
+      "textbook_example_id": 4663,
+      "line_type": "factor_theorem_root_factor",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_FactorTheorem\\components\\src_4663"
+    }
+  ]
+}

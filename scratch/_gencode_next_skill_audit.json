@@ -1,0 +1,1132 @@
+{
+  "db": "C:\\Python\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "b1_skill_count": 45,
+  "skills": [
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "display_name": "絕對值",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "display_order": 1,
+      "textbook_examples": 4,
+      "tracker": {
+        "verified": 4
+      },
+      "ui_status": "published",
+      "verified": 4,
+      "failed": 0,
+      "published": 4,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "display_name": "絕對值不等式",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "display_order": 2,
+      "textbook_examples": 10,
+      "tracker": {
+        "verified": 10
+      },
+      "ui_status": "published",
+      "verified": 10,
+      "failed": 0,
+      "published": 10,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 10
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "display_name": "絕對值不等式的展開與幾何意義",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "display_order": 3,
+      "textbook_examples": 3,
+      "tracker": {
+        "verified": 3
+      },
+      "ui_status": "published",
+      "verified": 3,
+      "failed": 0,
+      "published": 3,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 3
+    },
+    {
+      "skill_id": "vh_數學B1_NumberLine",
+      "display_name": "數線",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "display_order": 4,
+      "textbook_examples": 1,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_11",
+      "display_name": "1-1 數線與絕對值",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "display_order": 5,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "display_name": "直角坐標系的建立",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 1,
+      "textbook_examples": 4,
+      "tracker": {
+        "verified": 4
+      },
+      "ui_status": "published",
+      "verified": 4,
+      "failed": 0,
+      "published": 4,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_FunctionConcept",
+      "display_name": "函數的概念",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 2,
+      "textbook_examples": 2,
+      "tracker": {
+        "verified": 2
+      },
+      "ui_status": "published",
+      "verified": 2,
+      "failed": 0,
+      "published": 2,
+      "wrapper": false,
+      "package": true,
+      "generate_files": 2
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "display_name": "平面上兩點間的距離",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 3,
+      "textbook_examples": 4,
+      "tracker": {
+        "verified": 4
+      },
+      "ui_status": "published",
+      "verified": 4,
+      "failed": 0,
+      "published": 4,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "display_name": "中點坐標",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 4,
+      "textbook_examples": 10,
+      "tracker": {
+        "verified": 10
+      },
+      "ui_status": "deployed_pending_revalidation",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 10
+    },
+    {
+      "skill_id": "vh_數學B1_DivisionPointCoordinates",
+      "display_name": "分點坐標",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 5,
+      "textbook_examples": 7,
+      "tracker": {
+        "verified": 7
+      },
+      "ui_status": "deployed_pending_revalidation",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 7
+    },
+    {
+      "skill_id": "vh_數學B1_LinearFunction",
+      "display_name": "線型函數",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 6,
+      "textbook_examples": 15,
+      "tracker": {
+        "verified": 15
+      },
+      "ui_status": "published",
+      "verified": 15,
+      "failed": 0,
+      "published": 15,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 15
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_12",
+      "display_name": "1-2 平面坐標系與線型函數",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "display_order": 7,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "display_name": "二次函數的圖形",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "display_order": 1,
+      "textbook_examples": 4,
+      "tracker": {
+        "verified": 4
+      },
+      "ui_status": "published",
+      "verified": 4,
+      "failed": 0,
+      "published": 4,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "display_name": "頂點式",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "display_order": 2,
+      "textbook_examples": 5,
+      "tracker": {
+        "verified": 5
+      },
+      "ui_status": "published",
+      "verified": 5,
+      "failed": 0,
+      "published": 5,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 5
+    },
+    {
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "display_name": "配方法",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "display_order": 3,
+      "textbook_examples": 2,
+      "tracker": {
+        "verified": 2
+      },
+      "ui_status": "published",
+      "verified": 2,
+      "failed": 0,
+      "published": 2,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 2
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "display_name": "二次函數 $y = ax^{2} + bx + c$ 的最大（小）值",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "display_order": 4,
+      "textbook_examples": 13,
+      "tracker": {
+        "verified": 13
+      },
+      "ui_status": "published",
+      "verified": 13,
+      "failed": 0,
+      "published": 13,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 13
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_13",
+      "display_name": "1-3 二次函數",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "display_order": 5,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "display_name": "一元二次不等式的基本概念與十字交乘法",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "display_order": 1,
+      "textbook_examples": 3,
+      "tracker": {
+        "verified": 3
+      },
+      "ui_status": "published",
+      "verified": 3,
+      "failed": 0,
+      "published": 3,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 3
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "display_name": "一元二次不等式的解",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "display_order": 2,
+      "textbook_examples": 29,
+      "tracker": {
+        "verified": 29
+      },
+      "ui_status": "published",
+      "verified": 29,
+      "failed": 0,
+      "published": 29,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 29
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_14",
+      "display_name": "1-4 一元二次不等式",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "display_order": 3,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "display_name": "直線的斜率",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "display_order": 1,
+      "textbook_examples": 12,
+      "tracker": {},
+      "ui_status": "deployed_pending_revalidation",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 12
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "display_name": "兩平行線的性質",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "display_order": 2,
+      "textbook_examples": 4,
+      "tracker": {},
+      "ui_status": "deployed_pending_revalidation",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "display_name": "兩垂直線的性質",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "display_order": 3,
+      "textbook_examples": 8,
+      "tracker": {},
+      "ui_status": "deployed_pending_revalidation",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 8
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_21",
+      "display_name": "2-1 斜率",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "display_order": 4,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "display_name": "點斜式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "display_order": 1,
+      "textbook_examples": 14,
+      "tracker": {
+        "verified": 14
+      },
+      "ui_status": "published",
+      "verified": 14,
+      "failed": 0,
+      "published": 14,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 14
+    },
+    {
+      "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+      "display_name": "水平線與鉛直線的直線方程式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "display_order": 2,
+      "textbook_examples": 4,
+      "tracker": {
+        "verified": 4
+      },
+      "ui_status": "published",
+      "verified": 4,
+      "failed": 0,
+      "published": 4,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 4
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeInterceptForm",
+      "display_name": "斜截式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "display_order": 3,
+      "textbook_examples": 5,
+      "tracker": {
+        "verified": 5
+      },
+      "ui_status": "published",
+      "verified": 5,
+      "failed": 0,
+      "published": 5,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 5
+    },
+    {
+      "skill_id": "vh_數學B1_InterceptForm",
+      "display_name": "截距式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "display_order": 4,
+      "textbook_examples": 7,
+      "tracker": {
+        "verified": 7
+      },
+      "ui_status": "published",
+      "verified": 7,
+      "failed": 0,
+      "published": 7,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 7
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_22",
+      "display_name": "2-2 直線方程式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "display_order": 5,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+      "display_name": "直線的一般式",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "display_order": 1,
+      "textbook_examples": 17,
+      "tracker": {
+        "verified": 17
+      },
+      "ui_status": "published",
+      "verified": 17,
+      "failed": 0,
+      "published": 17,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 17
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "display_name": "點到直線的距離",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "display_order": 2,
+      "textbook_examples": 7,
+      "tracker": {
+        "verified": 7
+      },
+      "ui_status": "published",
+      "verified": 7,
+      "failed": 0,
+      "published": 7,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 7
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "display_name": "兩條平行線間的距離",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "display_order": 3,
+      "textbook_examples": 11,
+      "tracker": {
+        "verified": 11
+      },
+      "ui_status": "published",
+      "verified": 11,
+      "failed": 0,
+      "published": 11,
+      "wrapper": true,
+      "package": true,
+      "generate_files": 11
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_23",
+      "display_name": "2-3 直線的一般式與點到直線的距離",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "display_order": 4,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "display_name": "多項式的基本概念",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "display_order": 1,
+      "textbook_examples": 9,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "display_name": "多項式的四則運算",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "display_order": 2,
+      "textbook_examples": 22,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "display_name": "多項式的相等",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "display_order": 3,
+      "textbook_examples": 4,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_31",
+      "display_name": "3-1 多項式的基本概念與四則運算",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "display_order": 4,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "display_name": "餘式定理",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "display_order": 1,
+      "textbook_examples": 24,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "display_name": "因式定理",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "display_order": 2,
+      "textbook_examples": 17,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_32",
+      "display_name": "3-2 除法原理與餘式定理",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "display_order": 3,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "display_name": "因式分解",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "display_order": 1,
+      "textbook_examples": 18,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "display_name": "分式的四則運算",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "display_order": 2,
+      "textbook_examples": 8,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "display_name": "分式方程式",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "display_order": 3,
+      "textbook_examples": 14,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_33",
+      "display_name": "3-3 因式分解與分式",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "display_order": 4,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    },
+    {
+      "skill_id": "vh_數學B1_SubSection332",
+      "display_name": "分式",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "display_order": 5,
+      "textbook_examples": 0,
+      "tracker": {},
+      "ui_status": "not_generated",
+      "verified": 0,
+      "failed": 0,
+      "published": 0,
+      "wrapper": false,
+      "package": false,
+      "generate_files": 0
+    }
+  ],
+  "curriculum_sample": [
+    {
+      "skill_id": "outline_vocational_數學B1_11",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_NumberLine",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_12",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_DivisionPointCoordinates",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_FunctionConcept",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_LinearFunction",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_13",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_14",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "book": "數學B1",
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_21",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_22",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_InterceptForm",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeInterceptForm",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_23",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+      "book": "數學B1",
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_31",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_32",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "unit_title": null
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_33",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "unit_title": null
+    },
+    {
+      "skill_id": "vh_數學B1_SubSection332",
+      "book": "數學B1",
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "unit_title": null
+    }
+  ]
+}

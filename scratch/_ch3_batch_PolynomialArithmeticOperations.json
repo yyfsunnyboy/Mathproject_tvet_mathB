@@ -1,0 +1,2336 @@
+{
+  "skill": "vh_數學B1_PolynomialArithmeticOperations",
+  "ok": 22,
+  "total": 22,
+  "results": [
+    {
+      "id": 4612,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4613,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4614,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4615,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4616,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4617,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4622,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4623,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4624,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4625,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4626,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4627,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4628,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4633,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4634,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4635,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4636,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4637,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4706,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4718,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4719,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4720,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "partial_published",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "verified_component_count": 18,
+    "component_count": 18,
+    "coverage": {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "total_examples": 22,
+      "verified_count": 18,
+      "missing_tracker_count": 0,
+      "failed_count": 4,
+      "unsupported_count": 0,
+      "domain_gap_count": 4,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 18,
+      "needs_human_review_count": 0,
+      "unverified_count": 4,
+      "publish_ready": false,
+      "examples": [
+        {
+          "textbook_example_id": 4612,
+          "component_id": "src_4612",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4613,
+          "component_id": "src_4613",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4614,
+          "component_id": "src_4614",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4615,
+          "component_id": "src_4615",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4616,
+          "component_id": "src_4616",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4617,
+          "component_id": "src_4617",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4622,
+          "component_id": "src_4622",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4623,
+          "component_id": "src_4623",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4624,
+          "component_id": "src_4624",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4625,
+          "component_id": "src_4625",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4626,
+          "component_id": "src_4626",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4627,
+          "component_id": "src_4627",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4628,
+          "component_id": "src_4628",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4628\nproblem_type_id=polynomial_remainder_param_solve\ndomain_operation=polynomial_remainder_param_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4633,
+          "component_id": "src_4633",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4634,
+          "component_id": "src_4634",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4635,
+          "component_id": "src_4635",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4636,
+          "component_id": "src_4636",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4637,
+          "component_id": "src_4637",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4706,
+          "component_id": "src_4706",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4718,
+          "component_id": "src_4718",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4718\nproblem_type_id=polynomial_long_division\ndomain_operation=polynomial_long_division\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4719,
+          "component_id": "src_4719",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4719\nproblem_type_id=polynomial_remainder_param_solve\ndomain_operation=polynomial_remainder_param_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4720,
+          "component_id": "src_4720",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4720\nproblem_type_id=polynomial_long_division\ndomain_operation=polynomial_long_division\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": false,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+        "total_examples": 22,
+        "verified_count": 18,
+        "missing_tracker_count": 0,
+        "failed_count": 4,
+        "unsupported_count": 0,
+        "domain_gap_count": 4,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 18,
+        "needs_human_review_count": 0,
+        "unverified_count": 4,
+        "publish_ready": false,
+        "examples": [
+          {
+            "textbook_example_id": 4612,
+            "component_id": "src_4612",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4613,
+            "component_id": "src_4613",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4614,
+            "component_id": "src_4614",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4615,
+            "component_id": "src_4615",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4616,
+            "component_id": "src_4616",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4617,
+            "component_id": "src_4617",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4622,
+            "component_id": "src_4622",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4623,
+            "component_id": "src_4623",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4624,
+            "component_id": "src_4624",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4625,
+            "component_id": "src_4625",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4626,
+            "component_id": "src_4626",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4627,
+            "component_id": "src_4627",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4628,
+            "component_id": "src_4628",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4628\nproblem_type_id=polynomial_remainder_param_solve\ndomain_operation=polynomial_remainder_param_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4633,
+            "component_id": "src_4633",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4634,
+            "component_id": "src_4634",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4635,
+            "component_id": "src_4635",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4636,
+            "component_id": "src_4636",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4637,
+            "component_id": "src_4637",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4706,
+            "component_id": "src_4706",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4718,
+            "component_id": "src_4718",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4718\nproblem_type_id=polynomial_long_division\ndomain_operation=polynomial_long_division\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4719,
+            "component_id": "src_4719",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4719\nproblem_type_id=polynomial_remainder_param_solve\ndomain_operation=polynomial_remainder_param_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4720,
+            "component_id": "src_4720",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4720\nproblem_type_id=polynomial_long_division\ndomain_operation=polynomial_long_division\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          }
+        ]
+      },
+      "eligible_component_count": 18,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 18,
+      "review_hints": []
+    },
+    "warnings": [
+      "V3 coverage incomplete: 18/22 verified, failed examples: 4628, 4718, 4719, 4720",
+      "publish_ready=False: publish will only include verified tracker components, not all textbook_examples"
+    ],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_results": {
+        "src_4612": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4612",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4612",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4612",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4612",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4612",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4613": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4613",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4613",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4613",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4613",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4613",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4614": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4614",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4614",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4614",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4614",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4614",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4615": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4615",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4615",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4615",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4615",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4615",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4616": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4616",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4616",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4616",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4616",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4616",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4617": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4617",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4617",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4617",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4617",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4617",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4622": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4622",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4622",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4622",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4622",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4622",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4623": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4623",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4623",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4623",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4623",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4623",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4624": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4624",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4624",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4624",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4624",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4624",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4625": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4625",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4625",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4625",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4625",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4625",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4626": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4626",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4626",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4626",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4626",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4626",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4627": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4627",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4627",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4627",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4627",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4627",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4633": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4633",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4633",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4633",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4633",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4633",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4634": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4634",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4634",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4634",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4634",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4634",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4635": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4635",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4635",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4635",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4635",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4635",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4636": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4636",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4636",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4636",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4636",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4636",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4637": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4637",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4637",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4637",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4637",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4637",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4706": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4706",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4706",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4706",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4706",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4706",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_count": 18,
+      "generator_keys": [
+        "src_4612",
+        "src_4613",
+        "src_4614",
+        "src_4615",
+        "src_4616",
+        "src_4617",
+        "src_4622",
+        "src_4623",
+        "src_4624",
+        "src_4625",
+        "src_4626",
+        "src_4627",
+        "src_4633",
+        "src_4634",
+        "src_4635",
+        "src_4636",
+        "src_4637",
+        "src_4706"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4612,
+          "component_id": "src_4612",
+          "generator_key": "src_4612",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_add_sub",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_add_sub",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4612,
+          "source_order": 4612,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4613,
+          "component_id": "src_4613",
+          "generator_key": "src_4613",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_product_term_coefficient",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_product_term_coefficient",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4613,
+          "source_order": 4613,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4614,
+          "component_id": "src_4614",
+          "generator_key": "src_4614",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_long_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_long_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4614,
+          "source_order": 4614,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4615,
+          "component_id": "src_4615",
+          "generator_key": "src_4615",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_long_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_long_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4615,
+          "source_order": 4615,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4616,
+          "component_id": "src_4616",
+          "generator_key": "src_4616",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_synthetic_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_synthetic_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4616,
+          "source_order": 4616,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4617,
+          "component_id": "src_4617",
+          "generator_key": "src_4617",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_shifted_basis_eval",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_shifted_basis_eval",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4617,
+          "source_order": 4617,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4622,
+          "component_id": "src_4622",
+          "generator_key": "src_4622",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_add_sub",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_add_sub",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4622,
+          "source_order": 4622,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4623,
+          "component_id": "src_4623",
+          "generator_key": "src_4623",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_multiply",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_multiply",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4623,
+          "source_order": 4623,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4624,
+          "component_id": "src_4624",
+          "generator_key": "src_4624",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_product_term_coefficient",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_product_term_coefficient",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4624,
+          "source_order": 4624,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4625,
+          "component_id": "src_4625",
+          "generator_key": "src_4625",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_long_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_long_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4625,
+          "source_order": 4625,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4626,
+          "component_id": "src_4626",
+          "generator_key": "src_4626",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_synthetic_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_synthetic_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4626,
+          "source_order": 4626,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4627,
+          "component_id": "src_4627",
+          "generator_key": "src_4627",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_remainder_param_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_remainder_param_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4627,
+          "source_order": 4627,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4633,
+          "component_id": "src_4633",
+          "generator_key": "src_4633",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_add_sub",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_add_sub",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4633,
+          "source_order": 4633,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4634,
+          "component_id": "src_4634",
+          "generator_key": "src_4634",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_multiply",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_multiply",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4634,
+          "source_order": 4634,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4635,
+          "component_id": "src_4635",
+          "generator_key": "src_4635",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_product_term_coefficient",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_product_term_coefficient",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4635,
+          "source_order": 4635,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4636,
+          "component_id": "src_4636",
+          "generator_key": "src_4636",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_long_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_long_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4636,
+          "source_order": 4636,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4637,
+          "component_id": "src_4637",
+          "generator_key": "src_4637",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_synthetic_division",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_synthetic_division",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4637,
+          "source_order": 4637,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4706,
+          "component_id": "src_4706",
+          "generator_key": "src_4706",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "polynomial_product_term_coefficient",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_product_term_coefficient",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4706,
+          "source_order": 4706,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialArithmeticOperations.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialArithmeticOperations.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:37:30.428984+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4612,
+        "component_id": "src_4612",
+        "published_generate_sha256": "cfbaf419ee2fb8bb51936c6d7ed4525ee28e4bf0eef31c746c051eba94f425cc",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4612\\generate.py"
+      },
+      {
+        "textbook_example_id": 4613,
+        "component_id": "src_4613",
+        "published_generate_sha256": "fd8ca609dbb210fc6b5c183f89ae4cc151d802cc642bad31c8ed20d43f5228d0",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4613\\generate.py"
+      },
+      {
+        "textbook_example_id": 4614,
+        "component_id": "src_4614",
+        "published_generate_sha256": "83be4a3e6386a6bd29eaa26bcdceeecb45dc6849ee0fce211b235245a7959b1c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4614\\generate.py"
+      },
+      {
+        "textbook_example_id": 4615,
+        "component_id": "src_4615",
+        "published_generate_sha256": "eaf3b37eea358c42cd9651331491bb81e41d83eaa7a6e018fc0d3229da63492f",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4615\\generate.py"
+      },
+      {
+        "textbook_example_id": 4616,
+        "component_id": "src_4616",
+        "published_generate_sha256": "154ea78eb69b2a2730f8bd3730f5e4209f03b435cc4df7f52350ba1587054dab",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4616\\generate.py"
+      },
+      {
+        "textbook_example_id": 4617,
+        "component_id": "src_4617",
+        "published_generate_sha256": "5e91c3073aba6c55496eb0e2355048803c970f6f7ebe091c4b3b4c66d48ef3ee",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4617\\generate.py"
+      },
+      {
+        "textbook_example_id": 4622,
+        "component_id": "src_4622",
+        "published_generate_sha256": "c136be92ed772b6b3533093dc6e1c60f9c570de2fa99bffa7f4a7b92767f8858",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4622\\generate.py"
+      },
+      {
+        "textbook_example_id": 4623,
+        "component_id": "src_4623",
+        "published_generate_sha256": "41613cd7a49b55e8a40f24a2b7e243764e5a34ce42f910b3ddcf1999a6c18d1c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4623\\generate.py"
+      },
+      {
+        "textbook_example_id": 4624,
+        "component_id": "src_4624",
+        "published_generate_sha256": "52550cff8cecc672500b3f8635ddb7400db2a008c15e1407492eaded471510ed",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4624\\generate.py"
+      },
+      {
+        "textbook_example_id": 4625,
+        "component_id": "src_4625",
+        "published_generate_sha256": "28e5a1c30b8513c205b2560c47c261b4e40574302ab5e0a31dc4fb06bfa03f7f",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4625\\generate.py"
+      },
+      {
+        "textbook_example_id": 4626,
+        "component_id": "src_4626",
+        "published_generate_sha256": "4db70269caa1495ef004a5d109d637a203505421264543e40855cc86a2bf1ac2",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4626\\generate.py"
+      },
+      {
+        "textbook_example_id": 4627,
+        "component_id": "src_4627",
+        "published_generate_sha256": "fbd0a521260676ccb9c4a95f69b096db3f8e2da33a3ddbb34d253944e5e3a63b",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4627\\generate.py"
+      },
+      {
+        "textbook_example_id": 4633,
+        "component_id": "src_4633",
+        "published_generate_sha256": "7c9425932634355177bb496ff66f9c584285122e431e1d83e2b63fcd0c3a9e20",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4633\\generate.py"
+      },
+      {
+        "textbook_example_id": 4634,
+        "component_id": "src_4634",
+        "published_generate_sha256": "02e7ac8b41ba68f75b00bb2ba82b3d28cf5608d3a413452c171a2dc2d9e89d30",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4634\\generate.py"
+      },
+      {
+        "textbook_example_id": 4635,
+        "component_id": "src_4635",
+        "published_generate_sha256": "1509494107ebcc63516ab86768c2e72c120a5642d0e7287f9972a9e51c048379",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4635\\generate.py"
+      },
+      {
+        "textbook_example_id": 4636,
+        "component_id": "src_4636",
+        "published_generate_sha256": "c39cfb3e23f16198c7f7a11742d77e48774810a78482034e8bffe94e03eb0a17",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4636\\generate.py"
+      },
+      {
+        "textbook_example_id": 4637,
+        "component_id": "src_4637",
+        "published_generate_sha256": "63ceaffd47083a9e0c5f9060d153dc59eee24c1ff4707237f926e87a343e21a8",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4637\\generate.py"
+      },
+      {
+        "textbook_example_id": 4706,
+        "component_id": "src_4706",
+        "published_generate_sha256": "bcb09dff1d8d0a34db29a5f43290e8e17e9950b86c6ffc7e7dc217cc3d37245a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4706\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "partial_published",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 18,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+        "component_count": 18,
+        "generator_keys": [
+          "src_4612",
+          "src_4613",
+          "src_4614",
+          "src_4615",
+          "src_4616",
+          "src_4617",
+          "src_4622",
+          "src_4623",
+          "src_4624",
+          "src_4625",
+          "src_4626",
+          "src_4627",
+          "src_4633",
+          "src_4634",
+          "src_4635",
+          "src_4636",
+          "src_4637",
+          "src_4706"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4612,
+            "component_id": "src_4612",
+            "generator_key": "src_4612",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_add_sub",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_add_sub",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4612,
+            "source_order": 4612,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4613,
+            "component_id": "src_4613",
+            "generator_key": "src_4613",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_product_term_coefficient",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_product_term_coefficient",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4613,
+            "source_order": 4613,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4614,
+            "component_id": "src_4614",
+            "generator_key": "src_4614",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_long_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_long_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4614,
+            "source_order": 4614,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4615,
+            "component_id": "src_4615",
+            "generator_key": "src_4615",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_long_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_long_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4615,
+            "source_order": 4615,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4616,
+            "component_id": "src_4616",
+            "generator_key": "src_4616",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_synthetic_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_synthetic_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4616,
+            "source_order": 4616,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4617,
+            "component_id": "src_4617",
+            "generator_key": "src_4617",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_shifted_basis_eval",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_shifted_basis_eval",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4617,
+            "source_order": 4617,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4622,
+            "component_id": "src_4622",
+            "generator_key": "src_4622",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_add_sub",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_add_sub",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4622,
+            "source_order": 4622,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4623,
+            "component_id": "src_4623",
+            "generator_key": "src_4623",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_multiply",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_multiply",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4623,
+            "source_order": 4623,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4624,
+            "component_id": "src_4624",
+            "generator_key": "src_4624",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_product_term_coefficient",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_product_term_coefficient",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4624,
+            "source_order": 4624,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4625,
+            "component_id": "src_4625",
+            "generator_key": "src_4625",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_long_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_long_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4625,
+            "source_order": 4625,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4626,
+            "component_id": "src_4626",
+            "generator_key": "src_4626",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_synthetic_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_synthetic_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4626,
+            "source_order": 4626,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4627,
+            "component_id": "src_4627",
+            "generator_key": "src_4627",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_remainder_param_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_remainder_param_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4627,
+            "source_order": 4627,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4633,
+            "component_id": "src_4633",
+            "generator_key": "src_4633",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_add_sub",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_add_sub",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4633,
+            "source_order": 4633,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4634,
+            "component_id": "src_4634",
+            "generator_key": "src_4634",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_multiply",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_multiply",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4634,
+            "source_order": 4634,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4635,
+            "component_id": "src_4635",
+            "generator_key": "src_4635",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_product_term_coefficient",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_product_term_coefficient",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4635,
+            "source_order": 4635,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4636,
+            "component_id": "src_4636",
+            "generator_key": "src_4636",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_long_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_long_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4636,
+            "source_order": 4636,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4637,
+            "component_id": "src_4637",
+            "generator_key": "src_4637",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_synthetic_division",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_synthetic_division",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4637,
+            "source_order": 4637,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4706,
+            "component_id": "src_4706",
+            "generator_key": "src_4706",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "polynomial_product_term_coefficient",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_product_term_coefficient",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4706,
+            "source_order": 4706,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialArithmeticOperations.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialArithmeticOperations.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialArithmeticOperations",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:37:30.428984+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 5,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4612": {
+          "component_id": "src_4612",
+          "textbook_example_id": 4612,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4613": {
+          "component_id": "src_4613",
+          "textbook_example_id": 4613,
+          "generated_count": 200,
+          "unique_question_text_count": 200,
+          "unique_correct_answer_count": 55,
+          "unique_display_answer_count": 55,
+          "unique_choices_signature_count": 1,
+          "unique_semantic_answer_count": 1,
+          "unique_parameter_signature_count": 200,
+          "variation_status": "dynamic"
+        },
+        "src_4614": {
+          "component_id": "src_4614",
+          "textbook_example_id": 4614,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4615": {
+          "component_id": "src_4615",
+          "textbook_example_id": 4615,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4616": {
+          "component_id": "src_4616",
+          "textbook_example_id": 4616,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4617": {
+          "component_id": "src_4617",
+          "textbook_example_id": 4617,
+          "generated_count": 200,
+          "unique_question_text_count": 197,
+          "unique_correct_answer_count": 108,
+          "unique_display_answer_count": 108,
+          "unique_choices_signature_count": 1,
+          "unique_semantic_answer_count": 1,
+          "unique_parameter_signature_count": 197,
+          "variation_status": "dynamic"
+        },
+        "src_4622": {
+          "component_id": "src_4622",
+          "textbook_example_id": 4622,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4623": {
+          "component_id": "src_4623",
+          "textbook_example_id": 4623,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4624": {
+          "component_id": "src_4624",
+          "textbook_example_id": 4624,
+          "generated_count": 200,
+          "unique_question_text_count": 200,
+          "unique_correct_answer_count": 55,
+          "unique_display_answer_count": 55,
+          "unique_choices_signature_count": 1,
+          "unique_semantic_answer_count": 1,
+          "unique_parameter_signature_count": 200,
+          "variation_status": "dynamic"
+        },
+        "src_4625": {
+          "component_id": "src_4625",
+          "textbook_example_id": 4625,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4626": {
+          "component_id": "src_4626",
+          "textbook_example_id": 4626,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4627": {
+          "component_id": "src_4627",
+          "textbook_example_id": 4627,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4633": {
+          "component_id": "src_4633",
+          "textbook_example_id": 4633,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4634": {
+          "component_id": "src_4634",
+          "textbook_example_id": 4634,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4635": {
+          "component_id": "src_4635",
+          "textbook_example_id": 4635,
+          "generated_count": 200,
+          "unique_question_text_count": 200,
+          "unique_correct_answer_count": 55,
+          "unique_display_answer_count": 55,
+          "unique_choices_signature_count": 1,
+          "unique_semantic_answer_count": 1,
+          "unique_parameter_signature_count": 200,
+          "variation_status": "dynamic"
+        },
+        "src_4636": {
+          "component_id": "src_4636",
+          "textbook_example_id": 4636,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4637": {
+          "component_id": "src_4637",
+          "textbook_example_id": 4637,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4706": {
+          "component_id": "src_4706",
+          "textbook_example_id": 4706,
+          "generated_count": 200,
+          "unique_question_text_count": 200,
+          "unique_correct_answer_count": 55,
+          "unique_display_answer_count": 55,
+          "unique_choices_signature_count": 1,
+          "unique_semantic_answer_count": 1,
+          "unique_parameter_signature_count": 200,
+          "variation_status": "dynamic"
+        }
+      }
+    }
+  }
+}

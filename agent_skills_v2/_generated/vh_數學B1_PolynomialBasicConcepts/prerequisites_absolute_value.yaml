@@ -1,0 +1,21 @@
+items:
+  -
+    subskill_id: "polynomial_degree_product_sum"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "polynomial_descending_power_properties"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "polynomial_descending_power_table"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "polynomial_param_degree_constraint"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"
+  -
+    subskill_id: "zero_polynomial_find_coeffs"
+    prerequisite_subskills:
+      - "absolute_value_numeric_evaluation"

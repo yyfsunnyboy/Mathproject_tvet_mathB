@@ -255,3 +255,28 @@ def test_scaffold_builder_returns_only_string_files_without_disk_write():
     for content in files.values():
         assert isinstance(content, str)
         assert content.strip()
+
+
+def test_integer_parameter_contract_does_not_use_equation_checker():
+    from core.gencode.domain_matrix_adapter import _build_line_equation_answer_contract
+    from core.gencode.runtime_skill_wrapper import check_answer
+
+    contract = _build_line_equation_answer_contract(
+        presentation_mode="short_answer",
+        answer_type="integer",
+        semantic_answer="-60",
+        task_type="parallel_segments_parameter",
+    )
+    assert contract["checker_key"] == "integer_checker"
+    assert contract["answer_type"] == "integer"
+
+    payload = {
+        "answer": "-60",
+        "correct_answer": "-60",
+        "answer_type": "integer",
+        "presentation_mode": "short_answer",
+        "answer_contract": contract,
+        "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+    }
+    assert check_answer("-60", "-60", payload=payload, skill_id=payload["skill_id"]) is True
+    assert check_answer("999", "-60", payload=payload, skill_id=payload["skill_id"]) is False

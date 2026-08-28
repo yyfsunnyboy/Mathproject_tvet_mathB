@@ -1,0 +1,16 @@
+{
+  "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+  "gap": "missing_generator",
+  "repair_status": "PARTIAL",
+  "blocking_reasons": [
+    "missing_generator_logic_preserved_existing_flow"
+  ],
+  "warnings": [
+    "此版本保留既有流程；本輪主要新增 missing_runtime_binding。"
+  ],
+  "artifact_paths": {
+    "repair_json": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PolynomialBasicConcepts_repair_missing_generator.json",
+    "repair_md": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\vh_數學B1_PolynomialBasicConcepts_repair_missing_generator.md"
+  },
+  "timestamp": "2026-08-27T07:26:19.447012+00:00"
+}

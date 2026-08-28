@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "examples": 116,
+    "published": 101,
+    "failed": 15
+  },
+  "skills": [
+    {
+      "skill": "PolynomialBasicConcepts",
+      "ui": "published",
+      "examples": 9,
+      "published": 9,
+      "verified": 9,
+      "failed": 0,
+      "wrapper": true
+    },
+    {
+      "skill": "PolynomialArithmeticOperations",
+      "ui": "partially_published",
+      "examples": 22,
+      "published": 18,
+      "verified": 18,
+      "failed": 4,
+      "wrapper": true
+    },
+    {
+      "skill": "PolynomialEquality",
+      "ui": "published",
+      "examples": 4,
+      "published": 4,
+      "verified": 4,
+      "failed": 0,
+      "wrapper": true
+    },
+    {
+      "skill": "RemainderTheorem",
+      "ui": "partially_published",
+      "examples": 24,
+      "published": 20,
+      "verified": 20,
+      "failed": 4,
+      "wrapper": true
+    },
+    {
+      "skill": "FactorTheorem",
+      "ui": "partially_published",
+      "examples": 17,
+      "published": 13,
+      "verified": 13,
+      "failed": 4,
+      "wrapper": true
+    },
+    {
+      "skill": "PolynomialFactoring",
+      "ui": "published",
+      "examples": 18,
+      "published": 18,
+      "verified": 18,
+      "failed": 0,
+      "wrapper": true
+    },
+    {
+      "skill": "RationalExpressionArithmeticOperations",
+      "ui": "published",
+      "examples": 8,
+      "published": 8,
+      "verified": 8,
+      "failed": 0,
+      "wrapper": true
+    },
+    {
+      "skill": "RationalEquation",
+      "ui": "partially_published",
+      "examples": 14,
+      "published": 11,
+      "verified": 11,
+      "failed": 3,
+      "wrapper": true
+    }
+  ]
+}

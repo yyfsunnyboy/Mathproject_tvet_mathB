@@ -1,0 +1,1162 @@
+[
+  {
+    "id": 4609,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 1",
+    "problem_type": "textbook_exercise",
+    "problem_text": "設$f\\left( x \\right)=4{{x}^{2}}-5{{x}^{3}}-x+3$，試求：(1) $f\\left( x \\right)$依降冪排列 (2)$\\deg f\\left( x \\right)$(3) $f\\left( x \\right)$的首項係數 (4)$f\\left( x \\right)$在x = −1時之值",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4610,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 2",
+    "problem_type": "textbook_exercise",
+    "problem_text": "(1) 設多項式$f\\left( x \\right)=\\left( a-2 \\right){{x}^{3}}+\\left( b+3 \\right){{x}^{2}}-\\left( a-b \\right)x+3$，且a、b為實數，若$\\deg f\\left( x \\right)=1$，試求：①a、b之值 ②$f\\left( x \\right)$(2) 設$p\\left( x \\right)=\\left( a-5 \\right){{x}^{2}}+bx+3c-9$為一零多項式，試求a、b、c之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4618,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例1",
+    "problem_type": "textbook_example",
+    "problem_text": "已知$f\\left( x \\right)=2{{x}^{2}}+{{x}^{3}}-3x-5$，$g\\left( x \\right)=-3{{x}^{2}}+{{x}^{4}}-2x+{{x}^{3}}+1$，試按降冪排列完成下表：",
+    "correct_answer": null,
+    "solution_preview": "(1) 原式$f\\left( x \\right)=2{{x}^{2}}+{{x}^{3}}-3x-5$ 依降冪排列得$f\\left( x \\right)={{x}^{3}}+2{{x}^{2}}-3x-5$……① 依題意整理⑦$f\\left( x \\right)={{x}^{3}}+2{{x}^{2}}-3x-5=$0x4 + 1x3 + 2x2 + (−3)x + (−5)② ③ ④ ⑤ ⑥ $"
+  },
+  {
+    "id": 4619,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例2",
+    "problem_type": "textbook_example",
+    "problem_text": "多項式$f\\left( x \\right)=\\left( a-2 \\right){{x}^{4}}+\\left( b+3 \\right){{x}^{3}}+\\left( 2a-b \\right){{x}^{2}}+4x-5$，若$\\deg f\\left( x \\right)=2$，試求：(1) a、b之值 (2)$f\\left( x \\right)$",
+    "correct_answer": null,
+    "solution_preview": "(1) 因為$\\deg f\\left( x \\right)=2$，所以a − 2 = 0，b + 3 = 0 即a = 2，b = −3(2) 由(1)知a = 2，b = −3，代入${{x}^{2}}$項係數2a − b可得$2a-b=2\\times 2-\\left( -3 \\right)=7$，所以$f\\left( x \\right)=7{{x}^{2}}+4x-5$"
+  },
+  {
+    "id": 4620,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例3",
+    "problem_type": "textbook_example",
+    "problem_text": "設$f\\left( x \\right)=\\left( a+2 \\right){{x}^{3}}+\\left( b-1 \\right){{x}^{2}}+cx+d-5$為一零多項式，試求a、b、c、d之值。",
+    "correct_answer": null,
+    "solution_preview": "零多項式各項係數為0即a + 2 = 0，b − 1 = 0，c = 0，d − 5 = 0故a = −2，b = 1，c = 0，d = 5"
+  },
+  {
+    "id": 4629,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習1",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知$f\\left( x \\right)=-5{{x}^{2}}+{{x}^{3}}-1$，$g\\left( x \\right)=-3{{x}^{2}}-x+2{{x}^{3}}-1$，試按降冪排列完成下表：",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4630,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習2",
+    "problem_type": "in_class_practice",
+    "problem_text": "多項式$f\\left( x \\right)=\\left( 2a+2 \\right){{x}^{4}}+\\left( b-1 \\right){{x}^{3}}+\\left( a+2b \\right){{x}^{2}}-3x+1$，若$\\deg f\\left( x \\right)=2$，試求：(1) a、b之值 (2)$f\\left( x \\right)$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4631,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習3",
+    "problem_type": "in_class_practice",
+    "problem_text": "設$g\\left( x \\right)=\\left( a+1 \\right){{x}^{2}}+\\left( b-2 \\right)x+2c-4$為一零多項式，試求a、b、c之值。.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4716,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題2",
+    "problem_type": "self_assessment",
+    "problem_text": "設$f\\left( x \\right)$為四次多項式，$g\\left( x \\right)$為五次多項式，$h\\left( x \\right)=f\\left( x \\right)\\times g\\left( x \\right)$，$k\\left( x \\right)=f\\left( x \\right)+g\\left( x \\right)$且$h\\left( x \\right)$為a次多項式，$k\\left( x \\right)$為b次多項式，則",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4612,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 4",
+    "problem_type": "textbook_exercise",
+    "problem_text": "已知$f\\left( x \\right)=3{{x}^{3}}+4{{x}^{2}}-7x+3$，$g\\left( x \\right)={{x}^{2}}-5x+1$，試求：(1)$f\\left( x \\right)+g\\left( x \\right)$ (2)$f\\left( x \\right)-g\\left( x \\right)$ (3)$f\\left( x \\right)\\times g\\left( x \\right)$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4613,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 5",
+    "problem_type": "textbook_exercise",
+    "problem_text": "已知多項式$f\\left( x \\right)=2{{x}^{3}}-{{x}^{2}}+4x+3$，$g\\left( x \\right)={{x}^{2}}+2x+1$，試求$f\\left( x \\right)\\times g\\left( x \\right)$的${{x}^{3}}$項係數。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4614,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 6",
+    "problem_type": "textbook_exercise",
+    "problem_text": "試求$\\left( {{x}^{3}}+3{{x}^{2}}+4x-1 \\right)\\div \\left( {{x}^{2}}-2x+1 \\right)$的商式和餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4615,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 7",
+    "problem_type": "textbook_exercise",
+    "problem_text": "設$f\\left( x \\right)=6{{x}^{3}}-{{x}^{2}}-3$，$g\\left( x \\right)=2{{x}^{2}}+x-2$，若$f\\left( x \\right)\\div g\\left( x \\right)$的餘式為ax + b，試求a + b之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4616,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 8",
+    "problem_type": "textbook_exercise",
+    "problem_text": "利用綜合除法：(1) 試求多項式${{x}^{3}}-4{{x}^{2}}+2x-1$除以x − 1的商式及餘式。(2) 試求多項式${{x}^{3}}-4{{x}^{2}}-1$除以x + 2的商式及餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4617,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 進階題 10",
+    "problem_type": "advanced_exercise",
+    "problem_text": "設多項式$2{{x}^{3}}+3{{x}^{2}}-4x+5=a{{\\left( x-1 \\right)}^{3}}+b{{\\left( x-1 \\right)}^{2}}+c\\left( x-1 \\right)+d$，試求a + b + c + d之值。（提示：令$x-1=1$）",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4622,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例5",
+    "problem_type": "textbook_example",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{3}}+3x+1$，$g\\left( x \\right)=3{{x}^{2}}+4x+5$，試求：(1)$f\\left( x \\right)+g\\left( x \\right)$ (2)$f\\left( x \\right)-g\\left( x \\right)$",
+    "correct_answer": null,
+    "solution_preview": "橫式算法(1) $f\\left( x \\right)+g\\left( x \\right)=\\left( {{x}^{3}}+3x+1 \\right)+\\left( 3{{x}^{2}}+4x+5 \\right)$ $={{x}^{3}}+3{{x}^{2}}+\\left( 3+4 \\right)x+\\left( 1+5 \\right)$ $={{x}^{3}}+3{{x}^{2}}+7x+6$(2"
+  },
+  {
+    "id": 4623,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例6",
+    "problem_type": "textbook_example",
+    "problem_text": "試求多項式$f\\left( x \\right)=3{{x}^{2}}-x+4$與$g\\left( x \\right)=2x-3$的乘積及其次數。",
+    "correct_answer": null,
+    "solution_preview": "(1) $f\\left( x \\right)$與$g\\left( x \\right)$的乘積： 橫式算法 $f\\left( x \\right)\\times g\\left( x \\right)=\\left( 3{{x}^{2}}-x+4 \\right)\\left( 2x-3 \\right)$ $=\\left( 3{{x}^{2}}-x+4 \\right)\\times 2x+\\left( 3{{x}^"
+  },
+  {
+    "id": 4624,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例7",
+    "problem_type": "textbook_example",
+    "problem_text": "已知多項式$f\\left( x \\right)=2{{x}^{4}}-5{{x}^{3}}+2{{x}^{2}}-4x+3$，$g\\left( x \\right)=3{{x}^{2}}-2x-7$，試求$f\\left( x \\right)\\times g\\left( x \\right)$的${{x}^{3}}$項係數。",
+    "correct_answer": null,
+    "solution_preview": "由可得${{x}^{3}}$項的係數為$\\left( -5 \\right)\\times \\left( -7 \\right)+2\\times \\left( -2 \\right)+\\left( -4 \\right)\\times 3=35-4-12=19$"
+  },
+  {
+    "id": 4625,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例8",
+    "problem_type": "textbook_example",
+    "problem_text": "試求$2{{x}^{3}}+{{x}^{2}}-7$除以${{x}^{2}}+x+1$的商式和餘式。",
+    "correct_answer": null,
+    "solution_preview": "因為演算到−x − 6時其次數已小於${{x}^{2}}+x+1$的次數所以停止運算所求商式為2x − 1，餘式為−x − 6"
+  },
+  {
+    "id": 4626,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例9",
+    "problem_type": "textbook_example",
+    "problem_text": "試利用綜合除法，求多項式$f\\left( x \\right)=2{{x}^{3}}-3{{x}^{2}}+1$除以$g\\left( x \\right)$的商式及餘式：(1)$g\\left( x \\right)=x-1$ (2)$g\\left( x \\right)=x+2$",
+    "correct_answer": null,
+    "solution_preview": "被除式$f\\left( x \\right)$依降冪排列：$f\\left( x \\right)=2{{x}^{3}}-3{{x}^{2}}+0x+1$(1) 取$f\\left( x \\right)$係數，缺項補0，除式x − 1 所以商式為$2{{x}^{2}}-x-1$，餘式為0(2) 取$f\\left( x \\right)$係數，缺項補0，除式$x+2=x-\\left( -2 \\right)$ "
+  },
+  {
+    "id": 4627,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 進階題 9",
+    "problem_type": "advanced_exercise",
+    "problem_text": "設${{x}^{2}}+x+1$除$2{{x}^{3}}+3{{x}^{2}}+ax+b$的餘式為−10x + 4，試求實數a、b之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4628,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "110統測B",
+    "problem_type": "exam_practice",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{\\text{ }2}}+bx+c$為二次多項式。若$f\\left( x \\right)$被${{\\left( x+1 \\right)}^{2}}$除的餘式被$x-1$整除，且$f\\left( x \\right)$被${{\\left( x-1 \\right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A)$-3$ (B)$-1$ (C)1 (D)3 〔110統測B〕",
+    "correct_answer": null,
+    "solution_preview": "KEY多項式長除法、綜合除法"
+  },
+  {
+    "id": 4633,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習5",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知$f\\left( x \\right)=3{{x}^{3}}+2{{x}^{2}}-4x-5$，$g\\left( x \\right)=3{{x}^{3}}+3x+4$，試求：(1)$f\\left( x \\right)+g\\left( x \\right)$(2)$f\\left( x \\right)-g\\left( x \\right)$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4634,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習6",
+    "problem_type": "in_class_practice",
+    "problem_text": "試求多項式$f\\left( x \\right)=3x+5$與$g\\left( x \\right)=3{{x}^{2}}+2x-1$的乘積及其次數。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4635,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習7",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知多項式$f\\left( x \\right)={{x}^{5}}-3{{x}^{4}}-2{{x}^{3}}+{{x}^{2}}-3x+6$，$g\\left( x \\right)=2{{x}^{2}}+3x-5$，試求$f\\left( x \\right)\\times g\\left( x \\right)$的${{x}^{4}}$項係數。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4636,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習8",
+    "problem_type": "in_class_practice",
+    "problem_text": "試求$3{{x}^{3}}-2{{x}^{2}}-5x+3$除以${{x}^{2}}-2x+1$的商式和餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4637,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習9",
+    "problem_type": "in_class_practice",
+    "problem_text": "試利用綜合除法，求多項式$f\\left( x \\right)={{x}^{2}}+2{{x}^{3}}-5x+3$除以$g\\left( x \\right)$的商式及餘式：(1)$g\\left( x \\right)=x-2$ (2)$g\\left( x \\right)=x+1$.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4706,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題3",
+    "problem_type": "self_assessment",
+    "problem_text": "$\\left( 3{{x}^{3}}-2{{x}^{2}}+2x-5 \\right)\\left( 2{{x}^{2}}-5x-7 \\right)$乘積中，${{x}^{3}}$項的係數為 (A) −7",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4718,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題5",
+    "problem_type": "self_assessment",
+    "problem_text": "多項式${{x}^{4}}-3{{x}^{3}}+{{x}^{2}}+x+1$除以${{x}^{2}}+x-2$，餘式為ax + b，則a + b = (A) 1 (B) 2 (C) 3 (D) 4。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4719,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題6",
+    "problem_type": "self_assessment",
+    "problem_text": "已知a、b為實數，若${{x}^{3}}+a{{x}^{2}}+bx-6$可被${{x}^{2}}-x+3$整除，則a + b = (A) −2 (B) 0 (C) 2 (D) 4。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4720,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題7",
+    "problem_type": "self_assessment",
+    "problem_text": "設$f\\left( x \\right)$為多項式，且$4{{x}^{3}}+x+1=f\\left( x \\right)\\left( 2{{x}^{2}}-x+3 \\right)-4x-2$，則$f\\left( x \\right)=$ (A) 10x − 2 (B) 6x + 2 (C) 4x − 1 (D) 2x + 1。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4611,
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "3-1習題 基礎題 3",
+    "problem_type": "textbook_exercise",
+    "problem_text": "設多項式$f\\left( x \\right)=\\left( a-2 \\right){{x}^{2}}+3x+7$與$g\\left( x \\right)=4{{x}^{2}}+\\left( b-1 \\right)x+\\left( c+2 \\right)$，若$f\\left( x \\right)=g\\left( x \\right)$，試求實數a、b、c的值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4621,
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "例4",
+    "problem_type": "textbook_example",
+    "problem_text": "已知多項式$f\\left( x \\right)=a{{x}^{2}}+4x+b$與$g\\left( x \\right)=cx+3$相等，試求a、b、c的值。",
+    "correct_answer": null,
+    "solution_preview": "因為$f\\left( x \\right)$與$g\\left( x \\right)$相等所以其次數與同次項的係數都相等兩多項式${{x}^{2}}$項的係數相等，比較得a = 0x項的係數相等，比較得c = 4常數項相等，比較得b = 3故a = 0，b = 3，c = 4"
+  },
+  {
+    "id": 4632,
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "隨堂練習4",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知多項式$f\\left( x \\right)=3{{x}^{3}}-2a{{x}^{2}}+5x+b$與$g\\left( x \\right)=c{{x}^{3}}+5x+2$相等，試求a、b、c的值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4717,
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_description": "CH1自我評量 題4",
+    "problem_type": "self_assessment",
+    "problem_text": "設${{x}^{6}}-3{{x}^{5}}+12{{x}^{4}}-19{{x}^{3}}+36{{x}^{2}}-27x+27={{\\left( a{{x}^{2}}+bx+c \\right)}^{3}}$，則",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4638,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例3",
+    "problem_type": "textbook_example",
+    "problem_text": "寫出當多項式$f\\left( x \\right)$除以下列各式時所得的餘式。 (1) x + 1 (2) x − 2",
+    "correct_answer": null,
+    "solution_preview": "利用餘式定理可得"
+  },
+  {
+    "id": 4639,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例4",
+    "problem_type": "textbook_example",
+    "problem_text": "求多項式$f\\left( x \\right)={{x}^{100}}-x-2$除以x − 1的餘式與除以x + 1的餘式。",
+    "correct_answer": null,
+    "solution_preview": "由餘式定理得(1) $f\\left( x \\right)$除以x − 1的餘式為$f\\left( 1 \\right)={{1}^{100}}-1-2=-2$(2) $f\\left( x \\right)$除以x + 1的餘式為$f\\left( -1 \\right)={{\\left( -1 \\right)}^{100}}-\\left( -1 \\right)-2=0$"
+  },
+  {
+    "id": 4640,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例5",
+    "problem_type": "textbook_example",
+    "problem_text": "寫出當多項式$f\\left( x \\right)$除以下列各式時所得的餘式。",
+    "correct_answer": null,
+    "solution_preview": "利用餘式定理可得"
+  },
+  {
+    "id": 4641,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 1",
+    "problem_type": "textbook_exercise",
+    "problem_text": "(1) 已知$f\\left( x \\right)$除以${{x}^{2}}-x+2$，得商式為x − 1，餘式為−3，試求$f\\left( x \\right)$。(2) 設多項式$f\\left( x \\right)$除以${{x}^{2}}+2x-3$得餘式為2x − 1，試求$f\\left( 1 \\right)$之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4642,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 2",
+    "problem_type": "textbook_exercise",
+    "problem_text": "試求下列之餘式：(1) x − 1除$f\\left( x \\right)=3{{x}^{2018}}-5{{x}^{50}}+4$的餘式。(2)$f\\left( x \\right)=27{{x}^{3}}-9{{x}^{2}}+3x-5$除以3x + 1的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4643,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 3",
+    "problem_type": "textbook_exercise",
+    "problem_text": "多項式$f\\left( x \\right)=7{{x}^{6}}-50{{x}^{5}}+10{{x}^{4}}-22{{x}^{3}}+10{{x}^{2}}-20x+2$，試求：(1)$f\\left( 7 \\right)$的值。(2)$f\\left( x \\right)$除以x − 7的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4644,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 4",
+    "problem_type": "textbook_exercise",
+    "problem_text": "若$f\\left( x \\right)={{x}^{3}}+{{x}^{2}}+ax+b$，除以x − 1得餘式為3，除以x − 2得餘式為4，試求實數a、b。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4645,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 5",
+    "problem_type": "textbook_exercise",
+    "problem_text": "設多項式$f\\left( x \\right)$以x − 3、x + 1除之，其餘式分別為−2、6，試求$f\\left( x \\right)$除以$\\left( x-3 \\right)\\left( x+1 \\right)$的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4656,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例6",
+    "problem_type": "textbook_example",
+    "problem_text": "試求${{\\left( 4{{x}^{2}}-2x-1 \\right)}^{3}}\\div \\left( 2x+1 \\right)$的餘式。",
+    "correct_answer": null,
+    "solution_preview": "令$f\\left( x \\right)={{\\left( 4{{x}^{2}}-2x-1 \\right)}^{3}}$由餘式定理知$f\\left( x \\right)$除以2x + 1的餘式為$f\\left( -\\frac{1}{2} \\right)={{\\left[ 4\\times {{\\left( -\\frac{1}{2} \\right)}^{2}}-2\\times \\left( -\\frac"
+  },
+  {
+    "id": 4657,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例7",
+    "problem_type": "textbook_example",
+    "problem_text": "多項式$f\\left( x \\right)=2{{x}^{5}}-10{{x}^{4}}-8{{x}^{3}}-310{{x}^{2}}-1000$，試求$f\\left( 8 \\right)$的值。",
+    "correct_answer": null,
+    "solution_preview": "此題若直接用x = 8代入$f\\left( x \\right)$計算，數值很大，不易計算，又$f\\left( 8 \\right)$為$f\\left( x \\right)$除以x − 8的「餘式」，因此利用綜合除法來計算餘式$f\\left( 8 \\right)$，缺項補0所求$f\\left( 8 \\right)=-360$"
+  },
+  {
+    "id": 4658,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例8",
+    "problem_type": "textbook_example",
+    "problem_text": "若$f\\left( x \\right)=2{{x}^{3}}+a{{x}^{2}}+bx-1$，除以x + 1得餘式為−3，除以x − 2得餘式為3，試求實數a、b。",
+    "correct_answer": null,
+    "solution_preview": "由餘式定理知$f\\left( -1 \\right)=-3$與$f\\left( 2 \\right)=3$即$\\left\\{ \\begin{align}& f\\left( -1 \\right)=-2+a-b-1=-3 \\\\& f\\left( 2 \\right)=16+4a+2b-1=3 \\\\\\end{align} \\right.$整理得$\\left\\{ \\begin{align}& a-b=0\\ldo"
+  },
+  {
+    "id": 4659,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例9",
+    "problem_type": "textbook_example",
+    "problem_text": "設多項式$f\\left( x \\right)$除以x + 1的餘式為2；除以x − 2的餘式為5，試求$f\\left( x \\right)$除以$\\left( x+1 \\right)\\left( x-2 \\right)$的餘式。",
+    "correct_answer": null,
+    "solution_preview": "因為除式$\\left( x+1 \\right)\\left( x-2 \\right)$是二次式所以餘式至多為一次，可設為ax + b由除法原理知，恰有一多項式$q\\left( x \\right)$使得$f\\left( x \\right)=\\left( x+1 \\right)\\left( x-2 \\right)\\times q\\left( x \\right)+\\left( ax+b \\right)$又"
+  },
+  {
+    "id": 4664,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習3",
+    "problem_type": "in_class_practice",
+    "problem_text": "寫出當多項式$f\\left( x \\right)$除以下列各式時所得的餘式。(1) x − 5(2) x + 6",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4665,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習4",
+    "problem_type": "in_class_practice",
+    "problem_text": "求多項式$f\\left( x \\right)={{x}^{5}}-2{{x}^{3}}+4$除以x − 2的餘式與除以x + 2的餘式。.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4666,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習5",
+    "problem_type": "in_class_practice",
+    "problem_text": "寫出當多項式$f\\left( x \\right)$除以下列各式時所得的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4667,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習6",
+    "problem_type": "in_class_practice",
+    "problem_text": "試求${{\\left( 8{{x}^{3}}-2x+3 \\right)}^{4}}\\div \\left( 2x-1 \\right)$的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4668,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習7",
+    "problem_type": "in_class_practice",
+    "problem_text": "多項式$f\\left( x \\right)=3{{x}^{4}}-5{{x}^{3}}-130x+50$，試求$f\\left( 5 \\right)$的值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4669,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習8",
+    "problem_type": "in_class_practice",
+    "problem_text": "若$f\\left( x \\right)=a{{x}^{2}}+bx-4$，除以x − 1得餘式為1，除以x + 1得餘式為3，試求實數a、b。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4670,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習9",
+    "problem_type": "in_class_practice",
+    "problem_text": "設多項式$f\\left( x \\right)$除以x − 3的餘式為8；除以x + 2的餘式為−2，試求$f\\left( x \\right)$除以$\\left( x-3 \\right)\\left( x+2 \\right)$的餘式。.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4707,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題10",
+    "problem_type": "self_assessment",
+    "problem_text": "設$f\\left( x \\right)={{x}^{5}}-6{{x}^{4}}-4{{x}^{3}}-25{{x}^{2}}+30x-7$，則$f\\left( 7 \\right)=$ (A) 9 (B) 8 (C) 7 (D) 6。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4708,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題11",
+    "problem_type": "self_assessment",
+    "problem_text": "設a、b為實數，已知多項式$f\\left( x \\right)=2{{x}^{3}}-{{x}^{2}}-ax+b$除以x − 1之餘式為−3，且除以x + 1之餘式為3，則a − b之值為 (A) 3 (B) 4",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4709,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題12",
+    "problem_type": "self_assessment",
+    "problem_text": "設兩多項式$f\\left( x \\right)$和$g\\left( x \\right)$除以x + 5所得的餘式分別為2和−2，則$f\\left( x \\right)\\times g\\left( x \\right)$除以x + 5所得的餘式為 (A) −4 (B) −2 (C) −1",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4721,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題8",
+    "problem_type": "self_assessment",
+    "problem_text": "$f\\left( x \\right)={{x}^{101}}+98{{x}^{99}}+3{{x}^{2}}+99$，則以x + 1除$f\\left( x \\right)$之餘式為 (A) −3 (B) −4 (C) 3 (D) −5。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4722,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題9",
+    "problem_type": "self_assessment",
+    "problem_text": "設$f\\left( x \\right)=2{{x}^{3}}+2{{x}^{2}}-4x+a$除以x − 1的餘式為2，則a之值為",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4646,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 6",
+    "problem_type": "textbook_exercise",
+    "problem_text": "若x + 2是$f\\left( x \\right)=3{{x}^{3}}+5{{x}^{2}}+ax+2$之因式，試求a之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4647,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 7",
+    "problem_type": "textbook_exercise",
+    "problem_text": "已知${{x}^{2}}-3x+2$為$f\\left( x \\right)={{x}^{4}}+3{{x}^{2}}+ax+b$的因式，試求a、b之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4648,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 基礎題 8",
+    "problem_type": "textbook_exercise",
+    "problem_text": "已知$f\\left( x \\right)$為二次多項式函數，滿足$f\\left( -1 \\right)=f\\left( 2 \\right)=0$，且$f\\left( 3 \\right)=-16$，試求$f\\left( x \\right)$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4649,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 進階題 10",
+    "problem_type": "advanced_exercise",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{2}}+ax+3$，以x − 2除之所得餘式為5，則$f\\left( x+1 \\right)$除以x − 1的餘式為何？",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4650,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例10",
+    "problem_type": "textbook_example",
+    "problem_text": "設$f\\left( x \\right)=3{{x}^{3}}-4{{x}^{2}}-5x+2$，利用因式定理，判斷下列各式是否為$f\\left( x \\right)$的一次因式？(1) x + 2 (2) 3x − 1",
+    "correct_answer": null,
+    "solution_preview": "(1) 因為$f\\left( -2 \\right)=3\\times {{\\left( -2 \\right)}^{3}}-4\\times {{\\left( -2 \\right)}^{2}}-5\\times \\left( -2 \\right)+2$ = −24 − 16 + 10 + 2 = −28 ≠ 0 所以x + 2不是$f\\left( x \\right)$的因式(2) 因為$f\\left( \\"
+  },
+  {
+    "id": 4651,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例11",
+    "problem_type": "textbook_example",
+    "problem_text": "設$f\\left( x \\right)=5{{x}^{4}}+13{{x}^{3}}-18{{x}^{2}}+ax+6$，若x − 1能整除$f\\left( x \\right)$，試求a之值。",
+    "correct_answer": null,
+    "solution_preview": "因為x − 1能整除$f\\left( x \\right)$，即x − 1為$f\\left( x \\right)$的因式所以由因式定理知$f\\left( 1 \\right)=0$，即5 + 13 − 18 + a + 6 = 0故a = −6"
+  },
+  {
+    "id": 4652,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例12",
+    "problem_type": "textbook_example",
+    "problem_text": "已知${{x}^{2}}-x-2$為$f\\left( x \\right)={{x}^{4}}-3a{{x}^{2}}+bx+4$的因式，試求a、b之值。",
+    "correct_answer": null,
+    "solution_preview": "因為${{x}^{2}}-x-2=\\left( x-2 \\right)\\left( x+1 \\right)$為$f\\left( x \\right)$的因式所以x − 2與x + 1亦是$f\\left( x \\right)$的因式由因式定理知$f\\left( 2 \\right)=0$，$f\\left( -1 \\right)=0$即$\\left\\{ \\begin{align}& f\\left( 2 \\"
+  },
+  {
+    "id": 4653,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "例13",
+    "problem_type": "textbook_example",
+    "problem_text": "已知$f\\left( x \\right)$為二次多項式函數，滿足$f\\left( 2 \\right)=f\\left( -3 \\right)=0$，且$f\\left( 1 \\right)=8$，試求$f\\left( x \\right)$。",
+    "correct_answer": null,
+    "solution_preview": "因為$f\\left( 2 \\right)=f\\left( -3 \\right)=0$，所以$\\left( x-2 \\right)\\left( x+3 \\right)$是$f\\left( x \\right)$的因式又$f\\left( x \\right)$為二次多項式函數故可設$f\\left( x \\right)=a\\left( x-2 \\right)\\left( x+3 \\right)$又$f\\le"
+  },
+  {
+    "id": 4654,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 進階題 9",
+    "problem_type": "advanced_exercise",
+    "problem_text": "已知兩多項式$f\\left( x \\right)$與$g\\left( x \\right)$除以2x − 1的餘式分別為1與−1，試求多項式${{\\left[ f\\left( x \\right) \\right]}^{2020}}+{{\\left[ g\\left( x \\right) \\right]}^{2020}}$除以$x-\\frac{1}{2}$的餘式。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4655,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "112統測B",
+    "problem_type": "exam_practice",
+    "problem_text": "已知多項式$f\\left( x \\right)$除以$\\left( x+2 \\right)\\left( x-7 \\right)$的餘式為$ax+3$。若$\\left( x-7 \\right)$為$f\\left( x \\right)$的因式，則$f\\left( -2 \\right)=$？ (A)$\\frac{27}{7}$ (B)$\\frac{29}{7}$ (C)$\\frac{31}{7}$ (D)$\\frac{33}{7}$ 〔112統測B〕",
+    "correct_answer": null,
+    "solution_preview": "KEY(1) 除法原理：被除式$=$除式$\\times $商式$+$餘式(2) $\\left( x-a \\right)$為$f\\left( x \\right)$的因式$\\ \\ \\ \\Leftrightarrow \\ \\ \\ f\\left( a \\right)=0$"
+  },
+  {
+    "id": 4660,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習10",
+    "problem_type": "in_class_practice",
+    "problem_text": "設$f\\left( x \\right)=2{{x}^{3}}+3{{x}^{2}}-11x-6$，利用因式定理，判斷下列各式是否為$f\\left( x \\right)$的一次因式？(1) x − 1 (2) 2x + 1.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4661,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習11",
+    "problem_type": "in_class_practice",
+    "problem_text": "設$f\\left( x \\right)=2{{x}^{3}}+3{{x}^{2}}-8x+k$，若2x − 1是$f\\left( x \\right)$的因式，試求k之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4662,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習12",
+    "problem_type": "in_class_practice",
+    "problem_text": "若${{x}^{2}}+x-2$為$f\\left( x \\right)=2{{x}^{3}}+a{{x}^{2}}+bx-2$的因式，試求a、b之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4663,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "隨堂練習13",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知$f\\left( x \\right)$為二次多項式函數，滿足$f\\left( 1 \\right)=f\\left( -2 \\right)=0$，且$f\\left( 4 \\right)=36$，試求$f\\left( x \\right)$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4710,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題13",
+    "problem_type": "self_assessment",
+    "problem_text": "設x − 1為$f\\left( x \\right)=2{{x}^{3}}-k{{x}^{2}}+7x-5$之因式，則k = (A) 1 (B) 2",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4711,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題14",
+    "problem_type": "self_assessment",
+    "problem_text": "若多項式$f\\left( x \\right)=a{{x}^{2}}\\left( x+3 \\right)+5x\\left( x+3 \\right)+2\\left( x+3 \\right)$被x + 2除盡，則a = (A) −2 (B) −1 (C) 1 (D) 2。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4712,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "CH1自我評量 題15",
+    "problem_type": "self_assessment",
+    "problem_text": "若${{x}^{2}}-3x+2$是$a{{x}^{3}}+3{{x}^{2}}+bx-2$的因式，則a + b之值為 (A)$-\\frac{4}{3}$ (B) −1 (C)$-\\frac{1}{3}$ (D) 0。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4671,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 1",
+    "problem_type": "textbook_exercise",
+    "problem_text": "因式分解下列多項式：(1)${{x}^{3}}+{{x}^{2}}+x+1$(2)$27{{x}^{3}}-9{{x}^{2}}+3x-1$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4672,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 2",
+    "problem_type": "textbook_exercise",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-4x+4$(2)$4{{a}^{2}}+12ab+9{{b}^{2}}$(3)$5{{x}^{2}}-20$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4673,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 3",
+    "problem_type": "textbook_exercise",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}-27$(2)${{x}^{4}}-256$(3)${{a}^{3}}+8{{b}^{3}}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4674,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 4",
+    "problem_type": "textbook_exercise",
+    "problem_text": "利用十字交乘法因式分解$2{{x}^{2}}+5x-3$，得其因式分解為$\\left( ax+b \\right)\\left( x+c \\right)$，試求$a+b+c$之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4675,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 5",
+    "problem_type": "textbook_exercise",
+    "problem_text": "已知$P=4{{x}^{2}}-11x-3$是質數，x為正整數，試求：(1) x之值。(2) 此質數P。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4681,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例1",
+    "problem_type": "textbook_example",
+    "problem_text": "因式分解下列多項式：(1)${{\\left( x-1 \\right)}^{2}}-3\\left( x-1 \\right)$ (2)${{x}^{3}}-{{x}^{2}}+5x-5$",
+    "correct_answer": null,
+    "solution_preview": "(1)${{\\left( x-1 \\right)}^{2}}-3\\left( x-1 \\right)=$$\\left( x-1 \\right)\\left( x-1 \\right)-3\\left( x-1 \\right)$$=\\left( x-1 \\right)\\left[ \\left( x-1 \\right)-3 \\right]$ $=$$\\left( x-1 \\right)\\left( x-4 "
+  },
+  {
+    "id": 4682,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例2",
+    "problem_type": "textbook_example",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-1$ (2)${{\\left( a+2 \\right)}^{2}}-9$",
+    "correct_answer": null,
+    "solution_preview": "(1)${{x}^{2}}-1=\\left( x+1 \\right)\\left( x-1 \\right)$(2)${{\\left( a+2 \\right)}^{2}}-9={{\\left( a+2 \\right)}^{2}}-{{3}^{2}}=\\left[ \\left( a+2 \\right)+3 \\right]\\left[ \\left( a+2 \\right)-3 \\right]$ $=\\le"
+  },
+  {
+    "id": 4683,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例3",
+    "problem_type": "textbook_example",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}+4x+4$ (2)$25{{x}^{2}}-20x+4$",
+    "correct_answer": null,
+    "solution_preview": "(1)${{x}^{2}}+4x+4={{x}^{2}}+2\\times x\\times 2+{{2}^{2}}={{\\left( x+2 \\right)}^{2}}$(2)$25{{x}^{2}}-20x+4={{\\left( 5x \\right)}^{2}}-2\\times \\left( 5x \\right)\\times 2+{{2}^{2}}={{\\left( 5x-2 \\right)}^{"
+  },
+  {
+    "id": 4684,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例4",
+    "problem_type": "textbook_example",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}+8$ (2)$125{{x}^{3}}-27$",
+    "correct_answer": null,
+    "solution_preview": "(1)${{x}^{3}}+8={{x}^{3}}+{{2}^{3}}=\\left( x+2 \\right)\\left( {{x}^{2}}-x\\times 2+{{2}^{2}} \\right)=\\left( x+2 \\right)\\left( {{x}^{2}}-2x+4 \\right)$(2)$125{{x}^{3}}-27={{\\left( 5x \\right)}^{3}}-{{3}^{3"
+  },
+  {
+    "id": 4685,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例5",
+    "problem_type": "textbook_example",
+    "problem_text": "若x為正整數，且$P=8{{x}^{2}}-50x-13$是質數，試求此質數。",
+    "correct_answer": null,
+    "solution_preview": "因為$P=8{{x}^{2}}-50x-13=\\left( 4x+1 \\right)\\left( 2x-13 \\right)$為質數① 若4x + 1 = 1，得$x=0$ 則$P=2x-13=-13$（不合）② 若$2x-13=1$，得$x=7$ 則$P=4x+1=29$故由①②知$P=8{{x}^{2}}-50x-13$為29"
+  },
+  {
+    "id": 4694,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習1",
+    "problem_type": "in_class_practice",
+    "problem_text": "因式分解下列多項式：(1)$5\\left( x+1 \\right)-{{\\left( x+1 \\right)}^{2}}$ (2)${{x}^{3}}-3{{x}^{2}}+3x-9$.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4695,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習2",
+    "problem_type": "in_class_practice",
+    "problem_text": "利用乘法公式作因式分解",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4696,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習3",
+    "problem_type": "in_class_practice",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-6x+9$ (2)$4{{x}^{2}}+12x+9$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4697,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習4",
+    "problem_type": "in_class_practice",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}-1$ (2)$8{{x}^{3}}+125$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4701,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習5",
+    "problem_type": "in_class_practice",
+    "problem_text": "已知一正方形的邊長為正整數，其面積為$\\left( 6{{x}^{2}}-7x-5 \\right)$平方公分，且邊長可寫成x的一次式，試求此正方形的周長為多少公分？",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4713,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題16",
+    "problem_type": "self_assessment",
+    "problem_text": "已知一長方形的面積為$9{{x}^{2}}+6x+1-{{y}^{2}}$平方單位，若其長、寬均為x、y的一次式且x、y項的係數均為整數，則此長方形的周長為",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4714,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題17",
+    "problem_type": "self_assessment",
+    "problem_text": "如右圖，A、B、C為長方體相鄰的三面，其面積分別為${{x}^{2}}-x-6$、$2{{x}^{2}}-x-15$、$2{{x}^{2}}+9x+10$平方單位，則此長方體體積為多少立方單位？",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4715,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題18",
+    "problem_type": "self_assessment",
+    "problem_text": "下列何者為多項式${{\\left( {{x}^{2}}-2x \\right)}^{2}}-8\\left( {{x}^{2}}-2x \\right)+15$之因式？ (A) x + 3",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4676,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 6",
+    "problem_type": "textbook_exercise",
+    "problem_text": "化簡下列各式：(1)$\\frac{{{x}^{2}}-1}{{{x}^{2}}+x-12}\\times \\frac{{{x}^{2}}-16}{{{x}^{2}}-3x-4}$ (2)$\\frac{{{x}^{2}}+x}{{{x}^{2}}-25}\\div \\frac{x+1}{x-5}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4677,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 7",
+    "problem_type": "textbook_exercise",
+    "problem_text": "化簡下列各式：(1)$\\frac{x+3}{x-1}-\\frac{5}{x-1}$ (2)$\\frac{x+1}{x+2}-\\frac{x}{x-4}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4686,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例6",
+    "problem_type": "textbook_example",
+    "problem_text": "化簡$\\frac{{{x}^{2}}-4}{{{x}^{2}}-3x+2}\\times \\frac{x-1}{x+2}$。",
+    "correct_answer": null,
+    "solution_preview": "原式$=\\frac{\\left( x+2 \\right)\\left( x-2 \\right)}{\\left( x-1 \\right)\\left( x-2 \\right)}\\times \\frac{x-1}{x+2}=\\frac{x+2}{x-1}\\times \\frac{x-1}{x+2}=1$"
+  },
+  {
+    "id": 4691,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例7",
+    "problem_type": "textbook_example",
+    "problem_text": "化簡$\\frac{2{{x}^{2}}-3x-2}{{{x}^{2}}-3x+2}\\div \\frac{2{{x}^{2}}-7x-4}{x-4}$。",
+    "correct_answer": null,
+    "solution_preview": "原式$=\\frac{2{{x}^{2}}-3x-2}{{{x}^{2}}-3x+2}\\times \\frac{x-4}{2{{x}^{2}}-7x-4}$ $=\\frac{\\left( 2x+1 \\right)\\left( x-2 \\right)}{\\left( x-1 \\right)\\left( x-2 \\right)}\\times \\frac{\\left( x-4 \\right)}{\\left"
+  },
+  {
+    "id": 4692,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例8",
+    "problem_type": "textbook_example",
+    "problem_text": "化簡下列各式：(1)$\\frac{x+2}{x-2}+\\frac{3}{x-2}$ (2)$\\frac{x-1}{x+1}-\\frac{x+2}{x-3}$",
+    "correct_answer": null,
+    "solution_preview": "(1) 分母相同，直接合併運算 $\\frac{x+2}{x-2}+\\frac{3}{x-2}=\\frac{x+2+3}{x-2}$ $=\\frac{x+5}{x-2}$(2) 分母不同，先通分，再合併運算將兩分式的分母均化為$\\left( x+1 \\right)\\left( x-3 \\right)$$\\frac{x-1}{x+1}-\\frac{x+2}{x-3}=\\frac{\\left( x-1 "
+  },
+  {
+    "id": 4702,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習6",
+    "problem_type": "in_class_practice",
+    "problem_text": "化簡$\\frac{{{x}^{2}}-1}{{{x}^{2}}-4x-12}\\times \\frac{x-6}{x+1}$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4703,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習7",
+    "problem_type": "in_class_practice",
+    "problem_text": "化簡$\\frac{{{x}^{2}}-2x-3}{{{x}^{2}}-1}\\div \\frac{x-3}{x-2}$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4704,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習8",
+    "problem_type": "in_class_practice",
+    "problem_text": "化簡下列各式：(1)$\\frac{2x+3}{x-1}-\\frac{x+5}{x-1}$ (2)$\\frac{x+1}{x-2}+\\frac{2}{x+3}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4678,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 基礎題 8",
+    "problem_type": "textbook_exercise",
+    "problem_text": "解下列分式方程式：(1)$\\frac{x+10}{x-2}=2$ (2)$\\frac{1}{x+1}=-\\frac{1}{{{x}^{2}}+x}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4679,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 進階題 10",
+    "problem_type": "advanced_exercise",
+    "problem_text": "解分式方程式$\\frac{3}{x}+\\frac{6}{x-1}=\\frac{x+21}{x\\left( x-1 \\right)}$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4680,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "112統測B",
+    "problem_type": "exam_practice",
+    "problem_text": "已知多項式$Q\\left( x \\right)=ax+b$，$f\\left( x \\right)=\\left( 2a-b \\right){{x}^{2}}+ax-1$，$g\\left( x \\right)=3{{x}^{2}}+x-1$，且$f\\left( x \\right)=g\\left( x \\right)$。若分式方程式$\\frac{x}{Q(x)}+\\frac{5}{x-2}=\\frac{-1}{(x-2)\\text{ }Q(x)}$的解為$x=c$，則${{a}^{2}}+{{b}^{2}}+{{c}^{2}}=$？ (A)3 (B)10 (C)18 (D)27 〔112統測B〕",
+    "correct_answer": null,
+    "solution_preview": "KEY(1) $f\\left( x \\right)=a{{x}^{2}}+bx+c$，$g\\left( x \\right)=k{{x}^{2}}+mx+n$若$f\\left( x \\right)=g\\left( x \\right)$ $a=k$，$b=m$，$c=n$(2) 兩分式的加減：$\\frac{A}{B}\\pm \\frac{C}{D}=\\frac{AD+BC}{BD}$"
+  },
+  {
+    "id": 4687,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例10",
+    "problem_type": "textbook_example",
+    "problem_text": "解分式方程式$x+\\frac{5}{x}=6$。",
+    "correct_answer": null,
+    "solution_preview": "先移項使等式右邊等於0，再通分$x+\\frac{5}{x}-6=0$通分得$\\frac{{{x}^{2}}+5-6x}{x}=0$整理得$\\frac{{{x}^{2}}-6x+5}{x}=0$分子因式分解得$\\frac{\\left( x-1 \\right)\\left( x-5 \\right)}{x}=0$令$\\left( x-1 \\right)\\left( x-5 \\right)=0$，即x = "
+  },
+  {
+    "id": 4688,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例11",
+    "problem_type": "textbook_example",
+    "problem_text": "解分式方程式$\\frac{x-3}{3x+1}=\\frac{x-3}{3x+2}$。",
+    "correct_answer": null,
+    "solution_preview": "方法一：通分母法$\\frac{x-3}{3x+1}=\\frac{x-3}{3x+2}$移項得$\\frac{x-3}{3x+1}-\\frac{x-3}{3x+2}=0$分母通分得$\\frac{\\left( x-3 \\right)\\left( 3x+2 \\right)}{\\left( 3x+1 \\right)\\left( 3x+2 \\right)}-\\frac{\\left( 3x+1 \\right)\\"
+  },
+  {
+    "id": 4689,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例12",
+    "problem_type": "textbook_example",
+    "problem_text": "解分式方程式$\\frac{2x-3}{x-1}-\\frac{x-1}{x+1}=\\frac{-2}{{{x}^{2}}-1}$。",
+    "correct_answer": null,
+    "solution_preview": "$\\frac{2x-3}{x-1}-\\frac{x-1}{x+1}=\\frac{-2}{{{x}^{2}}-1}$依等量公理，等式兩邊同乘以$\\left( x-1 \\right)\\left( x+1 \\right)$去分母得$\\left( 2x-3 \\right)\\left( x+1 \\right)-{{\\left( x-1 \\right)}^{2}}=-2$左式展開得$\\left( 2{{x}^"
+  },
+  {
+    "id": 4690,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "3-3習題 進階題 9",
+    "problem_type": "advanced_exercise",
+    "problem_text": "已知$\\frac{3}{3x-4}-\\frac{1}{2x+1}=\\frac{ax+b}{6{{x}^{2}}-5x-4}$，試求a、b之值。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4693,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "例9",
+    "problem_type": "textbook_example",
+    "problem_text": "解分式方程式$\\frac{2x+1}{x-2}=3$。",
+    "correct_answer": null,
+    "solution_preview": "原式等號兩邊同乘以$\\left( x-2 \\right)$得$2x+1=3\\left( x-2 \\right)$右式乘開得2x + 1 = 3x − 6移項計算得x = 7，將x = 7代入分母，分母≠ 0所以此方程式的解為x = 7"
+  },
+  {
+    "id": 4698,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習10",
+    "problem_type": "in_class_practice",
+    "problem_text": "解分式方程式$x-\\frac{5}{x+1}=3$。.",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4699,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習11",
+    "problem_type": "in_class_practice",
+    "problem_text": "解分式方程式$\\frac{x-5}{2x+1}=\\frac{x-5}{2x+3}$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4700,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習12",
+    "problem_type": "in_class_practice",
+    "problem_text": "解分式方程式$\\frac{x}{x+2}+\\frac{2}{x-2}=\\frac{x+6}{{{x}^{2}}-4}$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4705,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "隨堂練習9",
+    "problem_type": "in_class_practice",
+    "problem_text": "解分式方程式$\\frac{x-2}{x+1}=2$。",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4723,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題19",
+    "problem_type": "self_assessment",
+    "problem_text": "試求方程式$\\frac{x}{1-x}=\\frac{1}{x}$之解為 (A)$x=\\frac{-1\\pm \\sqrt{5}}{2}$ (B)$x=\\frac{-2\\pm \\sqrt{5}}{2}$",
+    "correct_answer": null,
+    "solution_preview": null
+  },
+  {
+    "id": 4724,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題20",
+    "problem_type": "self_assessment",
+    "problem_text": "試求方程式$\\frac{3}{\\left( x-2 \\right)\\left( x+1 \\right)}+\\frac{x+2}{x+1}=\\frac{2}{x-2}$之解為 (A) x = 1 (B) x = 2 (C) x = 3 (D) x = −2。.",
+    "correct_answer": null,
+    "solution_preview": null
+  }
+]

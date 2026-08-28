@@ -504,5 +504,565 @@ skills:
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
 
+  - skill_id: vh_數學B1_PolynomialBasicConcepts
+    skill_ch_name: 多項式的基本概念
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_descending_power_properties
+        display_name: 降冪排列與次數首項求值
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: polynomial_param_degree_constraint
+        display_name: 參數多項式給定次數求係數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: polynomial_descending_power_table
+        display_name: 兩式降冪排列填表
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: zero_polynomial_find_coeffs
+        display_name: 零多項式求參數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+      - problem_type_id: polynomial_degree_product_sum
+        display_name: 乘積與和的次數關係
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+        merge_policy: split_by_contract_diff
+    classification_rules:
+      - if_contains:
+          - 零多項式
+        prefer_problem_type_id: zero_polynomial_find_coeffs
+      - if_contains:
+          - 完成下表
+          - 按降冪排列完成
+        prefer_problem_type_id: polynomial_descending_power_table
+      - if_contains:
+          - 四次多項式
+          - 五次多項式
+          - a次多項式
+        prefer_problem_type_id: polynomial_degree_product_sum
+      - if_contains:
+          - 首項係數
+        prefer_problem_type_id: polynomial_descending_power_properties
+      - if_contains:
+          - a、b之值
+          - a、b
+          - 若$\deg
+          - 若\deg
+        prefer_problem_type_id: polynomial_param_degree_constraint
+      - if_contains:
+          - 降冪排列
+        prefer_problem_type_id: polynomial_descending_power_properties
+    source_examples:
+      - example_id: 4609
+        matched_problem_type_id: polynomial_descending_power_properties
+      - example_id: 4610
+        matched_problem_type_id: polynomial_param_degree_constraint
+      - example_id: 4618
+        matched_problem_type_id: polynomial_descending_power_table
+      - example_id: 4619
+        matched_problem_type_id: polynomial_param_degree_constraint
+      - example_id: 4620
+        matched_problem_type_id: zero_polynomial_find_coeffs
+      - example_id: 4629
+        matched_problem_type_id: polynomial_descending_power_table
+      - example_id: 4630
+        matched_problem_type_id: polynomial_param_degree_constraint
+      - example_id: 4631
+        matched_problem_type_id: zero_polynomial_find_coeffs
+      - example_id: 4716
+        matched_problem_type_id: polynomial_degree_product_sum
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
+      default_problem_type_used: false
+      single_primary_problem_type: false
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_PolynomialArithmeticOperations
+    skill_ch_name: 多項式的四則運算
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_add_sub
+        display_name: 多項式加減
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_multiply
+        display_name: 多項式乘積與次數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_product_term_coefficient
+        display_name: 乘積指定項係數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_long_division
+        display_name: 多項式除法商式餘式
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_synthetic_division
+        display_name: 綜合除法
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_remainder_param_solve
+        display_name: 餘式條件求參數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+      - problem_type_id: polynomial_shifted_basis_eval
+        display_name: 平移基底展開求係數和
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 綜合除法
+        prefer_problem_type_id: polynomial_synthetic_division
+      - if_contains:
+          - a + b + c + d
+          - a+b+c+d
+          - (x-1)^{3}
+          - \left( x-1 \right)^{3}
+        prefer_problem_type_id: polynomial_shifted_basis_eval
+      - if_contains:
+          - 試求實數a
+          - 可被
+          - 整除
+        prefer_problem_type_id: polynomial_remainder_param_solve
+      - if_contains:
+          - 商式和餘式
+          - 商式及餘式
+          - \div
+          - 除以
+          - 餘式為ax
+          - a + b
+        prefer_problem_type_id: polynomial_long_division
+      - if_contains:
+          - 項係數
+          - 項的係數
+        prefer_problem_type_id: polynomial_product_term_coefficient
+      - if_contains:
+          - 乘積及其次數
+          - 的乘積
+        prefer_problem_type_id: polynomial_multiply
+      - if_contains:
+          - +g
+          - -g
+          - f\left( x \right)+g
+          - f\left( x \right)-g
+        prefer_problem_type_id: polynomial_add_sub
+    source_examples:
+      - example_id: 4612
+        matched_problem_type_id: polynomial_add_sub
+      - example_id: 4613
+        matched_problem_type_id: polynomial_product_term_coefficient
+      - example_id: 4614
+        matched_problem_type_id: polynomial_long_division
+      - example_id: 4615
+        matched_problem_type_id: polynomial_long_division
+      - example_id: 4616
+        matched_problem_type_id: polynomial_synthetic_division
+      - example_id: 4617
+        matched_problem_type_id: polynomial_shifted_basis_eval
+      - example_id: 4622
+        matched_problem_type_id: polynomial_add_sub
+      - example_id: 4623
+        matched_problem_type_id: polynomial_multiply
+      - example_id: 4624
+        matched_problem_type_id: polynomial_product_term_coefficient
+      - example_id: 4625
+        matched_problem_type_id: polynomial_long_division
+      - example_id: 4626
+        matched_problem_type_id: polynomial_synthetic_division
+      - example_id: 4627
+        matched_problem_type_id: polynomial_remainder_param_solve
+      - example_id: 4628
+        matched_problem_type_id: polynomial_remainder_param_solve
+      - example_id: 4633
+        matched_problem_type_id: polynomial_add_sub
+      - example_id: 4634
+        matched_problem_type_id: polynomial_multiply
+      - example_id: 4635
+        matched_problem_type_id: polynomial_product_term_coefficient
+      - example_id: 4636
+        matched_problem_type_id: polynomial_long_division
+      - example_id: 4637
+        matched_problem_type_id: polynomial_synthetic_division
+      - example_id: 4706
+        matched_problem_type_id: polynomial_product_term_coefficient
+      - example_id: 4718
+        matched_problem_type_id: polynomial_long_division
+      - example_id: 4719
+        matched_problem_type_id: polynomial_remainder_param_solve
+      - example_id: 4720
+        matched_problem_type_id: polynomial_long_division
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
+      default_problem_type_used: false
+      single_primary_problem_type: false
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_PolynomialEquality
+    skill_ch_name: 多項式的相等
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_equality_identity
+        display_name: 多項式恆等式求參數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 相等
+          - 恆等
+          - 對所有
+          - 實數
+          - a、b
+        prefer_problem_type_id: polynomial_equality_identity
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RemainderTheorem
+    skill_ch_name: 餘式定理
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: remainder_theorem_evaluate
+        display_name: 餘式定理求值
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 餘式
+          - 餘式定理
+          - 除以
+        prefer_problem_type_id: remainder_theorem_evaluate
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_FactorTheorem
+    skill_ch_name: 因式定理
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: factor_theorem_root_factor
+        display_name: 因式定理與根
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 因式
+          - 根
+          - 因式定理
+        prefer_problem_type_id: factor_theorem_root_factor
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_PolynomialFactoring
+    skill_ch_name: 因式分解
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_factoring
+        display_name: 多項式因式分解
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 因式分解
+          - 分解
+        prefer_problem_type_id: polynomial_factoring
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RationalExpressionArithmeticOperations
+    skill_ch_name: 有理式的四則運算
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: rational_expression_arithmetic
+        display_name: 有理式化簡與運算
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 化簡
+          - 有理式
+        prefer_problem_type_id: rational_expression_arithmetic
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RationalEquation
+    skill_ch_name: 有理方程式
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: rational_equation_solve
+        display_name: 解有理方程式
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 解
+          - 方程式
+          - 有理
+        prefer_problem_type_id: rational_equation_solve
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_PolynomialEquality
+    skill_ch_name: 多項式的相等
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_equality_identity
+        display_name: 多項式恆等式求參數
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 相等
+          - 恆等
+          - 對所有
+          - 實數
+          - a、b
+        prefer_problem_type_id: polynomial_equality_identity
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RemainderTheorem
+    skill_ch_name: 餘式定理
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: remainder_theorem_evaluate
+        display_name: 餘式定理求值
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 餘式
+          - 餘式定理
+          - f(
+          - 除以
+        prefer_problem_type_id: remainder_theorem_evaluate
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_FactorTheorem
+    skill_ch_name: 因式定理
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: factor_theorem_root_factor
+        display_name: 因式定理與根
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 因式
+          - 根
+          - 因式定理
+          - x-
+        prefer_problem_type_id: factor_theorem_root_factor
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_PolynomialFactoring
+    skill_ch_name: 因式分解
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: polynomial_factoring
+        display_name: 多項式因式分解
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 因式分解
+          - 分解
+        prefer_problem_type_id: polynomial_factoring
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RationalExpressionArithmeticOperations
+    skill_ch_name: 有理式的四則運算
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: rational_expression_arithmetic
+        display_name: 有理式化簡與運算
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 化簡
+          - 有理式
+          - 分數
+        prefer_problem_type_id: rational_expression_arithmetic
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
+  - skill_id: vh_數學B1_RationalEquation
+    skill_ch_name: 有理方程式
+    classifier_source: human_confirmed
+    problem_types:
+      - problem_type_id: rational_equation_solve
+        display_name: 解有理方程式
+        checker: multi_part_answer_checker
+        equivalence: multi_part_answer
+        runtime_candidate: true
+        requires_human_action: false
+    classification_rules:
+      - if_contains:
+          - 解
+          - 方程式
+          - 有理
+        prefer_problem_type_id: rational_equation_solve
+    source_policy:
+      source_count_threshold_for_split: 999
+      small_skill_merge_allowed: true
+      min_source_examples: 1
+      allow_single_problem_type: true
+      allow_skill_default_problem_type: true
+      default_problem_type_used: true
+      single_primary_problem_type: true
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+
 
 

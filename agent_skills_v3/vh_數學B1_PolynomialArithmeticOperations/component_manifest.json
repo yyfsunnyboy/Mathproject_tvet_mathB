@@ -1,0 +1,205 @@
+{
+  "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_4612",
+      "textbook_example_id": 4612,
+      "status": "verified",
+      "problem_type_id": "polynomial_add_sub",
+      "domain_operation": "polynomial_add_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4612/generate.py"
+    },
+    {
+      "component_id": "src_4613",
+      "textbook_example_id": 4613,
+      "status": "verified",
+      "problem_type_id": "polynomial_product_term_coefficient",
+      "domain_operation": "polynomial_product_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4613/generate.py"
+    },
+    {
+      "component_id": "src_4614",
+      "textbook_example_id": 4614,
+      "status": "verified",
+      "problem_type_id": "polynomial_long_division",
+      "domain_operation": "polynomial_long_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4614/generate.py"
+    },
+    {
+      "component_id": "src_4615",
+      "textbook_example_id": 4615,
+      "status": "verified",
+      "problem_type_id": "polynomial_long_division",
+      "domain_operation": "polynomial_long_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4615/generate.py"
+    },
+    {
+      "component_id": "src_4616",
+      "textbook_example_id": 4616,
+      "status": "verified",
+      "problem_type_id": "polynomial_synthetic_division",
+      "domain_operation": "polynomial_synthetic_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4616/generate.py"
+    },
+    {
+      "component_id": "src_4617",
+      "textbook_example_id": 4617,
+      "status": "verified",
+      "problem_type_id": "polynomial_shifted_basis_eval",
+      "domain_operation": "polynomial_shifted_basis_eval",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4617/generate.py"
+    },
+    {
+      "component_id": "src_4622",
+      "textbook_example_id": 4622,
+      "status": "verified",
+      "problem_type_id": "polynomial_add_sub",
+      "domain_operation": "polynomial_add_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4622/generate.py"
+    },
+    {
+      "component_id": "src_4623",
+      "textbook_example_id": 4623,
+      "status": "verified",
+      "problem_type_id": "polynomial_multiply",
+      "domain_operation": "polynomial_multiply",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4623/generate.py"
+    },
+    {
+      "component_id": "src_4624",
+      "textbook_example_id": 4624,
+      "status": "verified",
+      "problem_type_id": "polynomial_product_term_coefficient",
+      "domain_operation": "polynomial_product_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4624/generate.py"
+    },
+    {
+      "component_id": "src_4625",
+      "textbook_example_id": 4625,
+      "status": "verified",
+      "problem_type_id": "polynomial_long_division",
+      "domain_operation": "polynomial_long_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4625/generate.py"
+    },
+    {
+      "component_id": "src_4626",
+      "textbook_example_id": 4626,
+      "status": "verified",
+      "problem_type_id": "polynomial_synthetic_division",
+      "domain_operation": "polynomial_synthetic_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4626/generate.py"
+    },
+    {
+      "component_id": "src_4627",
+      "textbook_example_id": 4627,
+      "status": "verified",
+      "problem_type_id": "polynomial_remainder_param_solve",
+      "domain_operation": "polynomial_remainder_param_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4627/generate.py"
+    },
+    {
+      "component_id": "src_4633",
+      "textbook_example_id": 4633,
+      "status": "verified",
+      "problem_type_id": "polynomial_add_sub",
+      "domain_operation": "polynomial_add_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4633/generate.py"
+    },
+    {
+      "component_id": "src_4634",
+      "textbook_example_id": 4634,
+      "status": "verified",
+      "problem_type_id": "polynomial_multiply",
+      "domain_operation": "polynomial_multiply",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4634/generate.py"
+    },
+    {
+      "component_id": "src_4635",
+      "textbook_example_id": 4635,
+      "status": "verified",
+      "problem_type_id": "polynomial_product_term_coefficient",
+      "domain_operation": "polynomial_product_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4635/generate.py"
+    },
+    {
+      "component_id": "src_4636",
+      "textbook_example_id": 4636,
+      "status": "verified",
+      "problem_type_id": "polynomial_long_division",
+      "domain_operation": "polynomial_long_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4636/generate.py"
+    },
+    {
+      "component_id": "src_4637",
+      "textbook_example_id": 4637,
+      "status": "verified",
+      "problem_type_id": "polynomial_synthetic_division",
+      "domain_operation": "polynomial_synthetic_division",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4637/generate.py"
+    },
+    {
+      "component_id": "src_4706",
+      "textbook_example_id": 4706,
+      "status": "verified",
+      "problem_type_id": "polynomial_product_term_coefficient",
+      "domain_operation": "polynomial_product_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_4706/generate.py"
+    }
+  ]
+}

@@ -10,6 +10,14 @@ mvp_scope:
     - vh_數學B1_PropertiesOfPerpendicularLines
     - vh_數學B1_DistanceBetweenPointAndLine
     - vh_數學B1_DistanceBetweenTwoParallelLines
+    - vh_數學B1_PolynomialBasicConcepts
+    - vh_數學B1_PolynomialArithmeticOperations
+    - vh_數學B1_PolynomialEquality
+    - vh_數學B1_RemainderTheorem
+    - vh_數學B1_FactorTheorem
+    - vh_數學B1_PolynomialFactoring
+    - vh_數學B1_RationalExpressionArithmeticOperations
+    - vh_數學B1_RationalEquation
     - vh_數學B4_StatisticalChartReading
 
 skills:
@@ -214,6 +222,88 @@ skills:
       - absolute_value_inequality_linear_expression_basic
       - absolute_value_inequality_shifted_basic
       - absolute_value_inequality_interval_interpretation
+
+  vh_數學B1_PolynomialBasicConcepts:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - polynomial_descending_power_properties
+      - polynomial_param_degree_constraint
+      - polynomial_descending_power_table
+      - zero_polynomial_find_coeffs
+      - polynomial_degree_product_sum
+
+  vh_數學B1_PolynomialArithmeticOperations:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - polynomial_add_sub
+      - polynomial_multiply
+      - polynomial_product_term_coefficient
+      - polynomial_long_division
+      - polynomial_synthetic_division
+      - polynomial_remainder_param_solve
+      - polynomial_shifted_basis_eval
+
+  vh_數學B1_PolynomialEquality:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - polynomial_equality_identity
+
+  vh_數學B1_RemainderTheorem:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - remainder_theorem_evaluate
+
+  vh_數學B1_FactorTheorem:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - factor_theorem_root_factor
+
+  vh_數學B1_PolynomialFactoring:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - polynomial_factoring
+
+  vh_數學B1_RationalExpressionArithmeticOperations:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - rational_expression_arithmetic
+
+  vh_數學B1_RationalEquation:
+    fixed_domain_key: algebra.polynomial
+    domain_module: core.domain.polynomial_domain
+    entrypoint: build_polynomial_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - rational_equation_solve
 
 
 

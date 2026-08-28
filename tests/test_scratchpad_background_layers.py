@@ -63,8 +63,8 @@ def test_compute_question_background_region_uses_top_left_quarter() -> None:
     region = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
     assert region["x"] == region["edgePadding"]
     assert region["y"] == region["edgePadding"]
-    assert abs(region["quadrantWidth"] - 400) < 0.01
-    assert abs(region["quadrantHeight"] - 300) < 0.01
+    assert abs(region["quadrantWidth"] - 560) < 0.01
+    assert abs(region["quadrantHeight"] - 408) < 0.01
     assert region["width"] <= region["quadrantWidth"]
     assert region["height"] <= region["quadrantHeight"]
 
@@ -280,6 +280,35 @@ def test_4520_multi_figure_builds_six_panels_and_desktop_grid() -> None:
     assert result["cols"] == 3
     assert result["rows"] == 2
     assert result["cellCount"] == 6
+
+
+def test_4520_panel_axis_range_fits_segment_not_global_window() -> None:
+    from tests.domain.test_slope_of_a_line_domain import _build
+    from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
+
+    matrix = _build("classify_and_compare_figure_slopes", seed=4)
+    payload = convert_line_equation_matrix_to_question_payload(
+        matrix,
+        presentation_mode="short_answer",
+        domain_operation="classify_and_compare_figure_slopes",
+        answer_type="multi_part",
+    )
+    visual_spec = payload["visual_spec"]
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const spec=JSON.parse(process.argv[2]);"
+        "const panels=runtime.buildMultiFigurePanels(spec);"
+        "const first=panels[0].spec;"
+        "process.stdout.write(JSON.stringify({"
+        "span:first.x_range[1]-first.x_range[0],"
+        "lineCount:(first.lines||[]).length,"
+        "pointCount:(first.points||[]).length"
+        "}));"
+    )
+    result = json.loads(_run_node(script, str(VISUAL_SPEC_PATH), json.dumps(visual_spec)))
+    assert result["lineCount"] >= 1
+    assert result["pointCount"] >= 1
+    assert result["span"] > 2
 
 
 def test_4520_mobile_grid_uses_two_columns() -> None:

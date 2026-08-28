@@ -1,0 +1,545 @@
+{
+  "skill_id": "vh_數學B1_SubSection332",
+  "db": "C:\\Python\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "skills_info": {
+    "skill_id": "vh_數學B1_SubSection332",
+    "skill_ch_name": "分式",
+    "skill_en_name": "SubSection332",
+    "is_active": 1,
+    "input_type": "text"
+  },
+  "curriculum": {
+    "id": 777,
+    "skill_id": "vh_數學B1_SubSection332",
+    "curriculum": "vocational",
+    "grade": 10,
+    "volume": "數學B1",
+    "chapter": "3 式的運算",
+    "section": "3-3 因式分解與分式",
+    "paragraph": "分式",
+    "display_order": 5,
+    "difficulty_level": 1
+  },
+  "example_count": 0,
+  "examples": [],
+  "section_33_example_counts": [
+    {
+      "skill_id": "jh_數學1上_AgeProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_ApplicationProblems_v2",
+      "n": 1
+    },
+    {
+      "skill_id": "jh_數學1上_CostProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_DiscountProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_DistributionProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_GeometryProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_NumberProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_RateProblems",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學1上_SolutionReasonableness",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_AASCongruenceTheorem",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_ASACongruencePostulate",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_ApplicationsOfTriangleCongruence",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_MeaningOfCongruentTriangles",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_PropertiesOfCongruentTriangles",
+      "n": 12
+    },
+    {
+      "skill_id": "jh_數學2下_RHSCongruencePostulate",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_SASCongruencePostulate",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_SSSCongruencePostulate",
+      "n": 2
+    },
+    {
+      "skill_id": "jh_數學2下_TriangleCongruenceMeaning",
+      "n": 2
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "n": 18
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "n": 14
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "n": 8
+    },
+    {
+      "skill_id": "vh_數學B4_CentralTendencyMeasures",
+      "n": 11
+    },
+    {
+      "skill_id": "vh_數學B4_DispersionMeasures",
+      "n": 5
+    },
+    {
+      "skill_id": "vh_數學B4_LinearTransformationOfData",
+      "n": 8
+    },
+    {
+      "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+      "n": 6
+    },
+    {
+      "skill_id": "vh_數學B4_OpinionPollInterpretation",
+      "n": 2
+    },
+    {
+      "skill_id": "vh_數學B4_VarianceAndStandardDeviation",
+      "n": 5
+    },
+    {
+      "skill_id": "vh_數學B4_WeightedMean",
+      "n": 3
+    }
+  ],
+  "wrapper": false,
+  "v3_dir": false,
+  "fraction_related_examples_sample": [
+    {
+      "id": 4671,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 1"
+    },
+    {
+      "id": 4672,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 2"
+    },
+    {
+      "id": 4673,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 3"
+    },
+    {
+      "id": 4674,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 4"
+    },
+    {
+      "id": 4675,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 5"
+    },
+    {
+      "id": 4676,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 6"
+    },
+    {
+      "id": 4677,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 7"
+    },
+    {
+      "id": 4678,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 基礎題 8"
+    },
+    {
+      "id": 4679,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 進階題 10"
+    },
+    {
+      "id": 4680,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "112統測B"
+    },
+    {
+      "id": 4681,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例1"
+    },
+    {
+      "id": 4682,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例2"
+    },
+    {
+      "id": 4683,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例3"
+    },
+    {
+      "id": 4684,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例4"
+    },
+    {
+      "id": 4685,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例5"
+    },
+    {
+      "id": 4686,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例6"
+    },
+    {
+      "id": 4687,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例10"
+    },
+    {
+      "id": 4688,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例11"
+    },
+    {
+      "id": 4689,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例12"
+    },
+    {
+      "id": 4690,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "3-3習題 進階題 9"
+    },
+    {
+      "id": 4691,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例7"
+    },
+    {
+      "id": 4692,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例8"
+    },
+    {
+      "id": 4693,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "例9"
+    },
+    {
+      "id": 4694,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習1"
+    },
+    {
+      "id": 4695,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習2"
+    },
+    {
+      "id": 4696,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習3"
+    },
+    {
+      "id": 4697,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習4"
+    },
+    {
+      "id": 4698,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習10"
+    },
+    {
+      "id": 4699,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習11"
+    },
+    {
+      "id": 4700,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習12"
+    },
+    {
+      "id": 4701,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習5"
+    },
+    {
+      "id": 4702,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習6"
+    },
+    {
+      "id": 4703,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習7"
+    },
+    {
+      "id": 4704,
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習8"
+    },
+    {
+      "id": 4705,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "隨堂練習9"
+    },
+    {
+      "id": 4713,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "CH1自我評量 題16"
+    },
+    {
+      "id": 4714,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "CH1自我評量 題17"
+    },
+    {
+      "id": 4715,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "CH1自我評量 題18"
+    },
+    {
+      "id": 4723,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "CH1自我評量 題19"
+    },
+    {
+      "id": 4724,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "source_section": "3-3 因式分解與分式",
+      "source_description": "CH1自我評量 題20"
+    }
+  ],
+  "section_33_skills": [
+    {
+      "skill_id": "jh_數學1上_NumberProblems",
+      "section": "3-3 應用問題",
+      "display_order": 1
+    },
+    {
+      "skill_id": "jh_數學2下_MeaningOfCongruentTriangles",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 1
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "section": "3-3 因式分解與分式",
+      "display_order": 1
+    },
+    {
+      "skill_id": "vh_數學B4_CentralTendencyMeasures",
+      "section": "3-3 統計量分析",
+      "display_order": 1
+    },
+    {
+      "skill_id": "jh_數學1上_CostProblems",
+      "section": "3-3 應用問題",
+      "display_order": 2
+    },
+    {
+      "skill_id": "jh_數學2下_TriangleCongruenceMeaning",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 2
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "section": "3-3 因式分解與分式",
+      "display_order": 2
+    },
+    {
+      "skill_id": "vh_數學B4_WeightedMean",
+      "section": "3-3 統計量分析",
+      "display_order": 2
+    },
+    {
+      "skill_id": "jh_數學1上_DistributionProblems",
+      "section": "3-3 應用問題",
+      "display_order": 3
+    },
+    {
+      "skill_id": "jh_數學2下_PropertiesOfCongruentTriangles",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 3
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "section": "3-3 因式分解與分式",
+      "display_order": 3
+    },
+    {
+      "skill_id": "vh_數學B4_DispersionMeasures",
+      "section": "3-3 統計量分析",
+      "display_order": 3
+    },
+    {
+      "skill_id": "jh_數學1上_DiscountProblems",
+      "section": "3-3 應用問題",
+      "display_order": 4
+    },
+    {
+      "skill_id": "jh_數學2下_SSSCongruencePostulate",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 4
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_33",
+      "section": "3-3 因式分解與分式",
+      "display_order": 4
+    },
+    {
+      "skill_id": "vh_數學B4_VarianceAndStandardDeviation",
+      "section": "3-3 統計量分析",
+      "display_order": 4
+    },
+    {
+      "skill_id": "jh_數學1上_GeometryProblems",
+      "section": "3-3 應用問題",
+      "display_order": 5
+    },
+    {
+      "skill_id": "jh_數學2下_SASCongruencePostulate",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 5
+    },
+    {
+      "skill_id": "vh_數學B1_SubSection332",
+      "section": "3-3 因式分解與分式",
+      "display_order": 5
+    },
+    {
+      "skill_id": "vh_數學B4_LinearTransformationOfData",
+      "section": "3-3 統計量分析",
+      "display_order": 5
+    },
+    {
+      "skill_id": "jh_數學1上_AgeProblems",
+      "section": "3-3 應用問題",
+      "display_order": 6
+    },
+    {
+      "skill_id": "jh_數學2下_RHSCongruencePostulate",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 6
+    },
+    {
+      "skill_id": "vh_數學B4_NormalDistributionAndEmpiricalRule",
+      "section": "3-3 統計量分析",
+      "display_order": 6
+    },
+    {
+      "skill_id": "jh_數學1上_RateProblems",
+      "section": "3-3 應用問題",
+      "display_order": 7
+    },
+    {
+      "skill_id": "jh_數學2下_ASACongruencePostulate",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 7
+    },
+    {
+      "skill_id": "jh_數學1上_SolutionReasonableness",
+      "section": "3-3 應用問題",
+      "display_order": 8
+    },
+    {
+      "skill_id": "jh_數學2下_AASCongruenceTheorem",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 8
+    },
+    {
+      "skill_id": "jh_數學1上_ApplicationProblems_v2",
+      "section": "3-3 應用問題",
+      "display_order": 9
+    },
+    {
+      "skill_id": "jh_數學2下_ApplicationsOfTriangleCongruence",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 9
+    },
+    {
+      "skill_id": "jh_數學2下_ExploringSSACondition",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 10
+    },
+    {
+      "skill_id": "jh_數學2下_TriangleCongruenceProperties",
+      "section": "3-3 三角形的全等性質",
+      "display_order": 11
+    },
+    {
+      "skill_id": "vh_數學B4_OpinionPollInterpretation",
+      "section": "3-3 統計量分析",
+      "display_order": 50
+    }
+  ]
+}

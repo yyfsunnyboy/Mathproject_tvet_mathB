@@ -1,0 +1,205 @@
+{
+  "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+  "compiled_at": "2026-08-27T07:37:25.898955+00:00",
+  "publish_status": "dryrun_manifest_compiled",
+  "components": [
+    {
+      "component_id": "src_4612",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4612",
+      "textbook_example_id": 4612,
+      "line_type": "polynomial_add_sub",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4612"
+    },
+    {
+      "component_id": "src_4613",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4613",
+      "textbook_example_id": 4613,
+      "line_type": "polynomial_product_term_coefficient",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4613"
+    },
+    {
+      "component_id": "src_4614",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4614",
+      "textbook_example_id": 4614,
+      "line_type": "polynomial_long_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4614"
+    },
+    {
+      "component_id": "src_4615",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4615",
+      "textbook_example_id": 4615,
+      "line_type": "polynomial_long_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4615"
+    },
+    {
+      "component_id": "src_4616",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4616",
+      "textbook_example_id": 4616,
+      "line_type": "polynomial_synthetic_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4616"
+    },
+    {
+      "component_id": "src_4617",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4617",
+      "textbook_example_id": 4617,
+      "line_type": "polynomial_shifted_basis_eval",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4617"
+    },
+    {
+      "component_id": "src_4622",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4622",
+      "textbook_example_id": 4622,
+      "line_type": "polynomial_add_sub",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4622"
+    },
+    {
+      "component_id": "src_4623",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4623",
+      "textbook_example_id": 4623,
+      "line_type": "polynomial_multiply",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4623"
+    },
+    {
+      "component_id": "src_4624",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4624",
+      "textbook_example_id": 4624,
+      "line_type": "polynomial_product_term_coefficient",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4624"
+    },
+    {
+      "component_id": "src_4625",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4625",
+      "textbook_example_id": 4625,
+      "line_type": "polynomial_long_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4625"
+    },
+    {
+      "component_id": "src_4626",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4626",
+      "textbook_example_id": 4626,
+      "line_type": "polynomial_synthetic_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4626"
+    },
+    {
+      "component_id": "src_4627",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4627",
+      "textbook_example_id": 4627,
+      "line_type": "polynomial_remainder_param_solve",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4627"
+    },
+    {
+      "component_id": "src_4633",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4633",
+      "textbook_example_id": 4633,
+      "line_type": "polynomial_add_sub",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4633"
+    },
+    {
+      "component_id": "src_4634",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4634",
+      "textbook_example_id": 4634,
+      "line_type": "polynomial_multiply",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4634"
+    },
+    {
+      "component_id": "src_4635",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4635",
+      "textbook_example_id": 4635,
+      "line_type": "polynomial_product_term_coefficient",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4635"
+    },
+    {
+      "component_id": "src_4636",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4636",
+      "textbook_example_id": 4636,
+      "line_type": "polynomial_long_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4636"
+    },
+    {
+      "component_id": "src_4637",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4637",
+      "textbook_example_id": 4637,
+      "line_type": "polynomial_synthetic_division",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4637"
+    },
+    {
+      "component_id": "src_4706",
+      "status": "verified",
+      "presentation_mode": "short_answer",
+      "source_kind": "ex_4706",
+      "textbook_example_id": 4706,
+      "line_type": "polynomial_product_term_coefficient",
+      "domain_module": "core.domain.polynomial_domain",
+      "entrypoint": "build_polynomial_matrix",
+      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialArithmeticOperations\\components\\src_4706"
+    }
+  ]
+}

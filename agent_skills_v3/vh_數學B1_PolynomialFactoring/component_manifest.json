@@ -1,0 +1,205 @@
+{
+  "skill_id": "vh_數學B1_PolynomialFactoring",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_4671",
+      "textbook_example_id": 4671,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4671/generate.py"
+    },
+    {
+      "component_id": "src_4672",
+      "textbook_example_id": 4672,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4672/generate.py"
+    },
+    {
+      "component_id": "src_4673",
+      "textbook_example_id": 4673,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4673/generate.py"
+    },
+    {
+      "component_id": "src_4674",
+      "textbook_example_id": 4674,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4674/generate.py"
+    },
+    {
+      "component_id": "src_4675",
+      "textbook_example_id": 4675,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4675/generate.py"
+    },
+    {
+      "component_id": "src_4681",
+      "textbook_example_id": 4681,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4681/generate.py"
+    },
+    {
+      "component_id": "src_4682",
+      "textbook_example_id": 4682,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4682/generate.py"
+    },
+    {
+      "component_id": "src_4683",
+      "textbook_example_id": 4683,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4683/generate.py"
+    },
+    {
+      "component_id": "src_4684",
+      "textbook_example_id": 4684,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4684/generate.py"
+    },
+    {
+      "component_id": "src_4685",
+      "textbook_example_id": 4685,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4685/generate.py"
+    },
+    {
+      "component_id": "src_4694",
+      "textbook_example_id": 4694,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4694/generate.py"
+    },
+    {
+      "component_id": "src_4695",
+      "textbook_example_id": 4695,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4695/generate.py"
+    },
+    {
+      "component_id": "src_4696",
+      "textbook_example_id": 4696,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4696/generate.py"
+    },
+    {
+      "component_id": "src_4697",
+      "textbook_example_id": 4697,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4697/generate.py"
+    },
+    {
+      "component_id": "src_4701",
+      "textbook_example_id": 4701,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_4701/generate.py"
+    },
+    {
+      "component_id": "src_4713",
+      "textbook_example_id": 4713,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_4713/generate.py"
+    },
+    {
+      "component_id": "src_4714",
+      "textbook_example_id": 4714,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_4714/generate.py"
+    },
+    {
+      "component_id": "src_4715",
+      "textbook_example_id": 4715,
+      "status": "verified",
+      "problem_type_id": "polynomial_factoring",
+      "domain_operation": "polynomial_factoring",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_4715/generate.py"
+    }
+  ]
+}

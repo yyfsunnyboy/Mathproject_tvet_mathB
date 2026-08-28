@@ -1,0 +1,1495 @@
+{
+  "skill": "vh_數學B1_RationalEquation",
+  "ok": 14,
+  "total": 14,
+  "results": [
+    {
+      "id": 4678,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4679,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4680,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4687,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4688,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4689,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4690,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4693,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4698,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4699,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4700,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4705,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4723,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4724,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "partial_published",
+    "skill_id": "vh_數學B1_RationalEquation",
+    "verified_component_count": 11,
+    "component_count": 11,
+    "coverage": {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "total_examples": 14,
+      "verified_count": 11,
+      "missing_tracker_count": 0,
+      "failed_count": 3,
+      "unsupported_count": 0,
+      "domain_gap_count": 3,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 11,
+      "needs_human_review_count": 0,
+      "unverified_count": 3,
+      "publish_ready": false,
+      "examples": [
+        {
+          "textbook_example_id": 4678,
+          "component_id": "src_4678",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4679,
+          "component_id": "src_4679",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4680,
+          "component_id": "src_4680",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4680\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4687,
+          "component_id": "src_4687",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4688,
+          "component_id": "src_4688",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4689,
+          "component_id": "src_4689",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4690,
+          "component_id": "src_4690",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4693,
+          "component_id": "src_4693",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4698,
+          "component_id": "src_4698",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4699,
+          "component_id": "src_4699",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4700,
+          "component_id": "src_4700",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4705,
+          "component_id": "src_4705",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4723,
+          "component_id": "src_4723",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4723\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4724,
+          "component_id": "src_4724",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4724\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": false,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_RationalEquation",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_RationalEquation",
+        "total_examples": 14,
+        "verified_count": 11,
+        "missing_tracker_count": 0,
+        "failed_count": 3,
+        "unsupported_count": 0,
+        "domain_gap_count": 3,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 11,
+        "needs_human_review_count": 0,
+        "unverified_count": 3,
+        "publish_ready": false,
+        "examples": [
+          {
+            "textbook_example_id": 4678,
+            "component_id": "src_4678",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4679,
+            "component_id": "src_4679",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4680,
+            "component_id": "src_4680",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4680\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4687,
+            "component_id": "src_4687",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4688,
+            "component_id": "src_4688",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4689,
+            "component_id": "src_4689",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4690,
+            "component_id": "src_4690",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4693,
+            "component_id": "src_4693",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4698,
+            "component_id": "src_4698",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4699,
+            "component_id": "src_4699",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4700,
+            "component_id": "src_4700",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4705,
+            "component_id": "src_4705",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4723,
+            "component_id": "src_4723",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4723\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4724,
+            "component_id": "src_4724",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4724\nproblem_type_id=rational_equation_solve\ndomain_operation=rational_equation_solve\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          }
+        ]
+      },
+      "eligible_component_count": 11,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 11,
+      "review_hints": []
+    },
+    "warnings": [
+      "V3 coverage incomplete: 11/14 verified, failed examples: 4680, 4723, 4724",
+      "publish_ready=False: publish will only include verified tracker components, not all textbook_examples"
+    ],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_RationalEquation",
+      "component_results": {
+        "src_4678": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4678",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4678",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4678",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4678",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4678",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4679": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4679",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4679",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4679",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4679",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4679",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4687": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4687",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4687",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4687",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4687",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4687",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4688": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4688",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4688",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4688",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4688",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4688",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4689": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4689",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4689",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4689",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4689",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4689",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4690": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4690",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4690",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4690",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4690",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4690",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4693": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4693",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4693",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4693",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4693",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4693",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4698": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4698",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4698",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4698",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4698",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4698",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4699": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4699",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4699",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4699",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4699",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4699",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4700": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4700",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4700",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4700",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4700",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4700",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4705": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4705",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4705",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4705",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4705",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4705",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_RationalEquation",
+      "component_count": 11,
+      "generator_keys": [
+        "src_4678",
+        "src_4679",
+        "src_4687",
+        "src_4688",
+        "src_4689",
+        "src_4690",
+        "src_4693",
+        "src_4698",
+        "src_4699",
+        "src_4700",
+        "src_4705"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4678,
+          "component_id": "src_4678",
+          "generator_key": "src_4678",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4678,
+          "source_order": 4678,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4679,
+          "component_id": "src_4679",
+          "generator_key": "src_4679",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4679,
+          "source_order": 4679,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4687,
+          "component_id": "src_4687",
+          "generator_key": "src_4687",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4687,
+          "source_order": 4687,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4688,
+          "component_id": "src_4688",
+          "generator_key": "src_4688",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4688,
+          "source_order": 4688,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4689,
+          "component_id": "src_4689",
+          "generator_key": "src_4689",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4689,
+          "source_order": 4689,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4690,
+          "component_id": "src_4690",
+          "generator_key": "src_4690",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4690,
+          "source_order": 4690,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4693,
+          "component_id": "src_4693",
+          "generator_key": "src_4693",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4693,
+          "source_order": 4693,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4698,
+          "component_id": "src_4698",
+          "generator_key": "src_4698",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4698,
+          "source_order": 4698,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4699,
+          "component_id": "src_4699",
+          "generator_key": "src_4699",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4699,
+          "source_order": 4699,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4700,
+          "component_id": "src_4700",
+          "generator_key": "src_4700",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4700,
+          "source_order": 4700,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4705,
+          "component_id": "src_4705",
+          "generator_key": "src_4705",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "rational_equation_solve",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "rational_equation_solve",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4705,
+          "source_order": 4705,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RationalEquation\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RationalEquation\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_RationalEquation.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_RationalEquation.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:42:43.805862+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4678,
+        "component_id": "src_4678",
+        "published_generate_sha256": "da067454eec5670efacd31f7b04b948156ad607873af0d1f21cf5106c2aad65a",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4678\\generate.py"
+      },
+      {
+        "textbook_example_id": 4679,
+        "component_id": "src_4679",
+        "published_generate_sha256": "00e24bd2435f6071283a815029a4b9729f34ccadd693571decdf9ebffd6c28d2",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4679\\generate.py"
+      },
+      {
+        "textbook_example_id": 4687,
+        "component_id": "src_4687",
+        "published_generate_sha256": "b59ef9c15ec2c08dbc579fd22c1b2c74aea4f752956458eb7835193a7911f9de",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4687\\generate.py"
+      },
+      {
+        "textbook_example_id": 4688,
+        "component_id": "src_4688",
+        "published_generate_sha256": "6868537b37ca322198cb4ae3b7a1717ee84293f4a49ce66412f235165eb5104f",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4688\\generate.py"
+      },
+      {
+        "textbook_example_id": 4689,
+        "component_id": "src_4689",
+        "published_generate_sha256": "c7ad0fc1d02dda4057216be32c5cd5f3be5b0140e4eae3f45a6c80247c055ce6",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4689\\generate.py"
+      },
+      {
+        "textbook_example_id": 4690,
+        "component_id": "src_4690",
+        "published_generate_sha256": "ea8a469370a831be8c5827f2240afc3dc576a72ae66b1ad3f5683a707d8f2def",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4690\\generate.py"
+      },
+      {
+        "textbook_example_id": 4693,
+        "component_id": "src_4693",
+        "published_generate_sha256": "ff98aad816e2b89ddc65794ba27a2f6f8dc5fe3b30caf389645b4edb0d0e042c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4693\\generate.py"
+      },
+      {
+        "textbook_example_id": 4698,
+        "component_id": "src_4698",
+        "published_generate_sha256": "50e4c0cde39323766e855d634e765215975af382a060db4e7c8ad2d2f7b61504",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4698\\generate.py"
+      },
+      {
+        "textbook_example_id": 4699,
+        "component_id": "src_4699",
+        "published_generate_sha256": "dfafcd7c573104275cd2c7424fa2414c5d47cb3dfc17c4472b9661529e6bf6f0",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4699\\generate.py"
+      },
+      {
+        "textbook_example_id": 4700,
+        "component_id": "src_4700",
+        "published_generate_sha256": "1738357c4b75233a94e48fa143a201df8125fffd2a3ac0170d90a516475dc53b",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4700\\generate.py"
+      },
+      {
+        "textbook_example_id": 4705,
+        "component_id": "src_4705",
+        "published_generate_sha256": "9eb814142d998bfdb8e617b1c22fd81e50d7843d01adb663ebbb9cb2908ff1b6",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation\\components\\src_4705\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "partial_published",
+      "skill_id": "vh_數學B1_RationalEquation",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 11,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_RationalEquation",
+        "component_count": 11,
+        "generator_keys": [
+          "src_4678",
+          "src_4679",
+          "src_4687",
+          "src_4688",
+          "src_4689",
+          "src_4690",
+          "src_4693",
+          "src_4698",
+          "src_4699",
+          "src_4700",
+          "src_4705"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4678,
+            "component_id": "src_4678",
+            "generator_key": "src_4678",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4678,
+            "source_order": 4678,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4679,
+            "component_id": "src_4679",
+            "generator_key": "src_4679",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4679,
+            "source_order": 4679,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4687,
+            "component_id": "src_4687",
+            "generator_key": "src_4687",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4687,
+            "source_order": 4687,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4688,
+            "component_id": "src_4688",
+            "generator_key": "src_4688",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4688,
+            "source_order": 4688,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4689,
+            "component_id": "src_4689",
+            "generator_key": "src_4689",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4689,
+            "source_order": 4689,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4690,
+            "component_id": "src_4690",
+            "generator_key": "src_4690",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4690,
+            "source_order": 4690,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4693,
+            "component_id": "src_4693",
+            "generator_key": "src_4693",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4693,
+            "source_order": 4693,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4698,
+            "component_id": "src_4698",
+            "generator_key": "src_4698",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4698,
+            "source_order": 4698,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4699,
+            "component_id": "src_4699",
+            "generator_key": "src_4699",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4699,
+            "source_order": 4699,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4700,
+            "component_id": "src_4700",
+            "generator_key": "src_4700",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4700,
+            "source_order": 4700,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4705,
+            "component_id": "src_4705",
+            "generator_key": "src_4705",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "rational_equation_solve",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "rational_equation_solve",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4705,
+            "source_order": 4705,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RationalEquation\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RationalEquation\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_RationalEquation.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_RationalEquation.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RationalEquation",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:42:43.805862+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 0,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4678": {
+          "component_id": "src_4678",
+          "textbook_example_id": 4678,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4679": {
+          "component_id": "src_4679",
+          "textbook_example_id": 4679,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4687": {
+          "component_id": "src_4687",
+          "textbook_example_id": 4687,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4688": {
+          "component_id": "src_4688",
+          "textbook_example_id": 4688,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4689": {
+          "component_id": "src_4689",
+          "textbook_example_id": 4689,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4690": {
+          "component_id": "src_4690",
+          "textbook_example_id": 4690,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4693": {
+          "component_id": "src_4693",
+          "textbook_example_id": 4693,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4698": {
+          "component_id": "src_4698",
+          "textbook_example_id": 4698,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4699": {
+          "component_id": "src_4699",
+          "textbook_example_id": 4699,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4700": {
+          "component_id": "src_4700",
+          "textbook_example_id": 4700,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4705": {
+          "component_id": "src_4705",
+          "textbook_example_id": 4705,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        }
+      }
+    }
+  }
+}

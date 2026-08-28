@@ -17,6 +17,25 @@ from core.gencode.resources.rational_display import (
 )
 
 
+_CIRCLED_FIGURE_LABELS = "①②③④⑤⑥⑦⑧⑨⑩"
+
+
+def _figure_slot_display_label(key: str) -> str:
+    text = str(key or "").strip()
+    fig_match = re.fullmatch(r"fig(\d+)", text, flags=re.IGNORECASE)
+    if fig_match:
+        index = int(fig_match.group(1))
+        if 1 <= index <= len(_CIRCLED_FIGURE_LABELS):
+            return _CIRCLED_FIGURE_LABELS[index - 1]
+        return f"圖{index}"
+    cmp_match = re.fullmatch(r"cmp(\d+)", text, flags=re.IGNORECASE)
+    if cmp_match:
+        index = int(cmp_match.group(1))
+        circled = _CIRCLED_FIGURE_LABELS[index - 1] if 1 <= index <= len(_CIRCLED_FIGURE_LABELS) else str(index)
+        return f"圖{circled}"
+    return text
+
+
 def _finalize_question_payload(payload: dict[str, Any]) -> dict[str, Any]:
     from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
 
@@ -308,10 +327,23 @@ def _build_line_equation_answer_contract(
             )
             checker = "expression_equivalence_checker" if uses_class_token or expected_text in {"不存在", "無"} else "rational_checker"
             equiv = "algebraic_equivalent" if checker == "expression_equivalence_checker" else "rational_equivalent"
+            key_text = str(key)
+            if key_text.lower().startswith("fig"):
+                group_label = "(1) 看圖①～④，選擇斜率"
+                choices = ["m>0", "m=0", "m<0", "m不存在"]
+            elif key_text.lower().startswith("cmp"):
+                group_label = "(2) 看圖①、圖②，比較 m1 與 m2"
+                choices = ["m1>m2", "m1<m2"]
+            else:
+                group_label = ""
+                choices = []
             part_rows.append(
                 {
                     "key": key,
-                    "label": key,
+                    "label": _figure_slot_display_label(key_text),
+                    "group_label": group_label,
+                    "input_type": "select" if choices else "text",
+                    "choices": choices,
                     "checker": checker,
                     "equivalence_type": equiv,
                     "expected_answer": expected_text,
@@ -348,6 +380,17 @@ def _build_line_equation_answer_contract(
             "checker_key": "rational_checker",
             "answer_equivalence": "rational_equivalent",
             "equivalence": "rational_equivalent",
+            "semantic_answer": semantic_answer,
+        }
+    if answer_type == "integer":
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "integer",
+            "checker": "integer_checker",
+            "checker_key": "integer_checker",
+            "answer_equivalence": "numeric_exact",
+            "equivalence": "numeric_exact",
+            "equivalence_type": "numeric_exact",
             "semantic_answer": semantic_answer,
         }
     return {
@@ -413,7 +456,10 @@ def _apply_line_equation_practice_surface(payload: dict[str, Any]) -> dict[str, 
     """Attach handwriting canvas + renderable visuals for line-equation practice."""
     out = dict(payload)
     mode = str(out.get("presentation_mode") or "short_answer").strip()
-    ui_contract = _line_equation_handwriting_ui_contract(mode)
+    ui_contract = {
+        **dict(out.get("ui_contract") or {}),
+        **_line_equation_handwriting_ui_contract(mode),
+    }
     answer_contract = dict(out.get("answer_contract") or {})
     answer_contract["ui_contract"] = {
         **dict(answer_contract.get("ui_contract") or {}),
@@ -723,6 +769,20 @@ def convert_line_equation_matrix_to_question_payload(
     if generator_key or component_id:
         payload["generator_key"] = generator_key or component_id
     metadata["semantic_answer"] = semantic_answer
+    if task_type == "classify_and_compare_figure_slopes":
+        payload["subquestions"] = _subquestions_from_multi_field_contract(answer_contract)
+        ui_contract = dict(payload.get("ui_contract") or {})
+        ui_contract["field_groups"] = [
+            {"group_label": "(1) 看圖①～④，選擇斜率", "fields": ["fig1", "fig2", "fig3", "fig4"]},
+            {"group_label": "(2) 看圖①、圖②，比較 m1 與 m2", "fields": ["cmp1", "cmp2"]},
+        ]
+        payload["ui_contract"] = ui_contract
+        answer_contract = dict(answer_contract)
+        answer_contract["ui_contract"] = {
+            **dict(answer_contract.get("ui_contract") or {}),
+            **ui_contract,
+        }
+        payload["answer_contract"] = answer_contract
     return _apply_line_equation_practice_surface(payload)
 
 
@@ -1205,8 +1265,8 @@ def _build_line_equation_question_text(
 
     if task_type == "classify_and_compare_figure_slopes":
         return (
-            "(1) 請將 m = 0、m不存在、m > 0、m < 0，填入下列各圖形的斜率。"
-            "(2) 設 m1、m2 分別為直線 L1、L2 的斜率，試比較各圖中 m1 與 m2 的大小。"
+            "(1) 請將 $m = 0$、$m$ 不存在、$m > 0$、$m < 0$，填入下列各圖形的斜率。"
+            "(2) 設 $m_1$、$m_2$ 分別為直線 $L_1$、$L_2$ 的斜率，試比較圖①、圖②中 $m_1$ 與 $m_2$ 的大小。"
         )
 
     if task_type == "collinear_three_points_parameter_choice":
@@ -2742,7 +2802,13 @@ def convert_domain_matrix_to_question_payload(
             "validation_facts": validation_facts,
             "generator_key": generator_key or component_id,
         })
-    question_text = str(kwargs.get("question_text") or "")
+    question_text = str(
+        kwargs.get("question_text")
+        or givens.get("question_text")
+        or matrix.get("question_text")
+        or matrix.get("question")
+        or ""
+    )
     if not question_text:
         if op == "solve_basic_absolute_value_equation":
             rhs = givens.get("rhs", 8)
@@ -2912,6 +2978,10 @@ def convert_domain_matrix_to_question_payload(
     if resolved_answer_type == "solution_set":
         chk_key = "solution_set_checker"
         equiv_type = "unordered_solution_set"
+    elif resolved_answer_type == "multi_part" or isinstance(semantic_answer, dict):
+        chk_key = "multi_part_answer_checker"
+        equiv_type = "multi_part_answer"
+        resolved_answer_type = "multi_part"
     elif resolved_answer_type == "interval_set" or op in {
         "absolute_value_inequality_zero_center_basic",
         "absolute_value_inequality_linear_expression_basic",
@@ -2926,6 +2996,9 @@ def convert_domain_matrix_to_question_payload(
     elif problem_type_id == "histogram_distribution_update":
         chk_key = "text_short_checker"
         equiv_type = "string_equivalence"
+    elif resolved_answer_type in {"expression", "text_short"}:
+        chk_key = "expression_checker"
+        equiv_type = "algebraic_equivalent"
     else:
         chk_key = "integer_checker"
         equiv_type = "numeric_exact"

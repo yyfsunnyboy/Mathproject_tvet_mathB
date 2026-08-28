@@ -76,3 +76,27 @@ def test_table_completion_requires_table_structure() -> None:
         presentation_mode="short_answer",
     )
     assert op != "complete_descriptive_statistics_table"
+
+
+def test_descriptive_statistics_table_with_stat_measures_still_matches() -> None:
+    row = {
+        "id": 999001,
+        "skill_id": "vh_數學B4_CentralTendencyMeasures",
+        "problem_text": "資料 2, 5, 7, 9，完成下表各統計量。",
+        "correct_answer": "",
+    }
+    analysis = analyze_textbook_row(row, presentation_mode="short_answer")
+    assert analysis is not None
+    assert analysis.problem_type_id == "descriptive_statistics_table_completion"
+    row = {
+        "id": 4618,
+        "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+        "problem_text": r"已知$f\left( x \right)=2{{x}^{2}}+{{x}^{3}}-3x-5$，試按降冪排列完成下表：",
+        "correct_answer": "",
+    }
+    analysis = analyze_textbook_row(row, presentation_mode="short_answer")
+    assert analysis is None
+    phase1 = run_v3_no_llm_phase1_for_example("vh_數學B1_PolynomialBasicConcepts", row)
+    assert phase1.get("classification_source") != "descriptive_statistics_domain_analyzer"
+    assert phase1.get("fixed_domain_key") != "statistics.descriptive_statistics"
+    assert phase1.get("problem_type_id") != "descriptive_statistics_table_completion"

@@ -862,6 +862,49 @@
             border-radius: 6px;
             box-shadow: 0 1px 6px rgba(0,0,0,.14);
         }
+        #question-media-container canvas.visual-spec-canvas {
+            display: block;
+            width: 100%;
+            max-width: 960px;
+            height: auto;
+            min-height: 200px;
+            margin: 8px auto;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .visual-spec-caption {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #334155;
+            text-align: left;
+            margin: 10px 4px 0;
+        }
+        .multi-part-group {
+            margin: 8px 0 14px;
+        }
+        .multi-part-group-label {
+            display: block;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .multi-part-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0;
+        }
+        .multi-part-row label {
+            min-width: 3rem;
+            font-weight: 600;
+        }
+        .multi-part-input {
+            min-width: 12rem;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
         .question-media-error {
             color: #c0392b;
             font-size: 0.9rem;
@@ -1595,6 +1638,12 @@
             padding: 0 16px 12px;
             box-sizing: border-box;
         }
+        #scratchpad-container.scratchpad-has-figures {
+            min-height: 560px;
+        }
+        #scratchpad-container.scratchpad-has-figures .canvas-wrap {
+            min-height: 500px;
+        }
 
         .canvas-wrap {
             position: relative;
@@ -1748,7 +1797,7 @@
 
             .practice-area {
                 display: grid;
-                grid-template-rows: auto minmax(0, auto) auto minmax(220px, 1fr);
+                grid-template-rows: auto minmax(0, auto) auto minmax(360px, 1fr);
                 grid-template-areas:
                     "header"
                     "question"
@@ -1757,7 +1806,8 @@
                 gap: var(--practice-gap);
                 height: 100%;
                 min-height: 0;
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
                 padding-bottom: 8px;
                 box-sizing: border-box;
             }
@@ -1784,11 +1834,14 @@
             #scratchpad-container {
                 grid-area: canvas;
                 padding: 0 16px 8px;
-                min-height: 220px;
+                min-height: 360px;
                 height: 100%;
                 display: grid;
                 grid-template-rows: auto minmax(0, 1fr);
                 overflow: hidden;
+            }
+            #scratchpad-container.scratchpad-has-figures {
+                min-height: 560px;
             }
 
             .chat-area {
@@ -2056,9 +2109,9 @@
         }
     </style>
 
-    <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/choice_math.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
 </head>
 
 <body>
@@ -2674,6 +2727,68 @@
             };
         }
 
+        function renderVisualSpecInQuestionMedia(container, visualSpec) {
+            const runtime = window.VisualSpecRuntime;
+            if (!container || !runtime || !runtime.isVisualSpecRenderable(visualSpec)) {
+                return false;
+            }
+            if (typeof runtime.isMultiFigureSpec !== 'function' || !runtime.isMultiFigureSpec(visualSpec)) {
+                return false;
+            }
+            container.innerHTML = '';
+            container.style.display = 'block';
+            const cssWidth = Math.max(320, Math.min(container.clientWidth || 720, 960));
+
+            function paintSpec(spec, caption, heightRatio) {
+                if (!spec) return false;
+                if (caption) {
+                    const title = document.createElement('div');
+                    title.className = 'visual-spec-caption';
+                    title.textContent = caption;
+                    container.appendChild(title);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.className = 'visual-spec-canvas';
+                canvas.setAttribute('aria-label', caption || '題目圖形');
+                const cssHeight = Math.max(200, Math.round(cssWidth * heightRatio));
+                canvas.style.width = '100%';
+                canvas.style.maxWidth = '960px';
+                canvas.style.height = cssHeight + 'px';
+                container.appendChild(canvas);
+                return runtime.renderToCanvas(canvas, spec, {
+                    width: cssWidth,
+                    height: cssHeight,
+                    manageCanvasSize: true,
+                    visualOpacity: 1,
+                    backgroundFill: '#ffffff',
+                    padding: 10
+                });
+            }
+
+            const figures = Array.isArray(visualSpec.figures) ? visualSpec.figures : [];
+            const comparisons = Array.isArray(visualSpec.comparisons) ? visualSpec.comparisons : [];
+            if (figures.length && comparisons.length) {
+                const figOk = paintSpec({
+                    kind: 'coordinate_plane_multi_figure',
+                    render_required: true,
+                    figures: figures,
+                    comparisons: [],
+                    x_range: visualSpec.x_range,
+                    y_range: visualSpec.y_range
+                }, '(1) 圖①～④：判斷斜率是 m>0、m=0、m<0，或 m不存在', 0.34);
+                const cmpOk = paintSpec({
+                    kind: 'coordinate_plane_multi_figure',
+                    render_required: true,
+                    figures: [],
+                    comparisons: comparisons,
+                    x_range: visualSpec.x_range,
+                    y_range: visualSpec.y_range
+                }, '(2) 圖①、圖②：比較 L1 的斜率 m1 與 L2 的斜率 m2', 0.42);
+                return figOk && cmpOk;
+            }
+            return paintSpec(visualSpec, '', 0.62);
+        }
+
         function applyQuestionScratchpadBackground(payload) {
             scheduleResizeCanvas();
             const layer = getScratchpadBackgroundLayer();
@@ -2689,16 +2804,36 @@
                 return Promise.resolve(false);
             }
             if (bgInfo.kind === 'visual_spec') {
+                const isMulti = window.VisualSpecRuntime
+                    && typeof window.VisualSpecRuntime.isMultiFigureSpec === 'function'
+                    && window.VisualSpecRuntime.isMultiFigureSpec(bgInfo.visualSpec);
+                const scratchpad = document.getElementById('scratchpad-container');
+                if (scratchpad) {
+                    scratchpad.classList.toggle('scratchpad-has-figures', !!isMulti);
+                    scratchpad.style.display = '';
+                }
+                scheduleResizeCanvas();
+                const drawnSize = resolveScratchpadCssSize();
                 const ok = layer.setVisualSpecBackground(
                     bgInfo.visualSpec,
                     backgroundCtx,
-                    size.cw,
-                    size.ch,
+                    drawnSize.cw,
+                    drawnSize.ch,
                     window.VisualSpecRuntime
                 );
-                if (ok) {
-                    layer.hideQuestionMediaContainer(qmc);
+                if (qmc) {
+                    if (isMulti) {
+                        qmc.innerHTML = '<div class="visual-spec-caption">圖形在下方計算紙，可直接對照作答。</div>';
+                        qmc.style.display = 'block';
+                    } else if (ok) {
+                        layer.hideQuestionMediaContainer(qmc);
+                    }
                 }
+                requestAnimationFrame(() => {
+                    scheduleResizeCanvas();
+                    const later = resolveScratchpadCssSize();
+                    layer.redrawQuestionBackground(backgroundCtx, later.cw, later.ch, window.VisualSpecRuntime);
+                });
                 return Promise.resolve(ok);
             }
             const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
@@ -2816,10 +2951,8 @@
                 if (submitBtn) submitBtn.disabled = true;
             } else {
                 handlePracticeSkillEntry();
-                // 修正：不再直接呼叫 loadQuestion()。
-                // MathJax 準備好後會自動呼叫它。
-                // 如果 MathJax 因故未執行，提供一個備用方案。
-                setTimeout(ensureInitialLoad, 1000); // 1秒後檢查
+                loadQuestion();
+                setTimeout(ensureInitialLoad, 1000);
             }
 
             window.addEventListener('pageshow', (event) => {
@@ -4243,6 +4376,9 @@
                     field_key: String(part.key || part.field_key),
                     label: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
                     prompt: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    group_label: String(part.group_label || ''),
+                    input_type: String(part.input_type || 'text'),
+                    choices: Array.isArray(part.choices) ? part.choices : [],
                     answer_order: part.answer_order ?? index,
                 }));
             if (fromParts.length > 0) return fromParts;
@@ -4295,6 +4431,72 @@
             return [{ label: '', fields: subqs }];
         }
 
+        function figureSlotDisplayLabel(part, fallbackIndex) {
+            const key = String((part && (part.key || part.field_key)) || '');
+            const fig = key.match(/^fig(\d+)$/i);
+            if (fig) {
+                const marks = '①②③④⑤⑥⑦⑧⑨⑩';
+                const index = Number(fig[1]);
+                return marks[index - 1] || `圖${index}`;
+            }
+            const cmp = key.match(/^cmp(\d+)$/i);
+            if (cmp) {
+                const marks = '①②③④⑤⑥⑦⑧⑨⑩';
+                const index = Number(cmp[1]);
+                return `圖${marks[index - 1] || index}`;
+            }
+            return String((part && (part.label || part.prompt)) || key || `欄位 ${fallbackIndex + 1}`);
+        }
+
+        function createMultiPartControl(part, index) {
+            const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
+            const choices = Array.isArray(part.choices) ? part.choices : [];
+            const useSelect = part.input_type === 'select' || choices.length > 0
+                || /^fig\d+$/i.test(fieldKey) || /^cmp\d+$/i.test(fieldKey);
+            let input;
+            if (useSelect) {
+                input = document.createElement('select');
+                const blank = document.createElement('option');
+                blank.value = '';
+                blank.textContent = '請選擇';
+                input.appendChild(blank);
+                const options = choices.length
+                    ? choices
+                    : (/^cmp\d+$/i.test(fieldKey)
+                        ? ['m1>m2', 'm1<m2']
+                        : ['m>0', 'm=0', 'm<0', 'm不存在']);
+                options.forEach((item) => {
+                    const option = document.createElement('option');
+                    option.value = String(item);
+                    option.textContent = String(item);
+                    input.appendChild(option);
+                });
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.autocomplete = 'off';
+            }
+            input.id = `multi-part-input-${fieldKey}`;
+            input.className = 'multi-part-input';
+            input.dataset.partIndex = String(index);
+            input.dataset.fieldKey = fieldKey;
+            input.dataset.answerOrder = String(part.answer_order ?? index);
+            return input;
+        }
+
+        function appendMultiPartField(container, part, index) {
+            const row = document.createElement('div');
+            row.className = 'multi-part-row';
+            const label = document.createElement('label');
+            const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
+            const prompt = figureSlotDisplayLabel(part, index);
+            label.textContent = prompt;
+            label.setAttribute('for', `multi-part-input-${fieldKey}`);
+            row.appendChild(label);
+            row.appendChild(createMultiPartControl(part, index));
+            container.appendChild(row);
+        }
+
         function renderGroupedMultiPartInputs(payload, groups) {
             let globalIndex = 0;
             groups.forEach((group) => {
@@ -4306,26 +4508,10 @@
                     groupLabel.textContent = group.label;
                     groupWrap.appendChild(groupLabel);
                 }
-                const inline = document.createElement('div');
-                inline.className = 'multi-part-inline-fields';
-                group.fields.forEach((sq, index) => {
-                    const fieldWrap = document.createElement('label');
-                    fieldWrap.className = 'multi-part-inline-field';
-                    const fieldKey = String(sq.field_key || sq.key || `part_${index}`);
-                    const prompt = String(sq.prompt || sq.label || `欄位 ${index + 1}`);
-                    fieldWrap.appendChild(document.createTextNode(`${prompt} `));
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.inputMode = 'decimal';
-                    input.id = `multi-part-input-${fieldKey}`;
-                    input.className = 'multi-part-input';
-                    input.dataset.partIndex = String(globalIndex);
-                    input.dataset.fieldKey = fieldKey;
+                group.fields.forEach((sq) => {
+                    appendMultiPartField(groupWrap, sq, globalIndex);
                     globalIndex += 1;
-                    fieldWrap.appendChild(input);
-                    inline.appendChild(fieldWrap);
                 });
-                groupWrap.appendChild(inline);
                 subquestionsContainer.appendChild(groupWrap);
             });
         }
@@ -4349,34 +4535,23 @@
             }
             subquestionsContainer.style.display = 'block';
             subquestionsContainer.classList.add('multi-part-list');
+            const figParts = parts.filter((part) => /^fig\d+$/i.test(part.key));
+            const cmpParts = parts.filter((part) => /^cmp\d+$/i.test(part.key));
+            const autoGroups = (figParts.length && cmpParts.length)
+                ? [
+                    { label: '(1) 看下方計算紙圖①～④，選擇斜率', fields: figParts },
+                    { label: '(2) 看下方計算紙圖①、圖②，比較 m1 與 m2', fields: cmpParts },
+                ]
+                : null;
             const legacySubqs = Array.isArray(payload.subquestions) ? payload.subquestions : [];
-            const groups = legacySubqs.length > 0
-                ? buildMultiPartFieldGroups(payload, legacySubqs)
-                : [{ label: '', fields: parts }];
-            const useGroupedLayout = groups.length > 0
-                && (groups.length > 1 || (groups[0].fields && groups[0].fields.length > 1));
-            if (useGroupedLayout && legacySubqs.length > 0) {
+            const groups = autoGroups
+                || (legacySubqs.length > 0 ? buildMultiPartFieldGroups(payload, legacySubqs) : [{ label: '', fields: parts }]);
+            const useGroupedLayout = groups.length > 1 || (groups[0] && groups[0].fields && groups[0].fields.length > 1);
+            if (useGroupedLayout) {
                 renderGroupedMultiPartInputs(payload, groups);
             } else {
                 parts.forEach((part, index) => {
-                    const row = document.createElement('div');
-                    row.className = 'multi-part-row';
-                    const label = document.createElement('label');
-                    const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
-                    const prompt = String(part.label || part.prompt || fieldKey);
-                    label.textContent = prompt;
-                    label.setAttribute('for', `multi-part-input-${fieldKey}`);
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.id = `multi-part-input-${fieldKey}`;
-                    input.className = 'multi-part-input';
-                    input.dataset.partIndex = String(index);
-                    input.dataset.fieldKey = fieldKey;
-                    input.dataset.answerOrder = String(part.answer_order ?? index);
-                    input.autocomplete = 'off';
-                    row.appendChild(label);
-                    row.appendChild(input);
-                    subquestionsContainer.appendChild(row);
+                    appendMultiPartField(subquestionsContainer, part, index);
                 });
             }
             if (answerInput) {
@@ -4558,7 +4733,6 @@
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
-<<<<<<< Updated upstream
                 const showScratchpad =
                     drawing ||
                     isDrawingQuestion(cq) ||
@@ -4569,10 +4743,6 @@
                 } else {
                     scratchpad.style.display = 'none';
                 }
-=======
-                scratchpad.style.display = '';
-                scheduleResizeCanvas();
->>>>>>> Stashed changes
             }
         }
 

@@ -39,7 +39,10 @@ async ({ skillId, componentId }) => {
   const runtime = window.VisualSpecRuntime;
   const cw = bg.clientWidth || bg.width;
   const ch = bg.clientHeight || bg.height;
-  const region = layer.computeQuestionBackgroundRegion(cw, ch);
+  const isMulti = runtime && runtime.isMultiFigureSpec && runtime.isMultiFigureSpec(data.visual_spec);
+  const region = isMulti && layer.computeFullCanvasRegion
+    ? layer.computeFullCanvasRegion(cw, ch)
+    : layer.computeQuestionBackgroundRegion(cw, ch);
   const ctx = bg.getContext('2d');
   const bounds = layer.getLastRenderBounds() || layer.measureBackgroundContentBounds(ctx, cw, ch);
   const renderMeta = layer.getLastRenderMeta && layer.getLastRenderMeta();
@@ -74,8 +77,8 @@ async ({ skillId, componentId }) => {
     scaleMode: renderMeta ? renderMeta.scaleMode : null,
     validation,
     validationChecks: validation,
-    lowerRightWhite: !isNonWhite(lowerRight),
     upperLeftNonWhite: isNonWhite(upperLeft),
+    lowerRightWhite: isMulti ? true : !isNonWhite(lowerRight),
     multiFigure: runtime ? runtime.isMultiFigureSpec(data.visual_spec) : false,
     panelCount: runtime && runtime.buildMultiFigurePanels ? runtime.buildMultiFigurePanels(data.visual_spec || {}).length : 0,
     gridCols: gridInfo ? gridInfo.cols : null,
@@ -127,7 +130,12 @@ async () => {
   const ch = bg.clientHeight || bg.height;
   const ctx = bg.getContext('2d');
   const bounds = layer.getLastRenderBounds() || layer.measureBackgroundContentBounds(ctx, cw, ch);
-  const region = layer.computeQuestionBackgroundRegion(cw, ch);
+  const stored = layer.getStoredBackground && layer.getStoredBackground();
+  const runtime = window.VisualSpecRuntime;
+  const isMulti = runtime && stored && stored.visualSpec && runtime.isMultiFigureSpec(stored.visualSpec);
+  const region = isMulti && layer.computeFullCanvasRegion
+    ? layer.computeFullCanvasRegion(cw, ch)
+    : layer.computeQuestionBackgroundRegion(cw, ch);
   const validation = bounds ? layer.validateQuadrantBounds(bounds, cw, ch, region.edgePadding, region) : null;
   return {
     hasBg: layer.hasQuestionBackground(),
@@ -254,7 +262,8 @@ def test_4520_renders_six_panel_grid_desktop_and_mobile(browser_env) -> None:
     assert desktop["gridCols"] == 3
     assert desktop["gridRows"] == 2
     assert desktop["scaleMode"] == "cartesian_equal_units"
-    _assert_quadrant_layout(desktop)
+    assert desktop["hasBg"] is True
+    assert desktop["qmcHidden"] is False
     page.close()
 
     mobile = context.new_page()
@@ -267,7 +276,7 @@ def test_4520_renders_six_panel_grid_desktop_and_mobile(browser_env) -> None:
     assert phone["gridCols"] == 2
     assert phone["gridRows"] == 3
     assert phone["panelCount"] == 6
-    _assert_quadrant_layout(phone)
+    assert phone["hasBg"] is True
     mobile.close()
 
 

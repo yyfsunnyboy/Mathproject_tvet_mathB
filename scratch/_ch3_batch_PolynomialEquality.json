@@ -1,0 +1,606 @@
+{
+  "skill": "vh_數學B1_PolynomialEquality",
+  "ok": 4,
+  "total": 4,
+  "results": [
+    {
+      "id": 4611,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4621,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4632,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4717,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "production_published",
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "verified_component_count": 4,
+    "component_count": 4,
+    "coverage": {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "total_examples": 4,
+      "verified_count": 4,
+      "missing_tracker_count": 0,
+      "failed_count": 0,
+      "unsupported_count": 0,
+      "domain_gap_count": 0,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 4,
+      "needs_human_review_count": 0,
+      "unverified_count": 0,
+      "publish_ready": true,
+      "examples": [
+        {
+          "textbook_example_id": 4611,
+          "component_id": "src_4611",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4621,
+          "component_id": "src_4621",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4632,
+          "component_id": "src_4632",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4717,
+          "component_id": "src_4717",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": true,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_PolynomialEquality",
+        "total_examples": 4,
+        "verified_count": 4,
+        "missing_tracker_count": 0,
+        "failed_count": 0,
+        "unsupported_count": 0,
+        "domain_gap_count": 0,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 4,
+        "needs_human_review_count": 0,
+        "unverified_count": 0,
+        "publish_ready": true,
+        "examples": [
+          {
+            "textbook_example_id": 4611,
+            "component_id": "src_4611",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4621,
+            "component_id": "src_4621",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4632,
+            "component_id": "src_4632",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4717,
+            "component_id": "src_4717",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          }
+        ]
+      },
+      "eligible_component_count": 4,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 4,
+      "review_hints": []
+    },
+    "warnings": [],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "component_results": {
+        "src_4611": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4611",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4611",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4611",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4611",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4611",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4621": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4621",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4621",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4621",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4621",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4621",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4632": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4632",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4632",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4632",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4632",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4632",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4717": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4717",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4717",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4717",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4717",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4717",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "component_count": 4,
+      "generator_keys": [
+        "src_4611",
+        "src_4621",
+        "src_4632",
+        "src_4717"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4611,
+          "component_id": "src_4611",
+          "generator_key": "src_4611",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_equality_identity",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_equality_identity",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4611,
+          "source_order": 4611,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4621,
+          "component_id": "src_4621",
+          "generator_key": "src_4621",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "polynomial_equality_identity",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_equality_identity",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4621,
+          "source_order": 4621,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4632,
+          "component_id": "src_4632",
+          "generator_key": "src_4632",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "polynomial_equality_identity",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_equality_identity",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4632,
+          "source_order": 4632,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4717,
+          "component_id": "src_4717",
+          "generator_key": "src_4717",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "polynomial_equality_identity",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "polynomial_equality_identity",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4717,
+          "source_order": 4717,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialEquality.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialEquality.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:41:57.653489+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4611,
+        "component_id": "src_4611",
+        "published_generate_sha256": "1ce74167d23a31c14a042864703ef4ed53b5b42a9430f31d4bbd0b2b92699d48",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\components\\src_4611\\generate.py"
+      },
+      {
+        "textbook_example_id": 4621,
+        "component_id": "src_4621",
+        "published_generate_sha256": "e095d9c88daba616d507d4ff7ab299d5090accc2cc514acd6beb869c782a98aa",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\components\\src_4621\\generate.py"
+      },
+      {
+        "textbook_example_id": 4632,
+        "component_id": "src_4632",
+        "published_generate_sha256": "1dab63cb16421bc93db04eb0eb17a071681c83dc71c57d0f22ccf63cea99f55c",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\components\\src_4632\\generate.py"
+      },
+      {
+        "textbook_example_id": 4717,
+        "component_id": "src_4717",
+        "published_generate_sha256": "cc20b0fe624de4d0c5f3025bd1bce1f0ed67ed2008a11b14132c707d0074b01f",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\components\\src_4717\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "production_published",
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 4,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_PolynomialEquality",
+        "component_count": 4,
+        "generator_keys": [
+          "src_4611",
+          "src_4621",
+          "src_4632",
+          "src_4717"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4611,
+            "component_id": "src_4611",
+            "generator_key": "src_4611",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_equality_identity",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_equality_identity",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4611,
+            "source_order": 4611,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4621,
+            "component_id": "src_4621",
+            "generator_key": "src_4621",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "polynomial_equality_identity",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_equality_identity",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4621,
+            "source_order": 4621,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4632,
+            "component_id": "src_4632",
+            "generator_key": "src_4632",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "polynomial_equality_identity",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_equality_identity",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4632,
+            "source_order": 4632,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4717,
+            "component_id": "src_4717",
+            "generator_key": "src_4717",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "polynomial_equality_identity",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "polynomial_equality_identity",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4717,
+            "source_order": 4717,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_PolynomialEquality\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_PolynomialEquality.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_PolynomialEquality.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_PolynomialEquality",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:41:57.653489+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 0,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4611": {
+          "component_id": "src_4611",
+          "textbook_example_id": 4611,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4621": {
+          "component_id": "src_4621",
+          "textbook_example_id": 4621,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4632": {
+          "component_id": "src_4632",
+          "textbook_example_id": 4632,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4717": {
+          "component_id": "src_4717",
+          "textbook_example_id": 4717,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        }
+      }
+    }
+  }
+}

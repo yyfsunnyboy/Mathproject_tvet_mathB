@@ -1,0 +1,2577 @@
+{
+  "skill": "vh_數學B1_RemainderTheorem",
+  "ok": 24,
+  "total": 24,
+  "results": [
+    {
+      "id": 4638,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4639,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4640,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4641,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4642,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4643,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4644,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4645,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4656,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4657,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4658,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4659,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4664,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4665,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4666,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4667,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4668,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4669,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4670,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    },
+    {
+      "id": 4707,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4708,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4709,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4721,
+      "ok": true,
+      "status": "failed",
+      "error": null
+    },
+    {
+      "id": 4722,
+      "ok": true,
+      "status": "verified",
+      "error": null
+    }
+  ],
+  "publish": {
+    "status": "partial_published",
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "verified_component_count": 20,
+    "component_count": 20,
+    "coverage": {
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "total_examples": 24,
+      "verified_count": 20,
+      "missing_tracker_count": 0,
+      "failed_count": 4,
+      "unsupported_count": 0,
+      "domain_gap_count": 4,
+      "bootstrap_failed_count": 0,
+      "pipeline_failed_count": 0,
+      "published_count": 20,
+      "needs_human_review_count": 0,
+      "unverified_count": 4,
+      "publish_ready": false,
+      "examples": [
+        {
+          "textbook_example_id": 4638,
+          "component_id": "src_4638",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4639,
+          "component_id": "src_4639",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4640,
+          "component_id": "src_4640",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4641,
+          "component_id": "src_4641",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4642,
+          "component_id": "src_4642",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4643,
+          "component_id": "src_4643",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4644,
+          "component_id": "src_4644",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4645,
+          "component_id": "src_4645",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4656,
+          "component_id": "src_4656",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4657,
+          "component_id": "src_4657",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4658,
+          "component_id": "src_4658",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4659,
+          "component_id": "src_4659",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4664,
+          "component_id": "src_4664",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4665,
+          "component_id": "src_4665",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4666,
+          "component_id": "src_4666",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4667,
+          "component_id": "src_4667",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4668,
+          "component_id": "src_4668",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4669,
+          "component_id": "src_4669",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4670,
+          "component_id": "src_4670",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        },
+        {
+          "textbook_example_id": 4707,
+          "component_id": "src_4707",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4707\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4708,
+          "component_id": "src_4708",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4708\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4709,
+          "component_id": "src_4709",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4709\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4721,
+          "component_id": "src_4721",
+          "status": "failed",
+          "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4721\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+          "error_code": "DOMAIN_OPERATION_MISSING"
+        },
+        {
+          "textbook_example_id": 4722,
+          "component_id": "src_4722",
+          "status": "verified",
+          "gencode_error_log": null,
+          "error_code": ""
+        }
+      ]
+    },
+    "eligibility": {
+      "allowed": true,
+      "full_coverage": false,
+      "reason": "eligible",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "fixed_domain_key": "algebra.polynomial",
+      "domain_binding_status": "confirmed_binding",
+      "domain_resolution_source": "confirmed_binding",
+      "resolved_domain_key": "algebra.polynomial",
+      "coverage": {
+        "skill_id": "vh_數學B1_RemainderTheorem",
+        "total_examples": 24,
+        "verified_count": 20,
+        "missing_tracker_count": 0,
+        "failed_count": 4,
+        "unsupported_count": 0,
+        "domain_gap_count": 4,
+        "bootstrap_failed_count": 0,
+        "pipeline_failed_count": 0,
+        "published_count": 20,
+        "needs_human_review_count": 0,
+        "unverified_count": 4,
+        "publish_ready": false,
+        "examples": [
+          {
+            "textbook_example_id": 4638,
+            "component_id": "src_4638",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4639,
+            "component_id": "src_4639",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4640,
+            "component_id": "src_4640",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4641,
+            "component_id": "src_4641",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4642,
+            "component_id": "src_4642",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4643,
+            "component_id": "src_4643",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4644,
+            "component_id": "src_4644",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4645,
+            "component_id": "src_4645",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4656,
+            "component_id": "src_4656",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4657,
+            "component_id": "src_4657",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4658,
+            "component_id": "src_4658",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4659,
+            "component_id": "src_4659",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4664,
+            "component_id": "src_4664",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4665,
+            "component_id": "src_4665",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4666,
+            "component_id": "src_4666",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4667,
+            "component_id": "src_4667",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4668,
+            "component_id": "src_4668",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4669,
+            "component_id": "src_4669",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4670,
+            "component_id": "src_4670",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          },
+          {
+            "textbook_example_id": 4707,
+            "component_id": "src_4707",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4707\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4708,
+            "component_id": "src_4708",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4708\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4709,
+            "component_id": "src_4709",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4709\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4721,
+            "component_id": "src_4721",
+            "status": "failed",
+            "gencode_error_log": "DOMAIN_OPERATION_MISSING: answer_schema_mismatch:\ncomponent_id=src_4721\nproblem_type_id=remainder_theorem_evaluate\ndomain_operation=remainder_theorem_evaluate\nanswer_schema_key=choice_label\nexpected=['correct_label']\nactual=['canonical_form', 'coefficients', 'general_form', 'parts', 'value']",
+            "error_code": "DOMAIN_OPERATION_MISSING"
+          },
+          {
+            "textbook_example_id": 4722,
+            "component_id": "src_4722",
+            "status": "verified",
+            "gencode_error_log": null,
+            "error_code": ""
+          }
+        ]
+      },
+      "eligible_component_count": 20,
+      "domain_blocked_component_count": 0,
+      "integrity_blocked_component_count": 0,
+      "integrity_gate_component_count": 20,
+      "review_hints": []
+    },
+    "warnings": [
+      "V3 coverage incomplete: 20/24 verified, failed examples: 4707, 4708, 4709, 4721",
+      "publish_ready=False: publish will only include verified tracker components, not all textbook_examples"
+    ],
+    "integrity_gate_result": {
+      "passed": true,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_results": {
+        "src_4638": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4638",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4638",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4638",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4638",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4638",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4639": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4639",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4639",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4639",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4639",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4639",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4640": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4640",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4640",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4640",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4640",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4640",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4641": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4641",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4641",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4641",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4641",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4641",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4642": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4642",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4642",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4642",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4642",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4642",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4643": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4643",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4643",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4643",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4643",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4643",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4644": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4644",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4644",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4644",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4644",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4644",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4645": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4645",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4645",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4645",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4645",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4645",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4656": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4656",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4656",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4656",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4656",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4656",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4657": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4657",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4657",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4657",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4657",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4657",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4658": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4658",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4658",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4658",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4658",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4658",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4659": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4659",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4659",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4659",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4659",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4659",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4664": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4664",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4664",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4664",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4664",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4664",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4665": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4665",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4665",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4665",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4665",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4665",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4666": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4666",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4666",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4666",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4666",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4666",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4667": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4667",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4667",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4667",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4667",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4667",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4668": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4668",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4668",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4668",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4668",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4668",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4669": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4669",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4669",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4669",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4669",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4669",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4670": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4670",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4670",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4670",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4670",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4670",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        },
+        "src_4722": {
+          "passed": true,
+          "seed_results": [
+            {
+              "seed": 7,
+              "passed": true,
+              "component_id": "src_4722",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 42,
+              "passed": true,
+              "component_id": "src_4722",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 137,
+              "passed": true,
+              "component_id": "src_4722",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 256,
+              "passed": true,
+              "component_id": "src_4722",
+              "blockers": [],
+              "warnings": []
+            },
+            {
+              "seed": 999,
+              "passed": true,
+              "component_id": "src_4722",
+              "blockers": [],
+              "warnings": []
+            }
+          ],
+          "seeds_checked": 5
+        }
+      },
+      "blockers_summary": []
+    },
+    "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+    "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+    "smoke_status": "passed",
+    "staging_smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "compile": {
+      "status": "compiled",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_count": 20,
+      "generator_keys": [
+        "src_4638",
+        "src_4639",
+        "src_4640",
+        "src_4641",
+        "src_4642",
+        "src_4643",
+        "src_4644",
+        "src_4645",
+        "src_4656",
+        "src_4657",
+        "src_4658",
+        "src_4659",
+        "src_4664",
+        "src_4665",
+        "src_4666",
+        "src_4667",
+        "src_4668",
+        "src_4669",
+        "src_4670",
+        "src_4722"
+      ],
+      "generator_specs": [
+        {
+          "textbook_example_id": 4638,
+          "component_id": "src_4638",
+          "generator_key": "src_4638",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4638,
+          "source_order": 4638,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4639,
+          "component_id": "src_4639",
+          "generator_key": "src_4639",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4639,
+          "source_order": 4639,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4640,
+          "component_id": "src_4640",
+          "generator_key": "src_4640",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4640,
+          "source_order": 4640,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4641,
+          "component_id": "src_4641",
+          "generator_key": "src_4641",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4641,
+          "source_order": 4641,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4642,
+          "component_id": "src_4642",
+          "generator_key": "src_4642",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4642,
+          "source_order": 4642,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4643,
+          "component_id": "src_4643",
+          "generator_key": "src_4643",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4643,
+          "source_order": 4643,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4644,
+          "component_id": "src_4644",
+          "generator_key": "src_4644",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4644,
+          "source_order": 4644,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4645,
+          "component_id": "src_4645",
+          "generator_key": "src_4645",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4645,
+          "source_order": 4645,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4656,
+          "component_id": "src_4656",
+          "generator_key": "src_4656",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4656,
+          "source_order": 4656,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4657,
+          "component_id": "src_4657",
+          "generator_key": "src_4657",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4657,
+          "source_order": 4657,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4658,
+          "component_id": "src_4658",
+          "generator_key": "src_4658",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4658,
+          "source_order": 4658,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4659,
+          "component_id": "src_4659",
+          "generator_key": "src_4659",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "example",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4659,
+          "source_order": 4659,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4664,
+          "component_id": "src_4664",
+          "generator_key": "src_4664",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4664,
+          "source_order": 4664,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4665,
+          "component_id": "src_4665",
+          "generator_key": "src_4665",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4665,
+          "source_order": 4665,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4666,
+          "component_id": "src_4666",
+          "generator_key": "src_4666",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4666,
+          "source_order": 4666,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4667,
+          "component_id": "src_4667",
+          "generator_key": "src_4667",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4667,
+          "source_order": 4667,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4668,
+          "component_id": "src_4668",
+          "generator_key": "src_4668",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4668,
+          "source_order": 4668,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4669,
+          "component_id": "src_4669",
+          "generator_key": "src_4669",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4669,
+          "source_order": 4669,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4670,
+          "component_id": "src_4670",
+          "generator_key": "src_4670",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "quiz",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4670,
+          "source_order": 4670,
+          "sampling_weight": 10.0
+        },
+        {
+          "textbook_example_id": 4722,
+          "component_id": "src_4722",
+          "generator_key": "src_4722",
+          "presentation_mode": "short_answer",
+          "response_mode": "short_answer",
+          "interaction_type": "short_answer",
+          "source_kind": "test",
+          "line_type": "remainder_theorem_evaluate",
+          "answer_type": "expression",
+          "answer_value_type": "expression",
+          "problem_type_id": "remainder_theorem_evaluate",
+          "checker_key": "expression_checker",
+          "equivalence_type": null,
+          "display_order": 4722,
+          "source_order": 4722,
+          "sampling_weight": 10.0
+        }
+      ],
+      "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\__init__.py",
+      "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\component_manifest.json",
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_RemainderTheorem.py"
+    },
+    "promote": {
+      "backup_created": false,
+      "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_RemainderTheorem.py",
+      "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem",
+      "v3_promoted": true
+    },
+    "rollback": null,
+    "production_smoke_error": null,
+    "timestamp": "2026-08-27T07:42:10.241285+00:00",
+    "published_evidence": [
+      {
+        "textbook_example_id": 4638,
+        "component_id": "src_4638",
+        "published_generate_sha256": "8dfa6a47c79e44a989fb9f48feb2a2a1837e877fe671bb2c20c30aa148a07e75",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4638\\generate.py"
+      },
+      {
+        "textbook_example_id": 4639,
+        "component_id": "src_4639",
+        "published_generate_sha256": "db2b14a91db291476b6f39305766bf415ed68462f2bf488b34eca906d0588956",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4639\\generate.py"
+      },
+      {
+        "textbook_example_id": 4640,
+        "component_id": "src_4640",
+        "published_generate_sha256": "3ec0b843920d6abc8e199b569906744a88fdfe78c3a6cf02bb5659c09030f402",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4640\\generate.py"
+      },
+      {
+        "textbook_example_id": 4641,
+        "component_id": "src_4641",
+        "published_generate_sha256": "dadfb15eaae34386bbb24a153c3e79fe2e158b28749ccc80ea310977612621b5",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4641\\generate.py"
+      },
+      {
+        "textbook_example_id": 4642,
+        "component_id": "src_4642",
+        "published_generate_sha256": "663ee3258e46bad891510d180c65d63d6f2ac1a34746d3133e51b0de8096de32",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4642\\generate.py"
+      },
+      {
+        "textbook_example_id": 4643,
+        "component_id": "src_4643",
+        "published_generate_sha256": "b8522b9c6aa9b7ede69f540920a99c3a2a5a2e6686f9eaf15c421c551c3b0265",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4643\\generate.py"
+      },
+      {
+        "textbook_example_id": 4644,
+        "component_id": "src_4644",
+        "published_generate_sha256": "f30a88d2d0449b9237135f9b468c559c8db345a2c962049b95669fc131f5f725",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4644\\generate.py"
+      },
+      {
+        "textbook_example_id": 4645,
+        "component_id": "src_4645",
+        "published_generate_sha256": "78e5939476add143b25306c3895cb259ab9901916a0c1474363786644efa63e7",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4645\\generate.py"
+      },
+      {
+        "textbook_example_id": 4656,
+        "component_id": "src_4656",
+        "published_generate_sha256": "b814115e7d19517b9358a66f1bab41ee21ef96adbb24a45b362f82b1ee45c236",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4656\\generate.py"
+      },
+      {
+        "textbook_example_id": 4657,
+        "component_id": "src_4657",
+        "published_generate_sha256": "b7880d13e2eb001262f3356eca0e9280ad47fdc528ce264b274995517912c7e5",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4657\\generate.py"
+      },
+      {
+        "textbook_example_id": 4658,
+        "component_id": "src_4658",
+        "published_generate_sha256": "c3c53c02ddc090ac5696d02a8c0bf7ef4b320f4ce4d2011c1fc8ef99016b5aed",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4658\\generate.py"
+      },
+      {
+        "textbook_example_id": 4659,
+        "component_id": "src_4659",
+        "published_generate_sha256": "8dd2ebf7a0623e993461cdd12917414a557c51b72ea374ca36ebabae9535c979",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4659\\generate.py"
+      },
+      {
+        "textbook_example_id": 4664,
+        "component_id": "src_4664",
+        "published_generate_sha256": "0e5b82898e2e4642047123ab15460e66d1001f31b38238d71b453ba55091b1d0",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4664\\generate.py"
+      },
+      {
+        "textbook_example_id": 4665,
+        "component_id": "src_4665",
+        "published_generate_sha256": "f283c05f6dd6581b40ee34830927897fa9018b6aac693238470bd44179affc06",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4665\\generate.py"
+      },
+      {
+        "textbook_example_id": 4666,
+        "component_id": "src_4666",
+        "published_generate_sha256": "f5a80470f5189304c2ba6b3f8f625aed2ab4bb64e46fb1de29dc7eefec2247ec",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4666\\generate.py"
+      },
+      {
+        "textbook_example_id": 4667,
+        "component_id": "src_4667",
+        "published_generate_sha256": "ea45dc5352c5391b838143212a7db31cf521b83570d90dc31959c9505a6800f3",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4667\\generate.py"
+      },
+      {
+        "textbook_example_id": 4668,
+        "component_id": "src_4668",
+        "published_generate_sha256": "72a94e3268bdb4c10d974bb579c0c95a94344e8512921d2702894d8c0ade1ccf",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4668\\generate.py"
+      },
+      {
+        "textbook_example_id": 4669,
+        "component_id": "src_4669",
+        "published_generate_sha256": "0c76a5fae9d95f4daf1143cfe3de5512f799f493afe5bf0a203184923b9b1546",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4669\\generate.py"
+      },
+      {
+        "textbook_example_id": 4670,
+        "component_id": "src_4670",
+        "published_generate_sha256": "6fe130d44e5a96900e6ba7d0066bbdcc97a61136297f298a0f381f259fba1b9b",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4670\\generate.py"
+      },
+      {
+        "textbook_example_id": 4722,
+        "component_id": "src_4722",
+        "published_generate_sha256": "f86e5f1b557cee9cfceb0db241b9bb2065245d849b20caefaf86cd2acaa9c3a2",
+        "published_component_path": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\components\\src_4722\\generate.py"
+      }
+    ],
+    "publish": {
+      "status": "partial_published",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "project_root": "C:\\Python\\Mathproject_tvet_mathB",
+      "staging_root": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging",
+      "component_count": 20,
+      "smoke_status": "passed",
+      "staging_smoke_status": "passed",
+      "production_smoke_status": "passed",
+      "compile": {
+        "status": "compiled",
+        "skill_id": "vh_數學B1_RemainderTheorem",
+        "component_count": 20,
+        "generator_keys": [
+          "src_4638",
+          "src_4639",
+          "src_4640",
+          "src_4641",
+          "src_4642",
+          "src_4643",
+          "src_4644",
+          "src_4645",
+          "src_4656",
+          "src_4657",
+          "src_4658",
+          "src_4659",
+          "src_4664",
+          "src_4665",
+          "src_4666",
+          "src_4667",
+          "src_4668",
+          "src_4669",
+          "src_4670",
+          "src_4722"
+        ],
+        "generator_specs": [
+          {
+            "textbook_example_id": 4638,
+            "component_id": "src_4638",
+            "generator_key": "src_4638",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4638,
+            "source_order": 4638,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4639,
+            "component_id": "src_4639",
+            "generator_key": "src_4639",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4639,
+            "source_order": 4639,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4640,
+            "component_id": "src_4640",
+            "generator_key": "src_4640",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4640,
+            "source_order": 4640,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4641,
+            "component_id": "src_4641",
+            "generator_key": "src_4641",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4641,
+            "source_order": 4641,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4642,
+            "component_id": "src_4642",
+            "generator_key": "src_4642",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4642,
+            "source_order": 4642,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4643,
+            "component_id": "src_4643",
+            "generator_key": "src_4643",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4643,
+            "source_order": 4643,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4644,
+            "component_id": "src_4644",
+            "generator_key": "src_4644",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4644,
+            "source_order": 4644,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4645,
+            "component_id": "src_4645",
+            "generator_key": "src_4645",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4645,
+            "source_order": 4645,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4656,
+            "component_id": "src_4656",
+            "generator_key": "src_4656",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4656,
+            "source_order": 4656,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4657,
+            "component_id": "src_4657",
+            "generator_key": "src_4657",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4657,
+            "source_order": 4657,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4658,
+            "component_id": "src_4658",
+            "generator_key": "src_4658",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4658,
+            "source_order": 4658,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4659,
+            "component_id": "src_4659",
+            "generator_key": "src_4659",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "example",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4659,
+            "source_order": 4659,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4664,
+            "component_id": "src_4664",
+            "generator_key": "src_4664",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4664,
+            "source_order": 4664,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4665,
+            "component_id": "src_4665",
+            "generator_key": "src_4665",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4665,
+            "source_order": 4665,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4666,
+            "component_id": "src_4666",
+            "generator_key": "src_4666",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4666,
+            "source_order": 4666,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4667,
+            "component_id": "src_4667",
+            "generator_key": "src_4667",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4667,
+            "source_order": 4667,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4668,
+            "component_id": "src_4668",
+            "generator_key": "src_4668",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4668,
+            "source_order": 4668,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4669,
+            "component_id": "src_4669",
+            "generator_key": "src_4669",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4669,
+            "source_order": 4669,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4670,
+            "component_id": "src_4670",
+            "generator_key": "src_4670",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "quiz",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4670,
+            "source_order": 4670,
+            "sampling_weight": 10.0
+          },
+          {
+            "textbook_example_id": 4722,
+            "component_id": "src_4722",
+            "generator_key": "src_4722",
+            "presentation_mode": "short_answer",
+            "response_mode": "short_answer",
+            "interaction_type": "short_answer",
+            "source_kind": "test",
+            "line_type": "remainder_theorem_evaluate",
+            "answer_type": "expression",
+            "answer_value_type": "expression",
+            "problem_type_id": "remainder_theorem_evaluate",
+            "checker_key": "expression_checker",
+            "equivalence_type": null,
+            "display_order": 4722,
+            "source_order": 4722,
+            "sampling_weight": 10.0
+          }
+        ],
+        "new_house_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\__init__.py",
+        "component_manifest_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\agent_skills_v3\\vh_數學B1_RemainderTheorem\\component_manifest.json",
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_publish_staging\\skills\\vh_數學B1_RemainderTheorem.py"
+      },
+      "promote": {
+        "backup_created": false,
+        "thin_facade_path": "C:\\Python\\Mathproject_tvet_mathB\\skills\\vh_數學B1_RemainderTheorem.py",
+        "v3_skill_dir": "C:\\Python\\Mathproject_tvet_mathB\\agent_skills_v3\\vh_數學B1_RemainderTheorem",
+        "v3_promoted": true
+      },
+      "timestamp": "2026-08-27T07:42:10.241285+00:00",
+      "variation_status": "unsafe_dynamic",
+      "dynamic_count": 0,
+      "static_count": 0,
+      "partially_dynamic_count": 0,
+      "variation_warning": "",
+      "variation_status_by_component": {
+        "src_4638": {
+          "component_id": "src_4638",
+          "textbook_example_id": 4638,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4639": {
+          "component_id": "src_4639",
+          "textbook_example_id": 4639,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4640": {
+          "component_id": "src_4640",
+          "textbook_example_id": 4640,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4641": {
+          "component_id": "src_4641",
+          "textbook_example_id": 4641,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4642": {
+          "component_id": "src_4642",
+          "textbook_example_id": 4642,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4643": {
+          "component_id": "src_4643",
+          "textbook_example_id": 4643,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4644": {
+          "component_id": "src_4644",
+          "textbook_example_id": 4644,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4645": {
+          "component_id": "src_4645",
+          "textbook_example_id": 4645,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4656": {
+          "component_id": "src_4656",
+          "textbook_example_id": 4656,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4657": {
+          "component_id": "src_4657",
+          "textbook_example_id": 4657,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4658": {
+          "component_id": "src_4658",
+          "textbook_example_id": 4658,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4659": {
+          "component_id": "src_4659",
+          "textbook_example_id": 4659,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4664": {
+          "component_id": "src_4664",
+          "textbook_example_id": 4664,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4665": {
+          "component_id": "src_4665",
+          "textbook_example_id": 4665,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4666": {
+          "component_id": "src_4666",
+          "textbook_example_id": 4666,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4667": {
+          "component_id": "src_4667",
+          "textbook_example_id": 4667,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4668": {
+          "component_id": "src_4668",
+          "textbook_example_id": 4668,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4669": {
+          "component_id": "src_4669",
+          "textbook_example_id": 4669,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4670": {
+          "component_id": "src_4670",
+          "textbook_example_id": 4670,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        },
+        "src_4722": {
+          "component_id": "src_4722",
+          "textbook_example_id": 4722,
+          "generated_count": 200,
+          "unique_question_text_count": 0,
+          "unique_correct_answer_count": 0,
+          "unique_display_answer_count": 0,
+          "unique_choices_signature_count": 0,
+          "unique_semantic_answer_count": 0,
+          "unique_parameter_signature_count": 0,
+          "variation_status": "unsafe_dynamic",
+          "error": "Grader self-check failed on correct answer"
+        }
+      }
+    }
+  }
+}
