@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>學生主頁 - 自適應性教學系統</title>
+    <style>
+        :root {
+            --paper-bg: #f7f6f2;
+            --card-bg: #ffffff;
+            --ink: #2f3a32;
+            --ink-soft: #5e6a61;
+            --muted: #6a7569;
+            --green-main: #6b8f71;
+            --green-deep: #55735c;
+            --green-pale: #eef4ea;
+            --chalkboard: #31533a;
+            --chalkboard-dk: #263f2f;
+            --chalk: #f8f7ef;
+            --chalk-dim: rgba(248,247,239,0.72);
+            --border: #dde5d8;
+            --border-soft: #edf1e8;
+            --shadow-card: 0 2px 12px rgba(68,83,70,0.07);
+            --r-md: 10px;
+            --r-lg: 14px;
+            --r-xl: 18px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(180deg, #f7f6f2 0%, #f4f5ef 100%);
+            min-height: 100vh;
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .vhome-shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 16px 18px 40px;
+        }
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            border-radius: var(--r-md);
+            background: #edf6f0;
+            color: #4a7c59;
+            border: 1px solid #b8d9c3;
+            font-size: 14px;
+        }
+        .vhome-hero {
+            background: linear-gradient(135deg, var(--chalkboard) 0%, var(--chalkboard-dk) 100%);
+            border-radius: var(--r-xl);
+            padding: 16px 20px;
+            color: var(--chalk);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            min-height: 88px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(30,60,35,0.18);
+        }
+        .vhome-hero h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .vhome-hero p { color: var(--chalk-dim); font-size: 13.5px; }
+        .vhome-hero-meta {
+            font-size: 13px;
+            color: var(--chalk);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            padding: 6px 12px;
+            white-space: nowrap;
+        }
+        .vhome-section { margin-bottom: 18px; }
+        .vhome-section h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--ink);
+        }
+        .vhome-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--r-lg);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-card);
+        }
+        .vhome-continue {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .vhome-kicker { font-size: 12px; color: var(--green-deep); font-weight: 600; }
+        .vhome-continue h3 { font-size: 18px; margin: 4px 0; }
+        .vhome-muted { color: var(--muted); font-size: 13px; }
+        .btn-go {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--green-deep);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .btn-go:hover { background: var(--chalkboard); }
+        .btn-ghost {
+            display: inline-flex;
+            color: var(--green-deep);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .course-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 16px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 148px;
+        }
+        .course-card:hover { border-color: var(--green-main); background: var(--green-pale); }
+        .course-card h3 { font-size: 20px; }
+        .course-grade { font-size: 12px; color: var(--muted); }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--r-lg);
+            padding: 14px 12px;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+        }
+        .stat-card strong { display: block; font-size: 22px; color: var(--green-deep); }
+        .stat-card span { font-size: 12px; color: var(--muted); }
+        .tools-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tool-link {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-decoration: none;
+            color: var(--ink-soft);
+            font-size: 13px;
+        }
+        .dev-badge {
+            font-size: 11px;
+            background: #e8dcc8;
+            color: #7a5a2b;
+            border-radius: 999px;
+            padding: 1px 7px;
+            margin-left: 4px;
+        }
+        .class-join-mini {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .class-join-mini input {
+            flex: 1;
+            min-width: 140px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .class-join-mini button {
+            background: var(--green-main);
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        @media (max-width: 720px) {
+            .course-grid, .stats-grid { grid-template-columns: 1fr; }
+            .vhome-hero { min-height: 0; }
+            .vhome-hero-meta { white-space: normal; }
+        }
+        @media (min-width: 721px) and (max-width: 900px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    {% include '_student_navbar.html' %}
+    <div class="vhome-shell">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category in ['success', 'warning'] %}
+        <div class="alert">{{ message }}</div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <section class="vhome-hero">
+            <div>
+                <h1>歡迎回來，{{ display_name }}！</h1>
+                <p>今天也一起穩扎穩打，持續進步！</p>
+            </div>
+            {% if primary_class_name %}
+            <div class="vhome-hero-meta">
+                {{ primary_class_name }}
+                {% if primary_seat_no is not none %}｜座號 {{ primary_seat_no }}{% endif %}
+                ｜{{ username }}
+            </div>
+            {% else %}
+            <div class="vhome-hero-meta">{{ username }}</div>
+            {% endif %}
+        </section>
+
+        <section class="vhome-section">
+            <h2>繼續學習</h2>
+            <div class="vhome-card vhome-continue">
+                {% if continue_learning %}
+                <div>
+                    <div class="vhome-kicker">{{ continue_learning.volume or '最近練習' }}</div>
+                    {% if continue_learning.chapter %}
+                    <div class="vhome-muted">{{ continue_learning.chapter }}</div>
+                    {% endif %}
+                    <h3>{{ continue_learning.skill_name }}</h3>
+                    <div class="vhome-muted">最近練習：{{ continue_learning.recent_label }}</div>
+                </div>
+                <a class="btn-go" href="{{ url_for('practice.practice', skill_id=continue_learning.skill_id) }}">繼續練習</a>
+                {% else %}
+                <div>
+                    <h3>開始你的第一次練習</h3>
+                    <p class="vhome-muted">從下面選擇一本教材開始。</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="vhome-section">
+            <h2>我的課程</h2>
+            <div class="course-grid">
+                {% for card in volume_cards %}
+                <a class="course-card" href="{{ url_for('dashboard', view='curriculum', curriculum='vocational', volume=card.volume) }}">
+                    <div class="vhome-kicker">📘 教材</div>
+                    <h3>{{ card.volume }}</h3>
+                    <div class="course-grade">{{ card.grade_label }}</div>
+                    {% if card.recent_skill_name %}
+                    <div class="vhome-muted">目前學習：{{ card.recent_skill_name }}</div>
+                    {% elif card.chapter_hint %}
+                    <div class="vhome-muted">{{ card.chapter_hint }}</div>
+                    {% endif %}
+                    <span class="btn-ghost">進入課程 →</span>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="vhome-section">
+            <h2>本週學習概況</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <strong>{{ weekly_stats.week_count }}</strong>
+                    <span>本週練習題數</span>
+                </div>
+                <div class="stat-card">
+                    <strong>{{ weekly_stats.week_correct_rate_label }}</strong>
+                    <span>本週答對率</span>
+                </div>
+                <div class="stat-card">
+                    <strong>{{ weekly_stats.recent_label }}</strong>
+                    <span>最近練習</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="vhome-section">
+            <h2>我的班級</h2>
+            <div class="vhome-card">
+                {% if class_rows %}
+                    {% for row in class_rows %}
+                    <p><strong>{{ row.name }}</strong></p>
+                    <p class="vhome-muted">授課老師：{{ row.teacher_name }}{% if row.seat_no is not none %}｜座號 {{ row.seat_no }}{% endif %}</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="vhome-muted">尚未加入班級。</p>
+                {% endif %}
+                <form action="{{ url_for('core.join_class') }}" method="POST" class="class-join-mini">
+                    <input type="text" name="class_code" placeholder="班級代碼" required>
+                    <button type="submit">加入其他班級</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="vhome-section">
+            <h2>其他學習工具</h2>
+            <div class="tools-row">
+                <a class="tool-link" href="{{ url_for('core.exam_upload_page') }}">📝 考卷診斷</a>
+                <a class="tool-link" href="{{ url_for('practice.adaptive_selection_page', curriculum='vocational') }}">自選組合練習 <span class="dev-badge">開發中</span></a>
+                <a class="tool-link" href="{{ url_for('adaptive_review') }}">自適應複習 <span class="dev-badge">開發中</span></a>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

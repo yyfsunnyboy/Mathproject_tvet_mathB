@@ -104,9 +104,29 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
     },
     "interval_checker": {
         "runtime_available": True,
-        "answer_types": ["interval", "union_of_intervals", "interval_set"],
+        "answer_types": [
+            "interval",
+            "union_of_intervals",
+            "interval_set",
+            "inequality",
+            "inequality_solution",
+            "real_solution_set",
+        ],
         "equivalence_types": ["interval_equivalence", "interval_set", "inequality_solution_equivalence"],
         "module": "core.checkers.interval_checker",
+    },
+    "inequality_solution_checker": {
+        "runtime_available": True,
+        "answer_types": [
+            "interval",
+            "union_of_intervals",
+            "interval_set",
+            "inequality",
+            "inequality_solution",
+            "real_solution_set",
+        ],
+        "equivalence_types": ["interval_equivalence", "interval_set", "inequality_solution_equivalence"],
+        "module": "core.checkers.inequality_solution_checker",
     },
     "quadrant_checker": {
         "runtime_available": True,

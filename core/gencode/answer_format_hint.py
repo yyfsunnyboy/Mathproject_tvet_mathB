@@ -447,6 +447,7 @@ _CONTRACT_SHAPE_EXAMPLES: dict[str, str] = {
     "text_checker": "向上",
     "solution_set_checker": "-3, 7",
     "interval_checker": "x<-2 or x>5",
+    "inequality_solution_checker": "x<-2 or x>5",
     "choice_label_checker": "",
 }
 

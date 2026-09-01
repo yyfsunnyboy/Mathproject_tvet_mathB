@@ -8,7 +8,16 @@ from typing import Any
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
 
 SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_set"})
-INTERVAL_TYPES = frozenset({"interval", "union_of_intervals", "interval_set"})
+INTERVAL_TYPES = frozenset(
+    {
+        "interval",
+        "union_of_intervals",
+        "interval_set",
+        "inequality",
+        "inequality_solution",
+        "real_solution_set",
+    }
+)
 CLASSIFICATION_TYPES = frozenset({"classification", "quadrant_label", "text_label", "category"})
 NUMERIC_TYPES = frozenset({"numeric", "integer", "decimal", "number"})
 RATIONAL_TYPES = frozenset({"fraction", "rational", "rational_fraction"})
@@ -27,6 +36,9 @@ ANSWER_TYPE_ALIASES: dict[str, str] = {
     "number_set": "solution_set",
     "integer_set": "solution_set",
     "union_of_intervals": "interval",
+    "inequality": "interval",
+    "inequality_solution": "interval",
+    "real_solution_set": "interval",
     "quadrant_label": "classification",
     "text_label": "classification",
     "category": "classification",
@@ -274,12 +286,16 @@ def coerce_correct_answer(value: Any, answer_contract: dict[str, Any] | None = N
             pass
         return value
 
-    if not coord_contract and family != "coordinate_pair" and text.startswith(("[", "(", "{")):
+    if not coord_contract and family not in {"coordinate_pair", "interval"} and text.startswith(("[", "(", "{")):
         try:
             parsed = ast.literal_eval(text)
             if isinstance(parsed, set):
                 return sorted(parsed)
             if isinstance(parsed, (list, tuple)):
+                # A 2-tuple string like "(2,7)" is an open interval in inequality
+                # answers; do not collapse it into a Python list.
+                if len(parsed) == 2:
+                    return value
                 return list(parsed)
         except Exception:
             pass

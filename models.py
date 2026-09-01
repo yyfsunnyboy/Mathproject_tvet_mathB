@@ -683,6 +683,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), nullable=True)
     role = db.Column(db.String(20), default='student')
     real_name = db.Column(db.String(120), nullable=True)
+    curriculum_code = db.Column(db.String(40), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     @property

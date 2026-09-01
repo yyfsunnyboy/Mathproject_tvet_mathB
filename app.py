@@ -475,9 +475,27 @@ def create_app():
         enrolled_classes = current_user.enrolled_classes if current_user.is_authenticated and hasattr(current_user, 'enrolled_classes') else []
 
         view_mode = request.args.get('view', 'curriculum')
-        curriculum = request.args.get('curriculum', 'junior_high')
         volume = request.args.get('volume')
         chapter = request.args.get('chapter')
+
+        from core.vocational_student_home import (
+            build_vocational_home_context,
+            is_vocational_student,
+        )
+
+        voc_student_home = is_vocational_student(current_user)
+        hide_curriculum_switch = bool(voc_student_home)
+
+        if voc_student_home and view_mode == 'curriculum' and not volume and not chapter:
+            session['current_curriculum'] = 'vocational'
+            home_ctx = build_vocational_home_context(current_user)
+            return render_template(
+                'vocational_student_home.html',
+                **home_ctx,
+                enrolled_classes=enrolled_classes,
+            )
+
+        curriculum = request.args.get('curriculum', 'vocational' if voc_student_home else 'junior_high')
         
         progress_records = db.session.query(Progress).filter_by(user_id=current_user.id).all()
         progress_dict = {
@@ -542,7 +560,8 @@ def create_app():
                                      chapter_display=chapter_display,
                                      grouped_sections=grouped_sections,
                                      username=current_user.username,
-                                     enrolled_classes=enrolled_classes)
+                                     enrolled_classes=enrolled_classes,
+                                     hide_curriculum_switch=hide_curriculum_switch)
             elif curriculum and volume:
                 from core.utils import get_chapters_by_curriculum_volume
 
@@ -602,7 +621,8 @@ def create_app():
                                      volume=volume,
                                      chapter_cards=chapter_cards,
                                      username=current_user.username,
-                                     enrolled_classes=enrolled_classes)
+                                     enrolled_classes=enrolled_classes,
+                                     hide_curriculum_switch=hide_curriculum_switch)
             elif curriculum:
                 volumes = get_volumes_by_curriculum(curriculum)
 
@@ -645,7 +665,8 @@ def create_app():
                                      volumes=volumes,
                                      grade_map=grade_map,
                                      username=current_user.username,
-                                     enrolled_classes=enrolled_classes)
+                                     enrolled_classes=enrolled_classes,
+                                     hide_curriculum_switch=hide_curriculum_switch)
         else:
             selected_category = request.args.get('category')
 
@@ -668,7 +689,8 @@ def create_app():
                                      level='skills_in_category',
                                      category=selected_category,
                                      username=current_user.username,
-                                     enrolled_classes=enrolled_classes)
+                                     enrolled_classes=enrolled_classes,
+                                     hide_curriculum_switch=hide_curriculum_switch)
             else:
                 ordered_categories_query = db.session.query(SkillInfo.category)\
                     .join(SkillCurriculum, SkillInfo.skill_id == SkillCurriculum.skill_id)\
@@ -695,7 +717,8 @@ def create_app():
                                      level='categories',
                                      categories=categories,
                                      username=current_user.username,
-                                     enrolled_classes=enrolled_classes)
+                                     enrolled_classes=enrolled_classes,
+                                     hide_curriculum_switch=hide_curriculum_switch)
 
     with app.app_context():
         init_db(db.engine)

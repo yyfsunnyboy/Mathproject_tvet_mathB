@@ -535,7 +535,23 @@ def check_answer(
                 choices = raw_choices
         return bool(check_choice_label(user_answer, correct_answer, choices))
 
-    if checker == "coordinate_pair_checker" or family == "coordinate_pair" or coord_ctx:
+    explicit_coord = checker == "coordinate_pair_checker" or family == "coordinate_pair" or is_coordinate_pair_contract(ac)
+    if explicit_coord:
+        from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
+
+        return check_coordinate_pair_answer(user_answer, correct_answer)
+
+    from core.gencode.inequality_solution_routing import (
+        is_inequality_solution_context,
+        try_grade_inequality_solution,
+    )
+
+    if is_inequality_solution_context(payload if isinstance(payload, dict) else {}, ac, correct_answer):
+        ineq_verdict = try_grade_inequality_solution(user_answer, correct_answer)
+        if ineq_verdict is not None:
+            return ineq_verdict
+
+    if coord_ctx:
         from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
 
         return check_coordinate_pair_answer(user_answer, correct_answer)

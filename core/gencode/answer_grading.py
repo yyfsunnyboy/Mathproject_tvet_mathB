@@ -115,6 +115,7 @@ _CONTRACT_CHECKERS = frozenset(
     {
         "solution_set_checker",
         "interval_checker",
+        "inequality_solution_checker",
         "quadrant_checker",
         "classification_checker",
         "expression_equivalence_checker",
@@ -163,6 +164,8 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
     if equiv in {
         "unordered_solution_set",
         "interval_set",
+        "interval_equivalence",
+        "inequality_solution_equivalence",
         "math_expression_equivalence",
         "expression_equivalence",
         "radical_equivalence",
@@ -180,6 +183,10 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
     if family in {"solution_set", "interval", "classification", "numeric_or_radical", "coordinate_pair", "drawing"}:
         return True
     ca = coerce_correct_answer(refreshed.get("correct_answer", refreshed.get("answer")), ac)
+    from core.gencode.inequality_solution_routing import is_inequality_solution_context
+
+    if is_inequality_solution_context(refreshed, ac if isinstance(ac, dict) else {}, ca):
+        return True
     if isinstance(ca, (list, tuple, set)) and not is_coordinate_pair_contract(ac):
         return True
     return False
@@ -291,7 +298,22 @@ def grade_answer_for_current_question(
         ac.get("answer_equivalence") or ac.get("equivalence") or payload.get("equivalence") or payload.get("equivalence_type") or ""
     ).strip()
     expr_debug: dict[str, Any] | None = None
-    if checker == "free_response_drawing_checker" or answer_type_family(str(ac.get("answer_type", ""))) == "drawing":
+    from core.gencode.inequality_solution_routing import (
+        is_inequality_solution_context,
+        try_grade_inequality_solution,
+    )
+
+    ineq_resolved = False
+    interval_checker_locked = checker in {"interval_checker", "inequality_solution_checker"} or family == "interval"
+    if is_inequality_solution_context(payload, ac if isinstance(ac, dict) else {}, correct_answer):
+        ineq_verdict = try_grade_inequality_solution(user_answer, correct_answer)
+        if ineq_verdict is not None:
+            is_correct = ineq_verdict
+            ineq_resolved = True
+            checker = str(checker or "inequality_solution_checker")
+    if ineq_resolved:
+        pass
+    elif checker == "free_response_drawing_checker" or answer_type_family(str(ac.get("answer_type", ""))) == "drawing":
         from core.checkers.free_response_drawing_checker import (
             check_drawing_answer,
             find_answer_image,
@@ -352,9 +374,14 @@ def grade_answer_for_current_question(
             "analyzer": drawing_result.get("analyzer", ""),
             "raw_analysis_available": bool(drawing_result.get("raw_analysis_available", False)),
         }
-    if checker == "expression_equivalence_checker" or str(
-        ac.get("answer_type", payload.get("answer_type", ""))
-    ) in {"numeric_or_radical", "math_expression", "radical_number", "expression"}:
+    elif (
+        not interval_checker_locked
+        and (
+            checker == "expression_equivalence_checker"
+            or str(ac.get("answer_type", payload.get("answer_type", "")))
+            in {"numeric_or_radical", "math_expression", "radical_number", "expression"}
+        )
+    ):
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_debug
 
         expr_debug = check_expression_equivalence_debug(user_answer, correct_answer)

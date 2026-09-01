@@ -101,6 +101,11 @@ def parse_interval_answer(text: object) -> List[Interval]:
 
 
 def check_interval_answer(user_answer: object, correct_answer: object) -> bool:
+    from core.checkers.inequality_solution_checker import check_inequality_solution_answer
+
+    verdict = check_inequality_solution_answer(user_answer, correct_answer)
+    if verdict is not None:
+        return verdict
     u = parse_interval_answer(user_answer)
     c = parse_interval_answer(correct_answer)
     if not u or not c:
