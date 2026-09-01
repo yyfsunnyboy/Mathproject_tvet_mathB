@@ -115,7 +115,7 @@
                 <div class="operation-grid">
                     <div class="operation-item" style="border-top: 3px solid #3498db;">
                         <h3><i class="bi bi-download" style="color: #3498db;"></i> 備份資料庫</h3>
-                        <p>將目前資料匯出成 Excel（.xlsx），可選擇 core 或 full 匯出。core 含教材、帳號／班級與學習紀錄表。</p>
+                        <p>將目前資料匯出成 Excel（.xlsx），可選擇 core 或 full 匯出。core 含教材、帳號／班級與學習紀錄表。匯出完成後系統會自動檢查資料表、欄位與筆數完整性（✓ 匯出完整性驗證）。</p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST">
                             <input type="hidden" name="action" value="export_db">
                             <div class="form-group">

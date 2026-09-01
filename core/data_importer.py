@@ -15,6 +15,11 @@ from core.backup.backup_registry import (
     get_core_table_names,
     get_table_spec,
 )
+from core.backup.backup_validator import (
+    check_manifest_import_allowed,
+    is_metadata_sheet,
+    parse_manifest_from_workbook,
+)
 from core.secret_policy import should_skip_system_setting_restore
 from models import (
     db,
@@ -917,7 +922,23 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
         results.append(f"偵測到 models: {len(mapping)}")
         results.append(f"import mode: {mode}")
 
-        excel_sheet_names = {name.strip() for name in xls.keys()}
+        manifest = parse_manifest_from_workbook(xls)
+        if manifest:
+            allowed, manifest_error = check_manifest_import_allowed(manifest)
+            if not allowed:
+                return False, manifest_error
+            results.append(
+                "INFO: manifest backup_format_version="
+                f"{manifest.get('backup_format_version', 'unknown')}"
+            )
+        else:
+            results.append("INFO: legacy backup detected (no __manifest__ sheet)")
+
+        excel_sheet_names = {
+            name.strip()
+            for name in xls.keys()
+            if not is_metadata_sheet(name)
+        }
         required_core = set(get_core_required_table_names())
         optional_core = set(get_core_optional_table_names())
 
@@ -955,6 +976,9 @@ def import_excel_to_db(filepath, mode="core", confirm_full_clear="", strict_mode
 
         for sheet_name, df in ordered_sheets:
             sheet_name_clean = sheet_name.strip()
+            if is_metadata_sheet(sheet_name_clean):
+                results.append(f"INFO: skipped metadata sheet {sheet_name_clean}")
+                continue
             if allowed_tables is not None and sheet_name_clean not in allowed_tables:
                 results.append(f"INFO: ignored non-core sheet {sheet_name_clean}")
                 continue

@@ -230,6 +230,12 @@ from core.backup.backup_registry import (
     get_core_table_names,
     get_core_textbook_clear_specs,
 )
+from core.backup.backup_validator import (
+    ExportValidationError,
+    build_and_validate_export,
+    collect_source_counts,
+    ensure_dataframe_columns,
+)
 from core.data_importer import import_excel_to_db, FULL_CONFIRM_TOKEN
 
 from config import Config
@@ -1789,22 +1795,21 @@ def db_maintenance():
         core_clear_confirm = str(request.form.get('core_clear_confirm', '')).strip()
 
         if action == 'export_db':
-            output = io.BytesIO()
-            writer = pd.ExcelWriter(output, engine='openpyxl')
             inspector = inspect(db.engine)
             detected_tables = inspector.get_table_names()
             core_export_tables = get_core_table_names(include="export")
             current_app.logger.info(f"INFO: CORE_TABLES_EXPORT = {list(core_export_tables)}")
-            # core ?????頛魂??蝞??閰??萄???頦???inspector ?荒???穿???謘曇????
             if mode == 'core':
                 export_tables = list(core_export_tables)
             else:
                 export_tables = list(dict.fromkeys(core_export_tables + detected_tables))
 
+            source_counts = collect_source_counts(db.engine, export_tables)
+            source_database_name = Path(str(db.engine.url.database or "kumon_math.db")).name
+
             frames = {}
             for table in export_tables:
                 try:
-                    # Prefer read_sql_table; fall back to query / empty frame.
                     try:
                         df = pd.read_sql_table(table, db.engine)
                     except Exception:
@@ -1813,6 +1818,7 @@ def db_maintenance():
                         except Exception:
                             df = pd.DataFrame()
                             current_app.logger.warning(f"Export empty fallback sheet: {table}")
+                    df = ensure_dataframe_columns(table, df, db.engine)
                     df = sanitize_dataframe_for_excel(df)
                     if table == "system_settings" and "key" in df.columns:
                         from core.secret_policy import is_secret_setting_key, redact_system_settings_records
@@ -1828,7 +1834,7 @@ def db_maintenance():
                 except Exception:
                     current_app.logger.exception(f"Export failed for table {table}")
                     if mode == 'core':
-                        frames[table] = pd.DataFrame()
+                        frames[table] = ensure_dataframe_columns(table, pd.DataFrame(), db.engine)
                         current_app.logger.warning(f"INFO: core export fallback to empty sheet {table}")
 
             if mode == "core":
@@ -1836,16 +1842,35 @@ def db_maintenance():
                 for note in ensure_core_export_dataframes(frames):
                     current_app.logger.info(note)
 
-            for table, df in frames.items():
-                try:
-                    df.to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
-                except Exception:
-                    current_app.logger.exception(f"Export write failed for table {table}")
-                    if mode == "core":
-                        pd.DataFrame().to_excel(writer, sheet_name=safe_sheet_name(table), index=False)
-            writer.close()
-            output.seek(0)
-            return send_file(output, download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", as_attachment=True)
+            try:
+                payload, export_summary = build_and_validate_export(
+                    mode=mode,
+                    engine=db.engine,
+                    frames=frames,
+                    expected_tables=export_tables,
+                    source_counts=source_counts,
+                    source_database_name=source_database_name,
+                    logger=current_app.logger,
+                )
+            except ExportValidationError as exc:
+                current_app.logger.error("Export validation failed: %s report=%s", exc, exc.report)
+                flash(f"備份失敗：{exc}", "danger")
+                return redirect(url_for('core.db_maintenance'))
+
+            session["last_db_maintenance_op"] = "export"
+            flash(
+                "備份完成："
+                f"{export_summary.get('table_count', len(export_tables))} 張資料表，"
+                f"共 {int(export_summary.get('total_rows', 0)):,} 筆資料，"
+                "完整性驗證通過 ✓",
+                "success",
+            )
+            output = io.BytesIO(payload)
+            return send_file(
+                output,
+                download_name=f"kumon_math_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+                as_attachment=True,
+            )
 
         elif action == 'clear_all_data':
             inspector = inspect(db.engine)
