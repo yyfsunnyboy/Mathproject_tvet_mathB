@@ -18,6 +18,7 @@ EXPECTED_EXPORT_ORDER = [
     "skills_info",
     "skill_curriculum",
     "questions",
+    "practice_attempts",
     "progress",
     "student_abilities",
     "quiz_attempts",
@@ -68,6 +69,7 @@ def test_account_clear_delete_order():
     names = [s.table_name for s in get_core_account_clear_specs()]
     assert names == get_core_full_clear_table_names()
     assert names.index("progress") < names.index("class_students")
+    assert names.index("practice_attempts") < names.index("class_students")
     assert names.index("class_students") < names.index("classes") < names.index("users")
     assert "skills_info" not in names
     assert "textbook_examples" not in names
@@ -88,6 +90,7 @@ def test_restore_order_users_before_classes_before_learning():
     order = get_core_table_names(include="import")
     assert order.index("users") < order.index("classes") < order.index("class_students")
     assert order.index("class_students") < order.index("progress")
+    assert order.index("questions") < order.index("practice_attempts") < order.index("progress")
     assert order.index("questions") < order.index("quiz_attempts")
     assert order.index("skills_info") < order.index("student_abilities")
     assert order.index("progress") < order.index("textbook_examples")
@@ -107,6 +110,7 @@ def test_account_ref_checks_cover_user_fks():
         "node_competency",
         "learning_diagnosis",
         "b4_chap2_visibility_audit_logs",
+        "practice_attempts",
         "class_students",
         "classes",
     ):

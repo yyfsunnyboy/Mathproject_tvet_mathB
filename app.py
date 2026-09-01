@@ -299,42 +299,36 @@ def create_app():
     @app.route('/teacher/analysis')
     @login_required
     def teacher_analysis():
-        if current_user.role != 'teacher':
+        from core.teacher_analysis_service import (
+            build_analysis_page_context,
+            parse_time_range,
+            teacher_analysis_authorized,
+        )
+
+        if not teacher_analysis_authorized(current_user):
             flash('權限不足，無法存取教師頁面', 'warning')
             return redirect(url_for('dashboard'))
 
-        # 1. 取得錯題排行榜 (最多人做錯的題目)
-        # 統計 MistakeLog 中，相同的 question_content 出現的次數
-        from models import MistakeLog, LearningDiagnosis, User  # 確保導入模型
-        
-        top_mistakes = db.session.query(
-            MistakeLog.question_content,
-            func.count(MistakeLog.id).label('count')
-        ).group_by(MistakeLog.question_content)\
-        .order_by(text('count DESC'))\
-        .limit(10).all()
+        time_range = parse_time_range(request.args.get('range'))
+        ctx = build_analysis_page_context(
+            current_user,
+            class_id=request.args.get('class_id', type=int),
+            student_id=request.args.get('student_id', type=int),
+            volume=request.args.get('volume'),
+            chapter=request.args.get('chapter'),
+            skill_unit=request.args.get('skill_unit'),
+            time_range=time_range,
+            search=request.args.get('q', ''),
+            sort=request.args.get('sort', 'seat'),
+            order=request.args.get('order', 'asc'),
+        )
 
-        # 整理成 Chart.js 需要的格式
-        mistake_labels = []
-        mistake_data = []
-        for q_content, count in top_mistakes:
-            # 截斷過長的題目文字以利顯示
-            display_text = q_content[:20] + "..." if len(q_content) > 20 else q_content
-            mistake_labels.append(display_text)
-            mistake_data.append(count)
+        if ctx.get('error') == 'not_found':
+            flash('找不到指定的班級或學生，或您沒有檢視權限。', 'warning')
+            return redirect(url_for('teacher_analysis', range=time_range.key))
 
-        # 2. 取得學生學習診斷分析結果
-        # 關聯 User 表以獲取學生姓名
-        diagnoses = db.session.query(LearningDiagnosis, User.username)\
-            .join(User, LearningDiagnosis.student_id == User.id)\
-            .order_by(LearningDiagnosis.created_at.desc())\
-            .all()
-
-        return render_template('teacher_analysis.html', 
-                               username=current_user.username,
-                               mistake_labels=mistake_labels,
-                               mistake_data=mistake_data,
-                               diagnoses=diagnoses)
+        ctx['username'] = current_user.username
+        return render_template('teacher_analysis.html', **ctx)
 
     @app.route('/test_api_key', methods=["POST"])
     def test_api_key():

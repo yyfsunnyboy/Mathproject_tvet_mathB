@@ -82,6 +82,7 @@ from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
     persist_b4_chap2_deterministic_answer_event,
     persist_b4_chap2_gated_event,
 )
+from core.practice_attempt_service import persist_practice_attempt
 # Phase 6N: Chap2 chapter mode integration
 from core.vocational_math_b4.services.b4_chap2_chapter_mode import (
     B4_CHAP2_CHAPTER_SKILL_IDS,
@@ -365,12 +366,21 @@ def _log_practice_page_entry(skill_id: str, switch_info: dict[str, Any]) -> None
     )
 
 
+def _build_attempt_context(user_answer: Any, current_question: dict[str, Any] | None) -> dict[str, Any]:
+    return {
+        "user_answer": user_answer,
+        "current_question": current_question if isinstance(current_question, dict) else None,
+    }
+
+
 def _emit_check_result(
     question_uid: str,
     skill_id: str,
     result: dict[str, Any],
     *,
     record_progress: bool = True,
+    attempt_context: dict[str, Any] | None = None,
+    skip_practice_attempt: bool = False,
 ) -> Any:
     uid = str(question_uid or session.get("current_question_uid", "")).strip()
     # Only mark the question as answered in the store when the result carries a
@@ -389,7 +399,25 @@ def _emit_check_result(
         try:
             update_progress(current_user.id, skill_id, bool(out.get("correct", False)))
         except Exception:
-            pass
+            current_app.logger.exception(
+                "[PRACTICE] update_progress failed student_id=%s skill_id=%s",
+                getattr(current_user, "id", None),
+                skill_id,
+            )
+    if (
+        record_progress
+        and _is_gradable
+        and not skip_practice_attempt
+        and out.get("correct") is not None
+    ):
+        ctx = attempt_context if isinstance(attempt_context, dict) else {}
+        persist_practice_attempt(
+            skill_id=skill_id,
+            is_correct=bool(out.get("correct", False)),
+            user_answer=ctx.get("user_answer"),
+            current_question=ctx.get("current_question"),
+            question_uid=uid or None,
+        )
     return jsonify(out)
 
 
@@ -2050,6 +2078,7 @@ def check_answer():
         user_ans = normalize_table_student_answer(user_ans, current)
     if not isinstance(user_ans, (list, tuple, dict)):
         user_ans = _normalize_choice_alias_answer(user_ans, current)
+    attempt_ctx = _build_attempt_context(user_ans, current)
     check_mode = str(
         current.get("check_mode") or current.get("grading_mode") or ""
     ).strip().lower()
@@ -2099,6 +2128,7 @@ def check_answer():
                 "correct": is_correct_choice,
                 "result": "答對了！" if is_correct_choice else f"答錯了，正確答案是 {correct_display}",
             },
+            attempt_context=attempt_ctx,
         )
 
     # Deterministic auto-checked route (including Chap3 runtime skills with mixed review entries).
@@ -2133,6 +2163,7 @@ def check_answer():
                 "correct": is_correct_det,
                 "result": "答對了！" if is_correct_det else f"答錯了，正確答案是 {correct_ans}",
             },
+            attempt_context=attempt_ctx,
         )
     
     # [Fix] Instant Upload Special Handling
@@ -2149,6 +2180,7 @@ def check_answer():
                 "correct": is_correct,
                 "result": "答對了！" if is_correct else f"答錯了，正確答案是 {correct_ans}",
             },
+            attempt_context=attempt_ctx,
         )
 
     from core.checkers.free_response_drawing_checker import is_drawing_answer_contract
@@ -2196,6 +2228,7 @@ def check_answer():
                 skill_id,
                 contract_result,
                 record_progress=should_record,
+                attempt_context=_build_attempt_context(drawing_user_answer, current),
             )
 
     # Phase 7B: Chap3 deterministic checker logic
@@ -2227,6 +2260,7 @@ def check_answer():
                 "correct": is_correct_chap3,
                 "result": "答對了！" if is_correct_chap3 else f"答錯了，正確答案是 {correct_ans}",
             },
+            attempt_context=attempt_ctx,
         )
 
     # Phase 6C-1R2: deterministic Chap2 BEFORE legacy skills.<id> import (get_skill loads module).
@@ -2273,7 +2307,10 @@ def check_answer():
                 checker_name=chap2_checker_name,
             )
         except Exception:
-            pass
+            current_app.logger.exception(
+                "[Chap2 Phase6C1R2] visibility audit persist failed skill_id=%s",
+                skill_id,
+            )
 
         return _emit_check_result(
             question_uid,
@@ -2282,6 +2319,8 @@ def check_answer():
                 "correct": is_correct_chap2,
                 "result": "答對了！" if is_correct_chap2 else f"答錯了，正確答案是 {correct_ans}",
             },
+            attempt_context=attempt_ctx,
+            skip_practice_attempt=True,
         )
 
     # ?寞???嚗?敶ａ?
@@ -2329,6 +2368,7 @@ def check_answer():
             skill_id,
             result,
             record_progress=should_record,
+            attempt_context=attempt_ctx,
         )
 
     mod = get_skill(skill_id)
@@ -2589,7 +2629,7 @@ def check_answer():
             current_app.logger.error(f"?芸?閮??舫?憭望?: {e}")
             db.session.rollback()
 
-    return _emit_check_result(question_uid, skill_id, result)
+    return _emit_check_result(question_uid, skill_id, result, attempt_context=attempt_ctx)
 
 
 @practice_bp.route('/debug/clear_practice_state', methods=['POST', 'GET'])

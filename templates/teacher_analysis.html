@@ -1,213 +1,484 @@
 <!--
-=============================================================================
-模組名稱 (Module Name): templates/teacher_analysis.html
-功能說明 (Description): 教師分析儀表板
-後端呼叫 (Backend Call): app.py -> teacher_analysis
-版本資訊 (Version): V2.0
-更新日期 (Date): 2026-01-13
-維護團隊 (Maintainer): Math AI Project Team
-=============================================================================
+模組: templates/teacher_analysis.html — 教師端學生學習分析 (四層導航)
 -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>學生學習分析報告 - 自適應性教學系統</title>
-    <!-- 引入 Chart.js -->
+    <title>學生學習分析 - 自適應性教學系統</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
         }
-
-        /* Navbar 樣式改由 _admin_navbar.html 提供，避免頁面覆寫 */
-
-        .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
+        .container { max-width: 1400px; margin: 24px auto; padding: 0 20px 40px; }
+        .page-header { margin-bottom: 20px; }
+        .page-header h1 { font-size: 1.6rem; color: #2c3e50; margin-bottom: 6px; }
+        .page-header p { color: #666; font-size: 0.95rem; }
+        .toolbar {
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            justify-content: space-between; margin-bottom: 18px;
         }
-
+        .range-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+        .range-tabs a {
+            padding: 6px 14px; border-radius: 6px; text-decoration: none;
+            font-size: 0.88rem; color: #555; background: #fff; border: 1px solid #dde3ea;
+        }
+        .range-tabs a.active { background: #3d5a80; color: #fff; border-color: #3d5a80; }
+        .breadcrumb { font-size: 0.9rem; color: #666; margin-bottom: 14px; }
+        .breadcrumb a { color: #3d5a80; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span.sep { margin: 0 6px; color: #aaa; }
+        .back-link {
+            display: inline-block; margin-bottom: 16px; color: #3d5a80;
+            text-decoration: none; font-size: 0.92rem;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .summary-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px; margin-bottom: 22px;
+        }
+        .summary-card {
+            background: #fff; border-radius: 10px; padding: 16px 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .summary-card .label { font-size: 0.82rem; color: #888; margin-bottom: 4px; }
+        .summary-card .value { font-size: 1.35rem; font-weight: 600; color: #2c3e50; }
         .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
+            background: #fff; border-radius: 12px; padding: 22px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
         }
-
-        h2, h3 {
-            color: #2c3e50;
-            margin-top: 0;
+        .card h2, .card h3 { color: #2c3e50; margin-bottom: 12px; font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+        th, td { border: 1px solid #e8ecef; padding: 10px 12px; text-align: left; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; }
+        tr:nth-child(even) { background: #fcfcfc; }
+        tr.clickable { cursor: pointer; }
+        tr.clickable:hover { background: #eef3f8; }
+        .empty-state { text-align: center; color: #999; padding: 32px 16px; }
+        .status-attention { color: #c0392b; }
+        .status-watch { color: #d68910; }
+        .status-normal { color: #27ae60; }
+        .status-low-sample { color: #2980b9; }
+        .status-none { color: #95a5a6; }
+        .reason-hint { display: block; font-size: 0.78rem; color: #888; margin-top: 2px; }
+        .result-correct { background: #eafaf1; }
+        .result-wrong { background: #fdedec; }
+        .attention-box {
+            background: #fff8f6; border: 1px solid #f5c6cb; border-radius: 10px;
+            padding: 16px 18px; margin-bottom: 18px;
         }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
+        .attention-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid #f0e0e0;
         }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .attention-item:last-child { border-bottom: none; }
+        .attention-item a { color: #3d5a80; text-decoration: none; font-weight: 600; }
+        .search-bar { margin-bottom: 14px; }
+        .search-bar input {
+            padding: 8px 12px; border: 1px solid #dde3ea; border-radius: 6px;
+            width: 240px; max-width: 100%;
         }
-
-        table, th, td {
-            border: 1px solid #e0e0e0;
+        .sort-hint { font-size: 0.82rem; color: #888; margin-bottom: 10px; }
+        .sort-hint a { color: #3d5a80; margin-right: 10px; }
+        .chart-wrap { position: relative; height: 280px; max-width: 900px; }
+        .apr-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        @media (max-width: 768px) {
+            table { display: block; overflow-x: auto; }
         }
-
-        th {
-            background-color: #f8f9fa;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #555;
-        }
-
-        td {
-            padding: 12px;
-            color: #333;
-        }
-
-        tr:nth-child(even) {
-            background-color: #fcfcfc;
-        }
-
-        tr:hover {
-            background-color: #f1f2f6;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85em;
-            background-color: #e3f2fd;
-            color: #1565c0;
-        }
-
     </style>
 </head>
 <body>
     {% include '_admin_navbar.html' %}
 
     <div class="container">
-        <!-- 錯題分析圖表 -->
-        <div class="card">
-            <h3>📉 學生常錯題目分析 (Top 10)</h3>
-            <p style="color: #666; font-size: 0.9em;">統計所有學生在練習過程中錯誤次數最多的題目。</p>
-            <div class="chart-container">
-                <canvas id="mistakeChart"></canvas>
+        <div class="page-header">
+            <h1>📊 學生學習分析</h1>
+            <p>查看各班級與學生的練習進度及學習狀況</p>
+        </div>
+
+        {% macro range_url(extra={}) %}
+            {%- set p = {'range': time_range.key} -%}
+            {%- if class_obj is defined and class_obj -%}
+                {%- set _ = p.update({'class_id': class_obj.id}) -%}
+            {%- endif -%}
+            {%- if student is defined and student -%}
+                {%- set _ = p.update({'student_id': student.id}) -%}
+            {%- endif -%}
+            {%- if view == 'unit' and unit_detail is defined and unit_detail -%}
+                {%- if unit_detail.skill_unit -%}
+                    {%- set _ = p.update({'skill_unit': unit_detail.skill_unit}) -%}
+                {%- elif unit_detail.volume and unit_detail.chapter -%}
+                    {%- set _ = p.update({'volume': unit_detail.volume, 'chapter': unit_detail.chapter}) -%}
+                {%- endif -%}
+            {%- endif -%}
+            {%- set _ = p.update(extra) -%}
+            {{ url_for('teacher_analysis', **p) }}
+        {% endmacro %}
+
+        {% macro unit_url(row) %}
+            {%- if row.kind == 'curriculum' -%}
+                {{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, volume=row.volume, chapter=row.chapter, range=time_range.key) }}
+            {%- else -%}
+                {{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, skill_unit=row.skill_id, range=time_range.key) }}
+            {%- endif -%}
+        {% endmacro %}
+
+        <div class="toolbar">
+            <div class="range-tabs">
+                <a href="{{ range_url() }}" class="{% if time_range.key == 'all' %}active{% endif %}">全部</a>
+                <a href="{{ range_url({'range': 'today'}) }}" class="{% if time_range.key == 'today' %}active{% endif %}">今天</a>
+                <a href="{{ range_url({'range': '7d'}) }}" class="{% if time_range.key == '7d' %}active{% endif %}">近 7 天</a>
+                <a href="{{ range_url({'range': '30d'}) }}" class="{% if time_range.key == '30d' %}active{% endif %}">近 30 天</a>
             </div>
         </div>
 
-        <!-- 學習診斷列表 -->
+        {% if view != 'home' %}
+        <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="{{ url_for('teacher_analysis', range=time_range.key) }}">學生分析</a>
+            {% if view in ('class', 'student', 'unit') and class_obj %}
+                <span class="sep">&gt;</span>
+                {% if view == 'class' %}
+                    <span>{{ class_obj.name }}</span>
+                {% else %}
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key) }}">{{ class_obj.name }}</a>
+                {% endif %}
+            {% endif %}
+            {% if view in ('student', 'unit') and student %}
+                <span class="sep">&gt;</span>
+                {% if view == 'student' %}
+                    <span>{{ student_overview.display_name if student_overview else student.username }}</span>
+                {% else %}
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, range=time_range.key) }}">{{ student_overview.display_name if student_overview else student.username }}</a>
+                {% endif %}
+            {% endif %}
+            {% if view == 'unit' and unit_detail %}
+                <span class="sep">&gt;</span>
+                <span>{{ unit_detail.unit_label }}</span>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        {% if back_url %}
+        <a class="back-link" href="{{ url_for(back_url.endpoint, **back_url.params) }}">← 返回上一層</a>
+        {% endif %}
+
+        {# ========== HOME: 班級列表 ========== #}
+        {% if view == 'home' %}
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="label">班級數</div>
+                <div class="value">{{ summary.class_count }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">學生總數</div>
+                <div class="value">{{ summary.student_count }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">篩選期間練習題數</div>
+                <div class="value">{{ summary.practice_total }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">篩選期間平均正確率</div>
+                <div class="value">
+                    {% if summary.practice_accuracy is not none %}
+                        {{ (summary.practice_accuracy * 100)|round|int }}%
+                    {% else %}—{% endif %}
+                </div>
+            </div>
+        </div>
+
         <div class="card">
-            <h3>📋 學生個別學習診斷報告</h3>
-            <p style="color: #666; font-size: 0.9em;">條列所有學生的 AI 學習診斷紀錄。</p>
-            
-            {% if diagnoses|length == 0 %}
-                <p style="text-align: center; color: #999; padding: 20px;">目前尚無診斷資料。</p>
+            <h2>班級列表</h2>
+            {% if class_rows|length == 0 %}
+                <p class="empty-state">目前尚無可檢視的班級。</p>
             {% else %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 15%;">日期</th>
-                            <th style="width: 15%;">學生姓名</th>
-                            <th style="width: 25%;">系統推薦單元</th>
-                            <th style="width: 45%;">AI 診斷評語</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for diag, student_name in diagnoses %}
-                        <tr>
-                            <td>{{ diag.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                            <td><strong>{{ student_name }}</strong></td>
-                            <td>
-                                {% if diag.recommended_unit %}
-                                    <span class="tag">{{ diag.recommended_unit }}</span>
-                                {% else %}
-                                    <span style="color: #999;">-</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div style="max-height: 80px; overflow-y: auto; font-size: 0.95em; line-height: 1.5;">
-                                    {{ diag.ai_comment }}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>班級</th>
+                        <th>學生人數</th>
+                        <th>練習題數</th>
+                        <th>答對率</th>
+                        <th>學習時間</th>
+                        <th>需關注</th>
+                        <th>最後活動</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in class_rows %}
+                    <tr class="clickable" onclick="location.href='{{ url_for('teacher_analysis', class_id=row.class.id, range=time_range.key) }}'">
+                        <td><strong>{{ row.class.name }}</strong></td>
+                        <td>{{ row.student_count }}</td>
+                        <td>{{ row.stats.total }}</td>
+                        <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
+                        <td>—</td>
+                        <td>{{ row.attention_count }}</td>
+                        <td>
+                            {% if row.stats.last_activity %}
+                                {{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% endif %}
         </div>
-    </div>
+        {% endif %}
 
-    <script>
-        // 準備從後端傳來的資料
-        const labels = {{ mistake_labels | tojson }};
-        const dataValues = {{ mistake_data | tojson }};
+        {# ========== CLASS: 學生列表 ========== #}
+        {% if view == 'class' %}
+        <div class="page-header">
+            <h1>{{ class_obj.name }}</h1>
+            <p>學生學習狀況</p>
+        </div>
 
-        const ctx = document.getElementById('mistakeChart').getContext('2d');
-        const mistakeChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '錯誤人次/次數',
-                    data: dataValues,
-                    backgroundColor: 'rgba(231, 76, 60, 0.6)',
-                    borderColor: 'rgba(231, 76, 60, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: '錯誤次數'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: '題目 (簡略)'
-                        }
-                    }
+        <div class="summary-cards">
+            <div class="summary-card"><div class="label">學生</div><div class="value">{{ class_overview.student_count }} 人</div></div>
+            <div class="summary-card"><div class="label">練習題數</div><div class="value">{{ class_overview.stats.total }}</div></div>
+            <div class="summary-card"><div class="label">答對</div><div class="value">{{ class_overview.stats.correct }}</div></div>
+            <div class="summary-card"><div class="label">答錯</div><div class="value">{{ class_overview.stats.incorrect }}</div></div>
+            <div class="summary-card"><div class="label">正確率</div><div class="value">{% if class_overview.stats.accuracy is not none %}{{ (class_overview.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">需關注</div><div class="value">{{ class_overview.attention_count }}</div></div>
+        </div>
+
+        <div class="attention-box">
+            <h3>🚨 需要關注</h3>
+            {% if attention_students|length == 0 %}
+                <p class="empty-state" style="padding:12px;">目前沒有符合「建議介入」條件的學生。</p>
+            {% else %}
+                {% for row in attention_students %}
+                <div class="attention-item">
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name }}</a>
+                    <span>{{ row.status.reason }}</span>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <form class="search-bar" method="get" action="{{ url_for('teacher_analysis') }}">
+                <input type="hidden" name="class_id" value="{{ class_obj.id }}">
+                <input type="hidden" name="range" value="{{ time_range.key }}">
+                <input type="text" name="q" value="{{ search }}" placeholder="搜尋學生姓名…">
+                <button type="submit" style="margin-left:8px;padding:8px 14px;">搜尋</button>
+            </form>
+            <p class="sort-hint">
+                排序：
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='seat') }}">座號</a>
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='name') }}">姓名</a>
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='total', order='desc') }}">題數</a>
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='incorrect', order='desc') }}">答錯</a>
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='accuracy') }}">正確率</a>
+                <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, range=time_range.key, q=search, sort='last_activity', order='desc') }}">最近活動</a>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>學生</th><th>練習題數</th><th>答對</th><th>答錯</th>
+                        <th>正確率</th><th>學習時間</th><th>最近練習</th><th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in student_rows %}
+                    <tr class="clickable" onclick="location.href='{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}'">
+                        <td>
+                            {% if row.seat_no is not none %}<div style="color:#555;font-size:0.95em;">{{ row.seat_no }} {{ row.display_name }}</div>{% else %}<strong>{{ row.display_name }}</strong>{% endif %}
+                            <span class="reason-hint">{{ row.student.username }}</span>
+                        </td>
+                        <td>{{ row.stats.total }}</td>
+                        <td>{{ row.stats.correct }}</td>
+                        <td>{{ row.stats.incorrect }}</td>
+                        <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
+                        <td>—</td>
+                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td class="{{ row.status.css }}">
+                            {{ row.status.label }}
+                            <span class="reason-hint">{{ row.status.reason }}</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" class="empty-state">此班級目前尚無學生。</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {# ========== STUDENT: 單元列表 ========== #}
+        {% if view == 'student' %}
+        <div class="page-header">
+            <h1>👤 {{ student_overview.display_name }}</h1>
+            <p>學習概況</p>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card"><div class="label">練習題數</div><div class="value">{{ student_overview.stats.total }}</div></div>
+            <div class="summary-card"><div class="label">答對</div><div class="value">{{ student_overview.stats.correct }}</div></div>
+            <div class="summary-card"><div class="label">答錯</div><div class="value">{{ student_overview.stats.incorrect }}</div></div>
+            <div class="summary-card"><div class="label">正確率</div><div class="value">{% if student_overview.stats.accuracy is not none %}{{ (student_overview.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if student_overview.stats.last_activity %}{{ student_overview.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
+        </div>
+
+        <div class="card">
+            <h2>各單元學習狀況</h2>
+            {% if unit_rows|length == 0 %}
+                <p class="empty-state">此學生目前尚無練習紀錄。</p>
+            {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>單元</th><th>練習題數</th><th>答對</th><th>答錯</th>
+                        <th>正確率</th><th>最近練習</th><th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in unit_rows %}
+                    <tr class="clickable" onclick="location.href='{{ unit_url(row) }}'">
+                        <td><strong>{{ row.unit_label }}</strong></td>
+                        <td>{{ row.stats.total }}</td>
+                        <td>{{ row.stats.correct }}</td>
+                        <td>{{ row.stats.incorrect }}</td>
+                        <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
+                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%m/%d') }}{% else %}—{% endif %}</td>
+                        <td class="{{ row.status.css }}">{{ row.status.label }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# ========== UNIT: 單元詳細 ========== #}
+        {% if view == 'unit' and unit_detail %}
+        <div class="page-header">
+            <h1>{{ student_overview.display_name }}</h1>
+            <p>{{ unit_detail.unit_label }}</p>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card"><div class="label">練習題數</div><div class="value">{{ unit_detail.stats.total }}</div></div>
+            <div class="summary-card"><div class="label">答對</div><div class="value">{{ unit_detail.stats.correct }}</div></div>
+            <div class="summary-card"><div class="label">答錯</div><div class="value">{{ unit_detail.stats.incorrect }}</div></div>
+            <div class="summary-card"><div class="label">正確率</div><div class="value">{% if unit_detail.stats.accuracy is not none %}{{ (unit_detail.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if unit_detail.stats.last_activity %}{{ unit_detail.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
+        </div>
+
+        {% if unit_detail.latest_apr is not none %}
+        <p class="apr-note">最新預估掌握度：<strong>{{ (unit_detail.latest_apr * 100)|round|int }}%</strong>（自適應模型估計，不等於實際正確率）</p>
+        {% endif %}
+
+        <div class="card">
+            <h2>技能分析</h2>
+            {% if unit_detail.skills|length == 0 %}
+                <p class="empty-state">此單元尚無足夠資料進行分析。</p>
+            {% else %}
+            <table>
+                <thead>
+                    <tr><th>技能</th><th>題數</th><th>答對</th><th>答錯</th><th>正確率</th><th>狀態</th></tr>
+                </thead>
+                <tbody>
+                    {% for sk in unit_detail.skills %}
+                    <tr>
+                        <td>{{ sk.skill_name }}</td>
+                        <td>{{ sk.stats.total }}</td>
+                        <td>{{ sk.stats.correct }}</td>
+                        <td>{{ sk.stats.incorrect }}</td>
+                        <td>{% if sk.stats.accuracy is not none %}{{ (sk.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
+                        <td class="{{ sk.status.css }}">{{ sk.status.label }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>學習趨勢</h2>
+            {% if unit_detail.trend.has_enough %}
+            <div class="chart-wrap">
+                <canvas id="trendChart"></canvas>
+            </div>
+            {% elif unit_detail.trend.labels|length == 1 %}
+            <p>目前僅有單日資料：{{ unit_detail.trend.labels[0] }} — {{ unit_detail.trend.chart_values[0] }}%</p>
+            <p class="empty-state" style="padding:12px;">目前資料不足以形成趨勢圖（至少需要 2 個日期）。</p>
+            {% else %}
+            <p class="empty-state">目前尚無趨勢資料。</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>最近練習紀錄</h2>
+            {% if unit_detail.recent_attempts|length == 0 %}
+                <p class="empty-state">此單元尚無練習紀錄。</p>
+            {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>時間</th><th>技能</th><th>題型</th><th>作答</th><th>正解</th><th>結果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for att in unit_detail.recent_attempts %}
+                    <tr class="{% if att.is_correct %}result-correct{% else %}result-wrong{% endif %}">
+                        <td>{% if att.created_at %}{{ att.created_at.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td>{{ att.skill_name or '—' }}{% if att.question_text %}<div class="reason-hint">{{ att.question_text[:120] }}</div>{% endif %}</td>
+                        <td>{{ att.problem_type or '—' }}{% if att.apr is not none %} <small>(APR {{ (att.apr * 100)|round|int }}%)</small>{% endif %}</td>
+                        <td>{{ att.user_answer if att.user_answer is not none else '—' }}</td>
+                        <td>{{ att.expected_answer if att.expected_answer is not none else '—' }}</td>
+                        <td>{% if att.is_correct %}✓ 正確{% else %}✗ 錯誤{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        {% if unit_detail.trend.has_enough %}
+        <script>
+        (function() {
+            const labels = {{ unit_detail.trend.labels | tojson }};
+            const values = {{ unit_detail.trend.chart_values | tojson }};
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '正確率 (%)',
+                        data: values,
+                        borderColor: '#3d5a80',
+                        backgroundColor: 'rgba(61, 90, 128, 0.1)',
+                        fill: true,
+                        tension: 0.25,
+                        pointRadius: 4
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                // 顯示完整題目 (如果有的話，這裡目前只拿到截斷的，但可以優化)
-                                return tooltipItems[0].label;
-                            }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: v => v + '%' },
+                            title: { display: true, text: '正確率' }
                         }
-                    }
+                    },
+                    plugins: { legend: { display: false } }
                 }
-            }
-        });
-    </script>
+            });
+        })();
+        </script>
+        {% endif %}
+        {% endif %}
+    </div>
 </body>
 </html>

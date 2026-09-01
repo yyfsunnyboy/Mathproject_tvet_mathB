@@ -495,6 +495,10 @@ def init_db(engine, *, seed_bridges: bool = False):
 
     # Users
     add_column_if_not_exists('users', 'role', 'TEXT DEFAULT "student"')
+    add_column_if_not_exists('users', 'real_name', 'TEXT')
+    add_column_if_not_exists('users', 'curriculum_code', 'TEXT')
+    add_column_if_not_exists('users', 'is_active', 'BOOLEAN DEFAULT 1')
+    add_column_if_not_exists('class_students', 'seat_no', 'INTEGER')
 
     # Skills Info
     add_column_if_not_exists('skills_info', 'suggested_prompt_1', 'TEXT')
@@ -617,6 +621,34 @@ def init_db(engine, *, seed_bridges: bool = False):
         "ON b4_chap2_visibility_audit_logs (created_at)"
     )
     c.execute('''
+        CREATE TABLE IF NOT EXISTS practice_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            class_id INTEGER,
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT,
+            question_uid TEXT,
+            question_text TEXT,
+            user_answer TEXT,
+            expected_answer TEXT,
+            is_correct BOOLEAN NOT NULL,
+            source TEXT NOT NULL,
+            session_id TEXT,
+            difficulty REAL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (id),
+            FOREIGN KEY (class_id) REFERENCES classes (id)
+        )
+    ''')
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_practice_attempts_student_created "
+        "ON practice_attempts (student_id, created_at)"
+    )
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_practice_attempts_student_skill_created "
+        "ON practice_attempts (student_id, skill_id, created_at)"
+    )
+    c.execute('''
         CREATE TABLE IF NOT EXISTS node_competency (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -650,6 +682,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=True)
     role = db.Column(db.String(20), default='student')
+    real_name = db.Column(db.String(120), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     @property
@@ -921,6 +954,7 @@ class ClassStudent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_id = db.Column(db.Integer, db.ForeignKey('classes.id', ondelete='CASCADE'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    seat_no = db.Column(db.Integer, nullable=True)
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class MistakeNotebookEntry(db.Model):
@@ -1203,6 +1237,25 @@ class QuizAttempt(db.Model):
     
     # 關聯 (方便從 User 反查)
     user = db.relationship('User', backref=db.backref('quiz_attempts', lazy=True))
+
+
+class PracticeAttempt(db.Model):
+    """Canonical per-question student answer history (general practice PHASE A+)."""
+    __tablename__ = 'practice_attempts'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    class_id = db.Column(db.Integer, db.ForeignKey('classes.id'), nullable=True)
+    skill_id = db.Column(db.String(120), nullable=False, index=True)
+    problem_type_id = db.Column(db.String(120), nullable=True)
+    question_uid = db.Column(db.String(64), nullable=True)
+    question_text = db.Column(db.Text, nullable=True)
+    user_answer = db.Column(db.Text, nullable=True)
+    expected_answer = db.Column(db.Text, nullable=True)
+    is_correct = db.Column(db.Boolean, nullable=False)
+    source = db.Column(db.String(40), nullable=False)
+    session_id = db.Column(db.String(64), nullable=True)
+    difficulty = db.Column(db.Float, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
 
 
 class StudentAbility(db.Model):

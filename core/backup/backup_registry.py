@@ -50,6 +50,7 @@ CORE_TABLE_SPECS: tuple[BackupTableSpec, ...] = (
     BackupTableSpec("skill_curriculum", "sqlalchemy", True, True, True, 20, 250, True, "table_full", None),
     BackupTableSpec("questions", "sqlalchemy", True, True, True, 25, 215, False, "table_full", None),
     # --- Account-dependent learning records (FK -> users) ---
+    BackupTableSpec("practice_attempts", "sqlalchemy", True, True, True, 29, 102, False, "student_fk", "student_id"),
     # quiz_attempts / student_abilities are table_full so questions/skills_info can wipe cleanly (FK).
     BackupTableSpec("progress", "sqlalchemy", True, True, True, 30, 110, False, "student_fk", "user_id"),
     BackupTableSpec("student_abilities", "sqlalchemy", True, True, True, 31, 100, False, "table_full", None),
@@ -76,6 +77,8 @@ ACCOUNT_REF_CHECKS: tuple[tuple[str, str, str, str, bool], ...] = (
     ("class_students", "class_id", "classes", "id", False),
     ("class_students", "student_id", "users", "id", False),
     ("progress", "user_id", "users", "id", False),
+    ("practice_attempts", "student_id", "users", "id", False),
+    ("practice_attempts", "class_id", "classes", "id", True),
     ("student_abilities", "user_id", "users", "id", False),
     ("quiz_attempts", "user_id", "users", "id", False),
     ("quiz_attempts", "question_id", "questions", "id", False),

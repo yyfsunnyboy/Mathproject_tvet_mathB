@@ -33,6 +33,7 @@ from models import (
     NodeCompetency,
     LearningDiagnosis,
     B4Chap2VisibilityAuditLog,
+    PracticeAttempt,
     SkillInfo,
     SkillCurriculum,
     TextbookExample,
@@ -301,6 +302,7 @@ def _augment_core_workbook_missing_parents(xls: dict) -> list[str]:
         ("node_competency", "user_id"),
         ("learning_diagnosis", "student_id"),
         ("b4_chap2_visibility_audit_logs", "student_id"),
+        ("practice_attempts", "student_id"),
     )
     for sheet, col in user_fk_cols:
         if sheet in xls and col in xls[sheet].columns:
@@ -386,6 +388,7 @@ def get_model_mapping():
     mapping["node_competency"] = NodeCompetency
     mapping["learning_diagnosis"] = LearningDiagnosis
     mapping["b4_chap2_visibility_audit_logs"] = B4Chap2VisibilityAuditLog
+    mapping["practice_attempts"] = PracticeAttempt
     mapping["skills_info"] = SkillInfo
     mapping["skill_curriculum"] = SkillCurriculum
     mapping["textbook_examples"] = TextbookExample
