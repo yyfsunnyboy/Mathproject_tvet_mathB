@@ -1,0 +1,116 @@
+﻿{
+  "total": 142,
+  "ok": 141,
+  "fail": 1,
+  "samples": [
+    {
+      "i": 1,
+      "p": "oleObject1.bin",
+      "latex": "$  {\\overline{ OA }}  $"
+    },
+    {
+      "i": 2,
+      "p": "oleObject10.bin",
+      "latex": "$ +60{}^\\circ  $"
+    },
+    {
+      "i": 3,
+      "p": "oleObject100.bin",
+      "latex": "$ -1100{}^\\circ  $"
+    },
+    {
+      "i": 4,
+      "p": "oleObject101.bin",
+      "latex": "$ -\\frac { 21\\pi  } { 4 } $"
+    },
+    {
+      "i": 5,
+      "p": "oleObject102.bin",
+      "latex": "$ 2\\pi =360{}^\\circ  $"
+    },
+    {
+      "i": 6,
+      "p": "oleObject103.bin",
+      "latex": "$ = $"
+    },
+    {
+      "i": 7,
+      "p": "oleObject104.bin",
+      "latex": "$ -360{}^\\circ  $"
+    },
+    {
+      "i": 8,
+      "p": "oleObject105.bin",
+      "latex": "$ = $"
+    },
+    {
+      "i": 9,
+      "p": "oleObject106.bin",
+      "latex": "$ +360{}^\\circ  $"
+    },
+    {
+      "i": 10,
+      "p": "oleObject107.bin",
+      "latex": "$ 2\\pi =360{}^\\circ  $"
+    },
+    {
+      "i": 11,
+      "p": "oleObject108.bin",
+      "latex": "$ = $"
+    },
+    {
+      "i": 12,
+      "p": "oleObject109.bin",
+      "latex": "$ -360{}^\\circ  $"
+    },
+    {
+      "i": 13,
+      "p": "oleObject11.bin",
+      "latex": "$  {\\overline{ OA }}  $"
+    },
+    {
+      "i": 14,
+      "p": "oleObject110.bin",
+      "latex": "$ = $"
+    },
+    {
+      "i": 15,
+      "p": "oleObject111.bin",
+      "latex": "$ +360{}^\\circ  $"
+    },
+    {
+      "i": 16,
+      "p": "oleObject112.bin",
+      "latex": "$ 1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ  $"
+    },
+    {
+      "i": 17,
+      "p": "oleObject113.bin",
+      "latex": "$ 270{}^\\circ -360{}^\\circ =-90{}^\\circ  $"
+    },
+    {
+      "i": 18,
+      "p": "oleObject114.bin",
+      "latex": "$ -1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ  $"
+    },
+    {
+      "i": 19,
+      "p": "oleObject115.bin",
+      "latex": "$ -20{}^\\circ  $"
+    },
+    {
+      "i": 20,
+      "p": "oleObject116.bin",
+      "latex": "$ -20{}^\\circ +360{}^\\circ =340{}^\\circ  $"
+    }
+  ],
+  "fails": [
+    {
+      "i": 54,
+      "p": "oleObject19.bin",
+      "err": "empty_latex",
+      "latex": "",
+      "valid": false
+    }
+  ]
+}

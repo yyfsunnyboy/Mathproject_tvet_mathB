@@ -62,6 +62,7 @@ def find_reference_docx_in_storage(project_root: str | os.PathLike[str]) -> Path
         path
         for path in base.glob("*.docx")
         if REFERENCE_BASENAME_FRAGMENT in path.stem
+        and not path.stem.endswith("_Latex")
     )
     return matches[0] if matches else None
 

@@ -1,0 +1,352 @@
+[
+  {
+    "i": 1,
+    "p": "word/embeddings/oleObject1.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 13,
+    "p": "word/embeddings/oleObject11.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 35,
+    "p": "word/embeddings/oleObject13.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 54,
+    "p": "word/embeddings/oleObject19.bin",
+    "err": null,
+    "valid": false,
+    "nodes": 10,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ]
+    ]
+  },
+  {
+    "i": 55,
+    "p": "word/embeddings/oleObject2.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 66,
+    "p": "word/embeddings/oleObject3.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 88,
+    "p": "word/embeddings/oleObject5.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 110,
+    "p": "word/embeddings/oleObject7.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  },
+  {
+    "i": 116,
+    "p": "word/embeddings/oleObject75.bin",
+    "err": null,
+    "valid": false,
+    "nodes": 12,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ]
+    ]
+  },
+  {
+    "i": 132,
+    "p": "word/embeddings/oleObject9.bin",
+    "err": null,
+    "valid": true,
+    "nodes": 18,
+    "tags": [
+      [
+        0,
+        255,
+        null
+      ],
+      [
+        1,
+        1,
+        "MtLine"
+      ],
+      [
+        2,
+        3,
+        "MtTmpl"
+      ],
+      [
+        3,
+        1,
+        "MtLine"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ],
+      [
+        4,
+        2,
+        "MtChar"
+      ]
+    ]
+  }
+]

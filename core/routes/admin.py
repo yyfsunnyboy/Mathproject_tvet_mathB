@@ -1733,6 +1733,7 @@ def admin_textbook_importer_v3():
             publisher=request.form.get('publisher'),
             grade=request.form.get('grade'),
             volume=request.form.get('volume'),
+            overwrite_existing=request.form.get('overwrite_existing'),
         )
 
         return jsonify(_admin_v3_json_safe(payload)), status_code

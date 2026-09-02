@@ -305,6 +305,55 @@
             color: #95a5a6;
             font-style: italic;
         }
+
+        .overwrite-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(44, 62, 80, 0.45);
+            z-index: 1050;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        .overwrite-modal-backdrop.is-visible {
+            display: flex;
+        }
+
+        .overwrite-modal {
+            width: min(520px, 100%);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+            padding: 1.5rem;
+        }
+
+        .overwrite-modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #c0392b;
+            margin-bottom: 0.75rem;
+        }
+
+        .overwrite-modal-body {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            white-space: pre-line;
+            margin-bottom: 1.25rem;
+            line-height: 1.55;
+        }
+
+        .overwrite-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .overwrite-modal-actions .btn {
+            min-width: 7rem;
+        }
     </style>
 </head>
 
@@ -378,8 +427,12 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="volume">冊別 (Volume)</label>
-                            <input type="text" class="form-control" id="volume" name="volume" placeholder="例如: 數學B1"
-                                value="數學B1" required>
+                            <select class="form-select" id="volume" name="volume" required>
+                                <option value="數學B1">數學B1</option>
+                                <option value="數學B2" selected>數學B2</option>
+                                <option value="數學B3">數學B3</option>
+                                <option value="數學B4">數學B4</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -430,6 +483,9 @@
                     </div>
 
                     <div class="source-pairs-panel" id="sourcePairsPanel" aria-live="polite">
+                        <div class="text-secondary small mb-2" id="volumeConfirmStep2">
+                            本次匯入冊別：<strong id="volumeConfirmLabelStep2">數學B2</strong>
+                        </div>
                         <div class="fw-semibold text-secondary small mb-2">教材配對結果</div>
                         <div class="source-pairs-summary is-neutral" id="sourcePairsSummary">
                             請上傳同一章的多組 Word 與 PDF 教材檔案。
@@ -450,8 +506,11 @@
                     <p class="text-secondary mb-2">
                         系統將同時解析 Word 結構與 PDF 視覺內容，完成公式轉換、題目整理、圖片配對與資料建立。
                     </p>
-                    <p class="text-secondary mb-4">
+                    <p class="text-secondary mb-2">
                         本次將依教材配對清單逐組解析，完成後統一寫入所選課綱與冊別。
+                    </p>
+                    <p class="text-secondary mb-4" id="volumeConfirmStep3">
+                        本次匯入冊別：<strong id="volumeConfirmLabelStep3">數學B2</strong>
                     </p>
 
                     <div id="batchProgressPanel" class="batch-progress-panel" aria-live="polite">
@@ -559,6 +618,20 @@
         </div>
     </div>
 
+    <div class="overwrite-modal-backdrop" id="overwriteModal" role="dialog" aria-modal="true"
+        aria-labelledby="overwriteModalTitle" aria-hidden="true">
+        <div class="overwrite-modal">
+            <div class="overwrite-modal-title" id="overwriteModalTitle">
+                <i class="bi bi-exclamation-triangle-fill"></i> 發現同名教材
+            </div>
+            <div class="overwrite-modal-body" id="overwriteModalBody"></div>
+            <div class="overwrite-modal-actions">
+                <button type="button" class="btn btn-outline-secondary" id="overwriteCancelBtn">取消</button>
+                <button type="button" class="btn btn-danger" id="overwriteConfirmBtn">覆蓋既有教材</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (function () {
@@ -581,6 +654,13 @@
             };
 
             const form = document.getElementById('importerV3Form');
+            const volumeSelect = document.getElementById('volume');
+            const volumeConfirmLabelStep2 = document.getElementById('volumeConfirmLabelStep2');
+            const volumeConfirmLabelStep3 = document.getElementById('volumeConfirmLabelStep3');
+            const overwriteModal = document.getElementById('overwriteModal');
+            const overwriteModalBody = document.getElementById('overwriteModalBody');
+            const overwriteCancelBtn = document.getElementById('overwriteCancelBtn');
+            const overwriteConfirmBtn = document.getElementById('overwriteConfirmBtn');
             const docxInput = document.getElementById('textbook_docx');
             const pdfInput = document.getElementById('textbook_pdf');
             const docxFilenameDisplay = document.getElementById('docxFilenameDisplay');
@@ -838,6 +918,16 @@
                         '</div>'
                     );
                 }).join('');
+            }
+
+            function updateVolumeConfirmDisplay() {
+                var selectedVolume = volumeSelect ? volumeSelect.value : '';
+                if (volumeConfirmLabelStep2) {
+                    volumeConfirmLabelStep2.textContent = selectedVolume;
+                }
+                if (volumeConfirmLabelStep3) {
+                    volumeConfirmLabelStep3.textContent = selectedVolume;
+                }
             }
 
             function updateSelectedFilenames() {
@@ -1143,28 +1233,58 @@
                 alert(message);
             }
 
-            function handleFormSubmit(event) {
-                event.preventDefault();
+            function hideOverwriteModal() {
+                if (!overwriteModal) return;
+                overwriteModal.classList.remove('is-visible');
+                overwriteModal.setAttribute('aria-hidden', 'true');
+            }
 
+            function showOverwriteModal(payload) {
+                if (!overwriteModal || !overwriteModalBody) return;
+                var volumeLabel = (payload && payload.volume) ? payload.volume : (volumeSelect ? volumeSelect.value : '');
+                var files = (payload && payload.files) ? payload.files : [];
+                var lines = [volumeLabel + ' 已存在同名教材：'];
+                files.forEach(function (name) {
+                    lines.push(name);
+                });
+                lines.push('');
+                lines.push('是否覆蓋既有教材？');
+                overwriteModalBody.textContent = lines.join('\n');
+                overwriteModal.classList.add('is-visible');
+                overwriteModal.setAttribute('aria-hidden', 'false');
+            }
+
+            function buildUploadFormData(completePairs, overwriteExisting) {
+                var formData = new FormData(form);
+                formData.delete('textbook_docx[]');
+                formData.delete('textbook_pdf[]');
+                formData.delete('overwrite_existing');
+
+                completePairs.forEach(function (pair) {
+                    formData.append('textbook_docx[]', pair.docx, pair.docx.name);
+                    formData.append('textbook_pdf[]', pair.pdf, pair.pdf.name);
+                });
+
+                if (overwriteExisting) {
+                    formData.append('overwrite_existing', 'true');
+                }
+                return formData;
+            }
+
+            function submitSourceUpload(overwriteExisting) {
                 var validation = validateSourcePairs();
                 if (!validation.allComplete || validation.hasChapterMismatch) {
                     alert('請確保所有教材組皆已完成 DOCX 與 PDF 配對，且章節標記一致。');
                     return;
                 }
 
+                hideOverwriteModal();
                 resetProcessingPanel();
                 showProcessingPanel();
                 submitBtn.disabled = true;
                 setProcessingStep('file_validation', 'active');
 
-                var formData = new FormData(form);
-                formData.delete('textbook_docx[]');
-                formData.delete('textbook_pdf[]');
-
-                validation.completePairs.forEach(function (pair) {
-                    formData.append('textbook_docx[]', pair.docx, pair.docx.name);
-                    formData.append('textbook_pdf[]', pair.pdf, pair.pdf.name);
-                });
+                var formData = buildUploadFormData(validation.completePairs, !!overwriteExisting);
 
                 fetch(form.action, {
                     method: 'POST',
@@ -1185,6 +1305,13 @@
                         if (!result.ok || !result.data || !result.data.ok) {
                             hideProcessingPanel();
                             setImportButtonState();
+                            if (result.data &&
+                                result.data.error === 'source_file_already_exists' &&
+                                result.data.requires_confirmation &&
+                                !overwriteExisting) {
+                                showOverwriteModal(result.data);
+                                return;
+                            }
                             showBackendValidationError(result.data || {});
                             return;
                         }
@@ -1200,11 +1327,39 @@
                     });
             }
 
+            function handleFormSubmit(event) {
+                event.preventDefault();
+                submitSourceUpload(false);
+            }
+
             docxInput.addEventListener('change', handleSourceChange);
             pdfInput.addEventListener('change', handleSourceChange);
+            if (volumeSelect) {
+                volumeSelect.addEventListener('change', updateVolumeConfirmDisplay);
+            }
+            if (overwriteCancelBtn) {
+                overwriteCancelBtn.addEventListener('click', function () {
+                    hideOverwriteModal();
+                    setImportButtonState();
+                });
+            }
+            if (overwriteConfirmBtn) {
+                overwriteConfirmBtn.addEventListener('click', function () {
+                    submitSourceUpload(true);
+                });
+            }
+            if (overwriteModal) {
+                overwriteModal.addEventListener('click', function (event) {
+                    if (event.target === overwriteModal) {
+                        hideOverwriteModal();
+                        setImportButtonState();
+                    }
+                });
+            }
             form.addEventListener('submit', handleFormSubmit);
 
             resetProcessingPanel();
+            updateVolumeConfirmDisplay();
             handleSourceChange();
 
             window.textbookImporterV3 = {
@@ -1218,7 +1373,10 @@
                 setProcessingStep: setProcessingStep,
                 setBatchProgress: setBatchProgress,
                 renderValidationResult: renderValidationResult,
-                renderImportResult: renderImportResult
+                renderImportResult: renderImportResult,
+                showOverwriteModal: showOverwriteModal,
+                hideOverwriteModal: hideOverwriteModal,
+                submitSourceUpload: submitSourceUpload
             };
         })();
     </script>

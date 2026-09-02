@@ -1,0 +1,182 @@
+[
+  {
+    "i": 1,
+    "p": "oleObject1.bin",
+    "latex": "",
+    "valid": false
+  },
+  {
+    "i": 2,
+    "p": "oleObject10.bin",
+    "latex": "$ +60° $",
+    "valid": true
+  },
+  {
+    "i": 3,
+    "p": "oleObject100.bin",
+    "latex": "$ -1100° $",
+    "valid": true
+  },
+  {
+    "i": 4,
+    "p": "oleObject101.bin",
+    "latex": "$ -\\frac { 21π } { 4 } $",
+    "valid": true
+  },
+  {
+    "i": 5,
+    "p": "oleObject102.bin",
+    "latex": "$ 2π=360° $",
+    "valid": true
+  },
+  {
+    "i": 6,
+    "p": "oleObject103.bin",
+    "latex": "$ = $",
+    "valid": true
+  },
+  {
+    "i": 7,
+    "p": "oleObject104.bin",
+    "latex": "$ -360° $",
+    "valid": true
+  },
+  {
+    "i": 8,
+    "p": "oleObject105.bin",
+    "latex": "$ = $",
+    "valid": true
+  },
+  {
+    "i": 9,
+    "p": "oleObject106.bin",
+    "latex": "$ +360° $",
+    "valid": true
+  },
+  {
+    "i": 10,
+    "p": "oleObject107.bin",
+    "latex": "$ 2π=360° $",
+    "valid": true
+  },
+  {
+    "i": 11,
+    "p": "oleObject108.bin",
+    "latex": "$ = $",
+    "valid": true
+  },
+  {
+    "i": 12,
+    "p": "oleObject109.bin",
+    "latex": "$ -360° $",
+    "valid": true
+  },
+  {
+    "i": 13,
+    "p": "oleObject11.bin",
+    "latex": "",
+    "valid": false
+  },
+  {
+    "i": 14,
+    "p": "oleObject110.bin",
+    "latex": "$ = $",
+    "valid": true
+  },
+  {
+    "i": 15,
+    "p": "oleObject111.bin",
+    "latex": "$ +360° $",
+    "valid": true
+  },
+  {
+    "i": 16,
+    "p": "oleObject112.bin",
+    "latex": "$ 1350°=360°×3+270° $",
+    "valid": true
+  },
+  {
+    "i": 17,
+    "p": "oleObject113.bin",
+    "latex": "$ 270°-360°=-90° $",
+    "valid": true
+  },
+  {
+    "i": 18,
+    "p": "oleObject114.bin",
+    "latex": "$ -1100°=360°×\\left ( { -3 } \\right )-20° $",
+    "valid": true
+  },
+  {
+    "i": 19,
+    "p": "oleObject115.bin",
+    "latex": "$ -20° $",
+    "valid": true
+  },
+  {
+    "i": 20,
+    "p": "oleObject116.bin",
+    "latex": "$ -20°+360°=340° $",
+    "valid": true
+  },
+  {
+    "i": 21,
+    "p": "oleObject117.bin",
+    "latex": "$ -\\frac { 21π } { 4 }=-4π-\\frac { 5π } { 4 }=2π×\\left ( { -2 } \\right )-\\frac { 5π } { 4 } $",
+    "valid": true
+  },
+  {
+    "i": 22,
+    "p": "oleObject118.bin",
+    "latex": "$ -\\frac { 5π } { 4 } $",
+    "valid": true
+  },
+  {
+    "i": 23,
+    "p": "oleObject119.bin",
+    "latex": "$ -\\frac { 5π } { 4 }+2π=\\frac { 3π } { 4 } $",
+    "valid": true
+  },
+  {
+    "i": 24,
+    "p": "oleObject12.bin",
+    "latex": "$ -60° $",
+    "valid": true
+  },
+  {
+    "i": 25,
+    "p": "oleObject120.bin",
+    "latex": "$ 750° $",
+    "valid": true
+  },
+  {
+    "i": 26,
+    "p": "oleObject121.bin",
+    "latex": "$ -1030° $",
+    "valid": true
+  },
+  {
+    "i": 27,
+    "p": "oleObject122.bin",
+    "latex": "$ \\frac { 23π } { 5 } $",
+    "valid": true
+  },
+  {
+    "i": 28,
+    "p": "oleObject123.bin",
+    "latex": "$ 2019° $",
+    "valid": true
+  },
+  {
+    "i": 29,
+    "p": "oleObject124.bin",
+    "latex": "$ 6° $",
+    "valid": true
+  },
+  {
+    "i": 30,
+    "p": "oleObject125.bin",
+    "latex": "$ \\frac { π } { 6 } $",
+    "valid": true
+  }
+]

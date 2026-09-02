@@ -1,0 +1,172 @@
+{
+  "mathtype_ole": 142,
+  "equation_native_ok": 142,
+  "converted_ok": 139,
+  "converted_failed": 3,
+  "failed_reasons": [
+    {
+      "formula_index": 18,
+      "error": "empty_latex",
+      "embedding_path": "word/embeddings/oleObject18.bin"
+    },
+    {
+      "formula_index": 19,
+      "error": "empty_latex",
+      "embedding_path": "word/embeddings/oleObject19.bin"
+    },
+    {
+      "formula_index": 75,
+      "error": "empty_latex",
+      "embedding_path": "word/embeddings/oleObject75.bin"
+    }
+  ],
+  "eq_fields": 5,
+  "eq_converted_ok": 5,
+  "output": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本_Latex.docx",
+  "original_unchanged": true,
+  "phase1_lines": 166,
+  "phase1_inline_latex_markers": 145,
+  "phase1_opened_ok": true,
+  "representatives": [
+    {
+      "formula_index": 10,
+      "category": "degree",
+      "latex": "\\(+60{}^\\circ\\)",
+      "location": {
+        "block_index": 6,
+        "paragraph_index": 6,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 8,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 15,
+      "category": "pi",
+      "latex": "\\(=\\frac { 2\\pi r } { r }\\)",
+      "location": {
+        "block_index": 25,
+        "paragraph_index": 28,
+        "table_index": 2,
+        "row": 1,
+        "col": 0,
+        "run_index": 1,
+        "in_table_cell": true
+      }
+    },
+    {
+      "formula_index": 14,
+      "category": "theta",
+      "latex": "\\(\\theta\\)",
+      "location": {
+        "block_index": 22,
+        "paragraph_index": 24,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 20,
+      "category": "fraction",
+      "latex": "\\(1{}^\\circ =\\frac { 2\\pi } { 360 }=\\frac { \\pi } { 180 }\\)",
+      "location": {
+        "block_index": 29,
+        "paragraph_index": 32,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 1,
+      "category": "overline",
+      "latex": "\\({\\overline{ OA }}\\)",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 2,
+      "category": "paren",
+      "latex": "\\({\\overline{ OA }}\\)",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 12,
+      "category": "superscript",
+      "latex": "\\(-60{}^\\circ\\)",
+      "location": {
+        "block_index": 7,
+        "paragraph_index": 7,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 10,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 65,
+      "category": "subscript",
+      "latex": "\\(\\theta _{ 1 }\\)",
+      "location": {
+        "block_index": 67,
+        "paragraph_index": 114,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      }
+    },
+    {
+      "formula_index": 3,
+      "category": "simple",
+      "latex": "\\({\\overline{ OB }}\\)",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      }
+    }
+  ],
+  "phase1_sample_lines": [
+    "設\\({\\overline{ OA }}\\)為平面上的一線段，以O為旋轉中心，將\\({\\overline{ OA }}\\)旋轉至\\({\\overline{ OB }}\\)位置所成的角，記作\\(\\angle AOB\\)，稱為有向角。其中\\({\\overline{ OA }}\\)稱為\\(\\angle AOB\\)的始邊，\\({\\overline{ OB }}\\)稱為\\(\\angle AOB\\)的終邊，O稱為此有向角的頂點，並規定逆時針方向旋轉所得的角稱為正角，順時針方向旋轉所得的角稱為負角，如圖3。",
+    "例如：圖4，\\({\\overline{ OA }}\\)逆時針轉60°，記作\\(+60{}^\\circ\\)。",
+    "圖5，\\({\\overline{ OA }}\\)順時針轉60°，記作\\(-60{}^\\circ\\)。",
+    "因\\({\\overline{ OA }}\\)可任意旋轉半圈、1圈、2圈…等，所以角度大小沒有限制，如圖6。",
+    "在一圓周上取一段與半徑r等長之弧S，\n則此弧所對之圓心角\\(\\theta\\)稱為1弧度（或稱為1弳），",
+    "一周角\\(=\\frac { 2\\pi r } { r }\\)（弧度）\\(=2\\pi\\)（弧度）",
+    "一周角\\(=\\frac { 2\\pi r } { r }\\)（弧度）\\(=2\\pi\\)（弧度）",
+    "「一周角」以六十分制度量時為360°，以弧度制度量時為\\(2\\pi\\)（弧度），\n由此可得[MATH_PARSE_FAILED_18]，即[MATH_PARSE_FAILED_19]。",
+    "所以\\(1{}^\\circ =\\frac { 2\\pi } { 360 }=\\frac { \\pi } { 180 }\\)（弧度），1（弧度）\\(=\\frac { 180{}^\\circ } { \\pi }\\)。",
+    "\\(\\frac { \\pi } { 6 }\\)",
+    "\\(\\frac { \\pi } { 4 }\\)",
+    "\\(\\frac { \\pi } { 3 }\\)"
+  ]
+}

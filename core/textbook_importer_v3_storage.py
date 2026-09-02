@@ -133,6 +133,38 @@ def _preflight_existing_files(planned_items: list[dict[str, Any]]) -> list[str]:
     return conflicts
 
 
+def _parse_overwrite_flag(value: Any) -> bool:
+    if value is True:
+        return True
+    if value is False or value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _rollback_written_files(
+    written_records: list[dict[str, Any]],
+) -> None:
+    """
+    Roll back this batch only.
+
+    - Newly created files are deleted.
+    - Overwritten files are restored from in-memory backups.
+    - Unrelated files in the directory are never touched.
+    """
+    for record in reversed(written_records):
+        path: Path = record["path"]
+        existed_before = bool(record.get("existed_before"))
+        backup = record.get("backup")
+        try:
+            if existed_before:
+                if backup is not None:
+                    path.write_bytes(backup)
+            elif path.exists():
+                path.unlink()
+        except Exception:
+            pass
+
+
 def save_textbook_source_batch(
     *,
     project_root: Path,
@@ -141,9 +173,13 @@ def save_textbook_source_batch(
     pdf_map: dict[str, FileStorage],
     curriculum: str,
     volume: str,
+    overwrite_existing: Any = False,
 ) -> tuple[dict[str, Any], int]:
+    volume_key = str(volume or "").strip()
+    allow_overwrite = _parse_overwrite_flag(overwrite_existing)
+
     try:
-        destination_dir, relative_dir = resolve_source_directory(project_root, curriculum, volume)
+        destination_dir, relative_dir = resolve_source_directory(project_root, curriculum, volume_key)
     except ValueError as exc:
         error_code = str(exc.args[0]) if exc.args else "invalid_source_directory"
         message = str(exc.args[1]) if len(exc.args) > 1 else "來源目錄解析失敗。"
@@ -162,40 +198,47 @@ def save_textbook_source_batch(
         }, 400
 
     conflicts = _preflight_existing_files(planned_items)
-    if conflicts:
+    if conflicts and not allow_overwrite:
         return {
             "ok": False,
             "error": "source_file_already_exists",
+            "requires_confirmation": True,
             "message": "部分教材來源檔案已存在，未執行本次上傳。",
             "files": conflicts,
+            "volume": volume_key,
+            "target_directory": relative_dir,
         }, 409
 
     destination_dir.mkdir(parents=True, exist_ok=True)
 
-    written_files: list[Path] = []
+    written_records: list[dict[str, Any]] = []
     saved_pairs: list[dict[str, Any]] = []
     files_saved = 0
 
     try:
         for item in planned_items:
-            for upload_key, dest_key, rel_key, filename_key in (
-                ("docx_upload", "docx_dest", "docx_rel", "docx_filename"),
-                ("pdf_upload", "pdf_dest", "pdf_rel", "pdf_filename"),
+            for upload_key, dest_key in (
+                ("docx_upload", "docx_dest"),
+                ("pdf_upload", "pdf_dest"),
             ):
                 upload: FileStorage = item[upload_key]
                 dest_path: Path = item[dest_key]
+                existed_before = dest_path.exists()
+                backup = dest_path.read_bytes() if existed_before else None
                 payload = _read_upload_bytes(upload)
                 dest_path.write_bytes(payload)
-                written_files.append(dest_path)
+                written_records.append(
+                    {
+                        "path": dest_path,
+                        "existed_before": existed_before,
+                        "backup": backup,
+                    }
+                )
                 files_saved += 1
 
             saved_pairs.append(
                 {
-                    **{
-                        key: item[key]
-                        for key in ("base_name",)
-                        if key in item
-                    },
+                    "base_name": item["base_name"],
                     "docx": item["docx_filename"],
                     "pdf": item["pdf_filename"],
                     "docx_path": item["docx_rel"],
@@ -203,12 +246,7 @@ def save_textbook_source_batch(
                 }
             )
     except Exception as exc:
-        for path in written_files:
-            try:
-                if path.exists():
-                    path.unlink()
-            except Exception:
-                pass
+        _rollback_written_files(written_records)
         return {
             "ok": False,
             "error": "source_save_failed",
@@ -221,8 +259,9 @@ def save_textbook_source_batch(
         "storage": {
             "directory": relative_dir,
             "files_saved": files_saved,
+            "overwritten": bool(conflicts and allow_overwrite),
             "curriculum_label": CURRICULUM_DISPLAY_MAP.get(str(curriculum or "").strip(), curriculum),
-            "volume_label": VOLUME_DISPLAY_MAP.get(str(volume or "").strip(), volume),
+            "volume_label": VOLUME_DISPLAY_MAP.get(volume_key, volume_key),
         },
         "pairs": saved_pairs,
     }, 200
@@ -237,6 +276,7 @@ def upload_textbook_source_batch(
     publisher: str,
     grade: Any,
     volume: str,
+    overwrite_existing: Any = False,
 ) -> tuple[dict[str, Any], int]:
     """
     Full preflight + save pipeline.
@@ -244,7 +284,7 @@ def upload_textbook_source_batch(
     Order:
     1. metadata / extension / pairing / duplicate validation
     2. resolve destination directory
-    3. existing-file conflict check
+    3. existing-file conflict check (unless overwrite_existing)
     4. save with rollback on failure
     """
     payload, status_code = validate_textbook_source_batch(
@@ -276,6 +316,7 @@ def upload_textbook_source_batch(
         pdf_map=pdf_map,
         curriculum=str(payload["batch"]["curriculum"]),
         volume=str(payload["batch"]["volume"]),
+        overwrite_existing=overwrite_existing,
     )
     if not save_payload.get("ok"):
         return save_payload, save_status
