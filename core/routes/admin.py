@@ -184,6 +184,7 @@ from core.textbook_filename_parser import (
     parse_textbook_filename_metadata,
     resolve_upload_filenames,
 )
+from core.textbook_importer_v3_storage import upload_textbook_source_batch
 from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, mask_api_key_last4
 from core.session_safety import (
@@ -1690,6 +1691,54 @@ def admin_textbook_importer_v2():
 
     return render_template(
         'textbook_importer_v2.html',
+        has_gemini_api_key=has_gemini_api_key,
+        ai_settings_url='/admin/ai_prompt_settings',
+    )
+
+
+@core_bp.route('/textbook_importer_v3', methods=['GET', 'POST'])
+@login_required
+def admin_textbook_importer_v3():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        if request.method == 'POST':
+            return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+        flash('權限不足', 'error')
+        return redirect(url_for('dashboard'))
+
+    api_key, key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(api_key)
+    current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
+
+    if request.method == 'POST':
+        if not has_gemini_api_key:
+            return jsonify({
+                "ok": False,
+                "error": "missing_gemini_api_key",
+                "message": "請先設定 Gemini API Key 後再匯入教材。",
+            }), 400
+
+        docx_files = request.files.getlist('textbook_docx[]')
+        if not docx_files or all(not (f and f.filename) for f in docx_files):
+            docx_files = request.files.getlist('textbook_docx')
+
+        pdf_files = request.files.getlist('textbook_pdf[]')
+        if not pdf_files or all(not (f and f.filename) for f in pdf_files):
+            pdf_files = request.files.getlist('textbook_pdf')
+
+        payload, status_code = upload_textbook_source_batch(
+            project_root=Path(current_app.root_path),
+            docx_files=docx_files,
+            pdf_files=pdf_files,
+            curriculum=request.form.get('curriculum'),
+            publisher=request.form.get('publisher'),
+            grade=request.form.get('grade'),
+            volume=request.form.get('volume'),
+        )
+
+        return jsonify(_admin_v3_json_safe(payload)), status_code
+
+    return render_template(
+        'textbook_importer_v3.html',
         has_gemini_api_key=has_gemini_api_key,
         ai_settings_url='/admin/ai_prompt_settings',
     )

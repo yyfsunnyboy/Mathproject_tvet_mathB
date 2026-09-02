@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 教材匯入系統 V3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f9;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .step-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: #27ae60;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 0.25rem rgba(39, 174, 96, 0.15);
+        }
+
+        .btn-submit {
+            background: #27ae60;
+            border: none;
+            color: white;
+            padding: 14px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #219653;
+            color: white;
+        }
+
+        .btn-submit:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .upload-card {
+            border: 2px dashed #d5dce3;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            transition: border-color 0.2s, background 0.2s;
+            background: #fafbfc;
+        }
+
+        .upload-card:hover {
+            border-color: #27ae60;
+            background: #f8fdf9;
+        }
+
+        .upload-card.has-file {
+            border-color: #27ae60;
+            border-style: solid;
+            background: #f8fdf9;
+        }
+
+        .upload-card-icon {
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-card-icon.docx {
+            color: #2b579a;
+        }
+
+        .upload-card-icon.pdf {
+            color: #c0392b;
+        }
+
+        .upload-filename {
+            font-size: 0.85rem;
+            color: #5d6d7e;
+            word-break: break-all;
+            min-height: 1.25rem;
+        }
+
+        .source-pairs-panel {
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.25rem;
+            background: #f8fafb;
+            border: 1px solid #e1e8ed;
+        }
+
+        .source-pairs-summary {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-pairs-summary.is-complete {
+            color: #1e8449;
+        }
+
+        .source-pairs-summary.is-incomplete {
+            color: #c0392b;
+        }
+
+        .source-pairs-summary.is-neutral {
+            color: #7f8c8d;
+        }
+
+        .source-pair-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.65rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .source-pair-row:last-child {
+            border-bottom: none;
+        }
+
+        .source-pair-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .source-pair-title {
+            font-weight: 600;
+            color: #2c3e50;
+            word-break: break-all;
+        }
+
+        .source-pair-title.is-success {
+            color: #1e8449;
+        }
+
+        .source-pair-title.is-error {
+            color: #c0392b;
+        }
+
+        .source-pair-title.is-unknown {
+            color: #d68910;
+        }
+
+        .source-pair-subtitle {
+            font-size: 0.82rem;
+            color: #7f8c8d;
+            margin-top: 0.15rem;
+        }
+
+        .source-pair-badge {
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        #processingPanel,
+        #resultPanel,
+        #batchProgressPanel {
+            display: none;
+        }
+
+        #processingPanel.is-visible,
+        #resultPanel.is-visible,
+        #batchProgressPanel.is-visible {
+            display: block;
+        }
+
+        .batch-progress-panel {
+            background: rgba(39, 174, 96, 0.06);
+            border: 1px solid rgba(39, 174, 96, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .processing-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: #5d6d7e;
+        }
+
+        .processing-step.is-active {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .processing-step.is-done {
+            color: #1e8449;
+        }
+
+        .processing-step-icon {
+            width: 1.25rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .result-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid #f0f3f6;
+            font-size: 0.9rem;
+        }
+
+        .result-metric:last-child {
+            border-bottom: none;
+        }
+
+        .result-metric-label {
+            color: #5d6d7e;
+        }
+
+        .result-metric-value {
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: right;
+            word-break: break-all;
+            max-width: 55%;
+        }
+
+        .result-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #95a5a6;
+            margin-bottom: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .review-item {
+            border-left: 3px solid #f39c12;
+            background: #fffbf0;
+            border-radius: 0 8px 8px 0;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .review-item-type {
+            font-weight: 600;
+            color: #d68910;
+        }
+
+        .empty-value {
+            color: #bdc3c7;
+        }
+
+        #resultPairDetailsPlaceholder {
+            font-size: 0.85rem;
+            color: #95a5a6;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    {% include '_admin_navbar.html' %}
+
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-dark">
+                <i class="bi bi-journal-bookmark-fill text-success"></i> AI 教材匯入系統 V3
+            </h1>
+            <p class="text-secondary mt-2 mb-0">Word 精準結構 × PDF 完整視覺</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-4">
+            {% for category, message in messages %}
+            <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show"
+                role="alert">
+                {{ message | replace('\n', '<br>') | safe }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if not has_gemini_api_key %}
+        <div class="alert alert-danger shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <strong>系統核心警告：</strong> 尚未設定 Gemini API Key。請先前往
+            <a href="{{ ai_settings_url }}" class="alert-link">AI 設定頁</a> 完成金鑰配置。
+        </div>
+        {% endif %}
+
+        <!-- TODO V3 backend: connect dual-source DOCX + PDF importer -->
+        <form id="importerV3Form" method="POST" enctype="multipart/form-data"
+            action="{{ url_for('core.admin_textbook_importer_v3') }}">
+
+            <!-- STEP 1：教材設定 -->
+            <div class="card shadow-sm step-card">
+                <div class="card-body p-4">
+                    <div class="step-header">
+                        <span class="step-badge">1</span>
+                        <h2 class="step-title">教材設定</h2>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="curriculum">課綱 (Curriculum)</label>
+                            <select class="form-select bg-light text-muted" id="curriculum" name="curriculum" readonly
+                                style="pointer-events: none;">
+                                <option value="vocational" selected>技高 (Vocational)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="publisher">出版社 (Publisher)</label>
+                            <select class="form-select bg-light text-muted" id="publisher" name="publisher" readonly
+                                style="pointer-events: none;">
+                                <option value="longteng" selected>龍騰 (Longteng)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="grade">年級 (Grade)</label>
+                            <input type="number" class="form-control" id="grade" name="grade" value="10" min="10"
+                                max="12" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="volume">冊別 (Volume)</label>
+                            <input type="text" class="form-control" id="volume" name="volume" placeholder="例如: 數學B1"
+                                value="數學B1" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2：上傳教材 -->
+            <div class="card shadow-sm step-card">
+                <div class="card-body p-4">
+                    <div class="step-header">
+                        <span class="step-badge">2</span>
+                        <h2 class="step-title">上傳教材</h2>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="upload-card" id="docxUploadCard">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-file-earmark-word upload-card-icon docx"></i>
+                                    <h3 class="h6 fw-bold mb-1">Word 教材</h3>
+                                    <p class="small text-muted mb-0">結構與數學內容來源</p>
+                                </div>
+                                <p class="small text-secondary text-center mb-3">
+                                    讀取教材文字、表格、MathType / Equation Editor 公式。
+                                </p>
+                                <input type="file" class="form-control" id="textbook_docx" name="textbook_docx[]"
+                                    accept=".docx" multiple>
+                                <div class="upload-filename mt-2 text-center" id="docxFilenameDisplay"
+                                    aria-live="polite"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="upload-card" id="pdfUploadCard">
+                                <div class="text-center mb-3">
+                                    <i class="bi bi-file-earmark-pdf upload-card-icon pdf"></i>
+                                    <h3 class="h6 fw-bold mb-1">PDF 教材</h3>
+                                    <p class="small text-muted mb-0">圖片與視覺內容來源</p>
+                                </div>
+                                <p class="small text-secondary text-center mb-3">
+                                    保留幾何圖、照片、座標圖及完整教材視覺版面。
+                                </p>
+                                <input type="file" class="form-control" id="textbook_pdf" name="textbook_pdf[]"
+                                    accept=".pdf" multiple>
+                                <div class="upload-filename mt-2 text-center" id="pdfFilenameDisplay"
+                                    aria-live="polite"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="source-pairs-panel" id="sourcePairsPanel" aria-live="polite">
+                        <div class="fw-semibold text-secondary small mb-2">教材配對結果</div>
+                        <div class="source-pairs-summary is-neutral" id="sourcePairsSummary">
+                            請上傳同一章的多組 Word 與 PDF 教材檔案。
+                        </div>
+                        <div id="sourcePairsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3：執行匯入 -->
+            <div class="card shadow-sm step-card">
+                <div class="card-body p-4">
+                    <div class="step-header">
+                        <span class="step-badge">3</span>
+                        <h2 class="step-title">執行教材匯入</h2>
+                    </div>
+
+                    <p class="text-secondary mb-2">
+                        系統將同時解析 Word 結構與 PDF 視覺內容，完成公式轉換、題目整理、圖片配對與資料建立。
+                    </p>
+                    <p class="text-secondary mb-4">
+                        本次將依教材配對清單逐組解析，完成後統一寫入所選課綱與冊別。
+                    </p>
+
+                    <div id="batchProgressPanel" class="batch-progress-panel" aria-live="polite">
+                        <div id="batchCurrentSource">目前教材：<span class="empty-value">—</span></div>
+                        <div id="batchProgressCounter">進度：<span class="empty-value">— / —</span></div>
+                        <!-- TODO V3 backend: update batch progress from real progress API -->
+                    </div>
+
+                    <div id="processingPanel" class="card bg-light border-0 mb-4" aria-live="polite">
+                        <div class="card-body py-3">
+                            <p class="fw-semibold text-secondary mb-3 small text-uppercase letter-spacing-1">
+                                匯入進度
+                            </p>
+                            <div id="processingStepsList">
+                                <div class="processing-step" data-step="file_validation">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>檔案驗證</span>
+                                </div>
+                                <div class="processing-step" data-step="word_parse">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>Word 結構解析</span>
+                                </div>
+                                <div class="processing-step" data-step="equation_convert">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>MathType / Equation 公式轉換</span>
+                                </div>
+                                <div class="processing-step" data-step="pdf_alignment">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>PDF 視覺對位</span>
+                                </div>
+                                <div class="processing-step" data-step="asset_linking">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>圖片與題目關聯</span>
+                                </div>
+                                <div class="processing-step" data-step="db_write">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>資料庫寫入</span>
+                                </div>
+                            </div>
+                            <!-- TODO V3 backend: drive processing steps from real progress API response -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-submit w-100 fw-bold shadow-sm" id="submitBtn" disabled>
+                        <i class="bi bi-database-fill-up" id="submitBtnIcon"></i>
+                        <span id="submitBtnText">開始解析並匯入教材</span>
+                    </button>
+
+                    {% if not has_gemini_api_key %}
+                    <div class="text-center text-danger small mt-2">
+                        <i class="bi bi-x-circle"></i> 請先完成金鑰設定後方能解鎖按鈕。
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+
+        <!-- STEP 4：匯入結果 -->
+        <div class="card shadow-sm step-card" id="resultPanel" aria-live="polite">
+            <div class="card-body p-4">
+                <div class="step-header">
+                    <span class="step-badge">4</span>
+                    <h2 class="step-title">匯入結果</h2>
+                </div>
+
+                <div id="resultStatusBanner" class="mb-4"></div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="result-section-title">教材來源</div>
+                        <div id="resultSourcePairsStats"></div>
+
+                        <div class="result-section-title mt-3">來源檔案</div>
+                        <div id="resultSourceFiles"></div>
+
+                        <div class="result-section-title mt-3">內容解析</div>
+                        <div id="resultContentParsing"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="result-section-title">題目</div>
+                        <div id="resultQuestions"></div>
+
+                        <div class="result-section-title mt-3">圖片</div>
+                        <div id="resultImages"></div>
+
+                        <div class="result-section-title mt-3">Database</div>
+                        <div id="resultDatabase"></div>
+                    </div>
+                </div>
+
+                <div id="resultPairDetailsSection" class="mt-4" style="display: none;">
+                    <div class="result-section-title">各組教材匯入明細</div>
+                    <div id="resultPairDetails"></div>
+                </div>
+                <div id="resultPairDetailsPlaceholder" class="mt-3">
+                    <!-- TODO V3 backend: expand per source pair import results -->
+                </div>
+
+                <div id="resultReviewSection" class="mt-4" style="display: none;">
+                    <div class="result-section-title">需要確認</div>
+                    <div id="resultReviewItems"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const PROCESSING_STEP_IDS = [
+                'file_validation',
+                'word_parse',
+                'equation_convert',
+                'pdf_alignment',
+                'asset_linking',
+                'db_write'
+            ];
+
+            const EMPTY_DISPLAY = '—';
+
+            const CHINESE_CHAPTER_MAP = {
+                '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+                '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
+            };
+
+            const form = document.getElementById('importerV3Form');
+            const docxInput = document.getElementById('textbook_docx');
+            const pdfInput = document.getElementById('textbook_pdf');
+            const docxFilenameDisplay = document.getElementById('docxFilenameDisplay');
+            const pdfFilenameDisplay = document.getElementById('pdfFilenameDisplay');
+            const docxUploadCard = document.getElementById('docxUploadCard');
+            const pdfUploadCard = document.getElementById('pdfUploadCard');
+            const sourcePairsSummary = document.getElementById('sourcePairsSummary');
+            const sourcePairsList = document.getElementById('sourcePairsList');
+            const submitBtn = document.getElementById('submitBtn');
+            const processingPanel = document.getElementById('processingPanel');
+            const batchProgressPanel = document.getElementById('batchProgressPanel');
+            const batchCurrentSource = document.getElementById('batchCurrentSource');
+            const batchProgressCounter = document.getElementById('batchProgressCounter');
+            const resultPanel = document.getElementById('resultPanel');
+            const hasGeminiApiKey = {% if has_gemini_api_key %}true{% else %}false{% endif %};
+
+            function getBaseName(filename) {
+                if (!filename) return '';
+                var lastDot = filename.lastIndexOf('.');
+                if (lastDot <= 0) return filename;
+                return filename.slice(0, lastDot);
+            }
+
+            function parseChineseChapterNumber(chineseNum) {
+                if (!chineseNum) return null;
+                if (chineseNum.length === 1) {
+                    return CHINESE_CHAPTER_MAP[chineseNum] || null;
+                }
+                if (chineseNum === '十') return 10;
+                if (chineseNum.charAt(0) === '十') {
+                    var unit = CHINESE_CHAPTER_MAP[chineseNum.charAt(1)];
+                    return unit ? 10 + unit : 10;
+                }
+                if (chineseNum.charAt(chineseNum.length - 1) === '十') {
+                    var tens = CHINESE_CHAPTER_MAP[chineseNum.charAt(0)];
+                    return tens ? tens * 10 : null;
+                }
+                return CHINESE_CHAPTER_MAP[chineseNum] || null;
+            }
+
+            function formatChapterLabel(chapter) {
+                if (chapter === null || chapter === undefined) return '';
+                return '第' + chapter + '章';
+            }
+
+            function classifyTextbookSource(baseName) {
+                if (!baseName) {
+                    return { type: 'unknown' };
+                }
+
+                var assessmentMatch = baseName.match(/^第([一二三四五六七八九十]+)章\s*自我評量/);
+                if (assessmentMatch) {
+                    return {
+                        type: 'chapter_assessment',
+                        chapter: parseChineseChapterNumber(assessmentMatch[1]),
+                        section: null
+                    };
+                }
+
+                var sectionMatch = baseName.match(/(?<!\d)(\d+)-(\d+)/);
+                if (sectionMatch) {
+                    var sectionChapter = parseInt(sectionMatch[1], 10);
+                    var sectionNum = parseInt(sectionMatch[2], 10);
+                    var labelMatch = baseName.match(/^第([一二三四五六七八九十]+)章/);
+                    if (labelMatch) {
+                        var labelChapter = parseChineseChapterNumber(labelMatch[1]);
+                        if (labelChapter !== null && labelChapter !== sectionChapter) {
+                            return {
+                                type: 'chapter_mismatch',
+                                chapter: null,
+                                section: null,
+                                label_chapter: labelChapter,
+                                section_chapter: sectionChapter,
+                                section_number: sectionNum
+                            };
+                        }
+                    }
+                    return {
+                        type: 'section',
+                        chapter: sectionChapter,
+                        section: sectionNum
+                    };
+                }
+
+                return { type: 'unknown', chapter: null, section: null };
+            }
+
+            function getClassificationLabel(classification) {
+                if (!classification || classification.type === 'unknown') {
+                    return '尚未辨識章節類型';
+                }
+                if (classification.type === 'section') {
+                    return formatChapterLabel(classification.chapter) + ' · 第 ' + classification.section + ' 節';
+                }
+                if (classification.type === 'chapter_assessment') {
+                    var chapterLabel = classification.chapter
+                        ? formatChapterLabel(classification.chapter)
+                        : '第?章';
+                    return chapterLabel + ' · 自我評量';
+                }
+                if (classification.type === 'chapter_mismatch') {
+                    return '章節標記不一致（第' + classification.label_chapter + '章 vs ' +
+                        classification.section_chapter + '-' + classification.section_number + '）';
+                }
+                return '尚未辨識章節類型';
+            }
+
+            function buildFileMap(fileList) {
+                var map = new Map();
+                if (!fileList) return map;
+                Array.prototype.forEach.call(fileList, function (file) {
+                    var base = getBaseName(file.name);
+                    if (base) map.set(base, file);
+                });
+                return map;
+            }
+
+            function comparePairs(a, b) {
+                var rank = function (pair) {
+                    var c = pair.classification;
+                    if (c.type === 'section') return [0, c.chapter, c.section, pair.baseName];
+                    if (c.type === 'chapter_assessment') return [1, c.chapter || 999, 0, pair.baseName];
+                    if (c.type === 'chapter_mismatch') return [2, 0, 0, pair.baseName];
+                    return [3, 0, 0, pair.baseName];
+                };
+                var ra = rank(a);
+                var rb = rank(b);
+                for (var i = 0; i < ra.length; i++) {
+                    if (ra[i] < rb[i]) return -1;
+                    if (ra[i] > rb[i]) return 1;
+                }
+                return 0;
+            }
+
+            function buildSourcePairs(docxFiles, pdfFiles) {
+                var docxMap = buildFileMap(docxFiles);
+                var pdfMap = buildFileMap(pdfFiles);
+                var allBasenames = new Set();
+                docxMap.forEach(function (_, base) { allBasenames.add(base); });
+                pdfMap.forEach(function (_, base) { allBasenames.add(base); });
+
+                var pairs = [];
+                allBasenames.forEach(function (baseName) {
+                    var docx = docxMap.get(baseName) || null;
+                    var pdf = pdfMap.get(baseName) || null;
+                    var status = 'complete';
+                    if (!docx) status = 'missing_docx';
+                    else if (!pdf) status = 'missing_pdf';
+
+                    pairs.push({
+                        baseName: baseName,
+                        docx: docx,
+                        pdf: pdf,
+                        classification: classifyTextbookSource(baseName),
+                        status: status
+                    });
+                });
+
+                return pairs.sort(comparePairs);
+            }
+
+            function validateSourcePairs() {
+                var pairs = buildSourcePairs(docxInput.files, pdfInput.files);
+                var completePairs = pairs.filter(function (p) { return p.status === 'complete'; });
+                var totalCount = pairs.length;
+                var completeCount = completePairs.length;
+                var hasChapterMismatch = pairs.some(function (p) {
+                    return p.classification && p.classification.type === 'chapter_mismatch';
+                });
+
+                return {
+                    pairs: pairs,
+                    completePairs: completePairs,
+                    completeCount: completeCount,
+                    totalCount: totalCount,
+                    allComplete: totalCount > 0 && completeCount === totalCount,
+                    hasChapterMismatch: hasChapterMismatch,
+                    canSubmit: totalCount > 0 &&
+                        completeCount === totalCount &&
+                        !hasChapterMismatch,
+                    hasFiles: (docxInput.files && docxInput.files.length > 0) ||
+                        (pdfInput.files && pdfInput.files.length > 0)
+                };
+            }
+
+            function escapeHtml(text) {
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function renderSourcePairs(pairs, validation) {
+                var completeCount = validation.completeCount;
+                var totalCount = validation.totalCount;
+
+                sourcePairsSummary.classList.remove('is-complete', 'is-incomplete', 'is-neutral');
+
+                if (!validation.hasFiles) {
+                    sourcePairsSummary.classList.add('is-neutral');
+                    sourcePairsSummary.textContent = '請上傳同一章的多組 Word 與 PDF 教材檔案。';
+                    sourcePairsList.innerHTML = '';
+                    return;
+                }
+
+                if (totalCount === 0) {
+                    sourcePairsSummary.classList.add('is-neutral');
+                    sourcePairsSummary.textContent = '尚無可配對的教材檔案。';
+                    sourcePairsList.innerHTML = '';
+                    return;
+                }
+
+                if (validation.allComplete && !validation.hasChapterMismatch) {
+                    sourcePairsSummary.classList.add('is-complete');
+                } else {
+                    sourcePairsSummary.classList.add('is-incomplete');
+                }
+                sourcePairsSummary.textContent =
+                    completeCount + ' / ' + totalCount + ' 組教材配對完成';
+
+                sourcePairsList.innerHTML = pairs.map(function (pair) {
+                    var titleClass = 'source-pair-title';
+                    var icon = '';
+                    var badge = '';
+
+                    if (pair.status === 'complete') {
+                        if (pair.classification.type === 'chapter_mismatch') {
+                            titleClass += ' is-error';
+                            icon = '<i class="bi bi-x-circle-fill text-danger"></i> ';
+                            badge = '<span class="badge bg-danger source-pair-badge">章節不一致</span>';
+                        } else if (pair.classification.type === 'unknown') {
+                            titleClass += ' is-unknown';
+                            icon = '<i class="bi bi-exclamation-triangle-fill text-warning"></i> ';
+                        } else {
+                            titleClass += ' is-success';
+                            icon = '<i class="bi bi-check-circle-fill text-success"></i> ';
+                        }
+                        badge = '<span class="badge bg-success source-pair-badge">DOCX + PDF</span>';
+                    } else {
+                        titleClass += ' is-error';
+                        icon = '<i class="bi bi-x-circle-fill text-danger"></i> ';
+                        if (pair.status === 'missing_pdf') {
+                            badge = '<span class="badge bg-danger source-pair-badge">缺少 PDF</span>';
+                        } else {
+                            badge = '<span class="badge bg-danger source-pair-badge">缺少 DOCX</span>';
+                        }
+                    }
+
+                    return (
+                        '<div class="source-pair-row">' +
+                        '<div class="source-pair-main">' +
+                        '<div class="' + titleClass + '">' + icon + escapeHtml(pair.baseName) + '</div>' +
+                        '<div class="source-pair-subtitle">' + escapeHtml(getClassificationLabel(pair.classification)) + '</div>' +
+                        '</div>' +
+                        badge +
+                        '</div>'
+                    );
+                }).join('');
+            }
+
+            function updateSelectedFilenames() {
+                var docxCount = docxInput.files ? docxInput.files.length : 0;
+                var pdfCount = pdfInput.files ? pdfInput.files.length : 0;
+
+                docxFilenameDisplay.textContent = docxCount > 0
+                    ? '已選擇 ' + docxCount + ' 個 Word 檔案'
+                    : '';
+                pdfFilenameDisplay.textContent = pdfCount > 0
+                    ? '已選擇 ' + pdfCount + ' 個 PDF 檔案'
+                    : '';
+
+                docxUploadCard.classList.toggle('has-file', docxCount > 0);
+                pdfUploadCard.classList.toggle('has-file', pdfCount > 0);
+            }
+
+            function setImportButtonState() {
+                var validation = validateSourcePairs();
+                var canSubmit = hasGeminiApiKey && validation.canSubmit;
+                submitBtn.disabled = !canSubmit;
+            }
+
+            function formatDisplayValue(value) {
+                if (value === null || value === undefined || value === '') {
+                    return '<span class="empty-value">' + EMPTY_DISPLAY + '</span>';
+                }
+                return String(value);
+            }
+
+            function renderStepIcon(container, state) {
+                if (state === 'active') {
+                    container.innerHTML =
+                        '<span class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span>';
+                    return;
+                }
+                if (state === 'done') {
+                    container.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                    return;
+                }
+                container.innerHTML = '<i class="bi bi-circle text-muted"></i>';
+            }
+
+            function setProcessingStep(stepId, state) {
+                var stepEl = document.querySelector('.processing-step[data-step="' + stepId + '"]');
+                if (!stepEl) return;
+
+                stepEl.classList.remove('is-active', 'is-done');
+                if (state === 'active') stepEl.classList.add('is-active');
+                if (state === 'done') stepEl.classList.add('is-done');
+
+                var iconEl = stepEl.querySelector('[data-icon]');
+                if (iconEl) renderStepIcon(iconEl, state);
+            }
+
+            function setBatchProgress(currentName, currentIndex, totalCount) {
+                // TODO V3 backend: call from real progress API with current pair info
+                if (currentName === null || currentName === undefined) {
+                    batchProgressPanel.classList.remove('is-visible');
+                    batchCurrentSource.innerHTML = '目前教材：<span class="empty-value">' + EMPTY_DISPLAY + '</span>';
+                    batchProgressCounter.innerHTML = '進度：<span class="empty-value">' + EMPTY_DISPLAY + ' / ' + EMPTY_DISPLAY + '</span>';
+                    return;
+                }
+                batchProgressPanel.classList.add('is-visible');
+                batchCurrentSource.textContent = '目前教材：' + currentName;
+                batchProgressCounter.textContent = '進度：' + currentIndex + ' / ' + totalCount;
+            }
+
+            function resetProcessingPanel() {
+                PROCESSING_STEP_IDS.forEach(function (stepId) {
+                    setProcessingStep(stepId, 'pending');
+                });
+                setBatchProgress(null);
+            }
+
+            function showProcessingPanel() {
+                processingPanel.classList.add('is-visible');
+            }
+
+            function hideProcessingPanel() {
+                processingPanel.classList.remove('is-visible');
+            }
+
+            function renderMetricRow(label, value) {
+                return (
+                    '<div class="result-metric">' +
+                    '<span class="result-metric-label">' + label + '</span>' +
+                    '<span class="result-metric-value">' + formatDisplayValue(value) + '</span>' +
+                    '</div>'
+                );
+            }
+
+            function renderImportResult(result) {
+                if (!result) return;
+
+                var statusBanner = document.getElementById('resultStatusBanner');
+                var status = result.status || 'pending';
+                var statusHtml = '';
+
+                if (status === 'success') {
+                    statusHtml = '<div class="alert alert-success mb-0"><i class="bi bi-check-circle-fill"></i> <strong>匯入成功</strong></div>';
+                } else if (status === 'source_validated') {
+                    statusHtml = '<div class="alert alert-info mb-0"><i class="bi bi-shield-check"></i> <strong>來源檔案驗證完成，等待教材解析</strong></div>';
+                } else if (status === 'source_stored') {
+                    statusHtml = '<div class="alert alert-success mb-0"><i class="bi bi-folder-check"></i> <strong>教材來源已儲存</strong></div>';
+                } else if (status === 'partial') {
+                    statusHtml = '<div class="alert alert-warning mb-0"><i class="bi bi-exclamation-triangle-fill"></i> <strong>部分完成</strong></div>';
+                } else if (status === 'failed') {
+                    statusHtml = '<div class="alert alert-danger mb-0"><i class="bi bi-x-octagon-fill"></i> <strong>匯入失敗</strong></div>';
+                } else {
+                    statusHtml = '<div class="alert alert-secondary mb-0"><span class="badge bg-secondary">待處理</span></div>';
+                }
+                statusBanner.innerHTML = statusHtml;
+
+                if (result.storageSummary) {
+                    statusBanner.innerHTML += (
+                        '<div class="mt-3 small text-secondary" style="white-space: pre-line;">' +
+                        escapeHtml(result.storageSummary) +
+                        '</div>'
+                    );
+                }
+
+                var sourcePairsStats = result.sourcePairsStats || {};
+                document.getElementById('resultSourcePairsStats').innerHTML =
+                    renderMetricRow('Source pairs', sourcePairsStats.total) +
+                    renderMetricRow('Successful pairs', sourcePairsStats.successful) +
+                    renderMetricRow('Failed pairs', sourcePairsStats.failed) +
+                    renderMetricRow('Needs review', sourcePairsStats.needsReview);
+
+                var source = result.sourceFiles || {};
+                document.getElementById('resultSourceFiles').innerHTML =
+                    renderMetricRow('DOCX', source.docx) +
+                    renderMetricRow('PDF', source.pdf);
+
+                var content = result.contentParsing || {};
+                document.getElementById('resultContentParsing').innerHTML =
+                    renderMetricRow('Word tables', content.wordTables) +
+                    renderMetricRow('Table cells', content.tableCells) +
+                    renderMetricRow('MathType / Equation found', content.mathTypeFound) +
+                    renderMetricRow('MathType / Equation converted', content.mathTypeConverted) +
+                    renderMetricRow('EQ fields', content.eqFields) +
+                    renderMetricRow('Formula preview media', content.formulaPreviewMedia) +
+                    renderMetricRow('Independent images', content.independentImages) +
+                    renderMetricRow('Formula failures', content.formulaFailures);
+
+                var questions = result.questions || {};
+                document.getElementById('resultQuestions').innerHTML =
+                    renderMetricRow('Parsed questions', questions.parsed) +
+                    renderMetricRow('Imported questions', questions.imported);
+
+                var images = result.images || {};
+                document.getElementById('resultImages').innerHTML =
+                    renderMetricRow('PDF visual assets', images.pdfVisualAssets) +
+                    renderMetricRow('Linked assets', images.linked) +
+                    renderMetricRow('Unlinked assets', images.unlinked) +
+                    renderMetricRow('Needs review', images.needsReview);
+
+                var database = result.database || {};
+                document.getElementById('resultDatabase').innerHTML =
+                    renderMetricRow('Questions written', database.questionsWritten) +
+                    renderMetricRow('Assets written', database.assetsWritten) +
+                    renderMetricRow('Relationships created', database.relationshipsCreated);
+
+                var pairDetails = result.pairDetails || [];
+                var pairDetailsSection = document.getElementById('resultPairDetailsSection');
+                var pairDetailsContainer = document.getElementById('resultPairDetails');
+                var pairDetailsPlaceholder = document.getElementById('resultPairDetailsPlaceholder');
+
+                if (pairDetails.length > 0) {
+                    pairDetailsSection.style.display = 'block';
+                    pairDetailsPlaceholder.style.display = 'none';
+                    pairDetailsContainer.innerHTML = pairDetails.map(function (detail) {
+                        return (
+                            '<div class="review-item">' +
+                            '<div class="review-item-type">' + escapeHtml(detail.baseName || EMPTY_DISPLAY) + '</div>' +
+                            '<div class="small text-muted mt-1">' + escapeHtml(detail.status || '') + '</div>' +
+                            '<div class="mt-1">' + escapeHtml(detail.message || '') + '</div>' +
+                            '</div>'
+                        );
+                    }).join('');
+                } else {
+                    pairDetailsSection.style.display = 'none';
+                    pairDetailsContainer.innerHTML = '';
+                    pairDetailsPlaceholder.style.display = 'block';
+                }
+
+                var reviewItems = result.reviewItems || [];
+                var reviewSection = document.getElementById('resultReviewSection');
+                var reviewContainer = document.getElementById('resultReviewItems');
+
+                if (reviewItems.length > 0) {
+                    reviewSection.style.display = 'block';
+                    reviewContainer.innerHTML = reviewItems.map(function (item) {
+                        return (
+                            '<div class="review-item">' +
+                            '<div class="review-item-type">' + escapeHtml(item.type || '未分類') + '</div>' +
+                            '<div class="small text-muted mt-1">' + escapeHtml(item.identifier || EMPTY_DISPLAY) + '</div>' +
+                            '<div class="mt-1">' + escapeHtml(item.message || '') + '</div>' +
+                            '</div>'
+                        );
+                    }).join('');
+                } else {
+                    reviewSection.style.display = 'none';
+                    reviewContainer.innerHTML = '';
+                }
+
+                resultPanel.classList.add('is-visible');
+            }
+
+            function handleSourceChange() {
+                updateSelectedFilenames();
+                var validation = validateSourcePairs();
+                renderSourcePairs(validation.pairs, validation);
+                setImportButtonState();
+            }
+
+            function getClassificationLabelFromPair(pair) {
+                if (!pair || pair.type === 'unknown') {
+                    return '尚未辨識章節類型';
+                }
+                if (pair.type === 'section') {
+                    return '第' + pair.chapter + '章 · 第 ' + pair.section + ' 節';
+                }
+                if (pair.type === 'chapter_assessment') {
+                    var chapterLabel = pair.chapter ? ('第' + pair.chapter + '章') : '第?章';
+                    return chapterLabel + ' · 自我評量';
+                }
+                return '尚未辨識章節類型';
+            }
+
+            function renderValidationResult(payload) {
+                if (!payload || !payload.ok) return;
+
+                var unknownCount = (payload.pairs || []).filter(function (pair) {
+                    return pair.type === 'unknown';
+                }).length;
+
+                var storage = payload.storage || {};
+                var storageLines = [];
+                if (storage.curriculum_label || storage.volume_label) {
+                    storageLines.push((storage.curriculum_label || '') + ' / ' + (storage.volume_label || ''));
+                }
+                if (storage.directory) {
+                    storageLines.push(storage.directory);
+                }
+                if (storage.files_saved !== null && storage.files_saved !== undefined) {
+                    storageLines.push('已儲存：' + storage.files_saved + ' 個檔案');
+                }
+
+                renderImportResult({
+                    status: storage.directory ? 'source_stored' : 'source_validated',
+                    sourcePairsStats: {
+                        total: payload.batch ? payload.batch.total_pairs : null,
+                        successful: payload.batch ? payload.batch.total_pairs : null,
+                        failed: 0,
+                        needsReview: unknownCount || null
+                    },
+                    sourceFiles: {
+                        docx: storage.directory || null,
+                        pdf: storage.files_saved !== null && storage.files_saved !== undefined
+                            ? ('已儲存 ' + storage.files_saved + ' 個檔案')
+                            : null
+                    },
+                    contentParsing: {},
+                    storageSummary: storageLines.join('\n'),
+                    pairDetails: (payload.pairs || []).map(function (pair) {
+                        var message = getClassificationLabelFromPair(pair);
+                        if (pair.docx_path || pair.pdf_path) {
+                            message += '\n' + [pair.docx_path, pair.pdf_path].filter(Boolean).join('\n');
+                        }
+                        return {
+                            baseName: pair.base_name,
+                            status: pair.status,
+                            message: message
+                        };
+                    })
+                });
+            }
+
+            function showBackendValidationError(payload) {
+                var message = (payload && payload.message) ? payload.message : '教材來源驗證失敗。';
+                if (payload && payload.error === 'source_pair_validation_failed') {
+                    var parts = [];
+                    if (payload.missing_pdf && payload.missing_pdf.length) {
+                        parts.push('缺少 PDF：' + payload.missing_pdf.join('、'));
+                    }
+                    if (payload.missing_docx && payload.missing_docx.length) {
+                        parts.push('缺少 DOCX：' + payload.missing_docx.join('、'));
+                    }
+                    if (parts.length) message += '\n' + parts.join('\n');
+                }
+                if (payload && payload.basenames && payload.basenames.length) {
+                    message += '\n重複 basename：' + payload.basenames.join('、');
+                }
+                if (payload && payload.error === 'source_file_already_exists' && payload.files && payload.files.length) {
+                    message += '\n已存在檔案：' + payload.files.join('、');
+                }
+                if (payload && payload.error === 'chapter_metadata_mismatch' && payload.mismatches && payload.mismatches.length) {
+                    message += '\n章節不一致：' + payload.mismatches.map(function (item) {
+                        return item.base_name;
+                    }).join('、');
+                }
+                alert(message);
+            }
+
+            function handleFormSubmit(event) {
+                event.preventDefault();
+
+                var validation = validateSourcePairs();
+                if (!validation.allComplete || validation.hasChapterMismatch) {
+                    alert('請確保所有教材組皆已完成 DOCX 與 PDF 配對，且章節標記一致。');
+                    return;
+                }
+
+                resetProcessingPanel();
+                showProcessingPanel();
+                submitBtn.disabled = true;
+                setProcessingStep('file_validation', 'active');
+
+                var formData = new FormData(form);
+                formData.delete('textbook_docx[]');
+                formData.delete('textbook_pdf[]');
+
+                validation.completePairs.forEach(function (pair) {
+                    formData.append('textbook_docx[]', pair.docx, pair.docx.name);
+                    formData.append('textbook_pdf[]', pair.pdf, pair.pdf.name);
+                });
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(function (response) {
+                        return response.json().then(function (data) {
+                            return { ok: response.ok, status: response.status, data: data };
+                        }).catch(function () {
+                            throw new Error('伺服器回應非 JSON（' + response.status + '）');
+                        });
+                    })
+                    .then(function (result) {
+                        if (!result.ok || !result.data || !result.data.ok) {
+                            hideProcessingPanel();
+                            setImportButtonState();
+                            showBackendValidationError(result.data || {});
+                            return;
+                        }
+
+                        setProcessingStep('file_validation', 'done');
+                        renderValidationResult(result.data);
+                        setImportButtonState();
+                    })
+                    .catch(function (err) {
+                        hideProcessingPanel();
+                        setImportButtonState();
+                        alert('教材來源驗證失敗：' + (err && err.message ? err.message : String(err)));
+                    });
+            }
+
+            docxInput.addEventListener('change', handleSourceChange);
+            pdfInput.addEventListener('change', handleSourceChange);
+            form.addEventListener('submit', handleFormSubmit);
+
+            resetProcessingPanel();
+            handleSourceChange();
+
+            window.textbookImporterV3 = {
+                getBaseName: getBaseName,
+                buildFileMap: buildFileMap,
+                buildSourcePairs: buildSourcePairs,
+                classifyTextbookSource: classifyTextbookSource,
+                validateSourcePairs: validateSourcePairs,
+                renderSourcePairs: renderSourcePairs,
+                setImportButtonState: setImportButtonState,
+                setProcessingStep: setProcessingStep,
+                setBatchProgress: setBatchProgress,
+                renderValidationResult: renderValidationResult,
+                renderImportResult: renderImportResult
+            };
+        })();
+    </script>
+</body>
+
+</html>

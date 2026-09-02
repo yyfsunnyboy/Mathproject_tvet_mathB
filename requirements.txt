@@ -28,4 +28,5 @@ jieba
 tf-keras
 python-docx
 pix2tex
+olefile
 pypdf
