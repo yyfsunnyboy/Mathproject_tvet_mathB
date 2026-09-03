@@ -266,6 +266,12 @@ def validate_textbook_source_batch(
     volume_val = str(volume or "").strip()
     grade_val = _parse_grade(grade)
 
+    from core.textbook_processor import grade_for_vocational_math_volume
+
+    mapped_grade = grade_for_vocational_math_volume(volume_val)
+    if mapped_grade is not None:
+        grade_val = mapped_grade
+
     if not curriculum_val or not publisher_val or not volume_val or grade_val is None:
         return {
             "ok": False,

@@ -1,0 +1,19 @@
+B2 1-1 PDF visual formal mount
+generated_at: 2026-09-03T07:56:55+00:00
+backup: instance/backups/kumon_math_before_b2_1_1_pdf_visual_20260903_155655.db
+anchors filled: 10 kept=9 unique=19 collisions=[]
+mounted: 3 skipped: 1
+TE count: 19 -> 19
+idempotent: {'te_count_stable': True, 'anchor_count_stable': True, 'image_asset_count_stable': True, 'paths_identical': True, 'sha_identical': True, 'no_duplicate_files': True, 'content_fields_unchanged': True}
+
+candidates:
+- 例2: decorative mount=False | 題幹已給半徑16公分與八等分；PDF 旁為披薩情境照。解題示意圖在「解」區塊且含答案標註，不掛入題目資產。
+- 1-1習題 基礎題5: helpful mount=True | 文字已有12公分與15°，但粉紅鐘擺扇形示意圖（含標註）明顯幫助理解；不掛右側古典時鐘照片。
+- 1-1習題 進階題9: required mount=True | 題幹「如圖所示」；三等分花圃扇形關係主要靠圖呈現。
+- 1-1習題 進階題10: required mount=True | 文字寫運河寬20公尺，示意圖明確以半徑20公尺／80°建模；不掛摺扇橋情境照與自評表。
+
+assets:
+- SKIP 例2: decorative_photo
+- 1-1習題 基礎題5 p=13 363x341 18620B uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png
+- 1-1習題 進階題9 p=14 397x349 102213B uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png
+- 1-1習題 進階題10 p=14 439x258 9134B uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png

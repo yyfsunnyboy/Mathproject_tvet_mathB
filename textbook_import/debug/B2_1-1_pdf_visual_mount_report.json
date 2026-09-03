@@ -1,0 +1,336 @@
+{
+  "status": "ok",
+  "generated_at": "2026-09-03T07:56:55+00:00",
+  "pdf_path": "D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.pdf",
+  "db_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "db_backup": "instance/backups/kumon_math_before_b2_1_1_pdf_visual_20260903_155655.db",
+  "before": {
+    "te_count": 19,
+    "anchor_non_null": 9,
+    "anchor_unique": 9,
+    "anchor_collisions": [],
+    "rows_with_pdf_image_assets": 0,
+    "pdf_image_asset_count": 0,
+    "image_rows": [],
+    "content_fingerprint": "038e3b42546e5db1a2f2f7203c199fd083493f986adf50c1359c9960d32be17d"
+  },
+  "anchor_fill": {
+    "filled": 10,
+    "kept": 9,
+    "total": 19,
+    "unique": 19,
+    "collisions": []
+  },
+  "mount_pass1": {
+    "mounted": 3,
+    "skipped": 1,
+    "results": [
+      {
+        "textbook_example_id": 11567,
+        "source_description": "例2",
+        "source_type": "textbook_example",
+        "anchor_id": "vocational_math_B2_1-1_example_002_003",
+        "classification": "decorative",
+        "mount": false,
+        "reason": "題幹已給半徑16公分與八等分；PDF 旁為披薩情境照。解題示意圖在「解」區塊且含答案標註，不掛入題目資產。",
+        "status": "skipped",
+        "skip_code": "decorative_photo"
+      },
+      {
+        "textbook_example_id": 11560,
+        "source_description": "1-1習題 基礎題5",
+        "source_type": "textbook_exercise",
+        "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+        "classification": "helpful",
+        "mount": true,
+        "reason": "文字已有12公分與15°，但粉紅鐘擺扇形示意圖（含標註）明顯幫助理解；不掛右側古典時鐘照片。",
+        "status": "mounted",
+        "pdf_page": 13,
+        "bbox": [
+          272.0,
+          508.0,
+          400.0,
+          628.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png",
+        "width": 363,
+        "height": 341,
+        "file_size": 18620,
+        "sha256": "5e2563630b522280c462583340e29e4a69a162b12d9a657f9c9674412b17db2e"
+      },
+      {
+        "textbook_example_id": 11564,
+        "source_description": "1-1習題 進階題9",
+        "source_type": "advanced_exercise",
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+        "classification": "required",
+        "mount": true,
+        "reason": "題幹「如圖所示」；三等分花圃扇形關係主要靠圖呈現。",
+        "status": "mounted",
+        "pdf_page": 14,
+        "bbox": [
+          395.0,
+          235.0,
+          535.0,
+          358.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png",
+        "width": 397,
+        "height": 349,
+        "file_size": 102213,
+        "sha256": "50a9f8605101dac80a4a3924fc5db043c6e3a5b851e6abfc095bf4df0ba51202"
+      },
+      {
+        "textbook_example_id": 11565,
+        "source_description": "1-1習題 進階題10",
+        "source_type": "advanced_exercise",
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+        "classification": "required",
+        "mount": true,
+        "reason": "文字寫運河寬20公尺，示意圖明確以半徑20公尺／80°建模；不掛摺扇橋情境照與自評表。",
+        "status": "mounted",
+        "pdf_page": 14,
+        "bbox": [
+          400.0,
+          515.0,
+          555.0,
+          605.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png",
+        "width": 439,
+        "height": 258,
+        "file_size": 9134,
+        "sha256": "448356496d7548704cd8bbfd76dfb3f4f9e84f8bf3d1ca407f39c44ba3c7f358"
+      }
+    ],
+    "state": {
+      "te_count": 19,
+      "anchor_non_null": 19,
+      "anchor_unique": 19,
+      "anchor_collisions": [],
+      "rows_with_pdf_image_assets": 3,
+      "pdf_image_asset_count": 3,
+      "image_rows": [
+        {
+          "id": 11560,
+          "desc": "1-1習題 基礎題 5",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png"
+          ],
+          "sha": [
+            "5e2563630b522280c462583340e29e4a69a162b12d9a657f9c9674412b17db2e"
+          ]
+        },
+        {
+          "id": 11564,
+          "desc": "1-1習題 進階題 9",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png"
+          ],
+          "sha": [
+            "50a9f8605101dac80a4a3924fc5db043c6e3a5b851e6abfc095bf4df0ba51202"
+          ]
+        },
+        {
+          "id": 11565,
+          "desc": "1-1習題 進階題 10",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png"
+          ],
+          "sha": [
+            "448356496d7548704cd8bbfd76dfb3f4f9e84f8bf3d1ca407f39c44ba3c7f358"
+          ]
+        }
+      ],
+      "content_fingerprint": "038e3b42546e5db1a2f2f7203c199fd083493f986adf50c1359c9960d32be17d"
+    }
+  },
+  "mount_pass2": {
+    "mounted": 3,
+    "skipped": 1,
+    "results": [
+      {
+        "textbook_example_id": 11567,
+        "source_description": "例2",
+        "source_type": "textbook_example",
+        "anchor_id": "vocational_math_B2_1-1_example_002_003",
+        "classification": "decorative",
+        "mount": false,
+        "reason": "題幹已給半徑16公分與八等分；PDF 旁為披薩情境照。解題示意圖在「解」區塊且含答案標註，不掛入題目資產。",
+        "status": "skipped",
+        "skip_code": "decorative_photo"
+      },
+      {
+        "textbook_example_id": 11560,
+        "source_description": "1-1習題 基礎題5",
+        "source_type": "textbook_exercise",
+        "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+        "classification": "helpful",
+        "mount": true,
+        "reason": "文字已有12公分與15°，但粉紅鐘擺扇形示意圖（含標註）明顯幫助理解；不掛右側古典時鐘照片。",
+        "status": "mounted",
+        "pdf_page": 13,
+        "bbox": [
+          272.0,
+          508.0,
+          400.0,
+          628.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png",
+        "width": 363,
+        "height": 341,
+        "file_size": 18620,
+        "sha256": "5e2563630b522280c462583340e29e4a69a162b12d9a657f9c9674412b17db2e"
+      },
+      {
+        "textbook_example_id": 11564,
+        "source_description": "1-1習題 進階題9",
+        "source_type": "advanced_exercise",
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+        "classification": "required",
+        "mount": true,
+        "reason": "題幹「如圖所示」；三等分花圃扇形關係主要靠圖呈現。",
+        "status": "mounted",
+        "pdf_page": 14,
+        "bbox": [
+          395.0,
+          235.0,
+          535.0,
+          358.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png",
+        "width": 397,
+        "height": 349,
+        "file_size": 102213,
+        "sha256": "50a9f8605101dac80a4a3924fc5db043c6e3a5b851e6abfc095bf4df0ba51202"
+      },
+      {
+        "textbook_example_id": 11565,
+        "source_description": "1-1習題 進階題10",
+        "source_type": "advanced_exercise",
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+        "classification": "required",
+        "mount": true,
+        "reason": "文字寫運河寬20公尺，示意圖明確以半徑20公尺／80°建模；不掛摺扇橋情境照與自評表。",
+        "status": "mounted",
+        "pdf_page": 14,
+        "bbox": [
+          400.0,
+          515.0,
+          555.0,
+          605.0
+        ],
+        "asset_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png",
+        "width": 439,
+        "height": 258,
+        "file_size": 9134,
+        "sha256": "448356496d7548704cd8bbfd76dfb3f4f9e84f8bf3d1ca407f39c44ba3c7f358"
+      }
+    ],
+    "state": {
+      "te_count": 19,
+      "anchor_non_null": 19,
+      "anchor_unique": 19,
+      "anchor_collisions": [],
+      "rows_with_pdf_image_assets": 3,
+      "pdf_image_asset_count": 3,
+      "image_rows": [
+        {
+          "id": 11560,
+          "desc": "1-1習題 基礎題 5",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png"
+          ],
+          "sha": [
+            "5e2563630b522280c462583340e29e4a69a162b12d9a657f9c9674412b17db2e"
+          ]
+        },
+        {
+          "id": 11564,
+          "desc": "1-1習題 進階題 9",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png"
+          ],
+          "sha": [
+            "50a9f8605101dac80a4a3924fc5db043c6e3a5b851e6abfc095bf4df0ba51202"
+          ]
+        },
+        {
+          "id": 11565,
+          "desc": "1-1習題 進階題 10",
+          "n": 1,
+          "paths": [
+            "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png"
+          ],
+          "sha": [
+            "448356496d7548704cd8bbfd76dfb3f4f9e84f8bf3d1ca407f39c44ba3c7f358"
+          ]
+        }
+      ],
+      "content_fingerprint": "038e3b42546e5db1a2f2f7203c199fd083493f986adf50c1359c9960d32be17d"
+    }
+  },
+  "idempotency": {
+    "te_count_stable": true,
+    "anchor_count_stable": true,
+    "image_asset_count_stable": true,
+    "paths_identical": true,
+    "sha_identical": true,
+    "no_duplicate_files": true,
+    "content_fields_unchanged": true
+  },
+  "asset_files": [
+    {
+      "path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png",
+      "exists": true,
+      "size": 18620
+    },
+    {
+      "path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png",
+      "exists": true,
+      "size": 102213
+    },
+    {
+      "path": "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png",
+      "exists": true,
+      "size": 9134
+    }
+  ],
+  "ui": {
+    "admin_examples_reads_notes_image_assets_path": true,
+    "admin_display_ready": true,
+    "student_page_image_assets_render": false,
+    "student_note": "repo 內學生作答頁未發現 notes.image_assets / display_path render；asset 已寫入，學生端待後續最小整合。"
+  },
+  "candidate_table": [
+    {
+      "question": "例2",
+      "classification": "decorative",
+      "mounted": false,
+      "reason": "題幹已給半徑16公分與八等分；PDF 旁為披薩情境照。解題示意圖在「解」區塊且含答案標註，不掛入題目資產。"
+    },
+    {
+      "question": "1-1習題 基礎題5",
+      "classification": "helpful",
+      "mounted": true,
+      "reason": "文字已有12公分與15°，但粉紅鐘擺扇形示意圖（含標註）明顯幫助理解；不掛右側古典時鐘照片。"
+    },
+    {
+      "question": "1-1習題 進階題9",
+      "classification": "required",
+      "mounted": true,
+      "reason": "題幹「如圖所示」；三等分花圃扇形關係主要靠圖呈現。"
+    },
+    {
+      "question": "1-1習題 進階題10",
+      "classification": "required",
+      "mounted": true,
+      "reason": "文字寫運河寬20公尺，示意圖明確以半徑20公尺／80°建模；不掛摺扇橋情境照與自評表。"
+    }
+  ]
+}

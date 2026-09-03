@@ -2957,6 +2957,23 @@ def parse_volume(volume_str: str):
         return None, None
 
 
+def grade_for_vocational_math_volume(volume: str) -> int | None:
+    """Authoritative grade for vocational Math B volumes.
+
+    數學B1 / 數學B2 → 10
+    數學B3 / 數學B4 → 11
+    Other volumes → None (caller keeps existing grade).
+    """
+    subject, vol_num = parse_volume(volume)
+    if subject != "B" or not isinstance(vol_num, int):
+        return None
+    if vol_num in (1, 2):
+        return 10
+    if vol_num in (3, 4):
+        return 11
+    return None
+
+
 def normalize_json_text_before_parse(text):
     """Normalize JSON text before parsing."""
     if not text:

@@ -289,7 +289,177 @@ def _finalize_practice_question_api_fields(data: dict[str, Any], *, skill_id: st
     if isinstance(out.get("choices"), list) and out["choices"]:
         out["choices"] = normalize_choice_displays(out["choices"])
         out["choices_display"] = list(out["choices"])
+    return _attach_student_image_assets(out)
+
+
+def _resolve_textbook_example_id_for_images(payload: dict[str, Any]) -> int | None:
+    meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    for key in ("textbook_example_id",):
+        raw = payload.get(key)
+        if raw is None:
+            raw = meta.get(key)
+        if raw is None or raw == "" or raw == 0:
+            continue
+        try:
+            return int(raw)
+        except Exception:
+            continue
+    return None
+
+
+def _attach_student_image_assets(payload: dict[str, Any]) -> dict[str, Any]:
+    """Attach notes.image_assets as browser-ready image_assets. Never raises."""
+    out = dict(payload) if isinstance(payload, dict) else {}
+    try:
+        from core.question_image_assets import list_student_image_assets_from_notes
+        from models import TextbookExample
+
+        if isinstance(out.get("image_assets"), list) and out["image_assets"]:
+            # Already prepared (e.g. TE fallback); keep as-is if URLs present.
+            normalized = []
+            for item in out["image_assets"]:
+                if not isinstance(item, dict):
+                    continue
+                url = str(item.get("url") or "").strip()
+                if url:
+                    normalized.append(item)
+            if normalized:
+                out["image_assets"] = normalized
+                out["visual_backed"] = bool(out.get("visual_backed") or normalized)
+                return out
+
+        notes = out.get("notes")
+        assets: list[dict[str, Any]] = []
+        if notes is not None:
+            assets = list_student_image_assets_from_notes(notes)
+        if not assets:
+            te_id = _resolve_textbook_example_id_for_images(out)
+            if te_id is not None:
+                te = db.session.get(TextbookExample, te_id)
+                if te is not None:
+                    assets = list_student_image_assets_from_notes(getattr(te, "notes", None))
+        out["image_assets"] = assets
+        if assets:
+            out["visual_backed"] = True
+    except Exception as exc:
+        current_app.logger.warning("[PRACTICE image_assets] attach failed: %s", exc)
+        out.setdefault("image_assets", [])
     return out
+
+
+def _select_textbook_example_for_skill(skill_id: str, example_id: int | None = None):
+    """Pick a TextbookExample for skill practice. Read-only."""
+    from models import TextbookExample
+
+    if example_id is not None:
+        te = db.session.get(TextbookExample, int(example_id))
+        if te is not None and str(te.skill_id) == str(skill_id):
+            return te
+        return None
+    rows = (
+        TextbookExample.query.filter_by(skill_id=skill_id)
+        .order_by(TextbookExample.id.asc())
+        .all()
+    )
+    if not rows:
+        return None
+    seq_key = f"te_seq_{skill_id}"
+    try:
+        idx = int(session.get(seq_key, 0) or 0) % len(rows)
+    except Exception:
+        idx = 0
+    session[seq_key] = idx + 1
+    session.modified = True
+    return rows[idx]
+
+
+def _build_textbook_example_practice_response(
+    te,
+    *,
+    skill_id: str,
+    difficulty_level: int,
+    consecutive: int,
+    skill_info: Any,
+):
+    """Serve an existing TextbookExample stem + notes.image_assets (no generation)."""
+    from core.question_image_assets import list_student_image_assets_from_notes
+
+    stem = str(getattr(te, "problem_text", "") or "")
+    answer = getattr(te, "correct_answer", None)
+    if answer is None:
+        answer = ""
+    assets = list_student_image_assets_from_notes(getattr(te, "notes", None))
+    input_type = "text"
+    if isinstance(skill_info, dict):
+        input_type = skill_info.get("input_type", "text") or "text"
+    else:
+        input_type = getattr(skill_info, "input_type", "text") or "text"
+
+    data = {
+        "question_text": stem,
+        "new_question_text": stem,
+        "correct_answer": answer,
+        "answer": answer,
+        "context_string": "",
+        "answer_type": input_type,
+        "textbook_example_id": te.id,
+        "question_id": te.id,
+        "source_kind": "textbook_example",
+        "question_source": "db_textbook_example",
+        "source": "db_textbook_example",
+        "image_assets": assets,
+        "visual_backed": bool(assets),
+        "metadata": {
+            "textbook_example_id": te.id,
+            "source_kind": "textbook_example",
+            "source_description": getattr(te, "source_description", "") or "",
+        },
+    }
+    session_data = _normalize_gencode_runtime_payload(dict(data), skill_id=skill_id)
+    for k in ["image", "fig", "figure", "image_base64", "visuals"]:
+        if k in session_data:
+            del session_data[k]
+    set_current(skill_id, session_data)
+    stored = get_current()
+    payload = _finalize_practice_question_api_fields(
+        {
+            "skill_id": skill_id,
+            "question_uid": stored.get("question_uid", ""),
+            "question_text_hash": stored.get("question_text_hash", ""),
+            "question_text": stem,
+            "new_question_text": stem,
+            "correct_answer": answer,
+            "answer": answer,
+            "context_string": "",
+            "consecutive_correct": consecutive,
+            "current_level": difficulty_level,
+            "image_base64": "",
+            "visual_aids": [],
+            "image_assets": assets,
+            "answer_type": input_type,
+            "answer_input_type": input_type,
+            "textbook_example_id": te.id,
+            "question_id": te.id,
+            "source": "db_textbook_example",
+            "route_source": "db_textbook_example",
+            "route_mode": "textbook_example",
+            "route_reason": "no_generator_serve_textbook_example",
+            "wrapper_loaded": False,
+            "question_source": "db_textbook_example",
+            "source_kind": "textbook_example",
+            "visual_backed": bool(assets),
+            "metadata": data["metadata"],
+        },
+        skill_id=skill_id,
+    )
+    current_app.logger.info(
+        "[PRACTICE textbook_example] skill=%s example_id=%s image_assets=%s",
+        skill_id,
+        te.id,
+        len(assets),
+    )
+    _log_get_next_question_response(payload)
+    return jsonify(payload)
 
 
 def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
@@ -1634,6 +1804,36 @@ def next_question():
 
         progress = db.session.query(Progress).filter_by(user_id=current_user.id, skill_id=skill_id).first()
         consecutive = progress.consecutive_correct if progress else 0
+
+        # No generator module: serve existing TextbookExample stems (read-only).
+        # Supports optional ?textbook_example_id= for verifying a specific TE.
+        _te_id_raw = request.args.get("textbook_example_id", type=int)
+        _need_te_fallback = (
+            route_mode == "unavailable"
+            or (route_decision is not None and not wrapper_loaded and mod is None)
+        )
+        if _need_te_fallback or _te_id_raw:
+            te_row = _select_textbook_example_for_skill(skill_id, example_id=_te_id_raw)
+            if te_row is not None and (_need_te_fallback or _te_id_raw):
+                return _build_textbook_example_practice_response(
+                    te_row,
+                    skill_id=skill_id,
+                    difficulty_level=difficulty_level,
+                    consecutive=consecutive,
+                    skill_info=skill_info,
+                )
+            if _need_te_fallback and te_row is None:
+                current_app.logger.error(
+                    "[PRACTICE] no generator and no TextbookExample for skill_id=%s example_id=%s",
+                    skill_id,
+                    _te_id_raw,
+                )
+                return jsonify({
+                    "success": False,
+                    "error_code": "SKILL_MODULE_NOT_FOUND",
+                    "skill_id": skill_id,
+                    "message": "題目載入失敗，請通知教師檢查此技能。"
+                }), 404
 
         # AI prereq query
         prereq_query = db.session.query(SkillInfo).join(

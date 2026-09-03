@@ -79,25 +79,27 @@ _PURE_CONCEPT_LINE_RE = re.compile(
     r"^\s*(?:概念|重點整理|重要觀念|觀念補充|小結)"
 )
 
+# Schema-only example: placeholders only — never real textbook chapter/section names.
 _JSON_EXAMPLE_METADATA_ONLY = """
 {
   "chapters": [
     {
-      "chapter_title": "1 坐標系與函數圖形",
+      "chapter_title": "<chapter_title>",
       "sections": [
         {
-          "section_title": "1-4 一元二次不等式",
+          "section_code": "<section_code>",
+          "section_title": "<section_title>",
           "concepts": [
             {
-              "concept_name": "一元二次不等式",
-              "concept_en_id": "QuadraticInequalitiesSolution",
+              "concept_name": "<concept_name>",
+              "concept_en_id": "<ConceptEnId>",
               "concept_paragraph": "",
               "examples": [
                 {
                   "id": "1",
-                  "title": "例1",
-                  "source_description": "例1",
-                  "problem_text": "例1",
+                  "title": "<canonical_title>",
+                  "source_description": "<canonical_title>",
+                  "problem_text": "<canonical_title>",
                   "correct_answer": "",
                   "detailed_solution": ""
                 }
@@ -105,9 +107,9 @@ _JSON_EXAMPLE_METADATA_ONLY = """
               "practice_questions": [
                 {
                   "id": "1",
-                  "title": "隨堂練習1",
-                  "source_description": "隨堂練習1",
-                  "problem_text": "隨堂練習1",
+                  "title": "<canonical_title>",
+                  "source_description": "<canonical_title>",
+                  "problem_text": "<canonical_title>",
                   "correct_answer": "",
                   "detailed_solution": ""
                 }
@@ -686,6 +688,7 @@ def _ensure_formal_skill_info_and_curriculum_v2(
     difficulty_level: int = 1,
     section_code: str = "",
     concept_code: str = "",
+    allow_ai_description: bool = True,
 ) -> SkillCurriculum:
     sid = str(formal_skill_id or "").strip()
     ch_name = str(concept_name or "").strip() or sid
@@ -768,7 +771,10 @@ def _ensure_formal_skill_info_and_curriculum_v2(
 
     with db.session.no_autoflush:
         final_order_index = _order_index_for_skill()
-        desc_text, desc_source = _generate_student_description()
+        if allow_ai_description:
+            desc_text, desc_source = _generate_student_description()
+        else:
+            desc_text, desc_source = _fallback_description(), "fallback"
         _log_info(
             f"[SKILL_DESCRIPTION_GENERATED] skill_id={sid} source={desc_source} description={desc_text}"
         )
@@ -1414,8 +1420,17 @@ def _build_anchor_blocks_v2(
                 if from_cc:
                     sec_code = from_cc
             formal_sid = current_formal_skill_id
-            if cur_source_type == "textbook_exercise":
+            concept_code = current_concept_code
+            concept_name = current_concept_name
+            concept_en_id = current_concept_en_id
+            display_order = current_concept_display_order
+            # Section-level mixed exercises must not inherit the last body concept.
+            if cur_source_type in ("textbook_exercise", "advanced_exercise"):
                 formal_sid = ""
+                concept_code = ""
+                concept_name = ""
+                concept_en_id = ""
+                display_order = 0
             meta[cur_key] = _mathb_block_meta_base(
                 anchor=cur_anchor or cur_key,
                 source_type=cur_source_type or "textbook_example",
@@ -1423,11 +1438,11 @@ def _build_anchor_blocks_v2(
                 detailed_solution=stxt,
                 section_code=sec_code,
                 section_title=active_section_title,
-                concept_code=current_concept_code,
-                concept_name=current_concept_name,
-                concept_en_id=current_concept_en_id,
+                concept_code=concept_code,
+                concept_name=concept_name,
+                concept_en_id=concept_en_id,
                 formal_skill_id=formal_sid,
-                display_order=current_concept_display_order,
+                display_order=display_order,
             )
         cur_key = ""
         cur_anchor = ""
@@ -2750,6 +2765,140 @@ def phase2_deterministic_block_slice(
 _PHASE3_CHUNK_SIZE = 10
 
 
+def _phase3_authoritative_source_context(curriculum_info: dict | None) -> dict[str, str]:
+    """Deterministic chapter/section coords from curriculum_info (DOCX/filename/form)."""
+    info = curriculum_info if isinstance(curriculum_info, dict) else {}
+    curriculum = str(info.get("curriculum", "") or "").strip()
+    volume = str(info.get("volume", "") or "").strip()
+
+    section_code = normalize_section_code(
+        str(info.get("section_code") or "").strip()
+    ) or normalize_section_code(str(info.get("section") or "").strip())
+
+    section_raw = str(info.get("section_title") or info.get("section") or "").strip()
+    section_title_name = section_raw
+    if section_code and section_raw.startswith(section_code):
+        section_title_name = section_raw[len(section_code) :].lstrip(" \t.-–—_").strip()
+    if not section_title_name and section_raw:
+        # Strip leading N-N code if present.
+        m_sec = re.match(r"^\s*\d+\s*[-－–—]\s*\d+\s*(.*)$", section_raw)
+        if m_sec:
+            section_title_name = str(m_sec.group(1) or "").strip()
+        else:
+            section_title_name = section_raw
+
+    chapter_raw = str(info.get("chapter") or info.get("chapter_title") or "").strip()
+    chapter_index = str(info.get("chapter_index") or "").strip()
+    chapter_title_name = str(info.get("chapter_title_name") or "").strip()
+    m_ch = re.match(r"^\s*(\d+)\s*(.*)$", chapter_raw)
+    if m_ch:
+        if not chapter_index:
+            chapter_index = str(m_ch.group(1) or "").strip()
+        if not chapter_title_name:
+            chapter_title_name = str(m_ch.group(2) or "").strip()
+    if not chapter_index:
+        inferred = _chapter_index_from_section_code(section_code)
+        if inferred is not None:
+            chapter_index = str(inferred)
+    if not chapter_title_name and chapter_raw and not m_ch:
+        chapter_title_name = chapter_raw
+
+    if chapter_index and chapter_title_name:
+        chapter_title_full = f"{chapter_index} {chapter_title_name}".strip()
+    elif chapter_raw:
+        chapter_title_full = chapter_raw
+    elif chapter_index:
+        chapter_title_full = chapter_index
+    else:
+        chapter_title_full = ""
+
+    return {
+        "curriculum": curriculum,
+        "volume": volume,
+        "chapter": chapter_index,
+        "chapter_index": chapter_index,
+        "chapter_title": chapter_title_full,
+        "chapter_title_name": chapter_title_name,
+        "section": section_code,
+        "section_code": section_code,
+        "section_title": section_title_name,
+    }
+
+
+def _force_phase3_authoritative_chapter_section(
+    parsed: dict,
+    curriculum_info: dict | None,
+) -> dict:
+    """Overwrite Gemini chapter/section with authoritative source coords (merge-safe)."""
+    if not isinstance(parsed, dict):
+        return {"chapters": []}
+    auth = _phase3_authoritative_source_context(curriculum_info)
+    chapter_title = str(auth.get("chapter_title") or "").strip()
+    section_code = str(auth.get("section_code") or "").strip()
+    section_title = str(auth.get("section_title") or "").strip()
+    if not chapter_title and not section_code and not section_title:
+        return parsed
+
+    concepts_acc: list[dict] = []
+    con_by_name: dict[str, dict] = {}
+    for ch in parsed.get("chapters") or []:
+        if not isinstance(ch, dict):
+            continue
+        for sec in ch.get("sections") or []:
+            if not isinstance(sec, dict):
+                continue
+            for con in sec.get("concepts") or []:
+                if not isinstance(con, dict):
+                    continue
+                nk = str(con.get("concept_name", "") or "").strip() or "UnknownConcept"
+                tcon = con_by_name.get(nk)
+                if tcon is None:
+                    tcon = {
+                        "concept_name": con.get("concept_name", nk),
+                        "concept_en_id": con.get("concept_en_id", ""),
+                        "concept_paragraph": con.get("concept_paragraph", ""),
+                        "examples": [],
+                        "practice_questions": [],
+                    }
+                    concepts_acc.append(tcon)
+                    con_by_name[nk] = tcon
+                else:
+                    for field in ("concept_en_id", "concept_paragraph"):
+                        if not str(tcon.get(field, "") or "").strip() and con.get(field):
+                            tcon[field] = con[field]
+                for bucket in ("examples", "practice_questions"):
+                    seen = {
+                        get_question_title(x) or ""
+                        for x in (tcon.get(bucket) or [])
+                        if isinstance(x, dict) and (get_question_title(x) or "")
+                    }
+                    merged_list = list(tcon.get(bucket) or [])
+                    for item in con.get(bucket) or []:
+                        if not isinstance(item, dict):
+                            continue
+                        title = get_question_title(item) or ""
+                        if title and title in seen:
+                            continue
+                        if title:
+                            seen.add(title)
+                        merged_list.append(item)
+                    tcon[bucket] = merged_list
+
+    section_obj: dict[str, Any] = {"concepts": concepts_acc}
+    if section_code:
+        section_obj["section_code"] = section_code
+    if section_title:
+        section_obj["section_title"] = section_title
+    elif section_code:
+        section_obj["section_title"] = section_code
+
+    chapter_obj: dict[str, Any] = {
+        "chapter_title": chapter_title or str((parsed.get("chapters") or [{}])[0].get("chapter_title") or ""),
+        "sections": [section_obj],
+    }
+    return {"chapters": [chapter_obj]}
+
+
 def _chunk_blocks_keys_for_phase3(blocks_keys: list[str], chunk_size: int = _PHASE3_CHUNK_SIZE) -> list[list[str]]:
     """將題目 key 分塊，避免單次 Gemini JSON 過大。"""
     keys = list(blocks_keys or [])
@@ -2804,6 +2953,8 @@ def _merge_phase3_metadata_trees(accum: dict, patch: dict) -> None:
             tsec = sec_by_key.get(sk)
             if tsec is None:
                 tsec = {"section_title": sec.get("section_title", ""), "concepts": []}
+                if sec.get("section_code"):
+                    tsec["section_code"] = sec.get("section_code")
                 sec_list.append(tsec)
                 if sk:
                     sec_by_key[sk] = tsec
@@ -2849,6 +3000,7 @@ def _build_metadata_alignment_prompt(blocks_keys: list[str], curriculum_info: di
     volume = str(curriculum_info.get("volume", "") or "").strip()
     subject, vol_num = parse_volume(volume)
     is_vocational_mathb = curriculum == "vocational" and subject == "B"
+    auth = _phase3_authoritative_source_context(curriculum_info)
 
     base_prompt = (
         "你是教材結構化助手。請根據 converted_docx_latex 的題號清單，"
@@ -2860,18 +3012,55 @@ def _build_metadata_alignment_prompt(blocks_keys: list[str], curriculum_info: di
         "2. title 需是可讀、穩定的 canonical title。\n"
         "3. problem_text 不要重複 title，correct_answer/detailed_solution 可為空字串。\n"
         "4. 所有內容需對齊 DOCX 原文語意。\n"
+        "5. 你的工作是 metadata alignment，不是重新判斷教材屬於哪一章。\n"
     )
     if is_vocational_mathb:
-        title_rules += "5. 高職 B 需優先對齊 section_title 與 concept_paragraph。\n"
+        title_rules += "6. 高職 B 需優先對齊 authoritative section_title 與 concept_paragraph。\n"
 
     parts = [
         base_prompt,
-        f"curriculum={curriculum} volume={volume}",
-        CONVERTED_DOCX_LATEX_JSON_RULES,
-        title_rules,
-        f"請輸出合法 JSON，格式可參考:\n{_JSON_EXAMPLE_METADATA_ONLY}",
-        "請確保每題都能對應到 metadata。",
+        "【authoritative source context — 已由 DOCX/檔名/Phase2 決定，不得修改或改寫】",
+        f"curriculum={auth.get('curriculum') or curriculum}",
+        f"volume={auth.get('volume') or volume}",
     ]
+    if auth.get("chapter"):
+        parts.append(f"chapter={auth['chapter']}")
+    if auth.get("chapter_title_name"):
+        parts.append(f"chapter_title={auth['chapter_title_name']}")
+    elif auth.get("chapter_title"):
+        parts.append(f"chapter_title={auth['chapter_title']}")
+    if auth.get("section"):
+        parts.append(f"section={auth['section']}")
+    if auth.get("section_title"):
+        parts.append(f"section_title={auth['section_title']}")
+
+    if auth.get("chapter_title") or auth.get("section") or auth.get("section_title"):
+        parts.append(
+            "【硬性約束】若 authoritative source context 已提供 chapter / chapter_title / "
+            "section / section_title：\n"
+            "1. 不得修改 chapter\n"
+            "2. 不得修改 chapter_title\n"
+            "3. 不得修改 section\n"
+            "4. 不得修改 section_title\n"
+            "5. 不得自行建立其他章節名稱\n"
+            "JSON 的 chapter_title / section_title / section_code 必須使用下列權威值："
+        )
+        if auth.get("chapter_title"):
+            parts.append(f"- JSON chapter_title = {auth['chapter_title']}")
+        if auth.get("section"):
+            parts.append(f"- JSON section_code = {auth['section']}")
+        if auth.get("section_title"):
+            parts.append(f"- JSON section_title = {auth['section_title']}")
+
+    parts.extend(
+        [
+            CONVERTED_DOCX_LATEX_JSON_RULES,
+            title_rules,
+            f"請輸出合法 JSON，格式可參考（僅示範結構，<> 為佔位符，勿填入真實教材章名）:\n"
+            f"{_JSON_EXAMPLE_METADATA_ONLY}",
+            "請確保每題都能對應到 metadata。",
+        ]
+    )
     for key in blocks_keys:
         parts.append(f"- canonical_title={key}")
     if not blocks_keys:
@@ -2903,7 +3092,7 @@ def _phase3_gemini_metadata_for_keys(
     parsed = safe_load_gemini_json(raw)
     if not isinstance(parsed, dict):
         raise RuntimeError("Gemini JSON 非預期 object")
-    return parsed
+    return _force_phase3_authoritative_chapter_section(parsed, curriculum_info)
 
 
 def phase3_ai_metadata_alignment(
@@ -2934,7 +3123,7 @@ def phase3_ai_metadata_alignment(
             chunk, curriculum_info, queue, chunk_label=label
         )
         _merge_phase3_metadata_trees(merged, part)
-    return merged
+    return _force_phase3_authoritative_chapter_section(merged, curriculum_info)
 
 
 # ---------------------------------------------------------------------------
@@ -3202,6 +3391,39 @@ def _find_existing_by_structural_title(
     target = _compact_title_key(title)
     if not target:
         return None
+    for row in rows:
+        if not _row_matches_import_scope(row, coords):
+            continue
+        row_title = _extract_title_from_source_description(
+            str(getattr(row, "source_description", "") or "")
+        )
+        if _compact_title_key(row_title) == target:
+            return row
+    return None
+
+
+def _find_existing_by_structural_title_any_skill(
+    *,
+    curriculum_info: dict,
+    chapter_title: str,
+    section_title: str,
+    source_type: str,
+    title: str,
+) -> TextbookExample | None:
+    """Same-section structural title match without skill_id (re-import safety)."""
+    coords = _import_scope_coords(curriculum_info)
+    if source_type == "self_assessment":
+        return None
+    target = _compact_title_key(title)
+    if not target:
+        return None
+    rows = TextbookExample.query.filter_by(
+        source_curriculum=coords["curriculum"],
+        source_volume=coords["volume"],
+        source_chapter=chapter_title,
+        source_section=section_title,
+        problem_type=source_type,
+    ).all()
     for row in rows:
         if not _row_matches_import_scope(row, coords):
             continue
@@ -4618,16 +4840,29 @@ def phase4_absolute_hydrate_and_save(
                             skipped_fragment_count += 1
                             skipped += 1
                             continue
-                        db_answer = _sanitize_db_latex_delimiters(
-                            str(item.get("correct_answer") or "")
-                        )
-                        db_solution = _sanitize_db_latex_delimiters(
-                            str(block_meta.get("detailed_solution") or item.get("detailed_solution") or "")
-                        )
+                        db_answer_raw = item.get("correct_answer")
+                        if db_answer_raw is None or str(db_answer_raw).strip() == "":
+                            db_answer = None
+                        else:
+                            db_answer = _sanitize_db_latex_delimiters(str(db_answer_raw))
+                        db_solution_raw = (
+                            block_meta.get("detailed_solution")
+                            if block_meta
+                            else None
+                        ) or item.get("detailed_solution")
+                        if db_solution_raw is None or str(db_solution_raw).strip() == "":
+                            db_solution = None
+                        else:
+                            db_solution = _sanitize_db_latex_delimiters(str(db_solution_raw))
                         item["title"] = title
                         item["problem_text"] = db_problem_text
                         item["correct_answer"] = db_answer
                         item["detailed_solution"] = db_solution
+                        notes_raw = item.get("notes")
+                        if notes_raw is not None and str(notes_raw).strip():
+                            db_notes = str(notes_raw).strip()
+                        else:
+                            db_notes = None
 
                         concept_name_final = str(
                             block_meta.get("concept_name") or concept_name or ""
@@ -4763,6 +4998,14 @@ def phase4_absolute_hydrate_and_save(
                             source_type=source_type,
                             title=title,
                         )
+                        if existing is None and is_vocational_mathb:
+                            existing = _find_existing_by_structural_title_any_skill(
+                                curriculum_info=lookup_coords,
+                                chapter_title=auth["chapter_title"],
+                                section_title=auth["section_title"],
+                                source_type=source_type,
+                                title=title,
+                            )
 
                         try:
                             difficulty_level = int(item.get("difficulty_level", 1))
@@ -4771,9 +5014,21 @@ def phase4_absolute_hydrate_and_save(
 
                         category_fixed = False
                         if existing:
+                            existing.skill_id = skill_id
                             existing.problem_text = db_problem_text
                             existing.correct_answer = db_answer
                             existing.detailed_solution = db_solution
+                            if db_notes is not None:
+                                try:
+                                    from core.textbook_pdf_visual import (
+                                        merge_notes_preserve_image_assets,
+                                    )
+
+                                    existing.notes = merge_notes_preserve_image_assets(
+                                        existing.notes, db_notes
+                                    )
+                                except Exception:
+                                    existing.notes = db_notes
                             _, category_fixed = _phase4_propagate_curriculum_authority(
                                 existing, authority_row, skill_id=skill_id
                             )
@@ -4794,6 +5049,7 @@ def phase4_absolute_hydrate_and_save(
                                 problem_type=source_type or "calculation",
                                 correct_answer=db_answer,
                                 detailed_solution=db_solution,
+                                notes=db_notes,
                                 difficulty_level=difficulty_level,
                             )
                             _, category_fixed = _phase4_propagate_curriculum_authority(
@@ -4904,16 +5160,20 @@ def _is_outline_skip_section_title(section_title: str) -> bool:
 
 
 def _resolve_outline_grade(curriculum_info: dict) -> int:
-    """由 curriculum_info 推導年級（B1→10, B2→11）。"""
+    """Resolve grade. Vocational Math B volume mapping is authoritative."""
+    from core.textbook_processor import grade_for_vocational_math_volume
+
+    mapped = grade_for_vocational_math_volume(
+        str((curriculum_info or {}).get("volume", "") or "")
+    )
+    if mapped is not None:
+        return mapped
     try:
-        g = int(curriculum_info.get("grade", 0))
+        g = int((curriculum_info or {}).get("grade", 0))
         if g >= 10:
             return g
     except (TypeError, ValueError):
         pass
-    _, vol_num = parse_volume(str(curriculum_info.get("volume", "") or ""))
-    if isinstance(vol_num, int) and vol_num >= 1:
-        return 9 + vol_num
     return 10
 
 

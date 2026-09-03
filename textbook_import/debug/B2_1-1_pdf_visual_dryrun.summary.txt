@@ -1,0 +1,33 @@
+B2 1-1 PDF visual dry-run
+generated_at: 2026-09-03T07:45:20+00:00
+pdf: 第一章 1-1 角度的基本性質-課本.pdf
+pages: 14 text_usable=True
+matched: 19/19 high=19 mid=0 low=0 unmatched=0
+needs_review: 0
+visual_required: 4 (needs_review visual: 0)
+visual_types: {'embedded_image': 3, 'diagram': 1}
+cross_page: 0
+mathtype: {"failure_18": {"token": "[MATH_PARSE_FAILED_18]", "classification": "教材說明", "question_label": null, "context80": "「一周角」以六十分制度量時為360°，以弧度制度量時為\\(2\\pi\\)（弧度），\n由此可得[MATH_PARSE_FAILED_18]，即[MATH_PARSE_FAILED_19]。"}, "failure_19": {"token": "[MATH_PARSE_FAILED_19]", "classification": "教材說明", "question_label": null, "context80": "「一周角」以六十分制度量時為360°，以弧度制度量時為\\(2\\pi\\)（弧度），\n由此可得[MATH_PARSE_FAILED_18]，即[MATH_PARSE_FAILED_19]。"}, "failure_75": {"token": "[MATH_PARSE_FAILED_75]", "classification": "教材說明", "question_label": null, "context80": "由上例可知一個角\\(\\theta\\)有無限多個同界角，其中任二角的差為\\(360{}^\\circ\\)的整數倍，若\\(\\theta\\)不為\\(0{}^\\circ\\)的同界角，在所有正同界角中最小的，稱為最小正同界角，\n在所有負同界角中最大的，"}}
+json: D:\Python\Mathproject_tvet_mathB\textbook_import\debug\B2_1-1_pdf_visual_dryrun.json
+contact: D:\Python\Mathproject_tvet_mathB\textbook_import\debug\pdf_visual\B2_1-1\contact_sheet.png
+
+per-question:
+-  1 例1                 page=5 score=0.94 visual=False review=False reason=formula_or_decoration_vectors_only
+-  2 隨堂練習1              page=6 score=0.94 visual=False review=False reason=formula_or_decoration_vectors_only
+-  3 例2                 page=7 score=0.94 visual=True review=False reason=embedded_image_in_question_region
+-  4 隨堂練習2              page=7 score=0.94 visual=False review=False reason=formula_or_decoration_vectors_only
+-  5 例3                 page=10 score=0.99 visual=False review=False reason=formula_or_decoration_vectors_only
+-  6 隨堂練習3              page=10 score=0.99 visual=False review=False reason=formula_or_decoration_vectors_only
+-  7 例4                 page=11 score=0.99 visual=False review=False reason=formula_or_decoration_vectors_only
+-  8 隨堂練習4              page=11 score=0.99 visual=False review=False reason=text_and_formula_only
+-  9 108統測B             page=12 score=0.99 visual=False review=False reason=formula_or_decoration_vectors_only
+- 10 1-1習題 基礎題1         page=13 score=0.94 visual=False review=False reason=text_and_formula_only
+- 11 1-1習題 基礎題2         page=13 score=0.99 visual=False review=False reason=text_and_formula_only
+- 12 1-1習題 基礎題3         page=13 score=0.94 visual=False review=False reason=text_and_formula_only
+- 13 1-1習題 基礎題4         page=13 score=0.94 visual=False review=False reason=text_and_formula_only
+- 14 1-1習題 基礎題5         page=13 score=0.99 visual=True review=False reason=embedded_image_in_question_region
+- 15 1-1習題 基礎題6         page=13 score=0.99 visual=False review=False reason=text_and_formula_only
+- 16 1-1習題 基礎題7         page=13 score=0.94 visual=False review=False reason=text_and_formula_only
+- 17 1-1習題 基礎題8         page=14 score=0.99 visual=False review=False reason=text_and_formula_only
+- 18 1-1習題 進階題9         page=14 score=0.94 visual=True review=False reason=figure_keyword_and_soft_vector_cluster
+- 19 1-1習題 進階題10        page=14 score=0.94 visual=True review=False reason=embedded_image_in_question_region

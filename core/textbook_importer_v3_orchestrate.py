@@ -131,11 +131,18 @@ def build_curriculum_info_for_v3_import(
     except (TypeError, ValueError):
         grade_val = 10
 
+    volume_val = str(volume or "").strip()
+    from core.textbook_processor import grade_for_vocational_math_volume
+
+    mapped_grade = grade_for_vocational_math_volume(volume_val)
+    if mapped_grade is not None:
+        grade_val = mapped_grade
+
     curriculum_info: dict[str, Any] = {
         "curriculum": str(curriculum or "vocational").strip() or "vocational",
         "publisher": str(publisher or "longteng").strip() or "longteng",
         "grade": grade_val,
-        "volume": str(volume or "").strip(),
+        "volume": volume_val,
         "section_code": section_code,
         "import_mode": str(import_mode or "docx_problems").strip() or "docx_problems",
         "original_filename": upload_names["original_filename"],

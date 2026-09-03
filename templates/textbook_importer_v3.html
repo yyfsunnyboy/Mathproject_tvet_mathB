@@ -537,6 +537,22 @@
                                     <span class="processing-step-icon" data-icon></span>
                                     <span>MathType / Equation 公式轉換</span>
                                 </div>
+                                <div class="processing-step" data-step="question_parse">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>題目解析</span>
+                                </div>
+                                <div class="processing-step" data-step="curriculum_binding">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>課綱 / Skill 綁定</span>
+                                </div>
+                                <div class="processing-step" data-step="ai_alignment">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>AI metadata alignment</span>
+                                </div>
+                                <div class="processing-step" data-step="db_write">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>資料庫寫入</span>
+                                </div>
                                 <div class="processing-step" data-step="pdf_alignment">
                                     <span class="processing-step-icon" data-icon></span>
                                     <span>PDF 視覺對位</span>
@@ -545,12 +561,7 @@
                                     <span class="processing-step-icon" data-icon></span>
                                     <span>圖片與題目關聯</span>
                                 </div>
-                                <div class="processing-step" data-step="db_write">
-                                    <span class="processing-step-icon" data-icon></span>
-                                    <span>資料庫寫入</span>
-                                </div>
                             </div>
-                            <!-- TODO V3 backend: drive processing steps from real progress API response -->
                         </div>
                     </div>
 
@@ -641,10 +652,16 @@
                 'file_validation',
                 'word_parse',
                 'equation_convert',
+                'question_parse',
+                'curriculum_binding',
+                'ai_alignment',
+                'db_write',
                 'pdf_alignment',
-                'asset_linking',
-                'db_write'
+                'asset_linking'
             ];
+
+            const PENDING_ONLY_STEPS = {
+            };
 
             const EMPTY_DISPLAY = '—';
 
@@ -928,6 +945,22 @@
                 if (volumeConfirmLabelStep3) {
                     volumeConfirmLabelStep3.textContent = selectedVolume;
                 }
+                syncGradeFromVolume();
+            }
+
+            function syncGradeFromVolume() {
+                var GRADE_BY_VOLUME = {
+                    '數學B1': 10,
+                    '數學B2': 10,
+                    '數學B3': 11,
+                    '數學B4': 11
+                };
+                var gradeInput = document.getElementById('grade');
+                var selectedVolume = volumeSelect ? volumeSelect.value : '';
+                if (!gradeInput || !selectedVolume) return;
+                if (Object.prototype.hasOwnProperty.call(GRADE_BY_VOLUME, selectedVolume)) {
+                    gradeInput.value = String(GRADE_BY_VOLUME[selectedVolume]);
+                }
             }
 
             function updateSelectedFilenames() {
@@ -959,13 +992,21 @@
             }
 
             function renderStepIcon(container, state) {
-                if (state === 'active') {
+                if (state === 'active' || state === 'running') {
                     container.innerHTML =
                         '<span class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span>';
                     return;
                 }
-                if (state === 'done') {
+                if (state === 'done' || state === 'success') {
                     container.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                    return;
+                }
+                if (state === 'failed') {
+                    container.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
+                    return;
+                }
+                if (state === 'skipped') {
+                    container.innerHTML = '<i class="bi bi-dash-circle text-secondary"></i>';
                     return;
                 }
                 container.innerHTML = '<i class="bi bi-circle text-muted"></i>';
@@ -975,12 +1016,113 @@
                 var stepEl = document.querySelector('.processing-step[data-step="' + stepId + '"]');
                 if (!stepEl) return;
 
-                stepEl.classList.remove('is-active', 'is-done');
-                if (state === 'active') stepEl.classList.add('is-active');
-                if (state === 'done') stepEl.classList.add('is-done');
+                stepEl.classList.remove('is-active', 'is-done', 'is-failed');
+                if (state === 'active' || state === 'running') stepEl.classList.add('is-active');
+                if (state === 'done' || state === 'success') stepEl.classList.add('is-done');
+                if (state === 'failed') stepEl.classList.add('is-failed');
 
                 var iconEl = stepEl.querySelector('[data-icon]');
                 if (iconEl) renderStepIcon(iconEl, state);
+            }
+
+            function applyStagesToUi(stages) {
+                if (!stages) return;
+                Object.keys(stages).forEach(function (stageKey) {
+                    var info = stages[stageKey] || {};
+                    var uiStep = info.ui_step;
+                    if (!uiStep) return;
+                    var status = info.status || 'pending';
+                    if (PENDING_ONLY_STEPS[uiStep] && status === 'pending') {
+                        setProcessingStep(uiStep, 'pending');
+                        return;
+                    }
+                    setProcessingStep(uiStep, status);
+                });
+            }
+
+            function pollImportTask(statusUrl, overwriteExisting) {
+                var attempts = 0;
+                var maxAttempts = 720; // ~60 min at 5s
+                var timer = null;
+
+                function tick() {
+                    attempts += 1;
+                    fetch(statusUrl, {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (data) {
+                                return { ok: response.ok, status: response.status, data: data };
+                            });
+                        })
+                        .then(function (result) {
+                            if (!result.ok || !result.data || !result.data.ok) {
+                                hideProcessingPanel();
+                                setImportButtonState();
+                                showBackendValidationError(result.data || { message: '無法取得匯入進度' });
+                                return;
+                            }
+                            var data = result.data;
+                            applyStagesToUi(data.stages);
+                            if (data.current_pair) {
+                                setBatchProgress(
+                                    data.current_pair,
+                                    data.pair_index || 1,
+                                    data.pair_total || 1
+                                );
+                            }
+
+                            if (data.status === 'running') {
+                                if (attempts >= maxAttempts) {
+                                    hideProcessingPanel();
+                                    setImportButtonState();
+                                    alert('匯入逾時，請稍後至結果區或重新整理確認。');
+                                    return;
+                                }
+                                timer = setTimeout(tick, 5000);
+                                return;
+                            }
+
+                            // terminal
+                            if (data.result) {
+                                renderImportResult(data.result);
+                            } else if (data.error) {
+                                renderImportResult({
+                                    status: 'failed',
+                                    sourcePairsStats: {},
+                                    contentParsing: {},
+                                    questions: {},
+                                    images: {},
+                                    database: {},
+                                    storageSummary: (data.error.stage || '') + '\n' +
+                                        (data.error.error_code || '') + '\n' +
+                                        (data.error.message || '')
+                                });
+                            }
+                            setImportButtonState();
+                            if (data.status === 'failed') {
+                                var err = data.error || {};
+                                alert(
+                                    '匯入失敗\n' +
+                                    'stage: ' + (err.stage || '') + '\n' +
+                                    'code: ' + (err.error_code || '') + '\n' +
+                                    (err.message || '')
+                                );
+                            }
+                        })
+                        .catch(function (err) {
+                            hideProcessingPanel();
+                            setImportButtonState();
+                            alert('讀取匯入進度失敗：' + (err && err.message ? err.message : String(err)));
+                        });
+                }
+
+                tick();
+                return function cancel() {
+                    if (timer) clearTimeout(timer);
+                };
             }
 
             function setBatchProgress(currentName, currentIndex, totalCount) {
@@ -1076,7 +1218,13 @@
                 var questions = result.questions || {};
                 document.getElementById('resultQuestions').innerHTML =
                     renderMetricRow('Parsed questions', questions.parsed) +
-                    renderMetricRow('Imported questions', questions.imported);
+                    renderMetricRow('Imported questions', questions.imported) +
+                    renderMetricRow('Concepts found', questions.conceptsFound) +
+                    renderMetricRow('Formal skills created', questions.formalSkillsCreated) +
+                    renderMetricRow('Formal skills reused', questions.formalSkillsReused) +
+                    renderMetricRow('Gemini requests', questions.geminiRequests) +
+                    renderMetricRow('Gemini tokens', questions.geminiTokens) +
+                    renderMetricRow('Anchor collisions', questions.anchorCollisions);
 
                 var images = result.images || {};
                 document.getElementById('resultImages').innerHTML =
@@ -1088,6 +1236,7 @@
                 var database = result.database || {};
                 document.getElementById('resultDatabase').innerHTML =
                     renderMetricRow('Questions written', database.questionsWritten) +
+                    renderMetricRow('Questions updated/reused', database.questionsUpdated) +
                     renderMetricRow('Assets written', database.assetsWritten) +
                     renderMetricRow('Relationships created', database.relationshipsCreated);
 
@@ -1317,6 +1466,17 @@
                         }
 
                         setProcessingStep('file_validation', 'done');
+                        if (result.data.task_id && result.data.status_url) {
+                            setBatchProgress(
+                                (result.data.pairs && result.data.pairs[0] && result.data.pairs[0].base_name) || '教材',
+                                1,
+                                (result.data.batch && result.data.batch.total_pairs) || (result.data.pairs || []).length || 1
+                            );
+                            pollImportTask(result.data.status_url, overwriteExisting);
+                            return;
+                        }
+
+                        // Fallback: storage-only response (should not happen when pipeline is wired)
                         renderValidationResult(result.data);
                         setImportButtonState();
                     })
@@ -1372,6 +1532,8 @@
                 setImportButtonState: setImportButtonState,
                 setProcessingStep: setProcessingStep,
                 setBatchProgress: setBatchProgress,
+                applyStagesToUi: applyStagesToUi,
+                pollImportTask: pollImportTask,
                 renderValidationResult: renderValidationResult,
                 renderImportResult: renderImportResult,
                 showOverwriteModal: showOverwriteModal,

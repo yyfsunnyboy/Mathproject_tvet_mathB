@@ -14,3 +14,6 @@ import queue
 # 用於暫存正在執行的任務佇列 (簡易版 In-memory store)
 # Key: task_id, Value: queue.Queue
 TASK_QUEUES = {}
+
+# V3 textbook importer task state (stages / result). Key: task_id
+V3_IMPORT_TASKS: dict = {}

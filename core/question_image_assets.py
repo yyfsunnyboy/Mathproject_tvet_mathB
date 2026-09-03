@@ -380,3 +380,107 @@ def attach_image_metadata(record, metadata):
         setattr(record, field, json.dumps(merged, ensure_ascii=False))
         return True
     return False
+
+
+def parse_notes_dict(notes: Any) -> dict:
+    """Safely parse TextbookExample.notes into a dict. Never raises."""
+    if notes is None:
+        return {}
+    if isinstance(notes, dict):
+        return dict(notes)
+    if isinstance(notes, (bytes, bytearray)):
+        try:
+            notes = notes.decode("utf-8", errors="ignore")
+        except Exception:
+            return {}
+    if not isinstance(notes, str):
+        return {}
+    text = notes.strip()
+    if not text:
+        return {}
+    try:
+        parsed = json.loads(text)
+    except Exception:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def extract_raw_image_assets_from_notes(notes: Any) -> list[dict]:
+    """Return notes.image_assets list or [] for any notes shape. Never raises."""
+    meta = parse_notes_dict(notes)
+    assets = meta.get("image_assets")
+    if not isinstance(assets, list):
+        return []
+    return [a for a in assets if isinstance(a, dict)]
+
+
+def normalize_question_asset_relpath(path: Any) -> str | None:
+    """Normalize a stored path to uploads/question_assets/... relative path."""
+    raw = str(path or "").strip().replace("\\", "/")
+    if not raw:
+        return None
+    raw = raw.lstrip("/")
+    if raw.startswith("http://") or raw.startswith("https://"):
+        return None
+    if raw.startswith("uploads/question_assets/"):
+        return raw
+    if raw.startswith("question_assets/"):
+        return "uploads/" + raw
+    return None
+
+
+def question_asset_public_url(path: Any, *, root_path: str | None = None) -> str | None:
+    """
+    Build a browser URL for a question asset.
+
+    Reuses the existing Flask route: /uploads/question_assets/<path>
+    Returns None if path is invalid or the file is missing on disk.
+    """
+    rel = normalize_question_asset_relpath(path)
+    if not rel:
+        return None
+    try:
+        if root_path is None:
+            try:
+                root_path = current_app.root_path
+            except Exception:
+                root_path = os.getcwd()
+        abs_path = os.path.normpath(os.path.join(root_path, rel.replace("/", os.sep)))
+        root_norm = os.path.normpath(root_path)
+        if not abs_path.startswith(root_norm):
+            return None
+        if not os.path.isfile(abs_path):
+            return None
+    except Exception:
+        return None
+    return "/" + rel
+
+
+def list_student_image_assets_from_notes(
+    notes: Any,
+    *,
+    root_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """
+    Convert notes.image_assets into student-displayable entries.
+
+    Each item: {url, path, display_path}. Invalid/missing files are skipped.
+    """
+    out: list[dict[str, Any]] = []
+    for asset in extract_raw_image_assets_from_notes(notes):
+        try:
+            display = asset.get("display_path") or asset.get("path") or ""
+            url = question_asset_public_url(display, root_path=root_path)
+            if not url:
+                continue
+            rel = normalize_question_asset_relpath(display) or ""
+            out.append(
+                {
+                    "url": url,
+                    "path": rel,
+                    "display_path": rel,
+                }
+            )
+        except Exception:
+            continue
+    return out

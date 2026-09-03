@@ -185,6 +185,10 @@ from core.textbook_filename_parser import (
     resolve_upload_filenames,
 )
 from core.textbook_importer_v3_storage import upload_textbook_source_batch
+from core.textbook_importer_v3_pipeline import (
+    enqueue_v3_batch_pipeline,
+    get_v3_import_task,
+)
 from core.textbook_structure_parser import get_structure_map
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, mask_api_key_last4
 from core.session_safety import (
@@ -1352,6 +1356,11 @@ def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, fil
     if not is_vocational_mathb_volume(volume):
         return False
     curriculum_info["curriculum"] = "vocational"
+    from core.textbook_processor import grade_for_vocational_math_volume
+
+    mapped_grade = grade_for_vocational_math_volume(volume)
+    if mapped_grade is not None:
+        curriculum_info["grade"] = mapped_grade
     import_policy["docx_formula_source_mode"] = "converted_docx_latex"
     import_policy["enable_formula_postprocess"] = False
     import_policy["enable_formula_auto_apply"] = False
@@ -1736,6 +1745,37 @@ def admin_textbook_importer_v3():
             overwrite_existing=request.form.get('overwrite_existing'),
         )
 
+        if status_code == 200 and payload.get("ok"):
+            pairs = payload.get("pairs") or []
+            storage = payload.get("storage") or {}
+            batch = payload.get("batch") or {}
+            volume_val = str(batch.get("volume") or request.form.get("volume") or "")
+            from core.textbook_processor import grade_for_vocational_math_volume
+
+            mapped_grade = grade_for_vocational_math_volume(volume_val)
+            if mapped_grade is not None:
+                grade_val = mapped_grade
+            else:
+                try:
+                    grade_val = int(batch.get("grade") or request.form.get("grade") or 10)
+                except (TypeError, ValueError):
+                    grade_val = 10
+            task_id = enqueue_v3_batch_pipeline(
+                app=current_app._get_current_object(),
+                project_root=Path(current_app.root_path),
+                pairs=pairs,
+                curriculum=str(batch.get("curriculum") or request.form.get("curriculum") or "vocational"),
+                volume=volume_val,
+                publisher=str(request.form.get("publisher") or "longteng"),
+                grade=grade_val,
+                allow_phase4=True,
+                storage_meta=storage,
+            )
+            payload["task_id"] = task_id
+            payload["pipeline_started"] = True
+            payload["status_url"] = url_for("core.textbook_importer_v3_task_status", task_id=task_id)
+            payload["stream_url"] = url_for("core.importer_stream", task_id=task_id)
+
         return jsonify(_admin_v3_json_safe(payload)), status_code
 
     return render_template(
@@ -1743,6 +1783,41 @@ def admin_textbook_importer_v3():
         has_gemini_api_key=has_gemini_api_key,
         ai_settings_url='/admin/ai_prompt_settings',
     )
+
+
+@core_bp.route('/textbook_importer_v3/task/<task_id>', methods=['GET'])
+@login_required
+def textbook_importer_v3_task_status(task_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+
+    state = get_v3_import_task(task_id)
+    if state is None:
+        return jsonify({
+            "ok": False,
+            "error": "task_not_found",
+            "message": "找不到此匯入任務（可能已結束並清除，或尚未建立）。",
+            "task_id": task_id,
+        }), 404
+
+    result = state.get("result")
+    ui_result = None
+    if isinstance(result, dict):
+        ui_result = result.get("ui_result") or result
+
+    return jsonify(_admin_v3_json_safe({
+        "ok": True,
+        "task_id": task_id,
+        "status": state.get("status"),
+        "stages": state.get("stages"),
+        "error": state.get("error"),
+        "pair_index": state.get("pair_index"),
+        "pair_total": state.get("pair_total"),
+        "current_pair": state.get("current_pair"),
+        "updated_at": state.get("updated_at"),
+        "result": ui_result,
+        "raw_result": result if isinstance(result, dict) and "pairs" in result else None,
+    })), 200
 
 
 @core_bp.route('/importer/status/<task_id>')

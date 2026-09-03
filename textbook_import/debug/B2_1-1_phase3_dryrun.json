@@ -1,0 +1,1097 @@
+{
+  "status": "ok",
+  "generated_at": "2026-09-03T02:59:07.999080+00:00",
+  "curriculum": "vocational",
+  "publisher": "longteng",
+  "volume": "數學B2",
+  "chapter": "1 三角函數",
+  "section": "1-1 角度的基本性質",
+  "section_code": "1-1",
+  "chapter_index": 1,
+  "latex_docx_path": "D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本_Latex.docx",
+  "original_docx_path": "d:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.docx",
+  "converted_now": false,
+  "phase1_line_count": 166,
+  "phase2_block_keys": [
+    "例1",
+    "隨堂練習1",
+    "例2",
+    "隨堂練習2",
+    "例3",
+    "隨堂練習3",
+    "例4",
+    "隨堂練習4",
+    "108統測B",
+    "1-1習題 基礎題 1",
+    "1-1習題 基礎題 2",
+    "1-1習題 基礎題 3",
+    "1-1習題 基礎題 4",
+    "1-1習題 基礎題 5",
+    "1-1習題 基礎題 6",
+    "1-1習題 基礎題 7",
+    "1-1習題 基礎題 8",
+    "1-1習題 進階題 9",
+    "1-1習題 進階題 10"
+  ],
+  "phase2_block_meta_fields": [
+    "anchor",
+    "concept_code",
+    "concept_en_id",
+    "concept_name",
+    "detailed_solution",
+    "display_order",
+    "formal_skill_id",
+    "problem_text",
+    "section_code",
+    "section_title",
+    "source_type"
+  ],
+  "phase3_raw": {
+    "chapters": [
+      {
+        "chapter_title": "1 三角函數",
+        "sections": [
+          {
+            "concepts": [
+              {
+                "concept_name": "角度的基本性質",
+                "concept_en_id": "basic_properties_of_angles",
+                "concept_paragraph": "",
+                "examples": [],
+                "practice_questions": [
+                  {
+                    "id": "1",
+                    "title": "1-1習題 基礎題 1",
+                    "source_description": "1-1習題 基礎題 1",
+                    "problem_text": "1-1習題 基礎題 1",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "2",
+                    "title": "1-1習題 基礎題 2",
+                    "source_description": "1-1習題 基礎題 2",
+                    "problem_text": "1-1習題 基礎題 2",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "3",
+                    "title": "1-1習題 基礎題 3",
+                    "source_description": "1-1習題 基礎題 3",
+                    "problem_text": "1-1習題 基礎題 3",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "4",
+                    "title": "1-1習題 基礎題 4",
+                    "source_description": "1-1習題 基礎題 4",
+                    "problem_text": "1-1習題 基礎題 4",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "5",
+                    "title": "1-1習題 基礎題 5",
+                    "source_description": "1-1習題 基礎題 5",
+                    "problem_text": "1-1習題 基礎題 5",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "6",
+                    "title": "1-1習題 基礎題 6",
+                    "source_description": "1-1習題 基礎題 6",
+                    "problem_text": "1-1習題 基礎題 6",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "7",
+                    "title": "1-1習題 基礎題 7",
+                    "source_description": "1-1習題 基礎題 7",
+                    "problem_text": "1-1習題 基礎題 7",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "8",
+                    "title": "1-1習題 基礎題 8",
+                    "source_description": "1-1習題 基礎題 8",
+                    "problem_text": "1-1習題 基礎題 8",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "9",
+                    "title": "1-1習題 進階題 9",
+                    "source_description": "1-1習題 進階題 9",
+                    "problem_text": "1-1習題 進階題 9",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "10",
+                    "title": "1-1習題 進階題 10",
+                    "source_description": "1-1習題 進階題 10",
+                    "problem_text": "1-1習題 進階題 10",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  }
+                ]
+              },
+              {
+                "concept_name": "角度與弧度",
+                "concept_en_id": "angle_and_radian",
+                "concept_paragraph": "",
+                "examples": [
+                  {
+                    "id": "1",
+                    "title": "例1",
+                    "source_description": "例1",
+                    "problem_text": "例1",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "2",
+                    "title": "例2",
+                    "source_description": "例2",
+                    "problem_text": "例2",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "3",
+                    "title": "例3",
+                    "source_description": "例3",
+                    "problem_text": "例3",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "4",
+                    "title": "例4",
+                    "source_description": "例4",
+                    "problem_text": "例4",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  }
+                ],
+                "practice_questions": [
+                  {
+                    "id": "1",
+                    "title": "隨堂練習1",
+                    "source_description": "隨堂練習1",
+                    "problem_text": "隨堂練習1",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "2",
+                    "title": "隨堂練習2",
+                    "source_description": "隨堂練習2",
+                    "problem_text": "隨堂練習2",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "3",
+                    "title": "隨堂練習3",
+                    "source_description": "隨堂練習3",
+                    "problem_text": "隨堂練習3",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "4",
+                    "title": "隨堂練習4",
+                    "source_description": "隨堂練習4",
+                    "problem_text": "隨堂練習4",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  },
+                  {
+                    "id": "5",
+                    "title": "108統測B",
+                    "source_description": "108統測B",
+                    "problem_text": "108統測B",
+                    "correct_answer": "",
+                    "detailed_solution": ""
+                  }
+                ]
+              }
+            ],
+            "section_code": "1-1",
+            "section_title": "角度的基本性質"
+          }
+        ]
+      }
+    ]
+  },
+  "questions": [
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_001_001",
+      "text_fingerprint": "633ad81990ba614b549b4418137edfbbeb1359e785836d44b7b124996ee386a4",
+      "source_order": 1,
+      "anchor": "例1",
+      "question_label": "例1",
+      "source_type": "textbook_example",
+      "question_type": "example",
+      "question_number": "1",
+      "problem_text": "(1)試將135°化為弧度。\n(2)試將\\(-\\frac { 5 } { 3 }\\pi\\)化為度。",
+      "correct_answer": "",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 利用\\(\\pi =180{}^\\circ\\)，所以\\(1{}^\\circ =\\frac { \\pi } { 180 }\\)\n(1) \\(135{}^\\circ =135\\times 1{}^\\circ =135\\times \\frac { \\pi } { 180 }=\\frac { 3\\pi } { 4 }\\)\n(2) \\(-\\frac { 5 } { 3 }\\pi =-\\frac { 5 } { 3 }\\times 180{}^\\circ =-300{}^\\circ\\)",
+      "concept_code": "1-1.2",
+      "concept_name": "角的度量與換算",
+      "concept_en_id": "AngleMeasurementAndConversion",
+      "formal_skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "例1",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_example_001_001",
+          "text_fingerprint": "633ad81990ba614b549b4418137edfbbeb1359e785836d44b7b124996ee386a4",
+          "source_order": 1
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_001_002",
+      "text_fingerprint": "12423a5c7626542760e81ccb282028134d1a09b80582da8ca0adee96d8f40cc6",
+      "source_order": 2,
+      "anchor": "隨堂練習1",
+      "question_label": "隨堂練習1",
+      "source_type": "in_class_practice",
+      "question_type": "in_class_practice",
+      "question_number": "1",
+      "problem_text": "(1)試將\\(-570{}^\\circ\\)化為弧度。\n(2)試將\\(\\frac { 5 } { 6 }\\pi\\)化為度。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": "1-1.2",
+      "concept_name": "角的度量與換算",
+      "concept_en_id": "AngleMeasurementAndConversion",
+      "formal_skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "隨堂練習1",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_in_class_practice_001_002",
+          "text_fingerprint": "12423a5c7626542760e81ccb282028134d1a09b80582da8ca0adee96d8f40cc6",
+          "source_order": 2
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_002_003",
+      "text_fingerprint": "1e8ca52c2cc4236bc8852187aa1155b7223d2d146b35fac124a868af82df5c69",
+      "source_order": 3,
+      "anchor": "例2",
+      "question_label": "例2",
+      "source_type": "textbook_example",
+      "question_type": "example",
+      "question_number": "2",
+      "problem_text": "林媽媽製作了一個半徑為16公分的圓形披薩，並將其切成八塊大小一樣的扇形披薩，試求每一塊扇形披薩的\n(1)面積A (2)弧長S",
+      "correct_answer": "",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 先把每一塊扇形圓心角\\(\\frac { 360{}^\\circ } { 8 }=45{}^\\circ\\)化為弧度\n即\\(\\theta =45{}^\\circ =45\\times \\frac { \\pi } { 180 }=\\frac { \\pi } { 4 }\\)\n(1) 面積\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }\\times 16 ^ { 2 } \\times \\frac { \\pi } { 4 }=32\\pi\\)（平方公分）\n(2) 弧長\\(S=r\\theta =16\\times \\frac { \\pi } { 4 }=4\\pi\\)（公分）",
+      "concept_code": "1-1.3",
+      "concept_name": "扇形的弧長與面積",
+      "concept_en_id": "ArcLengthAndSectorArea",
+      "formal_skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "例2",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_example_002_003",
+          "text_fingerprint": "1e8ca52c2cc4236bc8852187aa1155b7223d2d146b35fac124a868af82df5c69",
+          "source_order": 3
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_002_004",
+      "text_fingerprint": "04645dbd51873abd890dd4b8f6f574bfd24b7d78524f2f4e4870edd658d94737",
+      "source_order": 4,
+      "anchor": "隨堂練習2",
+      "question_label": "隨堂練習2",
+      "source_type": "in_class_practice",
+      "question_type": "in_class_practice",
+      "question_number": "2",
+      "problem_text": "設一扇形半徑為9公分，所對應的圓心角為120°，試求：\n(1)將圓心角化為弧度。 (2)此扇形弧長S。 (3)此扇形面積A。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": "1-1.3",
+      "concept_name": "扇形的弧長與面積",
+      "concept_en_id": "ArcLengthAndSectorArea",
+      "formal_skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "隨堂練習2",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_in_class_practice_002_004",
+          "text_fingerprint": "04645dbd51873abd890dd4b8f6f574bfd24b7d78524f2f4e4870edd658d94737",
+          "source_order": 4
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_003_005",
+      "text_fingerprint": "a44381a73e0d61e66cdf7da1a002bb28806b9a877a86ccfbe2fdde0330b897c8",
+      "source_order": 5,
+      "anchor": "例3",
+      "question_label": "例3",
+      "source_type": "textbook_example",
+      "question_type": "example",
+      "question_number": "3",
+      "problem_text": "下列何者與\\(50{}^\\circ\\)互為同界角？\n(1)\\(-310{}^\\circ\\) (2)\\(770{}^\\circ\\) (3)\\(1250{}^\\circ\\)",
+      "correct_answer": "",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(-310{}^\\circ -50{}^\\circ =-360{}^\\circ =360{}^\\circ \\times \\left ( { -1 } \\right )\\)\n 故\\(-310{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(2) \\(770{}^\\circ -50{}^\\circ =720{}^\\circ =360{}^\\circ \\times 2\\)\n故\\(770{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(3) \\(1250{}^\\circ -50{}^\\circ =1200{}^\\circ\\)不是\\(360{}^\\circ\\)的整數倍\n故\\(1250{}^\\circ\\)不是\\(50{}^\\circ\\)的同界角",
+      "concept_code": "1-1.4",
+      "concept_name": "同界角",
+      "concept_en_id": "CoterminalAngles",
+      "formal_skill_id": "vh_數學B2_CoterminalAngles",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "例3",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_example_003_005",
+          "text_fingerprint": "a44381a73e0d61e66cdf7da1a002bb28806b9a877a86ccfbe2fdde0330b897c8",
+          "source_order": 5
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_003_006",
+      "text_fingerprint": "451c42811f4c707e84c6053040482ddd43d79d85f0050ae279d7e66819770e49",
+      "source_order": 6,
+      "anchor": "隨堂練習3",
+      "question_label": "隨堂練習3",
+      "source_type": "in_class_practice",
+      "question_type": "in_class_practice",
+      "question_number": "3",
+      "problem_text": "下列何者與\\(\\frac { \\pi } { 6 }\\)互為同界角？\n(1)\\(-\\frac { 5\\pi } { 6 }\\) (2)\\(\\frac { 5\\pi } { 3 }\\) (3)\\(\\frac { 73\\pi } { 6 }\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": "1-1.4",
+      "concept_name": "同界角",
+      "concept_en_id": "CoterminalAngles",
+      "formal_skill_id": "vh_數學B2_CoterminalAngles",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "隨堂練習3",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_in_class_practice_003_006",
+          "text_fingerprint": "451c42811f4c707e84c6053040482ddd43d79d85f0050ae279d7e66819770e49",
+          "source_order": 6
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_004_007",
+      "text_fingerprint": "f185aeb82c833e232ee839bdab8d2efaa086e19c238ce4f4a5b3137c9a0a84f8",
+      "source_order": 7,
+      "anchor": "例4",
+      "question_label": "例4",
+      "source_type": "textbook_example",
+      "question_type": "example",
+      "question_number": "4",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(1350{}^\\circ\\) (2)\\(-1100{}^\\circ\\) (3)\\(-\\frac { 21\\pi } { 4 }\\)",
+      "correct_answer": "",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ\\)\n 故最小正同界角為270°\n 最大負同界角為\\(270{}^\\circ -360{}^\\circ =-90{}^\\circ\\)\n(2) \\(-1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ\\)\n故最大負同界角為\\(-20{}^\\circ\\)\n 最小正同界角為\\(-20{}^\\circ +360{}^\\circ =340{}^\\circ\\)\n(3) \\(-\\frac { 21\\pi } { 4 }=-4\\pi -\\frac { 5\\pi } { 4 }=2\\pi \\times \\left ( { -2 } \\right )-\\frac { 5\\pi } { 4 }\\)\n故最大負同界角為\\(-\\frac { 5\\pi } { 4 }\\)\n 最小正同界角為\\(-\\frac { 5\\pi } { 4 }+2\\pi =\\frac { 3\\pi } { 4 }\\)",
+      "concept_code": "1-1.4",
+      "concept_name": "同界角",
+      "concept_en_id": "CoterminalAngles",
+      "formal_skill_id": "vh_數學B2_CoterminalAngles",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "例4",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_example_004_007",
+          "text_fingerprint": "f185aeb82c833e232ee839bdab8d2efaa086e19c238ce4f4a5b3137c9a0a84f8",
+          "source_order": 7
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_004_008",
+      "text_fingerprint": "38da9259149aa115ac0e0305c68c50d63be9c5461c6d816de67788edaf83f53c",
+      "source_order": 8,
+      "anchor": "隨堂練習4",
+      "question_label": "隨堂練習4",
+      "source_type": "in_class_practice",
+      "question_type": "in_class_practice",
+      "question_number": "4",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(750{}^\\circ\\) (2)\\(-1030{}^\\circ\\) (3)\\(\\frac { 23\\pi } { 5 }\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": "1-1.4",
+      "concept_name": "同界角",
+      "concept_en_id": "CoterminalAngles",
+      "formal_skill_id": "vh_數學B2_CoterminalAngles",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "隨堂練習4",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_in_class_practice_004_008",
+          "text_fingerprint": "38da9259149aa115ac0e0305c68c50d63be9c5461c6d816de67788edaf83f53c",
+          "source_order": 8
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exam_108b_009",
+      "text_fingerprint": "55fdb187169d3b665d61493455fc2d91e8cd405e67b528d898c917f88ddca3a5",
+      "source_order": 9,
+      "anchor": "108統測B",
+      "question_label": "108統測B",
+      "source_type": "exam_practice",
+      "question_type": "exam",
+      "question_number": "108B",
+      "problem_text": "假設分針原始指在時鐘12 的位置，現將分針依順時針的方向轉了\\(2019{}^\\circ\\)。試問\n下列敘述何者正確？\n(A) 分針指在9 跟10 之間\n(B) 分針指在7 跟8 之間\n(C) 分針指在5 跟6 之間\n(D) 分針指在3 跟4 之間 〔108統測B〕",
+      "correct_answer": "",
+      "detailed_solution": "KEY\n(1) 鐘面上有60 小格，每格所對之圓心角 = \\(6{}^\\circ\\)\n(2) 最小正同界角之概念",
+      "concept_code": "1-1.4",
+      "concept_name": "同界角",
+      "concept_en_id": "CoterminalAngles",
+      "formal_skill_id": "vh_數學B2_CoterminalAngles",
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "108統測B",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exam_108b_009",
+          "text_fingerprint": "55fdb187169d3b665d61493455fc2d91e8cd405e67b528d898c917f88ddca3a5",
+          "source_order": 9
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_001_010",
+      "text_fingerprint": "666f1f15b737d5066cb75751bd1c661637b3475ad2fc7fda9505785c98200fba",
+      "source_order": 10,
+      "anchor": "1-1習題 基礎題 1",
+      "question_label": "1-1習題 基礎題1",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "1",
+      "problem_text": "請完成下列常用特別角的「度度量」與「弧度量」之對照表：\n度\n0°\n30°\n45°\n60°\n90°\n120°\n135°\n150°\n180°\n270°\n360°\n弧度\n\\(\\frac { \\pi } { 6 }\\)\n\\(\\frac { \\pi } { 2 }\\)\n\\(\\pi\\)\n\\(\\frac { 3\\pi } { 2 }\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 1",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_001_010",
+          "text_fingerprint": "666f1f15b737d5066cb75751bd1c661637b3475ad2fc7fda9505785c98200fba",
+          "source_order": 10
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_002_011",
+      "text_fingerprint": "6e3daccaa2649348e1875572d73be1deda0965e6ea189278d7cb801533532453",
+      "source_order": 11,
+      "anchor": "1-1習題 基礎題 2",
+      "question_label": "1-1習題 基礎題2",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "2",
+      "problem_text": "將下列各角化成以弧度為單位：\n(1)\\(450{}^\\circ =\\) 。 (2)\\(560{}^\\circ =\\) 。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 2",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_002_011",
+          "text_fingerprint": "6e3daccaa2649348e1875572d73be1deda0965e6ea189278d7cb801533532453",
+          "source_order": 11
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_003_012",
+      "text_fingerprint": "949884fd97f29b959d4cc87a9b2ac4aec67959ffbf6a0f48ae00e9f23d35e455",
+      "source_order": 12,
+      "anchor": "1-1習題 基礎題 3",
+      "question_label": "1-1習題 基礎題3",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "3",
+      "problem_text": "將下列各角化成以度為單位：（提示：\\(1=\\frac { 180{}^\\circ } { \\pi }\\)）\n(1)\\(\\frac { 6 } { 5 }\\pi =\\) 。 (2)\\(\\frac { 5 } { 3 }\\pi =\\) 。 (3)\\(4=\\) 。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 3",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_003_012",
+          "text_fingerprint": "949884fd97f29b959d4cc87a9b2ac4aec67959ffbf6a0f48ae00e9f23d35e455",
+          "source_order": 12
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_004_013",
+      "text_fingerprint": "6d4b477549f79ead5cd8029796a65d2594c816069b5f512c6286688f14b725da",
+      "source_order": 13,
+      "anchor": "1-1習題 基礎題 4",
+      "question_label": "1-1習題 基礎題4",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "4",
+      "problem_text": "設一扇形半徑為12公分，所對應的圓心角為135°，試求：\n(1)此扇形弧長S。 (2)此扇形面積A。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 4",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_004_013",
+          "text_fingerprint": "6d4b477549f79ead5cd8029796a65d2594c816069b5f512c6286688f14b725da",
+          "source_order": 13
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+      "text_fingerprint": "6a67fc9b4524781e3fc78310146367df6493203ea998de4240d7a823cb5af695",
+      "source_order": 14,
+      "anchor": "1-1習題 基礎題 5",
+      "question_label": "1-1習題 基礎題5",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "5",
+      "problem_text": "爺爺收藏的古典時鐘，是一個下方有鐘擺的掛鐘，若鐘擺長為12公分，左右最大擺角各為15°，試求：\n(1)鐘擺掃出的最大面積。\n(2)鐘擺底端揮出的最大弧長。",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 5",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+          "text_fingerprint": "6a67fc9b4524781e3fc78310146367df6493203ea998de4240d7a823cb5af695",
+          "source_order": 14
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_006_015",
+      "text_fingerprint": "31e5d711a7fd5a07f425548f86a54455113f5abd2764669df3ce1d575f19046b",
+      "source_order": 15,
+      "anchor": "1-1習題 基礎題 6",
+      "question_label": "1-1習題 基礎題6",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "6",
+      "problem_text": "下列何者為\\(60{}^\\circ\\)的同界角？\n(1)\\(-300{}^\\circ\\) (2)\\(1140{}^\\circ\\) (3)\\(-1120{}^\\circ\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 6",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_006_015",
+          "text_fingerprint": "31e5d711a7fd5a07f425548f86a54455113f5abd2764669df3ce1d575f19046b",
+          "source_order": 15
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_007_016",
+      "text_fingerprint": "41f8a13e9ded85c9aa2072e4bd2b90fef8727c30ee510b1f277a54129cb4946b",
+      "source_order": 16,
+      "anchor": "1-1習題 基礎題 7",
+      "question_label": "1-1習題 基礎題7",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "7",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(390{}^\\circ\\) (2)\\(-1580{}^\\circ\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 7",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_007_016",
+          "text_fingerprint": "41f8a13e9ded85c9aa2072e4bd2b90fef8727c30ee510b1f277a54129cb4946b",
+          "source_order": 16
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_008_017",
+      "text_fingerprint": "d8dc736cf22c4570d4ee7b2aca1bf277fb491c9278a6c7f3cc6ad16738831a55",
+      "source_order": 17,
+      "anchor": "1-1習題 基礎題 8",
+      "question_label": "1-1習題 基礎題8",
+      "source_type": "textbook_exercise",
+      "question_type": "exercise",
+      "question_number": "8",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(\\frac { 15\\pi } { 4 }\\) (2)\\(-\\frac { 11\\pi } { 3 }\\)",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 基礎題 8",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_exercise_008_017",
+          "text_fingerprint": "d8dc736cf22c4570d4ee7b2aca1bf277fb491c9278a6c7f3cc6ad16738831a55",
+          "source_order": 17
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+      "text_fingerprint": "faec138c008de182f4868214ea30de3bb080bf839961d8819a284f4cc8914db1",
+      "source_order": 18,
+      "anchor": "1-1習題 進階題 9",
+      "question_label": "1-1習題 進階題9",
+      "source_type": "advanced_exercise",
+      "question_type": "advanced_exercise",
+      "question_number": "9",
+      "problem_text": "如圖所示：校門口有一個半徑6公尺的圓形花圃，農藝科同學打算將花圃平分成三等分的面積來種植不同的花卉，作為校園園藝造景的景觀設計，請問每一等分的扇形面積為多少？",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 進階題 9",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+          "text_fingerprint": "faec138c008de182f4868214ea30de3bb080bf839961d8819a284f4cc8914db1",
+          "source_order": 18
+        }
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+      "text_fingerprint": "45c8381693a42bdd8f1df4c0101852ea5b4b63d5d2df9c6f5cd6060bbc3da1b1",
+      "source_order": 19,
+      "anchor": "1-1習題 進階題 10",
+      "question_label": "1-1習題 進階題10",
+      "source_type": "advanced_exercise",
+      "question_type": "advanced_exercise",
+      "question_number": "10",
+      "problem_text": "英國有一座「摺扇橋」橫跨在20公尺寬的帕丁頓 大聯盟運河上。它是由英國著名橋梁設計專家騎士建築事務所設計，它的設計靈感來源於日本傳統的摺扇，它是全球唯一一座可以像摺扇一般開合自如的大橋，其最大的展開角為80度。請問在最大展開時的扇形面積為何？",
+      "correct_answer": "",
+      "detailed_solution": "",
+      "concept_code": null,
+      "concept_name": null,
+      "concept_en_id": null,
+      "formal_skill_id": null,
+      "chapter_title": "1 三角函數",
+      "section": "1-1",
+      "section_code": "1-1",
+      "section_title": "角度的基本性質",
+      "phase3_matched": true,
+      "phase3_title": "1-1習題 進階題 10",
+      "notes_preview": {
+        "question_anchor": {
+          "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+          "text_fingerprint": "45c8381693a42bdd8f1df4c0101852ea5b4b63d5d2df9c6f5cd6060bbc3da1b1",
+          "source_order": 19
+        }
+      }
+    }
+  ],
+  "stats": {
+    "phase2_blocks": 19,
+    "phase3_titles": 19,
+    "phase3_unique_titles": 19,
+    "dryrun_questions": 19,
+    "source_type_counts": {
+      "textbook_example": 4,
+      "in_class_practice": 4,
+      "exam_practice": 1,
+      "textbook_exercise": 8,
+      "advanced_exercise": 2
+    },
+    "no_answer": 19,
+    "no_solution": 14,
+    "no_skill": 10,
+    "phase3_unmatched_phase2": 0,
+    "anchor_collisions": 0
+  },
+  "anomalies": [],
+  "anchor_summary": {
+    "anchor_count": 19,
+    "collision_count": 0,
+    "collisions": [],
+    "type_number_collision_count": 0,
+    "type_number_collisions": [],
+    "source_order_monotonic": true,
+    "invalid_count": 0,
+    "invalid": [],
+    "empty_fingerprint_count": 0,
+    "pdf_match_stubs": [
+      {
+        "anchor_id": "vocational_math_B2_1-1_example_001_001",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_in_class_practice_001_002",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_example_002_003",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_in_class_practice_002_004",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_example_003_005",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_in_class_practice_003_006",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_example_004_007",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_in_class_practice_004_008",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exam_108b_009",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_001_010",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_002_011",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_003_012",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_004_013",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_006_015",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_007_016",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_exercise_008_017",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      },
+      {
+        "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+        "textbook_example_id": null,
+        "pdf_page": null,
+        "pdf_bbox": null,
+        "match_method": null,
+        "match_score": null,
+        "image_path": null
+      }
+    ]
+  },
+  "gemini": {
+    "request_count": 6,
+    "requests": [
+      {
+        "request_index": 1,
+        "input_character_count": 688,
+        "output_character_count": 209,
+        "prompt_token_count": 372,
+        "candidates_token_count": 52,
+        "total_token_count": 424,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      },
+      {
+        "request_index": 2,
+        "input_character_count": 792,
+        "output_character_count": 222,
+        "prompt_token_count": 443,
+        "candidates_token_count": 48,
+        "total_token_count": 491,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      },
+      {
+        "request_index": 3,
+        "input_character_count": 869,
+        "output_character_count": 216,
+        "prompt_token_count": 491,
+        "candidates_token_count": 52,
+        "total_token_count": 543,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      },
+      {
+        "request_index": 4,
+        "input_character_count": 1077,
+        "output_character_count": 143,
+        "prompt_token_count": 554,
+        "candidates_token_count": 44,
+        "total_token_count": 598,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      },
+      {
+        "request_index": 5,
+        "input_character_count": 2839,
+        "output_character_count": 3419,
+        "prompt_token_count": 1012,
+        "candidates_token_count": 993,
+        "total_token_count": 2005,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      },
+      {
+        "request_index": 6,
+        "input_character_count": 2743,
+        "output_character_count": 2928,
+        "prompt_token_count": 935,
+        "candidates_token_count": 726,
+        "total_token_count": 1661,
+        "usage_metadata_available": true,
+        "prompt_has_坐標系與函數圖形": false,
+        "prompt_has_數列與級數": false
+      }
+    ],
+    "input_character_count_total": 9008,
+    "output_character_count_total": 7137,
+    "prompt_token_count_total": 3807,
+    "candidates_token_count_total": 1915,
+    "total_token_count_total": 5722,
+    "usage_metadata_available": true,
+    "model": "gemini-3.5-flash",
+    "api_key_source": "env"
+  },
+  "logs": [
+    "INFO: [antigravity] Phase3 Gemini metadata alignment (keys=19 chunks=2 chunk_size=10)",
+    "INFO: [antigravity] Phase3 chunk 1/2 keys=10",
+    "INFO: antigravity metadata alignment (chunk 1/2) attempt 1/3",
+    "INFO: [antigravity] Phase3 chunk 2/2 keys=9",
+    "INFO: antigravity metadata alignment (chunk 2/2) attempt 1/3"
+  ],
+  "phase4_executed": false,
+  "db_committed": false,
+  "human_summary": "B2 1-1 Phase3 Dry-run Summary\n-----------------------------\nLatex: D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本_Latex.docx\nPhase1 lines: 166\nPhase2 blocks: 19\nPhase3 titles: 19 (unique=19)\nDry-run questions: 19\nGemini model: gemini-3.5-flash\nGemini requests: 6\nGemini input chars: 9008\nGemini tokens total: 5722\nsource_type counts: {'textbook_example': 4, 'in_class_practice': 4, 'exam_practice': 1, 'textbook_exercise': 8, 'advanced_exercise': 2}\nno_answer=19 no_solution=14 no_skill=10\nanchor_collisions=0\nanomalies=0\n\nFirst 15 questions:\n- [1] '例1' type=textbook_example skill='vh_數學B2_AngleMeasurementAndConversion' concept='角的度量與換算' anchor_id=vocational_math_B2_1-1_example_001_001 answer=N solution=Y text='(1)試將135°化為弧度。 (2)試將\\\\(-\\\\frac { 5 } { 3 }\\\\pi\\\\)化為度。'\n- [2] '隨堂練習1' type=in_class_practice skill='vh_數學B2_AngleMeasurementAndConversion' concept='角的度量與換算' anchor_id=vocational_math_B2_1-1_in_class_practice_001_002 answer=N solution=N text='(1)試將\\\\(-570{}^\\\\circ\\\\)化為弧度。 (2)試將\\\\(\\\\frac { 5 } { 6 }\\\\pi\\\\)化為度。'\n- [3] '例2' type=textbook_example skill='vh_數學B2_ArcLengthAndSectorArea' concept='扇形的弧長與面積' anchor_id=vocational_math_B2_1-1_example_002_003 answer=N solution=Y text='林媽媽製作了一個半徑為16公分的圓形披薩,並將其切成八塊大小一樣的扇形披薩,試求每一塊扇形披薩的 (1)面積A (2)弧長S'\n- [4] '隨堂練習2' type=in_class_practice skill='vh_數學B2_ArcLengthAndSectorArea' concept='扇形的弧長與面積' anchor_id=vocational_math_B2_1-1_in_class_practice_002_004 answer=N solution=N text='設一扇形半徑為9公分,所對應的圓心角為120°,試求: (1)將圓心角化為弧度。 (2)此扇形弧長S。 (3)此扇形面積A。'\n- [5] '例3' type=textbook_example skill='vh_數學B2_CoterminalAngles' concept='同界角' anchor_id=vocational_math_B2_1-1_example_003_005 answer=N solution=Y text='下列何者與\\\\(50{}^\\\\circ\\\\)互為同界角? (1)\\\\(-310{}^\\\\circ\\\\) (2)\\\\(770{}^\\\\circ\\\\) (3)\\\\(1250{}^\\\\ci'\n- [6] '隨堂練習3' type=in_class_practice skill='vh_數學B2_CoterminalAngles' concept='同界角' anchor_id=vocational_math_B2_1-1_in_class_practice_003_006 answer=N solution=N text='下列何者與\\\\(\\\\frac { \\\\pi } { 6 }\\\\)互為同界角? (1)\\\\(-\\\\frac { 5\\\\pi } { 6 }\\\\) (2)\\\\(\\\\frac { 5\\\\p'\n- [7] '例4' type=textbook_example skill='vh_數學B2_CoterminalAngles' concept='同界角' anchor_id=vocational_math_B2_1-1_example_004_007 answer=N solution=Y text='試求下列各角的最小正同界角與最大負同界角: (1)\\\\(1350{}^\\\\circ\\\\) (2)\\\\(-1100{}^\\\\circ\\\\) (3)\\\\(-\\\\frac { 21\\\\'\n- [8] '隨堂練習4' type=in_class_practice skill='vh_數學B2_CoterminalAngles' concept='同界角' anchor_id=vocational_math_B2_1-1_in_class_practice_004_008 answer=N solution=N text='試求下列各角的最小正同界角與最大負同界角: (1)\\\\(750{}^\\\\circ\\\\) (2)\\\\(-1030{}^\\\\circ\\\\) (3)\\\\(\\\\frac { 23\\\\pi'\n- [9] '108統測B' type=exam_practice skill='vh_數學B2_CoterminalAngles' concept='同界角' anchor_id=vocational_math_B2_1-1_exam_108b_009 answer=N solution=Y text='假設分針原始指在時鐘12 的位置,現將分針依順時針的方向轉了\\\\(2019{}^\\\\circ\\\\)。試問 下列敘述何者正確? (A) 分針指在9 跟10 之間 (B)'\n- [10] '1-1習題 基礎題 1' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_001_010 answer=N solution=N text='請完成下列常用特別角的「度度量」與「弧度量」之對照表: 度 0° 30° 45° 60° 90° 120° 135° 150° 180° 270° 360° 弧'\n- [11] '1-1習題 基礎題 2' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_002_011 answer=N solution=N text='將下列各角化成以弧度為單位: (1)\\\\(450{}^\\\\circ =\\\\) 。 (2)\\\\(560{}^\\\\circ =\\\\) 。'\n- [12] '1-1習題 基礎題 3' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_003_012 answer=N solution=N text='將下列各角化成以度為單位:(提示:\\\\(1=\\\\frac { 180{}^\\\\circ } { \\\\pi }\\\\)) (1)\\\\(\\\\frac { 6 } { 5 }\\\\pi '\n- [13] '1-1習題 基礎題 4' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_004_013 answer=N solution=N text='設一扇形半徑為12公分,所對應的圓心角為135°,試求: (1)此扇形弧長S。 (2)此扇形面積A。'\n- [14] '1-1習題 基礎題 5' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_005_014 answer=N solution=N text='爺爺收藏的古典時鐘,是一個下方有鐘擺的掛鐘,若鐘擺長為12公分,左右最大擺角各為15°,試求: (1)鐘擺掃出的最大面積。 (2)鐘擺底端揮出的最大弧長。'\n- [15] '1-1習題 基礎題 6' type=textbook_exercise skill=None concept=None anchor_id=vocational_math_B2_1-1_exercise_006_015 answer=N solution=N text='下列何者為\\\\(60{}^\\\\circ\\\\)的同界角? (1)\\\\(-300{}^\\\\circ\\\\) (2)\\\\(1140{}^\\\\circ\\\\) (3)\\\\(-1120{}^\\\\c'\n"
+}

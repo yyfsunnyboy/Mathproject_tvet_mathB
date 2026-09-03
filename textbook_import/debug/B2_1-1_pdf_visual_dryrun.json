@@ -1,0 +1,1128 @@
+{
+  "status": "ok",
+  "generated_at": "2026-09-03T07:45:20+00:00",
+  "mode": "pdf_visual_dryrun",
+  "db_write": false,
+  "pdf_path": "D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.pdf",
+  "section": "1-1 角度的基本性質",
+  "summary": {
+    "pdf_page_count": 14,
+    "pdf_text_layer_usable": true,
+    "usable_text_pages": 13,
+    "matched": 19,
+    "high_confidence_ge_0_90": 19,
+    "review_recommended_0_75_0_89": 0,
+    "low_confidence_lt_0_75": 0,
+    "needs_review": 0,
+    "visual_required_true": 4,
+    "visual_required_needs_review": 0,
+    "visual_type_distribution": {
+      "embedded_image": 3,
+      "diagram": 1
+    },
+    "unmatched": 0,
+    "cross_page": 0,
+    "notes_missing_anchor_count": 10
+  },
+  "mathtype_failures": {
+    "failure_18": {
+      "token": "[MATH_PARSE_FAILED_18]",
+      "classification": "教材說明",
+      "question_label": null,
+      "context80": "「一周角」以六十分制度量時為360°，以弧度制度量時為\\(2\\pi\\)（弧度），\n由此可得[MATH_PARSE_FAILED_18]，即[MATH_PARSE_FAILED_19]。"
+    },
+    "failure_19": {
+      "token": "[MATH_PARSE_FAILED_19]",
+      "classification": "教材說明",
+      "question_label": null,
+      "context80": "「一周角」以六十分制度量時為360°，以弧度制度量時為\\(2\\pi\\)（弧度），\n由此可得[MATH_PARSE_FAILED_18]，即[MATH_PARSE_FAILED_19]。"
+    },
+    "failure_75": {
+      "token": "[MATH_PARSE_FAILED_75]",
+      "classification": "教材說明",
+      "question_label": null,
+      "context80": "由上例可知一個角\\(\\theta\\)有無限多個同界角，其中任二角的差為\\(360{}^\\circ\\)的整數倍，若\\(\\theta\\)不為\\(0{}^\\circ\\)的同界角，在所有正同界角中最小的，稱為最小正同界角，\n在所有負同界角中最大的，"
+    }
+  },
+  "questions": [
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_001_001",
+      "textbook_example_id": 11566,
+      "source_order": 1,
+      "source_description": "例1",
+      "source_type": "textbook_example",
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "notes_had_anchor": true,
+      "problem_text80": "(1)試將135°化為弧度。\n(2)試將\\(-\\frac { 5 } { 3 }\\pi\\)化為度。",
+      "pdf_match": {
+        "page": 5,
+        "question_bbox": [
+          36.0,
+          464.71484375,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 5,
+            "bbox": [
+              36.0,
+              464.71484375,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "試將135c"
+        ],
+        "question_start_y": 472.71484375
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 2,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_001_001_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_001_002",
+      "textbook_example_id": 11570,
+      "source_order": 2,
+      "source_description": "隨堂練習1",
+      "source_type": "in_class_practice",
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "notes_had_anchor": true,
+      "problem_text80": "(1)試將\\(-570{}^\\circ\\)化為弧度。\n(2)試將\\(\\frac { 5 } { 6 }\\pi\\)化為度。",
+      "pdf_match": {
+        "page": 6,
+        "question_bbox": [
+          36.0,
+          111.46934509277344,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 6,
+            "bbox": [
+              36.0,
+              111.46934509277344,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "570c-",
+          "試將570c"
+        ],
+        "question_start_y": 119.46934509277344
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 2,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_001_002_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_002_003",
+      "textbook_example_id": 11567,
+      "source_order": 3,
+      "source_description": "例2",
+      "source_type": "textbook_example",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": true,
+      "problem_text80": "林媽媽製作了一個半徑為16公分的圓形披薩，並將其切成八塊大小一樣的扇形披薩，試求每一塊扇形披薩的\n(1)面積A (2)弧長S",
+      "pdf_match": {
+        "page": 7,
+        "question_bbox": [
+          36.0,
+          313.5913391113281,
+          573.4486083984375,
+          640.9602661132812
+        ],
+        "regions": [
+          {
+            "page": 7,
+            "bbox": [
+              36.0,
+              313.5913391113281,
+              573.4486083984375,
+              640.9602661132812
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "林媽媽製作了"
+        ],
+        "question_start_y": 321.5913391113281
+      },
+      "visual_required": true,
+      "visual_type": "embedded_image",
+      "visual_bbox": [
+        376.341552734375,
+        313.5126647949219,
+        490.0223693847656,
+        431.8674621582031
+      ],
+      "visual_evidence": {
+        "image_count": 1,
+        "drawing_count": 2,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "embedded_image_in_question_region",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_002_003_visual_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_002_004",
+      "textbook_example_id": 11571,
+      "source_order": 4,
+      "source_description": "隨堂練習2",
+      "source_type": "in_class_practice",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": true,
+      "problem_text80": "設一扇形半徑為9公分，所對應的圓心角為120°，試求：\n(1)將圓心角化為弧度。 (2)此扇形弧長S。 (3)此扇形面積A。",
+      "pdf_match": {
+        "page": 7,
+        "question_bbox": [
+          36.0,
+          636.9602661132812,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 7,
+            "bbox": [
+              36.0,
+              636.9602661132812,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "半徑為9公分"
+        ],
+        "question_start_y": 644.9602661132812
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 1,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": true,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_002_004_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_003_005",
+      "textbook_example_id": 11568,
+      "source_order": 5,
+      "source_description": "例3",
+      "source_type": "textbook_example",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": true,
+      "problem_text80": "下列何者與\\(50{}^\\circ\\)互為同界角？\n(1)\\(-310{}^\\circ\\) (2)\\(770{}^\\circ\\) (3)\\(1250{}^\\ci",
+      "pdf_match": {
+        "page": 10,
+        "question_bbox": [
+          36.0,
+          280.2515563964844,
+          573.4486083984375,
+          580.5008544921875
+        ],
+        "regions": [
+          {
+            "page": 10,
+            "bbox": [
+              36.0,
+              280.2515563964844,
+              573.4486083984375,
+              580.5008544921875
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "下列何者與50c互為同界角"
+        ],
+        "question_start_y": 288.2515563964844
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 1,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_003_005_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_003_006",
+      "textbook_example_id": 11572,
+      "source_order": 6,
+      "source_description": "隨堂練習3",
+      "source_type": "in_class_practice",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": true,
+      "problem_text80": "下列何者與\\(\\frac { \\pi } { 6 }\\)互為同界角？\n(1)\\(-\\frac { 5\\pi } { 6 }\\) (2)\\(\\frac { 5\\p",
+      "pdf_match": {
+        "page": 10,
+        "question_bbox": [
+          36.0,
+          576.5008544921875,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 10,
+            "bbox": [
+              36.0,
+              576.5008544921875,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "下列何者與6r互為同界角"
+        ],
+        "question_start_y": 584.5008544921875
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 1,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_003_006_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_example_004_007",
+      "textbook_example_id": 11569,
+      "source_order": 7,
+      "source_description": "例4",
+      "source_type": "textbook_example",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": true,
+      "problem_text80": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(1350{}^\\circ\\) (2)\\(-1100{}^\\circ\\) (3)\\(-\\frac { 21\\",
+      "pdf_match": {
+        "page": 11,
+        "question_bbox": [
+          36.0,
+          134.0833740234375,
+          573.4486083984375,
+          549.56884765625
+        ],
+        "regions": [
+          {
+            "page": 11,
+            "bbox": [
+              36.0,
+              134.0833740234375,
+              573.4486083984375,
+              549.56884765625
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "11350c",
+          "1350c21100"
+        ],
+        "question_start_y": 142.0833740234375
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 1,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_004_007_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_in_class_practice_004_008",
+      "textbook_example_id": 11573,
+      "source_order": 8,
+      "source_description": "隨堂練習4",
+      "source_type": "in_class_practice",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": true,
+      "problem_text80": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(750{}^\\circ\\) (2)\\(-1030{}^\\circ\\) (3)\\(\\frac { 23\\pi",
+      "pdf_match": {
+        "page": 11,
+        "question_bbox": [
+          36.0,
+          545.56884765625,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 11,
+            "bbox": [
+              36.0,
+              545.56884765625,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "1750c21030",
+          "750c21030"
+        ],
+        "question_start_y": 553.56884765625
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_004_008_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exam_108b_009",
+      "textbook_example_id": 11574,
+      "source_order": 9,
+      "source_description": "108統測B",
+      "source_type": "exam_practice",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": true,
+      "problem_text80": "假設分針原始指在時鐘12 的位置，現將分針依順時針的方向轉了\\(2019{}^\\circ\\)。試問\n下列敘述何者正確？\n(A) 分針指在9 跟10 之間\n(B)",
+      "pdf_match": {
+        "page": 12,
+        "question_bbox": [
+          36.0,
+          308.644775390625,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 12,
+            "bbox": [
+              36.0,
+              308.644775390625,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "2019c",
+          "【108統測B】"
+        ],
+        "question_start_y": 316.644775390625
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 1,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "formula_or_decoration_vectors_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exam_108b_009_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_001_010",
+      "textbook_example_id": 11556,
+      "source_order": 10,
+      "source_description": "1-1習題 基礎題1",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "notes_had_anchor": false,
+      "problem_text80": "請完成下列常用特別角的「度度量」與「弧度量」之對照表：\n度\n0°\n30°\n45°\n60°\n90°\n120°\n135°\n150°\n180°\n270°\n360°\n弧",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          164.2646942138672,
+          573.4486083984375,
+          272.4404296875
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              164.2646942138672,
+              573.4486083984375,
+              272.4404296875
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "對照表"
+        ],
+        "question_start_y": 172.2646942138672
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_001_010_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_002_011",
+      "textbook_example_id": 11557,
+      "source_order": 11,
+      "source_description": "1-1習題 基礎題2",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "notes_had_anchor": false,
+      "problem_text80": "將下列各角化成以弧度為單位：\n(1)\\(450{}^\\circ =\\) 。 (2)\\(560{}^\\circ =\\) 。",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          268.4404296875,
+          573.4486083984375,
+          344.58441162109375
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              268.4404296875,
+              573.4486083984375,
+              344.58441162109375
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "化成以弧度為單位"
+        ],
+        "question_start_y": 276.4404296875
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_002_011_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_003_012",
+      "textbook_example_id": 11558,
+      "source_order": 12,
+      "source_description": "1-1習題 基礎題3",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "notes_had_anchor": false,
+      "problem_text80": "將下列各角化成以度為單位：（提示：\\(1=\\frac { 180{}^\\circ } { \\pi }\\)）\n(1)\\(\\frac { 6 } { 5 }\\pi ",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          340.58441162109375,
+          573.4486083984375,
+          424.8554382324219
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              340.58441162109375,
+              573.4486083984375,
+              424.8554382324219
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "化成以度為單位"
+        ],
+        "question_start_y": 348.58441162109375
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_003_012_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_004_013",
+      "textbook_example_id": 11559,
+      "source_order": 13,
+      "source_description": "1-1習題 基礎題4",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": false,
+      "problem_text80": "設一扇形半徑為12公分，所對應的圓心角為135°，試求：\n(1)此扇形弧長S。 (2)此扇形面積A。",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          420.8554382324219,
+          573.4486083984375,
+          510.7208251953125
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              420.8554382324219,
+              573.4486083984375,
+              510.7208251953125
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "半徑為12公分"
+        ],
+        "question_start_y": 428.8554382324219
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_004_013_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_005_014",
+      "textbook_example_id": 11560,
+      "source_order": 14,
+      "source_description": "1-1習題 基礎題5",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": false,
+      "problem_text80": "爺爺收藏的古典時鐘，是一個下方有鐘擺的掛鐘，若鐘擺長為12公分，左右最大擺角各為15°，試求：\n(1)鐘擺掃出的最大面積。\n(2)鐘擺底端揮出的最大弧長。",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          506.7208251953125,
+          573.4486083984375,
+          622.1718139648438
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              506.7208251953125,
+              573.4486083984375,
+              622.1718139648438
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "古典時鐘",
+          "鐘擺長為12公分"
+        ],
+        "question_start_y": 514.7208251953125
+      },
+      "visual_required": true,
+      "visual_type": "embedded_image",
+      "visual_bbox": [
+        359.7633056640625,
+        471.614501953125,
+        615.123291015625,
+        641.5344848632812
+      ],
+      "visual_evidence": {
+        "image_count": 1,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "embedded_image_in_question_region",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_005_014_visual_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_006_015",
+      "textbook_example_id": 11561,
+      "source_order": 15,
+      "source_description": "1-1習題 基礎題6",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": false,
+      "problem_text80": "下列何者為\\(60{}^\\circ\\)的同界角？\n(1)\\(-300{}^\\circ\\) (2)\\(1140{}^\\circ\\) (3)\\(-1120{}^\\c",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          618.1718139648438,
+          573.4486083984375,
+          712.421630859375
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              618.1718139648438,
+              573.4486083984375,
+              712.421630859375
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "下列何者為60c的同界角"
+        ],
+        "question_start_y": 626.1718139648438
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_006_015_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_007_016",
+      "textbook_example_id": 11562,
+      "source_order": 16,
+      "source_description": "1-1習題 基礎題7",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": false,
+      "problem_text80": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(390{}^\\circ\\) (2)\\(-1580{}^\\circ\\)",
+      "pdf_match": {
+        "page": 13,
+        "question_bbox": [
+          36.0,
+          708.421630859375,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 13,
+            "bbox": [
+              36.0,
+              708.421630859375,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "390c",
+          "1580c"
+        ],
+        "question_start_y": 716.421630859375
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_007_016_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_exercise_008_017",
+      "textbook_example_id": 11563,
+      "source_order": 17,
+      "source_description": "1-1習題 基礎題8",
+      "source_type": "textbook_exercise",
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "notes_had_anchor": false,
+      "problem_text80": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(\\frac { 15\\pi } { 4 }\\) (2)\\(-\\frac { 11\\pi } { 3 }\\)",
+      "pdf_match": {
+        "page": 14,
+        "question_bbox": [
+          36.0,
+          160.0458984375,
+          573.4486083984375,
+          282.0572509765625
+        ],
+        "regions": [
+          {
+            "page": 14,
+            "bbox": [
+              36.0,
+              160.0458984375,
+              573.4486083984375,
+              282.0572509765625
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.99,
+        "hits": [
+          "1415r",
+          "15r2311r"
+        ],
+        "question_start_y": 168.0458984375
+      },
+      "visual_required": false,
+      "visual_type": null,
+      "visual_bbox": null,
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "text_and_formula_only",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_008_017_question_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_advanced_exercise_009_018",
+      "textbook_example_id": 11564,
+      "source_order": 18,
+      "source_description": "1-1習題 進階題9",
+      "source_type": "advanced_exercise",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": false,
+      "problem_text80": "如圖所示：校門口有一個半徑6公尺的圓形花圃，農藝科同學打算將花圃平分成三等分的面積來種植不同的花卉，作為校園園藝造景的景觀設計，請問每一等分的扇形面積為多少？",
+      "pdf_match": {
+        "page": 14,
+        "question_bbox": [
+          36.0,
+          278.0572509765625,
+          573.4486083984375,
+          373.28125
+        ],
+        "regions": [
+          {
+            "page": 14,
+            "bbox": [
+              36.0,
+              278.0572509765625,
+              573.4486083984375,
+              373.28125
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "圓形花圃",
+          "農藝科同學"
+        ],
+        "question_start_y": 286.0572509765625
+      },
+      "visual_required": true,
+      "visual_type": "diagram",
+      "visual_bbox": [
+        368.32037353515625,
+        228.0930938720703,
+        533.7763671875,
+        357.275634765625
+      ],
+      "visual_evidence": {
+        "image_count": 0,
+        "drawing_count": 0,
+        "text_figure_keyword": true
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "figure_keyword_and_soft_vector_cluster",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_advanced_exercise_009_018_visual_preview.png"
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-1_advanced_exercise_010_019",
+      "textbook_example_id": 11565,
+      "source_order": 19,
+      "source_description": "1-1習題 進階題10",
+      "source_type": "advanced_exercise",
+      "skill_id": "vh_數學B2_ArcLengthAndSectorArea",
+      "notes_had_anchor": false,
+      "problem_text80": "英國有一座「摺扇橋」橫跨在20公尺寬的帕丁頓 大聯盟運河上。它是由英國著名橋梁設計專家騎士建築事務所設計，它的設計靈感來源於日本傳統的摺扇，它是全球唯一一座可以",
+      "pdf_match": {
+        "page": 14,
+        "question_bbox": [
+          36.0,
+          369.28125,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "regions": [
+          {
+            "page": 14,
+            "bbox": [
+              36.0,
+              369.28125,
+              573.4486083984375,
+              757.7006225585938
+            ]
+          }
+        ],
+        "match_method": "unique_phrase+page_hint+order",
+        "match_score": 0.94,
+        "hits": [
+          "摺扇橋"
+        ],
+        "question_start_y": 377.28125
+      },
+      "visual_required": true,
+      "visual_type": "embedded_image",
+      "visual_bbox": [
+        362.7449951171875,
+        372.04754638671875,
+        524.4089965820312,
+        501.4555358886719
+      ],
+      "visual_evidence": {
+        "image_count": 1,
+        "drawing_count": 0,
+        "text_figure_keyword": false
+      },
+      "cross_page": false,
+      "cross_page_suspected": false,
+      "needs_review": false,
+      "reason": "embedded_image_in_question_region",
+      "preview_crop": "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_advanced_exercise_010_019_visual_preview.png"
+    }
+  ],
+  "artifacts": {
+    "debug_dir": "textbook_import/debug/pdf_visual/B2_1-1",
+    "contact_sheet": "textbook_import/debug/pdf_visual/B2_1-1/contact_sheet.png",
+    "preview_crops": [
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_001_001_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_001_002_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_002_003_visual_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_002_004_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_003_005_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_003_006_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_example_004_007_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_in_class_practice_004_008_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exam_108b_009_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_001_010_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_002_011_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_003_012_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_004_013_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_005_014_visual_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_006_015_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_007_016_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_exercise_008_017_question_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_advanced_exercise_009_018_visual_preview.png",
+      "textbook_import/debug/pdf_visual/B2_1-1/crops/vocational_math_B2_1-1_advanced_exercise_010_019_visual_preview.png"
+    ]
+  },
+  "reuse_notes": {
+    "render": "core.question_image_assets.render_pdf_page_to_image",
+    "text_figure_heuristic": "core.question_image_assets.question_needs_image",
+    "anchor_helpers": "core.textbook_question_anchor",
+    "not_used": [
+      "scripts/pdf_visual_enrich_imported_section.py OCR/pix2tex",
+      "B1 hardcoded page_fallback_map_for_b1_11"
+    ]
+  },
+  "page_stats": [
+    {
+      "page": 1,
+      "chars": 262,
+      "images": 5,
+      "drawings": 9
+    },
+    {
+      "page": 2,
+      "chars": 0,
+      "images": 1,
+      "drawings": 5
+    },
+    {
+      "page": 3,
+      "chars": 475,
+      "images": 4,
+      "drawings": 27
+    },
+    {
+      "page": 4,
+      "chars": 426,
+      "images": 0,
+      "drawings": 18
+    },
+    {
+      "page": 5,
+      "chars": 419,
+      "images": 0,
+      "drawings": 15
+    },
+    {
+      "page": 6,
+      "chars": 451,
+      "images": 0,
+      "drawings": 17
+    },
+    {
+      "page": 7,
+      "chars": 408,
+      "images": 1,
+      "drawings": 1332
+    },
+    {
+      "page": 8,
+      "chars": 553,
+      "images": 2,
+      "drawings": 1322
+    },
+    {
+      "page": 9,
+      "chars": 475,
+      "images": 0,
+      "drawings": 21
+    },
+    {
+      "page": 10,
+      "chars": 373,
+      "images": 0,
+      "drawings": 25
+    },
+    {
+      "page": 11,
+      "chars": 458,
+      "images": 0,
+      "drawings": 1324
+    },
+    {
+      "page": 12,
+      "chars": 183,
+      "images": 1,
+      "drawings": 1325
+    },
+    {
+      "page": 13,
+      "chars": 495,
+      "images": 6,
+      "drawings": 2636
+    },
+    {
+      "page": 14,
+      "chars": 325,
+      "images": 2,
+      "drawings": 2794
+    }
+  ]
+}

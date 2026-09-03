@@ -848,6 +848,11 @@
             min-width: 0;
             box-sizing: border-box;
         }
+        #question-media-container .question-visual {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+        }
         #question-media-container img,
         #question-media-container svg {
             display: block;
@@ -4304,6 +4309,45 @@
             }
         }
 
+        function renderQuestionImageAssets(payload) {
+            const qmc = document.getElementById('question-media-container');
+            if (!qmc) return false;
+            const assets = (payload && Array.isArray(payload.image_assets)) ? payload.image_assets : [];
+            if (!assets.length) return false;
+            const wrap = document.createElement('div');
+            wrap.className = 'question-visual';
+            let rendered = 0;
+            assets.forEach((asset) => {
+                if (!asset || typeof asset !== 'object') return;
+                let url = String(asset.url || '').trim();
+                if (!url) {
+                    const p = String(asset.display_path || asset.path || '').replace(/^\/+/, '');
+                    if (p) url = '/' + p;
+                }
+                if (!url) return;
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = '';
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                img.onerror = function () {
+                    console.warn('[FRONTEND PRACTICE] image_asset load failed', url);
+                    img.remove();
+                    if (!wrap.querySelector('img')) {
+                        qmc.innerHTML = '';
+                        qmc.style.display = 'none';
+                    }
+                };
+                wrap.appendChild(img);
+                rendered += 1;
+            });
+            if (!rendered) return false;
+            qmc.innerHTML = '';
+            qmc.appendChild(wrap);
+            qmc.style.display = 'block';
+            return true;
+        }
+
         function collectTableAnswers() {
             const qmc = document.getElementById('question-media-container');
             const model = getTableQuestionModel(currentQuestion || {});
@@ -5051,6 +5095,8 @@
                             qmc.innerHTML = data.table_data.html;
                             qmc.style.display = 'block';
                         }
+                        saveState();
+                    } else if (renderQuestionImageAssets(data)) {
                         saveState();
                     } else {
                         applyQuestionScratchpadBackground(data).then(() => {

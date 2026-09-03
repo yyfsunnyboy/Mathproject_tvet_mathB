@@ -268,8 +268,11 @@ def test_resolve_outline_grade_from_volume():
     from core.textbook_processor_v2 import _resolve_outline_grade
 
     assert _resolve_outline_grade({"volume": "數學B1", "grade": 10}) == 10
-    assert _resolve_outline_grade({"volume": "數學B2"}) == 11
-    assert _resolve_outline_grade({"volume": "數學B4"}) == 13
+    assert _resolve_outline_grade({"volume": "數學B2"}) == 10
+    assert _resolve_outline_grade({"volume": "數學B2", "grade": 11}) == 10
+    assert _resolve_outline_grade({"volume": "數學B3"}) == 11
+    assert _resolve_outline_grade({"volume": "數學B4"}) == 11
+    assert _resolve_outline_grade({"volume": "數學B4", "grade": 10}) == 11
 
 
 def test_canonical_outline_section_title():
