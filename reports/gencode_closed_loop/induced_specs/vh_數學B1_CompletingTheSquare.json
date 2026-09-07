@@ -29,6 +29,7 @@
         "checker_key": "expression_checker",
         "presentation_mode": "short_answer",
         "selected_checker": "expression_checker",
+        "answer_format_example": "$2(x-2)^2+3$",
         "accepted_formats": [
           "(x-3)**2-9",
           "2*(x+1)**2+4",

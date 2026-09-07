@@ -1,0 +1,112 @@
+[
+  {
+    "id": 4618,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "problem_type": "textbook_example",
+    "source_description": "例1",
+    "problem_text": "已知$f\\left( x \\right)=2{{x}^{2}}+{{x}^{3}}-3x-5$，$g\\left( x \\right)=-3{{x}^{2}}+{{x}^{4}}-2x+{{x}^{3}}+1$，試按降冪排列完成下表：",
+    "correct_answer": null,
+    "detailed_solution": "(1) 原式$f\\left( x \\right)=2{{x}^{2}}+{{x}^{3}}-3x-5$ 依降冪排列得$f\\left( x \\right)={{x}^{3}}+2{{x}^{2}}-3x-5$……① 依題意整理⑦$f\\left( x \\right)={{x}^{3}}+2{{x}^{2}}-3x-5=$0x4 + 1x3 + 2x2 + (−3)x + (−5)② ③ ④ ⑤ ⑥ $f\\left( -2 \\right)={{\\left( -2 \\right)}^{3}}+2{{\\left( -2 \\right)}^{2}}-3\\left( -2 \\right)-5=$−8 + 8 + 6 − 5 = 1……⑧(2) 原式$g\\left( x \\right)=-3{{x}^{2}}+{{x}^{4}}-2x+{{x}^{3}}+1$依降冪排列得$g\\left( x \\right)={{x}^{4}}+{{x}^{3}}-3{{x}^{2}}-2x+1$……⑨依題意整理⑮$g\\left( x \\right)={{x}^{4}}+{{x}^{3}}-3{{x}^{2}}-2x+1=$1x4 + 1x3 + (−3)x2 + (−2)x + 1⑩ ⑪ ⑫ ⑬ ⑭$g\\left( 1 \\right)={{1}^{4}}+{{1}^{3}}-3{{\\left( 1 \\right)}^{2}}-2\\left( 1 \\right)+1=$1 + 1 − 3 − 2 + 1 = −2……⑯",
+    "source_paragraph": "多項式的基本概念"
+  },
+  {
+    "id": 4629,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "problem_type": "in_class_practice",
+    "source_description": "隨堂練習1",
+    "problem_text": "已知$f\\left( x \\right)=-5{{x}^{2}}+{{x}^{3}}-1$，$g\\left( x \\right)=-3{{x}^{2}}-x+2{{x}^{3}}-1$，試按降冪排列完成下表：",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的基本概念"
+  },
+  {
+    "id": 4706,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題3",
+    "problem_text": "$\\left( 3{{x}^{3}}-2{{x}^{2}}+2x-5 \\right)\\left( 2{{x}^{2}}-5x-7 \\right)$乘積中，${{x}^{3}}$項的係數為 (A) −7",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4716,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題2",
+    "problem_text": "設$f\\left( x \\right)$為四次多項式，$g\\left( x \\right)$為五次多項式，$h\\left( x \\right)=f\\left( x \\right)\\times g\\left( x \\right)$，$k\\left( x \\right)=f\\left( x \\right)+g\\left( x \\right)$且$h\\left( x \\right)$為a次多項式，$k\\left( x \\right)$為b次多項式，則",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的基本概念"
+  },
+  {
+    "id": 4717,
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題4",
+    "problem_text": "設${{x}^{6}}-3{{x}^{5}}+12{{x}^{4}}-19{{x}^{3}}+36{{x}^{2}}-27x+27={{\\left( a{{x}^{2}}+bx+c \\right)}^{3}}$，則",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的相等"
+  },
+  {
+    "id": 4628,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_type": "exam_practice",
+    "source_description": "110統測B",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{\\text{ }2}}+bx+c$為二次多項式。若$f\\left( x \\right)$被${{\\left( x+1 \\right)}^{2}}$除的餘式被$x-1$整除，且$f\\left( x \\right)$被${{\\left( x-1 \\right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A)$-3$ (B)$-1$ (C)1 (D)3 〔110統測B〕",
+    "correct_answer": null,
+    "detailed_solution": "KEY多項式長除法、綜合除法",
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4718,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題5",
+    "problem_text": "多項式${{x}^{4}}-3{{x}^{3}}+{{x}^{2}}+x+1$除以${{x}^{2}}+x-2$，餘式為ax + b，則a + b = (A) 1 (B) 2 (C) 3 (D) 4。",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4719,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題6",
+    "problem_text": "已知a、b為實數，若${{x}^{3}}+a{{x}^{2}}+bx-6$可被${{x}^{2}}-x+3$整除，則a + b = (A) −2 (B) 0 (C) 2 (D) 4。",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4720,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_type": "self_assessment",
+    "source_description": "CH1自我評量 題7",
+    "problem_text": "設$f\\left( x \\right)$為多項式，且$4{{x}^{3}}+x+1=f\\left( x \\right)\\left( 2{{x}^{2}}-x+3 \\right)-4x-2$，則$f\\left( x \\right)=$ (A) 10x − 2 (B) 6x + 2 (C) 4x − 1 (D) 2x + 1。",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4609,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "problem_type": "textbook_exercise",
+    "source_description": "3-1習題 基礎題 1",
+    "problem_text": "設$f\\left( x \\right)=4{{x}^{2}}-5{{x}^{3}}-x+3$，試求：(1) $f\\left( x \\right)$依降冪排列 (2)$\\deg f\\left( x \\right)$(3) $f\\left( x \\right)$的首項係數 (4)$f\\left( x \\right)$在x = −1時之值",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "source_paragraph": "多項式的四則運算"
+  },
+  {
+    "id": 4620,
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "problem_type": "textbook_example",
+    "source_description": "例3",
+    "problem_text": "設$f\\left( x \\right)=\\left( a+2 \\right){{x}^{3}}+\\left( b-1 \\right){{x}^{2}}+cx+d-5$為一零多項式，試求a、b、c、d之值。",
+    "correct_answer": null,
+    "detailed_solution": "零多項式各項係數為0即a + 2 = 0，b − 1 = 0，c = 0，d − 5 = 0故a = −2，b = 1，c = 0，d = 5",
+    "source_paragraph": "多項式的基本概念"
+  }
+]

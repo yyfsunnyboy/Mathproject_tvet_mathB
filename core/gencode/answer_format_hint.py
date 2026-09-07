@@ -399,6 +399,17 @@ def naming_warning_if_prefix_contract_mismatch(
 QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE = "任意實數/無解/ -1<x<3"
 QUADRATIC_INEQUALITY_SPECIAL_CASE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
 QUADRATIC_INEQUALITY_PARAMETER_RANGE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+VERTEX_FORM_HINT_EXAMPLE = "$2(x-2)^2+3$"
+_VERTEX_FORM_ANSWER_SHAPES = frozenset({
+    "vertex_form_expression",
+    "vertex_form",
+    "complete_square_expression",
+})
+_VERTEX_FORM_PROBLEM_TYPE_MARKERS = (
+    "complete_square",
+    "completing_the_square",
+    "vertex_form_expression",
+)
 _QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
     "quadratic_inequality_interval_solution",
     "quadratic_inequality_parameter_range",
@@ -407,6 +418,31 @@ _QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
 _PARAMETER_RANGE_HINT_DECOYS = frozenset({"m>1", "k<-2", "m>=1", "k<=-2"})
 _SPECIAL_CASE_LABEL_ANSWERS = frozenset({"無解", "任意实数", "任意實數", "无解"})
 _LINEAR_EQUATION_DEFAULT_HINT = "（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）"
+
+
+def _is_vertex_form_contract(ac: dict[str, Any]) -> bool:
+    """True when the contract expects completing-the-square / vertex-form answers."""
+    shape = str(ac.get("answer_shape") or "").strip().lower()
+    if shape in _VERTEX_FORM_ANSWER_SHAPES:
+        return True
+    semantics = str(ac.get("answer_semantics") or "").strip().lower()
+    if "vertex" in semantics and "form" in semantics:
+        return True
+    pt = str(
+        ac.get("problem_type_id")
+        or ac.get("canonical_base_problem_type_id")
+        or ""
+    ).strip().lower()
+    if any(marker in pt for marker in _VERTEX_FORM_PROBLEM_TYPE_MARKERS):
+        return True
+    stem = ac.get("stem_contract") if isinstance(ac.get("stem_contract"), dict) else {}
+    math_objects = stem.get("required_math_objects") or stem.get("allowed_math_objects") or []
+    if isinstance(math_objects, list):
+        joined = " ".join(str(x) for x in math_objects).lower()
+        if "quadratic_vertex_form" in joined or "completing_the_square" in joined:
+            return True
+    return False
+
 
 
 def _is_linear_equation_contract(ac: dict[str, Any]) -> bool:
@@ -475,6 +511,10 @@ def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -
     )
     if is_parameter_range:
         return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+
+    # Completing-the-square / vertex form must not reuse factorization examples.
+    if _is_vertex_form_contract(ac):
+        return VERTEX_FORM_HINT_EXAMPLE
 
     explicit = str(ac.get("answer_format_example") or "").strip()
     if explicit in _SPECIAL_CASE_LABEL_ANSWERS:

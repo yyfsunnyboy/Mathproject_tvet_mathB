@@ -363,6 +363,12 @@ def generate_for_skill(
                 problem_type_spec=problem_type_spec,
             )
             if format_errors:
+                # Table/chart stem without renderable data: retry another sample
+                # instead of hard-failing the whole skill page.
+                if format_errors == ["stem_references_table_but_missing"]:
+                    raise RetryableSamplingError(
+                        f"generator_format_unsafe:{','.join(format_errors)}"
+                    )
                 raise RuntimeError(f"generator_format_unsafe:{','.join(format_errors)}")
 
             # ── Semantic validation (retryable choices_duplicate) ───

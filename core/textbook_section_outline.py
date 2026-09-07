@@ -24,6 +24,7 @@ AUTHORITATIVE_OUTLINE_SOURCES = frozenset(
         "authoritative_source_context",
         "form_confirmed",
         "v3_source_context",
+        "v3_catalog_pdf",
     }
 )
 

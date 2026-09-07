@@ -23,6 +23,7 @@ import threading
 import traceback
 import subprocess
 import sys
+import logging
 from pathlib import Path
 from collections import defaultdict
 import pandas as pd
@@ -30,6 +31,9 @@ import io
 import re
 import importlib
 import json
+
+
+_admin_v3_logger = logging.getLogger(__name__)
 from core.gencode.pipeline_orchestrator import (
     run_gencode_auto_pipeline,
     run_gencode_phase1,
@@ -47,23 +51,99 @@ from core.services.prompt_sync_service import (
 )
 
 
-def _admin_v3_json_safe(value):
+def _admin_v3_json_safe(
+    value,
+    _seen=None,
+    _path="root",
+    _depth=0,
+):
+    """Recursively make admin V3 payloads JSON serializable.
+
+    Protects against circular references and runaway recursion while keeping
+    legitimate shared references (the same object appearing in two separate
+    branches) untouched.
+    """
+    if _depth > 100:
+        try:
+            logger = current_app.logger
+        except RuntimeError:
+            logger = _admin_v3_logger
+        logger.warning(
+            "[admin_v3_json_safe] max depth exceeded at path=%s type=%s",
+            _path,
+            type(value).__name__,
+        )
+        return "[Max Depth Exceeded]"
+
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
+
     if isinstance(value, datetime):
         return value.isoformat()
+
     if isinstance(value, Path):
         return str(value)
+
     if isinstance(value, bytes):
         try:
             return value.decode("utf-8")
         except UnicodeDecodeError:
             return value.hex()
-    if isinstance(value, dict):
-        return {str(k): _admin_v3_json_safe(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple, set)):
-        return [_admin_v3_json_safe(v) for v in value]
-    return str(value)
+
+    if isinstance(value, bytearray):
+        try:
+            return bytes(value).decode("utf-8")
+        except UnicodeDecodeError:
+            return bytes(value).hex()
+
+    if isinstance(value, (dict, list, tuple, set)):
+        if _seen is None:
+            _seen = set()
+
+        obj_id = id(value)
+        if obj_id in _seen:
+            try:
+                logger = current_app.logger
+            except RuntimeError:
+                logger = _admin_v3_logger
+            logger.warning(
+                "[admin_v3_json_safe] circular reference detected "
+                "path=%s type=%s object_id=%s",
+                _path,
+                type(value).__name__,
+                obj_id,
+            )
+            return "[Circular Reference]"
+
+        _seen.add(obj_id)
+        try:
+            if isinstance(value, dict):
+                return {
+                    str(k): _admin_v3_json_safe(
+                        v,
+                        _seen=_seen,
+                        _path=f"{_path}.{k}",
+                        _depth=_depth + 1,
+                    )
+                    for k, v in value.items()
+                }
+
+            return [
+                _admin_v3_json_safe(
+                    item,
+                    _seen=_seen,
+                    _path=f"{_path}[{index}]",
+                    _depth=_depth + 1,
+                )
+                for index, item in enumerate(value)
+            ]
+        finally:
+            _seen.discard(obj_id)
+
+    try:
+        return str(value)
+    except Exception:
+        return f"<{type(value).__name__}>"
 
 
 def _parse_admin_v3_induced_spec_payload(payload_raw):
@@ -1788,36 +1868,184 @@ def admin_textbook_importer_v3():
 @core_bp.route('/textbook_importer_v3/task/<task_id>', methods=['GET'])
 @login_required
 def textbook_importer_v3_task_status(task_id):
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+    try:
+        if not (current_user.is_admin or current_user.role == 'teacher'):
+            return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
 
-    state = get_v3_import_task(task_id)
-    if state is None:
-        return jsonify({
-            "ok": False,
-            "error": "task_not_found",
-            "message": "找不到此匯入任務（可能已結束並清除，或尚未建立）。",
+        state = get_v3_import_task(task_id)
+        if state is None:
+            return jsonify({
+                "ok": False,
+                "error": "task_not_found",
+                "message": "找不到此匯入任務（可能已結束並清除，或尚未建立）。",
+                "task_id": task_id,
+            }), 404
+
+        result = state.get("result")
+        ui_result = None
+        if isinstance(result, dict):
+            ui_result = result.get("ui_result") or result
+
+        return jsonify(_admin_v3_json_safe({
+            "ok": True,
             "task_id": task_id,
-        }), 404
+            "status": state.get("status"),
+            "stages": state.get("stages"),
+            "error": state.get("error"),
+            "pair_index": state.get("pair_index"),
+            "pair_total": state.get("pair_total"),
+            "current_pair": state.get("current_pair"),
+            "updated_at": state.get("updated_at"),
+            "result": ui_result,
+            "raw_result": result if isinstance(result, dict) and "pairs" in result else None,
+        })), 200
+    except Exception as exc:
+        current_app.logger.exception(
+            "[textbook_importer_v3_task_status] failed: task_id=%s", task_id
+        )
+        return jsonify({
+            "status": "error",
+            "error": "讀取匯入進度失敗",
+            "details": (
+                f"{type(exc).__name__}: {exc}"
+                if current_app.config.get("DEBUG")
+                else "匯入進度資料處理時發生錯誤，請洽管理員。"
+            ),
+        }), 500
 
-    result = state.get("result")
-    ui_result = None
-    if isinstance(result, dict):
-        ui_result = result.get("ui_result") or result
 
-    return jsonify(_admin_v3_json_safe({
-        "ok": True,
-        "task_id": task_id,
-        "status": state.get("status"),
-        "stages": state.get("stages"),
-        "error": state.get("error"),
-        "pair_index": state.get("pair_index"),
-        "pair_total": state.get("pair_total"),
-        "current_pair": state.get("current_pair"),
-        "updated_at": state.get("updated_at"),
-        "result": ui_result,
-        "raw_result": result if isinstance(result, dict) and "pairs" in result else None,
-    })), 200
+@core_bp.route('/admin/textbook_catalog_v3', methods=['GET', 'POST'])
+@login_required
+def admin_textbook_catalog_v3():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        if request.method == 'POST':
+            return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+        flash('權限不足', 'error')
+        return redirect(url_for('dashboard'))
+
+    api_key, key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(api_key)
+    if request.method == 'POST':
+        if not has_gemini_api_key:
+            return jsonify({
+                "ok": False,
+                "error": "missing_gemini_api_key",
+                "message": "請先設定 Gemini API Key 後再建立目錄結構。",
+            }), 400
+
+        try:
+            from core.textbook_catalog_v3 import (
+                import_catalog_from_pdf_v3,
+                import_catalog_from_pdf_v2_text,
+                apply_catalog_from_token,
+            )
+
+            action = str(request.form.get('action') or 'preview').strip()
+
+            # ── CONFIRM action: token only, no PDF required ──
+            if action == 'confirm':
+                preview_token = str(request.form.get('preview_token') or '').strip()
+                if not preview_token:
+                    return jsonify({
+                        "ok": False,
+                        "error": "missing_preview_token",
+                        "message": "預覽資料已失效，請重新解析目錄。",
+                    }), 400
+                try:
+                    result = apply_catalog_from_token(preview_token, commit=True)
+                except ValueError as exc:
+                    return jsonify({
+                        "ok": False,
+                        "error": "invalid_preview_token",
+                        "message": str(exc),
+                    }), 400
+                return jsonify(_admin_v3_json_safe(result)), 200
+
+            # ── PREVIEW action: PDF required ──
+            pdf_file = request.files.get('catalog_pdf')
+            if not pdf_file or not pdf_file.filename:
+                return jsonify({
+                    "ok": False,
+                    "error": "missing_catalog_pdf",
+                    "message": "請上傳整冊目錄 PDF。",
+                }), 400
+
+            filename = secure_filename(pdf_file.filename)
+            upload_dir = Path(current_app.root_path) / 'instance' / 'catalog_uploads'
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            saved_path = upload_dir / f"{uuid.uuid4().hex}_{filename}"
+            try:
+                pdf_file.save(str(saved_path))
+            except Exception as exc:
+                current_app.logger.exception("[admin_textbook_catalog_v3] save pdf failed")
+                return jsonify({
+                    "ok": False,
+                    "error": "pdf_save_failed",
+                    "message": f"無法儲存 PDF：{exc}",
+                }), 500
+
+            volume = str(request.form.get('volume') or '').strip()
+            if not volume:
+                return jsonify({
+                    "ok": False,
+                    "error": "missing_volume",
+                    "message": "請輸入冊別。",
+                }), 400
+
+            grade_raw = request.form.get('grade', type=str) or ''
+            grade = None
+            if grade_raw.strip():
+                try:
+                    grade = int(grade_raw.strip())
+                except (TypeError, ValueError):
+                    return jsonify({
+                        "ok": False,
+                        "error": "invalid_grade",
+                        "message": "年級必須為整數。",
+                    }), 400
+
+            parse_mode = str(request.form.get('parse_mode') or 'v2_text').strip()
+            curriculum = str(request.form.get('curriculum') or 'vocational').strip()
+
+            if parse_mode == 'vision':
+                result = import_catalog_from_pdf_v3(
+                    str(saved_path),
+                    curriculum=curriculum,
+                    volume=volume,
+                    grade=grade,
+                    dry_run=True,
+                    commit=False,
+                    max_pages=5,
+                )
+            else:
+                # default: v2_text — uses V2 PDF text extraction + Gemini text model
+                result = import_catalog_from_pdf_v2_text(
+                    str(saved_path),
+                    curriculum=curriculum,
+                    volume=volume,
+                    grade=grade,
+                    dry_run=True,
+                    commit=False,
+                    max_pages=5,
+                )
+            return jsonify(_admin_v3_json_safe(result)), 200
+        except Exception as exc:
+            _path = locals().get('saved_path', '<no-pdf>')
+            current_app.logger.exception(
+                "[admin_textbook_catalog_v3] import failed: path=%s", _path
+            )
+            return jsonify({
+                "ok": False,
+                "error": "catalog_import_failed",
+                "message": "建立目錄結構失敗。",
+                "details": str(exc) if current_app.config.get("DEBUG") else None,
+            }), 500
+
+    return render_template(
+        'textbook_catalog_v3.html',
+        has_gemini_api_key=has_gemini_api_key,
+        ai_settings_url='/admin/ai_prompt_settings',
+    )
 
 
 @core_bp.route('/importer/status/<task_id>')

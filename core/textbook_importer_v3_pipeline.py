@@ -250,10 +250,75 @@ def _fill_chapter_section_from_outline_or_lines(
     chapter = str(info.get("chapter") or "").strip()
     section = str(info.get("section") or "").strip()
 
+    source_scope = str(info.get("source_scope") or "").strip()
+    filename_meta = dict(info.get("filename_meta") or {})
+    chapter_index = (
+        info.get("chapter_index")
+        if info.get("chapter_index") is not None
+        else filename_meta.get("chapter_index")
+    )
+    chapter_label = str(
+        info.get("chapter_label") or filename_meta.get("chapter_label") or ""
+    ).strip()
+    section_title = str(
+        info.get("section_title") or filename_meta.get("section_title") or ""
+    ).strip()
+    section_index = (
+        info.get("section_index")
+        if info.get("section_index") is not None
+        else filename_meta.get("section_index")
+    )
+
+    from flask import current_app
+
+    current_app.logger.info(
+        "[CURRICULUM_BINDING_INPUT] "
+        f"final_scope={source_scope!r} "
+        f"authority_source=filename_meta "
+        f"chapter_index={chapter_index!r} "
+        f"chapter_label={chapter_label!r} "
+        f"section_code={section_code!r} "
+        f"section_index={section_index!r} "
+        f"section_title={section_title[:120]!r}"
+    )
+
     from core.textbook_processor_v2 import (
         _canonical_outline_section_title,
+        _chapter_index_from_section_code,
         _lookup_outline_section_curriculum_row,
     )
+
+    # For section_textbook with authoritative filename_meta, derive chapter/section
+    # directly before falling back to outline DB or line scanning.
+    if source_scope == "section_textbook" and section_code and chapter_index is not None:
+        code_chapter_index = _chapter_index_from_section_code(section_code)
+        if code_chapter_index is not None and code_chapter_index != chapter_index:
+            current_app.logger.warning(
+                "[CURRICULUM_BINDING_FAILED] "
+                f"reason=chapter_section_mismatch "
+                f"chapter_index={chapter_index!r} "
+                f"section_code_chapter_index={code_chapter_index!r} "
+                f"section_code={section_code!r} "
+                f"available_keys=chapter_index, section_code, section_index"
+            )
+            raise V3PipelineError(
+                STAGE_CURRICULUM_BINDING,
+                "authoritative_chapter_section_conflict",
+                f"Filename chapter_index {chapter_index} conflicts with "
+                f"section_code {section_code}",
+                details={
+                    "chapter_index": chapter_index,
+                    "section_code": section_code,
+                    "section_index": section_index,
+                },
+            )
+        if not chapter:
+            chapter = chapter_label or f"第{chapter_index}章"
+        if not section:
+            _, section = _canonical_outline_section_title(
+                section_code,
+                section_title or section_code,
+            )
 
     if section_code:
         outline = _lookup_outline_section_curriculum_row(info, section_code)
@@ -279,6 +344,23 @@ def _fill_chapter_section_from_outline_or_lines(
         info["chapter"] = chapter
     if section:
         info["section"] = section
+
+    current_app.logger.info(
+        "[CURRICULUM_BINDING_RESOLVED] "
+        f"authoritative_chapter={chapter!r} "
+        f"authoritative_section={section!r} "
+        f"section_code={section_code!r}"
+    )
+
+    if not chapter or (not section and not section_code):
+        current_app.logger.warning(
+            "[CURRICULUM_BINDING_FAILED] "
+            f"reason=missing_authoritative_chapter_or_section "
+            f"chapter={chapter!r} "
+            f"section={section!r} "
+            f"section_code={section_code!r} "
+            f"available_keys=chapter, section, section_code, chapter_index, section_index"
+        )
     return info
 
 
@@ -1250,7 +1332,6 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
             for p in pairs
         ],
         "stages": batch_report.get("stages"),
-        "raw": batch_report,
     }
 
 

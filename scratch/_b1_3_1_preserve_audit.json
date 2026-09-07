@@ -1,0 +1,3052 @@
+{
+  "age_rows": [
+    {
+      "id": 4612,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_add_sub",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1627
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "gen_sha256": "cfbaf419ee2f"
+    },
+    {
+      "id": 4613,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_product_term_coefficient",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1712
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "gen_sha256": "fd8ca609dbb2"
+    },
+    {
+      "id": 4614,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_long_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1657
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "gen_sha256": "83be4a3e6386"
+    },
+    {
+      "id": 4615,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_long_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1657
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "gen_sha256": "eaf3b37eea35"
+    },
+    {
+      "id": 4616,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_synthetic_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1682
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "gen_sha256": "154ea78eb69b"
+    },
+    {
+      "id": 4617,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_shifted_basis_eval",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1682
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "gen_sha256": "5e91c3073aba"
+    },
+    {
+      "id": 4622,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_add_sub",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1627
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "gen_sha256": "c136be92ed77"
+    },
+    {
+      "id": 4623,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_multiply",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4578
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1632
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4578
+      },
+      "gen_sha256": "41613cd7a49b"
+    },
+    {
+      "id": 4624,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_product_term_coefficient",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1712
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "gen_sha256": "52550cff8cec"
+    },
+    {
+      "id": 4625,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_long_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1657
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "gen_sha256": "28e5a1c30b85"
+    },
+    {
+      "id": 4626,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_synthetic_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1682
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "gen_sha256": "4db70269caa1"
+    },
+    {
+      "id": 4627,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_remainder_param_solve",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4721
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1697
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4721
+      },
+      "gen_sha256": "fbd0a5212606"
+    },
+    {
+      "id": 4633,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_add_sub",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1624
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4567
+      },
+      "gen_sha256": "7c9425932634"
+    },
+    {
+      "id": 4634,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_multiply",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4578
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1629
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4578
+      },
+      "gen_sha256": "02e7ac8b41ba"
+    },
+    {
+      "id": 4635,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_product_term_coefficient",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1709
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "gen_sha256": "1509494107eb"
+    },
+    {
+      "id": 4636,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_long_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1654
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4633
+      },
+      "gen_sha256": "c39cfb3e23f1"
+    },
+    {
+      "id": 4637,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_synthetic_division",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1679
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4688
+      },
+      "gen_sha256": "63ceaffd4708"
+    },
+    {
+      "id": 4706,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "pt": "polynomial_product_term_coefficient",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1709
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4754
+      },
+      "gen_sha256": "bcb09dff1d8d"
+    },
+    {
+      "id": 4609,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_descending_power_properties",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4712
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1720
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4712
+      },
+      "gen_sha256": "f6339f95c931"
+    },
+    {
+      "id": 4610,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_param_degree_constraint",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1700
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "gen_sha256": "556a90b6939d"
+    },
+    {
+      "id": 4618,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_descending_power_table",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4657
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1695
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-07-10T18:12:47",
+        "size": 4657
+      },
+      "gen_sha256": "158251e45049"
+    },
+    {
+      "id": 4619,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_param_degree_constraint",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1700
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "gen_sha256": "403fd0c1c967"
+    },
+    {
+      "id": 4620,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "zero_polynomial_find_coeffs",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4591
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1665
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4591
+      },
+      "gen_sha256": "7ca4eb59051b"
+    },
+    {
+      "id": 4629,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_descending_power_table",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4657
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1692
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-07-10T18:12:47",
+        "size": 4657
+      },
+      "gen_sha256": "f41975d2110e"
+    },
+    {
+      "id": 4630,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_param_degree_constraint",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1697
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4668
+      },
+      "gen_sha256": "7b4731da52a2"
+    },
+    {
+      "id": 4631,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "zero_polynomial_find_coeffs",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4591
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1662
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4591
+      },
+      "gen_sha256": "efa27f1dbaad"
+    },
+    {
+      "id": 4716,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "pt": "polynomial_degree_product_sum",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4613
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1672
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4613
+      },
+      "gen_sha256": "daca149fc29e"
+    },
+    {
+      "id": 4611,
+      "skill": "vh_數學B1_PolynomialEquality",
+      "pt": "polynomial_equality_identity",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1665
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "gen_sha256": "1ce74167d23a"
+    },
+    {
+      "id": 4621,
+      "skill": "vh_數學B1_PolynomialEquality",
+      "pt": "polynomial_equality_identity",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1665
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "gen_sha256": "e095d9c88dab"
+    },
+    {
+      "id": 4632,
+      "skill": "vh_數學B1_PolynomialEquality",
+      "pt": "polynomial_equality_identity",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1662
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "gen_sha256": "1dab63cb1642"
+    },
+    {
+      "id": 4717,
+      "skill": "vh_數學B1_PolynomialEquality",
+      "pt": "polynomial_equality_identity",
+      "fs_gen": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "fs_meta": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1662
+      },
+      "git_first": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "git_last": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "blame_sha": "866042051ef5d179e49bfca2778e387977e1cf75",
+      "blame_date": "2026-08-28T13:48:20",
+      "dryrun_fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 4423
+      },
+      "gen_sha256": "cc20b0fe624d"
+    }
+  ],
+  "unique_first_commits": [
+    "866042051ef5d179e49bfca2778e387977e1cf75"
+  ],
+  "samples": [
+    {
+      "problem_type_id": "polynomial_add_sub",
+      "sample_id": 4612,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_add_sub",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4612",
+        "TEXTBOOK_EXAMPLE_ID": "4612",
+        "PROBLEM_TYPE_ID": "polynomial_add_sub",
+        "DOMAIN_OPERATION": "polynomial_add_sub",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_add_sub",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_degree_product_sum",
+      "sample_id": 4716,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_degree_product_sum",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4716",
+        "TEXTBOOK_EXAMPLE_ID": "4716",
+        "PROBLEM_TYPE_ID": "polynomial_degree_product_sum",
+        "DOMAIN_OPERATION": "polynomial_degree_product_sum",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialBasicConcepts",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_degree_product_sum",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "expression",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "str",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "expression",
+        "topology": "str",
+        "mismatch_expression_vs_multipart": false
+      }
+    },
+    {
+      "problem_type_id": "polynomial_descending_power_properties",
+      "sample_id": 4609,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_descending_power_properties",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4609",
+        "TEXTBOOK_EXAMPLE_ID": "4609",
+        "PROBLEM_TYPE_ID": "polynomial_descending_power_properties",
+        "DOMAIN_OPERATION": "polynomial_descending_power_properties",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialBasicConcepts",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_descending_power_properties",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2,part_3,part_4",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2,part_3,part_4",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_descending_power_table",
+      "sample_id": 4618,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_descending_power_table",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4618",
+        "TEXTBOOK_EXAMPLE_ID": "4618",
+        "PROBLEM_TYPE_ID": "polynomial_descending_power_table",
+        "DOMAIN_OPERATION": "polynomial_descending_power_table",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialBasicConcepts",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_descending_power_table",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2,part_3,part_4,part_5,part_6",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2,part_3,part_4,part_5,part_6",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_equality_identity",
+      "sample_id": 4611,
+      "skill": "vh_數學B1_PolynomialEquality",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_equality_identity",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4611",
+        "TEXTBOOK_EXAMPLE_ID": "4611",
+        "PROBLEM_TYPE_ID": "polynomial_equality_identity",
+        "DOMAIN_OPERATION": "polynomial_equality_identity",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialEquality",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_equality_identity",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_long_division",
+      "sample_id": 4614,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_long_division",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4614",
+        "TEXTBOOK_EXAMPLE_ID": "4614",
+        "PROBLEM_TYPE_ID": "polynomial_long_division",
+        "DOMAIN_OPERATION": "polynomial_long_division",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_long_division",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_multiply",
+      "sample_id": 4623,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_multiply",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4623",
+        "TEXTBOOK_EXAMPLE_ID": "4623",
+        "PROBLEM_TYPE_ID": "polynomial_multiply",
+        "DOMAIN_OPERATION": "polynomial_multiply",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_multiply",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_param_degree_constraint",
+      "sample_id": 4610,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_param_degree_constraint",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4610",
+        "TEXTBOOK_EXAMPLE_ID": "4610",
+        "PROBLEM_TYPE_ID": "polynomial_param_degree_constraint",
+        "DOMAIN_OPERATION": "polynomial_param_degree_constraint",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialBasicConcepts",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_param_degree_constraint",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_product_term_coefficient",
+      "sample_id": 4613,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_product_term_coefficient",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4613",
+        "TEXTBOOK_EXAMPLE_ID": "4613",
+        "PROBLEM_TYPE_ID": "polynomial_product_term_coefficient",
+        "DOMAIN_OPERATION": "polynomial_product_term_coefficient",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_product_term_coefficient",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "expression",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "str",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "expression",
+        "topology": "str",
+        "mismatch_expression_vs_multipart": false
+      }
+    },
+    {
+      "problem_type_id": "polynomial_remainder_param_solve",
+      "sample_id": 4627,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_remainder_param_solve",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4627",
+        "TEXTBOOK_EXAMPLE_ID": "4627",
+        "PROBLEM_TYPE_ID": "polynomial_remainder_param_solve",
+        "DOMAIN_OPERATION": "polynomial_remainder_param_solve",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_remainder_param_solve",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "polynomial_shifted_basis_eval",
+      "sample_id": 4617,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_shifted_basis_eval",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4617",
+        "TEXTBOOK_EXAMPLE_ID": "4617",
+        "PROBLEM_TYPE_ID": "polynomial_shifted_basis_eval",
+        "DOMAIN_OPERATION": "polynomial_shifted_basis_eval",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_shifted_basis_eval",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "expression",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "str",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "expression",
+        "topology": "str",
+        "mismatch_expression_vs_multipart": false
+      }
+    },
+    {
+      "problem_type_id": "polynomial_synthetic_division",
+      "sample_id": 4616,
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "generate": {
+        "PROBLEM_TYPE_ID": "polynomial_synthetic_division",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4616",
+        "TEXTBOOK_EXAMPLE_ID": "4616",
+        "PROBLEM_TYPE_ID": "polynomial_synthetic_division",
+        "DOMAIN_OPERATION": "polynomial_synthetic_division",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialArithmeticOperations",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "polynomial_synthetic_division",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2,part_3,part_4",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2,part_3,part_4",
+        "mismatch_expression_vs_multipart": true
+      }
+    },
+    {
+      "problem_type_id": "zero_polynomial_find_coeffs",
+      "sample_id": 4620,
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "generate": {
+        "PROBLEM_TYPE_ID": "zero_polynomial_find_coeffs",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "selected_operation": "",
+        "fixed_domain_key": "algebra.polynomial",
+        "answer_contract": {
+          "answer_type": "expression",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent"
+        },
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "classification_source": "phase1_rule_pack",
+        "has_placeholder": false,
+        "has_NotImplemented": false,
+        "has_pass_only": false,
+        "uses_build_polynomial": true,
+        "uses_adapter": true,
+        "uses_slot_generators": false
+      },
+      "metadata": {
+        "COMPONENT_ID": "src_4620",
+        "TEXTBOOK_EXAMPLE_ID": "4620",
+        "PROBLEM_TYPE_ID": "zero_polynomial_find_coeffs",
+        "DOMAIN_OPERATION": "zero_polynomial_find_coeffs",
+        "ANSWER_TYPE": "expression",
+        "PRESENTATION_MODE": "short_answer",
+        "GENERATOR_READINESS": "draft",
+        "SKILL_ID": "vh_數學B1_PolynomialBasicConcepts",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "hint_nonempty": true,
+      "hint_has_NotImplemented": false,
+      "required_operation": "zero_polynomial_find_coeffs",
+      "selected_operation": "",
+      "selected_matches_required": false,
+      "selected_empty": true,
+      "answer_type_declared_generate": "expression",
+      "answer_type_declared_metadata": "expression",
+      "answer_contract": {
+        "answer_type": "expression",
+        "checker_key": "expression_checker",
+        "equivalence_type": "algebraic_equivalent"
+      },
+      "generator_readiness": "draft",
+      "component_id_ok": true,
+      "smoke": {
+        "ok": true,
+        "error": null,
+        "answer_type_runtime": "multi_part",
+        "presentation_mode_runtime": "short_answer",
+        "answer_topology": "dict_parts:part_1,part_2,part_3",
+        "seed_stable": true,
+        "has_question": true,
+        "checker_key_declared": "expression_checker",
+        "integrity_ok": false,
+        "integrity_errors": null
+      },
+      "contract_vs_runtime": {
+        "declared": "expression",
+        "runtime": "multi_part",
+        "topology": "dict_parts:part_1,part_2,part_3",
+        "mismatch_expression_vs_multipart": true
+      }
+    }
+  ],
+  "all_class": [
+    {
+      "id": 4612,
+      "pt": "polynomial_add_sub",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_add_sub",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4613,
+      "pt": "polynomial_product_term_coefficient",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_product_term_coefficient",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "expression",
+      "topology": "str",
+      "contract_mismatch": false,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4614,
+      "pt": "polynomial_long_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_long_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4615,
+      "pt": "polynomial_long_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_long_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4616,
+      "pt": "polynomial_synthetic_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_synthetic_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4617,
+      "pt": "polynomial_shifted_basis_eval",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_shifted_basis_eval",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "expression",
+      "topology": "str",
+      "contract_mismatch": false,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4622,
+      "pt": "polynomial_add_sub",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_add_sub",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4623,
+      "pt": "polynomial_multiply",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_multiply",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4624,
+      "pt": "polynomial_product_term_coefficient",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_product_term_coefficient",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "expression",
+      "topology": "str",
+      "contract_mismatch": false,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4625,
+      "pt": "polynomial_long_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_long_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4626,
+      "pt": "polynomial_synthetic_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_synthetic_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4627,
+      "pt": "polynomial_remainder_param_solve",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_remainder_param_solve",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4633,
+      "pt": "polynomial_add_sub",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_add_sub",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4634,
+      "pt": "polynomial_multiply",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_multiply",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4635,
+      "pt": "polynomial_product_term_coefficient",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_product_term_coefficient",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "expression",
+      "topology": "str",
+      "contract_mismatch": false,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4636,
+      "pt": "polynomial_long_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_long_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4637,
+      "pt": "polynomial_synthetic_division",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_synthetic_division",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4706,
+      "pt": "polynomial_product_term_coefficient",
+      "skill": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_product_term_coefficient",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "expression",
+      "topology": "str",
+      "contract_mismatch": false,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4609,
+      "pt": "polynomial_descending_power_properties",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_descending_power_properties",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4610,
+      "pt": "polynomial_param_degree_constraint",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_param_degree_constraint",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4618,
+      "pt": "polynomial_descending_power_table",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_descending_power_table",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4,part_5,part_6",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4619,
+      "pt": "polynomial_param_degree_constraint",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_param_degree_constraint",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4620,
+      "pt": "zero_polynomial_find_coeffs",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "zero_polynomial_find_coeffs",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4629,
+      "pt": "polynomial_descending_power_table",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_descending_power_table",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3,part_4,part_5,part_6",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4630,
+      "pt": "polynomial_param_degree_constraint",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_param_degree_constraint",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4631,
+      "pt": "zero_polynomial_find_coeffs",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "zero_polynomial_find_coeffs",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4716,
+      "pt": "polynomial_degree_product_sum",
+      "skill": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_degree_product_sum",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4611,
+      "pt": "polynomial_equality_identity",
+      "skill": "vh_數學B1_PolynomialEquality",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_equality_identity",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4621,
+      "pt": "polynomial_equality_identity",
+      "skill": "vh_數學B1_PolynomialEquality",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_equality_identity",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4632,
+      "pt": "polynomial_equality_identity",
+      "skill": "vh_數學B1_PolynomialEquality",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_equality_identity",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    },
+    {
+      "id": 4717,
+      "pt": "polynomial_equality_identity",
+      "skill": "vh_數學B1_PolynomialEquality",
+      "component_id_ok": true,
+      "one_to_one": true,
+      "required": "polynomial_equality_identity",
+      "selected": "",
+      "selected_empty": true,
+      "selected_match": false,
+      "answer_type_gen": "expression",
+      "answer_type_meta": "expression",
+      "checker": "expression_checker",
+      "readiness": "draft",
+      "has_placeholder": false,
+      "uses_domain_adapter": true,
+      "smoke_ok": true,
+      "seed_stable": true,
+      "runtime_answer_type": "multi_part",
+      "topology": "dict_parts:part_1,part_2,part_3",
+      "contract_mismatch": true,
+      "integrity_ok": false,
+      "integrity_detail": [
+        "passed",
+        "component_id",
+        "blockers",
+        "warnings"
+      ],
+      "unproven": [
+        "correct_pass_wrong_reject",
+        "mathematical_invariant",
+        "tracker_record"
+      ],
+      "preserve_gate_fails": [
+        "selected_operation",
+        "answer_contract_topology",
+        "validator",
+        "lifecycle_draft_vs_verified_manifest"
+      ],
+      "classification": "REBUILD"
+    }
+  ],
+  "counts": {
+    "KEEP": 0,
+    "REBUILD": 31,
+    "UNKNOWN": 0
+  },
+  "manifests": {
+    "vh_數學B1_PolynomialBasicConcepts": {
+      "publish_status": "production_manifest_compiled",
+      "component_count": 9,
+      "git": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 3830
+      },
+      "has_generated_at": true,
+      "keys": [
+        "skill_id",
+        "publish_status",
+        "component_count",
+        "components"
+      ]
+    },
+    "vh_數學B1_PolynomialArithmeticOperations": {
+      "publish_status": "production_manifest_compiled",
+      "component_count": 18,
+      "git": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 7311
+      },
+      "has_generated_at": true,
+      "keys": [
+        "skill_id",
+        "publish_status",
+        "component_count",
+        "components"
+      ]
+    },
+    "vh_數學B1_PolynomialEquality": {
+      "publish_status": "production_manifest_compiled",
+      "component_count": 4,
+      "git": "866042051ef5d179e49bfca2778e387977e1cf75|2026-08-28 13:48:20 +0800|0828",
+      "fs": {
+        "mtime": "2026-09-01T22:14:31",
+        "ctime": "2026-09-01T22:14:31",
+        "size": 1752
+      },
+      "has_generated_at": true,
+      "keys": [
+        "skill_id",
+        "publish_status",
+        "component_count",
+        "components"
+      ]
+    }
+  },
+  "sop_v112_commits": [
+    "062195637c34f0ffb4170cad3c278f463c8918fc|2026-07-04 23:43:57 +0800|vh_數學B1_LinearFunction"
+  ],
+  "sop_recent": [
+    "062195637c34f0ffb4170cad3c278f463c8918fc|2026-07-04 23:43:57 +0800|vh_數學B1_LinearFunction",
+    "c29bf3b7187829a858cdfb3e8252d19cf922dba6|2026-06-29 09:41:18 +0800|*M3-2C：PASS",
+    "a62507ca32e27885add7898ed2180439e5e2b758|2026-06-28 23:46:35 +0800|*M2 的 runtime 大段落已經完成",
+    "0f8c58a8c6d5f2cd4c4f49de70a30615297c9e9e|2026-06-26 16:11:11 +0800|*vh_數學B4_DispersionMeasures",
+    "30f66c0d4cda92b937a71a782f35041abd128b65|2026-06-23 23:52:43 +0800|*SSD突然讀步道 改道一半",
+    "a9b7e4fb4a91ede74f8862e8f2317d9ea4db70c8|2026-06-22 17:04:13 +0800|*vh_數學B1_DistanceBetweenTwoParallelLines",
+    "3ba8b2f9b3ad7659d5a532bab77709dbeba9c566|2026-06-22 14:55:28 +0800|*Vh 數學b1 Distancebetweenpointandline 完成",
+    "539818120481a89dcd30504e21e98f53672af6b8|2026-06-16 16:52:01 +0800|*v3版 gencdoe 上線"
+  ],
+  "fail_freq": {
+    "selected_operation": 31,
+    "answer_contract_topology": 26,
+    "validator": 31,
+    "lifecycle_draft_vs_verified_manifest": 31
+  }
+}

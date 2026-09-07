@@ -382,6 +382,48 @@
         {% endif %}
         {% endwith %}
 
+        <!-- 模式選擇入口 -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-success" style="border-width:2px!important;">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="fs-2">📘</span>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-success">匯入教材內容</h5>
+                                <span class="badge bg-success bg-opacity-10 text-success">目前頁面</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mb-3">Word + PDF，用於匯入教材內容、題目、公式與圖片。</p>
+                        <div class="mt-auto">
+                            <span class="btn btn-success btn-sm disabled">已選擇此模式</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="fs-2">📑</span>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-primary">匯入教材目錄</h5>
+                                <span class="badge bg-primary bg-opacity-10 text-primary">PDF only</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mb-3">僅需 PDF，用於建立章節結構與正式章節名稱。</p>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('core.admin_textbook_catalog_v3') }}"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-arrow-right-circle me-1"></i>前往匯入目錄
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /模式選擇入口 -->
+
         {% if not has_gemini_api_key %}
         <div class="alert alert-danger shadow-sm mb-4" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
@@ -1053,6 +1095,17 @@
                         headers: { 'Accept': 'application/json' }
                     })
                         .then(function (response) {
+                            var contentType = response.headers.get('content-type') || '';
+                            if (!response.ok) {
+                                return response.text().then(function (text) {
+                                    throw new Error('HTTP ' + response.status + ': ' + text.slice(0, 300));
+                                });
+                            }
+                            if (!contentType.includes('application/json')) {
+                                return response.text().then(function (text) {
+                                    throw new Error('伺服器回傳非 JSON：' + text.slice(0, 300));
+                                });
+                            }
                             return response.json().then(function (data) {
                                 return { ok: response.ok, status: response.status, data: data };
                             });

@@ -91,31 +91,35 @@ def test_phase2_absolute_value_inequality_contract() -> None:
         
         # Verify parameters and formula
         givens = payload["metadata"]["givens"]
-        d = givens["d"]
-        e = givens["e"]
+        k = givens.get("k", givens["d"])
+        u = givens.get("u", givens["e"])
         c = givens["c"]
-        a = givens["a"]
-        b = givens["b"]
-        
-        assert a == d * e - c
-        assert b == e - 2 * (c // d)
-        assert a != 0
-        assert b != 0
-        
-        # Verify question_text format matches and contains parameters
+        a_value = givens["a_value"]
+        b_value = givens["b_value"]
+
+        assert a_value == k * u - c
+        assert b_value == (a_value - c) // k
+        assert a_value != 0
+        assert b_value != 0
+
+        # Verify question_text keeps symbolic a/b (not solved numeric a_value)
         qtext = payload["question_text"]
         assert "若不等式" in qtext
         assert "屬於哪一象限？" in qtext
-        assert str(d) in qtext
+        assert str(k) in qtext
         assert str(c) in qtext
-        assert str(e) in qtext
-        
+        assert str(u) in qtext
+        assert f"{k}x - a" in qtext or f"{k}x-a" in qtext
+        assert "$(b, a)$" in qtext or "$(b,a)$" in qtext
+        assert f"- {a_value}" not in qtext
+        assert f"+ {abs(a_value)}" not in qtext or a_value == 0
+
         # Verify quadrant match
-        if b > 0 and a > 0:
+        if b_value > 0 and a_value > 0:
             expected_quad = "第一象限"
-        elif b < 0 and a > 0:
+        elif b_value < 0 and a_value > 0:
             expected_quad = "第二象限"
-        elif b < 0 and a < 0:
+        elif b_value < 0 and a_value < 0:
             expected_quad = "第三象限"
         else:
             expected_quad = "第四象限"

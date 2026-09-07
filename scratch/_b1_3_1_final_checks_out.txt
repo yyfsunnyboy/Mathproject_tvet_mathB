@@ -1,0 +1,72 @@
+--- 4628
+type exam_practice
+src 110統測B
+text 已知$f\left( x \right)={{x}^{\text{ }2}}+bx+c$為二次多項式。若$f\left( x \right)$被${{\left( x+1 \right)}^{2}}$除的餘式被$x-1$整除，且$f\left( x \right)$被${{\left( x-1 \right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A)$-3$ (B)$-1$ (C
+--- 4718
+type self_assessment
+src CH1自我評量 題5
+text 多項式${{x}^{4}}-3{{x}^{3}}+{{x}^{2}}+x+1$除以${{x}^{2}}+x-2$，餘式為ax + b，則a + b = (A) 1 (B) 2 (C) 3 (D) 4。
+--- 4719
+type self_assessment
+src CH1自我評量 題6
+text 已知a、b為實數，若${{x}^{3}}+a{{x}^{2}}+bx-6$可被${{x}^{2}}-x+3$整除，則a + b = (A) −2 (B) 0 (C) 2 (D) 4。
+--- 4720
+type self_assessment
+src CH1自我評量 題7
+text 設$f\left( x \right)$為多項式，且$4{{x}^{3}}+x+1=f\left( x \right)\left( 2{{x}^{2}}-x+3 \right)-4x-2$，則$f\left( x \right)=$ (A) 10x − 2 (B) 6x + 2 (C) 4x − 1 (D) 2x + 1。
+--- 4627
+type advanced_exercise
+src 3-1習題 進階題 9
+text 設${{x}^{2}}+x+1$除$2{{x}^{3}}+3{{x}^{2}}+ax+b$的餘式為−10x + 4，試求實數a、b之值。
+--- 4612
+type textbook_exercise
+src 3-1習題 基礎題 4
+text 已知$f\left( x \right)=3{{x}^{3}}+4{{x}^{2}}-7x+3$，$g\left( x \right)={{x}^{2}}-5x+1$，試求：(1)$f\left( x \right)+g\left( x \right)$ (2)$f\left( x \right)-g\left( x \right)$ (3)$f\left( x \right)\times g\l
+--- 4609
+type textbook_exercise
+src 3-1習題 基礎題 1
+text 設$f\left( x \right)=4{{x}^{2}}-5{{x}^{3}}-x+3$，試求：(1) $f\left( x \right)$依降冪排列 (2)$\deg f\left( x \right)$(3) $f\left( x \right)$的首項係數 (4)$f\left( x \right)$在x = −1時之值
+resolve polynomial_add_sub domain= algebra.polynomial selected=  entry= build_polynomial_matrix
+resolve polynomial_remainder_param_solve domain= algebra.polynomial selected=  entry= build_polynomial_matrix
+resolve polynomial_long_division domain= algebra.polynomial selected=  entry= build_polynomial_matrix
+op_spec build_polynomial_matrix ('short_answer',) ('multi_part', 'expression')
+smoke4627 answer dict {'part_1': '2', 'part_2': '8'}
+presentation short_answer multi_part
+smoke4612 answer dict {'part_1': '8x^2+3x-6', 'part_2': '2x^2+3x-2'}
+smoke4612 modes short_answer multi_part
+TABLE
+4612 polynomial_add_sub verified True verified draft
+4613 polynomial_product_term_coefficient verified True verified draft
+4614 polynomial_long_division verified True verified draft
+4615 polynomial_long_division verified True verified draft
+4616 polynomial_synthetic_division verified True verified draft
+4617 polynomial_shifted_basis_eval verified True verified draft
+4622 polynomial_add_sub verified True verified draft
+4623 polynomial_multiply verified True verified draft
+4624 polynomial_product_term_coefficient verified True verified draft
+4625 polynomial_long_division verified True verified draft
+4626 polynomial_synthetic_division verified True verified draft
+4627 polynomial_remainder_param_solve verified True verified draft
+4628 polynomial_remainder_param_solve classified False None None
+4633 polynomial_add_sub verified True verified draft
+4634 polynomial_multiply verified True verified draft
+4635 polynomial_product_term_coefficient verified True verified draft
+4636 polynomial_long_division verified True verified draft
+4637 polynomial_synthetic_division verified True verified draft
+4706 polynomial_product_term_coefficient verified True verified draft
+4718 polynomial_long_division classified False None None
+4719 polynomial_remainder_param_solve classified False None None
+4720 polynomial_long_division classified False None None
+4609 polynomial_descending_power_properties verified True verified draft
+4610 polynomial_param_degree_constraint verified True verified draft
+4618 polynomial_descending_power_table verified True verified draft
+4619 polynomial_param_degree_constraint verified True verified draft
+4620 zero_polynomial_find_coeffs verified True verified draft
+4629 polynomial_descending_power_table verified True verified draft
+4630 polynomial_param_degree_constraint verified True verified draft
+4631 zero_polynomial_find_coeffs verified True verified draft
+4716 polynomial_degree_product_sum verified True verified draft
+4611 polynomial_equality_identity verified True verified draft
+4621 polynomial_equality_identity verified True verified draft
+4632 polynomial_equality_identity verified True verified draft
+4717 polynomial_equality_identity verified True verified draft

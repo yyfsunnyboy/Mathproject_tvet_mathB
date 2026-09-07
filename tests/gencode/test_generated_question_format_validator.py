@@ -343,3 +343,42 @@ def test_tc17_valid_choice_answer_in_range():
     _assert_no_blocker(result, "answer_not_in_choices")
     _assert_no_blocker(result, "choices_missing")
     _assert_no_blocker(result, "choices_duplicate")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TC-18: 題幹提到表格但無 table/chart/image → stem_references_table_but_missing
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_tc18_stem_references_table_but_missing():
+    """「根據表格」題幹但 payload 無可 render 資料時，應判定 invalid。"""
+    payload = {
+        "question_text": "閱讀下列資料，根據表格回答問題。",
+        "answer": "B",
+        "answer_type": "single_choice",
+        "choices": [
+            {"label": "A", "text": "3"},
+            {"label": "B", "text": "2"},
+            {"label": "C", "text": "1"},
+            {"label": "D", "text": "4"},
+        ],
+        "metadata": {"givens": {}, "target": {}, "derivation": []},
+    }
+    result = _run(payload)
+    _assert_blocker(result, "stem_references_table_but_missing")
+
+
+def test_tc18b_stem_references_table_with_table_data_passes():
+    """題幹提到表格且有 table_data.rows 時，不應誤殺。"""
+    payload = {
+        "question_text": "閱讀下列資料，根據表格回答問題。",
+        "answer": "2",
+        "answer_type": "integer",
+        "choices": [],
+        "table_data": {
+            "headers": ["組別", "次數"],
+            "rows": [["A", 3], ["B", 2]],
+        },
+        "metadata": {"givens": {}, "target": {}, "derivation": []},
+    }
+    result = _run(payload)
+    _assert_no_blocker(result, "stem_references_table_but_missing")
