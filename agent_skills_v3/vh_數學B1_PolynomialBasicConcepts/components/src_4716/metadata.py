@@ -11,31 +11,31 @@ IS_REQUIRED_CORE: Final[bool] = False
 ORDER_WEIGHT: Final[int] = 30
 DIFFICULTY_LEVEL: Final[str] = "hard"
 DOMAIN_OPERATION: Final[str] = "polynomial_degree_product_sum"
-ANSWER_SCHEMA_KEY: Final[str] = ""
+ANSWER_SCHEMA_KEY: Final[str] = "choice_label"
 LINE_TYPE: Final[str] = "polynomial_degree_product_sum"
 
 TARGET_TASK: Final[str] = "polynomial_degree_product_sum"
 TEMPLATE_SLOT: Final[str] = "polynomial_degree_product_sum"
 PROBLEM_TYPE_ID: Final[str] = "polynomial_degree_product_sum"
-PRESENTATION_MODE: Final[str] = "short_answer"
-RESPONSE_MODE: Final[str] = "short_answer"
-INTERACTION_TYPE: Final[str] = "short_answer"
-ANSWER_VALUE_TYPE: Final[str] = "expression"
-ANSWER_TYPE: Final[str] = "expression"
-LEGACY_ANSWER_TYPE: Final[str] = "expression"
+PRESENTATION_MODE: Final[str] = "single_choice"
+RESPONSE_MODE: Final[str] = "single_choice"
+INTERACTION_TYPE: Final[str] = "single_choice"
+ANSWER_VALUE_TYPE: Final[str] = "choice"
+ANSWER_TYPE: Final[str] = "choice"
+LEGACY_ANSWER_TYPE: Final[str] = "choice"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.polynomial_domain.build_polynomial_matrix",
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "expression_checker",
-    "equivalence_type": "algebraic_equivalent",
-    "response_mode": "short_answer",
-    "interaction_type": "short_answer",
-    "answer_value_type": "expression",
-    "answer_type": "expression",
-    "module": "core.checkers.structured_text_checker",
+    "checker_key": "choice_label_checker",
+    "equivalence_type": "choice_label",
+    "response_mode": "single_choice",
+    "interaction_type": "single_choice",
+    "answer_value_type": "choice",
+    "answer_type": "choice",
+    "module": "core.checkers.choice_label_checker",
 }
 
 GENERATOR_READINESS: Final[str] = "draft"

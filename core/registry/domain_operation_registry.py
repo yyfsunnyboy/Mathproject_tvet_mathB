@@ -918,8 +918,8 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_degree_product_sum": _op(
             "polynomial_degree_product_sum",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression", "integer"),
-            supported_presentation_modes=("short_answer", "multiple_inputs"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_degree_product_sum",),
         ),
         "polynomial_add_sub": _op(
@@ -937,13 +937,15 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_product_term_coefficient": _op(
             "polynomial_product_term_coefficient",
             "build_polynomial_matrix",
-            supported_answer_types=("integer", "expression", "choice", "multi_part"),
+            supported_answer_types=("integer", "expression", "choice", "single_choice", "multi_part"),
+            supported_presentation_modes=("short_answer", "single_choice"),
             provided_capabilities=("polynomial_product_term_coefficient",),
         ),
         "polynomial_long_division": _op(
             "polynomial_long_division",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_long_division",),
         ),
         "polynomial_synthetic_division": _op(
@@ -955,7 +957,8 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_remainder_param_solve": _op(
             "polynomial_remainder_param_solve",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_remainder_param_solve",),
         ),
         "polynomial_shifted_basis_eval": _op(
@@ -967,7 +970,8 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_equality_identity": _op(
             "polynomial_equality_identity",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_equality_identity",),
         ),
         "remainder_theorem_evaluate": _op(

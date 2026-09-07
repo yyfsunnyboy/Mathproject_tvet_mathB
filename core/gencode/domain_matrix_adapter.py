@@ -1406,7 +1406,7 @@ def _build_choice_options(
     seed_text: str,
 ) -> tuple[list[dict[str, str]], str]:
     unique_wrong: list[str] = []
-    seen: set[str] = {canonical}
+    seen: set[str] = {str(canonical).strip()}
     for item in distractors:
         text = str(item).strip()
         if not text or text in seen:
@@ -1414,7 +1414,31 @@ def _build_choice_options(
         seen.add(text)
         unique_wrong.append(text)
 
-    option_texts = [canonical] + unique_wrong[:3]
+    # Ensure 3 distractors for A/B/C/D when possible.
+    if len(unique_wrong) < 3:
+        try:
+            base = int(str(canonical).strip())
+            for d in (-3, -2, -1, 1, 2, 3, 4, -4, 5, -5, 6, -6):
+                cand = str(base + d)
+                if cand in seen:
+                    continue
+                seen.add(cand)
+                unique_wrong.append(cand)
+                if len(unique_wrong) >= 3:
+                    break
+        except (TypeError, ValueError):
+            for i in range(1, 8):
+                cand = f"{canonical}'"
+                # vary slightly
+                cand = f"{canonical}_{i}"
+                if cand in seen:
+                    continue
+                seen.add(cand)
+                unique_wrong.append(cand)
+                if len(unique_wrong) >= 3:
+                    break
+
+    option_texts = [str(canonical).strip()] + unique_wrong[:3]
     rng = random.Random(sum(ord(ch) for ch in seed_text))
     rng.shuffle(option_texts)
 
@@ -1423,7 +1447,7 @@ def _build_choice_options(
     for index, text in enumerate(option_texts):
         label = chr(ord("A") + index)
         choices.append({"label": label, "text": text})
-        if text == canonical:
+        if text == str(canonical).strip():
             correct_label = label
     return choices, correct_label
 
@@ -2840,12 +2864,38 @@ def convert_domain_matrix_to_question_payload(
             b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
             question_text = f"解不等式：$\\left| {a}x {b_text} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_interval_interpretation":
-            d = givens.get("d", 7)
-            a = givens.get("a", 0)
+            # Keep symbolic parameters a,b in the stem. Numeric solved values are
+            # givens["a_value"] / givens["b_value"] and must NOT be substituted
+            # into |k x - a|.
+            k = givens.get("k", givens.get("d", 7))
             c = givens.get("c", 28)
-            e = givens.get("e", 5)
-            a_part = f"- {a}" if a >= 0 else f"+ {abs(a)}"
-            question_text = f"若不等式 $\\left| {d}x {a_part} \\right| < {c}$ 之解為 $b < x < {e}$，則點 $(b, a)$ 屬於哪一象限？"
+            u = givens.get("u", givens.get("e", 5))
+            question_text = (
+                f"若不等式 $\\left| {k}x - a \\right| < {c}$ 之解為 $b < x < {u}$，"
+                f"則點 $(b, a)$ 屬於哪一象限？"
+            )
+        elif op == "absolute_value_inequality_integer_solution_count_choice":
+            a = givens.get("a", 1)
+            b = givens.get("b", 0)
+            op_sign = givens.get("op", "<=")
+            c = givens.get("c", 5)
+            try:
+                a_num = int(a)
+            except (TypeError, ValueError):
+                a_num = a
+            try:
+                b_num = int(b)
+            except (TypeError, ValueError):
+                b_num = b
+            ax_text = "x" if a_num == 1 else f"{a_num}x"
+            if b_num == 0:
+                inner = ax_text
+            else:
+                b_text = f"+ {b_num}" if b_num > 0 else f"- {abs(b_num)}"
+                inner = f"{ax_text} {b_text}"
+            question_text = (
+                f"若 $\\left| {inner} \\right| {op_sign} {c}$，滿足的整數 $x$ 有幾個？"
+            )
         elif op == "compute_distance_between_two_points":
             x1 = givens.get("x1")
             y1 = givens.get("y1")
@@ -2860,7 +2910,34 @@ def convert_domain_matrix_to_question_payload(
             dist = givens.get("distance")
             question_text = f"設 $A({x1}, {y1})$、$B({x2}, {y2})$ 為坐標平面上兩點，且其距離為 ${dist}$，試求 $k$ 值。"
         else:
-            question_text = "閱讀下列資料，根據表格回答問題。"
+            # Never emit a table-referencing placeholder without table/chart payload.
+            # Stems filled by the post-pass below (histogram / target_label) may stay empty.
+            _abs_ops_without_freq_override = {
+                "solve_basic_absolute_value_equation",
+                "solve_basic_absolute_value_equation_no_solution",
+                "number_line_distance_between_two_points",
+                "absolute_value_inequality_zero_center_basic",
+                "absolute_value_inequality_shifted_basic",
+                "absolute_value_inequality_linear_expression_basic",
+                "absolute_value_inequality_integer_solution_count_choice",
+                "absolute_value_inequality_interval_interpretation",
+            }
+            defer_to_post_pass = (
+                problem_type_id
+                in {
+                    "frequency_distribution_chart_construction",
+                    "histogram_distribution_update",
+                }
+                or (
+                    bool(validation_facts.get("target_label"))
+                    and op not in _abs_ops_without_freq_override
+                )
+            )
+            if not defer_to_post_pass:
+                raise ValueError(
+                    "domain_matrix_missing_question_text: "
+                    f"op={op!r} problem_type_id={problem_type_id!r}"
+                )
 
     if problem_type_id == "frequency_distribution_chart_construction":
         pass
@@ -2871,7 +2948,12 @@ def convert_domain_matrix_to_question_payload(
         if target_label and op not in {
             "solve_basic_absolute_value_equation",
             "solve_basic_absolute_value_equation_no_solution",
-            "number_line_distance_between_two_points"
+            "number_line_distance_between_two_points",
+            "absolute_value_inequality_zero_center_basic",
+            "absolute_value_inequality_shifted_basic",
+            "absolute_value_inequality_linear_expression_basic",
+            "absolute_value_inequality_integer_solution_count_choice",
+            "absolute_value_inequality_interval_interpretation",
         }:
             question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
 
@@ -3023,14 +3105,47 @@ def convert_domain_matrix_to_question_payload(
         } if problem_type_id == "histogram_distribution_update" else None,
     }
     if mode == "single_choice":
-        choices, correct_label = _build_choice_options(
-            display_answer,
-            normalized.get("distractors", []),
-            seed_text=f"{problem_type_id or op}|{display_answer}",
+        from core.gencode.single_choice_contract import build_single_choice_contract
+
+        source_choices = list(
+            kwargs.get("source_choices")
+            or givens.get("source_choices")
+            or matrix.get("source_choices")
+            or []
         )
+        source_answer_label = str(
+            kwargs.get("source_answer_label")
+            or givens.get("source_answer_label")
+            or matrix.get("source_answer_label")
+            or ""
+        ).strip().upper()
+        # Only honor explicit preserve flag. Auto-preserving textbook choices while
+        # the domain emits isomorphic variants would desync answer labels.
+        preserve_source = bool(kwargs.get("preserve_source_choices"))
+        try:
+            choice_bundle = build_single_choice_contract(
+                display_answer,
+                list(normalized.get("distractors") or []),
+                source_choices=source_choices or None,
+                source_answer_label=source_answer_label or None,
+                seed=kwargs.get("seed"),
+                preserve_source_choices=preserve_source,
+            )
+            choices = [
+                {"label": str(c.get("label") or c.get("key")), "text": str(c.get("text") or "")}
+                for c in (choice_bundle.get("choices") or [])
+            ]
+            correct_label = str(choice_bundle.get("correct_label") or "A")
+        except ValueError:
+            choices, correct_label = _build_choice_options(
+                display_answer,
+                normalized.get("distractors", []),
+                seed_text=f"{problem_type_id or op}|{display_answer}",
+            )
         options = [str(choice["text"]) for choice in choices]
         payload_answer = correct_label
         payload_correct = correct_label
+        resolved_answer_type = "single_choice"
         answer_contract = {
             "presentation_mode": "single_choice",
             "answer_type": "single_choice",
@@ -3052,13 +3167,13 @@ def convert_domain_matrix_to_question_payload(
         "textbook_example_id": textbook_example_id,
         "problem_type_id": problem_type_id or op,
         "source_kind": source_kind,
-        "presentation_mode": mode,
-        "answer_type": resolved_answer_type,
-        "checker": answer_contract["checker"],
-        "checker_key": answer_contract["checker_key"],
-        "equivalence": answer_contract["equivalence"],
-        "equivalence_type": answer_contract["answer_equivalence"],
-        "interaction_type": "expression",
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": answer_contract["checker"],
+            "checker_key": answer_contract["checker_key"],
+            "equivalence": answer_contract["equivalence"],
+            "equivalence_type": answer_contract["answer_equivalence"],
+            "interaction_type": "single_choice" if mode == "single_choice" else "expression",
         "auto_checkable": True,
         "grading_mode": "auto",
         "answer_contract": answer_contract,

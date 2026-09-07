@@ -6168,6 +6168,9 @@ def build_v3_component_draft_from_skill(
     if domain_ctx.fixed_domain_key == "statistics.descriptive_statistics":
         extra.update(_v3_extract_dispersion_constraints(row))
         extra["presentation_mode"] = presentation_mode
+    if domain_ctx.fixed_domain_key == "algebra.polynomial":
+        extra["presentation_mode"] = presentation_mode
+        extra["answer_type"] = answer_type
     if presentation_mode != "single_choice":
         if line_type == "slope_intercept_find_x_intercept":
             answer_type = "rational"
@@ -6224,6 +6227,16 @@ def build_v3_component_draft_from_skill(
     }
     matrix = normalize_domain_payload_to_v3_matrix(matrix, norm_context)
 
+    from core.gencode.domain_matrix_adapter import _prepare_choice_label_matrix_answer
+
+    matrix = _prepare_choice_label_matrix_answer(
+        matrix,
+        domain_operation=line_type,
+        component_id=component_id,
+        answer_schema_key=answer_schema_key,
+        problem_type_id=problem_type_id,
+    )
+
     validate_domain_matrix(
         matrix,
         answer_schema_key=answer_schema_key,
@@ -6269,12 +6282,6 @@ def build_v3_component_draft_from_skill(
         checker_key = "choice_label_checker"
         equivalence_type = "choice_label"
         checker_module = "core.checkers.choice_label_checker"
-    elif (
-        presentation_mode == "single_choice"
-        and convert_kwargs.get("source_choices")
-        and re.fullmatch(r"[A-D]", source_label)
-    ):
-        convert_kwargs["preserve_source_choices"] = True
     payload = convert_domain_matrix_to_question_payload(
         normalized_matrix,
         presentation_mode=presentation_mode,

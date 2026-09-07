@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_PolynomialBasicConcepts",
-  "compiled_at": "2026-08-27T07:28:19.200894+00:00",
+  "compiled_at": "2026-09-07T16:05:28.327423+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -12,7 +12,7 @@
       "line_type": "polynomial_descending_power_properties",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4609"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4609"
     },
     {
       "component_id": "src_4610",
@@ -23,7 +23,7 @@
       "line_type": "polynomial_param_degree_constraint",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4610"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4610"
     },
     {
       "component_id": "src_4618",
@@ -45,7 +45,7 @@
       "line_type": "polynomial_param_degree_constraint",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4619"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4619"
     },
     {
       "component_id": "src_4620",
@@ -56,7 +56,7 @@
       "line_type": "zero_polynomial_find_coeffs",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4620"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4620"
     },
     {
       "component_id": "src_4629",
@@ -78,7 +78,7 @@
       "line_type": "polynomial_param_degree_constraint",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4630"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4630"
     },
     {
       "component_id": "src_4631",
@@ -89,18 +89,18 @@
       "line_type": "zero_polynomial_find_coeffs",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4631"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4631"
     },
     {
       "component_id": "src_4716",
       "status": "verified",
-      "presentation_mode": "short_answer",
+      "presentation_mode": "single_choice",
       "source_kind": "ex_4716",
       "textbook_example_id": 4716,
       "line_type": "polynomial_degree_product_sum",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4716"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialBasicConcepts\\components\\src_4716"
     }
   ]
 }

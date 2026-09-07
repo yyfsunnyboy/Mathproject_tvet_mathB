@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_PolynomialEquality",
-  "compiled_at": "2026-08-27T07:41:57.070153+00:00",
+  "compiled_at": "2026-09-07T16:05:28.423231+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -12,7 +12,7 @@
       "line_type": "polynomial_equality_identity",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4611"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4611"
     },
     {
       "component_id": "src_4621",
@@ -23,7 +23,7 @@
       "line_type": "polynomial_equality_identity",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4621"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4621"
     },
     {
       "component_id": "src_4632",
@@ -34,18 +34,18 @@
       "line_type": "polynomial_equality_identity",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4632"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4632"
     },
     {
       "component_id": "src_4717",
       "status": "verified",
-      "presentation_mode": "short_answer",
+      "presentation_mode": "single_choice",
       "source_kind": "ex_4717",
       "textbook_example_id": 4717,
       "line_type": "polynomial_equality_identity",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4717"
+      "component_dir": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialEquality\\components\\src_4717"
     }
   ]
 }

@@ -142,6 +142,37 @@ def _answer_bundle(canonical: str, *, parts: dict[str, str] | None = None, value
     }
 
 
+def _numeric_distractors(rng: random.Random, correct: int | str, *, count: int = 3) -> list[str]:
+    """Build distinct integer-like distractors around a scalar correct answer."""
+    try:
+        base = int(str(correct).strip())
+    except (TypeError, ValueError):
+        base = None
+    out: list[str] = []
+    seen = {str(correct).strip()}
+    if base is not None:
+        deltas = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, -6, -7, 8, -8, 9, -9, 10]
+        rng.shuffle(deltas)
+        for d in deltas:
+            cand = str(base + d)
+            if cand in seen:
+                continue
+            seen.add(cand)
+            out.append(cand)
+            if len(out) >= count:
+                return out
+    # fallback strings
+    for i in range(1, 20):
+        cand = f"d{i}"
+        if cand in seen:
+            continue
+        seen.add(cand)
+        out.append(cand)
+        if len(out) >= count:
+            break
+    return out[:count]
+
+
 def _rand_nonzero(rng: random.Random, lo: int = -5, hi: int = 5) -> int:
     values = [v for v in range(lo, hi + 1) if v != 0]
     return int(rng.choice(values))
@@ -396,8 +427,12 @@ def _build_degree_product_sum(rng: random.Random) -> dict[str, Any]:
     # sum degree is max unless cancellation; assume no cancellation of leading terms
     deg_h = deg_f + deg_g
     deg_k = max(deg_f, deg_g)
-    # ask a+b or a,b depending on seed
-    mode = rng.choice(["sum", "pair", "product_only"])
+    # ask a+b / a-b / a,b depending on seed
+    prefer_choice = bool(getattr(rng, "_prefer_choice", False))
+    if prefer_choice:
+        mode = rng.choice(["diff", "diff", "sum", "product_only"])
+    else:
+        mode = rng.choice(["sum", "pair", "product_only"])
     if mode == "sum":
         question = (
             f"設$f(x)$為{deg_f}次多項式，$g(x)$為{deg_g}次多項式，"
@@ -407,6 +442,21 @@ def _build_degree_product_sum(rng: random.Random) -> dict[str, Any]:
         ans = str(deg_h + deg_k)
         parts = {"part_1": ans}
         canonical = ans
+        distractors = _numeric_distractors(rng, ans)
+    elif mode == "diff":
+        question = (
+            f"設$f(x)$為{deg_f}次多項式，$g(x)$為{deg_g}次多項式，"
+            f"$h(x)=f(x)\\times g(x)$，$k(x)=f(x)+g(x)$，"
+            f"且$h(x)$為$a$次多項式，$k(x)$為$b$次多項式，則$a-b=$？"
+        )
+        ans = str(deg_h - deg_k)
+        parts = {"part_1": ans}
+        canonical = ans
+        distractors = _numeric_distractors(rng, ans)
+        for extra in (str(deg_h), str(deg_h + deg_k), str(abs(deg_f - deg_g))):
+            if extra != ans and extra not in distractors:
+                distractors.append(extra)
+        distractors = distractors[:3]
     elif mode == "product_only":
         question = (
             f"設$f(x)$為{deg_f}次多項式，$g(x)$為{deg_g}次多項式，"
@@ -415,6 +465,7 @@ def _build_degree_product_sum(rng: random.Random) -> dict[str, Any]:
         ans = str(deg_h)
         parts = {"part_1": ans}
         canonical = ans
+        distractors = _numeric_distractors(rng, ans)
     else:
         question = (
             f"設$f(x)$為{deg_f}次多項式，$g(x)$為{deg_g}次多項式，"
@@ -423,6 +474,7 @@ def _build_degree_product_sum(rng: random.Random) -> dict[str, Any]:
         )
         parts = {"part_1": str(deg_h), "part_2": str(deg_k)}
         canonical = f"a={deg_h},b={deg_k}"
+        distractors = [str(deg_h), str(deg_k), str(abs(deg_f - deg_g))]
     return {
         "givens": {
             "question_text": question,
@@ -434,7 +486,7 @@ def _build_degree_product_sum(rng: random.Random) -> dict[str, Any]:
             parts=parts,
             value=parts if len(parts) > 1 else parts["part_1"],
         ),
-        "distractors": [str(deg_h), str(deg_k), str(abs(deg_f - deg_g))],
+        "distractors": distractors,
         "explanation_steps": [
             "乘積次數為兩式次數相加。",
             "和的次數為較高次數（首項不消去時）。",
@@ -519,7 +571,7 @@ def _build_product_term_coefficient(rng: random.Random) -> dict[str, Any]:
             "g": {str(k0): _frac_plain(v) for k0, v in g.items()},
         },
         "answer": _answer_bundle(ans, parts=parts, value=ans),
-        "distractors": [],
+        "distractors": _numeric_distractors(rng, ans),
         "explanation_steps": [
             f"只收集乘積中次數為 {k} 的各項係數並相加。",
             "不必展開全部乘積。",
@@ -535,11 +587,79 @@ def _build_long_division(rng: random.Random) -> dict[str, Any]:
         0: Fraction(_rand_nonzero(rng, -3, 3)),
     }
     quotient = _rand_poly(rng, deg=1, coeff_lo=-4, coeff_hi=4, allow_zero_lower=False)
-    remainder = _rand_poly(rng, deg=rng.randint(0, 1), coeff_lo=-5, coeff_hi=5, allow_zero_lower=False)
+    remainder = {
+        1: Fraction(_rand_nonzero(rng, -8, 8)),
+        0: Fraction(rng.randint(-8, 8)),
+    }
     if _degree(remainder) >= _degree(divisor):
         remainder = {0: Fraction(_rand_nonzero(rng))}
     dividend = _poly_add(_poly_mul(divisor, quotient), remainder)
     q, r = _poly_long_division(dividend, divisor)
+    mode = (
+        rng.choice(["remainder_ab_sum", "recover_quotient", "remainder_ab_sum"])
+        if bool(getattr(rng, "_prefer_choice", False))
+        else "quotient_remainder"
+    )
+    if mode == "remainder_ab_sum" and 1 in r:
+        a = int(r.get(1, Fraction(0)))
+        b = int(r.get(0, Fraction(0)))
+        ans = str(a + b)
+        parts = {"part_1": ans}
+        question = (
+            f"多項式${poly_plain(dividend)}$除以${poly_plain(divisor)}$，"
+            f"餘式為$ax+b$，則$a+b=$？"
+        )
+        return {
+            "givens": {
+                "question_text": question,
+                "dividend": {str(k): _frac_plain(v) for k, v in dividend.items()},
+                "divisor": {str(k): _frac_plain(v) for k, v in divisor.items()},
+            },
+            "answer": _answer_bundle(ans, parts=parts, value=ans),
+            "distractors": _numeric_distractors(rng, ans),
+            "explanation_steps": [
+                "以長除法求出一次餘式 ax+b。",
+                "再計算 a+b。",
+            ],
+        }
+    if mode == "recover_quotient":
+        # Style: dividend = f(x)*divisor + known linear remainder → ask f(x)
+        rem_display = poly_plain(remainder)
+        # rearrange: dividend = f*divisor - (-remainder) presentation like textbook
+        # textbook: LHS = f*divisor - 4x - 2  ⇒ remainder contribution is -(-4x-2)
+        neg_rem = {e: -c for e, c in remainder.items()}
+        lhs = _poly_add(_poly_mul(divisor, quotient), remainder)
+        question = (
+            f"設$f(x)$為多項式，且${poly_plain(lhs)}=f(x)\\left({poly_plain(divisor)}\\right)"
+            f"{_signed_poly_suffix(neg_rem)}$，則$f(x)=$？"
+        )
+        ans = poly_plain(quotient)
+        # distractors: nearby linear polys
+        dist = []
+        for _ in range(8):
+            dq = dict(quotient)
+            e = rng.choice(list(dq.keys()) or [0])
+            dq[e] = dq.get(e, Fraction(0)) + Fraction(_rand_nonzero(rng, -2, 2))
+            text = poly_plain(_trim(dq))
+            if text != ans and text not in dist:
+                dist.append(text)
+            if len(dist) >= 3:
+                break
+        while len(dist) < 3:
+            dist.append(poly_plain({1: Fraction(_rand_nonzero(rng)), 0: Fraction(rng.randint(-3, 3))}))
+        return {
+            "givens": {
+                "question_text": question,
+                "divisor": {str(k): _frac_plain(v) for k, v in divisor.items()},
+                "remainder": {str(k): _frac_plain(v) for k, v in remainder.items()},
+            },
+            "answer": _answer_bundle(ans, parts={"part_1": ans}, value=ans),
+            "distractors": dist[:3],
+            "explanation_steps": [
+                "移項得 f(x)×除式 = 左式 − 餘式項。",
+                "長除或比較係數求出一次式 f(x)。",
+            ],
+        }
     parts = {"part_1": poly_plain(q), "part_2": poly_plain(r)}
     question = (
         f"試求$\\left({poly_plain(dividend)}\\right)\\div\\left({poly_plain(divisor)}\\right)$的商式和餘式。"
@@ -557,6 +677,16 @@ def _build_long_division(rng: random.Random) -> dict[str, Any]:
             "餘式次數須小於除式次數。",
         ],
     }
+
+
+def _signed_poly_suffix(poly: dict[int, Fraction]) -> str:
+    """Render a signed poly suffix like '+3x-2' or '-4x-2' for equation stems."""
+    body = poly_plain(poly)
+    if not body or body == "0":
+        return ""
+    if body.startswith("-"):
+        return body
+    return f"+{body}"
 
 
 def _build_synthetic_division(rng: random.Random) -> dict[str, Any]:
@@ -604,6 +734,62 @@ def _build_synthetic_division(rng: random.Random) -> dict[str, Any]:
 
 def _build_remainder_param_solve(rng: random.Random) -> dict[str, Any]:
     # Style 4627: divisor known, dividend has a,b unknown, remainder given → solve a,b
+    # Also isomorphic to self-assessment: divisible case asking a+b
+    mode = (
+        "divisible_a_plus_b"
+        if bool(getattr(rng, "_prefer_choice", False))
+        else "solve_ab"
+    )
+    if mode == "divisible_a_plus_b":
+        divisor = {
+            2: Fraction(1),
+            1: Fraction(rng.randint(-2, 2)),
+            0: Fraction(_rand_nonzero(rng, -3, 3)),
+        }
+        quotient = _rand_poly(rng, deg=1, coeff_lo=-3, coeff_hi=3, allow_zero_lower=False)
+        remainder = {0: Fraction(0)}
+        dividend = _poly_mul(divisor, quotient)  # exact division
+        # present as x^3 + a x^2 + b x + const with const known
+        const = int(dividend.get(0, Fraction(0)))
+        a_true = int(dividend.get(2, Fraction(0)))
+        b_true = int(dividend.get(1, Fraction(0)))
+        # force cubic leading 1
+        if _degree(dividend) != 3:
+            # rebuild with deg-1 quotient ensuring cubic
+            quotient = {
+                1: Fraction(_rand_nonzero(rng, -3, 3)),
+                0: Fraction(rng.randint(-3, 3)),
+            }
+            dividend = _poly_mul(divisor, quotient)
+            const = int(dividend.get(0, Fraction(0)))
+            a_true = int(dividend.get(2, Fraction(0)))
+            b_true = int(dividend.get(1, Fraction(0)))
+        lead = int(dividend.get(3, Fraction(1)))
+        # simpler display matching textbook: x^3 + a x^2 + b x + const
+        const_term = _term_latex(Fraction(const), 0, first=False)
+        if lead == 1:
+            display = f"x^{{3}}+ax^{{2}}+bx{const_term}"
+        else:
+            display = f"{lead}x^{{3}}+ax^{{2}}+bx{const_term}"
+        ans = str(a_true + b_true)
+        question = (
+            f"已知$a$、$b$為實數，若${display}$可被${poly_plain(divisor)}$整除，則$a+b=$？"
+        )
+        return {
+            "givens": {
+                "question_text": question,
+                "a": a_true,
+                "b": b_true,
+                "divisor": {str(k): _frac_plain(v) for k, v in divisor.items()},
+            },
+            "answer": _answer_bundle(ans, parts={"part_1": ans}, value=ans),
+            "distractors": _numeric_distractors(rng, ans),
+            "explanation_steps": [
+                "可整除表示餘式為 0。",
+                "比較係數或做長除法解出 a、b 後求 a+b。",
+            ],
+        }
+
     divisor = {2: Fraction(1), 1: Fraction(1), 0: Fraction(1)}  # x^2+x+1 common
     if rng.random() < 0.4:
         divisor = {
@@ -705,7 +891,40 @@ def _factorization_plain(lead: int, roots: list[int]) -> str:
 
 def _build_equality_identity(rng: random.Random) -> dict[str, Any]:
     # Identity: equate coefficients → solve a, b (, c)
-    mode = rng.choice(["ab", "abc", "ab"])
+    # Also cube-expansion isomorphic mode: (ax^2+bx+c)^3 = expanded, ask a+b+c
+    mode = (
+        "cube_sum"
+        if bool(getattr(rng, "_prefer_choice", False))
+        else rng.choice(["ab", "abc", "ab"])
+    )
+    if mode == "cube_sum":
+        a = rng.choice([1, 1, 1, -1])
+        b = rng.randint(-3, 3)
+        c = rng.choice([-3, -2, -1, 1, 2, 3])
+        inner = {2: Fraction(a), 1: Fraction(b), 0: Fraction(c)}
+        expanded = _poly_mul(_poly_mul(inner, inner), inner)
+        ans = str(a + b + c)
+        question = (
+            "設$"
+            + poly_plain(expanded)
+            + r"={{\left(a{{x}^{2}}+bx+c\right)}^{3}}$，則$a+b+c=$？"
+        )
+        return {
+            "givens": {
+                "question_text": question,
+                "a": a,
+                "b": b,
+                "c": c,
+                "expanded": {str(k): _frac_plain(v) for k, v in expanded.items()},
+            },
+            "answer": _answer_bundle(ans, parts={"part_1": ans}, value=ans),
+            "distractors": _numeric_distractors(rng, ans),
+            "explanation_steps": [
+                "由最高次項得 a；由展開交叉項比較得 b、c。",
+                "最後求 a+b+c。",
+            ],
+        }
+
     # Right-hand side known poly
     rhs = {
         2: Fraction(_rand_nonzero(rng, -4, 4)),
@@ -1229,6 +1448,9 @@ def build_polynomial_matrix(
         raise ValueError(f"Unsupported polynomial operation: {op!r}")
 
     rng = random.Random(0 if seed is None else seed)
+    constraints = constraints or {}
+    prefer_choice = str((constraints or {}).get("presentation_mode") or "").strip() == "single_choice"
+    setattr(rng, "_prefer_choice", prefer_choice)
     builders = {
         "polynomial_descending_power_properties": _build_descending_power_properties,
         "polynomial_param_degree_constraint": _build_param_degree_constraint,
@@ -1255,6 +1477,13 @@ def build_polynomial_matrix(
         )
 
     built = builders[op](rng)
+    if prefer_choice:
+        for _ in range(12):
+            distractors = built.get("distractors") or []
+            parts = (built.get("answer") or {}).get("parts") or {}
+            if distractors and len(parts) <= 1:
+                break
+            built = builders[op](rng)
     return {
         "givens": built["givens"],
         "answer": built["answer"],
