@@ -1,0 +1,102 @@
+{
+  "backup": "_b1_3_3_q16_q18_db_backup_20260908_125209.json",
+  "db": [
+    {
+      "example_id": 4713,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_description": "CH1自我評量 題16",
+      "problem_text": "已知一長方形的面積為$9{{x}^{2}}+6x+1-{{y}^{2}}$平方單位，若其長、寬均為x、y的一次式且x、y項的係數均為整數，則此長方形的周長為？ (A) $6x+4$ (B) $6x-4$ (C) $12x-4$ (D) $12x+4$",
+      "choices": null,
+      "correct_answer": "D",
+      "problem_type_id": null,
+      "problem_type": "self_assessment",
+      "classification": null,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "source_paragraph": "因式分解",
+      "detailed_solution": null,
+      "notes": null
+    },
+    {
+      "example_id": 4715,
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "source_description": "CH1自我評量 題18",
+      "problem_text": "下列何者為多項式${{\\left( {{x}^{2}}-2x \\right)}^{2}}-8\\left( {{x}^{2}}-2x \\right)+15$之因式？ (A) $x+3$ (B) $x-3$ (C) $x+2$ (D) $x-2$",
+      "choices": null,
+      "correct_answer": "B",
+      "problem_type_id": null,
+      "problem_type": "self_assessment",
+      "classification": null,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "source_paragraph": "因式分解",
+      "detailed_solution": null,
+      "notes": null
+    }
+  ],
+  "gencode": [
+    {
+      "example_id": 4713,
+      "component_id": "src_4713",
+      "answer_type": "single_choice",
+      "20-seed": "20/20",
+      "status": "VERIFIED"
+    },
+    {
+      "example_id": 4715,
+      "component_id": "src_4715",
+      "answer_type": "single_choice",
+      "20-seed": "20/20",
+      "status": "VERIFIED"
+    }
+  ],
+  "publish": {
+    "status": "production_published",
+    "count": 18
+  },
+  "smoke": {
+    "passed": 40,
+    "failed": 0,
+    "samples": 40,
+    "hits": {
+      "src_4684": 2,
+      "src_4675": 2,
+      "src_4683": 2,
+      "src_4681": 2,
+      "src_4672": 2,
+      "src_4695": 3,
+      "src_4696": 3,
+      "src_4701": 3,
+      "src_4673": 3,
+      "src_4685": 3,
+      "src_4697": 2,
+      "src_4715": 2,
+      "src_4674": 2,
+      "src_4713": 2,
+      "src_4694": 3,
+      "src_4682": 2,
+      "src_4714": 1,
+      "src_4671": 1
+    },
+    "wrapper_keys": [
+      "src_4671",
+      "src_4672",
+      "src_4673",
+      "src_4674",
+      "src_4675",
+      "src_4681",
+      "src_4682",
+      "src_4683",
+      "src_4684",
+      "src_4685",
+      "src_4694",
+      "src_4695",
+      "src_4696",
+      "src_4697",
+      "src_4701",
+      "src_4713",
+      "src_4714",
+      "src_4715"
+    ]
+  }
+}

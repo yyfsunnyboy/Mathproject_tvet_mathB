@@ -1,0 +1,36 @@
+[
+  {
+    "id": 4723,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_curriculum": "vocational",
+    "source_volume": "數學B1",
+    "source_chapter": "3 式的運算",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題19",
+    "source_paragraph": "分式方程式",
+    "problem_text": "試求方程式$\\frac{x}{1-x}=\\frac{1}{x}$之解為 (A)$x=\\frac{-1\\pm \\sqrt{5}}{2}$ (B)$x=\\frac{-2\\pm \\sqrt{5}}{2}$",
+    "problem_type": "self_assessment",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "difficulty_level": 1,
+    "difficulty_h": 1.0,
+    "notes": null
+  },
+  {
+    "id": 4724,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_curriculum": "vocational",
+    "source_volume": "數學B1",
+    "source_chapter": "3 式的運算",
+    "source_section": "3-3 因式分解與分式",
+    "source_description": "CH1自我評量 題20",
+    "source_paragraph": "分式方程式",
+    "problem_text": "試求方程式$\\frac{3}{\\left( x-2 \\right)\\left( x+1 \\right)}+\\frac{x+2}{x+1}=\\frac{2}{x-2}$之解為 (A) x = 1 (B) x = 2 (C) x = 3 (D) x = −2。.",
+    "problem_type": "self_assessment",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "difficulty_level": 1,
+    "difficulty_h": 1.0,
+    "notes": null
+  }
+]

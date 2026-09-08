@@ -1,0 +1,39 @@
+{
+  "seed_677": {
+    "answer_type": "expression",
+    "answer": "x-3",
+    "checker": "expression_checker",
+    "parts": null,
+    "question": "設$f(x)=x^{2} - 9$，已知$x=3$為一根，試求對應一次因式。"
+  },
+  "sampling": {
+    "passed": 100,
+    "failed": 0,
+    "errors": []
+  },
+  "smoke": {
+    "passed": 40,
+    "failed": 0,
+    "wrapper_keys": 17,
+    "hits": {
+      "src_4653": 3,
+      "src_4651": 3,
+      "src_4652": 3,
+      "src_4711": 3,
+      "src_4710": 2,
+      "src_4649": 2,
+      "src_4662": 3,
+      "src_4647": 3,
+      "src_4646": 3,
+      "src_4654": 2,
+      "src_4663": 2,
+      "src_4648": 2,
+      "src_4650": 2,
+      "src_4660": 1,
+      "src_4661": 2,
+      "src_4655": 2,
+      "src_4712": 2
+    },
+    "errors": []
+  }
+}

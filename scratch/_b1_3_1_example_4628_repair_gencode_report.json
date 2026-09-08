@@ -1,0 +1,115 @@
+{
+  "started_at": "2026-09-08T01:13:11.924551+00:00",
+  "db_repair": {
+    "example_id": 4628,
+    "backup_path": "scratch\\_b1_3_1_example_4628_db_backup_20260908_091311.json",
+    "before": {
+      "problem_text": "已知$f\\left( x \\right)={{x}^{\\text{ }2}}+bx+c$為二次多項式。若$f\\left( x \\right)$被${{\\left( x+1 \\right)}^{2}}$除的餘式被$x-1$整除，且$f\\left( x \\right)$被${{\\left( x-1 \\right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A)$-3$ (B)$-1$ (C)1 (D)3 〔110統測B〕",
+      "correct_answer": null,
+      "source_description": "110統測B",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "exam_practice"
+    },
+    "after": {
+      "problem_text": "已知$f\\left( x \\right)={{x}^{2}}+bx+c$為二次多項式。若$f\\left( x \\right)$被${{\\left( x+1 \\right)}^{2}}$除的餘式被$x-1$整除，且$f\\left( x \\right)$被${{\\left( x-1 \\right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A) -3 (B) -1 (C) 1 (D) 3",
+      "correct_answer": "D",
+      "source_description": "110統測B",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "exam_practice"
+    },
+    "locked_unchanged": true,
+    "status": "REPAIRED"
+  },
+  "gencode": {
+    "component_id": "src_4628",
+    "answer_type": "single_choice",
+    "20_seeds": {
+      "passed": 20,
+      "failed": 0,
+      "errors": [],
+      "n": 20
+    },
+    "status": "VERIFIED",
+    "dryrun_status": "verified",
+    "problem_type_id": "polynomial_remainder_param_solve",
+    "selected_operation": "polynomial_remainder_param_solve"
+  },
+  "package": {
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "old_generator_count": 21,
+    "new_generator_count": 22,
+    "old_keys": [
+      "src_4612",
+      "src_4613",
+      "src_4614",
+      "src_4615",
+      "src_4616",
+      "src_4617",
+      "src_4622",
+      "src_4623",
+      "src_4624",
+      "src_4625",
+      "src_4626",
+      "src_4627",
+      "src_4633",
+      "src_4634",
+      "src_4635",
+      "src_4636",
+      "src_4637",
+      "src_4706",
+      "src_4718",
+      "src_4719",
+      "src_4720"
+    ],
+    "new_keys": [
+      "src_4612",
+      "src_4613",
+      "src_4614",
+      "src_4615",
+      "src_4616",
+      "src_4617",
+      "src_4622",
+      "src_4623",
+      "src_4624",
+      "src_4625",
+      "src_4626",
+      "src_4627",
+      "src_4628",
+      "src_4633",
+      "src_4634",
+      "src_4635",
+      "src_4636",
+      "src_4637",
+      "src_4706",
+      "src_4718",
+      "src_4719",
+      "src_4720"
+    ],
+    "src_4628_in_wrapper": true,
+    "publish_status": "production_published",
+    "verified_component_count": 22,
+    "component_count": 22,
+    "smoke_status": "passed"
+  },
+  "runtime": {
+    "samples": 40,
+    "passed": 40,
+    "failed": 0,
+    "src_4628_hit": 2,
+    "errors": [],
+    "targeted": null
+  },
+  "final_b1_3_1": {
+    "total": 35,
+    "published": 33,
+    "skipped": 2,
+    "failed": 0,
+    "unmatched": 0,
+    "4628_status": "verified",
+    "remaining_skip_expected": [
+      4618,
+      4629
+    ]
+  },
+  "finished_at": "2026-09-08T01:13:17.543353+00:00"
+}

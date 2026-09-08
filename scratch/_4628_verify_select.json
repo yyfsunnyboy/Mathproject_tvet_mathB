@@ -1,0 +1,167 @@
+{
+  "row": {
+    "id": 4628,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{2}}+bx+c$為二次多項式。若$f\\left( x \\right)$被${{\\left( x+1 \\right)}^{2}}$除的餘式被$x-1$整除，且$f\\left( x \\right)$被${{\\left( x-1 \\right)}^{2}}$除的餘式被$x+1$整除，則$c=$？ (A) -3 (B) -1 (C) 1 (D) 3",
+    "correct_answer": "D",
+    "source_description": "110統測B",
+    "problem_type": "exam_practice",
+    "source_chapter": "3 式的運算",
+    "source_section": "3-1 多項式的基本概念與四則運算",
+    "source_paragraph": "多項式的四則運算"
+  },
+  "tracker": {
+    "textbook_example_id": 4628,
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "component_id": "src_4628",
+    "gencode_status": "verified",
+    "gencode_error_log": null
+  },
+  "status_counts": {
+    "verified": 33,
+    "needs_human_review": 2
+  },
+  "missing": [],
+  "details": [
+    [
+      4609,
+      "verified"
+    ],
+    [
+      4610,
+      "verified"
+    ],
+    [
+      4611,
+      "verified"
+    ],
+    [
+      4612,
+      "verified"
+    ],
+    [
+      4613,
+      "verified"
+    ],
+    [
+      4614,
+      "verified"
+    ],
+    [
+      4615,
+      "verified"
+    ],
+    [
+      4616,
+      "verified"
+    ],
+    [
+      4617,
+      "verified"
+    ],
+    [
+      4618,
+      "needs_human_review"
+    ],
+    [
+      4619,
+      "verified"
+    ],
+    [
+      4620,
+      "verified"
+    ],
+    [
+      4621,
+      "verified"
+    ],
+    [
+      4622,
+      "verified"
+    ],
+    [
+      4623,
+      "verified"
+    ],
+    [
+      4624,
+      "verified"
+    ],
+    [
+      4625,
+      "verified"
+    ],
+    [
+      4626,
+      "verified"
+    ],
+    [
+      4627,
+      "verified"
+    ],
+    [
+      4628,
+      "verified"
+    ],
+    [
+      4629,
+      "needs_human_review"
+    ],
+    [
+      4630,
+      "verified"
+    ],
+    [
+      4631,
+      "verified"
+    ],
+    [
+      4632,
+      "verified"
+    ],
+    [
+      4633,
+      "verified"
+    ],
+    [
+      4634,
+      "verified"
+    ],
+    [
+      4635,
+      "verified"
+    ],
+    [
+      4636,
+      "verified"
+    ],
+    [
+      4637,
+      "verified"
+    ],
+    [
+      4706,
+      "verified"
+    ],
+    [
+      4716,
+      "verified"
+    ],
+    [
+      4717,
+      "verified"
+    ],
+    [
+      4718,
+      "verified"
+    ],
+    [
+      4719,
+      "verified"
+    ],
+    [
+      4720,
+      "verified"
+    ]
+  ]
+}

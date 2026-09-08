@@ -1,0 +1,34 @@
+[
+  {
+    "example_id": 4713,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "CH1自我評量 題16",
+    "problem_text": "已知一長方形的面積為$9{{x}^{2}}+6x+1-{{y}^{2}}$平方單位，若其長、寬均為x、y的一次式且x、y項的係數均為整數，則此長方形的周長為",
+    "choices": null,
+    "correct_answer": null,
+    "problem_type_id": null,
+    "problem_type": "self_assessment",
+    "classification": null,
+    "chapter": "3 式的運算",
+    "section": "3-3 因式分解與分式",
+    "source_paragraph": "因式分解",
+    "detailed_solution": null,
+    "notes": null
+  },
+  {
+    "example_id": 4715,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "CH1自我評量 題18",
+    "problem_text": "下列何者為多項式${{\\left( {{x}^{2}}-2x \\right)}^{2}}-8\\left( {{x}^{2}}-2x \\right)+15$之因式？ (A) x + 3",
+    "choices": null,
+    "correct_answer": null,
+    "problem_type_id": null,
+    "problem_type": "self_assessment",
+    "classification": null,
+    "chapter": "3 式的運算",
+    "section": "3-3 因式分解與分式",
+    "source_paragraph": "因式分解",
+    "detailed_solution": null,
+    "notes": null
+  }
+]

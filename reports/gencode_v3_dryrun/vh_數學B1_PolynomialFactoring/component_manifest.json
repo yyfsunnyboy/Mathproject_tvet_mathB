@@ -1,6 +1,6 @@
 {
   "skill_id": "vh_數學B1_PolynomialFactoring",
-  "compiled_at": "2026-08-27T07:42:26.458043+00:00",
+  "compiled_at": "2026-09-08T04:52:10.046077+00:00",
   "publish_status": "dryrun_manifest_compiled",
   "components": [
     {
@@ -12,7 +12,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4671"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4671"
     },
     {
       "component_id": "src_4672",
@@ -23,7 +23,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4672"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4672"
     },
     {
       "component_id": "src_4673",
@@ -34,7 +34,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4673"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4673"
     },
     {
       "component_id": "src_4674",
@@ -45,7 +45,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4674"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4674"
     },
     {
       "component_id": "src_4675",
@@ -56,7 +56,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4675"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4675"
     },
     {
       "component_id": "src_4681",
@@ -67,7 +67,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4681"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4681"
     },
     {
       "component_id": "src_4682",
@@ -78,7 +78,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4682"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4682"
     },
     {
       "component_id": "src_4683",
@@ -89,7 +89,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4683"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4683"
     },
     {
       "component_id": "src_4684",
@@ -100,7 +100,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4684"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4684"
     },
     {
       "component_id": "src_4685",
@@ -111,7 +111,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4685"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4685"
     },
     {
       "component_id": "src_4694",
@@ -122,7 +122,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4694"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4694"
     },
     {
       "component_id": "src_4695",
@@ -133,7 +133,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4695"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4695"
     },
     {
       "component_id": "src_4696",
@@ -144,7 +144,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4696"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4696"
     },
     {
       "component_id": "src_4697",
@@ -155,7 +155,7 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4697"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4697"
     },
     {
       "component_id": "src_4701",
@@ -166,18 +166,18 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4701"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4701"
     },
     {
       "component_id": "src_4713",
       "status": "verified",
-      "presentation_mode": "short_answer",
+      "presentation_mode": "single_choice",
       "source_kind": "ex_4713",
       "textbook_example_id": 4713,
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4713"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4713"
     },
     {
       "component_id": "src_4714",
@@ -188,18 +188,18 @@
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4714"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4714"
     },
     {
       "component_id": "src_4715",
       "status": "verified",
-      "presentation_mode": "short_answer",
+      "presentation_mode": "single_choice",
       "source_kind": "ex_4715",
       "textbook_example_id": 4715,
       "line_type": "polynomial_factoring",
       "domain_module": "core.domain.polynomial_domain",
       "entrypoint": "build_polynomial_matrix",
-      "component_dir": "C:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4715"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PolynomialFactoring\\components\\src_4715"
     }
   ]
 }

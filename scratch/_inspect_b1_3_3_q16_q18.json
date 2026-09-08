@@ -1,0 +1,402 @@
+[
+  {
+    "id": 4671,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "3-3習題 基礎題 1",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "因式分解下列多項式：(1)${{x}^{3}}+{{x}^{2}}+x+1$(2)$27{{x}^{3}}-9{{x}^{2}}+3x-1$"
+  },
+  {
+    "id": 4672,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "3-3習題 基礎題 2",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-4x+4$(2)$4{{a}^{2}}+12ab+9{{b}^{2}}$(3)$5{{x}^{2}}-20$"
+  },
+  {
+    "id": 4673,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "3-3習題 基礎題 3",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}-27$(2)${{x}^{4}}-256$(3)${{a}^{3}}+8{{b}^{3}}$"
+  },
+  {
+    "id": 4674,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "3-3習題 基礎題 4",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "利用十字交乘法因式分解$2{{x}^{2}}+5x-3$，得其因式分解為$\\left( ax+b \\right)\\left( x+c \\right)$，試求$a+b+c$之值。"
+  },
+  {
+    "id": 4675,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "3-3習題 基礎題 5",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "已知$P=4{{x}^{2}}-11x-3$是質數，x為正整數，試求：(1) x之值。(2) 此質數P。"
+  },
+  {
+    "id": 4676,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "3-3習題 基礎題 6",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "化簡下列各式：(1)$\\frac{{{x}^{2}}-1}{{{x}^{2}}+x-12}\\times \\frac{{{x}^{2}}-16}{{{x}^{2}}-3x-4}$ (2)$\\frac{{{x}^{2}}+x}{{{x}^{2}}-25}\\div \\frac{x+1}{x-5}$"
+  },
+  {
+    "id": 4677,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "3-3習題 基礎題 7",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "化簡下列各式：(1)$\\frac{x+3}{x-1}-\\frac{5}{x-1}$ (2)$\\frac{x+1}{x+2}-\\frac{x}{x-4}$"
+  },
+  {
+    "id": 4678,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "3-3習題 基礎題 8",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_exercise",
+    "correct_answer": null,
+    "problem_text": "解下列分式方程式：(1)$\\frac{x+10}{x-2}=2$ (2)$\\frac{1}{x+1}=-\\frac{1}{{{x}^{2}}+x}$"
+  },
+  {
+    "id": 4679,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "3-3習題 進階題 10",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "advanced_exercise",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{3}{x}+\\frac{6}{x-1}=\\frac{x+21}{x\\left( x-1 \\right)}$。"
+  },
+  {
+    "id": 4680,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "112統測B",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "exam_practice",
+    "correct_answer": "C",
+    "problem_text": "已知多項式$Q\\left( x \\right)=ax+b$，$f\\left( x \\right)=\\left( 2a-b \\right){{x}^{2}}+ax-1$，$g\\left( x \\right)=3{{x}^{2}}+x-1$，且$f\\left( x \\right)=g\\left( x \\right)$。若分式方程式$\\frac{x}{Q\\left( x \\right)}+\\frac{5}{x-2}=\\frac{-1}{\\left( x-2 \\right)Q\\left( x \\right)}$的解為$x=c$，則${{a}^{2}}+{{b}^{2}}+{{c}^{2}}=$？ (A) 4 (B) 10 (C) 18 (D) 27 〔112統測B〕"
+  },
+  {
+    "id": 4681,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "例1",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "因式分解下列多項式：(1)${{\\left( x-1 \\right)}^{2}}-3\\left( x-1 \\right)$ (2)${{x}^{3}}-{{x}^{2}}+5x-5$"
+  },
+  {
+    "id": 4682,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "例2",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-1$ (2)${{\\left( a+2 \\right)}^{2}}-9$"
+  },
+  {
+    "id": 4683,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "例3",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}+4x+4$ (2)$25{{x}^{2}}-20x+4$"
+  },
+  {
+    "id": 4684,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "例4",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}+8$ (2)$125{{x}^{3}}-27$"
+  },
+  {
+    "id": 4685,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "例5",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "若x為正整數，且$P=8{{x}^{2}}-50x-13$是質數，試求此質數。"
+  },
+  {
+    "id": 4686,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "例6",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "化簡$\\frac{{{x}^{2}}-4}{{{x}^{2}}-3x+2}\\times \\frac{x-1}{x+2}$。"
+  },
+  {
+    "id": 4687,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "例10",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$x+\\frac{5}{x}=6$。"
+  },
+  {
+    "id": 4688,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "例11",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{x-3}{3x+1}=\\frac{x-3}{3x+2}$。"
+  },
+  {
+    "id": 4689,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "例12",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{2x-3}{x-1}-\\frac{x-1}{x+1}=\\frac{-2}{{{x}^{2}}-1}$。"
+  },
+  {
+    "id": 4690,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "3-3習題 進階題 9",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "advanced_exercise",
+    "correct_answer": null,
+    "problem_text": "已知$\\frac{3}{3x-4}-\\frac{1}{2x+1}=\\frac{ax+b}{6{{x}^{2}}-5x-4}$，試求a、b之值。"
+  },
+  {
+    "id": 4691,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "例7",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "化簡$\\frac{2{{x}^{2}}-3x-2}{{{x}^{2}}-3x+2}\\div \\frac{2{{x}^{2}}-7x-4}{x-4}$。"
+  },
+  {
+    "id": 4692,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "例8",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "化簡下列各式：(1)$\\frac{x+2}{x-2}+\\frac{3}{x-2}$ (2)$\\frac{x-1}{x+1}-\\frac{x+2}{x-3}$"
+  },
+  {
+    "id": 4693,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "例9",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "textbook_example",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{2x+1}{x-2}=3$。"
+  },
+  {
+    "id": 4694,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習1",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "因式分解下列多項式：(1)$5\\left( x+1 \\right)-{{\\left( x+1 \\right)}^{2}}$ (2)${{x}^{3}}-3{{x}^{2}}+3x-9$."
+  },
+  {
+    "id": 4695,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習2",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": "(1) (x-2)(x+2) (2) (a+b-5)(a+b+5)",
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-4$ (2)${{\\left( a+b \\right)}^{2}}-25$。"
+  },
+  {
+    "id": 4696,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習3",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{2}}-6x+9$ (2)$4{{x}^{2}}+12x+9$"
+  },
+  {
+    "id": 4697,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習4",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "利用乘法公式因式分解下列各式：(1)${{x}^{3}}-1$ (2)$8{{x}^{3}}+125$"
+  },
+  {
+    "id": 4698,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "隨堂練習10",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$x-\\frac{5}{x+1}=3$。."
+  },
+  {
+    "id": 4699,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "隨堂練習11",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{x-5}{2x+1}=\\frac{x-5}{2x+3}$。"
+  },
+  {
+    "id": 4700,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "隨堂練習12",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{x}{x+2}+\\frac{2}{x-2}=\\frac{x+6}{{{x}^{2}}-4}$。"
+  },
+  {
+    "id": 4701,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習5",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "已知一正方形的邊長為正整數，其面積為$\\left( 6{{x}^{2}}-7x-5 \\right)$平方公分，且邊長可寫成x的一次式，試求此正方形的周長為多少公分？"
+  },
+  {
+    "id": 4702,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "隨堂練習6",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "化簡$\\frac{{{x}^{2}}-1}{{{x}^{2}}-4x-12}\\times \\frac{x-6}{x+1}$。"
+  },
+  {
+    "id": 4703,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "隨堂練習7",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "化簡$\\frac{{{x}^{2}}-2x-3}{{{x}^{2}}-1}\\div \\frac{x-3}{x-2}$。"
+  },
+  {
+    "id": 4704,
+    "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+    "source_description": "隨堂練習8",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "化簡下列各式：(1)$\\frac{2x+3}{x-1}-\\frac{x+5}{x-1}$ (2)$\\frac{x+1}{x-2}+\\frac{2}{x+3}$"
+  },
+  {
+    "id": 4705,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "隨堂練習9",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "in_class_practice",
+    "correct_answer": null,
+    "problem_text": "解分式方程式$\\frac{x-2}{x+1}=2$。"
+  },
+  {
+    "id": 4713,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "CH1自我評量 題16",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "self_assessment",
+    "correct_answer": null,
+    "problem_text": "已知一長方形的面積為$9{{x}^{2}}+6x+1-{{y}^{2}}$平方單位，若其長、寬均為x、y的一次式且x、y項的係數均為整數，則此長方形的周長為"
+  },
+  {
+    "id": 4714,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "CH1自我評量 題17",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "self_assessment",
+    "correct_answer": null,
+    "problem_text": "如右圖，A、B、C為長方體相鄰的三面，其面積分別為${{x}^{2}}-x-6$、$2{{x}^{2}}-x-15$、$2{{x}^{2}}+9x+10$平方單位，則此長方體體積為多少立方單位？"
+  },
+  {
+    "id": 4715,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "CH1自我評量 題18",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "self_assessment",
+    "correct_answer": null,
+    "problem_text": "下列何者為多項式${{\\left( {{x}^{2}}-2x \\right)}^{2}}-8\\left( {{x}^{2}}-2x \\right)+15$之因式？ (A) x + 3"
+  },
+  {
+    "id": 4723,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "CH1自我評量 題19",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "self_assessment",
+    "correct_answer": "A",
+    "problem_text": "試求方程式$\\frac{x}{1-x}=\\frac{1}{x}$之解為 (A)$x=\\frac{-1\\pm \\sqrt{5}}{2}$ (B)$x=\\frac{-2\\pm \\sqrt{5}}{2}$ (C)$x=\\frac{-1\\pm \\sqrt{3}}{2}$ (D)$x=\\frac{-2\\pm \\sqrt{3}}{2}$。"
+  },
+  {
+    "id": 4724,
+    "skill_id": "vh_數學B1_RationalEquation",
+    "source_description": "CH1自我評量 題20",
+    "source_section": "3-3 因式分解與分式",
+    "source_chapter": "3 式的運算",
+    "problem_type": "self_assessment",
+    "correct_answer": "C",
+    "problem_text": "試求方程式$\\frac{3}{\\left( x-2 \\right)\\left( x+1 \\right)}+\\frac{x+2}{x+1}=\\frac{2}{x-2}$之解為 (A) $x=1$ (B) $x=2$ (C) $x=3$ (D) $x=-2$。"
+  }
+]

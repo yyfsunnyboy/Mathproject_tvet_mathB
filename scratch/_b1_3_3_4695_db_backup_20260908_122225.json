@@ -1,0 +1,18 @@
+[
+  {
+    "example_id": 4695,
+    "skill_id": "vh_數學B1_PolynomialFactoring",
+    "source_description": "隨堂練習2",
+    "problem_text": "利用乘法公式作因式分解",
+    "choices": null,
+    "correct_answer": null,
+    "problem_type_id": null,
+    "problem_type": "in_class_practice",
+    "classification": null,
+    "chapter": "3 式的運算",
+    "section": "3-3 因式分解與分式",
+    "source_paragraph": "因式分解",
+    "detailed_solution": null,
+    "notes": null
+  }
+]

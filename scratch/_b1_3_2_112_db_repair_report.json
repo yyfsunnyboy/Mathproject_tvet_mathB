@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-09-08T01:35:44.957282+00:00",
+  "mapping": {
+    "source": "112統測B",
+    "example_id": 4655,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "match_confidence": "HIGH",
+    "reason": "source_description=112統測B; stem has (x+2)(x-7), ax+3, factor x-7, ask f(-2), choices 27/7..33/7",
+    "rejected_near_miss": {
+      "example_id": 4649,
+      "reason": "3-2習題 進階題 10; different stem x^2+ax+3"
+    }
+  },
+  "backup_path": "scratch\\_b1_3_2_112_db_repair_backup_20260908_093544.json",
+  "fields_changed": [
+    "problem_text",
+    "correct_answer"
+  ],
+  "before": {
+    "problem_text": "已知多項式$f\\left( x \\right)$除以$\\left( x+2 \\right)\\left( x-7 \\right)$的餘式為$ax+3$。若$\\left( x-7 \\right)$為$f\\left( x \\right)$的因式，則$f\\left( -2 \\right)=$？ (A)$\\frac{27}{7}$ (B)$\\frac{29}{7}$ (C)$\\frac{31}{7}$ (D)$\\frac{33}{7}$ 〔112統測B〕",
+    "correct_answer": null,
+    "source_description": "112統測B"
+  },
+  "after": {
+    "problem_text": "已知多項式$f\\left( x \\right)$除以$\\left( x+2 \\right)\\left( x-7 \\right)$的餘式為$ax+3$。若$\\left( x-7 \\right)$為$f\\left( x \\right)$的因式，則$f\\left( -2 \\right)=$？ (A) $\\frac{27}{7}$ (B) $\\frac{29}{7}$ (C) $\\frac{31}{7}$ (D) $\\frac{33}{7}$。",
+    "correct_answer": "A",
+    "source_description": "112統測B",
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "problem_type": "exam_practice"
+  },
+  "verify": {
+    "choices_complete": "YES",
+    "stored_label": "A",
+    "semantic_answer": "27/7",
+    "source_description": "112統測B",
+    "skill_id_unchanged": true,
+    "problem_type_unchanged": true
+  },
+  "status": "REPAIRED",
+  "safety": {
+    "skill_id_changed": "NO",
+    "problem_type_changed": "NO",
+    "classification_changed": "NO",
+    "gencode_executed": "NO"
+  }
+}

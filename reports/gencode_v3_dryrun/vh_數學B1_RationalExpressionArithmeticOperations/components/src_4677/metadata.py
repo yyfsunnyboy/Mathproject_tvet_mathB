@@ -20,8 +20,8 @@ PROBLEM_TYPE_ID: Final[str] = "rational_expression_arithmetic"
 PRESENTATION_MODE: Final[str] = "short_answer"
 RESPONSE_MODE: Final[str] = "short_answer"
 INTERACTION_TYPE: Final[str] = "short_answer"
-ANSWER_VALUE_TYPE: Final[str] = "expression"
-ANSWER_TYPE: Final[str] = "expression"
+ANSWER_VALUE_TYPE: Final[str] = "multi_part"
+ANSWER_TYPE: Final[str] = "multi_part"
 LEGACY_ANSWER_TYPE: Final[str] = "expression"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
@@ -29,16 +29,16 @@ DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "expression_checker",
-    "equivalence_type": "algebraic_equivalent",
+    "checker_key": "multi_part_answer_checker",
+    "equivalence_type": "multi_part_answer",
     "response_mode": "short_answer",
     "interaction_type": "short_answer",
     "answer_value_type": "expression",
-    "answer_type": "expression",
+    "answer_type": "multi_part",
     "module": "core.checkers.structured_text_checker",
 }
 
-GENERATOR_READINESS: Final[str] = "draft"
+GENERATOR_READINESS: Final[str] = "verified"
 
 SEMANTIC_REQUIRED_CONCEPTS: Final[tuple[str, ...]] = (
     

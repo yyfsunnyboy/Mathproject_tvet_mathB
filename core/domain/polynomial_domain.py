@@ -2017,55 +2017,9 @@ def _build_factor_theorem(rng: random.Random) -> dict[str, Any]:
 
 
 def _build_polynomial_factoring(rng: random.Random) -> dict[str, Any]:
-    deg = rng.choice([2, 2, 3])
-    roots: list[int] = []
-    pool = [-3, -2, -1, 1, 2, 3, 4]
-    while len(roots) < deg:
-        r = int(rng.choice(pool))
-        # allow at most one repeated root
-        if roots.count(r) >= 1 and rng.random() < 0.7:
-            continue
-        roots.append(r)
-    lead = int(rng.choice([1, 1, 1, 2, -1]))
-    f: dict[int, Fraction] = {0: Fraction(1)}
-    for r in roots:
-        f = _poly_mul(f, {1: Fraction(1), 0: Fraction(-r)})
-    f = _poly_scalar_mul(f, Fraction(lead))
-    factored = _factorization_plain(lead, roots)
-    mode = rng.choice(["expression", "expression", "multi_part"])
-    if mode == "multi_part":
-        question = (
-            f"試將多項式${poly_latex(f, name=None)}$因式分解為一次因式的乘積，"
-            f"並寫出所有整數根。"
-        )
-        roots_sorted = sorted(set(roots))
-        parts = {
-            "part_1": factored,
-            "part_2": ",".join(str(r) for r in roots_sorted),
-        }
-        canonical = "；".join(parts.values())
-    else:
-        question = f"試將多項式${poly_latex(f, name=None)}$因式分解。"
-        parts = {"part_1": factored}
-        canonical = factored
-    return {
-        "givens": {
-            "question_text": question,
-            "f": {str(k): _frac_plain(v) for k, v in f.items()},
-            "roots": roots,
-            "lead": lead,
-        },
-        "answer": _answer_bundle(
-            canonical,
-            parts=parts,
-            value=parts if len(parts) > 1 else factored,
-        ),
-        "distractors": [],
-        "explanation_steps": [
-            "先試可能的整數根（常數項因數）。",
-            "用因式定理逐次提出一次因式，直到完全分解。",
-        ],
-    }
+    from core.domain.polynomial_ch3_source_builders import build_polynomial_factoring_from_source
+
+    return build_polynomial_factoring_from_source(rng)
 
 
 def _rational_plain(num: dict[int, Fraction], den: dict[int, Fraction]) -> str:
@@ -2073,6 +2027,12 @@ def _rational_plain(num: dict[int, Fraction], den: dict[int, Fraction]) -> str:
 
 
 def _build_rational_expression_arithmetic(rng: random.Random) -> dict[str, Any]:
+    from core.domain.polynomial_ch3_source_builders import build_rational_expression_from_source
+
+    return build_rational_expression_from_source(rng)
+
+
+def _build_rational_expression_arithmetic_legacy(rng: random.Random) -> dict[str, Any]:
     mode = rng.choice(["simplify", "multiply", "add", "simplify"])
     if mode == "simplify":
         # cancel common linear factor
@@ -2171,6 +2131,12 @@ def _build_rational_expression_arithmetic(rng: random.Random) -> dict[str, Any]:
 
 
 def _build_rational_equation_solve(rng: random.Random) -> dict[str, Any]:
+    from core.domain.polynomial_ch3_source_builders import build_rational_equation_from_source
+
+    return build_rational_equation_from_source(rng)
+
+
+def _build_rational_equation_solve_legacy(rng: random.Random) -> dict[str, Any]:
     # Solve A/(x-p) + B/(x-q) = C  with small integers; state excluded values
     mode = rng.choice(["two_denom", "two_denom", "simple_prop"])
     if mode == "simple_prop":

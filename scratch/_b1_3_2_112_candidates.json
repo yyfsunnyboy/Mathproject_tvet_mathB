@@ -1,0 +1,36 @@
+[
+  {
+    "id": 4649,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_curriculum": "vocational",
+    "source_volume": "數學B1",
+    "source_chapter": "3 式的運算",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "3-2習題 進階題 10",
+    "source_paragraph": "因式定理",
+    "problem_text": "已知$f\\left( x \\right)={{x}^{2}}+ax+3$，以x − 2除之所得餘式為5，則$f\\left( x+1 \\right)$除以x − 1的餘式為何？",
+    "problem_type": "advanced_exercise",
+    "correct_answer": null,
+    "detailed_solution": null,
+    "difficulty_level": 1,
+    "difficulty_h": 1.0,
+    "notes": null
+  },
+  {
+    "id": 4655,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "source_curriculum": "vocational",
+    "source_volume": "數學B1",
+    "source_chapter": "3 式的運算",
+    "source_section": "3-2 除法原理與餘式定理",
+    "source_description": "112統測B",
+    "source_paragraph": "因式定理",
+    "problem_text": "已知多項式$f\\left( x \\right)$除以$\\left( x+2 \\right)\\left( x-7 \\right)$的餘式為$ax+3$。若$\\left( x-7 \\right)$為$f\\left( x \\right)$的因式，則$f\\left( -2 \\right)=$？ (A)$\\frac{27}{7}$ (B)$\\frac{29}{7}$ (C)$\\frac{31}{7}$ (D)$\\frac{33}{7}$ 〔112統測B〕",
+    "problem_type": "exam_practice",
+    "correct_answer": null,
+    "detailed_solution": "KEY(1) 除法原理：被除式$=$除式$\\times $商式$+$餘式(2) $\\left( x-a \\right)$為$f\\left( x \\right)$的因式$\\ \\ \\ \\Leftrightarrow \\ \\ \\ f\\left( a \\right)=0$",
+    "difficulty_level": 1,
+    "difficulty_h": 1.0,
+    "notes": null
+  }
+]

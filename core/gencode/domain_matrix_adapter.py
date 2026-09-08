@@ -3166,6 +3166,8 @@ def convert_domain_matrix_to_question_payload(
             factor_like = str(op or problem_type_id or "") in {
                 "factor_theorem_root_factor",
                 "polynomial_factoring",
+                "rational_expression_arithmetic",
+                "rational_equation_solve",
             }
             choices, correct_label = _build_choice_options(
                 display_answer,
@@ -3186,10 +3188,8 @@ def convert_domain_matrix_to_question_payload(
             "equivalence": "choice_label",
             "semantic_answer": semantic_answer,
         }
-    elif (
-        str(op or problem_type_id or "") == "factor_theorem_root_factor"
-        and str(answer_contract.get("answer_type") or "") == "multi_part"
-        and not (isinstance(answer_contract.get("parts"), list) and answer_contract.get("parts"))
+    elif str(answer_contract.get("answer_type") or resolved_answer_type or "") == "multi_part" and not (
+        isinstance(answer_contract.get("parts"), list) and answer_contract.get("parts")
     ):
         part_map = semantic_answer if isinstance(semantic_answer, dict) else {}
         if not part_map and isinstance(answer.get("parts"), dict):
