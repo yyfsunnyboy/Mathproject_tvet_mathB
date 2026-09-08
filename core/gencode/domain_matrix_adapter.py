@@ -84,6 +84,29 @@ def _subquestions_from_multi_field_contract(
         )
     return subquestions
 
+
+def _multi_part_contract_parts(semantic_answer: Any) -> list[dict[str, Any]]:
+    """Build per-part checker rows from a dict answer. Duplicate values are kept."""
+    if not isinstance(semantic_answer, dict):
+        return []
+    parts: list[dict[str, Any]] = []
+    for key, value in semantic_answer.items():
+        text = str(value).strip()
+        numeric = bool(text) and text.lstrip("+-").isdigit()
+        checker = "integer_checker" if numeric else "expression_checker"
+        parts.append(
+            {
+                "key": str(key),
+                "label": str(key),
+                "field_key": str(key),
+                "checker": checker,
+                "checker_key": checker,
+                "equivalence_type": "numeric_exact" if numeric else "algebraic_equivalent",
+                "expected_answer": value,
+            }
+        )
+    return parts
+
 MATRIX_REQUIRED_FIELDS = (
     "givens",
     "answer",
@@ -1404,6 +1427,7 @@ def _build_choice_options(
     distractors: list[Any],
     *,
     seed_text: str,
+    allow_technical_suffix: bool = True,
 ) -> tuple[list[dict[str, str]], str]:
     unique_wrong: list[str] = []
     seen: set[str] = {str(canonical).strip()}
@@ -1427,9 +1451,9 @@ def _build_choice_options(
                 if len(unique_wrong) >= 3:
                     break
         except (TypeError, ValueError):
+            if not allow_technical_suffix:
+                raise ValueError("insufficient_semantic_distractors")
             for i in range(1, 8):
-                cand = f"{canonical}'"
-                # vary slightly
                 cand = f"{canonical}_{i}"
                 if cand in seen:
                     continue
@@ -3137,10 +3161,17 @@ def convert_domain_matrix_to_question_payload(
             ]
             correct_label = str(choice_bundle.get("correct_label") or "A")
         except ValueError:
+            # Factor-theorem expression answers must retry / fail closed instead
+            # of padding student-visible technical suffixes like `_1`.
+            factor_like = str(op or problem_type_id or "") in {
+                "factor_theorem_root_factor",
+                "polynomial_factoring",
+            }
             choices, correct_label = _build_choice_options(
                 display_answer,
                 normalized.get("distractors", []),
                 seed_text=f"{problem_type_id or op}|{display_answer}",
+                allow_technical_suffix=not factor_like,
             )
         options = [str(choice["text"]) for choice in choices]
         payload_answer = correct_label
@@ -3155,6 +3186,18 @@ def convert_domain_matrix_to_question_payload(
             "equivalence": "choice_label",
             "semantic_answer": semantic_answer,
         }
+    elif (
+        str(op or problem_type_id or "") == "factor_theorem_root_factor"
+        and str(answer_contract.get("answer_type") or "") == "multi_part"
+        and not (isinstance(answer_contract.get("parts"), list) and answer_contract.get("parts"))
+    ):
+        part_map = semantic_answer if isinstance(semantic_answer, dict) else {}
+        if not part_map and isinstance(answer.get("parts"), dict):
+            part_map = answer.get("parts") or {}
+        answer_contract["parts"] = _multi_part_contract_parts(part_map)
+        keys = [str(row.get("key") or "") for row in answer_contract["parts"]]
+        if len(keys) != len(set(keys)):
+            raise ValueError("duplicate_multi_part_field_key")
 
     return _finalize_question_payload({
         "question_text": question_text,
