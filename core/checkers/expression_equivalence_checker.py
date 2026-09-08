@@ -37,7 +37,16 @@ def normalize_math_expression(text: object) -> str:
         .replace("）", ")")
         .replace("＝", "=")
         .replace("，", ",")
+        .replace("π", "pi")
+        .replace("𝜋", "pi")
+        .replace("°", "")
+        .replace("∘", "")
+        .replace("{}^\\circ", "")
+        .replace("^\\circ", "")
+        .replace("^{\\circ}", "")
     )
+    if s.endswith("度"):
+        s = s[:-1]
     for _ in range(3):
         s = _FRAC_LATEX.sub(r"((\1)/(\2))", s)
         s = _SQRT_LATEX_BRACE.sub(r"sqrt(\1)", s)
@@ -50,7 +59,10 @@ def normalize_math_expression(text: object) -> str:
     s = _IMPLICIT_COEF.sub(r"\1*sqrt", s)
     s = _IMPLICIT_AFTER_PAREN.sub(r")*sqrt", s)
     s = re.sub(r"\s+", "", s)
-    return s.lower()
+    s = s.lower()
+    s = re.sub(r"(\d)pi", r"\1*pi", s)
+    s = re.sub(r"pi(\d)", r"pi*\1", s)
+    return s
 
 
 def _looks_safe(text: str) -> bool:
@@ -107,6 +119,21 @@ def _numeric_equal(lhs: Any, rhs: Any, *, tol: float = 1e-9) -> bool:
 
 _FACTORIZED_FORMS = frozenset({"factorized", "factored", "factorization", "factored_expression", "factorized_expression"})
 _FACTORIZED_EQUIVS = frozenset({"factorized_form", "required_factorized_form"})
+_PI_FORMS = frozenset({"pi_expression", "radian_pi", "contains_pi", "pi_form"})
+
+
+def contract_requires_pi_form(
+    answer_contract: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+) -> bool:
+    """AST-based π required-form is contract-driven, not a string substring test."""
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    pl = payload if isinstance(payload, dict) else {}
+    required = str(ac.get("required_form") or pl.get("required_form") or "").strip().lower()
+    if required in _PI_FORMS:
+        return True
+    shape = str(ac.get("answer_shape") or pl.get("answer_shape") or "").strip().lower()
+    return shape in _PI_FORMS
 
 
 def contract_requires_factorized_form(
@@ -173,6 +200,16 @@ def _assignment_lists_equivalent(user_answer: object, correct_answer: object) ->
     return True
 
 
+def _has_pi_symbol(expr: Any) -> bool:
+    """True when the parsed expression contains sympy.pi (AST), not a 'pi' substring."""
+    try:
+        from sympy import pi as sympy_pi
+
+        return bool(getattr(expr, "has", lambda _x: False)(sympy_pi))
+    except Exception:
+        return False
+
+
 def _is_factorized_expression(expr: Any) -> bool:
     """True when the parsed expression is already a product of non-constant factors."""
     try:
@@ -233,6 +270,7 @@ def check_expression_equivalence_debug(
         if require_factorized is not None
         else contract_requires_factorized_form(answer_contract, payload)
     )
+    need_pi_form = contract_requires_pi_form(answer_contract, payload)
 
     assign_eq = _assignment_lists_equivalent(ua_raw, ca_raw)
     if assign_eq is True:
@@ -256,6 +294,11 @@ def check_expression_equivalence_debug(
             out["correct"] = False
             return out
         if need_form and not _is_factorized_expression(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        if need_pi_form and not _has_pi_symbol(user_expr):
             out["correct"] = False
             out["required_form_failed"] = True
             out["simplify_result"] = "required_form_failed"

@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 核心規範說明書
 
-> **文件版本**：v1.12  
+> **文件版本**：v1.13  
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一規範權威**（原則、契約、狀態、錯誤碼、Gate 定義、學生端作答契約與批改標準）。流程與時序見配套 [SOP_Gencode_AgentSkillV3_PipelineFlow.md](./SOP_Gencode_AgentSkillV3_PipelineFlow.md)（唯一流程權威）。
 
 ---
@@ -25,6 +25,10 @@
 | ui_contract | 6. Presentation Mode 與 UI Contract |
 | canonical_answer | 8. Answer Contract 與 Checker 規則 |
 | verified blocker | 10. Gate 與錯誤碼責任分區 |
+| source fidelity | 10.4 Textbook Source Fidelity Gate |
+| answer oracle | 10.5 Answer Oracle Gate |
+| oracle_source | 10.5 Answer Oracle Gate |
+| missing_ground_truth | 10.4 / 10.5（Policy reason；非「學生版無答案」） |
 | constraint | 9. 變數與約束分層 |
 | AI 修改前／後回報 | 11. AI Implementation Contract |
 
@@ -253,6 +257,7 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 | 將多道 textbook example 合併為單一 generator／component | 不得 verified / published |
 | 在 Exact Readiness Gate 未通過時標記 `ready_to_rebuild` 或重建 generator | 不得 verified / published |
 | 以 placeholder／`pass`／`NotImplementedError`／固定空回傳通過 Executable Workspace Gate | 不得 verified / published |
+| 以 AI／LLM 解題、generator 自算或 component-local formula 充當 Answer Oracle | 不得 verified / published |
 
 ---
 
@@ -355,6 +360,12 @@ safe parse → normalize → mathematical equivalence → optional required-form
 | `CONSTRAINT_UNSATISFIED` | Sampling Runtime | 單題 (出題) | 重新出題抽樣 | `[Planned]` |
 | `SAMPLING_EXHAUSTED` | Sampling Runtime | 單題 (出題) | 超限拋出異常，拋棄該 seed | `[Planned]` |
 | `CAPABILITY_IMMUTABILITY_VIOLATION` | Capability | 單題 | 自動管線寫入 production 唯讀區，Gate 安全攔截 | `[Current]` |
+| `source_incomplete` [Policy] | Source Fidelity | 單題 | 題幹／圖表／公式等來源資產不完整；verified/package/publish = NO。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
+| `source_corrupt` [Policy] | Source Fidelity | 單題 | 來源解析損毀；verified/package/publish = NO。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
+| `oracle_unavailable` [Policy] | Answer Oracle | 單題 | 無 source-provided oracle，且尚無可解析之 shared Domain operation；進 capability growth。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
+| `oracle_not_ready` [Policy] | Answer Oracle | 單題 | Domain operation 已識別但 Exact Readiness / Executable Workspace 未過；禁止以該 oracle 標記 VERIFIED。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
+| `oracle_validation_failed` [Policy] | Answer Oracle | 單題 | Oracle 輸出未通過 per-component validator / checker / 20-seed consistency。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
+| `missing_ground_truth` [Policy] | Answer Oracle | 單題 | **僅**當系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失。不得用於「學生版課本本來就沒有答案」。不是 tracker enum。[Gap: production alignment required] | `[Current]` Policy |
 
 ### 10.1 Exact Capability Readiness Gate (Current)
 
@@ -434,6 +445,152 @@ safe parse → normalize → mathematical equivalence → optional required-form
 * 不得在 `implementation_incomplete`、`validation_failed` 或未通過 Exact Readiness Gate 時標記 `ready_to_rebuild`。
 * `promoted` 後仍須逐 component 獨立 rebuild 與 tracker 更新，才得進入 component 層 `verified`。
 
+### 10.4 Textbook Source Fidelity Gate (Current)
+
+本節為 **教材來源是否足以建立 component 並進入後續 Oracle / 驗證** 的唯一規範權威。
+
+#### 10.4.1 根本假設
+
+本系統 `textbook_examples` 主要來源為 **學生版教科書**。學生版教材在正常情況下可能沒有：
+
+* `correct_answer`
+* `detailed_solution`
+* 官方答案頁
+
+**「教材沒有答案」本身不是 component failure，也不得自動導致不能 VERIFIED。**  
+本 Gate **不要求**學生版課本必須提供答案。
+
+#### 10.4.2 本 Gate 證明什麼
+
+Source Fidelity PASS 代表來源足以證明：
+
+1. 題幹完整
+2. 數學條件完整
+3. 圖片 / 表格 / 公式資產完整（題面若依賴該資產）
+4. 題目作答拓撲可判定
+5. `skill_id` 來源可信
+6. 無 parse corruption
+7. 無關鍵 source loss
+
+完整學生版隨堂練習 + 無 `correct_answer` + 無 `detailed_solution` **仍可** `source_fidelity = PASS`。
+
+#### 10.4.3 FAIL 條件
+
+| 情境 | Policy reason | 處置 |
+| --- | --- | --- |
+| 題幹破損、關鍵條件缺失 | `source_incomplete` | component 仍須建立；verified/package/publish = NO |
+| 題目依賴配圖／表格但缺少資產 | `source_incomplete` | 同上 |
+| 公式／題幹 parse 損毀 | `source_corrupt` | 同上 |
+
+以上為 **Policy eligibility condition / reason**，不是 Current production tracker enum。不得擅自新增 production enum；不得固定映射 `needs_human_review`。標示：`[Gap: production alignment required]`。
+
+**不得**因為沒有答案自動標記 `missing_ground_truth` / failed / blocked。
+
+### 10.5 Answer Oracle Gate (Current)
+
+本節為 **canonical answer 之可信權威來源** 的唯一規範權威。
+
+正式 canonical answer 必須有可信 Answer Oracle。Generator implementation **不等於** mathematical oracle authority。
+
+#### 10.5.1 合法 Oracle 兩類
+
+**A. Source-provided Oracle**（記錄 `oracle_source=source`）
+
+* `textbook_examples.correct_answer`
+* 教材 `detailed_solution` 中明確存在的正式解答
+* 教師手冊 / 官方答案
+* 有 provenance 的正式 answer artifact
+
+**B. Verified Mathematical Oracle**（記錄 `oracle_source=domain_operation`）
+
+當學生版教材沒有答案時，可使用已通過 Capability / Domain 驗證的 shared mathematical oracle。必須**全部**滿足：
+
+1. `fixed_domain_key` 正確
+2. required operation 已登錄
+3. Exact Capability Readiness Gate PASS（§10.1）
+4. shared Domain operation 是獨立、可重用的 production implementation
+5. operation 已通過 mathematical invariant tests
+6. operation 已通過獨立 unit tests
+7. component generator 只呼叫 oracle，不自行重寫相同數學公式
+8. per-component validator 獨立驗證題目與 oracle output
+9. shared checker 正解通過 / 錯解拒絕
+10. 20-seed / fixed-seed validation PASS（**implementation consistency**，不是 Oracle 本身）
+
+此情況即使教材沒有正式答案，Answer Oracle Gate 仍可 PASS。  
+**不得**因 `oracle_source=domain_operation` 而降低其他 Gate。
+
+#### 10.5.2 嚴格禁止的 Oracle
+
+以下不得作為 Answer Oracle：
+
+* AI / LLM 現場解題結果
+* Agent 看題目後自己寫死答案
+* component-local ad-hoc formula
+* generator 內自己重寫的 domain math
+* checker 反推答案
+* 20-seed PASS 本身
+* 「程式跑得過所以答案應該對」
+
+**20 seeds 驗證 implementation consistency，不是 Answer Oracle 本身。**
+
+#### 10.5.3 Generator / Oracle 分離
+
+```text
+generator implementation  ≠  mathematical oracle authority
+```
+
+Generator 可以：sample parameters、build question、call shared Domain operation、construct payload、construct answer_contract。
+
+Generator 不可：自己定義該 capability 的核心數學演算法；自己產生答案後再自己當驗證權威。
+
+同一 shared Domain operation 可供多個 components 共用。仍維持 `textbook_example : component = 1 : 1`。
+
+#### 10.5.4 Oracle 未就緒時的 Policy reason
+
+| 情境 | Policy reason |
+| --- | --- |
+| 無 source oracle，且尚無可解析之 shared Domain operation | `oracle_unavailable`（進 Capability Growth） |
+| operation 已識別但 Exact Readiness / Executable Workspace 未過 | `oracle_not_ready` |
+| oracle 輸出未通過 validator / checker / 20-seed consistency | `oracle_validation_failed` |
+| 系統明確要求 source-provided evidence，且該來源本應存在卻遺失 | `missing_ground_truth` |
+
+`missing_ground_truth` **不再**代表「學生版教材沒有答案」。一般學生版無答案不是錯誤。
+
+以上同樣不是 production tracker enum；`[Gap: production alignment required]`。
+
+### 10.6 VERIFIED 充要條件 (Current)
+
+元件標記 `verified` 必須同時滿足：
+
+```text
+VERIFIED =
+  Textbook Source Fidelity PASS
+  AND Answer Oracle Gate PASS
+  AND Exact Capability Readiness PASS
+  AND Executable Component PASS
+  AND Per-component Validator PASS
+  AND Valid Answer Contract PASS
+  AND Shared Checker Validation PASS
+```
+
+Source-provided Oracle → `oracle_source=source`。  
+Verified Mathematical Oracle → `oracle_source=domain_operation`。
+
+有 `correct_answer` / `detailed_solution` **不得**直接寫成 VERIFIED；仍須通過其餘 Gate。
+
+#### 10.6.1 Source Fidelity & Answer Oracle 資格矩陣 (Current)
+
+本表為 **可否進入 VERIFIED 資格判斷** 的唯一矩陣權威。Master SOP 必須與本表一致。
+
+| 情境 | Source Fidelity | Oracle | 可否驗證 |
+| --- | --- | --- | --- |
+| 完整學生版題目，無答案，已有 verified domain oracle | PASS | domain oracle | YES |
+| 完整題目 + 官方答案 | PASS | source oracle | YES |
+| 題幹破損 | FAIL | 不論 | NO |
+| 缺關鍵圖片 | FAIL | 不論 | NO |
+| 題目完整但 operation 不存在 | PASS | unavailable | NO，進 capability growth |
+| AI 自算答案 | PASS | INVALID | NO |
+
 ---
 
 ## 11. AI Implementation Contract (AI 程式修改規範)
@@ -506,6 +663,8 @@ SOP 與 production 是否已對齊：[是／否]
 * **以 `fixed_domain_key` 存在推斷 capability ready**：已廢除，必須通過 Exact Capability Readiness Gate。
 * **多題合併單一 generator**：已廢除，必須遵守 §2 一題一最小生成單位。
 * **以 placeholder／僅編譯／僅 schema 通過判定 implementation 完成**：已廢除，必須通過 Executable Workspace Gate。
+* **以「學生版教材沒有 `correct_answer` / `detailed_solution`」自動禁止 VERIFIED**：已廢除；Source Fidelity 與 Answer Oracle 為彼此獨立 Gate。
+* **一律禁止 shared Domain operation 作為 Answer Oracle**：已廢除；僅允許通過 Exact Readiness 且獨立驗證之 Verified Mathematical Oracle。
 
 ---
 
@@ -513,6 +672,7 @@ SOP 與 production 是否已對齊：[是／否]
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.13 | 拆分 Textbook Source Fidelity Gate 與 Answer Oracle Gate；學生版無答案不得自動禁止 VERIFIED；允許 Exact-Ready 之 shared Domain operation 作為 Verified Mathematical Oracle；`missing_ground_truth` 限縮為 source answer 本應存在卻遺失 |
 | v1.12.1 | Answer Runtime：數學答案類 checker 改為 safe parse → normalize → mathematical equivalence → optional required-form；parse failure / checker exception 不得靜默當成學生答錯 |
 | v1.12 | 確立一題一最小生成單位完整契約；新增 Exact Capability Readiness Gate、Executable Workspace Gate、Capability 狀態定義；強化 AI Implementation Contract 修改前／後回報欄位；禁止降級矩陣納入 readiness／workspace 違規 |
 | v1.11 | M2 正式封板：answer_contract 升格為 Current 權威；五種 Answer Type 完成 UI、grading、error handling 與橫向一致性驗收；修正 answer_type／presentation_mode 舊範例 |

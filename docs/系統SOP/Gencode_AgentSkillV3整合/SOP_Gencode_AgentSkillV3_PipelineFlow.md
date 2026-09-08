@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 Pipeline 系統流程與狀態轉移說明
 
-> **文件版本**：v1.12  
+> **文件版本**：v1.13  
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一流程權威**（流程、時序、狀態轉移、階段責任、錯誤分流、正常路徑與 repair 路徑、package/publish/runtime 邊界）。具體欄位 schema、Gate 定義、狀態名稱與規格規則見 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)（唯一規範權威）。
 
 ---
@@ -23,6 +23,9 @@
 | partial publish | 5. Phase 3 流程與 Package/Publish |
 | runtime generation | 6. Runtime 邊界與出題 |
 | 一題一 generator | Specification §2；本文件 §4.1 |
+| source fidelity | 本文件 §4.0；Specification §10.4 |
+| answer oracle | 本文件 §4.0；Specification §10.5 |
+| missing_ground_truth | Specification §10.5.4（非「學生版無答案」） |
 
 ---
 
@@ -52,14 +55,18 @@
 graph TD
     subgraph FlowA["Phase 2 Shadow / Component 動線 (逐題執行)"]
         Src[textbook_examples 例題] --> P1[Phase 1 Classification / Onboarding]
-        P1 --> P2[Phase 2 Shadow Component]
-        P2 --> P25[Component Verification / Sandbox]
-        P25 -->|capability 缺口| CapGrow[Capability 自動生長閉環]
-        CapGrow -->|promoted + Exact Ready| P2
+        P1 --> P2SrcFid{Textbook Source Fidelity Gate}
+        P2SrcFid -->|FAIL| SrcRepair[source repair / policy blocked]
+        P2SrcFid -->|PASS| P2Oracle[Answer Oracle Resolution]
+        P2Oracle -->|capability 未 ready| CapGrow[Capability 自動生長閉環]
+        CapGrow -->|promoted + Exact Ready| P2Oracle
+        P2Oracle -->|oracle ready| P2[Phase 2 Shadow Component]
+        P2 --> P25[Per-component Validator / 20 seeds / Checker]
+        P25 -->|All VERIFIED AND Pass| Verified[VERIFIED]
     end
     
     subgraph FlowB["Phase 3 Package / Publish 動線 (整 Skill 執行)"]
-        P25 -->|儲存 verified 狀態| Track[Tracker / JSON 緩存]
+        Verified -->|儲存 verified 狀態| Track[Tracker / JSON 緩存]
         Track --> P3[Phase 3 Package / Wrapper Compile]
         P3 --> Gate[Publish Gate]
         Gate --> Run[Runtime 學生端出題]
@@ -93,6 +100,43 @@ graph TD
 ---
 
 ## 4. Phase 2 流程與 Component 驗證
+
+### 4.0 Source Fidelity → Oracle Resolution → VERIFIED (Current)
+
+本節為 **Phase 2 來源保真與 Answer Oracle 時序** 的唯一流程權威。Gate 定義與政策 reason 以 Specification §10.4、§10.5、§10.6 為準。
+
+正式序列（依序執行，不得跳步宣稱 VERIFIED）：
+
+```text
+textbook example
+  → Textbook Source Fidelity Gate
+      FAIL → source repair / policy blocked
+             （source_incomplete / source_corrupt；仍須建立 component）
+      PASS → Answer Oracle Resolution
+  → Answer Oracle Resolution
+      1. source-provided oracle available?  YES → use source oracle（oracle_source=source）
+      2. 否則查 shared Domain operation
+           → Exact Capability Readiness
+           → Verified Mathematical Oracle（oracle_source=domain_operation）
+      若 oracle capability 未 ready
+           → Capability Growth Flow（§4.3）
+           → 不得以 AI／LLM／generator 自算充當 oracle
+  → Oracle ready 後
+      → Exact Capability Readiness（VERIFIED 充要條件仍須通過）
+      → build / rebuild component
+      → per-component validation
+      → 20 seeds（implementation consistency，不是 Oracle 本身）
+      → checker validation
+      → VERIFIED
+      → Phase 3
+```
+
+**流程硬規則**：
+
+* 學生版無 `correct_answer` / `detailed_solution` **不是** Source Fidelity FAIL，也不得自動停止 VERIFIED。
+* Source Fidelity PASS 且 Verified Mathematical Oracle 十項條件全過時，允許 VERIFIED。
+* `missing_ground_truth` 不得用於一般學生版無答案。
+* generator implementation ≠ mathematical oracle authority。
 
 ### 4.1 物理隔離與單題發布 (Current)
 
@@ -276,7 +320,14 @@ discovered (發現題目)
   → draft_written (寫入 sandbox)
   → compile_passed (通過沙盒編譯)
   → smoke_passed (通過單題 smoke 測試)
-  → verified (通過八項指標驗證)
+  → verified（Textbook Source Fidelity PASS
+              AND Answer Oracle Gate PASS
+              AND Exact Capability Readiness PASS
+              AND Executable Component PASS
+              AND Per-component Validator PASS
+              AND Valid Answer Contract PASS
+              AND Shared Checker Validation PASS；
+              20-seed 為 implementation consistency，不是 Oracle）
   → packaged (打包入 manifest)
   → published (正式發布)
 ```
@@ -318,6 +369,12 @@ proposed
 | `EXECUTABLE_WORKSPACE_INCOMPLETE` | Capability Gate | Executable Workspace Gate 未通過，不得 promotion |
 | `GENERATOR_SPEC_MISSING_FIELD` | Phase 3 | 封裝前 Gate 攔截，排除此組件且不干擾其他題 |
 | `SAMPLING_EXHAUSTED` | Runtime | 抽樣超限拋出，拋棄該 seed 並記錄異常 |
+| `source_incomplete` [Policy] | Phase 2 Source Fidelity | 題幹／資產不完整；停止 VERIFIED。不是 tracker enum。[Gap: production alignment required] |
+| `source_corrupt` [Policy] | Phase 2 Source Fidelity | 來源解析損毀；停止 VERIFIED。不是 tracker enum。[Gap: production alignment required] |
+| `oracle_unavailable` [Policy] | Phase 2 Oracle Resolution | 無 source oracle 且無 Domain operation；進 §4.3。不是「學生版無答案」錯誤。[Gap: production alignment required] |
+| `oracle_not_ready` [Policy] | Phase 2 Oracle Resolution | Domain operation 未過 Exact Readiness；進 §4.3。[Gap: production alignment required] |
+| `oracle_validation_failed` [Policy] | Phase 2 Validation | Oracle 輸出未通過 validator / checker / 20-seed consistency。[Gap: production alignment required] |
+| `missing_ground_truth` [Policy] | Phase 2 Oracle | **僅**當系統明確要求 source-provided evidence 且本應存在卻遺失。不得用於學生版無答案。[Gap: production alignment required] |
 
 ---
 
@@ -342,6 +399,7 @@ proposed
 * **多題合併單一 generator** (已廢除，必須遵守 Specification §2)
 * **每小步人工批准** (已廢除，人工審核僅保留在 production promotion 前)
 * **以 capability 分組批次 rebuild／合併 tracker** (已廢除，build／validation／tracker 必須逐 component 獨立)
+* **以「學生版無 correct_answer / detailed_solution」自動禁止 VERIFIED** (已廢除；見 §4.0 與 Specification §10.4 / §10.5)
 
 ---
 
@@ -349,6 +407,7 @@ proposed
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.13 | Phase 2 改為 Source Fidelity → Answer Oracle Resolution → build／validate／VERIFIED；學生版無答案不得自動禁止 VERIFIED；20 seeds 明定為 implementation consistency |
 | v1.12 | 新增 Capability 自動生長閉環、Recovery Orchestrator、人工審核位置、Capability 狀態機；一題一 generator 改為引用 Specification §2；Readiness／Executable Gate 引用 Specification §10；禁止 partial_capability rebuild |
 | v1.11 | M2 正式封板，補充五套餐 runtime dispatch、drawing 狀態閉環與 answer_contract Current 權威 |
 | v1.10 | 新增 Automated Domain Bootstrap 與 Healer 流程，Phase 1 導入 capability-first 解析 |

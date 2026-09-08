@@ -1013,3 +1013,38 @@ register_domain_spec(DomainCapabilitySpec(
 ))
 
 
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.angle",
+    domain_module="core.domain.trigonometry_angle_domain",
+    entrypoint="build_trigonometry_angle_matrix",
+    capabilities=frozenset({
+        "convert_angle_measure",
+        "sector_arc_and_area",
+        "coterminal_angles",
+    }),
+    operations={
+        "convert_angle_measure": _op(
+            "convert_angle_measure",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "table_fill", "expression", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "inline_table_input"),
+            provided_capabilities=("convert_angle_measure",),
+        ),
+        "sector_arc_and_area": _op(
+            "sector_arc_and_area",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "expression", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs"),
+            provided_capabilities=("sector_arc_and_area",),
+        ),
+        "coterminal_angles": _op(
+            "coterminal_angles",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "single_choice", "choice", "solution_set", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
+            provided_capabilities=("coterminal_angles",),
+        ),
+    },
+))
+
+

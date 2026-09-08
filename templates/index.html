@@ -4160,6 +4160,38 @@
                 .replace(/"/g, '&quot;');
         }
 
+        function looksLikeTexMath(value) {
+            const text = String(value ?? '').trim();
+            if (!text) return false;
+            if (/\$|\\\(|\\\[/.test(text)) return true;
+            return /\\[a-zA-Z]+|\^/.test(text);
+        }
+
+        function wrapTableCellForMath(value) {
+            if (value === null || value === undefined) return '';
+            const text = String(value);
+            const trimmed = text.trim();
+            if (!trimmed) return text;
+            if (
+                (trimmed.startsWith('$') && trimmed.endsWith('$') && trimmed.length >= 3)
+                || (trimmed.startsWith('\\(') && trimmed.endsWith('\\)'))
+            ) {
+                return text;
+            }
+            if (!looksLikeTexMath(trimmed)) return text;
+            return `$${trimmed}$`;
+        }
+
+        function setReadonlyTableCellContent(el, value) {
+            if (!el) return;
+            el.textContent = wrapTableCellForMath(value);
+        }
+
+        function typesetTableFillMath(container) {
+            if (!container || typeof renderMathContent !== 'function') return;
+            renderMathContent(container);
+        }
+
         function renderBlankCellInput(cellSpec, showBlankLabels) {
             const fieldKey = String(cellSpec.field_key || cellSpec.label || '').trim();
             const label = String(cellSpec.label || '').trim();
@@ -4201,12 +4233,14 @@
                 container.innerHTML = td.html;
                 container.classList.add('math-table-readonly');
                 container.style.display = 'block';
+                typesetTableFillMath(container);
                 return;
             }
             if (!model.headers.length && !model.rows.length) {
                 if (td.html) {
                     container.innerHTML = td.html;
                     container.style.display = 'block';
+                    typesetTableFillMath(container);
                 }
                 return;
             }
@@ -4226,7 +4260,7 @@
             const headRow = document.createElement('tr');
             model.headers.forEach((header) => {
                 const th = document.createElement('th');
-                th.textContent = String(header);
+                setReadonlyTableCellContent(th, header);
                 headRow.appendChild(th);
             });
             thead.appendChild(headRow);
@@ -4248,7 +4282,7 @@
                         tdCell.dataset.fieldKey = String(spec.field_key || spec.label || '');
                         tdCell.appendChild(renderBlankCellInput(spec, model.showBlankLabels));
                     } else {
-                        tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                        setReadonlyTableCellContent(tdCell, cell);
                     }
                     tr.appendChild(tdCell);
                 });
@@ -4261,7 +4295,7 @@
                 const tr = document.createElement('tr');
                 model.totalRow.forEach((cell) => {
                     const tdCell = document.createElement('td');
-                    tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                    setReadonlyTableCellContent(tdCell, cell);
                     tr.appendChild(tdCell);
                 });
                 tfoot.appendChild(tr);
@@ -4271,6 +4305,7 @@
             scrollWrap.appendChild(table);
             container.appendChild(scrollWrap);
             container.style.display = 'block';
+            typesetTableFillMath(container);
         }
 
         function renderTableFillFallbackGrid(payload) {
@@ -5107,8 +5142,10 @@
                     // 3. MathJax 排版
                     const typesetPromise = () => {
                         return new Promise((resolve) => {
+                            const qmc = document.getElementById('question-media-container');
+                            const targets = [questionText, qmc].filter(Boolean);
                             if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-                                window.MathJax.typesetPromise([questionText])
+                                window.MathJax.typesetPromise(targets)
                                     .then(() => resolve())
                                     .catch((err) => resolve());
                             } else {
@@ -5442,6 +5479,10 @@
             renderMathContent(questionText);
             if (questionChoices && questionChoices.style.display !== 'none') {
                 renderMathContent(questionChoices);
+            }
+            const questionMedia = document.getElementById('question-media-container');
+            if (questionMedia && questionMedia.style.display !== 'none') {
+                renderMathContent(questionMedia);
             }
             requestAnimationFrame(() => updateChoiceGridLayout(payload));
             setTimeout(() => updateChoiceGridLayout(payload), 80);

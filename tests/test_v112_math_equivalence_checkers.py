@@ -219,3 +219,21 @@ def test_text_short_stays_text() -> None:
     assert check_answer("第一象限", "第一象限", answer_contract=ac)
     assert check_answer("無解", "無解", answer_contract=ac)
     assert check_answer("第一象限", "第二象限", answer_contract=ac) is False
+
+
+def test_pi_expression_required_form() -> None:
+    ac = {
+        "answer_type": "expression",
+        "checker": "expression_checker",
+        "equivalence_type": "algebraic_equivalent",
+        "required_form": "pi_expression",
+    }
+    canonical = "3*pi/4"
+    students = ("3*pi/4", "3pi/4", "(3/4)pi", "3" + "π" + "/4")
+    for student in students:
+        assert check_expression_equivalence_answer(student, canonical, answer_contract=ac), student
+        assert check_answer(student, canonical, answer_contract=ac)
+    dbg = check_expression_equivalence_debug("2.356194490192345", canonical, answer_contract=ac)
+    assert dbg.get("correct") is False
+    assert dbg.get("required_form_failed") is True
+    assert check_expression_equivalence_answer("-300" + "°", "-300") is True

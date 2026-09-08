@@ -535,7 +535,11 @@ def check_answer(
         )
         return bool(result.get("is_correct"))
 
-    if checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
+    if (
+        checker in {"multi_part_answer_checker", "table_fill_checker", "multi_blank_checker"}
+        or family == "multi_part"
+        or equiv == "multi_part_answer"
+    ):
         from core.checkers.multi_part_answer_checker import check_multi_part_answer
 
         result = check_multi_part_answer(

@@ -1,0 +1,76 @@
+{
+  "publish": {
+    "vh_數學B2_AngleMeasurementAndConversion": {
+      "status": "runtime_ready_with_variation_warning",
+      "component_count": 5,
+      "verified_component_count": 5,
+      "production_smoke_status": "passed",
+      "error": null,
+      "ok": true
+    },
+    "vh_數學B2_ArcLengthAndAreaOfSector": {
+      "status": "production_published",
+      "component_count": 7,
+      "verified_component_count": 7,
+      "production_smoke_status": "passed",
+      "error": null,
+      "ok": true
+    },
+    "vh_數學B2_CoterminalAngles": {
+      "status": "production_published",
+      "component_count": 8,
+      "verified_component_count": 8,
+      "production_smoke_status": "passed",
+      "error": null,
+      "ok": true
+    }
+  },
+  "smoke": {
+    "vh_數學B2_AngleMeasurementAndConversion": {
+      "wrapper_components": 5,
+      "ok": false,
+      "errors": [
+        "11616_table_fill_contract_fail"
+      ],
+      "keys": [
+        "src_11606",
+        "src_11607",
+        "src_11616",
+        "src_11617",
+        "src_11618"
+      ],
+      "table_fill_11616": false
+    },
+    "vh_數學B2_ArcLengthAndAreaOfSector": {
+      "wrapper_components": 7,
+      "ok": true,
+      "errors": [],
+      "keys": [
+        "src_11608",
+        "src_11609",
+        "src_11610",
+        "src_11619",
+        "src_11620",
+        "src_11624",
+        "src_11625"
+      ],
+      "table_fill_11616": null
+    },
+    "vh_數學B2_CoterminalAngles": {
+      "wrapper_components": 8,
+      "ok": true,
+      "errors": [],
+      "keys": [
+        "src_11611",
+        "src_11612",
+        "src_11613",
+        "src_11614",
+        "src_11615",
+        "src_11621",
+        "src_11622",
+        "src_11623"
+      ],
+      "table_fill_11616": null
+    }
+  }
+}

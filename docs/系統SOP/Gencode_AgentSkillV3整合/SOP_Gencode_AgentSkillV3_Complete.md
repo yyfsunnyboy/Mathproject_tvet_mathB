@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 完整執行手冊 (Complete Master SOP)
 
-> **版本**：v1.12-Master  
+> **版本**：v1.13-Master  
 > **建立日期**：2026-09-08  
 > **文件定位**：本文件為 AI Agent、自動化管線與工程師進入 Gencode × AgentSkillV3 體系的第一閱讀入口與唯一端到端完整執行手冊。本手冊將既有規範權威、流程權威、檢核原則與已封板實證案例整合成可直接執行的 Master SOP。
 
@@ -14,7 +14,7 @@
 - [3. Authority and Data Ownership (權威歸屬與責任矩陣)](#3-authority-and-data-ownership-權威歸屬與責任矩陣)
 - [4. End-to-End Pipeline (端到端管線與狀態流動)](#4-end-to-end-pipeline-端到端管線與狀態流動)
 - [5. Textbook Example → Component Contract (一題一元件契約)](#5-textbook-example--component-contract-一題一元件契約)
-- [6. Source Evidence / Ground Truth Gate (教材證據閘門)](#6-source-evidence--ground-truth-gate-教材證據閘門)
+- [6. Source Fidelity & Answer Oracle Gate (來源保真與答案權威閘門)](#6-source-fidelity--answer-oracle-gate-來源保真與答案權威閘門)
 - [7. Skill-Fixed Domain / Capability / Operation (領域與能力層次)](#7-skill-fixed-domain--capability--operation-領域與能力層次)
 - [8. Generator Responsibility Boundary (生成器責任邊界)](#8-generator-responsibility-boundary-生成器責任邊界)
 - [9. Data Presentation / Answer Type / UI Contract (呈現與作答契約)](#9-data-presentation--answer-type--ui-contract-呈現與作答契約)
@@ -82,41 +82,37 @@
 * 嚴禁將多題合併為單一 generator 或單一 component。
 
 ### HARD RULE 2 — Component 存在性與 Publish 資格分離
-* 只要資料庫中存在教材例題，就必須建立對應的 component 目錄與骨架，不可因為題目破損或缺乏答案而直接省略。
-* 當題目條件或解答證據不足時：
+* 只要資料庫中存在教材例題，就必須建立對應的 component 目錄與骨架，不可因為題目破損或學生版沒有答案而直接省略。
+* **「學生版教材沒有答案」本身不是 component failure，也不得自動導致 `verified = NO`。**
+* 僅當 Source Fidelity FAIL、Answer Oracle 不可用／未就緒／驗證失敗，或其他 Gate 未過時：
   * `component exists = YES`
   * `verified = NO`
   * `wrapper inclusion = NO`
   * `publish = NO`
-* `blocked`、`missing_ground_truth`、`source_incomplete` 屬於 **Policy eligibility condition / reason**（資格條件與阻斷原因標籤）。
+* `blocked`、`missing_ground_truth`、`source_incomplete`、`source_corrupt`、`oracle_unavailable`、`oracle_not_ready`、`oracle_validation_failed` 屬於 **Policy eligibility condition / reason**（資格條件與阻斷原因標籤）。
 * 若 production tracker 目前無對應正式 enum：
   * **不得擅自新增 production enum**。
   * **不得在 Master SOP 中擅自指定另一 lifecycle status（例如 `needs_human_review`）作替代映射**（`needs_human_review` / `ready_for_human_review` 在流程中有既有特定 lifecycle 語意，不可挪用）。
   * 政策原因應儲存於 production 現有可用之 `metadata.py`、payload extra 或 error reason 欄位。
   * 若 tracker 強制需要某 Current status，必須依 production code 真實語意判定，並在文件標示：`[Gap: production alignment required]`，不得假裝已有正式 missing_ground_truth lifecycle state。
 
-### HARD RULE 3 — 教材 Ground Truth 證據閘門 (Textbook Ground Truth Gate)
-* **Generator 自己算出的答案，絕對不得作為教材 ground truth 證據。**
-* **20-seed 隨機生成 PASS，僅代表演算法自洽，絕對不等於教材證據。**
-* **Reliable Textbook Ground Truth Evidence** 必須同時滿足：
-  1. **可追溯 (Traceable)**：具備明確出處或來源紀錄。
-  2. **屬於教材或正式 source**：源自教科書、教師手冊、正式解答或經審核之教材資產。
-  3. **能支持 canonical answer**：證據內容足以直接確認 canonical answer 之正確性。
-* 可接受的來源證據包括：
-  1. `textbook_examples.correct_answer`。
-  2. `textbook_examples.detailed_solution` 中明確存在的正式答案。
-  3. 原始教材正式答案／解答頁（原書對照）。
-  4. 已有清晰 provenance 且經核准的 source-answer artifact（如已查核之勘誤對照表）。
-* **明確禁止以下項目作為 ground-truth evidence**：
-  * AI / LLM 自行解題推導。
-  * Generator 內部運算或自行推導。
-  * Domain Function 計算結果。
-  * Checker 反推答案。
-  * 20-seed 隨機測試 PASS。
-  *(以上各項僅能驗證 implementation correctness，絕不能建立教材 ground truth。)*
+### HARD RULE 3 — Source Fidelity & Answer Oracle Gate
+Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。本條為執行摘要。
+
+* `textbook_examples` 主要來源為 **學生版教科書**。學生版正常情況下可能沒有 `correct_answer`、`detailed_solution`、官方答案頁。
+* **兩個彼此獨立的 Gate**：
+  1. **Textbook Source Fidelity Gate**：證明題幹、數學條件、圖片／表格／公式資產、作答拓撲、`skill_id` 來源可信，且無 parse corruption／關鍵 source loss。本 Gate **不要求**學生版課本必須提供答案。完整學生版隨堂練習 + 無 `correct_answer` + 無 `detailed_solution` 仍可 `source_fidelity = PASS`。
+  2. **Answer Oracle Gate**：正式 canonical answer 必須有可信 Answer Oracle。
+* 合法 Oracle 分兩類：
+  * **Source-provided Oracle**（`oracle_source=source`）：DB `correct_answer`、教材 `detailed_solution`、教師手冊／官方答案、有 provenance 的正式 answer artifact。
+  * **Verified Mathematical Oracle**（`oracle_source=domain_operation`）：學生版無答案時，可使用已通過 Exact Capability Readiness 且獨立驗證之 shared Domain operation（十項條件見 Specification §10.5.1）。
+* **嚴格禁止的 Oracle**：AI／LLM 現場解題、Agent 看題寫死答案、component-local ad-hoc formula、generator 內重寫 domain math、checker 反推答案、20-seed PASS 本身、「程式跑得過所以答案應該對」。
+* **20 seeds 驗證 implementation consistency，不是 Answer Oracle 本身。**
+* **Generator implementation ≠ mathematical oracle authority。** Generator 可 sample、組題、呼叫 shared Domain、組 payload／answer_contract；不可自行定義該 capability 核心數學演算法，也不可自己產生答案後再自己當驗證權威。
 * 元件要取得 `VERIFIED` 狀態，必須滿足：
-  $$\text{VERIFIED} = \text{Reliable Source Evidence} \land \text{Exact Capability Readiness} \land \text{Executable Component} \land \text{Per-component Validator PASS} \land \text{Valid Answer Contract} \land \text{Shared Checker Validation PASS}$$
-* 若題目缺乏可靠答案證據，即使 AI 或程式能推導出唯一解，**亦嚴禁標記 VERIFIED，嚴禁進入 wrapper**。
+  $$\text{VERIFIED} = \text{Textbook Source Fidelity PASS} \land \text{Answer Oracle Gate PASS} \land \text{Exact Capability Readiness} \land \text{Executable Component} \land \text{Per-component Validator PASS} \land \text{Valid Answer Contract} \land \text{Shared Checker Validation PASS}$$
+* 不得因 `oracle_source=domain_operation` 而降低其他 Gate。
+* `missing_ground_truth` **不再**代表「學生版教材沒有答案」；僅適用於系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失。
 
 ### HARD RULE 4 — Domain Function 與 Operation 架構
 * 行政歸屬（`skill_id`）$\rightarrow$ 路由映射（`fixed_domain_key`）$\rightarrow$ 共享數學能力（`operation`）。
@@ -132,7 +128,8 @@
   3. 呼叫 shared Domain operation 取得數值解答。
   4. 輸出視覺與圖片契約（Visual / Image Contract）。
   5. 宣告作答與評分契約（Answer Contract Metadata）。
-* Generator 絕不是數學演算法定義中心、絕不是學生批改評分者、絕不是教材標準答案自證者。
+* Generator 絕不是數學演算法定義中心、絕不是學生批改評分者、絕不是 Answer Oracle 權威。
+* 同一 shared Domain operation 可供多個 components 共用；仍維持 `textbook_example : component = 1 : 1`。
 
 ### HARD RULE 6 — Checker 評分權威與 Local Check 邊界
 * 正式 grading authority 必須是：
@@ -160,16 +157,17 @@
 
 ### HARD RULE 9 — 封裝發布唯 verified 原則與部分發布 (Partial Publish)
 * 只有標記為 `VERIFIED` 的組件才能寫入 `GENERATOR_SPECS` 並編譯進技能 wrapper。
-* 系統全面支援 Partial Publish：未驗證或政策資格不足（`missing_ground_truth` / `source_incomplete` / `source_corrupt`）的題目排除在外，絕不可阻斷已通過 verified 的組件發布。`blocked` 不是 Current production tracker enum。
+* 系統全面支援 Partial Publish：未驗證或政策資格不足（`source_incomplete` / `source_corrupt` / `oracle_unavailable` / `oracle_not_ready` / `oracle_validation_failed` / 限縮後的 `missing_ground_truth`）的題目排除在外，絕不可阻斷已通過 verified 的組件發布。`blocked` 不是 Current production tracker enum。
 * 數量恆等關係：
   $$\text{published} \le \text{verified} \le \text{components} \equiv \text{textbook\_examples}$$
 
 ### HARD RULE 10 — AI 嚴禁擅自補洞
-* 缺乏 evidence 時：
+* Source Fidelity FAIL，或 Answer Oracle 為 INVALID／unavailable／not ready／validation failed 時：
   * 停止自動 VERIFIED
   * 停止 package
   * 停止 publish
-  * 保留 policy reason（如 `missing_ground_truth` / `source_incomplete` / `source_corrupt`）
+  * 保留對應 policy reason（`source_incomplete` / `source_corrupt` / `oracle_unavailable` / `oracle_not_ready` / `oracle_validation_failed`；`missing_ground_truth` 僅限 source answer 本應存在卻遺失）
+* 學生版無答案且 Domain oracle 未 ready：進 Capability Growth，**不得**用 AI 自算答案充當 oracle。
 * 是否需要人工審核：依實際責任層與 Current production flow 決定。
 * **不得**將 `missing_ground_truth` 自動映射到 `needs_human_review` 或 `ready_for_human_review`。
 * 嚴禁自行揣摩或猜測教材答案。
@@ -188,7 +186,7 @@
 ├───────────────────┬─────────────┬────────────────────────┤
 │ 概念層級           │ 餐廳比喻     │ 系統真實對應實體        │
 ├───────────────────┼─────────────┼────────────────────────┤
-│ Textbook Source   │ 原始食材採購 │ 教材題庫與真實解答依據    │
+│ Textbook Source   │ 原始食材採購 │ 學生版教材題幹／資產（答案可缺）│
 │ Skill             │ 餐廳品牌分店 │ 行政課程歸屬 (skill_id)  │
 │ Routing Domain    │ 菜單大分類   │ fixed_domain_key       │
 │ Operation         │ 廚師烹飪菜色 │ Shared Domain Function │
@@ -217,7 +215,8 @@
 | `fixed_domain_key` | `core/registry/taxonomy_registry.py` | 無 | 嚴禁因缺乏算子改指派其他 domain |
 | `allowed_operations` | Domain Registry 定義檔 | 無 | 嚴禁在未登錄情況下於 generator 調用 |
 | `Domain Function` | `core/domain/*.py` 共享模組 | 無 | 嚴禁在 component 目錄內撰寫 domain 運算 |
-| `Source Ground Truth` | 可追溯之教材正式來源 (DB `correct_answer` / `detailed_solution` / 原始解答頁 / 核准 artifact) | 經核准勘誤表 | 嚴禁 generator、AI、Domain 算子或 20-seed 自算充當證據 |
+| `Source Fidelity` | 學生版教材題幹、條件、圖片／表格／公式資產、作答拓撲、`skill_id` | 無 | 嚴禁把「沒有答案」當成 source failure |
+| `Answer Oracle` | Source-provided oracle；或 Exact-Ready 且獨立驗證之 shared Domain operation | 無 | 嚴禁 AI／LLM、generator 自算、component-local formula、checker 反推、20-seed 本身充當 oracle |
 | `Answer Contract` | `component/generate.py` 的 `answer_contract` | legacy 外層欄位 | 嚴禁使用外層字串比對欄位取代 |
 | `Component Tracker` | SQLite Tracker DB / Service | JSON Tracker Report | 嚴禁以 capability 分組狀態取代單題狀態 |
 | `Wrapper / Publish` | `core/gencode/phase3_skill_codegen.py` | drafts 快照 | 嚴禁手動編輯正式 `skills/<skill_id>.py` |
@@ -237,14 +236,20 @@ flowchart TD
     end
 
     subgraph S2["Phase 2: Component Generation & Verification"]
-        P1Entry --> P2CheckCap{Exact Capability Readiness Gate}
-        P2CheckCap -->|Incomplete / Missing| CapGrow[Capability Growth Loop]
-        P2CheckCap -->|Ready| P2Scaffold[Build Component Scaffold: generate, metadata, hint]
-        P2Scaffold --> P2CheckGT{Textbook Ground Truth Gate}
-        P2CheckGT -->|Missing / Corrupted| CompBlocked["Policy eligibility NO (missing_ground_truth / source_incomplete / source_corrupt)"]
-        P2CheckGT -->|source_evidence_eligible YES| P2Test[Run 20-Seeds as implementation validation only]
-        P2Test -->|Validation Fail| CompFailed[Mark FAILED]
-        P2Test -->|All VERIFIED AND conditions Pass| CompVerified[Mark VERIFIED]
+        P1Entry --> P2SrcFid{Textbook Source Fidelity Gate}
+        P2SrcFid -->|FAIL| CompBlocked["source repair / policy blocked (source_incomplete / source_corrupt)"]
+        P2SrcFid -->|PASS| P2OracleRes{Answer Oracle Resolution}
+        P2OracleRes -->|source-provided available| P2SrcOracle["use source oracle"]
+        P2OracleRes -->|else shared Domain operation| P2CapOracle{Exact Capability Readiness}
+        P2CapOracle -->|not ready| CapGrow[Capability Growth Loop]
+        P2CapOracle -->|Ready| P2DomOracle["Verified Mathematical Oracle"]
+        P2SrcOracle --> P2CheckCap{Exact Capability Readiness Gate}
+        P2DomOracle --> P2CheckCap
+        P2CheckCap -->|Incomplete / Missing| CapGrow
+        P2CheckCap -->|Ready| P2Scaffold[Build / Rebuild Component]
+        P2Scaffold --> P2Val[Per-component Validator + 20 Seeds + Checker]
+        P2Val -->|Validation Fail| CompFailed["Mark FAILED / oracle_validation_failed"]
+        P2Val -->|All VERIFIED AND conditions Pass| CompVerified[Mark VERIFIED]
     end
 
     subgraph SG["Capability Growth Loop (Repair Path)"]
@@ -316,64 +321,71 @@ agent_skills_v3/
 
 ---
 
-## 6. Source Evidence / Ground Truth Gate (教材證據閘門)
+## 6. Source Fidelity & Answer Oracle Gate (來源保真與答案權威閘門)
 
-本章節為杜絕「AI 自算自嗨冒充教材真理」的核心安全網。
+本章節為執行摘要。Gate 定義、政策 reason 與資格矩陣以 Specification §10.4、§10.5、§10.6 為唯一規範權威。
 
-### 6.1 雙軌驗證原則
-系統嚴格劃分兩種不同的驗證維度：
-- **維度 A：Textbook Ground-Truth Validation（教材真實性審查）**：查核教材正式來源是否存在可追溯之權威答案依據。
-- **維度 B：Generator Mathematical Validation（演算法自洽性校驗）**：查核 20 seeds 運算是否無異常、答案是否等價、評分器是否運作正常。
+### 6.1 根本假設與雙閘門
 
-**絕對禁止以維度 B（20 seeds PASS）反向推導或冒充維度 A！**
+本系統 `textbook_examples` 主要來源為 **學生版教科書**。學生版教材正常情況下可能沒有 `correct_answer`、`detailed_solution`、官方答案頁。
 
-### 6.2 Reliable Textbook Ground Truth Evidence 標準
-Reliable Textbook Ground Truth Evidence 必須同時具備：
-1. **可追溯 (Traceable)**：具備明確出處、頁碼、欄位或核准記錄。
-2. **屬於教材或正式 source**：源自教科書正本、官方教師用書、原書詳解或正式 source 資產。
-3. **能支持 canonical answer**：證據內容可明確直接支撐題目的標準答案。
+**「教材沒有答案」本身不得視為 component failure，也不得自動導致不能 VERIFIED。**
 
-#### 可接受之證據來源包括：
-1. `textbook_examples.correct_answer` 非空且正確。
-2. `textbook_examples.detailed_solution` 中明確存在的正式解答。
-3. 原始教材正式答案／解答頁（原書對照）。
-4. 已有清晰 provenance 且經核准的 source-answer artifact（如正式勘誤表）。
+系統嚴格劃分兩個彼此獨立的 Gate，以及一個實施一致性檢查：
 
-#### 明確禁止以下列項目充當 Ground Truth 證據：
-- AI / LLM 自行解題推導之結果。
-- Generator 內部運算或隨機抽樣得出之答案。
-- Domain Function 計算結果。
-- Checker 反推答案。
-- 20-seed 隨機生成 PASS。
-*(以上各項僅能證明 implementation correctness，絕不能建立教材 ground truth。)*
+- **Gate A：Textbook Source Fidelity**：題幹／條件／資產／拓撲／`skill_id` 是否完整可信。不要求學生版必須提供答案。
+- **Gate B：Answer Oracle**：canonical answer 是否有合法 Source-provided Oracle 或 Verified Mathematical Oracle。
+- **Implementation consistency**：20-seed / fixed-seed 驗證 implementation consistency，**不是 Answer Oracle 本身**。
 
-因此，元件要取得 `VERIFIED` 狀態之充要條件為：
-$$\text{VERIFIED} = \text{Reliable Source Evidence} \land \text{Exact Capability Readiness} \land \text{Executable Component} \land \text{Per-component Validator PASS} \land \text{Valid Answer Contract} \land \text{Shared Checker Validation PASS}$$
+**絕對禁止以 20 seeds PASS、AI 自算或 generator 自寫公式冒充 Answer Oracle。**
 
-### 6.3 Source Evidence 矩陣與處置
+### 6.2 Textbook Source Fidelity
 
-> **硬性區分**：有可靠教材 ground-truth evidence → `source_evidence_eligible = YES`。  
-> **不得**把「有 `correct_answer` / `detailed_solution`」直接寫成 `VERIFIED`。  
-> 20-seed 只能作為 **implementation validation**，不能取代教材 evidence。
+Source Fidelity PASS 證明：題幹完整、數學條件完整、圖片／表格／公式資產完整、作答拓撲可判定、`skill_id` 來源可信、無 parse corruption、無關鍵 source loss。
 
-元件要取得 `VERIFIED`，必須同時滿足：
+完整學生版隨堂練習 + 無 `correct_answer` + 無 `detailed_solution` **仍可** `source_fidelity = PASS`。
 
-`Reliable Source Evidence`  
-AND `Exact Capability Readiness`  
-AND `Executable Component`  
-AND `Per-component Validator PASS`  
-AND `Valid Answer Contract`  
-AND `Shared Checker Validation PASS`
+不得因為沒有答案自動標記 `missing_ground_truth` / failed / blocked。
 
-| 來源狀況 (Source Scenario) | `source_evidence_eligible` | Component 處置 | 20-Seed（僅 implementation validation） | VERIFIED | Wrapper | Publish |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **完整題幹 + 正確 correct_answer** | **YES** | 建立完整元件 | 可執行；不得取代教材 evidence | 僅當全部 AND 條件通過 | 僅 VERIFIED 後 **YES** | 僅 VERIFIED 後 **YES** |
-| **完整題幹 + 正確 detailed_solution 解答** | **YES** | 建立完整元件 | 可執行；不得取代教材 evidence | 僅當全部 AND 條件通過 | 僅 VERIFIED 後 **YES** | 僅 VERIFIED 後 **YES** |
-| **完整題幹 + 經核准教材解答頁/artifact** | **YES** | 建立完整元件 | 可執行；不得取代教材 evidence | 僅當全部 AND 條件通過 | 僅 VERIFIED 後 **YES** | 僅 VERIFIED 後 **YES** |
-| **題幹完整但無上述可靠答案來源** | **NO** | 建立元件骨架 | 可測但不作證據 | **NO**（policy reason: `missing_ground_truth`） | **NO** | **NO** |
-| **公式解析損毀 ([MATH_PARSE_FAILED])** | **NO** | 建立元件骨架 | 停用 | **NO**（policy reason: `source_corrupt`） | **NO** | **NO** |
-| **題目依賴配圖但缺少圖檔資產** | **NO** | 建立元件骨架 | 停用 | **NO**（policy reason: `source_incomplete`） | **NO** | **NO** |
-| **AI 自算有解，但教材原書無可靠依據** | **NO** | 建立元件骨架 | 僅供除錯，不作 evidence | **NO**（policy reason: `missing_ground_truth`） | **NO** | **NO** |
+FAIL 例：題幹破損 → `source_incomplete`；缺關鍵圖片 → `source_incomplete`；parse 損毀 → `source_corrupt`。
+
+### 6.3 Answer Oracle
+
+正式 canonical answer 必須有可信 Answer Oracle。
+
+**A. Source-provided Oracle**（`oracle_source=source`）：`textbook_examples.correct_answer`、教材 `detailed_solution`、教師手冊／官方答案、有 provenance 的正式 answer artifact。
+
+**B. Verified Mathematical Oracle**（`oracle_source=domain_operation`）：學生版無答案時可用。必須全部滿足 Specification §10.5.1 十項條件（含 Exact Readiness、獨立 invariant／unit tests、generator 只呼叫不重寫、per-component validator、shared checker、20-seed consistency）。
+
+**嚴格禁止**：AI／LLM 現場解題、Agent 寫死答案、component-local formula、generator 重寫 domain math、checker 反推、20-seed PASS 本身、「程式跑得過所以答案應該對」。
+
+`generator implementation ≠ mathematical oracle authority`。同一 shared Domain operation 可供多題共用；仍維持一題一 component。
+
+`missing_ground_truth` 僅適用於系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失。一般學生版無答案不是錯誤。
+
+### 6.4 VERIFIED 充要條件
+
+$$\text{VERIFIED} = \text{Textbook Source Fidelity PASS} \land \text{Answer Oracle Gate PASS} \land \text{Exact Capability Readiness} \land \text{Executable Component} \land \text{Per-component Validator PASS} \land \text{Valid Answer Contract} \land \text{Shared Checker Validation PASS}$$
+
+不得因 `oracle_source=domain_operation` 而降低其他 Gate。  
+有 `correct_answer` / `detailed_solution` **不得**直接寫成 `VERIFIED`。
+
+### 6.5 Source Fidelity & Answer Oracle 矩陣
+
+本表必須與 Specification §10.6.1 一致。
+
+| 情境 | Source Fidelity | Oracle | 可否驗證 |
+| :--- | :--- | :--- | :--- |
+| 完整學生版題目，無答案，已有 verified domain oracle | PASS | domain oracle | YES |
+| 完整題目 + 官方答案 | PASS | source oracle | YES |
+| 題幹破損 | FAIL | 不論 | NO |
+| 缺關鍵圖片 | FAIL | 不論 | NO |
+| 題目完整但 operation 不存在 | PASS | unavailable | NO，進 capability growth |
+| AI 自算答案 | PASS | INVALID | NO |
+
+對應處置：Source Fidelity FAIL → 仍建立元件骨架，verified/package/publish = NO。Oracle unavailable → 進 Capability Growth。Oracle INVALID（AI 自算）→ 禁止 VERIFIED。Oracle ready 且其餘 Gate PASS → 可 VERIFIED，再入 wrapper / publish。
+
+以上 policy reason 不是 Current production tracker enum。標示：`[Gap: production alignment required]`。不得擅自新增 production enum。
 
 ---
 
@@ -405,7 +417,8 @@ AND `Shared Checker Validation PASS`
 
 | 項目 | Generator 應當做 (SHOULD) | Generator 嚴禁做 (MUST NOT) |
 | :--- | :--- | :--- |
-| **數學計算** | 呼叫 `core.domain.*` 函式傳入參數並接收結果 | 自行在 `generate.py` 內編寫幾何、三角、微積分計算 |
+| **數學計算** | 呼叫 `core.domain.*` 函式傳入參數並接收結果 | 自行在 `generate.py` 內編寫幾何、三角、微積分計算；自行定義該 capability 核心演算法後再當 Answer Oracle |
+| **答案權威** | 呼叫 shared Domain operation 或使用 source-provided oracle | 自己產生答案後再自己當驗證權威；以 20-seed PASS 冒充 Oracle |
 | **隨機抽樣** | 依據題型特徵隨機抽樣合理數字，設定 seed | 寫死單一固定數值，或允許產生分母為 0 等非法參數 |
 | **答案契約** | 填寫標準 `answer_contract` 與 `canonical_answer` | 自行實作本機 local grading authority 進行答案批改（僅允許純轉發至 shared checker 之相容 facade） |
 | **提示引導** | 在 `get_hint.py` 拆解兩步驟以上邏輯指引 | 提供完全無意義的空提示或直接洩漏完整答案 |
@@ -537,15 +550,18 @@ $$\text{answer\_contract} \longrightarrow \text{runtime dispatch} \longrightarro
   3. 共享評分器 `check_answer` 能夠正確接受 canonical 答案。
   4. 構造之錯誤答案（Wrong Answer）能被 100% 拒絕。
 - **不驗證什麼**：
-  - **不驗證題目與原教材是否一致**（這是教材來源證據的責任，非亂數產生的責任）。
+  - **不驗證題目與原教材是否一致**（這是 Textbook Source Fidelity 的責任，非亂數產生的責任）。
+  - **不充當 Answer Oracle**（20 seeds 驗證 implementation consistency，不是 Oracle 本身）。
 
 ### 11.2 VERIFIED 閘門查核清單 (Gate Checklist)
 在將 Component 標記為 `verified` 前，必須逐項滿足：
-- [ ] 具備可追溯且能支持 canonical answer 之教材來源證據（Hard Rule 3）。
+- [ ] Textbook Source Fidelity PASS（題幹／條件／資產完整；學生版無答案不構成 FAIL）。
+- [ ] Answer Oracle Gate PASS：`oracle_source=source` 或 `oracle_source=domain_operation`（後者須 Exact Ready + 獨立驗證；禁止 AI／generator 自算）。
+- [ ] Exact Capability Readiness PASS。
 - [ ] 呼叫共用 Domain operation，無重複 inline 數學邏輯（Hard Rule 4）。
 - [ ] 無自建之 local grading 實作；若有 `check()` 必須完全委託 shared checker（Hard Rule 6）。
-- [ ] 20 個 seed 連續生成成功且輸出符合規格。
-- [ ] Canonical 答案與 Domain 算子輸出完全一致。
+- [ ] 20 個 seed 連續生成成功且輸出符合規格（implementation consistency）。
+- [ ] Canonical 答案與 Oracle 輸出一致（source oracle 或 shared Domain operation）。
 - [ ] 共享 Checker 通過 Canonical 答案。
 - [ ] 構造至少 1 個錯誤答案，Checker 成功判定為錯。
 - [ ] 代表性等價格式（如括號差異、分數未約分等）能正確被判對。
@@ -568,13 +584,28 @@ discovered
   → published
 ```
 
-`blocked` / `missing_ground_truth` / `source_incomplete` / `source_corrupt` **不是** Current production tracker enum，也不是上列 lifecycle state。
+`blocked` / `missing_ground_truth` / `source_incomplete` / `source_corrupt` / `oracle_unavailable` / `oracle_not_ready` / `oracle_validation_failed` **不是** Current production tracker enum，也不是上列 lifecycle state。
 
 ### 12.2 [Policy Eligibility Side Condition]
 ```text
 [Policy Eligibility Side Condition]
 
-missing_ground_truth / source_incomplete / source_corrupt
+source_incomplete / source_corrupt
+  → Source Fidelity FAIL
+  → verified eligibility = NO
+  → package = NO
+  → publish = NO
+
+oracle_unavailable / oracle_not_ready / oracle_validation_failed
+  → Answer Oracle Gate FAIL（或未就緒）
+  → verified eligibility = NO
+  → package = NO
+  → publish = NO
+  → oracle_unavailable / oracle_not_ready 應進入 Capability Growth（非「學生版無答案」錯誤）
+
+missing_ground_truth
+  → 僅當系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失
+  → 不得用於一般學生版教材本來就沒有答案
   → verified eligibility = NO
   → package = NO
   → publish = NO
@@ -591,7 +622,7 @@ missing_ground_truth / source_incomplete / source_corrupt
 ### 12.3 Tracker Status 對齊規範
 1. SQLite shadow tracker 目前正式定義的 enum 狀態為：`pending`, `usable`, `generating`, `draft_written`, `smoke_passed`, `verified`, `needs_human_review`, `failed`, `unsupported_domain_operation`, `fixed_domain_violation`, `domain_operation_not_allowed`, `needs_regeneration`。
 2. **嚴禁在 Master SOP 中擅自新增 production enum**。
-3. **嚴禁在 Master SOP 中擅自將 `blocked` / `missing_ground_truth` 固定映射為另一生命週期狀態（例如 `needs_human_review`）**。`needs_human_review` / `ready_for_human_review` 在 PipelineFlow 中具備特定的生命週期語意（如 onboarding 或 capability promotion 前的人工審核），不得未經 production contract 證據就挪用作教材 ground truth 缺失。
+3. **嚴禁在 Master SOP 中擅自將 `blocked` / `missing_ground_truth` 固定映射為另一生命週期狀態（例如 `needs_human_review`）**。`needs_human_review` / `ready_for_human_review` 在 PipelineFlow 中具備特定的生命週期語意（如 onboarding 或 capability promotion 前的人工審核），不得未經 production contract 證據就挪用。一般學生版無答案不是 `missing_ground_truth`。
 4. 政策阻斷原因應保存於現有可用之 `metadata.py`（例如 `GENERATOR_READINESS` 與 `BLOCK_REASON` 等 policy 欄位）、generator payload extra 或 tracker 的 error log 欄位。此處 `"blocked"` 是 metadata policy tag，不是 tracker lifecycle enum。
 5. 若 production tracker 資料庫寫入時因 schema 約束強制需要某 Current status，必須依 production code 真實語意判定，並在文件與報告中清楚標明：
    `[Gap: production alignment required]`
@@ -686,9 +717,12 @@ def check(user_answer, correct_answer, **kwargs):
 | `DOMAIN_FUNCTION_MISSING` | Phase 2 | 數學能力層 | 進入 Capability 自動生長閉環，補充共用算子 |
 | `CAPABILITY_NOT_READY` | Phase 2 | 能力閘門層 | Exact Readiness Gate 未過，嚴禁 rebuild generator |
 | `EXECUTABLE_WORKSPACE_INCOMPLETE` | 生長閉環 | 程式實作層 | 阻斷 promotion，退回隔離實作環境重修 |
-| `missing_ground_truth` [Policy] | 來源查核 | 教材資料層 | [Policy Condition] verified/package/publish = NO，儲存 policy reason，排除於 wrapper 之外。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
-| `source_incomplete` [Policy] | 來源查核 | 教材資料層 | [Policy Condition] verified/package/publish = NO，記錄缺失資源，排除於 wrapper 之外。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
-| `source_corrupt` [Policy] | 來源查核 | 教材資料層 | [Policy Condition] verified/package/publish = NO，記錄毀損來源，排除於 wrapper 之外。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
+| `missing_ground_truth` [Policy] | Answer Oracle | 教材資料層 | **僅**當系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失。不得用於「學生版本來就沒有答案」。verified/package/publish = NO。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
+| `source_incomplete` [Policy] | Source Fidelity | 教材資料層 | 題幹／圖表／公式等來源資產不完整。verified/package/publish = NO。不是「無答案」。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
+| `source_corrupt` [Policy] | Source Fidelity | 教材資料層 | 來源解析損毀。verified/package/publish = NO。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
+| `oracle_unavailable` [Policy] | Answer Oracle | 能力／Oracle 層 | 無 source oracle，且尚無可解析之 shared Domain operation。進 Capability Growth。不得固定映射 `needs_human_review`。[Gap: production alignment required] |
+| `oracle_not_ready` [Policy] | Answer Oracle | 能力閘門層 | Domain operation 已識別但 Exact Readiness / Executable Workspace 未過。禁止 VERIFIED。進 Capability Growth。[Gap: production alignment required] |
+| `oracle_validation_failed` [Policy] | Answer Oracle | 單題驗證層 | Oracle 輸出未通過 per-component validator / checker / 20-seed consistency。verified/package/publish = NO。[Gap: production alignment required] |
 | `ANSWER_PARSE_FAILED` | Runtime | 輸入解析層 | 提示前端輸入格式錯誤，引導學生重新輸入 |
 | `CHECKER_EXECUTION_FAILED` | Runtime | 評分執行層 | 記錄嚴重系統異常記錄檔，拋出 HTTP 500 / 系統提示 |
 | `SAMPLING_EXHAUSTED` | Runtime | 參數抽樣層 | 抽樣超限拋棄，自動更換 seed 重試 |
@@ -702,8 +736,17 @@ def check(user_answer, correct_answer, **kwargs):
 ```text
 [出現錯誤或測試失敗]
        │
-       ├─ 是否為教材答案不存在或題幹破碎？
-       │     └─ 是 ──> 記錄 Policy Reason (missing_ground_truth / source_incomplete / source_corrupt)，停止 VERIFIED / package / publish，退出 Wrapper (Hard Rule 2, 3)
+       ├─ 題幹／資產是否破損或不完整？（Source Fidelity）
+       │     └─ 是 ──> 記錄 source_incomplete / source_corrupt，停止 VERIFIED / package / publish（Hard Rule 2, 3）
+       │
+       ├─ 學生版是否無答案？
+       │     ├─ 有 source-provided oracle ──> 繼續後續 Gate
+       │     └─ 無答案 ──> 查 shared Domain operation（不是 missing_ground_truth）
+       │           ├─ operation 不存在／未 ready ──> oracle_unavailable / oracle_not_ready，進 Capability 生長閉環
+       │           └─ Exact Ready 且獨立驗證通過 ──> Verified Mathematical Oracle，繼續後續 Gate
+       │
+       ├─ 是否以 AI／LLM／generator 自算充當 oracle？
+       │     └─ 是 ──> Oracle INVALID，停止 VERIFIED（Hard Rule 3）
        │
        ├─ 是否為缺少數學運算核心 (如三角換算、多項式乘除)？
        │     └─ 是 ──> 進入 Capability 生長閉環，修復/新增 core/domain/*.py (Hard Rule 4)
@@ -762,7 +805,7 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 - [ ] 無任何 per-example Domain Function，數學運算集中於 `core.domain`。
 - [ ] 各 Component 內部無重複 inline 複製貼上的 shared 數學邏輯。
 - [ ] Exact Capability Readiness 8 項條件全部檢查通過。
-- [ ] 標記 `VERIFIED` 之元件具備可靠教材答案證據（非 generator 自算、非 LLM 推導、非 20-seed 代替）。
+- [ ] 標記 `VERIFIED` 之元件：Source Fidelity PASS **且** Answer Oracle PASS（source 或 Exact-Ready domain operation）；非 generator 自算、非 LLM 推導、非 20-seed 代替 Oracle。
 - [ ] 所有 Component 均無自建之 local grading authority，評分全權走 `core.checkers`（相容 `check()` 僅能純轉發）。
 - [ ] 20 seeds 連續生成測試 100% 通過。
 - [ ] 至少 1 個代表性錯誤答案能被 Checker 100% 拒絕。
@@ -780,7 +823,7 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 1. **絕不使用「100% Published」作為封板標準**（破碎題目必須不得 verified / package / publish）。
 2. **所有教材例題皆已建立 Component**，且數量完全一致。
 3. **所有已發布（Published）之組件皆為 VERIFIED**。
-4. **所有未發布之組件皆具備明確政策資格歸因**（如 `missing_ground_truth`），且不得假裝已 verified。
+4. **所有未發布之組件皆具備明確政策資格歸因**（如 `source_incomplete` / `oracle_unavailable` / `oracle_not_ready`；`missing_ground_truth` 僅限 source answer 本應存在卻遺失），且不得假裝已 verified。
 5. **Domain Function 符合共用規範，Checker 完全符合四步流**。
 6. **Skills Wrapper 經 Runtime Smoke 驗證全數通過**。
 7. **本次 scope 內不得存在**：unresolved blocker、SOP violation、publish-breaking defect。已正式登錄於 KnownIssues、明確 deferred、且不影響本次 scope 的 technical debt：**不阻止本次 section / skill seal**。
@@ -790,12 +833,12 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 ## 21. Anti-Patterns (反模式與常見陷阱)
 
 在歷次開發與修復中總結出之重大禁忌：
-1. **「自算自嗨」反模式**：Generator 自己計算出解答，就將其填入作為 Ground Truth 證據並標記 VERIFIED。
-2. **「假性等價」反模式**：把 20-seed 生成無 crash 當作教材驗證通過。
+1. **「自算自嗨」反模式**：Generator 或 AI 自己計算出解答，就將其當作 Answer Oracle 並標記 VERIFIED。合法路徑是呼叫已驗證之 shared Domain operation，或使用 source-provided oracle。
+2. **「假性等價」反模式**：把 20-seed 生成無 crash 當作 Answer Oracle 或 VERIFIED。
 3. **「自立門戶」反模式**：在 `generate.py` 旁自建 local grading authority（自行以字串或正則比對），規避共用評分器。
 4. **「代碼搬運工」反模式**：因為禁建 per-example domain function，就將相同數學程式碼整段複製到各題 `generate.py`。
-5. **「因噎廢食」反模式**：因為教材原題缺少圖片或答案，就完全不替該例題建立 component 目錄。
-6. **「盲目衝高」反模式**：為了達到 100% 發布率，人為猜測填補教材答案。
+5. **「因噎廢食」反模式**：因為教材原題缺少圖片或答案，就完全不替該例題建立 component 目錄。學生版無答案仍須建 component；有 verified domain oracle 時仍可 VERIFIED。
+6. **「盲目衝高」反模式**：為了達到 100% 發布率，人為猜測填補教材答案，或以 AI 解題充當 oracle。
 7. **「大鍋炒」反模式**：看到同一個 capability 就把 3 道教材題硬塞在同一個 component 資料夾。
 
 ---
@@ -829,6 +872,9 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 | 5 種作答套餐 (Answer Type) | **`[Current]`** | short_answer, single_choice, multi_part, table_fill, drawing |
 | 數學等價四步評分流 | **`[Current]`** | safe parse → normalize → equivalence → required-form |
 | Exact Capability Readiness Gate | **`[Current]`** | 8 項條件未齊全嚴禁 rebuild |
+| Textbook Source Fidelity Gate | **`[Current]`** | 不要求學生版必須有答案；定義見 Specification §10.4 |
+| Answer Oracle Gate | **`[Current]`** | source oracle 或 Exact-Ready domain oracle；禁止 AI／generator 自算 |
+| 依「學生版無答案」自動禁止 VERIFIED | **`[Deprecated]`** | **已廢除**；Source Fidelity 與 Answer Oracle 彼此獨立 |
 | 獨立 Component Tracker DB | **`[Current]`** | SQLite 追蹤各題狀態 |
 | 宣告式變數二元約束引擎 (`ConstraintPolicy`) | `[Planned]` | 規劃於 M3 引進，現階段由 generator 內部抽樣控制 |
 | 強型別規格檢核驗證模型 (Pydantic / Dataclass) | `[Planned]` | 規劃於 M1 引進 |
@@ -844,12 +890,14 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 AI Agent 進入任務時，請直接依循此 10 步極速流程：
 
 1. **READ SOP**：精讀本手冊 §1 鐵律與 §18 回報契約。
-2. **INSPECT SOURCE**：查詢教材正式來源（DB `correct_answer`、`detailed_solution`、原書解答頁或核准 artifact）。
-3. **GROUND TRUTH GATE**：確認是否有可靠教材證據。無可靠證據 $\rightarrow$ 停止自動 VERIFIED / package / publish，保留 policy reason，停手不入 wrapper、不發布。是否人工審核依實際責任層與 Current production flow 決定；不得把 `missing_ground_truth` 固定映射到 `needs_human_review`。
-4. **DOMAIN CHECK**：檢查 `core/domain/*.py` 是否具備共用算子。若無 $\rightarrow$ 先擴充共用算子並單元測試。
-5. **BUILD COMPONENT**：建立獨立 `src_<id>`，撰寫 `generate.py`，配置標準 `answer_contract`。
+2. **SOURCE FIDELITY**：查核題幹、條件、圖片／表格／公式資產是否完整。學生版無 `correct_answer` / `detailed_solution` **不是** Source Fidelity FAIL。
+3. **ANSWER ORACLE RESOLUTION**：優先使用 source-provided oracle；否則查 shared Domain operation。若 capability 未 ready → Capability Growth。禁止 AI 自算充當 oracle。`missing_ground_truth` 不得用於一般學生版無答案。
+4. **DOMAIN CHECK**：檢查 `core/domain/*.py` 是否具備共用算子。若無 → 先擴充共用算子並單元測試。
+5. **BUILD COMPONENT**：建立獨立 `src_<id>`，撰寫 `generate.py`（只呼叫 oracle，不重寫 domain math），配置標準 `answer_contract`。
 6. **NO LOCAL GRADING**：移除本機自審 `check()`；若有 `check()` 僅能作為純轉發至 `check_answer` 之相容 facade。
-7. **RUN 20 SEEDS**：執行 20 種隨機 seed，驗證輸出與算子自洽，測試正解與錯解。
-8. **UPDATE TRACKER**：更新單題 tracker 紀錄（`verified` 或依 production 語意記錄 blocked 政策原因 `[Gap: production alignment required]`）。
+7. **RUN 20 SEEDS**：執行 20 種隨機 seed，驗證 implementation consistency（不是 Oracle 本身），測試正解與錯解。
+8. **UPDATE TRACKER**：更新單題 tracker 紀錄（`verified` 或依 production 語意記錄政策原因 `[Gap: production alignment required]`）。
+9. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
+10. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。
 9. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
 10. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。
