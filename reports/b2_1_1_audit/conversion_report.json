@@ -1,0 +1,3383 @@
+{
+  "source": "textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.docx",
+  "output": "reports\\b2_1_1_audit\\B2_1_1_Latex.docx",
+  "original_unchanged": true,
+  "mathtype_ole": 142,
+  "equation_native_ok": 142,
+  "converted_ok": 142,
+  "converted_failed": 0,
+  "eq_fields": 5,
+  "eq_converted_ok": 5,
+  "formulas": [
+    {
+      "formula_index": 1,
+      "relationship_id": "rId11",
+      "embedding_path": "word/embeddings/oleObject1.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 2,
+      "relationship_id": "rId13",
+      "embedding_path": "word/embeddings/oleObject2.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 3,
+      "relationship_id": "rId15",
+      "embedding_path": "word/embeddings/oleObject3.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OB }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OB }}  $"
+      }
+    },
+    {
+      "formula_index": 4,
+      "relationship_id": "rId17",
+      "embedding_path": "word/embeddings/oleObject4.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\angle AOB\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\angle AOB $"
+      }
+    },
+    {
+      "formula_index": 5,
+      "relationship_id": "rId19",
+      "embedding_path": "word/embeddings/oleObject5.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 13,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 6,
+      "relationship_id": "rId21",
+      "embedding_path": "word/embeddings/oleObject6.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 15,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\angle AOB\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\angle AOB $"
+      }
+    },
+    {
+      "formula_index": 7,
+      "relationship_id": "rId23",
+      "embedding_path": "word/embeddings/oleObject7.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 19,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OB }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OB }}  $"
+      }
+    },
+    {
+      "formula_index": 8,
+      "relationship_id": "rId25",
+      "embedding_path": "word/embeddings/oleObject8.bin",
+      "location": {
+        "block_index": 5,
+        "paragraph_index": 5,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 21,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\angle AOB\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\angle AOB $"
+      }
+    },
+    {
+      "formula_index": 9,
+      "relationship_id": "rId27",
+      "embedding_path": "word/embeddings/oleObject9.bin",
+      "location": {
+        "block_index": 6,
+        "paragraph_index": 6,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 10,
+      "relationship_id": "rId29",
+      "embedding_path": "word/embeddings/oleObject10.bin",
+      "location": {
+        "block_index": 6,
+        "paragraph_index": 6,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 8,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(+60{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ +60{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 11,
+      "relationship_id": "rId31",
+      "embedding_path": "word/embeddings/oleObject11.bin",
+      "location": {
+        "block_index": 7,
+        "paragraph_index": 7,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 12,
+      "relationship_id": "rId33",
+      "embedding_path": "word/embeddings/oleObject12.bin",
+      "location": {
+        "block_index": 7,
+        "paragraph_index": 7,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 10,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-60{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ -60{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 13,
+      "relationship_id": "rId39",
+      "embedding_path": "word/embeddings/oleObject13.bin",
+      "location": {
+        "block_index": 11,
+        "paragraph_index": 11,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({\\overline{ OA }}\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$  {\\overline{ OA }}  $"
+      }
+    },
+    {
+      "formula_index": 14,
+      "relationship_id": "rId42",
+      "embedding_path": "word/embeddings/oleObject14.bin",
+      "location": {
+        "block_index": 22,
+        "paragraph_index": 24,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta  $"
+      }
+    },
+    {
+      "formula_index": 15,
+      "relationship_id": "rId44",
+      "embedding_path": "word/embeddings/oleObject15.bin",
+      "location": {
+        "block_index": 25,
+        "paragraph_index": 28,
+        "table_index": 2,
+        "row": 1,
+        "col": 0,
+        "run_index": 1,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\frac { 2\\pi r } { r }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ =\\frac { 2\\pi r } { r } $"
+      }
+    },
+    {
+      "formula_index": 16,
+      "relationship_id": "rId46",
+      "embedding_path": "word/embeddings/oleObject16.bin",
+      "location": {
+        "block_index": 25,
+        "paragraph_index": 28,
+        "table_index": 2,
+        "row": 1,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=2\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ =2\\pi  $"
+      }
+    },
+    {
+      "formula_index": 17,
+      "relationship_id": "rId48",
+      "embedding_path": "word/embeddings/oleObject17.bin",
+      "location": {
+        "block_index": 28,
+        "paragraph_index": 31,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 2\\pi  $"
+      }
+    },
+    {
+      "formula_index": 18,
+      "relationship_id": "rId50",
+      "embedding_path": "word/embeddings/oleObject18.bin",
+      "location": {
+        "block_index": 28,
+        "paragraph_index": 31,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2\\pi =360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ 2\\pi =360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 19,
+      "relationship_id": "rId52",
+      "embedding_path": "word/embeddings/oleObject19.bin",
+      "location": {
+        "block_index": 28,
+        "paragraph_index": 31,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 11,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi =180{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi =180{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 20,
+      "relationship_id": "rId54",
+      "embedding_path": "word/embeddings/oleObject20.bin",
+      "location": {
+        "block_index": 29,
+        "paragraph_index": 32,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1{}^\\circ =\\frac { 2\\pi } { 360 }=\\frac { \\pi } { 180 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1{}^\\circ =\\frac { 2\\pi  } { 360 }=\\frac { \\pi  } { 180 } $"
+      }
+    },
+    {
+      "formula_index": 21,
+      "relationship_id": "rId56",
+      "embedding_path": "word/embeddings/oleObject21.bin",
+      "location": {
+        "block_index": 29,
+        "paragraph_index": 32,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\frac { 180{}^\\circ } { \\pi }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ =\\frac { 180{}^\\circ  } { \\pi  } $"
+      }
+    },
+    {
+      "formula_index": 22,
+      "relationship_id": "rId58",
+      "embedding_path": "word/embeddings/oleObject22.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 48,
+        "table_index": 3,
+        "row": 1,
+        "col": 2,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 23,
+      "relationship_id": "rId60",
+      "embedding_path": "word/embeddings/oleObject23.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 49,
+        "table_index": 3,
+        "row": 1,
+        "col": 3,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 24,
+      "relationship_id": "rId62",
+      "embedding_path": "word/embeddings/oleObject24.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 50,
+        "table_index": 3,
+        "row": 1,
+        "col": 4,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 3 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 3 } $"
+      }
+    },
+    {
+      "formula_index": 25,
+      "relationship_id": "rId64",
+      "embedding_path": "word/embeddings/oleObject25.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 51,
+        "table_index": 3,
+        "row": 1,
+        "col": 5,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 2 } $"
+      }
+    },
+    {
+      "formula_index": 26,
+      "relationship_id": "rId66",
+      "embedding_path": "word/embeddings/oleObject26.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 52,
+        "table_index": 3,
+        "row": 1,
+        "col": 6,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 2\\pi } { 3 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 2\\pi  } { 3 } $"
+      }
+    },
+    {
+      "formula_index": 27,
+      "relationship_id": "rId68",
+      "embedding_path": "word/embeddings/oleObject27.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 53,
+        "table_index": 3,
+        "row": 1,
+        "col": 7,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 3\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 3\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 28,
+      "relationship_id": "rId70",
+      "embedding_path": "word/embeddings/oleObject28.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 54,
+        "table_index": 3,
+        "row": 1,
+        "col": 8,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 5\\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 5\\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 29,
+      "relationship_id": "rId72",
+      "embedding_path": "word/embeddings/oleObject29.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 55,
+        "table_index": 3,
+        "row": 1,
+        "col": 9,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi  $"
+      }
+    },
+    {
+      "formula_index": 30,
+      "relationship_id": "rId74",
+      "embedding_path": "word/embeddings/oleObject30.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 56,
+        "table_index": 3,
+        "row": 1,
+        "col": 10,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 3\\pi } { 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 3\\pi  } { 2 } $"
+      }
+    },
+    {
+      "formula_index": 31,
+      "relationship_id": "rId76",
+      "embedding_path": "word/embeddings/oleObject31.bin",
+      "location": {
+        "block_index": 31,
+        "paragraph_index": 57,
+        "table_index": 3,
+        "row": 1,
+        "col": 11,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 2\\pi  $"
+      }
+    },
+    {
+      "formula_index": 32,
+      "relationship_id": "rId78",
+      "embedding_path": "word/embeddings/oleObject32.bin",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 61,
+        "table_index": 4,
+        "row": 0,
+        "col": 0,
+        "run_index": 4,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 5 } { 3 }\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 5 } { 3 }\\pi  $"
+      }
+    },
+    {
+      "formula_index": 33,
+      "relationship_id": "rId80",
+      "embedding_path": "word/embeddings/oleObject33.bin",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 62,
+        "table_index": 4,
+        "row": 1,
+        "col": 0,
+        "run_index": 10,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi =180{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi =180{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 34,
+      "relationship_id": "rId82",
+      "embedding_path": "word/embeddings/oleObject34.bin",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 62,
+        "table_index": 4,
+        "row": 1,
+        "col": 0,
+        "run_index": 12,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1{}^\\circ =\\frac { \\pi } { 180 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1{}^\\circ =\\frac { \\pi  } { 180 } $"
+      }
+    },
+    {
+      "formula_index": 35,
+      "relationship_id": "rId84",
+      "embedding_path": "word/embeddings/oleObject35.bin",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 62,
+        "table_index": 4,
+        "row": 1,
+        "col": 0,
+        "run_index": 15,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(135{}^\\circ =135\\times 1{}^\\circ =135\\times \\frac { \\pi } { 180 }=\\frac { 3\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 135{}^\\circ =135\\times 1{}^\\circ =135\\times \\frac { \\pi  } { 180 }=\\frac { 3\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 36,
+      "relationship_id": "rId86",
+      "embedding_path": "word/embeddings/oleObject36.bin",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 62,
+        "table_index": 4,
+        "row": 1,
+        "col": 0,
+        "run_index": 18,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 5 } { 3 }\\pi =-\\frac { 5 } { 3 }\\times 180{}^\\circ =-300{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 5 } { 3 }\\pi =-\\frac { 5 } { 3 }\\times 180{}^\\circ =-300{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 37,
+      "relationship_id": "rId88",
+      "embedding_path": "word/embeddings/oleObject37.bin",
+      "location": {
+        "block_index": 35,
+        "paragraph_index": 65,
+        "table_index": 5,
+        "row": 0,
+        "col": 0,
+        "run_index": 4,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-570{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -570{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 38,
+      "relationship_id": "rId90",
+      "embedding_path": "word/embeddings/oleObject38.bin",
+      "location": {
+        "block_index": 35,
+        "paragraph_index": 65,
+        "table_index": 5,
+        "row": 0,
+        "col": 0,
+        "run_index": 9,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 5 } { 6 }\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 5 } { 6 }\\pi  $"
+      }
+    },
+    {
+      "formula_index": 39,
+      "relationship_id": "rId92",
+      "embedding_path": "word/embeddings/oleObject39.bin",
+      "location": {
+        "block_index": 37,
+        "paragraph_index": 69,
+        "table_index": 6,
+        "row": 1,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi \\left ( { 5 } \\right ) ^ { 2 } =25\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi \\left ( { 5 } \\right ) ^ { 2 } =25\\pi  $"
+      }
+    },
+    {
+      "formula_index": 40,
+      "relationship_id": "rId94",
+      "embedding_path": "word/embeddings/oleObject40.bin",
+      "location": {
+        "block_index": 37,
+        "paragraph_index": 70,
+        "table_index": 6,
+        "row": 1,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi \\left ( { 3 } \\right ) ^ { 2 } =9\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi \\left ( { 3 } \\right ) ^ { 2 } =9\\pi  $"
+      }
+    },
+    {
+      "formula_index": 41,
+      "relationship_id": "rId97",
+      "embedding_path": "word/embeddings/oleObject41.bin",
+      "location": {
+        "block_index": 40,
+        "paragraph_index": 74,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 6,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta  $"
+      }
+    },
+    {
+      "formula_index": 42,
+      "relationship_id": "rId99",
+      "embedding_path": "word/embeddings/oleObject42.bin",
+      "location": {
+        "block_index": 41,
+        "paragraph_index": 75,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 0,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta =\\frac { S } { r }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta =\\frac { S } { r } $"
+      }
+    },
+    {
+      "formula_index": 43,
+      "relationship_id": "rId101",
+      "embedding_path": "word/embeddings/oleObject43.bin",
+      "location": {
+        "block_index": 41,
+        "paragraph_index": 75,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 2,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(S=r\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ S=r\\theta  $"
+      }
+    },
+    {
+      "formula_index": 44,
+      "relationship_id": "rId103",
+      "embedding_path": "word/embeddings/oleObject44.bin",
+      "location": {
+        "block_index": 43,
+        "paragraph_index": 77,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 0,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { A } { \\pi r ^ { 2 } }=\\frac { \\theta } { 2\\pi }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ \\frac { A } { \\pi r ^ { 2 }  }=\\frac { \\theta  } { 2\\pi  } $"
+      }
+    },
+    {
+      "formula_index": 45,
+      "relationship_id": "rId105",
+      "embedding_path": "word/embeddings/oleObject45.bin",
+      "location": {
+        "block_index": 43,
+        "paragraph_index": 77,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 2,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }r\\left ( { r\\theta } \\right )=\\frac { 1 } { 2 }rS\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }r\\left ( { r\\theta  } \\right )=\\frac { 1 } { 2 }rS $"
+      }
+    },
+    {
+      "formula_index": 46,
+      "relationship_id": "rId106",
+      "embedding_path": "word/embeddings/oleObject46.bin",
+      "location": {
+        "block_index": 46,
+        "paragraph_index": 81,
+        "table_index": 7,
+        "row": 1,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta  $"
+      }
+    },
+    {
+      "formula_index": 47,
+      "relationship_id": "rId108",
+      "embedding_path": "word/embeddings/oleObject47.bin",
+      "location": {
+        "block_index": 46,
+        "paragraph_index": 82,
+        "table_index": 7,
+        "row": 1,
+        "col": 0,
+        "run_index": 1,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(S=r\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ S=r\\theta  $"
+      }
+    },
+    {
+      "formula_index": 48,
+      "relationship_id": "rId110",
+      "embedding_path": "word/embeddings/oleObject48.bin",
+      "location": {
+        "block_index": 46,
+        "paragraph_index": 82,
+        "table_index": 7,
+        "row": 1,
+        "col": 0,
+        "run_index": 4,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }rS\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }rS $"
+      }
+    },
+    {
+      "formula_index": 49,
+      "relationship_id": "rId113",
+      "embedding_path": "word/embeddings/oleObject49.bin",
+      "location": {
+        "block_index": 48,
+        "paragraph_index": 88,
+        "table_index": 8,
+        "row": 1,
+        "col": 0,
+        "run_index": 10,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 360{}^\\circ } { 8 }=45{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 360{}^\\circ  } { 8 }=45{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 50,
+      "relationship_id": "rId116",
+      "embedding_path": "word/embeddings/oleObject50.bin",
+      "location": {
+        "block_index": 48,
+        "paragraph_index": 88,
+        "table_index": 8,
+        "row": 1,
+        "col": 0,
+        "run_index": 15,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta =45{}^\\circ =45\\times \\frac { \\pi } { 180 }=\\frac { \\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta =45{}^\\circ =45\\times \\frac { \\pi  } { 180 }=\\frac { \\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 51,
+      "relationship_id": "rId118",
+      "embedding_path": "word/embeddings/oleObject51.bin",
+      "location": {
+        "block_index": 48,
+        "paragraph_index": 88,
+        "table_index": 8,
+        "row": 1,
+        "col": 0,
+        "run_index": 19,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }\\times 16 ^ { 2 } \\times \\frac { \\pi } { 4 }=32\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }\\times 16 ^ { 2 } \\times \\frac { \\pi  } { 4 }=32\\pi  $"
+      }
+    },
+    {
+      "formula_index": 52,
+      "relationship_id": "rId120",
+      "embedding_path": "word/embeddings/oleObject52.bin",
+      "location": {
+        "block_index": 48,
+        "paragraph_index": 88,
+        "table_index": 8,
+        "row": 1,
+        "col": 0,
+        "run_index": 24,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(S=r\\theta =16\\times \\frac { \\pi } { 4 }=4\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ S=r\\theta =16\\times \\frac { \\pi  } { 4 }=4\\pi  $"
+      }
+    },
+    {
+      "formula_index": 53,
+      "relationship_id": "rId125",
+      "embedding_path": "word/embeddings/oleObject53.bin",
+      "location": {
+        "block_index": 53,
+        "paragraph_index": 96,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({ \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ { \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 54,
+      "relationship_id": "rId127",
+      "embedding_path": "word/embeddings/oleObject54.bin",
+      "location": {
+        "block_index": 59,
+        "paragraph_index": 102,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\({ \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ =\\frac { 110 } { 180 }\\pi =\\frac { 11 } { 18 }\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ { \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ =\\frac { 110 } { 180 }\\pi =\\frac { 11 } { 18 }\\pi  $"
+      }
+    },
+    {
+      "formula_index": 55,
+      "relationship_id": "rId129",
+      "embedding_path": "word/embeddings/oleObject55.bin",
+      "location": {
+        "block_index": 60,
+        "paragraph_index": 103,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 2,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1\\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 18 }\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1\\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 18 }\\pi  $"
+      }
+    },
+    {
+      "formula_index": 56,
+      "relationship_id": "rId131",
+      "embedding_path": "word/embeddings/oleObject56.bin",
+      "location": {
+        "block_index": 61,
+        "paragraph_index": 104,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 1 } { 2 }\\times 1 ^ { 2 } \\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 36 }\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 1 } { 2 }\\times 1 ^ { 2 } \\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 36 }\\pi  $"
+      }
+    },
+    {
+      "formula_index": 57,
+      "relationship_id": "rId134",
+      "embedding_path": "word/embeddings/oleObject57.bin",
+      "location": {
+        "block_index": 65,
+        "paragraph_index": 108,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 60{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 58,
+      "relationship_id": "rId136",
+      "embedding_path": "word/embeddings/oleObject58.bin",
+      "location": {
+        "block_index": 65,
+        "paragraph_index": 108,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 11,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(420{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 420{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 59,
+      "relationship_id": "rId138",
+      "embedding_path": "word/embeddings/oleObject59.bin",
+      "location": {
+        "block_index": 65,
+        "paragraph_index": 108,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 13,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 60{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 60,
+      "relationship_id": "rId140",
+      "embedding_path": "word/embeddings/oleObject60.bin",
+      "location": {
+        "block_index": 65,
+        "paragraph_index": 108,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 15,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(780{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 780{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 61,
+      "relationship_id": "rId142",
+      "embedding_path": "word/embeddings/oleObject61.bin",
+      "location": {
+        "block_index": 65,
+        "paragraph_index": 108,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 17,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-300{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -300{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 62,
+      "relationship_id": "rId144",
+      "embedding_path": "word/embeddings/oleObject62.bin",
+      "location": {
+        "block_index": 66,
+        "paragraph_index": 109,
+        "table_index": 9,
+        "row": 0,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ +360{}^\\circ \\times 1=420{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ 60{}^\\circ +360{}^\\circ \\times 1=420{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 63,
+      "relationship_id": "rId146",
+      "embedding_path": "word/embeddings/oleObject63.bin",
+      "location": {
+        "block_index": 66,
+        "paragraph_index": 110,
+        "table_index": 9,
+        "row": 0,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ +360{}^\\circ \\times 2=780{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 60{}^\\circ +360{}^\\circ \\times 2=780{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 64,
+      "relationship_id": "rId148",
+      "embedding_path": "word/embeddings/oleObject64.bin",
+      "location": {
+        "block_index": 66,
+        "paragraph_index": 111,
+        "table_index": 9,
+        "row": 0,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ +360{}^\\circ \\times \\left ( { -1 } \\right )=-300{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 60{}^\\circ +360{}^\\circ \\times \\left ( { -1 } \\right )=-300{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 65,
+      "relationship_id": "rId151",
+      "embedding_path": "word/embeddings/oleObject65.bin",
+      "location": {
+        "block_index": 67,
+        "paragraph_index": 114,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 1 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 1 }   $"
+      }
+    },
+    {
+      "formula_index": 66,
+      "relationship_id": "rId153",
+      "embedding_path": "word/embeddings/oleObject66.bin",
+      "location": {
+        "block_index": 67,
+        "paragraph_index": 114,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 2 }   $"
+      }
+    },
+    {
+      "formula_index": 67,
+      "relationship_id": "rId155",
+      "embedding_path": "word/embeddings/oleObject67.bin",
+      "location": {
+        "block_index": 67,
+        "paragraph_index": 114,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 68,
+      "relationship_id": "rId157",
+      "embedding_path": "word/embeddings/oleObject68.bin",
+      "location": {
+        "block_index": 67,
+        "paragraph_index": 114,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 1 } -\\theta _{ 2 } =360{}^\\circ \\times n\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 1 }  -\\theta _{ 2 }  =360{}^\\circ \\times n $"
+      }
+    },
+    {
+      "formula_index": 69,
+      "relationship_id": "rId159",
+      "embedding_path": "word/embeddings/oleObject69.bin",
+      "location": {
+        "block_index": 68,
+        "paragraph_index": 115,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(420{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 420{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 70,
+      "relationship_id": "rId161",
+      "embedding_path": "word/embeddings/oleObject70.bin",
+      "location": {
+        "block_index": 68,
+        "paragraph_index": 115,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(420{}^\\circ +360{}^\\circ \\times n\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 420{}^\\circ +360{}^\\circ \\times n $"
+      }
+    },
+    {
+      "formula_index": 71,
+      "relationship_id": "rId164",
+      "embedding_path": "word/embeddings/oleObject71.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 1,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta  $"
+      }
+    },
+    {
+      "formula_index": 72,
+      "relationship_id": "rId166",
+      "embedding_path": "word/embeddings/oleObject72.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 73,
+      "relationship_id": "rId168",
+      "embedding_path": "word/embeddings/oleObject73.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 5,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta  $"
+      }
+    },
+    {
+      "formula_index": 74,
+      "relationship_id": "rId170",
+      "embedding_path": "word/embeddings/oleObject74.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(0{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 0{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 75,
+      "relationship_id": "rId172",
+      "embedding_path": "word/embeddings/oleObject75.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 18,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ = $"
+      }
+    },
+    {
+      "formula_index": 76,
+      "relationship_id": "rId174",
+      "embedding_path": "word/embeddings/oleObject76.bin",
+      "location": {
+        "block_index": 71,
+        "paragraph_index": 118,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 20,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 77,
+      "relationship_id": "rId177",
+      "embedding_path": "word/embeddings/oleObject77.bin",
+      "location": {
+        "block_index": 76,
+        "paragraph_index": 124,
+        "table_index": 10,
+        "row": 1,
+        "col": 0,
+        "run_index": 1,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 1 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 1 }   $"
+      }
+    },
+    {
+      "formula_index": 78,
+      "relationship_id": "rId179",
+      "embedding_path": "word/embeddings/oleObject78.bin",
+      "location": {
+        "block_index": 76,
+        "paragraph_index": 124,
+        "table_index": 10,
+        "row": 1,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 2 }   $"
+      }
+    },
+    {
+      "formula_index": 79,
+      "relationship_id": "rId181",
+      "embedding_path": "word/embeddings/oleObject79.bin",
+      "location": {
+        "block_index": 76,
+        "paragraph_index": 124,
+        "table_index": 10,
+        "row": 1,
+        "col": 0,
+        "run_index": 5,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 1 } -\\theta _{ 2 } =360{}^\\circ \\times n\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 1 }  -\\theta _{ 2 }  =360{}^\\circ \\times n $"
+      }
+    },
+    {
+      "formula_index": 80,
+      "relationship_id": "rId183",
+      "embedding_path": "word/embeddings/oleObject80.bin",
+      "location": {
+        "block_index": 76,
+        "paragraph_index": 124,
+        "table_index": 10,
+        "row": 1,
+        "col": 0,
+        "run_index": 7,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\theta _{ 1 } -\\theta _{ 2 } =2\\pi n\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\theta _{ 1 }  -\\theta _{ 2 }  =2\\pi n $"
+      }
+    },
+    {
+      "formula_index": 81,
+      "relationship_id": "rId185",
+      "embedding_path": "word/embeddings/oleObject81.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 127,
+        "table_index": 11,
+        "row": 0,
+        "col": 0,
+        "run_index": 2,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(50{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 50{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 82,
+      "relationship_id": "rId187",
+      "embedding_path": "word/embeddings/oleObject82.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 128,
+        "table_index": 11,
+        "row": 0,
+        "col": 0,
+        "run_index": 3,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-310{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -310{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 83,
+      "relationship_id": "rId189",
+      "embedding_path": "word/embeddings/oleObject83.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 128,
+        "table_index": 11,
+        "row": 0,
+        "col": 0,
+        "run_index": 8,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(770{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 770{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 84,
+      "relationship_id": "rId191",
+      "embedding_path": "word/embeddings/oleObject84.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 128,
+        "table_index": 11,
+        "row": 0,
+        "col": 0,
+        "run_index": 13,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1250{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1250{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 85,
+      "relationship_id": "rId193",
+      "embedding_path": "word/embeddings/oleObject85.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 129,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 13,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-310{}^\\circ -50{}^\\circ =-360{}^\\circ =360{}^\\circ \\times \\left ( { -1 } \\right )\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -310{}^\\circ -50{}^\\circ =-360{}^\\circ =360{}^\\circ \\times \\left ( { -1 } \\right ) $"
+      }
+    },
+    {
+      "formula_index": 86,
+      "relationship_id": "rId195",
+      "embedding_path": "word/embeddings/oleObject86.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 129,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 17,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-310{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -310{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 87,
+      "relationship_id": "rId197",
+      "embedding_path": "word/embeddings/oleObject87.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 129,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 19,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(50{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 50{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 88,
+      "relationship_id": "rId199",
+      "embedding_path": "word/embeddings/oleObject88.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 130,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 4,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(770{}^\\circ -50{}^\\circ =720{}^\\circ =360{}^\\circ \\times 2\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ 770{}^\\circ -50{}^\\circ =720{}^\\circ =360{}^\\circ \\times 2 $"
+      }
+    },
+    {
+      "formula_index": 89,
+      "relationship_id": "rId201",
+      "embedding_path": "word/embeddings/oleObject89.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 130,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 7,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(770{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 770{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 90,
+      "relationship_id": "rId203",
+      "embedding_path": "word/embeddings/oleObject90.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 130,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 9,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(50{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 50{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 91,
+      "relationship_id": "rId206",
+      "embedding_path": "word/embeddings/oleObject91.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 131,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 5,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1250{}^\\circ -50{}^\\circ =1200{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1250{}^\\circ -50{}^\\circ =1200{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 92,
+      "relationship_id": "rId208",
+      "embedding_path": "word/embeddings/oleObject92.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 131,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 7,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 93,
+      "relationship_id": "rId210",
+      "embedding_path": "word/embeddings/oleObject93.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 131,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 11,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1250{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1250{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 94,
+      "relationship_id": "rId212",
+      "embedding_path": "word/embeddings/oleObject94.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 131,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 13,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(50{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 50{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 95,
+      "relationship_id": "rId214",
+      "embedding_path": "word/embeddings/oleObject95.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 134,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 4,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 96,
+      "relationship_id": "rId216",
+      "embedding_path": "word/embeddings/oleObject96.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 134,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 8,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 5\\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 5\\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 97,
+      "relationship_id": "rId218",
+      "embedding_path": "word/embeddings/oleObject97.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 134,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 11,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 5\\pi } { 3 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 5\\pi  } { 3 } $"
+      }
+    },
+    {
+      "formula_index": 98,
+      "relationship_id": "rId220",
+      "embedding_path": "word/embeddings/oleObject98.bin",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 134,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 14,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 73\\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 73\\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 99,
+      "relationship_id": "rId222",
+      "embedding_path": "word/embeddings/oleObject99.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 141,
+        "table_index": 12,
+        "row": 0,
+        "col": 0,
+        "run_index": 5,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1350{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ 1350{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 100,
+      "relationship_id": "rId224",
+      "embedding_path": "word/embeddings/oleObject100.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 141,
+        "table_index": 12,
+        "row": 0,
+        "col": 0,
+        "run_index": 10,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-1100{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -1100{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 101,
+      "relationship_id": "rId226",
+      "embedding_path": "word/embeddings/oleObject101.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 141,
+        "table_index": 12,
+        "row": 0,
+        "col": 0,
+        "run_index": 15,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 21\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 21\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 102,
+      "relationship_id": "rId228",
+      "embedding_path": "word/embeddings/oleObject102.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2\\pi =360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 2\\pi =360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 103,
+      "relationship_id": "rId230",
+      "embedding_path": "word/embeddings/oleObject103.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ = $"
+      }
+    },
+    {
+      "formula_index": 104,
+      "relationship_id": "rId232",
+      "embedding_path": "word/embeddings/oleObject104.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ -360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 105,
+      "relationship_id": "rId234",
+      "embedding_path": "word/embeddings/oleObject105.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ = $"
+      }
+    },
+    {
+      "formula_index": 106,
+      "relationship_id": "rId236",
+      "embedding_path": "word/embeddings/oleObject106.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(+360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ +360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 107,
+      "relationship_id": "rId237",
+      "embedding_path": "word/embeddings/oleObject107.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2\\pi =360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 2\\pi =360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 108,
+      "relationship_id": "rId238",
+      "embedding_path": "word/embeddings/oleObject108.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ = $"
+      }
+    },
+    {
+      "formula_index": 109,
+      "relationship_id": "rId239",
+      "embedding_path": "word/embeddings/oleObject109.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ -360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 110,
+      "relationship_id": "rId240",
+      "embedding_path": "word/embeddings/oleObject110.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ = $"
+      }
+    },
+    {
+      "formula_index": 111,
+      "relationship_id": "rId241",
+      "embedding_path": "word/embeddings/oleObject111.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(+360{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ +360{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 112,
+      "relationship_id": "rId243",
+      "embedding_path": "word/embeddings/oleObject112.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 12,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 113,
+      "relationship_id": "rId245",
+      "embedding_path": "word/embeddings/oleObject113.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 22,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(270{}^\\circ -360{}^\\circ =-90{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 270{}^\\circ -360{}^\\circ =-90{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 114,
+      "relationship_id": "rId247",
+      "embedding_path": "word/embeddings/oleObject114.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 143,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 2,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ -1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 115,
+      "relationship_id": "rId249",
+      "embedding_path": "word/embeddings/oleObject115.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 143,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 5,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-20{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -20{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 116,
+      "relationship_id": "rId251",
+      "embedding_path": "word/embeddings/oleObject116.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 143,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 8,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-20{}^\\circ +360{}^\\circ =340{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -20{}^\\circ +360{}^\\circ =340{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 117,
+      "relationship_id": "rId253",
+      "embedding_path": "word/embeddings/oleObject117.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 144,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 2,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 21\\pi } { 4 }=-4\\pi -\\frac { 5\\pi } { 4 }=2\\pi \\times \\left ( { -2 } \\right )-\\frac { 5\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 21\\pi  } { 4 }=-4\\pi -\\frac { 5\\pi  } { 4 }=2\\pi \\times \\left ( { -2 } \\right )-\\frac { 5\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 118,
+      "relationship_id": "rId255",
+      "embedding_path": "word/embeddings/oleObject118.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 144,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 5,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 5\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 5\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 119,
+      "relationship_id": "rId257",
+      "embedding_path": "word/embeddings/oleObject119.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 144,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 8,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 5\\pi } { 4 }+2\\pi =\\frac { 3\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ -\\frac { 5\\pi  } { 4 }+2\\pi =\\frac { 3\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 120,
+      "relationship_id": "rId259",
+      "embedding_path": "word/embeddings/oleObject120.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 147,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 8,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(750{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 750{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 121,
+      "relationship_id": "rId261",
+      "embedding_path": "word/embeddings/oleObject121.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 147,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 13,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-1030{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -1030{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 122,
+      "relationship_id": "rId263",
+      "embedding_path": "word/embeddings/oleObject122.bin",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 147,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 18,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 23\\pi } { 5 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 0,
+        "raw_latex": "$ \\frac { 23\\pi  } { 5 } $"
+      }
+    },
+    {
+      "formula_index": 123,
+      "relationship_id": "rId266",
+      "embedding_path": "word/embeddings/oleObject123.bin",
+      "location": {
+        "block_index": 85,
+        "paragraph_index": 160,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(2019{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 2019{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 124,
+      "relationship_id": "rId268",
+      "embedding_path": "word/embeddings/oleObject124.bin",
+      "location": {
+        "block_index": 93,
+        "paragraph_index": 168,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 8,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(6{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 6{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 125,
+      "relationship_id": "rId269",
+      "embedding_path": "word/embeddings/oleObject125.bin",
+      "location": {
+        "block_index": 103,
+        "paragraph_index": 192,
+        "table_index": 13,
+        "row": 1,
+        "col": 2,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 6 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 6 } $"
+      }
+    },
+    {
+      "formula_index": 126,
+      "relationship_id": "rId270",
+      "embedding_path": "word/embeddings/oleObject126.bin",
+      "location": {
+        "block_index": 103,
+        "paragraph_index": 195,
+        "table_index": 13,
+        "row": 1,
+        "col": 5,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { \\pi } { 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { \\pi  } { 2 } $"
+      }
+    },
+    {
+      "formula_index": 127,
+      "relationship_id": "rId271",
+      "embedding_path": "word/embeddings/oleObject127.bin",
+      "location": {
+        "block_index": 103,
+        "paragraph_index": 199,
+        "table_index": 13,
+        "row": 1,
+        "col": 9,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\pi\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\pi  $"
+      }
+    },
+    {
+      "formula_index": 128,
+      "relationship_id": "rId272",
+      "embedding_path": "word/embeddings/oleObject128.bin",
+      "location": {
+        "block_index": 103,
+        "paragraph_index": 200,
+        "table_index": 13,
+        "row": 1,
+        "col": 10,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 3\\pi } { 2 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 3\\pi  } { 2 } $"
+      }
+    },
+    {
+      "formula_index": 129,
+      "relationship_id": "rId274",
+      "embedding_path": "word/embeddings/oleObject129.bin",
+      "location": {
+        "block_index": 105,
+        "paragraph_index": 203,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(450{}^\\circ =\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 450{}^\\circ = $"
+      }
+    },
+    {
+      "formula_index": 130,
+      "relationship_id": "rId276",
+      "embedding_path": "word/embeddings/oleObject130.bin",
+      "location": {
+        "block_index": 105,
+        "paragraph_index": 203,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 13,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(560{}^\\circ =\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 560{}^\\circ = $"
+      }
+    },
+    {
+      "formula_index": 131,
+      "relationship_id": "rId278",
+      "embedding_path": "word/embeddings/oleObject131.bin",
+      "location": {
+        "block_index": 107,
+        "paragraph_index": 205,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1=\\frac { 180{}^\\circ } { \\pi }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1=\\frac { 180{}^\\circ  } { \\pi  } $"
+      }
+    },
+    {
+      "formula_index": 132,
+      "relationship_id": "rId280",
+      "embedding_path": "word/embeddings/oleObject132.bin",
+      "location": {
+        "block_index": 107,
+        "paragraph_index": 205,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 6 } { 5 }\\pi =\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 6 } { 5 }\\pi = $"
+      }
+    },
+    {
+      "formula_index": 133,
+      "relationship_id": "rId282",
+      "embedding_path": "word/embeddings/oleObject133.bin",
+      "location": {
+        "block_index": 107,
+        "paragraph_index": 205,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 15,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 5 } { 3 }\\pi =\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 5 } { 3 }\\pi = $"
+      }
+    },
+    {
+      "formula_index": 134,
+      "relationship_id": "rId284",
+      "embedding_path": "word/embeddings/oleObject134.bin",
+      "location": {
+        "block_index": 107,
+        "paragraph_index": 205,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 21,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(4=\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 4= $"
+      }
+    },
+    {
+      "formula_index": 135,
+      "relationship_id": "rId288",
+      "embedding_path": "word/embeddings/oleObject135.bin",
+      "location": {
+        "block_index": 113,
+        "paragraph_index": 211,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 3,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(60{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 60{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 136,
+      "relationship_id": "rId290",
+      "embedding_path": "word/embeddings/oleObject136.bin",
+      "location": {
+        "block_index": 113,
+        "paragraph_index": 211,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 9,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-300{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -300{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 137,
+      "relationship_id": "rId292",
+      "embedding_path": "word/embeddings/oleObject137.bin",
+      "location": {
+        "block_index": 113,
+        "paragraph_index": 211,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 14,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(1140{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 1140{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 138,
+      "relationship_id": "rId294",
+      "embedding_path": "word/embeddings/oleObject138.bin",
+      "location": {
+        "block_index": 113,
+        "paragraph_index": 211,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 19,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-1120{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -1120{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 139,
+      "relationship_id": "rId296",
+      "embedding_path": "word/embeddings/oleObject139.bin",
+      "location": {
+        "block_index": 115,
+        "paragraph_index": 213,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(390{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ 390{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 140,
+      "relationship_id": "rId298",
+      "embedding_path": "word/embeddings/oleObject140.bin",
+      "location": {
+        "block_index": 115,
+        "paragraph_index": 213,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 12,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-1580{}^\\circ\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -1580{}^\\circ  $"
+      }
+    },
+    {
+      "formula_index": 141,
+      "relationship_id": "rId300",
+      "embedding_path": "word/embeddings/oleObject141.bin",
+      "location": {
+        "block_index": 117,
+        "paragraph_index": 215,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 7,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(\\frac { 15\\pi } { 4 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ \\frac { 15\\pi  } { 4 } $"
+      }
+    },
+    {
+      "formula_index": 142,
+      "relationship_id": "rId302",
+      "embedding_path": "word/embeddings/oleObject142.bin",
+      "location": {
+        "block_index": 117,
+        "paragraph_index": 215,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 12,
+        "in_table_cell": false
+      },
+      "equation_native_found": true,
+      "mtef_version": 5,
+      "latex": "\\(-\\frac { 11\\pi } { 3 }\\)",
+      "status": "ok",
+      "error": null,
+      "mtef_summary": {
+        "inline": 1,
+        "raw_latex": "$ -\\frac { 11\\pi  } { 3 } $"
+      }
+    }
+  ],
+  "eq_field_results": [
+    {
+      "field_index": 1,
+      "instruction": "eq \\o\\ac(○,解)",
+      "location": {
+        "block_index": 33,
+        "paragraph_index": 62,
+        "table_index": 4,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "latex": "\\(\\o\\ac(○,解)\\)",
+      "status": "ok",
+      "error": null
+    },
+    {
+      "field_index": 2,
+      "instruction": "eq \\o\\ac(○,解)",
+      "location": {
+        "block_index": 48,
+        "paragraph_index": 88,
+        "table_index": 8,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "latex": "\\(\\o\\ac(○,解)\\)",
+      "status": "ok",
+      "error": null
+    },
+    {
+      "field_index": 3,
+      "instruction": "eq \\o\\ac(○,解)",
+      "location": {
+        "block_index": 58,
+        "paragraph_index": 101,
+        "table_index": null,
+        "row": null,
+        "col": null,
+        "run_index": 0,
+        "in_table_cell": false
+      },
+      "latex": "\\(\\o\\ac(○,解)\\)",
+      "status": "ok",
+      "error": null
+    },
+    {
+      "field_index": 4,
+      "instruction": "eq \\o\\ac(○,解)",
+      "location": {
+        "block_index": 78,
+        "paragraph_index": 129,
+        "table_index": 11,
+        "row": 1,
+        "col": 0,
+        "run_index": 0,
+        "in_table_cell": true
+      },
+      "latex": "\\(\\o\\ac(○,解)\\)",
+      "status": "ok",
+      "error": null
+    },
+    {
+      "field_index": 5,
+      "instruction": "eq \\o\\ac(○,解)",
+      "location": {
+        "block_index": 80,
+        "paragraph_index": 142,
+        "table_index": 12,
+        "row": 1,
+        "col": 0,
+        "run_index": 1,
+        "in_table_cell": true
+      },
+      "latex": "\\(\\o\\ac(○,解)\\)",
+      "status": "ok",
+      "error": null
+    }
+  ],
+  "summary": {
+    "paragraphs": 223,
+    "paragraph_blocks": 111,
+    "tables": 14,
+    "table_cells": 71,
+    "mathtype_ole": 142,
+    "mathtype_ole_in_table_cells": 81,
+    "ole_embeddings_resolved": 142,
+    "ole_cfb_validated": 142,
+    "eq_fields": 5,
+    "eq_fields_in_table_cells": 4,
+    "independent_images": 24,
+    "formula_preview_media_refs": 132,
+    "media_physical_files": 156,
+    "media_extension_counts": {
+      "jpeg": 19,
+      "wmf": 132,
+      "png": 5
+    },
+    "ole_embeddings": 142
+  },
+  "skipped_empty": 0
+}

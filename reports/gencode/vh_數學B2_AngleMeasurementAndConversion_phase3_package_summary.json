@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+  "package_status": "packaged",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "passed",
+  "publish_status": "published",
+  "total_examples": 5,
+  "verified_count": 1,
+  "blocked_count": 4,
+  "verified_components": [
+    "src_11606"
+  ],
+  "blocked_examples": [
+    11607,
+    11616,
+    11617,
+    11618
+  ],
+  "timestamp": "2026-09-08T08:26:44.533322+00:00"
+}

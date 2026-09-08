@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "phase": "phase3",
+  "skill_id": "vh_數學B2_CoterminalAngles",
+  "package_status": "packaged",
+  "py_compile_status": "passed",
+  "runtime_smoke_status": "passed",
+  "publish_status": "published",
+  "total_examples": 8,
+  "verified_count": 2,
+  "blocked_count": 6,
+  "verified_components": [
+    "src_11611",
+    "src_11613"
+  ],
+  "blocked_examples": [
+    11612,
+    11614,
+    11615,
+    11621,
+    11622,
+    11623
+  ],
+  "timestamp": "2026-09-08T08:26:44.534324+00:00"
+}

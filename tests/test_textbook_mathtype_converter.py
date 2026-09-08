@@ -288,3 +288,31 @@ def test_existing_v2_style_extractor_can_read_output(tmp_path: Path):
     assert r"\(" in joined
     assert r"\frac" in joined or r"\pi" in joined or r"\overline" in joined
     assert "MATH_PARSE_FAILED" in joined or report["converted_failed"] == 0
+
+
+def test_b2_1_1_font_style_records_preserve_formulas_and_text(tmp_path: Path):
+    source = (PROJECT_ROOT / "textbook_import/source/vocational/math_B2"
+              / "第一章 1-1 角度的基本性質-課本.docx")
+    if not source.is_file():
+        pytest.skip("reference B2 1-1 DOCX missing")
+    output = tmp_path / "B2_1_1_Latex.docx"
+    report = convert_docx_mathtype_to_latex_docx(source, output)
+    formulas = {f["formula_index"]: f for f in report["formulas"]}
+    assert report["mathtype_ole"] == report["converted_ok"] == 142
+    assert report["converted_failed"] == 0
+    assert report["original_unchanged"]
+    for index in (32, 37, 38, 129, 131, 18, 19, 75):
+        assert formulas[index]["status"] == "ok"
+        assert formulas[index]["latex"]
+    # Original WMF previews confirm these are real formulas, not empty layout.
+    assert formulas[18]["latex"] == r"\(2\pi =360{}^\circ\)"
+    assert formulas[19]["latex"] == r"\(\pi =180{}^\circ\)"
+    assert formulas[75]["latex"] == r"\(=\)"
+    with zipfile.ZipFile(source) as src, zipfile.ZipFile(output) as out:
+        original = etree.fromstring(src.read("word/document.xml"))
+        converted = etree.fromstring(out.read("word/document.xml"))
+        assert b"MATH_PARSE_FAILED" not in out.read("word/document.xml")
+        # Every existing text node survives, in order, including adjacent text.
+        remaining = iter(converted.iter(f"{{{W_NS}}}t"))
+        for node in original.iter(f"{{{W_NS}}}t"):
+            assert any(candidate.text == node.text for candidate in remaining)

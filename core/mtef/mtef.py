@@ -116,18 +116,9 @@ class MTEF:
             elif record == RecordType.FONT_STYLE_DEF:
                 fsDef = MtfontStyleDef()
                 fsDef.fontDefIndex = Helper.bytes2int(self.reader.read(1))  # uint8
-                # Style names are null-terminated ASCII. If the next byte is not a
-                # plausible string start, do not consume equation payload as a name.
-                peek = self.reader.read(1)
-                if peek == b"\x00":
-                    fsDef.name = b""
-                elif peek and 32 <= peek[0] <= 126:
-                    rest, _ = self.readNullTerminatedString()
-                    fsDef.name = bytes(peek) + rest
-                else:
-                    if peek:
-                        self.reader.seek(-1, 1)
-                    fsDef.name = b""
+                # FONT_STYLE_DEF stores a font index followed by one style byte.
+                # The style bitmask (e.g. 1 or 3) is not a new LINE/TMPL record.
+                fsDef.style = Helper.bytes2int(self.reader.read(1))
                 # Keep style records out of the latex AST (same as upstream MTEF-py).
             elif record == RecordType.SIZE:
                 mtSize = MtSize()

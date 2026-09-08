@@ -1,0 +1,96 @@
+[
+  {
+    "label": "例1",
+    "formulas": [
+      {
+        "formula_index": 32,
+        "latex": "\\(-\\frac { 5 } { 3 }\\pi\\)",
+        "present": true
+      }
+    ],
+    "subitem_order": [
+      1,
+      2
+    ],
+    "problem_text": "(1)試將135°化為弧度。\n(2)試將\\(-\\frac { 5 } { 3 }\\pi\\)化為度。",
+    "pdf_page": 5,
+    "result": "PASS at Phase2/prewrite text normalization; final Phase3 not available"
+  },
+  {
+    "label": "隨堂練習1",
+    "formulas": [
+      {
+        "formula_index": 37,
+        "latex": "\\(-570{}^\\circ\\)",
+        "present": true
+      },
+      {
+        "formula_index": 38,
+        "latex": "\\(\\frac { 5 } { 6 }\\pi\\)",
+        "present": true
+      }
+    ],
+    "subitem_order": [
+      1,
+      2
+    ],
+    "problem_text": "(1)試將\\(-570{}^\\circ\\)化為弧度。\n(2)試將\\(\\frac { 5 } { 6 }\\pi\\)化為度。",
+    "pdf_page": 6,
+    "result": "PASS at Phase2/prewrite text normalization; final Phase3 not available"
+  },
+  {
+    "label": "1-1習題 基礎題 2",
+    "formulas": [
+      {
+        "formula_index": 129,
+        "latex": "\\(450{}^\\circ =\\)",
+        "present": true
+      },
+      {
+        "formula_index": 130,
+        "latex": "\\(560{}^\\circ =\\)",
+        "present": true
+      }
+    ],
+    "subitem_order": [
+      1,
+      2
+    ],
+    "problem_text": "將下列各角化成以弧度為單位：\n(1)\\(450{}^\\circ =\\) 。 (2)\\(560{}^\\circ =\\) 。",
+    "pdf_page": 13,
+    "result": "PASS at Phase2/prewrite text normalization; final Phase3 not available"
+  },
+  {
+    "label": "1-1習題 基礎題 3",
+    "formulas": [
+      {
+        "formula_index": 131,
+        "latex": "\\(1=\\frac { 180{}^\\circ } { \\pi }\\)",
+        "present": true
+      },
+      {
+        "formula_index": 132,
+        "latex": "\\(\\frac { 6 } { 5 }\\pi =\\)",
+        "present": true
+      },
+      {
+        "formula_index": 133,
+        "latex": "\\(\\frac { 5 } { 3 }\\pi =\\)",
+        "present": true
+      },
+      {
+        "formula_index": 134,
+        "latex": "\\(4=\\)",
+        "present": true
+      }
+    ],
+    "subitem_order": [
+      1,
+      2,
+      3
+    ],
+    "problem_text": "將下列各角化成以度為單位：（提示：\\(1=\\frac { 180{}^\\circ } { \\pi }\\)）\n(1)\\(\\frac { 6 } { 5 }\\pi =\\) 。 (2)\\(\\frac { 5 } { 3 }\\pi =\\) 。 (3)\\(4=\\) 。",
+    "pdf_page": 13,
+    "result": "PASS at Phase2/prewrite text normalization; final Phase3 not available"
+  }
+]

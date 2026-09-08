@@ -781,6 +781,8 @@ def enrich_textbook_examples_with_pdf_visuals(
     matched = match_questions_to_pdf(items, pages)
     matched = assign_question_regions(matched, pages)
     matched = classify_and_detect_visuals(matched, pages)
+    from core.textbook_b2_11 import correct_pdf_regions
+    matched = correct_pdf_regions(matched, pages, pdf, curriculum_info)
 
     curriculum = str(curriculum_info.get("curriculum") or "vocational")
     publisher = str(curriculum_info.get("publisher") or "longteng")

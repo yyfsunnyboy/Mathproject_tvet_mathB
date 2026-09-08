@@ -55,6 +55,7 @@ from core.textbook_import_authority import (
 )
 from core.utils import normalize_vocational_math_skill_id
 from models import SkillCurriculum, SkillInfo, TextbookExample, db
+from core.textbook_b2_11 import is_b2_11, SDG_TITLE
 
 # ---------------------------------------------------------------------------
 # Regex barriers
@@ -1484,6 +1485,30 @@ def _build_anchor_blocks_v2(
             for x in line_list[max(0, idx - 6) : idx]
         ]
 
+        if is_b2_11(curriculum_info):
+            if re.match(r"^SDG\s*14\s*保育海洋生態", line):
+                in_practice_zone = in_exam_mode = in_key_mode = in_exercise_mode = False
+                start_block(SDG_TITLE, "textbook_example")
+                continue
+            if cur_anchor == SDG_TITLE:
+                if line.startswith("SDGS"):
+                    flush_one()
+                    continue
+                if not re.match(r"^1-1\.4\s", line):
+                    if "\\o\\ac(○,解)" in line or line == "解":
+                        in_solution = True
+                        continue
+                    # Word auto-numbering supplies (1), while (2) is literal text.
+                    if not in_solution and line.startswith("若有一鹽工"):
+                        line = "(1) " + line
+                    if in_solution and trigger_hit:
+                        if line.startswith("扇形夾角"):
+                            line = "(1) " + line
+                        elif line.startswith("鹽工巡視"):
+                            line = "(2) " + line
+                    (solution_lines if in_solution else problem_lines).append(line)
+                    continue
+
         parsed_concept = _parse_mathb_concept_line(
             line,
             section_code=active_section_code,
@@ -1547,6 +1572,8 @@ def _build_anchor_blocks_v2(
                     formal_skill_id=existing_sid,
                 )
                 continue
+            if is_b2_11(curriculum_info):
+                raise ValueError(f"B2 1-1 requires existing heading skill: {docx_concept_name}")
             nearby = "\n".join(recent_context_lines[-6:] + [line]).strip()
             resolved = _resolve_formal_concept_en_id_v2(
                 concept_name=docx_concept_name,
@@ -2189,7 +2216,7 @@ def _phase1_emit_paragraph_line(lines: list[str], para) -> None:
         lines.append(text_clean)
 
 
-def phase1_extract_docx_lines(file_path: str) -> list[str]:
+def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = None) -> list[str]:
     """Read all DOCX paragraphs and table cells into normalized lines."""
     from docx import Document
     from docx.table import Table
@@ -2202,6 +2229,15 @@ def phase1_extract_docx_lines(file_path: str) -> list[str]:
             _phase1_emit_paragraph_line(lines, Paragraph(block, doc))
         elif block.tag.endswith("}tbl"):
             tbl = Table(block, doc)
+            if (is_b2_11(curriculum_info) and len(tbl.rows) == 2
+                    and len(tbl.columns) == 12 and tbl.cell(0, 0).text.strip() == "度"
+                    and tbl.cell(1, 0).text.strip() == "弧度"):
+                # Preserve every original column, including empty answer cells.
+                rows = [[_normalize_docx_line_text(c.text) for c in r.cells] for r in tbl.rows]
+                lines.append("| " + " | ".join(rows[0]) + " |")
+                lines.append("| " + " | ".join(["---"] * 12) + " |")
+                lines.append("| " + " | ".join(rows[1]) + " |")
+                continue
             for row in tbl.rows:
                 for cell in row.cells:
                     for para in cell.paragraphs:
@@ -3102,6 +3138,9 @@ def phase3_ai_metadata_alignment(
 ) -> dict:
     """Gemini 對齊章節概念 JSON，必要時分塊合併。"""
     keys = list(blocks_keys or [])
+    if is_b2_11(curriculum_info):
+        from core.textbook_b2_11 import align_existing_skills
+        return align_existing_skills(keys, _DOCX_BLOCK_META, curriculum_info)
     chunks = _chunk_blocks_keys_for_phase3(keys)
     total = len(chunks)
 
@@ -4406,6 +4445,11 @@ def _phase4_resolve_mathb_formal_binding(
         or section_auth["chapter_title"]
     )
 
+    if is_b2_11(curriculum_info):
+        from core.textbook_b2_11 import existing_skill
+        row = existing_skill(curriculum_info, docx_concept_name, formal_skill_id)
+        return docx_concept_name, row.skill_id, row
+
     ai_source_type = _normalize_mathb_ai_source_type(source_type, anchor)
 
     if ai_source_type == "self_assessment":
@@ -5691,7 +5735,7 @@ def process_textbook_file_v2(file_path: str, curriculum_info: dict, queue) -> di
             queue.put(f"INFO: [antigravity] 開始處理 DOCX：{file_path}")
         _log_info(f"[antigravity] process_textbook_file_v2 path={file_path}")
 
-        lines = phase1_extract_docx_lines(file_path)
+        lines = phase1_extract_docx_lines(file_path, curriculum_info=curriculum_info)
         if queue is not None:
             queue.put(f"INFO: [antigravity] Phase1 lines={len(lines)}")
 

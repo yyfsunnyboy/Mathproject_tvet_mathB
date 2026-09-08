@@ -26,8 +26,8 @@ def _minimal_docx_bytes() -> bytes:
 
 @pytest.fixture
 def pair_paths(tmp_path: Path):
-    docx = tmp_path / "第一章 1-1 角度的基本性質-課本.docx"
-    pdf = tmp_path / "第一章 1-1 角度的基本性質-課本.pdf"
+    docx = tmp_path / "generic_metadata_fixture.docx"
+    pdf = tmp_path / "generic_metadata_fixture.pdf"
     docx.write_bytes(_minimal_docx_bytes())
     pdf.write_bytes(b"%PDF-1.4")
     return docx, pdf

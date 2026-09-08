@@ -1,0 +1,1220 @@
+[
+  {
+    "anchor": "例1",
+    "source_type": "textbook_example",
+    "problem_text": "(1)試將135°化為弧度。\n(2)試將\\(-\\frac { 5 } { 3 }\\pi\\)化為度。",
+    "detailed_solution": "\\(\\o\\ac(○,解)\\) 利用\\(\\pi =180{}^\\circ\\)，所以\\(1{}^\\circ =\\frac { \\pi } { 180 }\\)\n(1) \\(135{}^\\circ =135\\times 1{}^\\circ =135\\times \\frac { \\pi } { 180 }=\\frac { 3\\pi } { 4 }\\)\n(2) \\(-\\frac { 5 } { 3 }\\pi =-\\frac { 5 } { 3 }\\times 180{}^\\circ =-300{}^\\circ\\)",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.2",
+    "concept_name": "角的度量與換算",
+    "concept_en_id": "AngleMeasurementAndConversion",
+    "formal_skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+    "display_order": 3,
+    "id": 1,
+    "source_order": 1,
+    "source_description": "例1",
+    "problem_type": "textbook_example",
+    "pdf_match": {
+      "page": 5,
+      "question_start_y": 484.525390625,
+      "hits": [
+        "1試將135c化為弧度2",
+        "1試將135c化為弧度"
+      ],
+      "question_bbox": [
+        36.0,
+        476.525390625,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 5,
+          "bbox": [
+            36.0,
+            476.525390625,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.96,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 5,
+        "bbox": [
+          36.0,
+          476.525390625,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      476.525390625,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "formula_or_decoration_vectors_only",
+    "visual_page": 5
+  },
+  {
+    "anchor": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "problem_text": "(1)試將\\(-570{}^\\circ\\)化為弧度。\n(2)試將\\(\\frac { 5 } { 6 }\\pi\\)化為度。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.2",
+    "concept_name": "角的度量與換算",
+    "concept_en_id": "AngleMeasurementAndConversion",
+    "formal_skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+    "display_order": 3,
+    "id": 2,
+    "source_order": 2,
+    "source_description": "隨堂練習1",
+    "problem_type": "in_class_practice",
+    "pdf_match": null,
+    "match_method": "unmatched",
+    "match_score": 0.0,
+    "needs_review": true,
+    "reason": "no_unique_phrase_hit",
+    "regions": [],
+    "question_bbox": null,
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "unmatched"
+  },
+  {
+    "anchor": "例2",
+    "source_type": "textbook_example",
+    "problem_text": "林媽媽製作了一個半徑為16公分的圓形披薩，並將其切成八塊大小一樣的扇形披薩，試求每一塊扇形披薩的\n(1)面積A (2)弧長S",
+    "detailed_solution": "\\(\\o\\ac(○,解)\\) 先把每一塊扇形圓心角\\(\\frac { 360{}^\\circ } { 8 }=45{}^\\circ\\)化為弧度\n即\\(\\theta =45{}^\\circ =45\\times \\frac { \\pi } { 180 }=\\frac { \\pi } { 4 }\\)\n(1) 面積\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }\\times 16 ^ { 2 } \\times \\frac { \\pi } { 4 }=32\\pi\\)（平方公分）\n(2) 弧長\\(S=r\\theta =16\\times \\frac { \\pi } { 4 }=4\\pi\\)（公分）",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.3",
+    "concept_name": "扇形的弧長與面積",
+    "concept_en_id": "ArcLengthAndAreaOfSector",
+    "formal_skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+    "display_order": 4,
+    "id": 3,
+    "source_order": 3,
+    "source_description": "例2",
+    "problem_type": "textbook_example",
+    "pdf_match": {
+      "page": 7,
+      "question_start_y": 321.5913391113281,
+      "hits": [
+        "林媽媽製作了一個半徑為16公分的圓形披薩並將其切成八塊大",
+        "林媽媽製作了一個半徑為16公分的圓形披薩並將其切",
+        "林媽媽製作了一個半徑為16公分的圓形",
+        "林媽媽製作了一個半徑為16公分的",
+        "林媽媽製作了一個半徑為1"
+      ],
+      "question_bbox": [
+        36.0,
+        313.5913391113281,
+        573.4486083984375,
+        640.9602661132812
+      ],
+      "regions": [
+        {
+          "page": 7,
+          "bbox": [
+            36.0,
+            313.5913391113281,
+            573.4486083984375,
+            640.9602661132812
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 7,
+        "bbox": [
+          36.0,
+          313.5913391113281,
+          573.4486083984375,
+          640.9602661132812
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      313.5913391113281,
+      573.4486083984375,
+      640.9602661132812
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "helpful",
+    "should_mount": true,
+    "visual_type": "diagram",
+    "visual_bbox": [
+      85.03860473632812,
+      313.12353515625,
+      524.4085693359375,
+      732.16455078125
+    ],
+    "visual_reason": "photo_and_diagram_ai_reference",
+    "visual_page": 7
+  },
+  {
+    "anchor": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "problem_text": "設一扇形半徑為9公分，所對應的圓心角為120°，試求：\n(1)將圓心角化為弧度。 (2)此扇形弧長S。 (3)此扇形面積A。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.3",
+    "concept_name": "扇形的弧長與面積",
+    "concept_en_id": "ArcLengthAndAreaOfSector",
+    "formal_skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+    "display_order": 4,
+    "id": 4,
+    "source_order": 4,
+    "source_description": "隨堂練習2",
+    "problem_type": "in_class_practice",
+    "pdf_match": {
+      "page": 7,
+      "question_start_y": 644.9602661132812,
+      "hits": [
+        "設一扇形半徑為9公分所對應的圓心角為120c試求1將圓心",
+        "設一扇形半徑為9公分所對應的圓心角為120c試求",
+        "設一扇形半徑為9公分所對應的圓心角為",
+        "設一扇形半徑為9公分所對應的圓心",
+        "設一扇形半徑為9公分所對"
+      ],
+      "question_bbox": [
+        36.0,
+        636.9602661132812,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 7,
+          "bbox": [
+            36.0,
+            636.9602661132812,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 7,
+        "bbox": [
+          36.0,
+          636.9602661132812,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      636.9602661132812,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "formula_or_decoration_vectors_only",
+    "visual_page": 7
+  },
+  {
+    "anchor": "例3",
+    "source_type": "textbook_example",
+    "problem_text": "下列何者與\\(50{}^\\circ\\)互為同界角？\n(1)\\(-310{}^\\circ\\) (2)\\(770{}^\\circ\\) (3)\\(1250{}^\\circ\\)",
+    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(-310{}^\\circ -50{}^\\circ =-360{}^\\circ =360{}^\\circ \\times \\left ( { -1 } \\right )\\)\n 故\\(-310{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(2) \\(770{}^\\circ -50{}^\\circ =720{}^\\circ =360{}^\\circ \\times 2\\)\n故\\(770{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(3) \\(1250{}^\\circ -50{}^\\circ =1200{}^\\circ\\)不是\\(360{}^\\circ\\)的整數倍\n故\\(1250{}^\\circ\\)不是\\(50{}^\\circ\\)的同界角",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.4",
+    "concept_name": "同界角",
+    "concept_en_id": "CoterminalAngles",
+    "formal_skill_id": "vh_數學B2_CoterminalAngles",
+    "display_order": 6,
+    "id": 5,
+    "source_order": 5,
+    "source_description": "例3",
+    "problem_type": "textbook_example",
+    "pdf_match": null,
+    "match_method": "unmatched",
+    "match_score": 0.0,
+    "needs_review": true,
+    "reason": "no_unique_phrase_hit",
+    "regions": [],
+    "question_bbox": null,
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "unmatched"
+  },
+  {
+    "anchor": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "problem_text": "下列何者與\\(\\frac { \\pi } { 6 }\\)互為同界角？\n(1)\\(-\\frac { 5\\pi } { 6 }\\) (2)\\(\\frac { 5\\pi } { 3 }\\) (3)\\(\\frac { 73\\pi } { 6 }\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.4",
+    "concept_name": "同界角",
+    "concept_en_id": "CoterminalAngles",
+    "formal_skill_id": "vh_數學B2_CoterminalAngles",
+    "display_order": 6,
+    "id": 6,
+    "source_order": 6,
+    "source_description": "隨堂練習3",
+    "problem_type": "in_class_practice",
+    "pdf_match": null,
+    "match_method": "unmatched",
+    "match_score": 0.0,
+    "needs_review": true,
+    "reason": "no_unique_phrase_hit",
+    "regions": [],
+    "question_bbox": null,
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "unmatched"
+  },
+  {
+    "anchor": "例4",
+    "source_type": "textbook_example",
+    "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(1350{}^\\circ\\) (2)\\(-1100{}^\\circ\\) (3)\\(-\\frac { 21\\pi } { 4 }\\)",
+    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ\\)\n 故最小正同界角為270°\n 最大負同界角為\\(270{}^\\circ -360{}^\\circ =-90{}^\\circ\\)\n(2) \\(-1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ\\)\n故最大負同界角為\\(-20{}^\\circ\\)\n 最小正同界角為\\(-20{}^\\circ +360{}^\\circ =340{}^\\circ\\)\n(3) \\(-\\frac { 21\\pi } { 4 }=-4\\pi -\\frac { 5\\pi } { 4 }=2\\pi \\times \\left ( { -2 } \\right )-\\frac { 5\\pi } { 4 }\\)\n故最大負同界角為\\(-\\frac { 5\\pi } { 4 }\\)\n 最小正同界角為\\(-\\frac { 5\\pi } { 4 }+2\\pi =\\frac { 3\\pi } { 4 }\\)",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.4",
+    "concept_name": "同界角",
+    "concept_en_id": "CoterminalAngles",
+    "formal_skill_id": "vh_數學B2_CoterminalAngles",
+    "display_order": 6,
+    "id": 7,
+    "source_order": 7,
+    "source_description": "例4",
+    "problem_type": "textbook_example",
+    "pdf_match": {
+      "page": 11,
+      "question_start_y": 100.17684173583984,
+      "hits": [
+        "試求下列各角的最小正同界角與最大負同界角",
+        "試求下列各角的最小正同界角與最大負同",
+        "試求下列各角的最小正同界角與最大",
+        "試求下列各角的最小正同界"
+      ],
+      "question_bbox": [
+        36.0,
+        92.17684173583984,
+        573.4486083984375,
+        136.17684173583984
+      ],
+      "regions": [
+        {
+          "page": 11,
+          "bbox": [
+            36.0,
+            92.17684173583984,
+            573.4486083984375,
+            136.17684173583984
+          ]
+        }
+      ]
+    },
+    "match_method": "shared_phrase+order",
+    "match_score": 0.88,
+    "needs_review": true,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 11,
+        "bbox": [
+          36.0,
+          92.17684173583984,
+          573.4486083984375,
+          136.17684173583984
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      92.17684173583984,
+      573.4486083984375,
+      136.17684173583984
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "low_match_confidence"
+  },
+  {
+    "anchor": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(750{}^\\circ\\) (2)\\(-1030{}^\\circ\\) (3)\\(\\frac { 23\\pi } { 5 }\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.4",
+    "concept_name": "同界角",
+    "concept_en_id": "CoterminalAngles",
+    "formal_skill_id": "vh_數學B2_CoterminalAngles",
+    "display_order": 6,
+    "id": 8,
+    "source_order": 8,
+    "source_description": "隨堂練習4",
+    "problem_type": "in_class_practice",
+    "pdf_match": {
+      "page": 11,
+      "question_start_y": 100.17684173583984,
+      "hits": [
+        "試求下列各角的最小正同界角與最大負同界角",
+        "試求下列各角的最小正同界角與最大負同",
+        "試求下列各角的最小正同界角與最大",
+        "試求下列各角的最小正同界"
+      ],
+      "question_bbox": [
+        36.0,
+        92.17684173583984,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 11,
+          "bbox": [
+            36.0,
+            92.17684173583984,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "shared_phrase+order",
+    "match_score": 0.88,
+    "needs_review": true,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 11,
+        "bbox": [
+          36.0,
+          92.17684173583984,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      92.17684173583984,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "low_match_confidence"
+  },
+  {
+    "anchor": "108統測B",
+    "source_type": "exam_practice",
+    "problem_text": "假設分針原始指在時鐘12 的位置，現將分針依順時針的方向轉了\\(2019{}^\\circ\\)。試問\n下列敘述何者正確？\n(A) 分針指在9 跟10 之間\n(B) 分針指在7 跟8 之間\n(C) 分針指在5 跟6 之間\n(D) 分針指在3 跟4 之間 〔108統測B〕",
+    "detailed_solution": "KEY\n(1) 鐘面上有60 小格，每格所對之圓心角 = \\(6{}^\\circ\\)\n(2) 最小正同界角之概念",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "1-1.4",
+    "concept_name": "同界角",
+    "concept_en_id": "CoterminalAngles",
+    "formal_skill_id": "vh_數學B2_CoterminalAngles",
+    "display_order": 6,
+    "id": 9,
+    "source_order": 9,
+    "source_description": "108統測B",
+    "problem_type": "exam_practice",
+    "pdf_match": {
+      "page": 12,
+      "question_start_y": 192.03932189941406,
+      "hits": [
+        "假設分針原始指在時鐘12的位置現將分針依順時針的方向轉了",
+        "假設分針原始指在時鐘12的位置現將分針依順時針的",
+        "假設分針原始指在時鐘12的位置現將分",
+        "假設分針原始指在時鐘12的位置現",
+        "假設分針原始指在時鐘12"
+      ],
+      "question_bbox": [
+        36.0,
+        184.03932189941406,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 12,
+          "bbox": [
+            36.0,
+            184.03932189941406,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 12,
+        "bbox": [
+          36.0,
+          184.03932189941406,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      184.03932189941406,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "formula_or_decoration_vectors_only",
+    "visual_page": 12
+  },
+  {
+    "anchor": "1-1習題 基礎題 1",
+    "source_type": "textbook_exercise",
+    "problem_text": "請完成下列常用特別角的「度度量」與「弧度量」之對照表：\n度\n0°\n30°\n45°\n60°\n90°\n120°\n135°\n150°\n180°\n270°\n360°\n弧度\n\\(\\frac { \\pi } { 6 }\\)\n\\(\\frac { \\pi } { 2 }\\)\n\\(\\pi\\)\n\\(\\frac { 3\\pi } { 2 }\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 10,
+    "source_order": 10,
+    "source_description": "1-1習題 基礎題1",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 172.2646942138672,
+      "hits": [
+        "請完成下列常用特別角的度度量與弧度量之對照表度0c30c",
+        "請完成下列常用特別角的度度量與弧度量之對照表",
+        "請完成下列常用特別角的度度量與弧度量",
+        "請完成下列常用特別角的度度量與弧",
+        "請完成下列常用特別角的度"
+      ],
+      "question_bbox": [
+        36.0,
+        164.2646942138672,
+        573.4486083984375,
+        272.4404296875
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            164.2646942138672,
+            573.4486083984375,
+            272.4404296875
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          164.2646942138672,
+          573.4486083984375,
+          272.4404296875
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      164.2646942138672,
+      573.4486083984375,
+      272.4404296875
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "text_and_formula_only",
+    "visual_page": 13
+  },
+  {
+    "anchor": "1-1習題 基礎題 2",
+    "source_type": "textbook_exercise",
+    "problem_text": "將下列各角化成以弧度為單位：\n(1)\\(450{}^\\circ =\\) 。 (2)\\(560{}^\\circ =\\) 。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 11,
+    "source_order": 11,
+    "source_description": "1-1習題 基礎題2",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 276.4404296875,
+      "hits": [
+        "將下列各角化成以弧度為單位1450c",
+        "將下列各角化成以弧度為單位",
+        "將下列各角化成以弧度為單"
+      ],
+      "question_bbox": [
+        36.0,
+        268.4404296875,
+        573.4486083984375,
+        344.58441162109375
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            268.4404296875,
+            573.4486083984375,
+            344.58441162109375
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          268.4404296875,
+          573.4486083984375,
+          344.58441162109375
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      268.4404296875,
+      573.4486083984375,
+      344.58441162109375
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "text_and_formula_only",
+    "visual_page": 13
+  },
+  {
+    "anchor": "1-1習題 基礎題 3",
+    "source_type": "textbook_exercise",
+    "problem_text": "將下列各角化成以度為單位：（提示：\\(1=\\frac { 180{}^\\circ } { \\pi }\\)）\n(1)\\(\\frac { 6 } { 5 }\\pi =\\) 。 (2)\\(\\frac { 5 } { 3 }\\pi =\\) 。 (3)\\(4=\\) 。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 12,
+    "source_order": 12,
+    "source_description": "1-1習題 基礎題3",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 348.58441162109375,
+      "hits": [
+        "將下列各角化成以度為單位"
+      ],
+      "question_bbox": [
+        36.0,
+        340.58441162109375,
+        573.4486083984375,
+        424.8554382324219
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            340.58441162109375,
+            573.4486083984375,
+            424.8554382324219
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.96,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          340.58441162109375,
+          573.4486083984375,
+          424.8554382324219
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      340.58441162109375,
+      573.4486083984375,
+      424.8554382324219
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "text_and_formula_only",
+    "visual_page": 13
+  },
+  {
+    "anchor": "1-1習題 基礎題 4",
+    "source_type": "textbook_exercise",
+    "problem_text": "設一扇形半徑為12公分，所對應的圓心角為135°，試求：\n(1)此扇形弧長S。 (2)此扇形面積A。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 13,
+    "source_order": 13,
+    "source_description": "1-1習題 基礎題4",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 428.8554382324219,
+      "hits": [
+        "設一扇形半徑為12公分所對應的圓心角為135c試求1此扇",
+        "設一扇形半徑為12公分所對應的圓心角為135c試",
+        "設一扇形半徑為12公分所對應的圓心角",
+        "設一扇形半徑為12公分所對應的圓",
+        "設一扇形半徑為12公分所"
+      ],
+      "question_bbox": [
+        36.0,
+        420.8554382324219,
+        573.4486083984375,
+        487.8728332519531
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            420.8554382324219,
+            573.4486083984375,
+            487.8728332519531
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          420.8554382324219,
+          573.4486083984375,
+          487.8728332519531
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      420.8554382324219,
+      573.4486083984375,
+      487.8728332519531
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "none",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "text_and_formula_only",
+    "visual_page": 13
+  },
+  {
+    "anchor": "1-1習題 基礎題 5",
+    "source_type": "textbook_exercise",
+    "problem_text": "爺爺收藏的古典時鐘，是一個下方有鐘擺的掛鐘，若鐘擺長為12公分，左右最大擺角各為15°，試求：\n(1)鐘擺掃出的最大面積。\n(2)鐘擺底端揮出的最大弧長。",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 14,
+    "source_order": 14,
+    "source_description": "1-1習題 基礎題5",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 491.8728332519531,
+      "hits": [
+        "爺爺收藏的古典時鐘是一個下方有鐘擺的掛鐘若鐘擺長為12公",
+        "爺爺收藏的古典時鐘是一個下方有鐘擺的掛鐘若鐘擺長",
+        "爺爺收藏的古典時鐘是一個下方有鐘擺的",
+        "爺爺收藏的古典時鐘是一個下方有鐘",
+        "爺爺收藏的古典時鐘是一個"
+      ],
+      "question_bbox": [
+        36.0,
+        483.8728332519531,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            483.8728332519531,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          483.8728332519531,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      483.8728332519531,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "helpful",
+    "should_mount": true,
+    "visual_type": "embedded_image",
+    "visual_bbox": [
+      359.7633056640625,
+      471.614501953125,
+      615.123291015625,
+      641.5344848632812
+    ],
+    "visual_reason": "embedded_image_ai_reference",
+    "visual_page": 13
+  },
+  {
+    "anchor": "1-1習題 基礎題 6",
+    "source_type": "textbook_exercise",
+    "problem_text": "下列何者為\\(60{}^\\circ\\)的同界角？\n(1)\\(-300{}^\\circ\\) (2)\\(1140{}^\\circ\\) (3)\\(-1120{}^\\circ\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 15,
+    "source_order": 15,
+    "source_description": "1-1習題 基礎題6",
+    "problem_type": "textbook_exercise",
+    "pdf_match": null,
+    "match_method": "unmatched",
+    "match_score": 0.0,
+    "needs_review": true,
+    "reason": "no_unique_phrase_hit",
+    "regions": [],
+    "question_bbox": null,
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "unmatched"
+  },
+  {
+    "anchor": "1-1習題 基礎題 7",
+    "source_type": "textbook_exercise",
+    "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(390{}^\\circ\\) (2)\\(-1580{}^\\circ\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 16,
+    "source_order": 16,
+    "source_description": "1-1習題 基礎題7",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 693.3819580078125,
+      "hits": [
+        "試求下列各角的最小正同界角與最大負同界角",
+        "試求下列各角的最小正同界角與最大負同",
+        "試求下列各角的最小正同界角與最大",
+        "試求下列各角的最小正同界"
+      ],
+      "question_bbox": [
+        36.0,
+        685.3819580078125,
+        573.4486083984375,
+        729.3819580078125
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            685.3819580078125,
+            573.4486083984375,
+            729.3819580078125
+          ]
+        }
+      ]
+    },
+    "match_method": "shared_phrase+order",
+    "match_score": 0.88,
+    "needs_review": true,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          685.3819580078125,
+          573.4486083984375,
+          729.3819580078125
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      685.3819580078125,
+      573.4486083984375,
+      729.3819580078125
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "low_match_confidence"
+  },
+  {
+    "anchor": "1-1習題 基礎題 8",
+    "source_type": "textbook_exercise",
+    "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(\\frac { 15\\pi } { 4 }\\) (2)\\(-\\frac { 11\\pi } { 3 }\\)",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 17,
+    "source_order": 17,
+    "source_description": "1-1習題 基礎題8",
+    "problem_type": "textbook_exercise",
+    "pdf_match": {
+      "page": 13,
+      "question_start_y": 693.3819580078125,
+      "hits": [
+        "試求下列各角的最小正同界角與最大負同界角",
+        "試求下列各角的最小正同界角與最大負同",
+        "試求下列各角的最小正同界角與最大",
+        "試求下列各角的最小正同界"
+      ],
+      "question_bbox": [
+        36.0,
+        685.3819580078125,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 13,
+          "bbox": [
+            36.0,
+            685.3819580078125,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "shared_phrase+order",
+    "match_score": 0.88,
+    "needs_review": true,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 13,
+        "bbox": [
+          36.0,
+          685.3819580078125,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      685.3819580078125,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "skipped_low_confidence",
+    "should_mount": false,
+    "visual_type": null,
+    "visual_bbox": null,
+    "visual_reason": "low_match_confidence"
+  },
+  {
+    "anchor": "1-1習題 進階題 9",
+    "source_type": "advanced_exercise",
+    "problem_text": "如圖所示：校門口有一個半徑6公尺的圓形花圃，農藝科同學打算將花圃平分成三等分的面積來種植不同的花卉，作為校園園藝造景的景觀設計，請問每一等分的扇形面積為多少？",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 18,
+    "source_order": 18,
+    "source_description": "1-1習題 進階題9",
+    "problem_type": "advanced_exercise",
+    "pdf_match": {
+      "page": 14,
+      "question_start_y": 263.209228515625,
+      "hits": [
+        "如圖所示校門口有一個半徑6公尺的圓形花圃農藝科同學打算將",
+        "如圖所示校門口有一個半徑6公尺的圓形花圃農藝科同",
+        "如圖所示校門口有一個半徑6公尺的圓形",
+        "如圖所示校門口有一個半徑6公尺的",
+        "如圖所示校門口有一個半徑"
+      ],
+      "question_bbox": [
+        36.0,
+        255.209228515625,
+        573.4486083984375,
+        373.28125
+      ],
+      "regions": [
+        {
+          "page": 14,
+          "bbox": [
+            36.0,
+            255.209228515625,
+            573.4486083984375,
+            373.28125
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 14,
+        "bbox": [
+          36.0,
+          255.209228515625,
+          573.4486083984375,
+          373.28125
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      255.209228515625,
+      573.4486083984375,
+      373.28125
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "required",
+    "should_mount": true,
+    "visual_type": "diagram",
+    "visual_bbox": [
+      368.32037353515625,
+      228.0930938720703,
+      533.7763671875,
+      357.275634765625
+    ],
+    "visual_reason": "figure_keyword_and_visual_in_region",
+    "visual_page": 14
+  },
+  {
+    "anchor": "1-1習題 進階題 10",
+    "source_type": "advanced_exercise",
+    "problem_text": "英國有一座「摺扇橋」橫跨在20公尺寬的帕丁頓 大聯盟運河上。它是由英國著名橋梁設計專家騎士建築事務所設計，它的設計靈感來源於日本傳統的摺扇，它是全球唯一一座可以像摺扇一般開合自如的大橋，其最大的展開角為80度。請問在最大展開時的扇形面積為何？",
+    "detailed_solution": "",
+    "section_code": "1-1",
+    "section_title": "1-1 角度的基本性質",
+    "concept_code": "",
+    "concept_name": "",
+    "concept_en_id": "",
+    "formal_skill_id": "",
+    "display_order": 0,
+    "id": 19,
+    "source_order": 19,
+    "source_description": "1-1習題 進階題10",
+    "problem_type": "advanced_exercise",
+    "pdf_match": {
+      "page": 14,
+      "question_start_y": 377.28125,
+      "hits": [
+        "英國有一座摺扇橋橫跨在20公尺寬的帕丁頓大聯盟運河上它是",
+        "英國有一座摺扇橋橫跨在20公尺寬的帕丁頓大聯盟運",
+        "它是由英國著名橋梁設計專家騎士建築事務所設計它的",
+        "英國有一座摺扇橋橫跨在20公尺寬的帕",
+        "英國有一座摺扇橋橫跨在20公尺寬"
+      ],
+      "question_bbox": [
+        36.0,
+        369.28125,
+        573.4486083984375,
+        757.7006225585938
+      ],
+      "regions": [
+        {
+          "page": 14,
+          "bbox": [
+            36.0,
+            369.28125,
+            573.4486083984375,
+            757.7006225585938
+          ]
+        }
+      ]
+    },
+    "match_method": "unique_phrase+order",
+    "match_score": 0.99,
+    "needs_review": false,
+    "reason": "matched_via_text_layer",
+    "regions": [
+      {
+        "page": 14,
+        "bbox": [
+          36.0,
+          369.28125,
+          573.4486083984375,
+          757.7006225585938
+        ]
+      }
+    ],
+    "question_bbox": [
+      36.0,
+      369.28125,
+      573.4486083984375,
+      757.7006225585938
+    ],
+    "cross_page_suspected": false,
+    "visual_classification": "helpful",
+    "should_mount": true,
+    "visual_type": "diagram",
+    "visual_bbox": [
+      362.7449951171875,
+      372.04754638671875,
+      549.4957885742188,
+      743.6779174804688
+    ],
+    "visual_reason": "photo_and_diagram_ai_reference",
+    "visual_page": 14
+  }
+]

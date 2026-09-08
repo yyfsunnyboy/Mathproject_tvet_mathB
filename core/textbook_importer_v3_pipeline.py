@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from core.globals import TASK_QUEUES, V3_IMPORT_TASKS
+from core.textbook_b2_11 import is_b2_11, existing_outline, existing_skill
 from core.mathb_concept_heading import is_persistable_concept_code
 from core.textbook_importer_v3_docx import parse_docx_summary
 from core.textbook_importer_v3_orchestrate import build_curriculum_info_for_v3_import
@@ -323,6 +324,10 @@ def _fill_chapter_section_from_outline_or_lines(
     if section_code:
         outline = _lookup_outline_section_curriculum_row(info, section_code)
         if outline is not None:
+            if is_b2_11(info):
+                # B2 1-1 reuses its existing curriculum names, not the numeric filename label.
+                chapter = str(outline.chapter or "").strip()
+                section = str(outline.section or "").strip()
             if not chapter:
                 chapter = str(outline.chapter or "").strip()
             if not section:
@@ -400,6 +405,11 @@ def _ensure_formal_concepts_for_headings(
     from models import SkillCurriculum, SkillInfo
     from core.textbook_formal_concept import ensure_formal_concept_from_authoritative_heading_v2
 
+    if is_b2_11(curriculum_info):
+        return [dict(action="existing", wrote=False, concept_name=h["concept_name"],
+                     skill_id=existing_skill(curriculum_info, h["concept_name"],
+                                             h.get("formal_skill_id", "")).skill_id)
+                for h in headings]
     results: list[dict[str, Any]] = []
     curr = str(curriculum_info.get("curriculum") or "vocational").strip()
     vol = str(curriculum_info.get("volume") or "").strip()
@@ -682,7 +692,7 @@ def run_v3_pair_pipeline(
         with flask_app.app_context():
             # --- QUESTION_PARSE (Phase1 + metadata + outline gate + Phase2) ---
             _emit(tid, task_queue, stage=STAGE_QUESTION_PARSE, status="running")
-            lines = tpv2.phase1_extract_docx_lines(str(latex_path))
+            lines = tpv2.phase1_extract_docx_lines(str(latex_path), curriculum_info=curriculum_info)
             scope_bundle = tpv2._resolve_import_source_metadata(
                 parse_filename=str(curriculum_info.get("parse_filename") or docx.name),
                 lines=lines,
@@ -711,7 +721,7 @@ def run_v3_pair_pipeline(
                     },
                 )
 
-            outline_result = ensure_section_outline_from_authoritative_metadata_v2(
+            outline_result = existing_outline(curriculum_info) if is_b2_11(curriculum_info) else ensure_section_outline_from_authoritative_metadata_v2(
                 curriculum=str(curriculum_info.get("curriculum") or "vocational"),
                 volume=str(curriculum_info.get("volume") or volume),
                 chapter=chapter,
@@ -813,8 +823,10 @@ def run_v3_pair_pipeline(
             _emit(tid, task_queue, stage=STAGE_AI_ALIGNMENT, status="running")
             from core.ai_analyzer import get_model, gemini_model_name
 
-            model = get_model("architect")
-            tracker.wrap_model(model)
+            model = None
+            if not is_b2_11(curriculum_info):
+                model = get_model("architect")
+                tracker.wrap_model(model)
             phase3_keys = sorted(question_blocks.keys())
             try:
                 phase3_parsed = tpv2.phase3_ai_metadata_alignment(

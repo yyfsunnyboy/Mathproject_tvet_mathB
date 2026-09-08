@@ -1,0 +1,18 @@
+{
+  "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 1,
+  "components": [
+    {
+      "component_id": "src_11606",
+      "textbook_example_id": 11606,
+      "status": "verified",
+      "problem_type_id": "angle_measurement_and_conversion",
+      "domain_operation": "angle_measurement_and_conversion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11606/generate.py"
+    }
+  ]
+}

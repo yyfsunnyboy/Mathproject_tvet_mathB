@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 MAX_INPUT_LEN = 200
 _SAFE_CHARS = re.compile(r"^[0-9a-zA-Z+\-*/^=().,_\s\\{}$√]+$")
 
+_FRAC_LATEX = re.compile(r"\\?frac\s*\{([^{}]+)\}\{([^{}]+)\}", re.IGNORECASE)
 _SQRT_LATEX_BRACE = re.compile(r"\\sqrt\s*\{([^{}]+)\}", re.IGNORECASE)
 _SQRT_LATEX_PAREN = re.compile(r"\\sqrt\s*\(([^()]+)\)", re.IGNORECASE)
 _SQRT_LATEX_DIGIT = re.compile(r"\\sqrt\s*([0-9]+(?:\.[0-9]+)?)", re.IGNORECASE)
@@ -38,6 +39,7 @@ def normalize_math_expression(text: object) -> str:
         .replace("，", ",")
     )
     for _ in range(3):
+        s = _FRAC_LATEX.sub(r"((\1)/(\2))", s)
         s = _SQRT_LATEX_BRACE.sub(r"sqrt(\1)", s)
         s = _SQRT_LATEX_PAREN.sub(r"sqrt(\1)", s)
         s = _SQRT_LATEX_DIGIT.sub(r"sqrt(\1)", s)
