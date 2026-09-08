@@ -290,6 +290,40 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
   * **checker execution failure / system error**：評分器或系統執行異常，記錄日誌並返回系統錯誤，**絕不得**被靜默當成學生答錯。
   * **一般答錯**：比對結果不符，返回 incorrect。
 
+### 8.4 數學答案檢核原則
+
+所有數學答案類 checker 必須採：
+
+```text
+safe parse → normalize → mathematical equivalence → optional required-form validation
+```
+
+不得只做 `strip()` / `lower()` / `string == string`。
+
+規則：
+
+1. **數值**依數學值比較，不做純文字比對。例如 canonical `2` 應接受 `2`、`+2`、`2.0`（若 contract 允許 numeric equivalence）。
+2. **分數**允許等價分數。例如 `1/2` = `2/4` = `3/6`。是否接受小數由 `answer_contract` / `equivalence_type` 決定。
+3. **代數式**支援隱含乘法與代數等價。例如 `(x-1)(x-2)` = `(x-2)(x-1)` = `(x - 1) (x - 2)`；亦應接受 `2x`、`2(x+1)`、`x(x+3)`。
+4. **方程式**依等價性判斷，不比對左右兩邊字串。例如 `x=3` = `3=x` = `2x=6` = `x-3=0`。
+5. **multi_part** 必須逐 part 依該 part 自己的 checker 做數學等價，禁止把整個 dict stringify 後字串比對。
+6. **single_choice** 使用 semantic answer mapping：學生選到的 label 先對應選項語意值，再與正解語意比較；shuffle 後 mapping 必須同步。
+7. **text_short** 只用於真正文字答案（如「第一象限」「無解」），不得把數學式誤派去 text checker。
+8. parse failure → `ANSWER_PARSE_FAILED`（不算學生答錯）。
+9. checker exception → `CHECKER_EXECUTION_FAILED`（不得靜默當成答錯）。
+10. **因式分解等題型**：先驗證代數等價，再驗證 required form。
+
+代表案例：
+
+| canonical | 學生輸入 | 結果 |
+| --- | --- | --- |
+| `(x-1)(x-2)` | `(x-2)(x-1)` | PASS（代數等價） |
+| `1/2` | `2/4` | PASS（分數等價） |
+| `x=3` | `3=x`、`2x=6` | PASS（方程等價） |
+| `(x-1)(x-2)` 且 contract 要求 factorized form | `x^2-3x+2` | FAIL required-form（雖代數等價，但未完成因式分解） |
+
+等價與形式不得混為一談：未要求 factorized form 時，展開式可依代數等價通過；一旦 `answer_contract` 要求 `required_form=factorized`（或 `answer_shape=factored_expression`），展開式必須 FAIL。
+
 ---
 
 ## 9. 變數與約束分層 (Current)
@@ -479,8 +513,21 @@ SOP 與 production 是否已對齊：[是／否]
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.12.1 | Answer Runtime：數學答案類 checker 改為 safe parse → normalize → mathematical equivalence → optional required-form；parse failure / checker exception 不得靜默當成學生答錯 |
 | v1.12 | 確立一題一最小生成單位完整契約；新增 Exact Capability Readiness Gate、Executable Workspace Gate、Capability 狀態定義；強化 AI Implementation Contract 修改前／後回報欄位；禁止降級矩陣納入 readiness／workspace 違規 |
 | v1.11 | M2 正式封板：answer_contract 升格為 Current 權威；五種 Answer Type 完成 UI、grading、error handling 與橫向一致性驗收；修正 answer_type／presentation_mode 舊範例 |
 | v1.10 | 定義 Bootstrap 與 Healer 狀態及升格 Gate，確定 generator/oracle/validator 三元分離 |
 | v1.9 | 新增資料呈現/學生作答三層分離，正式確立五種作答套餐及禁止降級原則 |
 | v1.8 | 移除全域 fallback，確立一題一 component_id 實體隔離與 practice.py 相容規範 |
+
+---
+
+## 15. Known Issues / Technical Debt
+
+### 15.1 CartesianCoordinateSystem skill-local `check()` 仍為字串比對
+
+`skills/vh_數學B1_CartesianCoordinateSystemEstablishment.py` 的 skill-local `check()` 仍存在字串比對，未走共用數學等價 checker。
+
+本輪不處理：該問題不屬於共用 checker 層，也與 B1 Chapter 3 無關。runtime wrapper `check_answer` 在 contract 指向象限 checker 時仍走共用路徑；未對齊的是 skill 本體 `check()`。
+
+狀態：deferred。禁止順手修改。

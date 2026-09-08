@@ -595,6 +595,7 @@ def infer_answer_contract_from_problem_context(
             **base,
             "answer_type": "expression",
             "answer_shape": "factored_expression",
+            "required_form": "factorized",
             "answer_equivalence": "algebraic_equivalent",
             "equivalence_type": "algebraic_equivalent",
             "checker": "expression_checker",

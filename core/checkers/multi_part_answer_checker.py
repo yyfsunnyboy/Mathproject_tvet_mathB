@@ -3,6 +3,8 @@ from __future__ import annotations
 from fractions import Fraction
 from typing import Any
 
+from core.checkers.expression_equivalence_checker import contract_requires_factorized_form
+
 
 SUPPORTED_PART_CHECKERS = frozenset(
     {
@@ -12,9 +14,12 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "fraction_checker",
         "expression_checker",
         "expression_equivalence_checker",
+        "equation_checker",
         "linear_equation_equivalent_checker",
         "choice_label_checker",
         "decimal_tolerance_checker",
+        "text_short_checker",
+        "text_checker",
     }
 )
 
@@ -84,24 +89,42 @@ def _check_part(
         if res.get("system_error"):
             raise RuntimeError(str(res.get("result") or "grading system error"))
         return bool(res.get("correct"))
-    if checker_key in {"numeric_checker", "integer_checker"} or equiv == "numeric_exact":
+    if checker_key in {"numeric_checker", "integer_checker"} or equiv in {"numeric_exact", "numeric_equivalence", "numeric_equal"}:
         return _check_numeric_equivalent(student_answer, expected_answer)
-    if checker_key in {"rational_checker", "fraction_checker"} or equiv == "rational_equivalent":
+    if checker_key in {"rational_checker", "fraction_checker"} or equiv in {"rational_equivalent", "fraction_equal"}:
         return _check_numeric_equivalent(student_answer, expected_answer)
-    if checker_key in {"expression_checker", "expression_equivalence_checker"} or equiv == "algebraic_equivalent":
+    if checker_key in {"expression_checker", "expression_equivalence_checker"} or equiv in {
+        "algebraic_equivalent",
+        "expression_equivalence",
+        "factorized_form",
+        "required_factorized_form",
+    }:
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
 
-        return check_expression_equivalence_answer(student_answer, expected_answer)
-    if checker_key == "linear_equation_equivalent_checker" or equiv == "linear_equation_equivalent":
-        from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer
+        return check_expression_equivalence_answer(
+            student_answer,
+            expected_answer,
+            answer_contract=part,
+        )
+    if checker_key in {"equation_checker", "linear_equation_equivalent_checker"} or equiv in {
+        "equation_equivalent",
+        "linear_equation_equivalent",
+    }:
+        from core.checkers.expression_equivalence_checker import check_equation_equivalence_answer
 
-        return check_linear_equation_equivalent_answer(student_answer, expected_answer)
+        return check_equation_equivalence_answer(student_answer, expected_answer)
     if checker_key == "choice_label_checker" or equiv == "choice_label":
         from core.checkers.choice_label_checker import check_choice_label
 
         choices = part.get("choices") if isinstance(part.get("choices"), list) else []
         return bool(check_choice_label(student_answer, expected_answer, choices))
-    return _normalize_scalar(student_answer) == _normalize_scalar(expected_answer)
+    if checker_key in {"text_short_checker", "text_checker"}:
+        return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
+    from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+
+    if check_expression_equivalence_answer(student_answer, expected_answer, answer_contract=part):
+        return True
+    return False
 
 
 def check_multi_part_answer(
@@ -142,10 +165,17 @@ def check_multi_part_answer(
     for index, raw_part in enumerate(parts):
         if not isinstance(raw_part, dict):
             continue
-        key = _part_key(raw_part, index)
-        label = str(raw_part.get("label") or key).strip()
-        checker = str(raw_part.get("checker") or raw_part.get("checker_key") or "").strip()
-        equivalence = str(raw_part.get("equivalence_type") or raw_part.get("answer_equivalence") or "").strip()
+        part_contract = dict(raw_part)
+        if contract_requires_factorized_form(ac, payload) and not part_contract.get("required_form"):
+            part_contract["required_form"] = "factorized"
+            part_contract.setdefault(
+                "problem_type_id",
+                ac.get("problem_type_id") or (payload or {}).get("problem_type_id"),
+            )
+        key = _part_key(part_contract, index)
+        label = str(part_contract.get("label") or key).strip()
+        checker = str(part_contract.get("checker") or part_contract.get("checker_key") or "").strip()
+        equivalence = str(part_contract.get("equivalence_type") or part_contract.get("answer_equivalence") or "").strip()
         expected = raw_part.get("expected_answer")
         if expected is None:
             expected = _value_for_part(correct_answer, key, index)
@@ -154,8 +184,13 @@ def check_multi_part_answer(
         missing = student is None or _normalize_scalar(student) == ""
         supported = checker in SUPPORTED_PART_CHECKERS or equivalence in {
             "numeric_exact",
+            "numeric_equivalence",
             "rational_equivalent",
+            "fraction_equal",
             "algebraic_equivalent",
+            "expression_equivalence",
+            "factorized_form",
+            "equation_equivalent",
             "linear_equation_equivalent",
             "choice_label",
             "decimal_tolerance",
@@ -172,7 +207,7 @@ def check_multi_part_answer(
                 expected_answer=expected,
                 checker=checker,
                 equivalence_type=equivalence,
-                part=raw_part,
+                part=part_contract,
             )
             reason = "correct" if correct else "incorrect"
 

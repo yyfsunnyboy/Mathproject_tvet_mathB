@@ -67,6 +67,8 @@ def validate_answer_input(user_answer: Any, answer_contract: dict[str, Any] | No
         "correct": False,
         "status": "parse_error",
         "error_code": "ANSWER_PARSE_FAILED",
+        "invalid_input": True,
+        "result": "invalid input",
         "message": "答案格式不正確",
     }
     if user_answer is None:
@@ -119,6 +121,8 @@ _CONTRACT_CHECKERS = frozenset(
         "quadrant_checker",
         "classification_checker",
         "expression_equivalence_checker",
+        "expression_checker",
+        "equation_checker",
         "choice_label_checker",
         "coordinate_pair_checker",
         "linear_equation_equivalent_checker",
@@ -169,6 +173,9 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
         "math_expression_equivalence",
         "expression_equivalence",
         "radical_equivalence",
+        "algebraic_equivalent",
+        "equation_equivalent",
+        "factorized_form",
         "coordinate_pair_equivalence",
         "linear_equation_equivalent",
         "multi_part_answer",
@@ -377,15 +384,43 @@ def grade_answer_for_current_question(
     elif (
         not interval_checker_locked
         and (
-            checker == "expression_equivalence_checker"
+            checker in {"expression_equivalence_checker", "expression_checker"}
             or str(ac.get("answer_type", payload.get("answer_type", "")))
             in {"numeric_or_radical", "math_expression", "radical_number", "expression"}
         )
+        and checker not in {"equation_checker", "linear_equation_equivalent_checker"}
     ):
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_debug
 
-        expr_debug = check_expression_equivalence_debug(user_answer, correct_answer)
+        expr_debug = check_expression_equivalence_debug(
+            user_answer,
+            correct_answer,
+            answer_contract=ac if isinstance(ac, dict) else None,
+            payload=payload,
+        )
+        if expr_debug.get("error_code") == "ANSWER_PARSE_FAILED" or expr_debug.get("parser_error"):
+            return normalize_grading_result({
+                "correct": False,
+                "invalid_input": True,
+                "error_code": "ANSWER_PARSE_FAILED",
+                "result": "答案格式不正確",
+                "parser_error": expr_debug.get("parser_error"),
+            })
         is_correct = bool(expr_debug.get("correct"))
+    elif checker in {"equation_checker", "linear_equation_equivalent_checker"} or family == "linear_equation" or equiv in {"equation_equivalent", "linear_equation_equivalent"}:
+        from core.checkers.expression_equivalence_checker import check_equation_equivalence_debug
+
+        eq_debug = check_equation_equivalence_debug(user_answer, correct_answer)
+        expr_debug = eq_debug
+        if eq_debug.get("error_code") == "ANSWER_PARSE_FAILED" or eq_debug.get("parser_error"):
+            return normalize_grading_result({
+                "correct": False,
+                "invalid_input": True,
+                "error_code": "ANSWER_PARSE_FAILED",
+                "result": "答案格式不正確",
+                "parser_error": eq_debug.get("parser_error"),
+            })
+        is_correct = bool(eq_debug.get("correct"))
     elif checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
         from core.checkers.multi_part_answer_checker import check_multi_part_answer
         from core.gencode.table_question_contract import normalize_table_student_answer

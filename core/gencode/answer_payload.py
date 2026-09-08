@@ -546,7 +546,7 @@ def grade_numeric_contract_answer(
             }
         return check_decimal_tolerance_answer(user_answer, canonical, tol)
 
-    user_val, user_err = parse_single_numeric(user_answer, require_integer=require_integer)
+    user_val, user_err = parse_single_numeric(user_answer, require_integer=False)
     if user_err == "empty":
         return {"correct": False, "invalid_input": True, "result": "invalid input"}
     if user_err or user_val is None:
@@ -563,7 +563,7 @@ def grade_numeric_contract_answer(
                     "result": "批改系統錯誤：整數標準答案格式無效",
                 }
             exp_val = float(exp_frac.numerator)
-        if require_integer and abs(user_val - round(user_val)) > 1e-9:
+        if abs(user_val - round(user_val)) > 1e-9:
             return {"correct": False}
         return {"correct": abs(user_val - exp_val) < 1e-9}
 
@@ -572,6 +572,15 @@ def grade_numeric_contract_answer(
         exp_frac = _to_exact_rational(canonical)
         if user_frac is None or exp_frac is None:
             return {"correct": False, "invalid_input": True, "result": "invalid input"}
+        equiv = str(ac.get("answer_equivalence") or ac.get("equivalence_type") or "").strip()
+        allow_decimal = bool(ac.get("allow_decimal")) or equiv in {
+            "numeric_equivalence",
+            "numeric_equal",
+            "decimal_tolerance",
+            "rational_equivalent",
+        }
+        if (not allow_decimal) and "." in str(user_answer).strip():
+            return {"correct": False}
         return {"correct": user_frac == exp_frac}
 
     if checker_key == "numeric_checker" or checker_key:
