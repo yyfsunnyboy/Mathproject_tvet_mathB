@@ -732,7 +732,125 @@ def _build_synthetic_division(rng: random.Random) -> dict[str, Any]:
     }
 
 
+def _constraint_example_ids(rng: random.Random) -> set[int]:
+    constraints = getattr(rng, "_constraints", None) or {}
+    if not isinstance(constraints, dict):
+        return set()
+    ids: set[int] = set()
+    blobs: list[Any] = [constraints]
+    for key in ("v3_induced_spec", "phase1_classification"):
+        nested = constraints.get(key)
+        if isinstance(nested, dict):
+            blobs.append(nested)
+    for blob in blobs:
+        for key in ("source_example_id", "textbook_example_id"):
+            raw = blob.get(key)
+            try:
+                eid = int(raw)
+            except (TypeError, ValueError):
+                continue
+            if eid > 0:
+                ids.add(eid)
+    return ids
+
+
+def _constraint_source_text(rng: random.Random) -> str:
+    constraints = getattr(rng, "_constraints", None) or {}
+    if not isinstance(constraints, dict):
+        return ""
+    parts = [
+        str(constraints.get("source_question_text") or ""),
+        str(constraints.get("source_problem_text") or ""),
+    ]
+    for key in ("v3_induced_spec", "phase1_classification"):
+        nested = constraints.get(key)
+        if isinstance(nested, dict):
+            parts.append(str(nested.get("source_question_text") or ""))
+            parts.append(str(nested.get("source_problem_text") or ""))
+    return "\n".join(parts)
+
+
+def _looks_like_square_remainder_divisibility(rng: random.Random) -> bool:
+    """Detect 4628-style: remainder of f/(x-p)^2 is divisible by (x-q)."""
+    if 4628 in _constraint_example_ids(rng):
+        return True
+    text = _constraint_source_text(rng)
+    if "餘式被" in text and "整除" in text:
+        return True
+    return False
+
+
+def _square_factor_tex(root: int) -> str:
+    inner = _linear_factor_tex(root)
+    return r"{{\left(" + inner + r"\right)}^{2}}"
+
+
+def _solve_quadratic_square_remainder(p: int, q: int) -> tuple[int, int]:
+    """Unique (b, c) for f(x)=x^2+bx+c under the 4628 remainder conditions."""
+    if p == q:
+        raise ValueError("square_remainder_roots_must_differ")
+    b = -(p + q)
+    c = p * p + q * q - p * q
+    return b, c
+
+
+def _build_quadratic_square_remainder_divisibility(rng: random.Random) -> dict[str, Any]:
+    # Topology (教材 4628 / 110統測B):
+    # f(x)=x^2+bx+c
+    # rem(f, (x-p)^2) divisible by (x-q)
+    # rem(f, (x-q)^2) divisible by (x-p)
+    # ask c. Safe pairs keep a unique integer solution.
+    safe_pairs = ((-1, 1), (1, -1), (-2, 1), (1, -2), (-1, 2), (2, -1))
+    p, q = rng.choice(safe_pairs)
+    b_true, c_true = _solve_quadratic_square_remainder(p, q)
+    # Independent remainder check (never hard-code c).
+    rem1_at_q = (b_true + 2 * p) * q + (c_true - p * p)
+    rem2_at_p = (b_true + 2 * q) * p + (c_true - q * q)
+    if rem1_at_q != 0 or rem2_at_p != 0:
+        raise ValueError("square_remainder_conditions_inconsistent")
+    ans = str(c_true)
+    p_tex = _linear_factor_tex(p)
+    q_tex = _linear_factor_tex(q)
+    question = (
+        rf"已知$f\left( x \right)={{{{x}}^{{2}}}}+bx+c$為二次多項式。"
+        rf"若$f\left( x \right)$被${_square_factor_tex(p)}$除的餘式被${q_tex}$整除，"
+        rf"且$f\left( x \right)$被${_square_factor_tex(q)}$除的餘式被${p_tex}$整除，"
+        rf"則$c=$？"
+    )
+    textbook_choices = ["-3", "-1", "1", "3"]
+    if ans in textbook_choices:
+        distractors = [item for item in textbook_choices if item != ans]
+    else:
+        distractors = _numeric_distractors(rng, ans)
+        for extra in ("-3", "-1", "1", "3", str(-c_true), str(p * p + q * q)):
+            if extra != ans and extra not in distractors:
+                distractors.append(extra)
+        distractors = distractors[:3]
+    return {
+        "givens": {
+            "question_text": question,
+            "p": p,
+            "q": q,
+            "b": b_true,
+            "c": c_true,
+            "divisor_root_1": p,
+            "divisor_root_2": q,
+        },
+        "answer": _answer_bundle(ans, parts={"part_1": ans}, value=ans),
+        "distractors": distractors,
+        "explanation_steps": [
+            f"f(x) 與 ({_linear_factor_plain(p)})^2 均為二次且首項係數 1，"
+            f"餘式 r1(x)=(b+{2 * p})x+(c-{p * p})。",
+            f"r1 被 {_linear_factor_plain(q)} 整除 ⇒ r1({q})=0。",
+            f"同理 r2({p})=0。聯立得唯一解 c={c_true}。",
+        ],
+    }
+
+
 def _build_remainder_param_solve(rng: random.Random) -> dict[str, Any]:
+    # Style 4628: quadratic remainder-of-square divisible by the other linear factor
+    if _looks_like_square_remainder_divisibility(rng):
+        return _build_quadratic_square_remainder_divisibility(rng)
     # Style 4627: divisor known, dividend has a,b unknown, remainder given → solve a,b
     # Also isomorphic to self-assessment: divisible case asking a+b
     mode = (
@@ -1451,6 +1569,7 @@ def build_polynomial_matrix(
     constraints = constraints or {}
     prefer_choice = str((constraints or {}).get("presentation_mode") or "").strip() == "single_choice"
     setattr(rng, "_prefer_choice", prefer_choice)
+    setattr(rng, "_constraints", constraints)
     builders = {
         "polynomial_descending_power_properties": _build_descending_power_properties,
         "polynomial_param_degree_constraint": _build_param_degree_constraint,

@@ -1,7 +1,7 @@
 {
   "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
   "publish_status": "production_manifest_compiled",
-  "component_count": 21,
+  "component_count": 22,
   "components": [
     {
       "component_id": "src_4612",
@@ -134,6 +134,17 @@
       "answer_type": "expression",
       "source_kind": "example",
       "generate_py": "components/src_4627/generate.py"
+    },
+    {
+      "component_id": "src_4628",
+      "textbook_example_id": 4628,
+      "status": "verified",
+      "problem_type_id": "polynomial_remainder_param_solve",
+      "domain_operation": "polynomial_remainder_param_solve",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4628/generate.py"
     },
     {
       "component_id": "src_4633",
