@@ -412,3 +412,80 @@ def test_practice_template_no_duplicate_question_media_canvas_for_visual_spec() 
     assert "layer.hideQuestionMediaContainer(qmc)" in index_html
     adaptive_html = ADAPTIVE_TEMPLATE_PATH.read_text(encoding="utf-8")
     assert "runtime.renderToCanvas(questionVisualCanvas, visualSpec)" not in adaptive_html
+
+
+def test_extracts_modern_question_assets_and_deduplicates_visual_aids() -> None:
+    script = (
+        "const layers=require(process.argv[1]);"
+        "const payload={"
+        "visual_spec:{kind:'image',asset_path:'uploads/triangle-1.png'},"
+        "visual_aids:[{kind:'image',asset_path:'uploads/triangle-1.png'}],"
+        "image_assets:["
+        "{url:'/uploads/triangle-1.png'},"
+        "{display_path:'uploads/triangle-2.png'}"
+        "]};"
+        "process.stdout.write(JSON.stringify({"
+        "images:layers.extractImagesFromPayload(payload),"
+        "strategy:layers.shouldRenderBackgroundForPayload(payload,null)"
+        "}));"
+    )
+    result = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert result["images"] == ["uploads/triangle-1.png", "uploads/triangle-2.png"]
+    assert result["strategy"]["kind"] == "multi_image"
+    assert result["strategy"]["rawImages"] == result["images"]
+
+
+def test_multi_image_grid_contains_two_images_without_cropping() -> None:
+    script = (
+        "const layers=require(process.argv[1]);"
+        "const desktop=layers.computeImageGrid(2,800,500);"
+        "const mobile=layers.computeImageGrid(2,390,500);"
+        "const calls=[];"
+        "const ctx={canvas:{width:800,height:500,clientWidth:800,clientHeight:500},"
+        "clearRect(){},fillRect(){},save(){},restore(){},"
+        "drawImage(img,x,y,w,h){calls.push({id:img.id,x,y,w,h,ratio:w/h});},"
+        "get fillStyle(){return '#fff'},set fillStyle(_){},"
+        "get globalAlpha(){return 1},set globalAlpha(_){}};"
+        "const images=["
+        "{id:'one',naturalWidth:400,naturalHeight:200},"
+        "{id:'two',naturalWidth:200,naturalHeight:400}"
+        "];"
+        "const ok=layers.setImagesBackground(images,['one','two'],ctx,800,500);"
+        "process.stdout.write(JSON.stringify({desktop,mobile,calls,ok,meta:layers.getLastRenderMeta()}));"
+    )
+    result = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert result["ok"] is True
+    assert result["desktop"]["cols"] == 2
+    assert result["desktop"]["rows"] == 1
+    assert result["mobile"]["cols"] == 1
+    assert result["mobile"]["rows"] == 2
+    assert len(result["calls"]) == 2
+    assert abs(result["calls"][0]["ratio"] - 2.0) < 0.001
+    assert abs(result["calls"][1]["ratio"] - 0.5) < 0.001
+    assert result["meta"]["scaleMode"] == "multi_image_contain"
+    assert result["meta"]["imageCount"] == 2
+
+
+def test_standard_practice_routes_image_assets_to_scratchpad_not_question_media() -> None:
+    index_html = INDEX_TEMPLATE_PATH.read_text(encoding="utf-8")
+    load_branch = index_html[index_html.index("if (isTableFillQuestion(data))") :]
+    load_branch = load_branch[: load_branch.index("// 3. MathJax")]
+    assert "renderQuestionImageAssets(data)" not in load_branch
+    assert "applyQuestionScratchpadBackground(data)" in load_branch
+    assert "layer.loadImageBackgrounds(imgSources)" in index_html
+    assert "layer.setImagesBackground(" in index_html
+
+
+def test_practice_templates_keep_background_below_ink_and_clear_only_ink() -> None:
+    index_html = INDEX_TEMPLATE_PATH.read_text(encoding="utf-8")
+    adaptive_html = ADAPTIVE_TEMPLATE_PATH.read_text(encoding="utf-8")
+    for template in (index_html, adaptive_html):
+        assert 'id="drawing-background-canvas"' in template
+        assert 'id="handwriting-canvas"' in template
+        assert "clearInkLayer" in template
+        assert "loadImageBackgrounds" in template
+        assert "setImagesBackground" in template
+    assert "z-index: 1 !important" in index_html
+    assert "z-index: 2 !important" in index_html
+    assert "#drawing-background-canvas { z-index:1; pointer-events:none; }" in adaptive_html
+    assert "#handwriting-canvas { z-index:2;" in adaptive_html

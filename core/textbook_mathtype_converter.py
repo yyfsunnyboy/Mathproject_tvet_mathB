@@ -153,6 +153,22 @@ def extract_equation_native(ole_bytes: bytes) -> tuple[bytes | None, str | None]
             pass
 
 
+def _is_embedded_ooxml_package(data: bytes) -> bool:
+    """Identify an embedded Office Open XML package mislabeled as equation OLE.
+
+    Some legacy Word documents retain ``Equation.DSMT4`` on the object node
+    while its relationship target is an embedded DOCX ZIP package.  Such an
+    object has no Equation Native stream and must remain untouched rather than
+    being replaced with a math failure placeholder.
+    """
+    try:
+        with zipfile.ZipFile(io.BytesIO(data), "r") as package:
+            names = {name.replace("\\", "/") for name in package.namelist()}
+    except (OSError, zipfile.BadZipFile):
+        return False
+    return "[Content_Types].xml" in names and "word/document.xml" in names
+
+
 def _make_latex_run(latex_text: str) -> etree._Element:
     run = etree.Element(f"{{{W_NS}}}r")
     text = etree.SubElement(run, f"{{{W_NS}}}t")
@@ -280,6 +296,12 @@ def convert_docx_mathtype_to_latex_docx(
                 if not embed_path:
                     raise ValueError("missing_embedding_path")
                 ole_bytes = zf.read(embed_path)
+                if _is_embedded_ooxml_package(ole_bytes):
+                    report["status"] = "not_mtef"
+                    report["error"] = "embedded_ooxml_not_mtef"
+                    report["classification"] = "embedded_ooxml"
+                    formula_reports.append(report)
+                    continue
                 native, native_err = extract_equation_native(ole_bytes)
                 if native is None:
                     raise ValueError(native_err or "equation_native_missing")
@@ -421,7 +443,8 @@ def convert_docx_mathtype_to_latex_docx(
                 out_zf.writestr(item, data)
 
     ok_count = sum(1 for f in formula_reports if f["status"] == "ok")
-    fail_count = sum(1 for f in formula_reports if f["status"] != "ok")
+    fail_count = sum(1 for f in formula_reports if f["status"] == "failed")
+    non_mtef_count = sum(1 for f in formula_reports if f["status"] == "not_mtef")
     native_ok = sum(1 for f in formula_reports if f.get("equation_native_found"))
     eq_ok = sum(1 for e in eq_reports if e["status"] == "ok")
 
@@ -437,6 +460,7 @@ def convert_docx_mathtype_to_latex_docx(
         "equation_native_ok": native_ok,
         "converted_ok": ok_count,
         "converted_failed": fail_count,
+        "non_mtef_objects": non_mtef_count,
         "eq_fields": len(eq_reports),
         "eq_converted_ok": eq_ok,
         "formulas": formula_reports,

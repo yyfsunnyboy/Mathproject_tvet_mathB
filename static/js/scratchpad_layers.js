@@ -12,11 +12,13 @@
     const REGION_EDGE_PADDING = 14;
     const REGION_WIDTH_RATIO = 0.7;
     const REGION_HEIGHT_RATIO = 0.68;
-    const IMAGE_OPACITY = 0.72;
+    const IMAGE_OPACITY = 0.86;
 
     let storedVisualSpec = null;
     let storedQuestionImage = null;
     let storedImageSource = null;
+    let storedQuestionImages = [];
+    let storedImageSources = [];
     let lastRenderBounds = null;
     let lastRenderMeta = null;
 
@@ -54,6 +56,31 @@
             canvasWidth: cw,
             canvasHeight: ch
         };
+    }
+
+    function computeImageGrid(imageCount, canvasWidth, canvasHeight, edgePadding) {
+        const count = Math.max(0, Math.floor(Number(imageCount) || 0));
+        const region = computeFullCanvasRegion(canvasWidth, canvasHeight, edgePadding);
+        if (!count) {
+            return { cols: 0, rows: 0, cells: [], region: region };
+        }
+        const gap = 12;
+        const cols = count === 1 ? 1 : (region.width < 520 ? 1 : Math.min(2, count));
+        const rows = Math.ceil(count / cols);
+        const cellWidth = Math.max(1, (region.width - gap * (cols - 1)) / cols);
+        const cellHeight = Math.max(1, (region.height - gap * (rows - 1)) / rows);
+        const cells = [];
+        for (let index = 0; index < count; index += 1) {
+            const col = index % cols;
+            const row = Math.floor(index / cols);
+            cells.push({
+                x: region.x + col * (cellWidth + gap),
+                y: region.y + row * (cellHeight + gap),
+                width: cellWidth,
+                height: cellHeight
+            });
+        }
+        return { cols: cols, rows: rows, cells: cells, region: region, gap: gap };
     }
 
     function computeContainRect(naturalWidth, naturalHeight, regionWidth, regionHeight, innerPadding, regionOffsetX, regionOffsetY) {
@@ -158,6 +185,8 @@
         storedVisualSpec = null;
         storedQuestionImage = null;
         storedImageSource = null;
+        storedQuestionImages = [];
+        storedImageSources = [];
         lastRenderBounds = null;
         lastRenderMeta = null;
     }
@@ -171,6 +200,8 @@
             visualSpec: storedVisualSpec,
             questionImage: storedQuestionImage,
             imageSource: storedImageSource,
+            questionImages: storedQuestionImages.slice(),
+            imageSources: storedImageSources.slice(),
             lastRenderBounds: lastRenderBounds,
             lastRenderMeta: lastRenderMeta
         };
@@ -183,41 +214,54 @@
     }
 
     function drawStoredImageBackground(ctx, cssWidth, cssHeight) {
-        if (!storedQuestionImage || !ctx) {
+        const images = storedQuestionImages.length
+            ? storedQuestionImages
+            : (storedQuestionImage ? [storedQuestionImage] : []);
+        if (!images.length || !ctx) {
             return false;
         }
-        const region = computeQuestionBackgroundRegion(cssWidth, cssHeight);
-        const rect = computeContainRect(
-            storedQuestionImage.naturalWidth,
-            storedQuestionImage.naturalHeight,
-            region.width,
-            region.height,
-            region.edgePadding,
-            region.x,
-            region.y
-        );
+        const isMulti = images.length > 1;
+        const region = isMulti
+            ? computeFullCanvasRegion(cssWidth, cssHeight)
+            : computeQuestionBackgroundRegion(cssWidth, cssHeight);
+        const grid = isMulti ? computeImageGrid(images.length, cssWidth, cssHeight) : null;
+        const rects = images.map(function (image, index) {
+            const cell = isMulti ? grid.cells[index] : region;
+            return computeContainRect(
+                image.naturalWidth,
+                image.naturalHeight,
+                cell.width,
+                cell.height,
+                isMulti ? 6 : region.edgePadding,
+                cell.x,
+                cell.y
+            );
+        });
         ctx.save();
         ctx.globalAlpha = IMAGE_OPACITY;
-        ctx.drawImage(
-            storedQuestionImage,
-            rect.x,
-            rect.y,
-            rect.width,
-            rect.height
-        );
+        rects.forEach(function (rect, index) {
+            ctx.drawImage(images[index], rect.x, rect.y, rect.width, rect.height);
+        });
         ctx.restore();
+        const minX = Math.min.apply(null, rects.map(function (rect) { return rect.x; }));
+        const minY = Math.min.apply(null, rects.map(function (rect) { return rect.y; }));
+        const maxX = Math.max.apply(null, rects.map(function (rect) { return rect.x + rect.width; }));
+        const maxY = Math.max.apply(null, rects.map(function (rect) { return rect.y + rect.height; }));
         setLastRenderBounds({
-            minX: rect.x,
-            minY: rect.y,
-            maxX: rect.x + rect.width,
-            maxY: rect.y + rect.height,
-            width: rect.width,
-            height: rect.height
+            minX: minX,
+            minY: minY,
+            maxX: maxX,
+            maxY: maxY,
+            width: maxX - minX,
+            height: maxY - minY
         });
         setLastRenderMeta({
-            scaleMode: 'image_contain',
+            scaleMode: isMulti ? 'multi_image_contain' : 'image_contain',
             equalUnits: false,
-            imageScale: rect.scale
+            imageCount: images.length,
+            imageScales: rects.map(function (rect) { return rect.scale; }),
+            gridCols: isMulti ? grid.cols : 1,
+            gridRows: isMulti ? grid.rows : 1
         });
         return true;
     }
@@ -289,6 +333,8 @@
             storedVisualSpec = null;
             storedQuestionImage = null;
             storedImageSource = null;
+            storedQuestionImages = [];
+            storedImageSources = [];
             if (backgroundCtx) {
                 clearBackgroundCanvas(backgroundCtx, cssWidth, cssHeight);
             }
@@ -297,6 +343,8 @@
         storedVisualSpec = visualSpec || null;
         storedQuestionImage = null;
         storedImageSource = null;
+        storedQuestionImages = [];
+        storedImageSources = [];
         if (!backgroundCtx) {
             return false;
         }
@@ -304,10 +352,22 @@
     }
 
     function setImageBackground(image, imageSource, backgroundCtx, cssWidth, cssHeight) {
-        storedQuestionImage = image || null;
-        storedImageSource = imageSource || null;
+        return setImagesBackground(
+            image ? [image] : [],
+            imageSource ? [imageSource] : [],
+            backgroundCtx,
+            cssWidth,
+            cssHeight
+        );
+    }
+
+    function setImagesBackground(images, imageSources, backgroundCtx, cssWidth, cssHeight) {
+        storedQuestionImages = Array.isArray(images) ? images.filter(Boolean) : [];
+        storedImageSources = Array.isArray(imageSources) ? imageSources.filter(Boolean) : [];
+        storedQuestionImage = storedQuestionImages[0] || null;
+        storedImageSource = storedImageSources[0] || null;
         storedVisualSpec = null;
-        if (!backgroundCtx || !storedQuestionImage) {
+        if (!backgroundCtx || !storedQuestionImages.length) {
             return false;
         }
         return redrawQuestionBackground(backgroundCtx, cssWidth, cssHeight, null);
@@ -330,6 +390,11 @@
         });
     }
 
+    function loadImageBackgrounds(imageSources) {
+        const sources = Array.isArray(imageSources) ? imageSources.filter(Boolean) : [];
+        return Promise.all(sources.map(loadImageBackground));
+    }
+
     function hideQuestionMediaContainer(container) {
         if (!container) {
             return;
@@ -338,37 +403,53 @@
         container.style.display = 'none';
     }
 
-    function extractImageFromPayload(payload) {
+    function extractImagesFromPayload(payload) {
         if (!payload || typeof payload !== 'object') {
-            return '';
+            return [];
         }
-        let rawImage = payload.image_base64;
-        const visualSpec = payload.visual_spec;
-        if ((!rawImage || String(rawImage).trim() === '') && visualSpec && typeof visualSpec === 'object') {
-            rawImage = visualSpec.image_base64;
-        }
-        const tableData = payload.table_data;
-        if ((!rawImage || String(rawImage).trim() === '') && tableData && typeof tableData === 'object') {
-            rawImage = tableData.image_base64;
-        }
-        if ((!rawImage || String(rawImage).trim() === '') && payload.image_url) {
-            rawImage = payload.image_url;
-        }
-        if (!rawImage && payload.visual_aids) {
-            if (typeof payload.visual_aids === 'string') {
-                rawImage = payload.visual_aids;
-            } else if (payload.visual_aids.plot_base64) {
-                rawImage = payload.visual_aids.plot_base64;
-            } else if (Array.isArray(payload.visual_aids)) {
-                const imgObj = payload.visual_aids.find(function (item) {
-                    return item && item.type === 'image/png';
-                });
-                if (imgObj) {
-                    rawImage = imgObj.value;
-                }
+        const candidates = [];
+        function add(value) {
+            const source = String(value || '').trim();
+            if (!source) return;
+            const key = source.replace(/^\/+/, '');
+            if (!candidates.some(function (item) { return item.key === key; })) {
+                candidates.push({ key: key, source: source });
             }
         }
-        return rawImage && String(rawImage).trim() !== '' ? rawImage : '';
+        function addObject(item) {
+            if (!item || typeof item !== 'object') return;
+            add(item.url || item.src || item.image_url || item.image_base64
+                || item.value || item.asset_path || item.display_path || item.path);
+        }
+
+        add(payload.image_base64);
+        add(payload.image_url);
+        const visualSpec = payload.visual_spec;
+        if (visualSpec && typeof visualSpec === 'object') {
+            addObject(visualSpec);
+        }
+        const tableData = payload.table_data;
+        if (tableData && typeof tableData === 'object') {
+            addObject(tableData);
+        }
+        if (Array.isArray(payload.image_assets)) {
+            payload.image_assets.forEach(addObject);
+        }
+        if (payload.visual_aids) {
+            if (typeof payload.visual_aids === 'string') {
+                add(payload.visual_aids);
+            } else if (Array.isArray(payload.visual_aids)) {
+                payload.visual_aids.forEach(addObject);
+            } else {
+                addObject(payload.visual_aids);
+            }
+        }
+        return candidates.map(function (item) { return item.source; });
+    }
+
+    function extractImageFromPayload(payload) {
+        const images = extractImagesFromPayload(payload);
+        return images[0] || '';
     }
 
     function shouldRenderBackgroundForPayload(payload, visualRuntime) {
@@ -380,9 +461,13 @@
         if (runtime && runtime.isVisualSpecRenderable && runtime.isVisualSpecRenderable(visualSpec)) {
             return { kind: 'visual_spec', visualSpec: visualSpec };
         }
-        const rawImage = extractImageFromPayload(payload);
-        if (rawImage) {
-            return { kind: 'image', rawImage: rawImage };
+        const rawImages = extractImagesFromPayload(payload);
+        if (rawImages.length) {
+            return {
+                kind: rawImages.length > 1 ? 'multi_image' : 'image',
+                rawImage: rawImages[0],
+                rawImages: rawImages
+            };
         }
         return { kind: 'none' };
     }
@@ -423,6 +508,7 @@
         IMAGE_OPACITY: IMAGE_OPACITY,
         computeQuestionBackgroundRegion: computeQuestionBackgroundRegion,
         computeFullCanvasRegion: computeFullCanvasRegion,
+        computeImageGrid: computeImageGrid,
         computeContainRect: computeContainRect,
         measureBackgroundContentBounds: measureBackgroundContentBounds,
         validateQuadrantBounds: validateQuadrantBounds,
@@ -435,8 +521,11 @@
         clearBackgroundCanvas: clearBackgroundCanvas,
         setVisualSpecBackground: setVisualSpecBackground,
         setImageBackground: setImageBackground,
+        setImagesBackground: setImagesBackground,
         loadImageBackground: loadImageBackground,
+        loadImageBackgrounds: loadImageBackgrounds,
         extractImageFromPayload: extractImageFromPayload,
+        extractImagesFromPayload: extractImagesFromPayload,
         hideQuestionMediaContainer: hideQuestionMediaContainer,
         shouldRenderBackgroundForPayload: shouldRenderBackgroundForPayload,
         clearInkLayer: clearInkLayer

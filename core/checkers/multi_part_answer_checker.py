@@ -18,6 +18,7 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "linear_equation_equivalent_checker",
         "choice_label_checker",
         "decimal_tolerance_checker",
+        "solution_set_checker",
         "text_short_checker",
         "text_checker",
     }
@@ -118,6 +119,10 @@ def _check_part(
 
         choices = part.get("choices") if isinstance(part.get("choices"), list) else []
         return bool(check_choice_label(student_answer, expected_answer, choices))
+    if checker_key == "solution_set_checker" or equiv == "unordered_solution_set":
+        from core.checkers.solution_set_checker import check_solution_set_answer
+
+        return check_solution_set_answer(student_answer, expected_answer)
     if checker_key in {"text_short_checker", "text_checker"}:
         return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
     from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
@@ -194,6 +199,7 @@ def check_multi_part_answer(
             "linear_equation_equivalent",
             "choice_label",
             "decimal_tolerance",
+            "unordered_solution_set",
         }
         correct = False
         reason = ""

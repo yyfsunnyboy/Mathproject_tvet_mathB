@@ -2652,6 +2652,10 @@
                 return value;
             }
 
+            if (/^(uploads|static)\//i.test(value)) {
+                return `/${value}`;
+            }
+
             return `data:image/png;base64,${value}`;
         }
 
@@ -2699,6 +2703,8 @@
         function resetScratchpadForNextQuestion() {
             const layer = getScratchpadBackgroundLayer();
             if (layer) layer.resetQuestionBackground();
+            const scratchpad = document.getElementById('scratchpad-container');
+            if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
             const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
             const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
             if (layer && backgroundCtx) {
@@ -2806,6 +2812,8 @@
             if (bgInfo.kind === 'none') {
                 layer.resetQuestionBackground();
                 layer.clearBackgroundCanvas(backgroundCtx, size.cw, size.ch);
+                const scratchpad = document.getElementById('scratchpad-container');
+                if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
                 return Promise.resolve(false);
             }
             if (bgInfo.kind === 'visual_spec') {
@@ -2841,13 +2849,34 @@
                 });
                 return Promise.resolve(ok);
             }
-            const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
-            return layer.loadImageBackground(imgSource)
-                .then((img) => {
-                    const ok = layer.setImageBackground(img, imgSource, backgroundCtx, size.cw, size.ch);
+            const imgSources = (bgInfo.rawImages || [bgInfo.rawImage])
+                .map(normalizeQuestionImageSource)
+                .filter(Boolean);
+            const scratchpad = document.getElementById('scratchpad-container');
+            const isMultiImage = imgSources.length > 1;
+            if (scratchpad) {
+                scratchpad.classList.toggle('scratchpad-has-figures', isMultiImage);
+                scratchpad.style.display = '';
+            }
+            scheduleResizeCanvas();
+            const imageSize = resolveScratchpadCssSize();
+            return layer.loadImageBackgrounds(imgSources)
+                .then((images) => {
+                    const ok = layer.setImagesBackground(
+                        images,
+                        imgSources,
+                        backgroundCtx,
+                        imageSize.cw,
+                        imageSize.ch
+                    );
                     if (ok) {
                         layer.hideQuestionMediaContainer(qmc);
                     }
+                    requestAnimationFrame(() => {
+                        scheduleResizeCanvas();
+                        const later = resolveScratchpadCssSize();
+                        layer.redrawQuestionBackground(backgroundCtx, later.cw, later.ch, window.VisualSpecRuntime);
+                    });
                     return ok;
                 })
                 .catch((err) => {
@@ -4102,6 +4131,9 @@
                     || '',
                 interaction_type: payload.interaction_type || '',
                 visual_spec: payload.visual_spec || null,
+                visual_aids: Array.isArray(payload.visual_aids) ? payload.visual_aids.slice() : payload.visual_aids,
+                image_assets: Array.isArray(payload.image_assets) ? payload.image_assets.slice() : [],
+                image_url: payload.image_url || '',
                 subquestions: Array.isArray(payload.subquestions) ? payload.subquestions.slice() : [],
                 table_data: payload.table_data || {},
                 table_question: payload.table_question || {},
@@ -5130,8 +5162,6 @@
                             qmc.innerHTML = data.table_data.html;
                             qmc.style.display = 'block';
                         }
-                        saveState();
-                    } else if (renderQuestionImageAssets(data)) {
                         saveState();
                     } else {
                         applyQuestionScratchpadBackground(data).then(() => {

@@ -53,6 +53,7 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
             "radical_number",
             "math_expression",
             "expression",
+            "short_answer",
         ],
         "equivalence_types": [
             "radical_equivalence",
@@ -71,6 +72,7 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
             "radical_number",
             "math_expression",
             "expression",
+            "short_answer",
         ],
         "equivalence_types": [
             "radical_equivalence",

@@ -14,9 +14,10 @@ from docx.text.paragraph import Paragraph
 from lxml import etree
 
 from core.mtef import MTEF, equation_native_to_latex, mtef_bytes_to_latex
-from core.mtef.record import MtAST, MtChar, MtLine, MtTmpl, RecordType, SelectorType
+from core.mtef.record import MtAST, MtChar, MtLine, MtMatrix, MtTmpl, RecordType, SelectorType
 from core.textbook_importer_v3_docx import find_reference_docx_in_storage
 from core.textbook_mathtype_converter import (
+    _is_embedded_ooxml_package,
     convert_docx_mathtype_to_latex_docx,
     convert_eq_instruction_to_latex,
     wrap_latex_for_v2,
@@ -62,6 +63,15 @@ def test_wrap_latex_for_v2_uses_inline_delimiters():
     assert wrap_latex_for_v2("  ") == ""
 
 
+def test_embedded_ooxml_is_not_misclassified_as_mtef():
+    package = io.BytesIO()
+    with zipfile.ZipFile(package, "w") as zf:
+        zf.writestr("[Content_Types].xml", "<Types/>")
+        zf.writestr("word/document.xml", "<w:document/>")
+    assert _is_embedded_ooxml_package(package.getvalue())
+    assert not _is_embedded_ooxml_package(b"not-a-zip-or-ole")
+
+
 def test_simple_token_and_operators():
     latex = _render_ast([_ast_line([_ast_char(ord("1")), _ast_char(ord("+")), _ast_char(ord("2"))])])
     assert "1" in latex and "+" in latex and "2" in latex
@@ -104,6 +114,60 @@ def test_sqrt_template():
     node.children = [_ast_line([_ast_char(ord("2"))]), _ast_line([])]
     latex = _render_ast([_ast_line([node])])
     assert r"\sqrt" in latex
+
+
+def test_box_template_preserves_content():
+    tmpl = MtTmpl()
+    tmpl.selector = SelectorType.tmBOX
+    tmpl.variation = 0x001E
+    node = MtAST(RecordType.TMPL, tmpl, None)
+    node.children = [_ast_line([_ast_char(ord("4"))])]
+    latex = _render_ast([_ast_line([node])])
+    assert r"\boxed{ 4 }" in latex
+
+
+def test_matrix_renderer_preserves_first_cell_and_all_rows():
+    matrix = MtMatrix()
+    matrix.rows = 2
+    matrix.cols = 2
+    node = MtAST(RecordType.MATRIX, matrix, None)
+    node.children = [
+        _ast_line([_ast_char(ord("1"))]),
+        _ast_line([_ast_char(ord("2"))]),
+        _ast_line([_ast_char(ord("3"))]),
+        _ast_line([_ast_char(ord("4"))]),
+    ]
+    latex = _render_ast([_ast_line([node])])
+    assert r"\begin{array}{cc}" in latex
+    assert "1 & 2" in latex
+    assert r"3 & 4" in latex
+
+
+def test_matrix_record_consumes_partition_bytes_before_object_list():
+    # MTEF header followed by a 1x1 matrix.  The two zero bytes after rows
+    # and cols are packed row/column partition styles, not END records.
+    body = bytes(
+        [
+            5, 0, 0, 0, 0, 0, 0,  # MTEF header + empty app + inline
+            RecordType.LINE, 0,
+            RecordType.MATRIX, 0, 1, 1, 1, 1, 1, 0, 0,
+            RecordType.LINE, 0,
+            RecordType.CHAR, 0, 128 + 8, ord("x"), 0,
+            RecordType.END,
+            RecordType.END,
+            RecordType.END,
+        ]
+    )
+    eqn = MTEF()
+    eqn.reader = io.BytesIO(body)
+    eqn.readRecord()
+    eqn.makeAST()
+    assert eqn.Valid
+    assert "x" in eqn.Translate()
+    matrix_nodes = [node for node in eqn.nodes if node.tag == RecordType.MATRIX]
+    assert len(matrix_nodes) == 1
+    assert matrix_nodes[0].value.row_parts == b"\x00"
+    assert matrix_nodes[0].value.col_parts == b"\x00"
 
 
 def test_greek_and_degree_char_maps():

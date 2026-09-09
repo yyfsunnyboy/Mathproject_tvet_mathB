@@ -104,10 +104,6 @@ class MTEF:
                 self.readMatrix(matrix)
 
                 self.nodes.append(MtAST(RecordType.MATRIX, matrix, None))
-
-                # 匹配矩阵数据下面的2个nil
-                self.nodes.append(MtAST(RecordType.LINE, MtLine(), None))
-                self.nodes.append(MtAST(RecordType.LINE, MtLine(), None))
             elif record == RecordType.EMBELL:
                 embell = MtEmbellRd()
                 self.readEmbell(embell)
@@ -430,6 +426,17 @@ class MTEF:
         # 读取rows和cols
         matrix.rows = Helper.bytes2int(self.reader.read(1)) # uint8
         matrix.cols = Helper.bytes2int(self.reader.read(1)) # uint8
+
+        # MTEF v5 stores a two-bit line style for each possible row and
+        # column partition (count + 1), padded to a whole byte.  Leaving
+        # these bytes unread shifts the rest of the record stream and makes
+        # their values look like LINE/TMPL records.
+        row_part_bytes = (2 * (matrix.rows + 1) + 7) // 8
+        col_part_bytes = (2 * (matrix.cols + 1) + 7) // 8
+        matrix.row_parts = self.reader.read(row_part_bytes)
+        matrix.col_parts = self.reader.read(col_part_bytes)
+        if len(matrix.row_parts) != row_part_bytes or len(matrix.col_parts) != col_part_bytes:
+            self.Valid = False
 
         # print('(DEBUG)MTEF.readMatrix.matrix:', matrix)
         return None
@@ -1145,6 +1152,15 @@ class MTEF:
                 buf += tmplStr
 
                 return buf, None
+            elif tmpl.selector == SelectorType.tmBOX:
+                mainAST = ast.children[0] if ast.children else None
+                mainSlot, _ = self.makeLatex(mainAST) if mainAST is not None else ("", None)
+                if mainSlot:
+                    # LaTeX has no portable partial/rounded-box primitive;
+                    # preserve the semantic boxed expression for every MTEF
+                    # TBoxBoxClass variation.
+                    buf += "\\boxed{ %s }" % mainSlot
+                return buf, None
             else:
                 self.Valid = False
                 pass  # silenced
@@ -1165,24 +1181,26 @@ class MTEF:
                 idx += 1
             return buf, None
         elif ast.tag == RecordType.MATRIX:
-            matrixCol = int(ast.value.cols)
-            idx = 0
-            for _ast in ast.children:
-                _latex, _ = self.makeLatex(_ast)
+            matrix_cols = max(1, int(ast.value.cols or 0))
+            cells = []
+            for child in ast.children:
+                latex, _ = self.makeLatex(child)
+                cells.append(latex)
 
-                if idx == 0:
-                    buf += " \\begin{array} {} "
-                    continue
+            # A 1x1 MATRIX is commonly emitted by MathType as a layout
+            # container.  Returning its sole cell avoids unnecessary array
+            # markup while preserving the complete object list.
+            if int(ast.value.rows or 0) == 1 and matrix_cols == 1 and len(cells) == 1:
+                return cells[0], None
 
-                buf += _latex
-
-                if idx%matrixCol == 0:
-                    buf += " \\\\ "
-                else:
-                    buf += " & "
-                idx += 1
-
-            buf += " \\end{array} "
+            rows = []
+            for start in range(0, len(cells), matrix_cols):
+                rows.append(" & ".join(cells[start:start + matrix_cols]))
+            alignment = "c" * matrix_cols
+            buf += " \\begin{array}{%s} %s \\end{array} " % (
+                alignment,
+                " \\\\ ".join(rows),
+            )
             return buf, None
         elif ast.tag == RecordType.LINE:
             for _ast in ast.children:

@@ -1,0 +1,5197 @@
+[
+  {
+    "formula_index": 198,
+    "embedding_path": "word/embeddings/oleObject208.bin",
+    "location": {
+      "block_index": 71,
+      "paragraph_index": 161,
+      "table_index": 13,
+      "row": 1,
+      "col": 0,
+      "run_index": 20,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 52,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 52,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 4 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 199,
+    "embedding_path": "word/embeddings/oleObject209.bin",
+    "location": {
+      "block_index": 71,
+      "paragraph_index": 161,
+      "table_index": 13,
+      "row": 1,
+      "col": 0,
+      "run_index": 21,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 48,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 0 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 200,
+    "embedding_path": "word/embeddings/oleObject210.bin",
+    "location": {
+      "block_index": 71,
+      "paragraph_index": 161,
+      "table_index": 13,
+      "row": 1,
+      "col": 0,
+      "run_index": 22,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 295,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 115,
+                              "typeface": 130,
+                              "children": []
+                            },
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 105,
+                              "typeface": 130,
+                              "children": []
+                            },
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 110,
+                              "typeface": 130,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ sin } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 201,
+    "embedding_path": "word/embeddings/oleObject211.bin",
+    "location": {
+      "block_index": 71,
+      "paragraph_index": 161,
+      "table_index": 13,
+      "row": 1,
+      "col": 0,
+      "run_index": 26,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 332,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 46,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 52,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 50,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 56,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "TMPL",
+              "selector": 37,
+              "variation": 30,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 46,
+                      "typeface": 130,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 54,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 52,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 50,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 55,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 56,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 55,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 54,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 0.642787609 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 204,
+    "embedding_path": "word/embeddings/oleObject214.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 10,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 52,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 52,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 4 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 205,
+    "embedding_path": "word/embeddings/oleObject215.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 11,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 57,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 9 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 206,
+    "embedding_path": "word/embeddings/oleObject216.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 12,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 286,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 247,
+        "typeface": 134
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 247,
+                              "typeface": 134,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ \\div  } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 207,
+    "embedding_path": "word/embeddings/oleObject217.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 13,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 54,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 6 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 208,
+    "embedding_path": "word/embeddings/oleObject218.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 14,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 48,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 0 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 209,
+    "embedding_path": "word/embeddings/oleObject219.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 15,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 286,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 43,
+        "typeface": 134
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 43,
+                              "typeface": 134,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ + } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 210,
+    "embedding_path": "word/embeddings/oleObject220.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 16,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 51,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 51,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 3 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 211,
+    "embedding_path": "word/embeddings/oleObject221.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 17,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 285,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 56,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 56,
+                              "typeface": 136,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 8 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 212,
+    "embedding_path": "word/embeddings/oleObject222.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 18,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 286,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61,
+                              "typeface": 134,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ = } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 213,
+    "embedding_path": "word/embeddings/oleObject223.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 19,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 295,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "MATRIX",
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "TMPL",
+                      "selector": 37,
+                      "variation": 30,
+                      "options": 0,
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 99,
+                              "typeface": 130,
+                              "children": []
+                            },
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 111,
+                              "typeface": 130,
+                              "children": []
+                            },
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 115,
+                              "typeface": 130,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ cos } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 214,
+    "embedding_path": "word/embeddings/oleObject224.bin",
+    "location": {
+      "block_index": 73,
+      "paragraph_index": 169,
+      "table_index": 14,
+      "row": 0,
+      "col": 0,
+      "run_index": 22,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 327,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "TMPL",
+        "selector": 37,
+        "variation": 30
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 46,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 49,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 53,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 53,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "TMPL",
+              "selector": 37,
+              "variation": 30,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 46,
+                      "typeface": 130,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 55,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 55,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 49,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 53,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 53,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 54,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 54,
+                      "typeface": 136,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ \\boxed{ 0.77915566 } $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 270,
+    "embedding_path": "word/embeddings/oleObject279.bin",
+    "location": {
+      "block_index": 100,
+      "paragraph_index": 220,
+      "table_index": 20,
+      "row": 0,
+      "col": 0,
+      "run_index": 1,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 431,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 0,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 49,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 53,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 49,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 53,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ sin15{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad  } \\right )=cos\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 271,
+    "embedding_path": "word/embeddings/oleObject280.bin",
+    "location": {
+      "block_index": 100,
+      "paragraph_index": 221,
+      "table_index": 20,
+      "row": 0,
+      "col": 0,
+      "run_index": 1,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 427,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 56,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 56,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 48,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ cos80{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad  } \\right )=sin\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 278,
+    "embedding_path": "word/embeddings/oleObject287.bin",
+    "location": {
+      "block_index": 100,
+      "paragraph_index": 225,
+      "table_index": 20,
+      "row": 1,
+      "col": 0,
+      "run_index": 6,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 431,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 0,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 54,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 53,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 54,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 53,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ sin65{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad  } \\right )=cos\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 279,
+    "embedding_path": "word/embeddings/oleObject288.bin",
+    "location": {
+      "block_index": 100,
+      "paragraph_index": 225,
+      "table_index": 20,
+      "row": 1,
+      "col": 0,
+      "run_index": 12,
+      "in_table_cell": true
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 427,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 55,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 55,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 55,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ cos77{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad  } \\right )=sin\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 337,
+    "embedding_path": "word/embeddings/oleObject346.bin",
+    "location": {
+      "block_index": 133,
+      "paragraph_index": 279,
+      "table_index": null,
+      "row": null,
+      "col": null,
+      "run_index": 27,
+      "in_table_cell": false
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 427,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 51,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 51,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 48,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ sin30{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad  } \\right )=cos\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  },
+  {
+    "formula_index": 338,
+    "embedding_path": "word/embeddings/oleObject347.bin",
+    "location": {
+      "block_index": 133,
+      "paragraph_index": 279,
+      "table_index": null,
+      "row": null,
+      "col": null,
+      "run_index": 33,
+      "in_table_cell": false
+    },
+    "ole_size": 3584,
+    "native_error": null,
+    "native_size": 427,
+    "open_error": null,
+    "header": {
+      "mtef_version": 5,
+      "platform": 1,
+      "product": 0,
+      "version": 6,
+      "version_sub": 9,
+      "application": "DSMT6",
+      "inline": 1,
+      "valid_after_records": true,
+      "unknown_record": null,
+      "unknown_offset": null
+    },
+    "node_sequence": [
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "ENCODING_DEF"
+      },
+      {
+        "record": "FONT_DEF"
+      },
+      {
+        "record": "EQN_PREFS"
+      },
+      {
+        "record": "FULL"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 99,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 111,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 52,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 53,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 57,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 48,
+        "typeface": 136
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 176,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 8722,
+        "typeface": 134
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61,
+        "typeface": 134
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 115,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 105,
+        "typeface": 130
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 110,
+        "typeface": 130
+      },
+      {
+        "record": "TMPL",
+        "selector": 1,
+        "variation": 3
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "MATRIX"
+      },
+      {
+        "record": "LINE"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 61189,
+        "typeface": 152
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 40,
+        "typeface": 150
+      },
+      {
+        "record": "CHAR",
+        "mtcode": 41,
+        "typeface": 150
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      },
+      {
+        "record": "END"
+      }
+    ],
+    "ast": {
+      "record": "ROOT",
+      "children": [
+        {
+          "record": "LINE",
+          "null": false,
+          "children": [
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 99,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 111,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 52,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 53,
+              "typeface": 136,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 176,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 57,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 48,
+                      "typeface": 136,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 176,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "CHAR",
+                      "options": 0,
+                      "mtcode": 8722,
+                      "typeface": 134,
+                      "children": []
+                    },
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 61,
+              "typeface": 134,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 115,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 105,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "CHAR",
+              "options": 0,
+              "mtcode": 110,
+              "typeface": 130,
+              "children": []
+            },
+            {
+              "record": "TMPL",
+              "selector": 1,
+              "variation": 3,
+              "options": 0,
+              "children": [
+                {
+                  "record": "LINE",
+                  "null": false,
+                  "children": [
+                    {
+                      "record": "MATRIX",
+                      "children": [
+                        {
+                          "record": "LINE",
+                          "null": false,
+                          "children": [
+                            {
+                              "record": "CHAR",
+                              "options": 0,
+                              "mtcode": 61189,
+                              "typeface": 152,
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 40,
+                  "typeface": 150,
+                  "children": []
+                },
+                {
+                  "record": "CHAR",
+                  "options": 0,
+                  "mtcode": 41,
+                  "typeface": 150,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "latex": "$ cos45{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad  } \\right )=sin\\left ( { \\quad  } \\right ) $",
+    "failure_stage": null
+  }
+]

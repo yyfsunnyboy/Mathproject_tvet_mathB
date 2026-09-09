@@ -1,0 +1,117 @@
+{
+  "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_11557",
+      "textbook_example_id": 11557,
+      "status": "verified",
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "domain_operation": "compute_right_triangle_trig_ratios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11557/generate.py"
+    },
+    {
+      "component_id": "src_11558",
+      "textbook_example_id": 11558,
+      "status": "verified",
+      "problem_type_id": "solve_acute_trig_constraints",
+      "domain_operation": "solve_acute_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11558/generate.py"
+    },
+    {
+      "component_id": "src_11567",
+      "textbook_example_id": 11567,
+      "status": "verified",
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "domain_operation": "compute_right_triangle_trig_ratios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11567/generate.py"
+    },
+    {
+      "component_id": "src_11568",
+      "textbook_example_id": 11568,
+      "status": "verified",
+      "problem_type_id": "solve_acute_trig_constraints",
+      "domain_operation": "solve_acute_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11568/generate.py"
+    },
+    {
+      "component_id": "src_11576",
+      "textbook_example_id": 11576,
+      "status": "verified",
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "domain_operation": "compute_right_triangle_trig_ratios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11576/generate.py"
+    },
+    {
+      "component_id": "src_11577",
+      "textbook_example_id": 11577,
+      "status": "verified",
+      "problem_type_id": "solve_acute_trig_constraints",
+      "domain_operation": "solve_acute_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11577/generate.py"
+    },
+    {
+      "component_id": "src_11579",
+      "textbook_example_id": 11579,
+      "status": "verified",
+      "problem_type_id": "solve_acute_trig_constraints",
+      "domain_operation": "solve_acute_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11579/generate.py"
+    },
+    {
+      "component_id": "src_11581",
+      "textbook_example_id": 11581,
+      "status": "verified",
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "domain_operation": "simplify_fundamental_trig_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11581/generate.py"
+    },
+    {
+      "component_id": "src_11582",
+      "textbook_example_id": 11582,
+      "status": "verified",
+      "problem_type_id": "solve_acute_trig_constraints",
+      "domain_operation": "solve_acute_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11582/generate.py"
+    },
+    {
+      "component_id": "src_11583",
+      "textbook_example_id": 11583,
+      "status": "verified",
+      "problem_type_id": "compute_chord_and_arc_length",
+      "domain_operation": "compute_chord_and_arc_length",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11583/generate.py"
+    }
+  ]
+}

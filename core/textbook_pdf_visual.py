@@ -783,6 +783,8 @@ def enrich_textbook_examples_with_pdf_visuals(
     matched = classify_and_detect_visuals(matched, pages)
     from core.textbook_b2_11 import correct_pdf_regions
     matched = correct_pdf_regions(matched, pages, pdf, curriculum_info)
+    from core.textbook_b2_12 import correct_pdf_visual_regions
+    matched = correct_pdf_visual_regions(matched, pages, pdf, curriculum_info)
 
     curriculum = str(curriculum_info.get("curriculum") or "vocational")
     publisher = str(curriculum_info.get("publisher") or "longteng")
@@ -850,49 +852,60 @@ def enrich_textbook_examples_with_pdf_visuals(
         label = normalize_question_label(str(row.get("source_description") or ""))
         source_type = str(row.get("source_type") or row.get("problem_type") or "textbook_exercise")
         rel_dir = build_question_asset_dir(curriculum, publisher, volume, chapter_title, section_title)
-        filename = build_question_asset_filename(
-            source_type=source_type,
-            question_title=label,
-            question_id_or_dedupe=anchor_id,
-            fig_index=1,
-            ext="png",
-        )
-        rel_path = f"{rel_dir}/{filename}".replace("\\", "/")
-        abs_path = root / rel_path
-        page_no = int(row.get("visual_page") or (row.get("pdf_match") or {}).get("page") or 0)
-        bbox = row.get("visual_bbox")
-        if not page_no or not bbox:
-            summary["errors"] += 1
-            pub["status"] = "error"
-            pub["error"] = "missing_bbox"
-            summary["rows"].append(pub)
-            continue
-
+        crop_specs = row.get("visual_crops") or [
+            {
+                "page": row.get("visual_page") or (row.get("pdf_match") or {}).get("page"),
+                "bbox": row.get("visual_bbox"),
+                "classification": classification,
+                "visual_type": row.get("visual_type"),
+            }
+        ]
+        mounted_assets = []
         try:
-            reused = abs_path.is_file()
-            meta_img = crop_pdf_bbox(pdf, page_no, list(bbox), abs_path, dpi=dpi)
-            if reused:
-                summary["reused_count"] += 1
-            asset = build_pdf_visual_asset_record(
-                rel_path=rel_path,
-                page_1based=page_no,
-                bbox=list(bbox),
-                classification=classification,
-                visual_type=row.get("visual_type"),
-                match_method=row.get("match_method"),
-                match_score=row.get("match_score"),
-                reason=str(row.get("visual_reason") or ""),
-                image_meta=meta_img,
-                anchor_id=anchor_id,
-            )
+            for fig_index, spec in enumerate(crop_specs, start=1):
+                page_no = int(spec.get("page") or 0)
+                bbox = spec.get("bbox")
+                if not page_no or not bbox:
+                    raise ValueError("missing_bbox")
+                filename = build_question_asset_filename(
+                    source_type=source_type,
+                    question_title=label,
+                    question_id_or_dedupe=anchor_id,
+                    fig_index=fig_index,
+                    ext="png",
+                )
+                rel_path = f"{rel_dir}/{filename}".replace("\\", "/")
+                abs_path = root / rel_path
+                reused = abs_path.is_file()
+                meta_img = crop_pdf_bbox(pdf, page_no, list(bbox), abs_path, dpi=dpi)
+                if reused:
+                    summary["reused_count"] += 1
+                asset = build_pdf_visual_asset_record(
+                    rel_path=rel_path,
+                    page_1based=page_no,
+                    bbox=list(bbox),
+                    classification=str(spec.get("classification") or classification),
+                    visual_type=spec.get("visual_type") or row.get("visual_type"),
+                    match_method=row.get("match_method"),
+                    match_score=row.get("match_score"),
+                    reason=str(row.get("visual_reason") or ""),
+                    image_meta=meta_img,
+                    anchor_id=anchor_id,
+                    asset_slot=f"pdf_visual_{fig_index:02d}",
+                )
+                mounted_assets.append(asset)
+                summary["mounted"] += 1
+                summary["linked_count"] += 1
             if write_notes:
-                notes = upsert_notes_image_asset(notes, asset)
+                for asset in mounted_assets:
+                    notes = upsert_notes_image_asset(
+                        notes, asset, slot=str(asset.get("asset_slot") or ASSET_SLOT)
+                    )
                 te.notes = json.dumps(notes, ensure_ascii=False)
-            summary["mounted"] += 1
-            summary["linked_count"] += 1
             pub["status"] = "mounted"
-            pub["asset_path"] = rel_path
-            pub["sha256"] = meta_img.get("sha256")
+            pub["asset_path"] = mounted_assets[0]["path"]
+            pub["asset_paths"] = [a["path"] for a in mounted_assets]
+            pub["sha256"] = mounted_assets[0].get("sha256")
         except Exception as exc:
             summary["errors"] += 1
             pub["status"] = "error"

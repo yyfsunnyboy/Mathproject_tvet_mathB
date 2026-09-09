@@ -13,7 +13,7 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, url_for, render_template, flash, session, send_file, Response, stream_with_context
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect
+from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect, cast, Integer, case
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 import os
@@ -3416,9 +3416,18 @@ def admin_examples():
     if selected['f_section'] != 'all':
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
+    anchor_source_order = cast(
+        func.json_extract(TextbookExample.notes, '$.question_anchor.source_order'),
+        Integer,
+    )
     pagination = query.order_by(
-        SkillCurriculum.display_order.asc(), 
-        TextbookExample.id.asc()
+        TextbookExample.source_volume.asc(),
+        TextbookExample.source_chapter.asc(),
+        TextbookExample.source_section.asc(),
+        case((anchor_source_order.is_(None), 1), else_=0),
+        anchor_source_order.asc(),
+        SkillCurriculum.display_order.asc(),
+        TextbookExample.id.asc(),
     ).paginate(page=page, per_page=50, error_out=False)
     page_formula_stats = {
         "total": len(pagination.items),

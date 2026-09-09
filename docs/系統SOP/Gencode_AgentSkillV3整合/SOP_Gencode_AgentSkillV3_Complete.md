@@ -113,6 +113,7 @@ Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。�
   $$\text{VERIFIED} = \text{Textbook Source Fidelity PASS} \land \text{Answer Oracle Gate PASS} \land \text{Exact Capability Readiness} \land \text{Executable Component} \land \text{Per-component Validator PASS} \land \text{Valid Answer Contract} \land \text{Shared Checker Validation PASS}$$
 * 不得因 `oracle_source=domain_operation` 而降低其他 Gate。
 * `missing_ground_truth` **不再**代表「學生版教材沒有答案」；僅適用於系統明確要求 source-provided answer evidence，且該來源本應存在卻遺失。
+* **Source Resolution（簡短引用）**：教材原始 source 必須 **project-local first**。完整規則見 §6.6。不得未搜尋 repo 就查 Drive；不得因歷史 absolute path 失效而判定 source missing。
 
 ### HARD RULE 4 — Domain Function 與 Operation 架構
 * 行政歸屬（`skill_id`）$\rightarrow$ 路由映射（`fixed_domain_key`）$\rightarrow$ 共享數學能力（`operation`）。
@@ -345,6 +346,8 @@ Source Fidelity PASS 證明：題幹完整、數學條件完整、圖片／表�
 
 完整學生版隨堂練習 + 無 `correct_answer` + 無 `detailed_solution` **仍可** `source_fidelity = PASS`。
 
+執行本 Gate 前，必須先依 §6.6 完成教材原始 source 查找（project-local first）。
+
 不得因為沒有答案自動標記 `missing_ground_truth` / failed / blocked。
 
 FAIL 例：題幹破損 → `source_incomplete`；缺關鍵圖片 → `source_incomplete`；parse 損毀 → `source_corrupt`。
@@ -386,6 +389,73 @@ $$\text{VERIFIED} = \text{Textbook Source Fidelity PASS} \land \text{Answer Orac
 對應處置：Source Fidelity FAIL → 仍建立元件骨架，verified/package/publish = NO。Oracle unavailable → 進 Capability Growth。Oracle INVALID（AI 自算）→ 禁止 VERIFIED。Oracle ready 且其餘 Gate PASS → 可 VERIFIED，再入 wrapper / publish。
 
 以上 policy reason 不是 Current production tracker enum。標示：`[Gap: production alignment required]`。不得擅自新增 production enum。
+
+### 6.6 Source Resolution（教材來源檔案查找優先順序）
+
+執行 Textbook Source Fidelity 之前，必須先完成教材原始 source 查找。查找優先順序固定，不得跳過或倒置。
+
+**SOURCE RESOLUTION 口訣**：先查 project-local source，只有 project-local 不存在才查 Drive / external fallback。
+
+#### 6.6.1 優先順序（固定）
+
+教材原始 source 查找優先順序固定為：
+
+**1. 目前專案 / repo 內既有來源檔（project-local first）**
+
+優先搜尋：
+- `textbook_import/source/`
+- 專案內已保存的 DOCX / PDF
+- `reports/` 中已下載或隔離保存的來源副本
+- 其他專案內已上傳 / 已保存的教材附件
+
+**2. 若專案內已有來源檔**
+- 必須優先使用
+- 不得重新從 Google Drive / 外部來源下載另一份副本
+- 不得因歷史 absolute path 已失效就直接判定 source missing
+
+**3. Fallback 條件**
+
+只有在確認專案內完全不存在可用原始來源後，才允許使用 connected Drive / 外部來源作 fallback。
+
+**4. 同名 source 比對**
+
+若找到多份同名 source，必須先比對：
+- filename
+- file size
+- hash（若可取得）
+- modified time
+- ingestion provenance
+
+不得自行假設任一份為權威來源。
+
+**5. Source authority 原則**
+
+```text
+project-local source first
+→ connected Drive fallback
+→ external/manual recovery last
+```
+
+**6. Fallback 必記 audit / report**
+
+若使用 fallback 來源，必須在 audit/report 記錄：
+- `source_origin`
+- file path / connector source
+- filename
+- size
+- hash（若可）
+- `reason_for_fallback`
+
+**7. 禁止**
+- 專案內已有 source 時重複下載
+- 未搜尋 repo 就直接查 Drive
+- 因舊絕對路徑失效而誤判 source 不存在
+- 同名檔案未比對 provenance 就直接使用
+
+#### 6.6.2 與 Source Fidelity 的關係
+
+§6.6 解決「原始檔在哪、該用哪一份」；§6.2 解決「該檔內容是否完整可信」。  
+歷史路徑失效 ≠ source missing。必須先在專案內重找既有來源檔，確認完全不存在後才得 fallback。
 
 ---
 
@@ -887,17 +957,16 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 
 ## 25. Quick Start for Agents (Agent 極速開工手冊)
 
-AI Agent 進入任務時，請直接依循此 10 步極速流程：
+AI Agent 進入任務時，請直接依循此 11 步極速流程：
 
 1. **READ SOP**：精讀本手冊 §1 鐵律與 §18 回報契約。
-2. **SOURCE FIDELITY**：查核題幹、條件、圖片／表格／公式資產是否完整。學生版無 `correct_answer` / `detailed_solution` **不是** Source Fidelity FAIL。
-3. **ANSWER ORACLE RESOLUTION**：優先使用 source-provided oracle；否則查 shared Domain operation。若 capability 未 ready → Capability Growth。禁止 AI 自算充當 oracle。`missing_ground_truth` 不得用於一般學生版無答案。
-4. **DOMAIN CHECK**：檢查 `core/domain/*.py` 是否具備共用算子。若無 → 先擴充共用算子並單元測試。
-5. **BUILD COMPONENT**：建立獨立 `src_<id>`，撰寫 `generate.py`（只呼叫 oracle，不重寫 domain math），配置標準 `answer_contract`。
-6. **NO LOCAL GRADING**：移除本機自審 `check()`；若有 `check()` 僅能作為純轉發至 `check_answer` 之相容 facade。
-7. **RUN 20 SEEDS**：執行 20 種隨機 seed，驗證 implementation consistency（不是 Oracle 本身），測試正解與錯解。
-8. **UPDATE TRACKER**：更新單題 tracker 紀錄（`verified` 或依 production 語意記錄政策原因 `[Gap: production alignment required]`）。
-9. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
-10. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。
-9. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
-10. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。
+2. **SOURCE RESOLUTION**：先查 project-local source，只有 project-local 不存在才查 Drive / external fallback。詳見 §6.6。
+3. **SOURCE FIDELITY**：查核題幹、條件、圖片／表格／公式資產是否完整。學生版無 `correct_answer` / `detailed_solution` **不是** Source Fidelity FAIL。
+4. **ANSWER ORACLE RESOLUTION**：優先使用 source-provided oracle；否則查 shared Domain operation。若 capability 未 ready → Capability Growth。禁止 AI 自算充當 oracle。`missing_ground_truth` 不得用於一般學生版無答案。
+5. **DOMAIN CHECK**：檢查 `core/domain/*.py` 是否具備共用算子。若無 → 先擴充共用算子並單元測試。
+6. **BUILD COMPONENT**：建立獨立 `src_<id>`，撰寫 `generate.py`（只呼叫 oracle，不重寫 domain math），配置標準 `answer_contract`。
+7. **NO LOCAL GRADING**：移除本機自審 `check()`；若有 `check()` 僅能作為純轉發至 `check_answer` 之相容 facade。
+8. **RUN 20 SEEDS**：執行 20 種隨機 seed，驗證 implementation consistency（不是 Oracle 本身），測試正解與錯解。
+9. **UPDATE TRACKER**：更新單題 tracker 紀錄（`verified` 或依 production 語意記錄政策原因 `[Gap: production alignment required]`）。
+10. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
+11. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。

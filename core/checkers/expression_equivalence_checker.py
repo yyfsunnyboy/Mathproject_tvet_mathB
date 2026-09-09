@@ -120,6 +120,7 @@ def _numeric_equal(lhs: Any, rhs: Any, *, tol: float = 1e-9) -> bool:
 _FACTORIZED_FORMS = frozenset({"factorized", "factored", "factorization", "factored_expression", "factorized_expression"})
 _FACTORIZED_EQUIVS = frozenset({"factorized_form", "required_factorized_form"})
 _PI_FORMS = frozenset({"pi_expression", "radian_pi", "contains_pi", "pi_form"})
+_SIMPLIFIED_TRIG_FORMS = frozenset({"simplified_trig", "fundamental_trig_simplified"})
 
 
 def contract_requires_pi_form(
@@ -239,6 +240,17 @@ def _is_factorized_expression(expr: Any) -> bool:
         return False
 
 
+def _is_simplified_trig_expression(expr: Any) -> bool:
+    """AST/structural check that a trig expression is already simplified."""
+    try:
+        from sympy import trigsimp
+
+        simplified = trigsimp(expr, method="fu")
+        return bool(expr == simplified)
+    except Exception:
+        return False
+
+
 def check_expression_equivalence_debug(
     user_answer: object,
     correct_answer: object,
@@ -271,6 +283,12 @@ def check_expression_equivalence_debug(
         else contract_requires_factorized_form(answer_contract, payload)
     )
     need_pi_form = contract_requires_pi_form(answer_contract, payload)
+    required_form = str(
+        (answer_contract or {}).get("required_form")
+        or (payload or {}).get("required_form")
+        or ""
+    ).strip().lower()
+    need_simplified_trig = required_form in _SIMPLIFIED_TRIG_FORMS
 
     assign_eq = _assignment_lists_equivalent(ua_raw, ca_raw)
     if assign_eq is True:
@@ -299,6 +317,11 @@ def check_expression_equivalence_debug(
             out["simplify_result"] = "required_form_failed"
             return out
         if need_pi_form and not _has_pi_symbol(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        if need_simplified_trig and not _is_simplified_trig_expression(user_expr):
             out["correct"] = False
             out["required_form_failed"] = True
             out["simplify_result"] = "required_form_failed"

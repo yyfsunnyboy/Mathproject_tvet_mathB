@@ -176,6 +176,7 @@
     .color-dot { display:inline-block; width:16px; height:16px; vertical-align:middle; border-radius:999px; border:2px solid rgba(255,255,255,.92); box-shadow:0 0 0 1px rgba(0,0,0,.12); }
     .canvas-tools .warning { white-space:nowrap; height:36px; border-radius:10px; padding:7px 12px; }
     .canvas-wrap { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:#ffffff; height:300px; }
+    .scratchpad-section.scratchpad-has-figures .canvas-wrap { height:500px; }
     .canvas-wrap canvas { position:absolute; inset:0; width:100%; height:100%; }
     #drawing-background-canvas { z-index:1; pointer-events:none; }
     #handwriting-canvas { z-index:2; display:block; background:transparent; cursor:crosshair; touch-action:none; user-select:none; }
@@ -784,6 +785,10 @@
             return value;
         }
 
+        if (/^(uploads|static)\//i.test(value)) {
+            return `/${value}`;
+        }
+
         return `data:image/png;base64,${value}`;
     }
 
@@ -946,6 +951,8 @@
       const layer = getScratchpadBackgroundLayer();
       if (layer) layer.resetQuestionBackground();
       if (questionVisualContainer) questionVisualContainer.hidden = true;
+      const scratchpad = document.querySelector('.scratchpad-section');
+      if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
       const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
       const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
       redrawScratchpadQuestionBackground();
@@ -986,6 +993,8 @@
       const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
       if (bgInfo.kind === "none") {
         layer.resetQuestionBackground();
+        const scratchpad = document.querySelector('.scratchpad-section');
+        if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
         redrawScratchpadQuestionBackground();
         return Promise.resolve(false);
       }
@@ -1002,10 +1011,23 @@
         }
         return Promise.resolve(ok);
       }
-      const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
-      return layer.loadImageBackground(imgSource)
-        .then((img) => {
-          const ok = layer.setImageBackground(img, imgSource, backgroundCtx, size.cw, size.ch);
+      const imgSources = (bgInfo.rawImages || [bgInfo.rawImage])
+        .map(normalizeQuestionImageSource)
+        .filter(Boolean);
+      const scratchpad = document.querySelector('.scratchpad-section');
+      const isMultiImage = imgSources.length > 1;
+      if (scratchpad) scratchpad.classList.toggle('scratchpad-has-figures', isMultiImage);
+      if (typeof resizeCanvas === "function") resizeCanvas();
+      const imageSize = resolveScratchpadCssSize();
+      return layer.loadImageBackgrounds(imgSources)
+        .then((images) => {
+          const ok = layer.setImagesBackground(
+            images,
+            imgSources,
+            backgroundCtx,
+            imageSize.cw,
+            imageSize.ch
+          );
           if (ok && questionVisualContainer) {
             questionVisualContainer.hidden = true;
           }

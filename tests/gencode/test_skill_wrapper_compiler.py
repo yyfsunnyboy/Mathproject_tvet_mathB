@@ -149,6 +149,8 @@ def test_compile_and_double_write_skill_deterministic_order(
         "def generate(",
         "def check(",
         "def get_hint(",
+        'if "stage" in parameters and "question_payload" not in parameters:',
+        "hint_fn(payload, stage=step)",
     ):
         assert token in new_house_source
 

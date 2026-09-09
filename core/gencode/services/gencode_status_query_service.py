@@ -6,6 +6,7 @@ import sqlite3
 import json
 import ast
 import hashlib
+import importlib.util
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -141,6 +142,7 @@ def resolve_teacher_facing_v3_status(
     hash_evidence_stale: bool = False,
     active_generation_job: bool | None = None,
     deployed_without_tracker: bool = False,
+    production_runtime_ready: bool = False,
 ) -> dict[str, object]:
     status = str(gencode_status or "").strip()
     if status == "unsupported":
@@ -159,18 +161,21 @@ def resolve_teacher_facing_v3_status(
     ):
         return _teacher_status_payload("deployed_pending_revalidation")
 
+    # Production runtime evidence is authoritative even when Phase 3 was
+    # packaged from an isolated verified tracker snapshot.  This flag is only
+    # true when manifest, package wrapper and runtime facade all agree that the
+    # verified component is selectable.
+    if production_runtime_ready:
+        return _teacher_status_payload("published")
+
     if deployed_without_tracker and (has_component or has_generated_artifact or production_contains_latest):
         return _teacher_status_payload("deployed_pending_revalidation")
 
     if status == "draft_written":
-        if production_contains_latest:
-            return _teacher_status_payload("published")
         if has_generated_artifact or integrity_gate_passed is True:
             return _teacher_status_payload("generated_not_packaged")
         return _teacher_status_payload("generation_incomplete")
     if status in {"verified", "smoke_passed"}:
-        if production_contains_latest:
-            return _teacher_status_payload("published")
         return _teacher_status_payload("generated_not_packaged")
     if status == "pending":
         # pending without an active job is lifecycle incomplete, not "generating".
@@ -180,8 +185,6 @@ def resolve_teacher_facing_v3_status(
     if status in {"draft"} or status.startswith("draft"):
         return _teacher_status_payload("not_generated")
     if has_tracker and (has_generated_artifact or has_component):
-        if production_contains_latest:
-            return _teacher_status_payload("published")
         return _teacher_status_payload("generated_not_packaged")
     if not has_tracker and not has_component and not has_generated_artifact:
         return _teacher_status_payload("not_generated")
@@ -278,6 +281,111 @@ def load_v3_skill_generator_specs(
         return []
     production_root = _resolve_base_path(production_base_dir, project_root)
     return _read_generator_specs(production_root / skill_key / "__init__.py")
+
+
+def _load_runtime_module(path: Path, module_role: str) -> Any | None:
+    if not path.is_file():
+        return None
+    try:
+        module_name = f"_gencode_status_{module_role}_{hashlib.sha256(str(path).encode()).hexdigest()[:16]}"
+        spec = importlib.util.spec_from_file_location(module_name, path)
+        if spec is None or spec.loader is None:
+            return None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+    except Exception:
+        return None
+
+
+def inspect_skill_runtime_publication(
+    *,
+    skill_id: str,
+    production_base_dir: str = "agent_skills_v3",
+    project_root: str | Path | None = None,
+) -> dict[str, object]:
+    """Return production components proven selectable by manifest and wrappers."""
+    skill_key = str(skill_id or "").strip()
+    root = Path(project_root) if project_root is not None and str(project_root).strip() else PROJECT_ROOT
+    production_root = _resolve_base_path(production_base_dir, project_root)
+    package_dir = production_root / skill_key
+    manifest_path = package_dir / "component_manifest.json"
+    package_module = _load_runtime_module(package_dir / "__init__.py", "package")
+    facade_module = _load_runtime_module(root / "skills" / f"{skill_key}.py", "facade")
+    empty = {
+        "runtime_ready": False,
+        "manifest_valid": False,
+        "package_wrapper_loadable": package_module is not None,
+        "runtime_wrapper_loadable": facade_module is not None,
+        "selectable_components": {},
+    }
+    if package_module is None or facade_module is None or not manifest_path.is_file():
+        return empty
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return empty
+    rows = manifest.get("components") if isinstance(manifest, dict) else None
+    if (
+        not isinstance(rows, list)
+        or str(manifest.get("skill_id") or "") != skill_key
+        or str(manifest.get("publish_status") or "") != "production_manifest_compiled"
+        or int(manifest.get("component_count") or 0) != len(rows)
+        or str(getattr(package_module, "SKILL_ID", "")) != skill_key
+        or str(getattr(facade_module, "SKILL_ID", "")) != skill_key
+        or not callable(getattr(facade_module, "generate", None))
+    ):
+        return empty
+
+    try:
+        package_keys = {str(value) for value in getattr(package_module, "GENERATOR_KEYS", [])}
+        facade_keys = {str(value) for value in getattr(facade_module, "GENERATOR_KEYS", [])}
+        package_specs = getattr(package_module, "GENERATOR_SPECS", [])
+        facade_specs = getattr(facade_module, "GENERATOR_SPECS", [])
+        package_pairs = {
+            (int(row.get("textbook_example_id")), str(row.get("component_id") or ""))
+            for row in package_specs
+            if isinstance(row, dict) and row.get("textbook_example_id") is not None
+        }
+        facade_pairs = {
+            (int(row.get("textbook_example_id")), str(row.get("component_id") or ""))
+            for row in facade_specs
+            if isinstance(row, dict) and row.get("textbook_example_id") is not None
+        }
+    except (TypeError, ValueError):
+        return empty
+    selectable: dict[int, str] = {}
+    seen_components: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict) or str(row.get("status") or "") != "verified":
+            return empty
+        try:
+            example_id = int(row.get("textbook_example_id"))
+        except (TypeError, ValueError):
+            return empty
+        component_id = str(row.get("component_id") or "").strip()
+        pair = (example_id, component_id)
+        generate_path = package_dir / "components" / component_id / "generate.py"
+        if (
+            not component_id
+            or component_id in seen_components
+            or example_id in selectable
+            or component_id not in package_keys
+            or component_id not in facade_keys
+            or pair not in package_pairs
+            or pair not in facade_pairs
+            or not generate_path.is_file()
+        ):
+            return empty
+        seen_components.add(component_id)
+        selectable[example_id] = component_id
+    return {
+        "runtime_ready": bool(selectable),
+        "manifest_valid": True,
+        "package_wrapper_loadable": True,
+        "runtime_wrapper_loadable": True,
+        "selectable_components": selectable,
+    }
 
 
 def _production_specs_contains_component(
@@ -723,6 +831,15 @@ def build_admin_example_gencode_status_view(
     deployed_without_tracker = (not has_tracker) and bool(
         file_status.get("production_generate_exists") or file_status.get("dryrun_generate_exists")
     )
+    runtime_publication = inspect_skill_runtime_publication(
+        skill_id=skill_id,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
+    runtime_selectable = (
+        runtime_publication.get("selectable_components", {}).get(int(textbook_example_id))
+        == component_id
+    )
     teacher_status = resolve_teacher_facing_v3_status(
         gencode_status=status,
         has_tracker=has_tracker,
@@ -734,6 +851,7 @@ def build_admin_example_gencode_status_view(
         hash_evidence_stale=hash_evidence_stale,
         active_generation_job=(status in {"generating", "running", "queued"}),
         deployed_without_tracker=deployed_without_tracker,
+        production_runtime_ready=runtime_selectable,
     )
     return {
         **tracker_status,
@@ -742,6 +860,8 @@ def build_admin_example_gencode_status_view(
         "teacher_status": teacher_status,
         "status_label": format_gencode_status_label(status),
         "hash_evidence_stale": hash_evidence_stale,
+        "production_runtime_ready": runtime_selectable,
+        "runtime_publication": runtime_publication,
         "has_payload_label": "有" if has_payload else "無",
         "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
         "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),
@@ -759,6 +879,14 @@ def build_admin_examples_gencode_status_map(
     example_ids = [example_id for example_id, _skill_id in examples]
     base_map = get_gencode_status_for_examples(conn, example_ids)
     status_map: dict[int, dict[str, object]] = {}
+    publication_by_skill = {
+        skill_id: inspect_skill_runtime_publication(
+            skill_id=skill_id,
+            production_base_dir=production_base_dir,
+            project_root=project_root,
+        )
+        for skill_id in {skill_id for _example_id, skill_id in examples}
+    }
     for example_id, skill_id in examples:
         tracker_status = base_map.get(example_id, dict(NOT_CREATED_STATUS))
         component_id = str(tracker_status.get("component_id") or "").strip() or None
@@ -805,6 +933,11 @@ def build_admin_examples_gencode_status_map(
         deployed_without_tracker = (not has_tracker) and bool(
             file_status.get("production_generate_exists") or file_status.get("dryrun_generate_exists")
         )
+        runtime_publication = publication_by_skill.get(skill_id, {})
+        runtime_selectable = (
+            runtime_publication.get("selectable_components", {}).get(int(example_id))
+            == component_id
+        )
         teacher_status = resolve_teacher_facing_v3_status(
             gencode_status=status,
             has_tracker=has_tracker,
@@ -816,6 +949,7 @@ def build_admin_examples_gencode_status_map(
             hash_evidence_stale=hash_evidence_stale,
             active_generation_job=(status in {"generating", "running", "queued"}),
             deployed_without_tracker=deployed_without_tracker,
+            production_runtime_ready=runtime_selectable,
         )
         status_map[example_id] = {
             **tracker_status,
@@ -824,6 +958,8 @@ def build_admin_examples_gencode_status_map(
             "teacher_status": teacher_status,
             "status_label": format_gencode_status_label(status),
             "hash_evidence_stale": hash_evidence_stale,
+            "production_runtime_ready": runtime_selectable,
+            "runtime_publication": runtime_publication,
             "has_payload_label": "有" if has_payload else "無",
             "dryrun_generate_label": _bool_label(bool(file_status["dryrun_generate_exists"])),
             "production_generate_label": _bool_label(bool(file_status["production_generate_exists"])),

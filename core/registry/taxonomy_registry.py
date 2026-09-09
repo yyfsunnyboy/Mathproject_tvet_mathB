@@ -11,7 +11,7 @@ from core.registry.domain_operation_registry import (
     list_registered_domains,
 )
 
-REGISTRY_REVISION = "2026-06-23-v1.8"
+REGISTRY_REVISION = "2026-09-09-v1.9"
 
 
 class SkillDomainNotRegisteredError(KeyError):
@@ -127,6 +127,41 @@ SKILL_DOMAIN_PROFILE: dict[str, dict[str, Any]] = {
         "curriculum_profile": "vocational_high_b",
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_angle_measurement_and_conversion",
+    },
+    "vh_數學B2_RatioAndRatioValue": {
+        "fixed_domain_key": "geometry.similarity",
+        "domain": "geometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_similar_triangle_proportion",
+    },
+    "vh_數學B2_TrigonometricFunctionsOfAcuteAngles": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_right_triangle_trig_ratios",
+    },
+    "vh_數學B2_TrigonometricValuesOfSpecialAngles": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_exact_special_angles",
+    },
+    "vh_數學B2_CalculatingFunctionValuesUsingCalculator": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_acute_trig_decimal_evaluation",
+    },
+    "vh_數學B2_FundamentalTrigonometricIdentities": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_cofunction_identity",
     },
     "vh_數學B2_ArcLengthAndAreaOfSector": {
         "fixed_domain_key": "trigonometry.angle",
@@ -335,6 +370,51 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "entrypoint": "build_trigonometry_angle_matrix",
         "default_curriculum_profile": "vocational_high_b",
         "allowed_types": ["convert_angle_measure"],
+    },
+    "vh_數學B2_RatioAndRatioValue": {
+        "fixed_domain_key": "geometry.similarity",
+        "domain_module": "core.domain.geometry_similarity_domain",
+        "entrypoint": "build_geometry_similarity_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": ["solve_similar_triangle_proportion"],
+    },
+    "vh_數學B2_TrigonometricFunctionsOfAcuteAngles": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain_module": "core.domain.trigonometry_acute_domain",
+        "entrypoint": "build_trigonometry_acute_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "compute_right_triangle_trig_ratios",
+            "solve_acute_trig_constraints",
+            "simplify_fundamental_trig_expression",
+            "collinear_three_points_parameter",
+            "compute_chord_and_arc_length",
+        ],
+    },
+    "vh_數學B2_TrigonometricValuesOfSpecialAngles": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain_module": "core.domain.trigonometry_acute_domain",
+        "entrypoint": "build_trigonometry_acute_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": ["evaluate_exact_special_angle_expression", "solve_right_triangle_projection"],
+    },
+    "vh_數學B2_CalculatingFunctionValuesUsingCalculator": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain_module": "core.domain.trigonometry_acute_domain",
+        "entrypoint": "build_trigonometry_acute_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": ["evaluate_trig_decimal"],
+    },
+    "vh_數學B2_FundamentalTrigonometricIdentities": {
+        "fixed_domain_key": "trigonometry.acute",
+        "domain_module": "core.domain.trigonometry_acute_domain",
+        "entrypoint": "build_trigonometry_acute_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": [
+            "simplify_fundamental_trig_expression",
+            "complete_cofunction_identity",
+            "solve_acute_trig_constraints",
+        ],
     },
     "vh_數學B2_ArcLengthAndAreaOfSector": {
         "fixed_domain_key": "trigonometry.angle",

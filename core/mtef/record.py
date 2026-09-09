@@ -222,8 +222,10 @@ class MtMatrix:
         # cols uint8
         self.cols = 0
 
-        # //row_parts uint8
-        # //col_parts uint8
+        # Packed two-bit partition styles.  There is one possible partition
+        # before/after every row/column, rounded up to whole bytes.
+        self.row_parts = b''
+        self.col_parts = b''
 
         # objectList *MtObjList //objectList可以不读，不影响后面字节错位，因为这个是一个完整的额外record数据
         self.objectList = None

@@ -171,6 +171,16 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "absolute_value_inequality_zero_center_basic": "numeric_scalar",
     "absolute_value_inequality_linear_expression_basic": "numeric_scalar",
     "absolute_value_inequality_shifted_basic": "numeric_scalar",
+    "solve_similar_triangle_proportion": "numeric_scalar",
+    "compute_right_triangle_trig_ratios": "multi_part_scalar",
+    "evaluate_exact_special_angle_expression": "numeric_scalar",
+    "complete_cofunction_identity": "multi_part_scalar",
+    "solve_acute_trig_constraints": "multi_part_scalar",
+    "solve_right_triangle_projection": "multi_part_scalar",
+    "evaluate_trig_decimal": "multi_part_scalar",
+    "simplify_fundamental_trig_expression": "multi_part_scalar",
+    "sector_arc_and_area": "multi_part_scalar",
+    "compute_chord_and_arc_length": "multi_part_scalar",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)

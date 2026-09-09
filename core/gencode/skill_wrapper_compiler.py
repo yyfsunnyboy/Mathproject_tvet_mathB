@@ -450,6 +450,11 @@ def get_hint(step: int, question_payload: dict[str, Any] | None = None) -> str:
         module = _load_component_module(component_id, "get_hint.py")
         hint_fn = getattr(module, "get_hint", None)
         if callable(hint_fn):
+            from inspect import signature
+
+            parameters = signature(hint_fn).parameters
+            if "stage" in parameters and "question_payload" not in parameters:
+                return str(hint_fn(payload, stage=step) or "")
             return str(hint_fn(step, payload) or "")
     return ""
 '''
