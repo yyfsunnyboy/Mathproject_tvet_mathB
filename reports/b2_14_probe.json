@@ -1,0 +1,530 @@
+{
+  "convert": {
+    "mathtype_ole": 287,
+    "converted_ok": 287,
+    "converted_failed": 0,
+    "eq_fields": 5,
+    "eq_converted_ok": 5
+  },
+  "lines": 214,
+  "blocks": 21,
+  "tokens": 0,
+  "independent_images": 25,
+  "skill_candidates": [
+    {
+      "source_heading_text": "1-4.1 正弦函數的圖形與其週期現象的表徵",
+      "source_order": 16,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.1",
+      "concept_name": "正弦函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.2 餘弦函數的圖形與其週期現象的表徵",
+      "source_order": 70,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.2",
+      "concept_name": "餘弦函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.3 正切函數的圖形與其週期現象的表徵",
+      "source_order": 123,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.3",
+      "concept_name": "正切函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.4 三角函數圖形的變化與週期",
+      "source_order": 224,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.4",
+      "concept_name": "三角函數圖形的變化與週期",
+      "section_code": "1-4",
+      "validation": "PASS"
+    }
+  ],
+  "structural": [
+    {
+      "source_heading_text": "1-4.1 正弦函數的圖形與其週期現象的表徵",
+      "source_order": 16,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.1",
+      "concept_name": "正弦函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.2 餘弦函數的圖形與其週期現象的表徵",
+      "source_order": 70,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.2",
+      "concept_name": "餘弦函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.3 正切函數的圖形與其週期現象的表徵",
+      "source_order": 123,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.3",
+      "concept_name": "正切函數的圖形與其週期現象的表徵",
+      "section_code": "1-4",
+      "validation": "PASS"
+    },
+    {
+      "source_heading_text": "1-4.4 三角函數圖形的變化與週期",
+      "source_order": 224,
+      "style": "01-1-1.1",
+      "font": "華康中明體",
+      "latin_font": "Times New Roman",
+      "size": 15.0,
+      "bold": true,
+      "concept_code": "1-4.4",
+      "concept_name": "三角函數圖形的變化與週期",
+      "section_code": "1-4",
+      "validation": "PASS"
+    }
+  ],
+  "alignment": {
+    "chapters": [
+      {
+        "chapter_title": "第1章 三角函數",
+        "sections": [
+          {
+            "section_code": "1-4",
+            "section_title": "1-4 正弦、餘弦函數的圖形",
+            "concepts": [
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "examples": [
+                  {
+                    "title": "例1",
+                    "source_description": "例1",
+                    "source_order": 1,
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1)由\\(y=sinx\\)的圖形可知：\n 當\\(0ʰ\\)（第一象限角）時\n \\(y=sinx\\)為遞增函數\n 即角度愈大\n \\(y=sinx\\)的值也愈大\n 故\\(sin10{}^\\circ < sin50{}^\\circ < sin80{}^\\circ\\)\n(2) 由\\(y=cosx\\)的圖形可知：\n當\\(0{}^\\circ < x < 90{}^\\circ\\)（第一象限角）時，\\(y=cosx\\)為遞減函數\n即角度愈大\n\\(y=cosx\\)的值反而愈小\n又\\(sin40{}^\\circ =cos50{}^\\circ\\)\n即\\(cos10{}^\\circ >cos50{}^\\circ >cos80{}^\\circ\\)\n故\\(cos10{}^\\circ >sin40{}^\\circ >cos80{}^\\circ\\)",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"例1\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 1}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "practice_questions": [
+                  {
+                    "title": "隨堂練習1",
+                    "source_description": "隨堂練習1",
+                    "source_order": 2,
+                    "source_type": "in_class_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"隨堂練習1\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 2}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "examples": [
+                  {
+                    "title": "例2",
+                    "source_description": "例2",
+                    "source_order": 3,
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "\\(\\o\\ac(○,解)\\) 將原式因式分解得\n\\(\\left ( { 2sin\\theta -1 } \\right )\\left ( { sin\\theta -2 } \\right )=0\\)\n得\\(sin\\theta =\\frac { 1 } { 2 }\\)或\\(sin\\theta =2\\)，但\\(-1\\le sin\\theta \\le 1\\)，故\\(sin\\theta =\\frac { 1 } { 2 }\\)",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"例2\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 3}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "practice_questions": [
+                  {
+                    "title": "隨堂練習2",
+                    "source_description": "隨堂練習2",
+                    "source_order": 4,
+                    "source_type": "in_class_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"隨堂練習2\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 4}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "examples": [
+                  {
+                    "title": "例3",
+                    "source_description": "例3",
+                    "source_order": 5,
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1)\n延伸思考：\\(y=sinx+1\\)與\\(y=sinx\\)的圖形有何差異呢？\n(2) 圖形每隔\\(2\\pi\\)單位會重複一次，所以\\(y=sinx+1\\)的週期為\\(2\\pi\\)，最大值為2、最小值為0",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"例3\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 5}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "practice_questions": [
+                  {
+                    "title": "隨堂練習3",
+                    "source_description": "隨堂練習3",
+                    "source_order": 6,
+                    "source_type": "in_class_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"隨堂練習3\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 6}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "examples": [
+                  {
+                    "title": "例4",
+                    "source_description": "例4",
+                    "source_order": 7,
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1)\n延伸思考：\\(y=2cosx\\)與\\(y=cosx\\)的圖形有何差異呢？\n(2) 圖形每隔\\(2\\pi\\)單位會重複一次，所以\\(y=2cosx\\)的週期為\\(2\\pi\\)，最大值為2，最小值為\\(-2\\)",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"例4\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 7}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "正切函數的圖形與其週期現象的表徵",
+                "concept_en_id": "SubSection_1_4_3",
+                "practice_questions": [
+                  {
+                    "title": "隨堂練習4",
+                    "source_description": "隨堂練習4",
+                    "source_order": 8,
+                    "source_type": "in_class_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_3",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"隨堂練習4\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 8}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "三角函數圖形的變化與週期",
+                "concept_en_id": "SubSection_1_4_4",
+                "examples": [
+                  {
+                    "title": "例5",
+                    "source_description": "例5",
+                    "source_order": 9,
+                    "source_type": "textbook_example",
+                    "skill_id": "vh_數學B2_SubSection_1_4_4",
+                    "correct_answer": "",
+                    "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 因為\\(y=sinx\\)的週期為\\(2\\pi\\)\n 所以\\(y=-sin2x+1\\)的週期為\\(\\frac { 2\\pi } { \\left | { 2 } \\right | }=\\pi\\)\n(2) 因為\\(y=cosx\\)的週期為\\(2\\pi\\)\n所以\\(y=3cos\\left ( { -\\frac { 1 } { 2 }x-5 } \\right )\\)的週期為\\(\\frac { 2\\pi } { \\left | { -\\frac { 1 } { 2 } } \\right | }=4\\pi\\)",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"例5\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 9}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "三角函數圖形的變化與週期",
+                "concept_en_id": "SubSection_1_4_4",
+                "practice_questions": [
+                  {
+                    "title": "隨堂練習5",
+                    "source_description": "隨堂練習5",
+                    "source_order": 10,
+                    "source_type": "in_class_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_4",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"隨堂練習5\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 10}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "三角函數圖形的變化與週期",
+                "concept_en_id": "SubSection_1_4_4",
+                "practice_questions": [
+                  {
+                    "title": "113統測B",
+                    "source_description": "113統測B",
+                    "source_order": 11,
+                    "source_type": "exam_practice",
+                    "skill_id": "vh_數學B2_SubSection_1_4_4",
+                    "correct_answer": "",
+                    "detailed_solution": "KEY\n正弦函數圖形，在第二、三象限遞減",
+                    "mapping_status": "structurally_bound",
+                    "needs_skill_resolution": false,
+                    "notes": "{\"anchor\": \"113統測B\", \"needs_skill_resolution\": false, \"section_outline_skill_id\": null, \"skill_assignment_status\": \"structurally_bound\", \"source_order\": 11}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 1",
+                    "source_description": "1-4習題 基礎題 1",
+                    "source_order": 12,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 1\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 12}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 2",
+                    "source_description": "1-4習題 基礎題 2",
+                    "source_order": 13,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 2\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 13}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 3",
+                    "source_description": "1-4習題 基礎題 3",
+                    "source_order": 14,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 3\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 14}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 4",
+                    "source_description": "1-4習題 基礎題 4",
+                    "source_order": 15,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 4\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 15}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 5",
+                    "source_description": "1-4習題 基礎題 5",
+                    "source_order": 16,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 5\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 16}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 6",
+                    "source_description": "1-4習題 基礎題 6",
+                    "source_order": 17,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 6\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 17}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 7",
+                    "source_description": "1-4習題 基礎題 7",
+                    "source_order": 18,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 7\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 18}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 基礎題 8",
+                    "source_description": "1-4習題 基礎題 8",
+                    "source_order": 19,
+                    "source_type": "textbook_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 基礎題 8\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 19}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 進階題 9",
+                    "source_description": "1-4習題 進階題 9",
+                    "source_order": 20,
+                    "source_type": "advanced_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 進階題 9\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 20}"
+                  }
+                ]
+              },
+              {
+                "concept_name": "1-4 正弦、餘弦函數的圖形",
+                "concept_en_id": "",
+                "practice_questions": [
+                  {
+                    "title": "1-4習題 進階題 10",
+                    "source_description": "1-4習題 進階題 10",
+                    "source_order": 21,
+                    "source_type": "advanced_exercise",
+                    "skill_id": "outline_vocational_數學B2_14",
+                    "correct_answer": "",
+                    "detailed_solution": "",
+                    "mapping_status": "section_outline_fallback",
+                    "needs_skill_resolution": true,
+                    "notes": "{\"anchor\": \"1-4習題 進階題 10\", \"needs_skill_resolution\": true, \"section_outline_skill_id\": \"outline_vocational_數學B2_14\", \"skill_assignment_status\": \"section_outline_fallback\", \"source_order\": 21}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "metadata_source": "deterministic_docx_structure",
+    "metadata_alignment": "PASS",
+    "unresolved_skill_bindings": [],
+    "needs_skill_resolution": [
+      "1-4習題 基礎題 1",
+      "1-4習題 基礎題 2",
+      "1-4習題 基礎題 3",
+      "1-4習題 基礎題 4",
+      "1-4習題 基礎題 5",
+      "1-4習題 基礎題 6",
+      "1-4習題 基礎題 7",
+      "1-4習題 基礎題 8",
+      "1-4習題 進階題 9",
+      "1-4習題 進階題 10"
+    ],
+    "section_outline_fallback_count": 10
+  }
+}
