@@ -1100,7 +1100,7 @@ register_domain_spec(DomainCapabilitySpec(
             "build_trigonometry_acute_matrix",
             payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
             validator="validate_acute_trigonometry_matrix",
-            supported_answer_types=("multi_part", "short_answer"),
+            supported_answer_types=("multi_part", "short_answer", "classification"),
             supported_presentation_modes=("multiple_inputs", "short_answer"),
             required_source_features=("hypotenuse", "acute_angle", "projection_target"),
             runtime_contract="b2_12_exact_symbolic_v1",
@@ -1111,7 +1111,7 @@ register_domain_spec(DomainCapabilitySpec(
             "build_trigonometry_acute_matrix",
             payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
             validator="validate_acute_trigonometry_matrix",
-            supported_answer_types=("multi_part", "short_answer"),
+            supported_answer_types=("multi_part", "short_answer", "expression"),
             supported_presentation_modes=("multiple_inputs", "short_answer"),
             required_source_features=("degree_minute_angle", "precision", "rounding_policy"),
             runtime_contract="b2_12_decimal_round_half_up_v1",
@@ -1196,6 +1196,111 @@ register_domain_spec(DomainCapabilitySpec(
             supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("coterminal_angles",),
         ),
+    },
+))
+
+
+_B2_14_ADAPTER = "core.gencode.b2_14_capability_adapter.adapt_b2_14_function_graph_matrix"
+_B2_14_OPERATIONS = (
+    "compare_trig_values_by_monotonicity", "solve_trig_value_quadratic_constraint",
+    "analyze_affine_transformed_trig_graph", "calculate_trig_period_from_argument_scale",
+    "classify_trig_expression_sign_change", "classify_trig_equation_feasibility",
+    "analyze_tangent_absolute_graph_period", "evaluate_trig_decimal",
+    "count_sine_cosine_intersections",
+)
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.function_graph",
+    domain_module="core.domain.trigonometry_function_graph_domain",
+    entrypoint="build_trigonometry_function_graph_matrix",
+    capabilities=frozenset(_B2_14_OPERATIONS),
+    operations={operation: _op(
+        operation, "build_trigonometry_function_graph_matrix",
+        payload_adapter=_B2_14_ADAPTER,
+        validator="validate_trigonometry_function_graph_matrix",
+        supported_answer_types=("short_answer", "single_choice", "multi_part"),
+        supported_presentation_modes=("short_answer", "single_choice", "multiple_inputs"),
+        required_source_features=("trig_function_contract",),
+        runtime_contract="b2_14_exact_trig_function_graph_v1",
+        provided_capabilities=(operation,),
+    ) for operation in _B2_14_OPERATIONS},
+))
+
+
+_B2_13_ADAPTER = "core.gencode.b2_13_capability_adapter.adapt_b2_13_arbitrary_matrix"
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.arbitrary_angle",
+    domain_module="core.domain.trigonometry_arbitrary_domain",
+    entrypoint="build_trigonometry_arbitrary_matrix",
+    capabilities=frozenset({
+        "classify_standard_position_angle",
+        "compute_terminal_ray_trig_ratios",
+        "solve_signed_trig_constraints",
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "complete_reference_angle_conversion",
+        "classify_trig_derived_point_quadrant",
+        "solve_arbitrary_angle_vertical_projection",
+        "simplify_fundamental_trig_expression",
+    }),
+    operations={
+        "classify_standard_position_angle": _op(
+            "classify_standard_position_angle", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("angle", "angle_unit"),
+            runtime_contract="b2_13_exact_angle_location_v1",
+            provided_capabilities=("classify_standard_position_angle",)),
+        "compute_terminal_ray_trig_ratios": _op(
+            "compute_terminal_ray_trig_ratios", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part",), supported_presentation_modes=("multiple_inputs",),
+            required_source_features=("terminal_point",), runtime_contract="b2_13_exact_terminal_ratios_v1",
+            provided_capabilities=("compute_terminal_ray_trig_ratios",)),
+        "solve_signed_trig_constraints": _op(
+            "solve_signed_trig_constraints", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("signed_trig_constraints",), runtime_contract="b2_13_exact_signed_constraints_v1",
+            provided_capabilities=("solve_signed_trig_constraints",)),
+        "evaluate_exact_arbitrary_angle_trig_expression": _op(
+            "evaluate_exact_arbitrary_angle_trig_expression", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("structured_trig_expression",), runtime_contract="b2_13_exact_arbitrary_expression_v1",
+            provided_capabilities=("evaluate_exact_arbitrary_angle_trig_expression",)),
+        "complete_reference_angle_conversion": _op(
+            "complete_reference_angle_conversion", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("table_fill", "multi_part"),
+            supported_presentation_modes=("inline_table_input", "multiple_inputs"),
+            required_source_features=("angle", "function", "structured_required_form"),
+            runtime_contract="b2_13_reference_angle_ast_v1",
+            provided_capabilities=("complete_reference_angle_conversion",)),
+        "classify_trig_derived_point_quadrant": _op(
+            "classify_trig_derived_point_quadrant", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("single_choice", "short_answer", "classification"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("trig_derived_point",), runtime_contract="b2_13_exact_derived_point_sign_v1",
+            provided_capabilities=("classify_trig_derived_point_quadrant",)),
+        "solve_arbitrary_angle_vertical_projection": _op(
+            "solve_arbitrary_angle_vertical_projection", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("short_answer", "expression"), supported_presentation_modes=("short_answer",),
+            required_source_features=("radius", "arbitrary_angle", "base_elevation"),
+            runtime_contract="b2_13_exact_signed_projection_v1",
+            provided_capabilities=("solve_arbitrary_angle_vertical_projection",)),
+        "simplify_fundamental_trig_expression": _op(
+            "simplify_fundamental_trig_expression", "build_trigonometry_arbitrary_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("trig_expression", "fundamental_identity"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("simplify_fundamental_trig_expression",)),
     },
 ))
 

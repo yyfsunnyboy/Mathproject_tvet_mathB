@@ -344,5 +344,65 @@ skills:
     allowed_types:
       - coterminal_angles
 
+  vh_數學B2_SubSection_1_3_1:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [classify_standard_position_angle]
+
+  vh_數學B2_SubSection_1_3_2:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compute_terminal_ray_trig_ratios]
+
+  vh_數學B2_SubSection_1_3_4:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [solve_signed_trig_constraints, classify_trig_derived_point_quadrant]
+
+  vh_數學B2_SubSection_1_3_5:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [evaluate_exact_arbitrary_angle_trig_expression]
+
+  vh_數學B2_SubSection_1_3_6:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [evaluate_exact_arbitrary_angle_trig_expression, solve_arbitrary_angle_vertical_projection]
+
+  vh_數學B2_SubSection_1_3_7:
+    fixed_domain_key: trigonometry.arbitrary_angle
+    domain_module: core.domain.trigonometry_arbitrary_domain
+    entrypoint: build_trigonometry_arbitrary_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [evaluate_exact_arbitrary_angle_trig_expression, complete_reference_angle_conversion, classify_trig_derived_point_quadrant, simplify_fundamental_trig_expression]
+
+  vh_數學B2_SubSection_1_4_1: &b2_14_function_graph
+    fixed_domain_key: trigonometry.function_graph
+    domain_module: core.domain.trigonometry_function_graph_domain
+    entrypoint: build_trigonometry_function_graph_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compare_trig_values_by_monotonicity, solve_trig_value_quadratic_constraint, analyze_affine_transformed_trig_graph, calculate_trig_period_from_argument_scale, classify_trig_expression_sign_change, classify_trig_equation_feasibility, analyze_tangent_absolute_graph_period, evaluate_trig_decimal, count_sine_cosine_intersections]
+
+  vh_數學B2_SubSection_1_4_2: *b2_14_function_graph
+  vh_數學B2_SubSection_1_4_3: *b2_14_function_graph
+  vh_數學B2_SubSection_1_4_4: *b2_14_function_graph
+
 
 

@@ -1,0 +1,73 @@
+{
+  "skill_id": "vh_數學B2_SubSection_1_3_6",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 6,
+  "components": [
+    {
+      "component_id": "src_11636",
+      "textbook_example_id": 11636,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11636/generate.py"
+    },
+    {
+      "component_id": "src_11637",
+      "textbook_example_id": 11637,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11637/generate.py"
+    },
+    {
+      "component_id": "src_11638",
+      "textbook_example_id": 11638,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11638/generate.py"
+    },
+    {
+      "component_id": "src_11639",
+      "textbook_example_id": 11639,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11639/generate.py"
+    },
+    {
+      "component_id": "src_11650",
+      "textbook_example_id": 11650,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11650/generate.py"
+    },
+    {
+      "component_id": "src_11654",
+      "textbook_example_id": 11654,
+      "status": "verified",
+      "problem_type_id": "solve_arbitrary_angle_vertical_projection",
+      "domain_operation": "solve_arbitrary_angle_vertical_projection",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11654/generate.py"
+    }
+  ]
+}

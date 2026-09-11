@@ -21,7 +21,7 @@ from typing import Any
 from core.globals import TASK_QUEUES, V3_IMPORT_TASKS
 from core.textbook_b2_11 import is_b2_11, existing_outline, existing_skill
 from core.mathb_concept_heading import is_persistable_concept_code
-from core.textbook_importer_v3_docx import parse_docx_summary
+from core.textbook_importer_v3_docx import parse_docx_summary, extract_docx_skill_headings
 from core.textbook_importer_v3_orchestrate import build_curriculum_info_for_v3_import
 from core.textbook_importer_v3_phase3_dryrun import GeminiUsageTracker
 from core.textbook_mathtype_converter import convert_docx_mathtype_to_latex_docx
@@ -324,6 +324,16 @@ def _fill_chapter_section_from_outline_or_lines(
     if section_code:
         outline = _lookup_outline_section_curriculum_row(info, section_code)
         if outline is not None:
+            # A filename chapter number is incomplete metadata, not a new title.
+            # Reuse the catalog title only for the same section and chapter index.
+            outline_chapter = str(outline.chapter or "").strip()
+            chapter_match = re.match(r"^第(\d+)章", outline_chapter)
+            if (re.fullmatch(r"第\d+章", chapter)
+                    and chapter_match
+                    and chapter == f"第{chapter_match.group(1)}章"
+                    and re.sub(r"\s+", "", section) == re.sub(r"\s+", "", str(outline.section or ""))):
+                chapter = outline_chapter
+                section = str(outline.section).strip()
             if is_b2_11(info):
                 # B2 1-1 reuses its existing curriculum names, not the numeric filename label.
                 chapter = str(outline.chapter or "").strip()
@@ -369,6 +379,28 @@ def _fill_chapter_section_from_outline_or_lines(
     return info
 
 
+def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
+    """Pre-import gate: structural candidates and read-only curriculum binding."""
+    from core.textbook_section_outline import ensure_section_outline_from_authoritative_metadata_v2
+
+    audit = extract_docx_skill_headings(docx_path, section_code=curriculum_info['section_code'])
+    info = _fill_chapter_section_from_outline_or_lines(curriculum_info, lines)
+    outline = ensure_section_outline_from_authoritative_metadata_v2(
+        curriculum=info['curriculum'], volume=info['volume'], chapter=info['chapter'],
+        section=info['section'], section_code=info['section_code'], grade=info.get('grade'),
+        authority_source='v3_source_context', dry_run=True, flush=False, curriculum_info=info)
+    audit['outline_result'] = outline
+    audit['outline_conflict'] = int(outline['action'] == 'conflict')
+    audit['curriculum_info'] = info
+    info['structural_skill_candidates'] = audit['skill_candidates']
+    heading = audit['section_heading']
+    same_section = heading and re.sub(r'\s+', '', heading['source_heading_text']) == re.sub(r'\s+', '', info['section'])
+    audit['curriculum_binding'] = 'PASS' if (
+        same_section and audit['candidate_count'] > 0 and not audit['unresolved_heading_count']
+        and outline['action'] in ('existing', 'would_create')) else 'FAIL'
+    return audit
+
+
 def _collect_unique_concept_headings(
     block_meta: dict[str, dict[str, Any]],
 ) -> list[dict[str, str]]:
@@ -404,6 +436,17 @@ def _ensure_formal_concepts_for_headings(
 ) -> list[dict[str, Any]]:
     from models import SkillCurriculum, SkillInfo
     from core.textbook_formal_concept import ensure_formal_concept_from_authoritative_heading_v2
+
+    if curriculum_info.get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+        from core.textbook_structural_metadata import resolve_heading_identity
+        results = []
+        for heading in headings:
+            resolved = resolve_heading_identity(curriculum_info, heading['concept_code'], heading['concept_name'])
+            if resolved['source'] != 'existing_registry':
+                raise ValueError('Phase2 did not establish the structural heading skill')
+            results.append(dict(action='existing', wrote=False,
+                                concept_name=heading['concept_name'], skill_id=resolved['formal_skill_id']))
+        return results
 
     if is_b2_11(curriculum_info):
         return [dict(action="existing", wrote=False, concept_name=h["concept_name"],
@@ -524,6 +567,14 @@ def _attach_anchor_notes_to_phase3(
                             missing += 1
                             continue
                         notes_obj = question_anchor_notes_payload(anchor)
+                        existing_notes = item.get("notes")
+                        if existing_notes:
+                            try:
+                                existing_obj = json.loads(str(existing_notes))
+                            except (TypeError, ValueError, json.JSONDecodeError):
+                                existing_obj = None
+                            if isinstance(existing_obj, dict):
+                                notes_obj.update(existing_obj)
                         item["notes"] = json.dumps(notes_obj, ensure_ascii=False)
                         item["anchor_id"] = anchor.get("anchor_id")
                         item["text_fingerprint"] = anchor.get("text_fingerprint")
@@ -611,6 +662,15 @@ def run_v3_pair_pipeline(
         return report
 
     try:
+        from core.textbook_importer_v3_source import is_generated_latex_docx
+
+        if is_generated_latex_docx(docx.name):
+            return fail(
+                STAGE_FILE_VALIDATION,
+                "generated_latex_docx_not_source",
+                "Converter output cannot be used as the authoritative DOCX source",
+                details={"filename": docx.name},
+            )
         _emit(
             tid,
             task_queue,
@@ -672,6 +732,16 @@ def run_v3_pair_pipeline(
                 "LaTeX DOCX was not produced",
                 details=formula_metrics,
             )
+        found = int(formula_metrics.get("mathtype_found") or 0)
+        converted = int(formula_metrics.get("mathtype_converted") or 0)
+        failures = int(formula_metrics.get("formula_failures") or 0)
+        if failures or converted != found:
+            return fail(
+                STAGE_FORMULA_CONVERSION,
+                "source_fidelity_formula_failed",
+                "MathType conversion did not pass the Source Fidelity Gate",
+                details=formula_metrics,
+            )
         _emit(
             tid,
             task_queue,
@@ -700,6 +770,13 @@ def run_v3_pair_pipeline(
             )
             curriculum_info = scope_bundle["curriculum_info"]
             source_scope = scope_bundle["source_scope"]
+            if source_scope == "section_textbook":
+                extraction = audit_v3_skill_extraction(docx, curriculum_info, lines)
+                report["metrics"]["skill_extraction"] = extraction
+                if extraction['curriculum_binding'] != 'PASS':
+                    return fail(STAGE_CURRICULUM_BINDING, 'skill_extraction_gate_failed',
+                                'DOCX structural extraction/binding dry-run failed', details=extraction)
+                curriculum_info = extraction['curriculum_info']
             curriculum_info = _fill_chapter_section_from_outline_or_lines(
                 curriculum_info, lines
             )
@@ -721,7 +798,16 @@ def run_v3_pair_pipeline(
                     },
                 )
 
-            outline_result = existing_outline(curriculum_info) if is_b2_11(curriculum_info) else ensure_section_outline_from_authoritative_metadata_v2(
+            if not allow_phase4:
+                outline_row = tpv2._lookup_outline_section_curriculum_row(curriculum_info, section_code)
+                outline_result = ({"action": "existing", "wrote": False,
+                                   "skill_id": outline_row.skill_id,
+                                   "chapter": outline_row.chapter, "section": outline_row.section}
+                                  if outline_row is not None else {"action": "would_create"})
+            elif is_b2_11(curriculum_info):
+                outline_result = existing_outline(curriculum_info)
+            else:
+                outline_result = ensure_section_outline_from_authoritative_metadata_v2(
                 curriculum=str(curriculum_info.get("curriculum") or "vocational"),
                 volume=str(curriculum_info.get("volume") or volume),
                 chapter=chapter,
@@ -740,14 +826,17 @@ def run_v3_pair_pipeline(
                     "Existing section outline conflicts with authoritative metadata",
                     details=outline_result,
                 )
-            if outline_result.get("action") in ("invalid_authority", "would_create"):
+            if outline_result.get("action") == "invalid_authority" or (
+                allow_phase4 and outline_result.get("action") == "would_create"
+            ):
                 return fail(
                     STAGE_CURRICULUM_BINDING,
                     "outline_ensure_failed",
                     f"Outline ensure failed: {outline_result.get('action')}",
                     details=outline_result,
                 )
-            db.session.commit()
+            if allow_phase4:
+                db.session.commit()
             curriculum_info["chapter"] = outline_result.get("chapter") or chapter
             curriculum_info["section"] = outline_result.get("section") or section
 
@@ -757,6 +846,8 @@ def run_v3_pair_pipeline(
                 curriculum_info=curriculum_info,
             )
             block_meta = dict(tpv2._DOCX_BLOCK_META or {})
+            for block_title, block in block_meta.items():
+                block["problem_text"] = str((question_blocks or {}).get(block_title) or "")
             parse_metrics = {
                 "phase1_lines": len(lines),
                 "phase2_blocks": len(question_blocks or {}),
@@ -778,12 +869,20 @@ def run_v3_pair_pipeline(
                 metrics=parse_metrics,
             )
 
-            headings = _collect_unique_concept_headings(block_meta)
-            concept_results = _ensure_formal_concepts_for_headings(
-                headings=headings,
-                curriculum_info=curriculum_info,
-            )
-            db.session.commit()
+            headings = (extraction['skill_candidates'] if source_scope == 'section_textbook'
+                        else _collect_unique_concept_headings(block_meta))
+            if allow_phase4:
+                concept_results = _ensure_formal_concepts_for_headings(
+                    headings=headings,
+                    curriculum_info=curriculum_info,
+                )
+                db.session.commit()
+            else:
+                concept_results = [
+                    {"action": "existing", "skill_id": h.get("formal_skill_id"),
+                     "concept_name": h.get("concept_name")}
+                    for h in headings
+                ]
             formal_candidates = get_section_formal_skill_candidates(
                 curriculum=str(curriculum_info.get("curriculum") or "vocational"),
                 volume=str(curriculum_info.get("volume") or volume),
@@ -824,7 +923,7 @@ def run_v3_pair_pipeline(
             from core.ai_analyzer import get_model, gemini_model_name
 
             model = None
-            if not is_b2_11(curriculum_info):
+            if not is_b2_11(curriculum_info) and not curriculum_info.get('structural_skill_candidates'):
                 model = get_model("architect")
                 tracker.wrap_model(model)
             phase3_keys = sorted(question_blocks.keys())
@@ -854,6 +953,11 @@ def run_v3_pair_pipeline(
                         phase3_q += len((con or {}).get("examples") or [])
                         phase3_q += len((con or {}).get("practice_questions") or [])
             ai_metrics = {
+                "metadata_source": phase3_parsed.get('metadata_source', 'gemini'),
+                "metadata_alignment": phase3_parsed.get('metadata_alignment', 'PASS'),
+                "unresolved_skill_bindings": phase3_parsed.get('unresolved_skill_bindings', []),
+                "needs_skill_resolution": phase3_parsed.get('needs_skill_resolution', []),
+                "section_outline_fallback_count": phase3_parsed.get('section_outline_fallback_count', 0),
                 "phase3_questions": phase3_q,
                 "gemini_requests": gemini_summary.get("request_count"),
                 "gemini_total_tokens": gemini_summary.get("total_token_count_total"),
@@ -907,7 +1011,12 @@ def run_v3_pair_pipeline(
                 )
                 report["ok"] = True
                 report["metrics"]["db_write"] = {"skipped": True}
+                db.session.rollback()
             else:
+                if phase3_parsed.get('unresolved_skill_bindings'):
+                    return fail(STAGE_DB_WRITE, 'unresolved_skill_bindings',
+                                'Source exercises require an explicit reviewed skill binding',
+                                details=phase3_parsed['unresolved_skill_bindings'])
                 _emit(tid, task_queue, stage=STAGE_DB_WRITE, status="running")
                 backup_info = ensure_db_backup(project_root=root, label="v3_phase4")
                 report["metrics"]["db_backup"] = backup_info
@@ -1003,7 +1112,25 @@ def run_v3_pair_pipeline(
                 "reused_count": 0,
                 "status": "skipped",
             }
-            if not allow_phase4:
+            if not allow_phase4 and pdf and Path(pdf).is_file():
+                from core.textbook_pdf_visual import audit_pdf_visuals
+
+                visual_summary = audit_pdf_visuals(
+                    pdf_path=pdf,
+                    docx_path=docx,
+                    phase3_parsed=phase3_parsed,
+                    block_meta=block_meta,
+                    curriculum_info=curriculum_info,
+                )
+                pdf_metrics = dict(visual_summary, status="audited")
+                report["metrics"]["pdf_visual"] = pdf_metrics
+                report["metrics"]["image_linking"] = {
+                    "linked_count": 0, "reused_count": 0, "status": "dry_run"
+                }
+                _emit(tid, task_queue, stage=STAGE_PDF_VISUAL, status="success", metrics=pdf_metrics)
+                _emit(tid, task_queue, stage=STAGE_IMAGE_LINKING, status="skipped",
+                      message="dry-run audit; no assets written", metrics=report["metrics"]["image_linking"])
+            elif not allow_phase4:
                 _emit(
                     tid,
                     task_queue,
@@ -1273,6 +1400,14 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         pdf_linked += int(ilm.get("linked_count") or 0)
         pdf_reused += int(ilm.get("reused_count") or 0)
 
+    fidelity_failures = [
+        p for p in pairs
+        if int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("formula_failures") or 0) > 0
+        or int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("mathtype_found") or 0)
+        != int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("mathtype_converted") or 0)
+        or int(((p.get("metrics") or {}).get("ai_alignment") or {}).get("section_outline_fallback_count") or 0) > 0
+        or int(((p.get("metrics") or {}).get("pdf_visual") or {}).get("errors") or 0) > 0
+    ]
     status = "success"
     if failed_pairs and ok_pairs:
         status = "partial"
@@ -1280,6 +1415,8 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         status = "failed"
     elif not pairs:
         status = "failed"
+    elif fidelity_failures:
+        status = "needs_repair"
 
     return {
         "status": status,

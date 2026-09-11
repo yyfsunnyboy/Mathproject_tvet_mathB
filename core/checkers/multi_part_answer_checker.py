@@ -21,6 +21,7 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "solution_set_checker",
         "text_short_checker",
         "text_checker",
+        "ordered_inequality_checker",
     }
 )
 
@@ -125,6 +126,9 @@ def _check_part(
         return check_solution_set_answer(student_answer, expected_answer)
     if checker_key in {"text_short_checker", "text_checker"}:
         return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
+    if checker_key == "ordered_inequality_checker" or equiv == "ordered_inequality":
+        from core.checkers.ordered_inequality_checker import check_ordered_inequality_answer
+        return check_ordered_inequality_answer(student_answer, expected_answer)
     from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
 
     if check_expression_equivalence_answer(student_answer, expected_answer, answer_contract=part):
@@ -200,6 +204,7 @@ def check_multi_part_answer(
             "choice_label",
             "decimal_tolerance",
             "unordered_solution_set",
+            "ordered_inequality",
         }
         correct = False
         reason = ""

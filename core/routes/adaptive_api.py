@@ -8,6 +8,7 @@ from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
 
 from core.adaptive.judge import judge_answer_with_feedback
+from core.gencode.answer_grading import build_correct_answer_display
 from core.handwriting_ai_check import (
     HandwritingCheckContext,
     build_handwriting_check_response,
@@ -577,6 +578,12 @@ def adaptive_submit_and_get_next():
             payload["routing_state"] = _slim_routing_state(payload.get("routing_state"))
 
         response = submit_and_get_next(payload)
+        if runtime and payload.get("is_correct") is False:
+            display_context = dict(runtime)
+            display_context.setdefault("skill_id", str(payload.get("skill_id") or ""))
+            correct_answer_display = build_correct_answer_display(display_context)
+            if correct_answer_display is not None:
+                response["correct_answer_display"] = correct_answer_display
         if grading_analysis is not None:
             response["grading_analysis"] = grading_analysis
             try:
@@ -607,6 +614,7 @@ def adaptive_submit_and_get_next():
                 "choices": list(response["new_question_data"].get("choices") or []),
                 "answer_type": str(response["new_question_data"].get("answer_type") or ""),
                 "checker_type": str(response["new_question_data"].get("checker_type") or ""),
+                "answer_contract": dict(response["new_question_data"].get("answer_contract") or {}),
                 "routing_state": _slim_routing_state(response.get("routing_state", {})),
             }
             runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)

@@ -991,6 +991,21 @@ class MTEF:
                 buf += tmplStr
 
                 return buf, None
+            elif tmpl.selector in {SelectorType.tmHBRACE, SelectorType.tmHBRACK}:
+                # Horizontal fences have a main slot and an annotation slot.
+                # Variation bit 0x1 places the annotation above the expression.
+                mainAST = ast.children[0] if ast.children else None
+                noteAST = ast.children[1] if len(ast.children or []) > 1 else None
+                mainSlot, _ = self.makeLatex(mainAST) if mainAST is not None else ("", None)
+                noteSlot, _ = self.makeLatex(noteAST) if noteAST is not None else ("", None)
+                if tmpl.selector == SelectorType.tmHBRACE:
+                    fence = "overbrace" if tmpl.variation & 0x1 else "underbrace"
+                else:
+                    fence = "overbracket" if tmpl.variation & 0x1 else "underbracket"
+                buf += "\\%s{%s}" % (fence, mainSlot)
+                if noteSlot:
+                    buf += "^{%s}" % noteSlot if tmpl.variation & 0x1 else "_{%s}" % noteSlot
+                return buf, None
             elif tmpl.selector == SelectorType.tmSUP:
                 subAST = ast.children[0]
                 supAST = ast.children[1]

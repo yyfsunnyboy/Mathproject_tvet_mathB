@@ -134,6 +134,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["interval_equivalence", "interval_set", "inequality_solution_equivalence"],
         "module": "core.checkers.inequality_solution_checker",
     },
+    "ordered_inequality_checker": {
+        "runtime_available": True,
+        "answer_types": ["expression", "short_answer"],
+        "equivalence_types": ["ordered_inequality"],
+        "module": "core.checkers.ordered_inequality_checker",
+    },
     "quadrant_checker": {
         "runtime_available": True,
         "answer_types": ["classification", "quadrant_label", "text_label", "category"],

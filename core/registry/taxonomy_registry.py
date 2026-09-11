@@ -11,7 +11,30 @@ from core.registry.domain_operation_registry import (
     list_registered_domains,
 )
 
-REGISTRY_REVISION = "2026-09-09-v1.9"
+REGISTRY_REVISION = "2026-09-10-v1.10"
+
+_B2_13_SKILL_OPERATIONS = {
+    "vh_數學B2_SubSection_1_3_1": ("classify_standard_position_angle",),
+    "vh_數學B2_SubSection_1_3_2": ("compute_terminal_ray_trig_ratios",),
+    "vh_數學B2_SubSection_1_3_4": ("solve_signed_trig_constraints", "classify_trig_derived_point_quadrant"),
+    "vh_數學B2_SubSection_1_3_5": ("evaluate_exact_arbitrary_angle_trig_expression",),
+    "vh_數學B2_SubSection_1_3_6": ("evaluate_exact_arbitrary_angle_trig_expression", "solve_arbitrary_angle_vertical_projection"),
+    "vh_數學B2_SubSection_1_3_7": (
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "complete_reference_angle_conversion",
+        "classify_trig_derived_point_quadrant",
+        "simplify_fundamental_trig_expression",
+    ),
+}
+
+_B2_14_OPERATIONS = (
+    "compare_trig_values_by_monotonicity", "solve_trig_value_quadratic_constraint",
+    "analyze_affine_transformed_trig_graph", "calculate_trig_period_from_argument_scale",
+    "classify_trig_expression_sign_change", "classify_trig_equation_feasibility",
+    "analyze_tangent_absolute_graph_period", "evaluate_trig_decimal",
+    "count_sine_cosine_intersections",
+)
+_B2_14_SKILLS = tuple(f"vh_數學B2_SubSection_1_4_{index}" for index in range(1, 5))
 
 
 class SkillDomainNotRegisteredError(KeyError):
@@ -371,6 +394,24 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "default_curriculum_profile": "vocational_high_b",
         "allowed_types": ["convert_angle_measure"],
     },
+    **{
+        skill_id: {
+            "fixed_domain_key": "trigonometry.arbitrary_angle",
+            "domain": "trigonometry",
+            "curriculum_profile": "vocational_high_b",
+            "registry_revision": REGISTRY_REVISION,
+            "mapping_reason": "textbook_skill_arbitrary_angle_trigonometry",
+        }
+        for skill_id in _B2_13_SKILL_OPERATIONS
+    },
+    **{
+        skill_id: {
+            "fixed_domain_key": "trigonometry.function_graph", "domain": "trigonometry",
+            "curriculum_profile": "vocational_high_b", "registry_revision": REGISTRY_REVISION,
+            "mapping_reason": "textbook_skill_trigonometric_function_graph",
+        }
+        for skill_id in _B2_14_SKILLS
+    },
     "vh_數學B2_RatioAndRatioValue": {
         "fixed_domain_key": "geometry.similarity",
         "domain_module": "core.domain.geometry_similarity_domain",
@@ -436,6 +477,26 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "entrypoint": "build_trigonometry_angle_matrix",
         "default_curriculum_profile": "vocational_high_b",
         "allowed_types": ["coterminal_angles"],
+    },
+    **{
+        skill_id: {
+            "fixed_domain_key": "trigonometry.arbitrary_angle",
+            "domain_module": "core.domain.trigonometry_arbitrary_domain",
+            "entrypoint": "build_trigonometry_arbitrary_matrix",
+            "default_curriculum_profile": "vocational_high_b",
+            "allowed_types": list(_B2_13_SKILL_OPERATIONS[skill_id]),
+        }
+        for skill_id in _B2_13_SKILL_OPERATIONS
+    },
+    **{
+        skill_id: {
+            "fixed_domain_key": "trigonometry.function_graph",
+            "domain_module": "core.domain.trigonometry_function_graph_domain",
+            "entrypoint": "build_trigonometry_function_graph_matrix",
+            "default_curriculum_profile": "vocational_high_b",
+            "allowed_types": list(_B2_14_OPERATIONS),
+        }
+        for skill_id in _B2_14_SKILLS
     },
 }
 
@@ -537,7 +598,12 @@ def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
 
     fixed_domain_key = get_fixed_domain_key(key)
     merged["fixed_domain_key"] = fixed_domain_key
-    merged["allowed_operations"] = get_allowed_operations(fixed_domain_key, skill_id=key)
+    merged["allowed_operations"] = (
+        list(_B2_13_SKILL_OPERATIONS[key])
+        if key in _B2_13_SKILL_OPERATIONS
+        else list(_B2_14_OPERATIONS) if key in _B2_14_SKILLS
+        else get_allowed_operations(fixed_domain_key, skill_id=key)
+    )
     merged["registry_revision"] = get_registry_revision(key)
     return merged
 

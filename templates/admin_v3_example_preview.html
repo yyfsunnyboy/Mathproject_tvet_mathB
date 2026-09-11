@@ -26,6 +26,7 @@
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
 
     <style>
         :root {
@@ -600,6 +601,9 @@
 
     // Call MathJax typeset safely
     async function triggerMathJax(elements) {
+        if (window.MathDisplayNormalizer) {
+            elements.filter(Boolean).forEach((element) => window.MathDisplayNormalizer.normalizeElement(element));
+        }
         if (window.MathJax && window.MathJax.typesetPromise) {
             try {
                 await window.MathJax.typesetPromise(elements);

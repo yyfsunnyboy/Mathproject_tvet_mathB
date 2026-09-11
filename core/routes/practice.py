@@ -553,16 +553,22 @@ def _emit_check_result(
     skip_practice_attempt: bool = False,
 ) -> Any:
     uid = str(question_uid or session.get("current_question_uid", "")).strip()
+    out = dict(result)
+    ctx = attempt_context if isinstance(attempt_context, dict) else {}
+    current_question = ctx.get("current_question")
+    if isinstance(current_question, dict):
+        from core.gencode.answer_grading import attach_correct_answer_feedback
+
+        out = attach_correct_answer_feedback(out, current_question)
     # Only mark the question as answered in the store when the result carries a
     # definitive verdict (correct / incorrect). parse_error and system_error are
     # not genuine student answers and must not pollute the question store.
-    _status = str(result.get("status", "")).strip() if isinstance(result, dict) else ""
+    _status = str(out.get("status", "")).strip()
     _is_gradable = _status in ("correct", "incorrect") or (
-        _status == "" and not result.get("system_error") and not result.get("invalid_input")
+        _status == "" and not out.get("system_error") and not out.get("invalid_input")
     )
     if uid and _is_gradable:
-        mark_question_answered(uid, result)
-    out = dict(result)
+        mark_question_answered(uid, out)
     if uid:
         out["question_uid"] = uid
     if record_progress and _is_gradable:
@@ -580,7 +586,6 @@ def _emit_check_result(
         and not skip_practice_attempt
         and out.get("correct") is not None
     ):
-        ctx = attempt_context if isinstance(attempt_context, dict) else {}
         persist_practice_attempt(
             skill_id=skill_id,
             is_correct=bool(out.get("correct", False)),
@@ -2598,7 +2603,11 @@ def check_answer():
             _legacy_parse_fail.get("error_code"),
         )
         return _emit_check_result(
-            question_uid, skill_id, _legacy_parse_fail, record_progress=False
+            question_uid,
+            skill_id,
+            _legacy_parse_fail,
+            record_progress=False,
+            attempt_context=attempt_ctx,
         )
 
     correct_for_check = current.get("correct_answer", current.get("answer"))

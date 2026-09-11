@@ -770,6 +770,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
   <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
 
   <script>
     function normalizeQuestionImageSource(rawImage) {
@@ -2182,7 +2184,11 @@
       analyzeCanvasBtn.disabled = disabled;
     }
     async function typesetMath(element) {
-      if (!element || !window.MathJax || !window.MathJax.typesetPromise) return;
+      if (!element) return;
+      if (window.MathDisplayNormalizer) {
+        window.MathDisplayNormalizer.normalizeElement(element);
+      }
+      if (!window.MathJax || !window.MathJax.typesetPromise) return;
       try {
         await window.MathJax.typesetPromise([element]);
       } catch (err) {
@@ -2589,7 +2595,10 @@
       if (!response.ok) throw new Error(data.result || data.error || "drawing check failed");
       const message = data.feedback || data.result || data.message || "圖形檢查完成。";
       setStatus(message);
-      await addMessage("bot", message);
+      const feedbackMessage = await addMessage("bot", message);
+      if (window.CorrectAnswerFeedback && data.correct_answer_display) {
+        await window.CorrectAnswerFeedback.render(feedbackMessage, data, message);
+      }
 
       const isCorrect = data.correct === true;
       const isCorrectVal = data.is_correct; // True / False / None
@@ -3357,6 +3366,10 @@
             return;
           }
           await applyAdaptiveResponse(data);
+          if (window.CorrectAnswerFeedback && data.correct_answer_display) {
+            const feedbackNode = await addMessage("bot", data.answer_feedback || "答錯了。");
+            await window.CorrectAnswerFeedback.render(feedbackNode, data, data.answer_feedback || "答錯了。");
+          }
       } catch (err) { setStatus(`提交失敗：${err.message}`); }
     });
 

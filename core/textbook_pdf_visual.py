@@ -167,6 +167,52 @@ def find_phrase_y(page: dict[str, Any], phrase: str) -> float | None:
     return None
 
 
+def find_phrase_ys(page: dict[str, Any], phrase: str) -> list[float]:
+    """Find every line occurrence, preserving repeated question cues on one page."""
+    target = normalize_pdf_text(phrase)
+    if not target:
+        return []
+    lines: list[tuple[float, str]] = []
+    for word in page.get("words") or []:
+        y = float(word[1])
+        token = normalize_pdf_text(str(word[4]))
+        if not token:
+            continue
+        if lines and abs(lines[-1][0] - y) <= 3.0:
+            lines[-1] = (lines[-1][0], lines[-1][1] + token)
+        else:
+            lines.append((y, token))
+    return [y for y, text in lines if target in text]
+
+
+def _ordered_figure_cue_assignments(
+    items: list[dict[str, Any]], pages: list[dict[str, Any]]
+) -> dict[int, tuple[float, int, float, list[str], str]]:
+    """Pair repeated, strong figure cues only when source/PDF cardinality agrees.
+
+    This is a source-order association, not nearest-image matching.  Refusing a
+    partial cardinality match prevents an unrelated diagram from being silently
+    consumed when either source extraction or the PDF text layer is incomplete.
+    """
+    assignments: dict[int, tuple[float, int, float, list[str], str]] = {}
+    for cue in ("下圖中實線為", "依圖", "試用筆連接"):
+        source_indexes = [
+            idx for idx, item in enumerate(items)
+            if cue in normalize_pdf_text(str(item.get("problem_text") or ""))
+            and idx not in assignments
+        ]
+        occurrences = [
+            (int(page["page"]), float(y))
+            for page in pages
+            for y in find_phrase_ys(page, cue)
+        ]
+        if not source_indexes or len(source_indexes) != len(occurrences):
+            continue
+        for idx, (page_no, y) in zip(source_indexes, occurrences):
+            assignments[idx] = (0.98, page_no, y, [cue], "ordered_figure_cue")
+    return assignments
+
+
 def extract_match_phrases(problem_text: str, label: str = "") -> list[str]:
     """Build unique-ish phrases from problem text (and optional label). No section hardcodes."""
     raw = normalize_query_text(problem_text)
@@ -220,6 +266,7 @@ def match_questions_to_pdf(
     results: list[dict[str, Any]] = []
     last_page = 0
     last_y = -1.0
+    figure_assignments = _ordered_figure_cue_assignments(items, pages)
 
     for idx, item in enumerate(items):
         label = normalize_question_label(
@@ -234,6 +281,24 @@ def match_questions_to_pdf(
             if freq > max(2, len(pages) // 3) and len(ph) < 10:
                 continue
             usable.append((ph, freq))
+
+        best = figure_assignments.get(idx)
+        if best is not None:
+            score, page_no, y, hits, method = best
+            last_page, last_y = page_no, y
+            results.append(
+                {
+                    **item,
+                    "source_description": label or item.get("source_description"),
+                    "pdf_match": {"page": page_no, "question_start_y": y, "hits": hits},
+                    "match_method": method,
+                    "match_score": round(float(score), 3),
+                    "needs_review": False,
+                    "reason": "matched_via_ordered_strong_figure_evidence",
+                    "source_order": item.get("source_order") or (idx + 1),
+                }
+            )
+            continue
 
         best = None
         for page in pages:
@@ -273,6 +338,26 @@ def match_questions_to_pdf(
                     best = cand
 
         if best is None:
+            # Textbooks routinely reuse short labels (例、隨堂練習、習題).  A
+            # label is weak in isolation, but the next occurrence in strict
+            # source order is deterministic structural evidence.
+            label_phrase = normalize_pdf_text(label)
+            ordered_hits = []
+            if label_phrase:
+                for page in pages:
+                    y = find_phrase_y(page, label_phrase)
+                    if y is None:
+                        continue
+                    if last_page and page["page"] < last_page:
+                        continue
+                    if last_page and page["page"] == last_page and float(y) <= last_y + 2:
+                        continue
+                    ordered_hits.append((page["page"], float(y)))
+            if ordered_hits:
+                page_no, y = ordered_hits[0]
+                best = (0.92, page_no, y, [label_phrase], "ordered_label")
+
+        if best is None:
             results.append(
                 {
                     **item,
@@ -305,6 +390,84 @@ def match_questions_to_pdf(
             }
         )
     return results
+
+
+def audit_pdf_visuals(
+    *,
+    pdf_path: str | Path,
+    phase3_parsed: dict[str, Any],
+    block_meta: dict[str, Any],
+    curriculum_info: dict[str, Any],
+    docx_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Read-only visual matching/classification for the Phase 3 dry-run gate."""
+    import fitz
+
+    items = []
+    for order, (title, block) in enumerate(block_meta.items(), 1):
+        items.append({
+            "id": order,
+            "source_description": title,
+            "problem_text": block.get("problem_text") or block.get("question_text") or "",
+            "source_order": order,
+            "source_type": block.get("source_type") or "",
+            "anchor_id": str(block.get("anchor_id") or f"dry-run-{order}"),
+        })
+    pdf = Path(pdf_path)
+    with fitz.open(str(pdf)) as doc:
+        pages = build_page_index(doc)
+    matched = classify_and_detect_visuals(
+        assign_question_regions(match_questions_to_pdf(items, pages), pages), pages
+    )
+    from core.textbook_b2_11 import correct_pdf_regions
+    from core.textbook_b2_12 import correct_pdf_visual_regions
+    matched = correct_pdf_regions(matched, pages, pdf, curriculum_info)
+    matched = correct_pdf_visual_regions(matched, pages, pdf, curriculum_info)
+    # Dry-run fidelity is deliberately stricter than production enrichment:
+    # only a question-region visual with an explicit figure dependency is
+    # QUESTION_REQUIRED. Helpful/explanatory imagery is never mount-required.
+    for row in matched:
+        classification = str(row.get("visual_classification") or "none")
+        explicit_dependency = _text_has_strong_figure_cue(str(row.get("problem_text") or ""))
+        if explicit_dependency:
+            row["source_visual_class"] = "QUESTION_REQUIRED"
+            # This flag expresses policy need, not successful matching. The
+            # blocking check below separately requires a usable crop/bbox.
+            row["should_mount"] = True
+        elif row.get("should_mount") or classification == "helpful":
+            row["source_visual_class"] = "EXPLANATION_ONLY"
+            row["should_mount"] = False
+        else:
+            row["source_visual_class"] = "DECORATIVE"
+    required = [r for r in matched if r.get("source_visual_class") == "QUESTION_REQUIRED"]
+    provenance = []
+    if docx_path:
+        from core.textbook_importer_v3_docx import extract_question_image_provenance
+        provenance = extract_question_image_provenance(docx_path)
+    if len(provenance) == len(required):
+        for row, source_image in zip(required, provenance):
+            row["source_image_provenance"] = source_image
+    unmatched = [r for r in matched if not r.get("pdf_match")]
+    blocking = [r for r in required if not r.get("visual_bbox") and not r.get("visual_crops")]
+    return {
+        "questions_scanned": len(items),
+        "questions_matched": len(items) - len(unmatched),
+        "high_confidence": sum(float(r.get("match_score") or 0) >= HIGH_CONFIDENCE for r in matched),
+        "visual_candidates": len(required),
+        "source_images": sum(1 for r in matched if r.get("visual_bbox")),
+        "question_required": len(required),
+        "explanation_only": sum(1 for r in matched if r.get("source_visual_class") == "EXPLANATION_ONLY"),
+        "solution_only": 0,
+        "decorative": sum(1 for r in matched if r.get("source_visual_class") == "DECORATIVE" and r.get("visual_bbox")),
+        "mount_required": len(required),
+        "matched": len(required) - len(blocking),
+        "unmatched": len(blocking),
+        "errors": len(blocking),
+        "visual_issues": len(blocking),
+        "rows": matched,
+        "source_image_provenance_count": len(provenance),
+        "text_layer_usable": pdf_text_layer_usable(pages),
+    }
 
 
 def assign_question_regions(
@@ -453,16 +616,26 @@ def classify_and_detect_visuals(
         photo_and_diagram = bool(significant_imgs) and bool(significant_draws or soft_draws)
 
         if strong_cue and (preferred_draws or soft_draws or significant_imgs):
-            if preferred_draws or soft_draws:
-                top = sorted((preferred_draws or soft_draws), key=lambda d: -d["area"])[:10]
-                visual_bbox = union_bbox([d["bbox"] for d in top])
+            page = pages[regions[0]["page"] - 1]
+            graph_draws = [
+                d for d in (preferred_draws or soft_draws)
+                if 100 <= d["bbox"][2] - d["bbox"][0] <= 0.65 * page["width"]
+                and 70 <= d["bbox"][3] - d["bbox"][1] <= 0.45 * page["height"]
+            ]
+            if graph_draws:
+                # PDF graphs are commonly emitted as one outer vector group plus
+                # nested axes/curves.  The outer compact group is the crop; a
+                # union with page-layout groups would swallow unrelated content.
+                visual_bbox = list(max(graph_draws, key=lambda d: d["area"])["bbox"])
                 visual_type = "diagram"
-            else:
+            elif significant_imgs:
                 visual_bbox = union_bbox([i["bbox"] for i in significant_imgs])
                 visual_type = "embedded_image"
+            else:
+                visual_bbox = None
             classification = "required"
-            reason = "figure_keyword_and_visual_in_region"
-            should_mount = True
+            reason = "figure_keyword_and_compact_visual_in_region" if visual_bbox else "figure_without_compact_visual"
+            should_mount = bool(visual_bbox)
         elif text_flag and (preferred_draws or soft_draws or significant_imgs):
             if preferred_draws or soft_draws:
                 top = sorted((preferred_draws or soft_draws), key=lambda d: -d["area"])[:10]
@@ -814,8 +987,15 @@ def enrich_textbook_examples_with_pdf_visuals(
             summary["high_confidence"] += 1
 
         classification = str(row.get("visual_classification") or "none")
-        if classification in ("required", "helpful") and row.get("should_mount"):
+        if classification == "required" and row.get("should_mount"):
             summary["visual_candidates"] += 1
+        elif classification == "helpful":
+            # Helpful/explanatory figures are useful for source audit, but they
+            # are not part of the question contract and must never be mounted.
+            summary["skipped_none"] += 1
+            pub["status"] = "skipped_explanation_only"
+            summary["rows"].append(pub)
+            continue
         elif classification == "decorative":
             summary["skipped_decorative"] += 1
             pub["status"] = "skipped_decorative"

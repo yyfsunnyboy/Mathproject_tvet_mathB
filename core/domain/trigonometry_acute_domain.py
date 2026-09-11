@@ -249,12 +249,13 @@ def evaluate_trig_decimal(
         raise ValueError("decimal_rounding_policy_unsupported")
     total_minutes = sp.Rational(str(degrees)) * 60 + sp.Rational(str(minutes))
     normalized_degrees = sp.simplify(total_minutes / 60)
-    if not (0 < normalized_degrees < 90):
-        raise ValueError("angle_must_be_positive_acute")
     radians = sp.pi * normalized_degrees / 180
+    exact_value = sp.simplify(_TRIG_FUNCTIONS[function_key](radians))
+    if exact_value in {sp.zoo, sp.oo, -sp.oo, sp.nan} or exact_value.is_finite is False:
+        raise ValueError("trig_value_undefined")
     with localcontext() as context:
         context.prec = precision + 18
-        raw = Decimal(str(sp.N(_TRIG_FUNCTIONS[function_key](radians), precision + 16)))
+        raw = Decimal(str(sp.N(exact_value, precision + 16)))
         quantum = Decimal(1).scaleb(-precision)
         rounded = raw.quantize(quantum, rounding=ROUND_HALF_UP)
     return {

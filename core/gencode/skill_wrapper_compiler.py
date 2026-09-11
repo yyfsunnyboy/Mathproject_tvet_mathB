@@ -366,7 +366,6 @@ def _merge_generator_spec(payload: dict[str, Any], component_id: str) -> dict[st
         "component_id",
         "generator_key",
         "presentation_mode",
-        "answer_type",
         "problem_type_id",
         "source_kind",
         "line_type",

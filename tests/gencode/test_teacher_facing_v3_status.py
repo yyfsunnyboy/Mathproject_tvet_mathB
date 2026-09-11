@@ -98,8 +98,11 @@ def test_production_sync_requires_matching_component_hash(tmp_path: Path):
 def _write_production_init(root: Path, skill_id: str, specs: list[dict[str, object]]) -> None:
     skill_dir = root / "agent_skills_v3" / skill_id
     skill_dir.mkdir(parents=True, exist_ok=True)
+    keys = [str(row["component_id"]) for row in specs]
     (skill_dir / "__init__.py").write_text(
-        f"SKILL_ID = {skill_id!r}\nGENERATOR_SPECS = {specs!r}\n",
+        f"SKILL_ID = {skill_id!r}\n"
+        f"GENERATOR_KEYS = {keys!r}\n"
+        f"GENERATOR_SPECS = {specs!r}\n",
         encoding="utf-8",
     )
 
@@ -431,8 +434,8 @@ def test_regression_skill_partial_publishing_states(tmp_path: Path):
             skill_id=skill_id,
             project_root=tmp_path,
         )
-        assert skill_status["teacher_status"]["status_key"] == "partially_published"
-        assert "部分上線" in skill_status["teacher_status"]["label"]
+        assert skill_status["teacher_status"]["status_key"] == "failed"
+        assert skill_status["teacher_status"]["label"] == "驗證失敗"
         assert skill_status["published_count"] == 1
         assert skill_status["generated_not_packaged_count"] == 1
     finally:
@@ -479,7 +482,7 @@ def test_src_3829_production_consistency():
     import skills.vh_數學B4_HistogramsAndFrequencyPolygons as facade
     p = facade.generate(seed=100, component_id="src_3829")
     assert p["problem_type_id"] == "histogram_distribution_update"
-    assert p["answer_contract"]["checker"] == "free_response_drawing_checker"
+    assert p["answer_contract"]["checker"] == "choice_label_checker"
 
 
 # ---------------------------------------------------------------------------
@@ -659,6 +662,18 @@ def test_b2_12_examples_use_production_runtime_publication_evidence() -> None:
         project_root=PROJECT_ROOT,
     )
 
+    online = [
+        example_id
+        for example_id, status in status_map.items()
+        if status["teacher_status"]["status_key"] == "published"
+    ]
+
+    assert len(status_map) == 31
+    assert len(online) == 30
+    assert 11575 not in online
+    assert status_map[11575]["production_runtime_ready"] is False
+    conn.close()
+
 
 def _write_runtime_facade_and_manifest(
     root: Path, skill_id: str, specs: list[dict[str, object]]
@@ -690,17 +705,6 @@ def _write_runtime_facade_and_manifest(
     (skill_dir / "component_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False), encoding="utf-8"
     )
-    online = [
-        example_id
-        for example_id, status in status_map.items()
-        if status["teacher_status"]["status_key"] == "published"
-    ]
-
-    assert len(status_map) == 31
-    assert len(online) == 30
-    assert 11575 not in online
-    assert status_map[11575]["production_runtime_ready"] is False
-    conn.close()
 
 
 def test_b2_11_published_examples_remain_online() -> None:

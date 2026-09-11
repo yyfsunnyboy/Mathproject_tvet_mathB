@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B2_SubSection_1_3_7",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_11640",
+      "textbook_example_id": 11640,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11640/generate.py"
+    },
+    {
+      "component_id": "src_11641",
+      "textbook_example_id": 11641,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11641/generate.py"
+    },
+    {
+      "component_id": "src_11642",
+      "textbook_example_id": 11642,
+      "status": "verified",
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "domain_operation": "simplify_fundamental_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11642/generate.py"
+    },
+    {
+      "component_id": "src_11643",
+      "textbook_example_id": 11643,
+      "status": "verified",
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "domain_operation": "simplify_fundamental_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11643/generate.py"
+    },
+    {
+      "component_id": "src_11644",
+      "textbook_example_id": 11644,
+      "status": "verified",
+      "problem_type_id": "classify_trig_derived_point_quadrant",
+      "domain_operation": "classify_trig_derived_point_quadrant",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11644/generate.py"
+    },
+    {
+      "component_id": "src_11651",
+      "textbook_example_id": 11651,
+      "status": "verified",
+      "problem_type_id": "complete_reference_angle_conversion",
+      "domain_operation": "complete_reference_angle_conversion",
+      "presentation_mode": "table_fill",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11651/generate.py"
+    },
+    {
+      "component_id": "src_11652",
+      "textbook_example_id": 11652,
+      "status": "verified",
+      "problem_type_id": "evaluate_exact_arbitrary_angle_trig_expression",
+      "domain_operation": "evaluate_exact_arbitrary_angle_trig_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11652/generate.py"
+    }
+  ]
+}

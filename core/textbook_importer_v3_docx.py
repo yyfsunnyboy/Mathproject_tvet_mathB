@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import io
 import os
+import re
 import zipfile
 from pathlib import Path
 from typing import Any, BinaryIO
@@ -31,6 +32,103 @@ REL_NS = NS["r"]
 W_NS = NS["w"]
 INDEPENDENT_IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
 FORMULA_PREVIEW_EXTS = {".wmf", ".emf"}
+
+QUESTION_FIGURE_EVIDENCE = ("下圖中", "依圖", "試用筆連接", "實線為", "虛線為")
+
+
+def extract_question_image_provenance(source) -> list[dict[str, Any]]:
+    """Return independent DOCX images in figure-dependent structural regions."""
+    with zipfile.ZipFile(source) as zf:
+        document = etree.fromstring(zf.read("word/document.xml"))
+        relationships = etree.fromstring(zf.read("word/_rels/document.xml.rels"))
+    rel_targets = {
+        rel.get("Id"): rel.get("Target")
+        for rel in relationships
+        if rel.get("Id") and rel.get("Target")
+    }
+    body = document.find(f".//{{{W_NS}}}body")
+    if body is None:
+        return []
+    independent_index = 0
+    results: list[dict[str, Any]] = []
+    for body_index, element in enumerate(body):
+        evidence_text = "".join(element.itertext()).strip()
+        has_question_evidence = any(cue in evidence_text for cue in QUESTION_FIGURE_EVIDENCE)
+        for blip in element.findall(f".//{{{NS['a']}}}blip"):
+            rel_id = blip.get(f"{{{NS['r']}}}embed")
+            target = str(rel_targets.get(rel_id) or "")
+            if Path(target).suffix.lower() not in INDEPENDENT_IMAGE_EXTS:
+                continue
+            independent_index += 1
+            if not has_question_evidence:
+                continue
+            results.append({
+                "source_image_index": independent_index,
+                "relationship_id": rel_id,
+                "source_image": target,
+                "docx_location": f"word/document.xml:body[{body_index}]",
+                "evidence_text": evidence_text,
+            })
+    return results
+
+
+def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
+    """Read numbered concept headings with inherited Word typography; never persist."""
+    from docx import Document
+    from docx.text.paragraph import Paragraph
+    from core.mathb_concept_heading import detect_mathb_concept_heading
+
+    doc = Document(source)
+    candidates, unresolved, sections = [], [], []
+    seen = {}
+    for order, element in enumerate(doc.element.body.iter(f"{{{W_NS}}}p"), 1):
+        p = Paragraph(element, doc)
+        text = p.text.strip()
+        if not text:
+            continue
+        styles = []
+        style = p.style
+        while style is not None and style.style_id not in {s.style_id for s in styles}:
+            styles.append(style)
+            style = style.base_style
+        run = next((r for r in p.runs if r.text.strip()), None)
+        fonts = ([run.font] if run is not None else []) + [s.font for s in styles]
+        def inherited(attr):
+            return next((getattr(f, attr) for f in fonts if getattr(f, attr) is not None), None)
+        size = inherited("size")
+        east = []
+        for node in ([run._element] if run is not None else []) + [s.element for s in styles]:
+            east = node.xpath('./w:rPr/w:rFonts/@w:eastAsia')
+            if east:
+                break
+        evidence = dict(source_heading_text=text, source_order=order,
+                        style=p.style.name, font=east[0] if east else inherited("name"),
+                        latin_font=inherited("name"), size=size.pt if size else None,
+                        bold=inherited("bold"))
+        if re.match(r'^' + re.escape(section_code) + r'\s+\S', text):
+            if not sections:
+                sections.append(evidence)
+            continue
+        hit = detect_mathb_concept_heading(text, current_section_code=section_code)
+        if not hit or not hit.get("concept_code"):
+            continue
+        # Numbering alone is insufficient: require a paragraph style or emphasis.
+        if hit['section_code'] != section_code or not (
+            p.style.name != 'Normal' or evidence['bold'] or (size and size.pt >= 15)
+        ):
+            unresolved.append(evidence)
+            continue
+        code, name = hit['concept_code'], hit['concept_name']
+        if code in seen:
+            if seen[code] != name:
+                unresolved.append(evidence)
+            continue
+        seen[code] = name
+        candidates.append(dict(evidence, concept_code=code, concept_name=name,
+                               section_code=section_code, validation='PASS'))
+    return dict(section_heading=sections[0] if sections else None,
+                skill_candidates=candidates, candidate_count=len(candidates),
+                unresolved_headings=unresolved, unresolved_heading_count=len(unresolved))
 
 REFERENCE_SOURCE_REL_DIR = Path("textbook_import") / "source" / "vocational" / "math_B2"
 REFERENCE_BASENAME_FRAGMENT = "第一章 1-1 角度的基本性質-課本"

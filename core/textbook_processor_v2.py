@@ -574,6 +574,9 @@ def _resolve_formal_concept_en_id_v2(
     AI 僅產生 concept_en_id；建立前查 DB 避免重複 skill_id。
     """
     name = str(concept_name or "").strip()
+    if (curriculum_info or {}).get('structural_skill_candidates'):
+        from core.textbook_structural_metadata import resolve_heading_identity
+        return resolve_heading_identity(curriculum_info, concept_code, name)
     subject, vol_num = _mathb_volume_parts(curriculum_info)
     if vol_num is None:
         vol_num = 1
@@ -1326,6 +1329,7 @@ def _persist_formal_skill_from_docx_heading(
         section_code=sec_code,
         concept_code=concept_code,
         display_order=display_order,
+        allow_ai_description=not bool(curriculum_info.get('structural_skill_candidates')),
     )
     _log_info(
         (
@@ -1554,6 +1558,11 @@ def _build_anchor_blocks_v2(
                 section_code=active_section_code,
                 concept_name=docx_concept_name,
             )
+            if existing_sid and (curriculum_info or {}).get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+                from core.textbook_structural_metadata import resolve_heading_identity
+                checked = resolve_heading_identity(curriculum_info, concept_code, docx_concept_name)
+                if checked['formal_skill_id'] != existing_sid:
+                    raise ValueError('Existing heading lookup disagrees with scoped registry')
             if existing_sid:
                 current_concept_code = concept_code
                 current_concept_name = docx_concept_name
@@ -2207,13 +2216,45 @@ def _scan_line_flushes_current_block(
 
 def _phase1_emit_paragraph_line(lines: list[str], para) -> None:
     """正規化 + 觸發注入，需先正規化再建 key。"""
-    text_clean = _normalize_docx_line_text(str(para.text or ""))
+    text_clean = _normalize_docx_line_text(_docx_paragraph_text_with_symbols(para))
     if not text_clean:
         return
     if _phase1_should_inject_question_trigger(para, text_clean):
         lines.append(f"{_QUESTION_TRIGGER_PREFIX} {text_clean}")
     else:
         lines.append(text_clean)
+
+
+def _docx_paragraph_text_with_symbols(para) -> str:
+    """Decode Word Symbol runs before python-docx discards w:sym nodes.
+
+    Work on a copy so source XML, formatting and question triggers stay intact.
+    Unknown font/code pairs remain explicit rather than silently losing a glyph.
+    """
+    from copy import deepcopy
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.text.paragraph import Paragraph
+
+    symbols = para._p.xpath('.//w:sym')
+    if not symbols:
+        return str(para.text or '')
+    node = deepcopy(para._p)
+    symbol_chars = {0x2B: '+', 0x2D: '−'}
+    for symbol in node.xpath('.//w:sym'):
+        font = symbol.get(qn('w:font'), '')
+        code = symbol.get(qn('w:char'), '')
+        try:
+            number = int(code, 16)
+        except ValueError:
+            number = -1
+        if 0xF000 <= number <= 0xF0FF:
+            number -= 0xF000
+        value = symbol_chars.get(number) if font.casefold() == 'symbol' else None
+        replacement = OxmlElement('w:t')
+        replacement.text = value or f'[MATH_PARSE_FAILED:symbol:{font}:{code}]'
+        symbol.getparent().replace(symbol, replacement)
+    return Paragraph(node, para._parent).text
 
 
 def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = None) -> list[str]:
@@ -3138,6 +3179,9 @@ def phase3_ai_metadata_alignment(
 ) -> dict:
     """Gemini 對齊章節概念 JSON，必要時分塊合併。"""
     keys = list(blocks_keys or [])
+    if curriculum_info.get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+        from core.textbook_structural_metadata import align_structural_metadata
+        return align_structural_metadata(keys, _DOCX_BLOCK_META, curriculum_info)
     if is_b2_11(curriculum_info):
         from core.textbook_b2_11 import align_existing_skills
         return align_existing_skills(keys, _DOCX_BLOCK_META, curriculum_info)
@@ -4403,6 +4447,8 @@ def _phase4_resolve_mathb_formal_binding(
     item_sec_code: str,
     coords: dict[str, Any],
     source_description: str = "",
+    requested_skill_id: str = "",
+    mapping_status: str = "",
 ) -> tuple[str, str, SkillCurriculum] | None:
     """
     Resolve formal skill + SkillCurriculum for Math B.
@@ -4425,6 +4471,10 @@ def _phase4_resolve_mathb_formal_binding(
         return None
     if sec_code and not _section_code_boundary_matches(sec_code, section_auth["section_title"]):
         return None
+    if mapping_status == "section_outline_fallback":
+        if requested_skill_id != section_curriculum.skill_id:
+            return None
+        return section_auth["section_title"], section_curriculum.skill_id, section_curriculum
 
     outline_item = ImportAuthority(
         source_scope=str((curriculum_info or {}).get("source_scope") or "section_textbook"),
@@ -4523,6 +4573,27 @@ def _phase4_resolve_mathb_formal_binding(
         )
         return concept_name, pick_id, formal_curriculum
 
+    if (
+        not formal_skill_id
+        and requested_skill_id.startswith("vh_")
+    ):
+        # Phase 3 already supplied a formal section skill. It is validated
+        # against SkillCurriculum below before use.
+        # Preserve that decision instead of invoking semantic skill selection.
+        formal_skill_id = requested_skill_id
+    if (
+        not formal_skill_id
+        and docx_concept_code
+        and docx_concept_name
+        and (curriculum_info or {}).get("structural_skill_candidates")
+    ):
+        from core.textbook_structural_metadata import resolve_heading_identity
+
+        structural = resolve_heading_identity(
+            curriculum_info, docx_concept_code, docx_concept_name
+        )
+        formal_skill_id = str(structural["formal_skill_id"])
+        concept_en_id = str(structural["concept_en_id"])
     if formal_skill_id and formal_skill_id.startswith("vh_"):
         concept_name = docx_concept_name
     else:
@@ -4646,6 +4717,9 @@ def _phase4_resolve_mathb_formal_binding(
         section_code=sec_code,
         concept_code=docx_concept_code,
         display_order=display_order_val,
+        allow_ai_description=not bool(
+            (curriculum_info or {}).get("structural_skill_candidates")
+        ),
     )
     final_ch = docx_concept_name or concept_name
     bind_source = (
@@ -4925,6 +4999,8 @@ def phase4_absolute_hydrate_and_save(
                                 source_description=str(
                                     block_meta.get("anchor") or title or ""
                                 ).strip(),
+                                requested_skill_id=str(item.get("skill_id") or "").strip(),
+                                mapping_status=str(item.get("mapping_status") or "").strip(),
                             )
                             if resolved is None:
                                 _shield_log_missing_outline(

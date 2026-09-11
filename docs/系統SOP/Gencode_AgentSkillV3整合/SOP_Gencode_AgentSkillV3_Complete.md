@@ -1,7 +1,7 @@
 # Gencode × AgentSkillV3 完整執行手冊 (Complete Master SOP)
 
-> **版本**：v1.13-Master  
-> **建立日期**：2026-09-08  
+> **版本**：v1.15-Master  
+> **建立日期**：2026-09-11  
 > **文件定位**：本文件為 AI Agent、自動化管線與工程師進入 Gencode × AgentSkillV3 體系的第一閱讀入口與唯一端到端完整執行手冊。本手冊將既有規範權威、流程權威、檢核原則與已封板實證案例整合成可直接執行的 Master SOP。
 
 ---
@@ -12,7 +12,9 @@
 - [1. Gencode Hard Rules (不可違反鐵律)](#1-gencode-hard-rules-不可違反鐵律)
 - [2. Core Mental Model (西堤選餐架構模型)](#2-core-mental-model-西堤選餐架構模型)
 - [3. Authority and Data Ownership (權威歸屬與責任矩陣)](#3-authority-and-data-ownership-權威歸屬與責任矩陣)
+- [3.1 教材 Word 結構辨識與 Skill Extraction Authority](#31-教材-word-結構辨識與-skill-extraction-authority)
 - [4. End-to-End Pipeline (端到端管線與狀態流動)](#4-end-to-end-pipeline-端到端管線與狀態流動)
+- [4.1 End-to-End Textbook → Domain → Gencode Production Workflow](#41-end-to-end-textbook--domain--gencode-production-workflow)
 - [5. Textbook Example → Component Contract (一題一元件契約)](#5-textbook-example--component-contract-一題一元件契約)
 - [6. Source Fidelity & Answer Oracle Gate (來源保真與答案權威閘門)](#6-source-fidelity--answer-oracle-gate-來源保真與答案權威閘門)
 - [7. Skill-Fixed Domain / Capability / Operation (領域與能力層次)](#7-skill-fixed-domain--capability--operation-領域與能力層次)
@@ -71,7 +73,7 @@
 
 ## 1. Gencode Hard Rules (不可違反鐵律)
 
-以下 10 條鐵律為系統絕對剛性邊界，任何 violation 將直接導致 Gate 拒絕，不得有任何例外：
+以下 12 條鐵律為系統絕對剛性邊界，任何 violation 將直接導致 Gate 拒絕，不得有任何例外：
 
 ### HARD RULE 1 — 一題一 Component
 * 每一道教材題目（`textbook_example_row`）對應唯一元件識別碼：`component_id = src_<textbook_example_id>`。
@@ -143,6 +145,10 @@ Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。�
 * 嚴禁純字串比對（`student == correct`）作為數學批改。
 * 嚴禁使用 `"pi" in answer` 或正則表達式作為正式形式驗證器。
 * 嚴禁選項題只對比 `A`/`B`/`C`/`D` 字元位置（必須走 semantic choice mapping）。
+* **Student Submission Feedback Hard Rule**：任何 `all_correct=false` 的 submission，學生都必須能看到由 backend 依 `answer_contract`／canonical answer 產生的 `correct_answer_display`，或該 Answer Type 合法且既有的 reference/rubric。`correct_answer_display` 僅是提交後 feedback layer，不得成為新的 grading authority；`all_correct=true` 維持原 success flow，不強制揭示 canonical answer。
+* 嚴禁 frontend 自行計算答案、checker reverse inference、LLM 產生正確答案、generator-local formula、hardcode example answer，或在學生 submit 前將 canonical answer 暴露於初始題目 payload。
+* **Math Display Hard Rule**：斜線分數可存在於 parser internal representation、checker input 或 compatibility representation，但只要可明確認定為學生端數學分數，最終 mathematical display 必須使用 LaTeX `\frac` 的課本式上下堆疊分數。display normalization 只改 presentation，不得改動 canonical mathematical value、Domain math、Oracle、checker、`answer_contract` semantics 或 grading result。
+* 嚴禁 example-specific fraction patch、skill-specific formatter、各 generator 自行處理顯示、以圖片取代可由 MathJax 呈現的分數，或為顯示格式改寫 canonical mathematical value。
 * KnownIssues 中 `CartesianCoordinateSystem` 之 technical debt 屬暫緩修正之技術債，**絕對不得被當成可仿效的新模式**。
 
 ### HARD RULE 7 — 作答拓撲不可篡改性
@@ -174,6 +180,30 @@ Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。�
 * 嚴禁自行揣摩或猜測教材答案。
 * 嚴禁自行修改 `skill_id` 或 `fixed_domain_key`。
 * 嚴禁為了提高 published 數量而人為調降 Gate 門檻。
+
+### HARD RULE 11 — Skill Extraction Authority（教材結構優先）
+適用於 **section-level textbook import**。完整規範見 §3.1。
+
+* 正式 skill 的主要來源應優先來自教材 DOCX 的結構資訊，而不是人工先建立 skill。
+* Word structural parser 必須利用可取得的版面／樣式特徵辨識教材中的概念小標題，不得只用純文字內容。
+* `section heading ≠ skill heading`：不得因只辨識到 section heading，就把整節退化成單一巨大 skill。
+* **禁止**：
+  * 未做 Word heading extraction 就人工建立 skills
+  * 因 existing skill 缺失直接判 importer blocked
+  * 只用純文字內容忽略 typography / paragraph structure
+  * B2 1-3 或任一 section-specific hardcode
+  * 依後續 Gencode capability 反推教材 skill taxonomy
+* 正式寫入 DB 前必須通過 Dry-run Gate。只有 section identity 正確、skill candidates 合理、無 unresolved structural conflict、且 curriculum binding PASS，才可正式 import。
+
+### HARD RULE 12 — Textbook Ingestion 與 Gencode Production 必須分階段封板
+
+* **Stage 1 = Textbook Ingestion / Source Fidelity**：先完成 DOCX 結構與數學解析、PDF 視覺對齊、skill resolution、example segmentation、dry-run、production import 與 import 後驗證。
+* **Stage 2 = Gencode Production**：教材階段封板後，才可進行 Gencode Phase 1 audit、Capability Growth、Phase 2 component generation、Phase 3 publish 與 runtime seal。
+* DOCX 是結構與可取得數學文字的主要 authority；PDF 是 visual/layout authority。不得以 PDF OCR 重建 DOCX 可直接取得的數學內容。
+* MathType/OLE、OMML、Symbol font、Unicode/legacy minus、matrix/brace/box/template record 必須經通用 fidelity gate；禁止以 formula index、單題 hardcode 或人工 LaTeX patch 補洞。
+* skill candidate 不等於 final skill；必須經 `KEEP / MERGE / CONCEPT_ONLY` granularity audit。LLM 只能在 deterministic resolution 無法唯一判定時作 optional semantic fallback，且其結果必須再經 deterministic scope validation。
+* 已產生且通過 curriculum/section validation 的正式 `skill_id`，後續 import 必須直接沿用；status 字串不是重新分類 authority。
+* Phase 3 staging 未通過時禁止 publish；ONLINE 必須由 production manifest、wrapper/facade 可載入及 component runtime selectable 等真實 production evidence 共同判定，不得只看檔案存在或 `verified` badge。
 
 ---
 
@@ -212,7 +242,8 @@ Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。�
 
 | 資料 / 欄位項目 | 唯一持有權威 (Authority) | 次要/相容參考 (Fallback) | 違規操作 (Forbidden) |
 | :--- | :--- | :--- | :--- |
-| `textbook_examples.skill_id` | 教材資料庫（唯讀） | 無 | AI 嚴禁改派或手動修正分類 |
+| Formal skill candidates（section-level import） | 教材 DOCX structural headings（typography / paragraph structure） | existing outline（僅限 section identity、binding、已存在 skill 匹配與重用） | 嚴禁人工先建 skill、依 Domain operation 反推、每題一 skill、因 outline 只有 section-level 就覆蓋教材內部 heading |
+| `textbook_examples.skill_id` | 教材資料庫（唯讀；建立後不得改派） | 無 | AI 嚴禁改派或手動修正分類 |
 | `fixed_domain_key` | `core/registry/taxonomy_registry.py` | 無 | 嚴禁因缺乏算子改指派其他 domain |
 | `allowed_operations` | Domain Registry 定義檔 | 無 | 嚴禁在未登錄情況下於 generator 調用 |
 | `Domain Function` | `core/domain/*.py` 共享模組 | 無 | 嚴禁在 component 目錄內撰寫 domain 運算 |
@@ -221,6 +252,166 @@ Gate 定義以 Specification §10.4、§10.5、§10.6 為唯一規範權威。�
 | `Answer Contract` | `component/generate.py` 的 `answer_contract` | legacy 外層欄位 | 嚴禁使用外層字串比對欄位取代 |
 | `Component Tracker` | SQLite Tracker DB / Service | JSON Tracker Report | 嚴禁以 capability 分組狀態取代單題狀態 |
 | `Wrapper / Publish` | `core/gencode/phase3_skill_codegen.py` | drafts 快照 | 嚴禁手動編輯正式 `skills/<skill_id>.py` |
+
+### 3.1 教材 Word 結構辨識與 Skill Extraction Authority
+
+> **適用範圍**：section-level textbook import。  
+> **核心原則**：正式 skill 的主要來源應優先來自教材 DOCX 的結構資訊，而不是人工先建立 skill。
+
+#### 3.1.1 Word Structural Parser 義務
+
+Word structural parser 必須利用可取得的版面／樣式特徵辨識教材中的概念小標題，例如：
+
+- paragraph style
+- font family
+- font size
+- bold
+- color
+- indentation
+- spacing
+- document order
+- 與正文不同的 typography / formatting pattern
+
+不得只用純文字內容、忽略 typography / paragraph structure。
+
+#### 3.1.2 正常 Pipeline
+
+```text
+DOCX structural parsing
+→ heading detection
+→ skill candidate extraction
+→ normalization / deduplication
+→ curriculum / section binding
+→ skill record establishment / mapping
+→ textbook example assignment
+```
+
+#### 3.1.3 Section Heading ≠ Skill Heading
+
+section title 與 skill heading 必須區分，不得混為同一層。
+
+**例子**：
+
+```text
+section heading:
+1-3 任意角的三角函數
+
+下面若存在多個不同字級／字型／粗體的概念標題，則：
+section heading != skill heading
+```
+
+`1-3 任意角的三角函數` 是 **section heading**。  
+其下不同字型／字級／樣式的概念標題，才是可能的正式 **skill candidates**。
+
+應由 importer 抽取各 skill candidate，而不是只建立一個 section-level outline skill。  
+不得因只辨識到 section heading，就把整節退化成單一巨大 skill。
+
+若存在多個樣式相同且在語意上平行的教材小標題，應辨識為同層級 skill candidates。
+
+#### 3.1.4 Skill Extraction Authority
+
+若教材 DOCX 中存在清楚且穩定的 heading evidence，應以教材結構作為 skill candidate 的主要 evidence。
+
+**不得**：
+
+- 因 skill 尚不存在就要求人工先建立
+- 因 existing outline 只有 section-level skill 就覆蓋教材內部 heading
+- 依 Gencode Domain operation 反推 skill 名稱
+- 為每題建立一個 skill
+- 為了程式方便任意合併教材概念
+
+#### 3.1.5 Existing Curriculum / Outline 的角色
+
+existing outline 用於：
+
+- section identity
+- chapter / section binding
+- curriculum consistency
+- 已存在 skill 的匹配與重用
+
+但不得在沒有充分理由時，壓掉 DOCX 中明確的教材 skill headings。
+
+若 DOCX heading 與 existing outline 發生衝突：必須先 audit：
+
+- source heading evidence
+- existing outline metadata
+- normalization
+- stale outline
+- duplicate skill
+- historical mismatch
+
+不得直接人工補 skill 或直接修改教材。
+
+#### 3.1.6 Skill Candidate 建立條件
+
+candidate 必須至少記錄：
+
+- source heading text
+- normalized display name
+- source order
+- structural evidence
+- section binding
+- confidence / validation result
+
+若存在多個樣式相同且在語意上平行的教材小標題，應辨識為同層級 skill candidates。
+
+#### 3.1.7 Dry-run Gate
+
+在正式寫入 DB 前，section-level import 必須可輸出：
+
+- `detected_headings`
+- `detected_skill_candidates`
+- `candidate_names`
+- `section_heading`
+- `skill_heading_count`
+- `unresolved_heading_count`
+- `curriculum_binding_status`
+
+只有當以下全部成立，才可正式 import：
+
+- section identity 正確
+- skill candidates 合理
+- 無 unresolved structural conflict
+- curriculum binding PASS
+
+#### 3.1.8 本節 Hard Rule
+
+禁止：
+
+- 未做 Word heading extraction 就人工建立 skills
+- 因 existing skill 缺失直接判 importer blocked
+- 只用純文字內容忽略 typography / paragraph structure
+- B2 1-3 或任一 section-specific hardcode
+- 依後續 Gencode capability 反推教材 skill taxonomy
+
+#### 3.1.9 Final Skill Resolution 與穩定 ID
+
+Word heading 只提供 candidate，不自動等於 final skill。每個 candidate 必須依下列判準進行 granularity audit，結果只能是 `KEEP`、`MERGE` 或 `CONCEPT_ONLY`：
+
+- 是否有題例支撐且可獨立練習
+- 是否可形成獨立 adaptive diagnosis 範圍
+- 是否與其他 candidate 高度重疊
+- 是否只是概念說明或版面標題
+- 合併後是否仍忠於教材概念邊界
+
+禁止把每個 heading 強制轉為 skill、保留沒有題例支撐的空 skill、每題建立一個 skill，或依 Gencode operation 反推 taxonomy。
+
+正式 `skill_id` 必須 deterministic、stable、curriculum-scoped、repeat-import stable 且 registry-compatible。應優先重用 existing scoped registry；新 ID 應遵循 Specification／registry 的 canonical convention，例如 `vh_<curriculum/volume>_SubSection_<chapter>_<section>_<order>`。禁止 random ID、由 AI 每次重新命名、以 SHA/hash opaque ID 作正式 canonical ID（除非 Specification 明確允許），以及任何 section-specific hardcode。
+
+#### 3.1.10 Example → Skill Resolution 與 LLM Fallback
+
+一般題優先依 structural heading span 綁定。章末習題或沒有 heading span 的題，必須依下列 authority 順序解析：
+
+1. DOCX structural evidence。
+2. curriculum / section context。
+3. deterministic mathematical/content classification。
+4. 仍有歧義時，才可使用 Gemini/LLM semantic fallback。
+5. 對 fallback 結果執行 deterministic scope validation。
+6. 仍不能唯一確認時，標記 human review / unresolved，不得猜測寫入。
+
+LLM 是 optional fallback，不是 authority，也不得成為 importer 單點硬依賴。LLM 僅可在既有候選集合中選擇、提供 reasoning summary、confidence 與 alternatives；不可自創 skill、修改教材或 skill scope、依 Gencode operation 分類，亦不可直接把未驗證輸出寫入 production。API unavailable 時，deterministic 可完成部分必須照常執行；真正 unresolved semantic case 保留待 LLM 恢復或 human review。
+
+若 structural/final-skill stage 已得到 valid formal `skill_id` 且 curriculum/section validation PASS，後續 production import 必須直接沿用。mapping status 僅為 metadata；不得在後續 phase 依 status 字串重新呼叫 AI 分類或重新猜 display name。
 
 ---
 
@@ -285,6 +476,165 @@ flowchart TD
 
 ---
 
+## 4.1 End-to-End Textbook → Domain → Gencode Production Workflow
+
+本節是日常執行的整合入口；欄位、Answer Type、Checker 與 Gate 的精確定義仍以 **Specification** 為權威，生命週期、時序與 recovery 仍以 **PipelineFlow** 為權威。本節不得覆寫兩者。
+
+### 4.1.1 全流程與階段邊界
+
+```text
+DOCX + PDF source
+→ source resolution / provenance
+→ DOCX structural parsing
+→ MathType / OMML / Symbol fidelity
+→ heading extraction
+→ skill candidate extraction
+→ KEEP / MERGE / CONCEPT_ONLY final skill resolution
+→ curriculum binding
+→ textbook example segmentation and skill assignment
+→ PDF visual alignment and asset mounting
+→ dry-run Textbook Production Import Gate
+→ production textbook import
+→ post-import Source Fidelity seal
+──────────────── Stage 1 complete ────────────────
+→ Gencode Phase 1 audit
+→ Domain operation inventory
+→ capability growth / shared Domain Functions
+→ Exact Capability Readiness
+→ Phase 2 one-example-one-component generation
+→ Answer Oracle / Answer Contract / Checker validation
+→ 20-seed verification
+→ VERIFIED gate
+→ Phase 3 wrapper / manifest / thin facade
+→ staging smoke
+→ publish
+→ production runtime + HTTP + browser visual smoke
+→ teacher-facing ONLINE verification
+→ final seal
+──────────────── Stage 2 complete ────────────────
+```
+
+教材階段未封板不得開始 Gencode；Gencode 可生成不等於教材匯入正確。兩階段的報告、Gate 與失敗責任必須分開。
+
+### 4.1.2 Source Resolution 與 DOCX/PDF Authority
+
+來源順序固定為 `project-local source → connected Drive fallback → external/manual recovery last`。優先檢查 `textbook_import/source/`、repo 內既有 DOCX/PDF，以及保存於 audit/report 的 source copy。project-local 已有可用 source 時，不得重新從 Drive 下載另一份。
+
+多份同名來源必須比較 filename、size、hash、modified time 與 ingestion provenance；fallback 必須記錄來源位置、選用理由及可取得的 fingerprint。
+
+教材 ingestion 的 authoritative source 必須是原始教材來源。`*_Latex.docx`、converter output、temporary converted DOCX、staging artifact 與 prior failed conversion artifact 均不得作為 authoritative source；conversion output 只能是 pipeline intermediate artifact。source selection 必須在原始 DOCX 與 conversion output 同時存在時仍能排除後者，不得用檔名相近、mtime 較新或先被掃描到作為權威判準。source identity 無法唯一確認時，Source Fidelity Gate 必須 FAIL。完整查找與 provenance 規則見 §6.6。
+
+| Source | Authority |
+| :--- | :--- |
+| DOCX | 題目文字、paragraph/run structure、typography、heading hierarchy、MathType/OLE、OMML、Symbol characters、tables、source order、structural anchors |
+| PDF | 題圖、解圖、計算機畫面、diagram、page region、crop/alignment、visual asset mounting |
+
+不得只靠 PDF OCR 重建 DOCX 能直接取得的數學文字；PDF OCR 只可作缺漏診斷或視覺對齊輔助，不可無 provenance 地覆蓋 DOCX source。
+
+### 4.1.3 Formula / Character Fidelity Gate
+
+正式 import 前必須證明：
+
+- `MATH_PARSE_FAILED=0`
+- MathType／公式轉換的 `found == converted` 且 `formula_failures=0`
+- MathType/OLE conversion 完整
+- OMML 完整
+- Symbol font characters 完整
+- Unicode minus 與 legacy Symbol minus 均未遺失
+- matrix、brace、box、template records 正確
+- 公式順序、文字錨點與 source order 可追溯
+
+遇到 unsupported MTEF record 時，先 inspect record stream，再修共用 parser/converter；禁止 formula-index hardcode、example-specific parser branch 或人工 LaTeX patch 單一公式。修復後必須重跑整個受影響 source 的 fidelity regression。
+
+診斷不得以 `FORMULA_MISSING=0` 掩蓋 parse corruption。管理／匯入診斷至少必須分別呈現 `MATH_PARSE_FAILED rows`、`MATH_PARSE_FAILED tokens` 與 formula conversion failures；任一非零皆使 Formula Fidelity Gate FAIL。
+
+### 4.1.4 Skill、Example 與 Curriculum Binding
+
+依 §3.1 完成 structural heading detection、candidate normalization/dedup、granularity audit、stable ID resolution 與 curriculum binding。`section heading != skill heading`，`heading candidate != final skill`。
+
+一般題以 heading span 綁定；章末題依 structural evidence、curriculum context、deterministic content classification、optional LLM fallback、deterministic validation、human review 的順序處理。只有 validated result 可寫 production binding。
+
+每個 example 必須保留 source order、anchors、formal `skill_id` 與原始 answer topology。已驗證的 formal `skill_id` 在後續 import phase 是 authority，不得再用 AI、status 字串或 display name 猜測覆蓋。
+
+### 4.1.5 Visual / PDF Alignment
+
+逐題以 PDF page region 對齊 DOCX anchors，辨識題圖、解圖、diagram 與計算機畫面。PDF visual extraction 的目標不是重建整本課本，而是保留「學生完成 textbook example 所必要的視覺資訊」。所有 source visuals 至少分類為：
+
+- `QUESTION_REQUIRED`：學生理解或完成該題所必須的圖片／圖形；例如題幹出現「下圖中」、「依圖」、「實線為…虛線為…」、「試用筆連接…」，或缺圖會使題意／作答不完整。
+- `EXPLANATION_ONLY`：課本文字講解、概念示範、性質說明或正文教學使用的圖。
+- `SOLUTION_ONLY`：只存在於解答／示範解題區，不屬於學生題幹必要資訊的圖。
+- `DECORATIVE`：裝飾、情境插畫、章節視覺等非作答必要圖片。
+
+只有 `QUESTION_REQUIRED` 可以沿 `textbook_example → visual asset → practice question visual → scratchpad background` mount。禁止因 PDF 有圖便全部掛入題目、無證據的 nearest-image 配對、誤掛 explanation/demo、solution 或 decorative image，以及以 example ID、page number 或 image index 建立教材特例 hardcode。
+
+每一個 `QUESTION_REQUIRED` 配對必須保留可稽核 source evidence，例如 DOCX image relationship／anchor、question region、PDF page、PDF bounding region、question text evidence，以及 deterministic ordering／unique matching evidence。multi-image 題可以 mount 多圖，但每張皆須有明確 evidence。Production gate 至少驗證：
+
+```text
+question_required_unmatched = 0
+false_positive_mounts = 0
+explanation_mounted = 0
+solution_mounted = 0
+decorative_mounted = 0
+```
+
+若 `QUESTION_REQUIRED > matched`，Visual Fidelity Gate 必須 FAIL，Production import 不得正式 SUCCESS。單圖與多圖均走同一共用 visual contract；practice UI 可將題圖作 scratchpad background，畫布使用 `contain` 等比例縮放，clear 只清筆跡、不清底圖。禁止 example-specific frontend patch。
+
+### 4.1.6 Textbook Production Import Gate
+
+正式 DB write 前 dry-run 必須檢查：question count 合理、`MATH_PARSE_FAILED=0`、segmentation/order/visual/skill-mapping issues 均為 0、duplicate examples=0、curriculum binding PASS，且 unresolved structural conflict=0 或已有 Specification/PipelineFlow 允許的明確 policy disposition。
+
+Dry-run 必須是真正唯讀。當使用 dry-run、`allow_phase4=false` 或任何 equivalent no-write mode 時，`textbook_examples`、skills、outline skills、curriculum mappings、assets、tracker/status 與其他 production-side persistent state 的 writes 必須全部為 0。禁止為 validation convenience 偷建 outline/formal skill、寫入 asset 或修改 production state；任一 persistent write，即使題目解析成功，該 Dry-run Gate 仍為 FAIL。應以 DB row count、hash 或 snapshot 的 before/after 一致性驗證 no-write contract。
+
+Production import 必須在單一明確 transaction/write scope 內執行。完成後重新驗證 example count、source order、anchors、skill IDs、formulas、images、runtime read-only page 與 teacher examples page。half-import 不得標示完成；修好 dry-run 後才能再做一次正式 import。
+
+「題目有寫進 DB」不等於「教材匯入成功」。Production importer 顯示正式 SUCCESS 前，至少必須確認 structural/segmentation、ordering、formula fidelity、required visual fidelity 與 final skill binding 全部 PASS，且 unresolved blocking conflicts 為 0。重大 blocker 包含但不限於：`formula_failures > 0`、`MATH_PARSE_FAILED > 0`、required visual unmatched、blocking structural conflict、unresolved skill mapping 或 invalid authoritative source。存在 blocker 時，UI 必須顯示 FAIL、needs repair 或 Specification／PipelineFlow 定義的 equivalent warning state，不得只因 `inserted_questions > 0` 顯示「匯入成功」。
+
+高公式密度或高視覺依賴單元（例如函數圖形、幾何、統計圖表）不另建獨立 pipeline，仍使用同一 ingestion flow，但必須提高 preflight 與 Source Fidelity 嚴格度，逐題確認 formula conversion completeness、`QUESTION_REQUIRED` visual completeness 與 question-level completeness：
+
+$$\text{question-level completeness} = \text{text complete} \land \text{formula complete} \land \text{required visual complete}$$
+
+任一項缺失，該題不得視為可正式匯入題目，整體 import success 必須依 blocking policy 處理。
+
+### 4.1.7 Gencode Phase 1 與 Domain Operation Inventory
+
+教材 seal 後，逐一盤點所有 `textbook_examples` 的 example ID、正式 skill ID、answer topology、mathematical capability、required Domain operation、existing/reusable/new、Exact Readiness 與 Answer Oracle source。
+
+operation inventory 至少包含 `operation_key`、responsibility、input contract、output/canonical contract、example IDs 與 existing/reusable/new。相同數學能力共享 operation；不得每題或每 skill 複製公式。跨章能力優先 reuse，例如 `coterminal_angles`、`sector_arc_and_area`、`compute_right_triangle_trig_ratios`、`solve_right_triangle_projection`。operation 可共享，但永遠維持 `1 textbook_example = 1 independent component`。
+
+### 4.1.8 Capability Growth 與 Exact Readiness
+
+只有真正 missing 的 Domain capability 才可新增。每個 operation 必須具備 shared implementation、registry、taxonomy/fixed-domain compatibility、adapter、canonical answer contract、validator、unit tests 與 mathematical invariants。`fixed_domain_key` 存在不代表 Exact Ready；只有 §7.2 Gate 全過才可供 Phase 2 與 Domain Oracle 使用。
+
+### 4.1.9 Phase 2、Oracle、Answer Contract 與 Verification
+
+每個 example 建立一個獨立 component directory 與 generator。Generator 只能 sample parameters、呼叫 shared Domain operation、組 problem payload、canonical answer 與 `answer_contract`；不得重寫 Domain math。
+
+Oracle 只能來自 source-provided official evidence 或 Exact-Ready shared Domain mathematical oracle。學生版沒有答案是正常狀況；禁止 LLM ad hoc 解題、generator-local formula、checker reverse inference，亦禁止把 20 seeds 當 Oracle。
+
+正式 Answer Types 只有 `short_answer`、`single_choice`、`multi_part`、`table_fill`、`drawing`；`solution_set` 是 checker semantics，不是第六種 Answer Type。不得為實作方便改變教材 answer topology。
+
+正式 grading authority 固定為 `answer_contract → runtime dispatch → core.checkers`。數學 checker 採 `safe parse → normalize → mathematical equivalence → optional required-form structural validation`；禁止 raw string equality 與 regex-only mathematical grading。component-local `check()` 若保留，只能 thin-forward shared checker。
+
+逐 component 驗證 import/execute、canonical answer、valid answer contract、correct accepted、wrong rejected、equivalent accepted where applicable、20 deterministic seeds 與 no duplicate math。`VERIFIED` 必須同時滿足 Source Fidelity、Answer Oracle、Exact Readiness、Executable Component、per-component validator、Answer Contract 與 Shared Checker 七項 Gate。
+
+### 4.1.10 Phase 3、Runtime、ONLINE 與 Final Seal
+
+Phase 3 只讀取 VERIFIED components，依序產生 skill wrapper、component manifest 與 thin facade，先做 isolated staging smoke；staging 全過才可 publish，publish 後再做 production runtime smoke。禁止 old-generator fallback、nearest-template fallback、runtime LLM、wrapper local math/grading 與 component merge。
+
+逐 skill runtime smoke 必須驗證 wrapper import、component count、generate、canonical answer、answer-contract dispatch、correct/wrong/equivalent grading、HTTP 200、no fallback、no missing/duplicate component。依題型額外驗證 table-fill rendering/grading、single-choice semantic mapping、drawing、decimal tolerance、undefined math case 等。
+
+Teacher-facing `ONLINE` 至少要求 component verified、production manifest 包含該 component、production wrapper 與 runtime facade 可載入、specs/keys 一致、component runtime selectable。不得只因檔案存在、badge 文字或 verified 狀態顯示 ONLINE。Partial Publish 合法；教材 example 可存在但 runtime excluded，未上線者必須保留明確原因。
+
+Final seal 同時要求教材 ingestion/formula/skill/visual clean，以及 Gencode eligible component verification、publish count、runtime smoke、no fallback、teacher status 全部正確。不要求每個 textbook example 一定 publish，但不得隱藏未發布原因。
+
+### 4.1.11 中斷與 Recovery
+
+Agent/Codex 中斷後，必須先 inspect working tree 與產物，分類 complete／partial／missing；驗證 complete、從缺口續作 partial、只為 missing 新建。不得復原有效變更或重做已完成 gate。
+
+Production import 中途失敗時，先確認 transaction 與 write scope，禁止 half-import 假裝完成。Phase 3 staging fail 時禁止 publish；先修責任層的 generic infrastructure，重跑 staging，PASS 後才能 promote。任何 recovery 都不得藉機改 skill assignment、放寬 Oracle/Checker Gate 或引入 fallback。
+
+---
+
 ## 5. Textbook Example → Component Contract (一題一元件契約)
 
 ### 5.1 目錄結構契約
@@ -344,6 +694,8 @@ agent_skills_v3/
 
 Source Fidelity PASS 證明：題幹完整、數學條件完整、圖片／表格／公式資產完整、作答拓撲可判定、`skill_id` 來源可信、無 parse corruption、無關鍵 source loss。
 
+其執行檢核必須套用 §4.1.3 的公式 diagnostics、§4.1.5 的 Question Visual Authority，以及 §4.1.6 的 true dry-run 與 import success 定義。question-level completeness 必須同時具備完整文字、完整公式與完整 required visual。
+
 完整學生版隨堂練習 + 無 `correct_answer` + 無 `detailed_solution` **仍可** `source_fidelity = PASS`。
 
 執行本 Gate 前，必須先依 §6.6 完成教材原始 source 查找（project-local first）。
@@ -395,6 +747,8 @@ $$\text{VERIFIED} = \text{Textbook Source Fidelity PASS} \land \text{Answer Orac
 執行 Textbook Source Fidelity 之前，必須先完成教材原始 source 查找。查找優先順序固定，不得跳過或倒置。
 
 **SOURCE RESOLUTION 口訣**：先查 project-local source，只有 project-local 不存在才查 Drive / external fallback。
+
+此處的「source」專指原始教材來源。`*_Latex.docx`、任何 converter／temporary conversion output、staging artifact 或先前失敗的 conversion artifact 都不是 authoritative source，只能作為可丟棄、可重建的 pipeline intermediate。原始檔與轉換產物並存時必須明確排除轉換產物；若 provenance 仍不足以確定 source identity，不得通過 §6.2 Source Fidelity。
 
 #### 6.6.1 優先順序（固定）
 
@@ -451,6 +805,7 @@ project-local source first
 - 未搜尋 repo 就直接查 Drive
 - 因舊絕對路徑失效而誤判 source 不存在
 - 同名檔案未比對 provenance 就直接使用
+- 將 `*_Latex.docx`、converter output、temporary/staging 或 failed conversion artifact 誤選為 authoritative source
 
 #### 6.6.2 與 Source Fidelity 的關係
 
@@ -731,6 +1086,9 @@ draft_scaffold_ready (隔離區骨架就緒)
 - **只打包 Verified**：Phase 3 封裝編譯器遍歷 component tracker，僅萃取 `verified` 組件。
 - **一題一 Spec**：在輸出之 `skills/<skill_id>.py` 中，`GENERATOR_SPECS` 陣列包含對應各 verified 題目的獨立規格物件，禁止合併。
 - **部分發布 (Partial Publish)**：若某 Skill 共有 10 題，其中 3 題 verified、7 題因政策資格不足而未 verified，則編譯出的 wrapper 僅包含該 3 題，並可正常發布上線提供練習。政策資格不足的題目絕不阻礙已 verified 組件發布。
+- **固定發布順序**：`verified components → wrapper → manifest → thin facade → staging smoke → publish → production runtime smoke`。任一 staging gate 失敗時不得 promote。
+- **Wrapper 邊界**：wrapper 僅做 component selection、runtime dispatch 與 shared checker/hint forwarding；禁止 local math、local grading、old generator fallback、nearest-template fallback、runtime LLM 與 component merge。
+- **Topology preservation**：wrapper/spec merge 不得用 answer value type 覆寫 component 的正式 Answer Type 或 `answer_contract`。
 
 ### 14.2 封裝產物模板片段
 ```python
@@ -766,6 +1124,21 @@ def check(user_answer, correct_answer, **kwargs):
     return check_answer(user_answer, correct_answer, **kwargs)
 ```
 
+### 14.3 Phase 3 Final Runtime / Browser Verification
+
+Phase 3 publish 後與 final seal 前，除 wrapper、component count、runtime generate/grading、HTTP 200 與 no fallback 外，必須完成以下 student feedback regression：
+
+- [ ] wrong `short_answer` → canonical correct answer visible。
+- [ ] wrong `single_choice` → correct label + option text visible；不得只顯示 `A/B/C/D`。
+- [ ] partial `multi_part` → canonical parts 逐 part visible。
+- [ ] partial `table_fill` → canonical cells 逐 cell visible。
+- [ ] mathematically equivalent but required-form wrong → 明確提示格式錯誤，且 canonical correct format visible。
+- [ ] `correct_answer_display` 中的數學內容已由共用 MathJax renderer 正常呈現，無 raw `\frac`、`\pi`、`\sqrt`。
+- [ ] `all_correct=true` 原 success flow regression PASS，且不強制顯示 canonical answer。
+- [ ] Math display browser verification 涵蓋 simple fraction、negative fraction、$\pi$ fraction、含分數的 trig expression、choice fraction、`correct_answer_display` fraction 與 `table_fill` fraction。
+- [ ] 可辨識為數學分數時，學生端無 raw slash fraction；MathJax 已呈現 stacked fraction。
+- [ ] 日期、URL、filesystem path、一般文字 slash 與非數學比例文字均無 false-positive conversion。
+
 ---
 
 ## 15. Runtime Contract (執行期契約)
@@ -775,6 +1148,53 @@ def check(user_answer, correct_answer, **kwargs):
 3. **安全例外處置**：
    - 學生輸入格式無法解析 $\rightarrow$ 回傳 `ANSWER_PARSE_FAILED`，引導學生修改輸入，不可扣分。
    - 評分器發生未預期 crash $\rightarrow$ 記錄系統錯誤記錄檔並回傳 `CHECKER_EXECUTION_FAILED`，絕對嚴禁靜默判定學生答錯！
+
+### 15.1 Runtime Smoke Gate
+
+每個已發布 skill 必須驗證 wrapper import、manifest/component count、每個 component 可選取與 generate、canonical answer、answer-contract dispatch、正解接受、錯解拒絕、適用時等價解接受、practice HTTP 200，以及無 missing/duplicate/fallback。另依實際題型驗證 `table_fill` rendering/grading、`single_choice` semantic mapping、drawing、decimal tolerance 與 undefined mathematical cases。
+
+### 15.2 Student Submission Feedback / Correct Answer Display Policy
+
+本政策適用於學生已在 practice／adaptive practice 按下「送出」後的正式 feedback；不得在 submit 前提前揭示答案。
+
+1. **提交結果規則**：
+   - `all_correct=true`：維持原成功 feedback，不強制顯示 canonical answer。
+   - `all_correct=false`：backend 必須透過 `answer_contract`／canonical answer 回傳 `correct_answer_display`；frontend 必須顯示正確答案或正確答案格式。
+2. **正式 Answer Types 全覆蓋**：
+   - `short_answer`：顯示 canonical answer。
+   - `single_choice`：顯示正確 label + option text，不得只顯示 `A/B/C/D`。
+   - `multi_part`：逐 part 顯示 canonical answer。
+   - `table_fill`：逐 cell 顯示 canonical value，不得直接顯示 raw dict/JSON。
+   - `drawing`：只能顯示 `answer_contract` 已存在的 reference/rubric；不得偽造文字答案。
+3. **Required-form feedback**：若 `mathematically_equivalent=true` 且 `required_form_valid=false`，feedback 必須明確說明「數學內容可能正確，但答案格式不符合要求」，並顯示 canonical correct format；若 `answer_contract` 有 required-form hint，可一併顯示。
+4. **Authority 與資料流**：正確答案顯示來源只能是：
+   $$\text{answer\_contract} \longrightarrow \text{canonical answer} \longrightarrow \text{backend correct\_answer\_display}$$
+   既有 grading authority 保持不變：
+   $$\text{answer\_contract} \longrightarrow \text{runtime dispatch} \longrightarrow \text{core.checkers}$$
+   `correct_answer_display` 是 feedback layer，不是新的 grading authority。
+5. **禁止來源**：frontend 自行計算答案、checker reverse inference、LLM 產生正確答案、generator-local formula、hardcode example answer，全部禁止。
+6. **Security / Exposure**：canonical answer 只能在學生送出後，由 submit response 提供。不得為 UI 方便，把完整 canonical answer 預先塞入初始題目 payload；backend 回應不得洩漏 oracle implementation、hidden checker metadata 或其他內部資訊。
+7. **Math rendering**：`correct_answer_display` 若含數學內容，必須走共用 MathJax rendering；不得讓學生看到 raw `\frac`、`\pi`、`\sqrt` 等 LaTeX。若 canonical answer 為分數，必須使用 §15.3 的同一 shared math display normalizer，以課本式上下分數呈現，不得保留學生端 raw slash fraction。
+
+### 15.3 Math Display / Textbook-Style Fraction Rendering Policy
+
+學生端所有數學內容中的數學分數，最終顯示必須採用 LaTeX `\frac` 的課本式上下堆疊分數；斜線 `a/b` 不得作為正式 mathematical display。例如：`3/5` 顯示為 $\frac{3}{5}$、`19π/4` 顯示為 $\frac{19\pi}{4}$、`-5π/6` 顯示為 $-\frac{5\pi}{6}$。
+
+1. **適用範圍**：question stem、sub-question、choices、hint、`correct_answer_display`、required-form feedback、`multi_part`、`table_fill` readonly/correct values、adaptive practice、textbook/example preview，以及其他共用 MathJax 數學顯示入口。
+2. **Display authority 與資料流**：
+   $$\text{canonical mathematical content} \longrightarrow \text{shared math display normalizer} \longrightarrow \text{LaTeX } \backslash\text{frac} \longrightarrow \text{MathJax}$$
+   normalization 僅負責 presentation。數學語意與 canonical answer 不得因排版改變；Domain math、Oracle、checker、`answer_contract` semantics 與 grading result 均不得改動。
+3. **輸入保存與轉換**：來源已是合法 LaTeX 時，保持原意並交給 MathJax；來源仍使用可辨識的數學斜線分數時，shared display normalizer 才可轉成 `\frac`。
+4. **最低支援形式**：`a/b`、`-a/b`、`aπ/b`、`-aπ/b`、`(a/b)π`，以及含分數的 trig expression（例如 `sin(19π/4)`）。正負號與 $\pi$ 的 canonical 排列應遵循既有 canonical 規則，不可由 display layer改變數學值。
+5. **數學上下文限定**：normalizer 只能處理可辨識的數學上下文；日期、URL、filesystem path、一般文字 slash 與非數學比例文字禁止誤轉。
+6. **允許的 slash representation**：斜線分數可存在於 parser internal representation、checker input 與 compatibility representation，但不得成為學生端最終 mathematical display。
+7. **禁止分散實作**：禁止 example-specific fraction patch、skill-specific formatter、每個 generator 各自處理顯示，或用圖片取代可由 MathJax 顯示的分數。所有正式入口必須委派同一 shared math display normalizer，再交由 MathJax。
+
+### 15.4 Frontend Visual 與 Teacher-facing ONLINE
+
+題圖由共用 practice visual contract 呈現；scratchpad/handwriting canvas 疊於背景圖並以 `contain` 等比例縮放，clear 只清除筆跡。單圖與多圖都必須支援，禁止 example-specific frontend patch。
+
+Teacher-facing `ONLINE` 必須反映 production evidence：component 已 verified、production manifest 已包含、wrapper/facade 可載入、specs/keys 一致且 runtime 可選取。檔案存在、badge 文字或 verified-only 都不足以判定 ONLINE。Partial Publish 時，未發布 component 必須顯示或可追溯其 exclusion reason。
 
 ---
 
@@ -800,6 +1220,12 @@ def check(user_answer, correct_answer, **kwargs):
 ---
 
 ## 17. Recovery / Repair Decision Tree (故障排除與修復決策樹)
+
+開始 recovery 前先做 resume audit：inspect working tree、來源副本、DB transaction 狀態、component/wrapper/manifest/staging 產物，分類 `complete / partial / missing`。不得復原有效變更、不得重建已完成項目；complete 先重驗，partial 從缺失 gate 補完，missing 才新建。
+
+若 textbook production import 中斷，必須確認 transaction/write scope，禁止 half-import 宣告完成；修復 dry-run 後再以單次正式 import 執行。若 Phase 3 staging fail，禁止 publish，先修 generic infrastructure 或正確責任層，staging PASS 後才可 publish。
+
+Recovery audit 必須重新確認 authoritative source identity，並驗證 dry-run before/after production state 完全一致。若發現 dry-run 曾寫入 DB、skill、outline、mapping、asset、tracker/status 或其他 persistent state，須先將其視為 Dry-run Gate FAIL 並釐清 transaction scope；不得沿用該次結果宣告 Source Fidelity PASS。production 已寫入題目但 formula、required visual、structure 或 skill blocker 尚存時，UI 亦不得維持正式 SUCCESS。
 
 遇到問題時，依循決策樹定位責任層，**嚴禁一看到錯誤就改 `generate.py`**：
 
@@ -871,6 +1297,12 @@ SOP 與 production 是否已對齊：[必須為「是」]
 
 AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 
+- [ ] authoritative source 是依 §6.6 識別的原始教材 DOCX/PDF；conversion/staging/failed artifact 未被誤選。
+- [ ] ingestion dry-run 為 true no-write；DB row count/hash/snapshot before-after 一致，所有 production-side persistent writes 為 0。
+- [ ] question-level completeness 全數成立：text、formula 與 required visual 均完整。
+- [ ] `MATH_PARSE_FAILED rows/tokens=0`、formula conversion failures=0，且 `FORMULA_MISSING=0` 未掩蓋 parse failure。
+- [ ] 所有 visuals 已分為 `QUESTION_REQUIRED`／`EXPLANATION_ONLY`／`SOLUTION_ONLY`／`DECORATIVE`；required unmatched 與 false-positive mounts 均為 0。
+- [ ] production SUCCESS 同時通過 structure、ordering、formula、required visual、final skill binding，且 unresolved blocking conflicts=0；不是只依 DB write count 判定。
 - [ ] `textbook_examples count == components count`（每題獨立元件，無漏題）。
 - [ ] 無任何 per-example Domain Function，數學運算集中於 `core.domain`。
 - [ ] 各 Component 內部無重複 inline 複製貼上的 shared 數學邏輯。
@@ -884,6 +1316,7 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 - [ ] 各 Component 具備獨立 tracker 紀錄，無合併追蹤。
 - [ ] Phase 3 wrapper 只打包 `VERIFIED` 組件；政策資格不足的組件安全隔離（不 package、不 publish）。
 - [ ] 本地 Client Runtime Smoke 測試通過，無破題或 500 錯誤。
+- [ ] 所有 `all_correct=false` submission 均由 backend 回傳並由 frontend 顯示合法的 `correct_answer_display`；required-form mismatch 顯示 canonical correct format，MathJax rendering 與全對 success flow regression 均 PASS。
 
 ---
 
@@ -957,16 +1390,31 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 
 ## 25. Quick Start for Agents (Agent 極速開工手冊)
 
-AI Agent 進入任務時，請直接依循此 11 步極速流程：
+AI Agent 進入任務時，請依循以下 26 步完整順序；不得跳過 Stage 1 直接進 Gencode：
 
-1. **READ SOP**：精讀本手冊 §1 鐵律與 §18 回報契約。
-2. **SOURCE RESOLUTION**：先查 project-local source，只有 project-local 不存在才查 Drive / external fallback。詳見 §6.6。
-3. **SOURCE FIDELITY**：查核題幹、條件、圖片／表格／公式資產是否完整。學生版無 `correct_answer` / `detailed_solution` **不是** Source Fidelity FAIL。
-4. **ANSWER ORACLE RESOLUTION**：優先使用 source-provided oracle；否則查 shared Domain operation。若 capability 未 ready → Capability Growth。禁止 AI 自算充當 oracle。`missing_ground_truth` 不得用於一般學生版無答案。
-5. **DOMAIN CHECK**：檢查 `core/domain/*.py` 是否具備共用算子。若無 → 先擴充共用算子並單元測試。
-6. **BUILD COMPONENT**：建立獨立 `src_<id>`，撰寫 `generate.py`（只呼叫 oracle，不重寫 domain math），配置標準 `answer_contract`。
-7. **NO LOCAL GRADING**：移除本機自審 `check()`；若有 `check()` 僅能作為純轉發至 `check_answer` 之相容 facade。
-8. **RUN 20 SEEDS**：執行 20 種隨機 seed，驗證 implementation consistency（不是 Oracle 本身），測試正解與錯解。
-9. **UPDATE TRACKER**：更新單題 tracker 紀錄（`verified` 或依 production 語意記錄政策原因 `[Gap: production alignment required]`）。
-10. **COMPILE WRAPPER**：執行 Phase 3 codegen，僅打包 `verified` 組件進入 wrapper。
-11. **RUNTIME SMOKE & REPORT**：執行本機端到端抽題與評分測試，輸出標準回報並封板。
+1. **READ AUTHORITIES**：先讀 Master SOP；欄位/契約/Gate 查 Specification，時序/lifecycle/recovery 查 PipelineFlow。
+2. **LOCATE LOCAL SOURCES**：尋找 project-local 原始 DOCX/PDF 與 audit/source copy；排除 `*_Latex.docx`、converter/temporary/staging/failed artifacts。
+3. **SOURCE PROVENANCE**：比較 filename、size、hash、mtime、provenance；原始 source 與 conversion output 並存時明確排除後者，local 不存在才用 Drive/external fallback；identity 不確定即 FAIL。
+4. **DOCX STRUCTURAL PARSE**：保留 paragraphs、runs、styles、typography、tables、anchors 與 source order。
+5. **FORMULA/SYMBOL FIDELITY**：驗證 MathType/OLE、OMML、Symbol、minus 與 template records，要求 found=converted、conversion failures=0、`MATH_PARSE_FAILED rows/tokens=0`；不得以 `FORMULA_MISSING=0` 掩蓋 parse failure。
+6. **HEADING EXTRACTION**：區分 section heading 與 skill headings。
+7. **SKILL CANDIDATES**：抽取、normalize、deduplicate，保存 structural evidence。
+8. **FINAL SKILL RESOLUTION**：執行 `KEEP / MERGE / CONCEPT_ONLY` granularity audit，產生 stable canonical skill IDs。
+9. **EXAMPLE-SKILL BINDING**：heading span 優先；章末題依 deterministic-first、optional LLM fallback、validation 流程處理。
+10. **PDF VISUAL ALIGNMENT**：分類 `QUESTION_REQUIRED`／`EXPLANATION_ONLY`／`SOLUTION_ONLY`／`DECORATIVE`；只以 DOCX anchor、question region、PDF page/bbox、題幹與唯一順序 evidence 配對 required visuals，僅 required 可 mount。
+11. **DRY-RUN SOURCE FIDELITY GATE**：驗證 counts、segmentation、ordering、formula、required visual、mapping、duplicates 與 curriculum binding；以 DB row count/hash/snapshot 證明 examples、skills、outline、mappings、assets、tracker/status 及所有 production persistent writes 均為 0。
+12. **PRODUCTION TEXTBOOK IMPORT**：只在 true dry-run PASS 後，以明確 transaction/write scope 正式匯入；DB 有寫入不等於 SUCCESS，所有 blocking gates 必須 PASS。
+13. **POST-IMPORT VERIFICATION**：重驗 examples、order、anchors、skill IDs、formula diagnostics、required unmatched=0、false-positive mounts=0、read-only page、teacher examples page 與 frontend success state；完成 Stage 1 seal。
+14. **GENCODE PHASE 1 AUDIT**：逐 example 盤點 topology、capability、operation、reuse/new、Oracle 與 Exact Readiness。
+15. **DOMAIN OPERATION INVENTORY**：定義 responsibility、input/output/canonical contracts、example coverage 與 reuse decision。
+16. **CAPABILITY GROWTH**：僅補真正 missing capability，禁止 per-example operation 或公式複製。
+17. **EXACT READINESS**：驗證 shared implementation、registry、taxonomy、adapter、contract、validator、tests、invariants。
+18. **PHASE 2 COMPONENTS**：一題一獨立 component；generator 只 sample、call Domain、assemble payload/answer/contract。
+19. **ANSWER CONTRACT/CHECKER**：確認五種正式 Answer Type 與 `answer_contract → runtime dispatch → core.checkers`。
+20. **20-SEED VALIDATION**：逐 component 驗證 deterministic consistency、正解/錯解/等價解及 no duplicate math；不得把 20 seeds 當 Oracle。
+21. **PHASE 3 PACKAGE/PUBLISH**：只封裝 VERIFIED components，依序生成 wrapper、manifest、thin facade，staging PASS 後才 publish。
+22. **RUNTIME SMOKE**：逐 skill/component 驗證 generate、grading、HTTP 200、特殊 Answer Types、undefined cases 與 no fallback。
+23. **STUDENT FEEDBACK**：驗證所有非全對 submission 都能顯示 backend canonical correct answer，尤其 required-form mismatch；並確認全對 success flow 不受影響。
+24. **MATH DISPLAY**：學生端數學分數一律驗證為 textbook-style stacked fraction；slash notation 僅可作 internal/compatibility form，並驗證 plain text 無 false-positive。
+25. **TEACHER ONLINE + BROWSER VISUAL**：核對 production evidence、runtime selectable、圖片 rendering、scratchpad background 與 clear 行為。
+26. **FINAL SEAL**：教材與 Gencode 雙階段條件全部滿足；Partial Publish 的 exclusion reasons 完整可追溯。

@@ -71,7 +71,7 @@ def test_ui_result_marks_pdf_visual_null_and_counts():
         ],
     }
     ui = build_v3_ui_result_payload(batch)
-    assert ui["status"] == "success"
+    assert ui["status"] == "needs_repair"
     assert ui["contentParsing"]["mathTypeFound"] == 10
     assert ui["contentParsing"]["formulaFailures"] == 1
     assert ui["questions"]["parsed"] == 19
@@ -153,6 +153,13 @@ def test_pipeline_gemini_failure_skips_db_write(pair_paths, tmp_path: Path):
     ), patch(
         "core.textbook_importer_v3_pipeline.build_curriculum_info_for_v3_import",
         return_value=dict(curriculum_info),
+    ), patch(
+        "core.textbook_importer_v3_pipeline.audit_v3_skill_extraction",
+        return_value={
+            "curriculum_binding": "PASS",
+            "curriculum_info": dict(curriculum_info, structural_skill_candidates=[fake_meta["例1"]]),
+            "skill_candidates": [fake_meta["例1"]],
+        },
     ), patch("core.textbook_processor_v2.phase1_extract_docx_lines", return_value=["l1"]    ), patch(
         "core.textbook_processor_v2._resolve_import_source_metadata",
         return_value={
@@ -298,6 +305,13 @@ def test_pipeline_happy_path_calls_phase4_and_pdf_visual(pair_paths, tmp_path: P
     ), patch(
         "core.textbook_importer_v3_pipeline.build_curriculum_info_for_v3_import",
         return_value=dict(curriculum_info),
+    ), patch(
+        "core.textbook_importer_v3_pipeline.audit_v3_skill_extraction",
+        return_value={
+            "curriculum_binding": "PASS",
+            "curriculum_info": dict(curriculum_info, structural_skill_candidates=[fake_meta["例1"]]),
+            "skill_candidates": [fake_meta["例1"]],
+        },
     ), patch(
         "core.textbook_processor_v2.phase1_extract_docx_lines",
         return_value=["1 三角函數", "l2"],

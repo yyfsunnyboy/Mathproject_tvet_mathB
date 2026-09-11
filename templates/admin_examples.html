@@ -512,6 +512,8 @@
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d1ecf1;color:#0c5460;font-size:12px;">formula_assets 題數={{ (page_formula_stats or {}).get('with_formula_assets', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d4edda;color:#155724;font-size:12px;">FORMULA_IMAGE 題數={{ (page_formula_stats or {}).get('with_formula_image_placeholder', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#fff3cd;color:#856404;font-size:12px;">FORMULA_MISSING 題數={{ (page_formula_stats or {}).get('with_formula_missing', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">MATH_PARSE_FAILED 題數={{ (page_formula_stats or {}).get('math_parse_failed_rows', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">MATH_PARSE_FAILED tokens={{ (page_formula_stats or {}).get('math_parse_failed_tokens', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">image_placeholder_no_asset 題數={{ (page_formula_stats or {}).get('image_placeholder_no_asset', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">missing_no_asset 題數={{ (page_formula_stats or {}).get('missing_no_asset', 0) }}</span>
             </div>

@@ -2116,7 +2116,9 @@
 
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
 </head>
 
 <body>
@@ -2892,6 +2894,9 @@
         // === 通用函式：呼叫 MathJax 渲染指定元素 ===
         function renderMathContent(element) {
             if (!element) return;
+            if (window.MathDisplayNormalizer) {
+                window.MathDisplayNormalizer.normalizeElement(element);
+            }
             // 檢查 MathJax 是否已載入並準備好
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([element])
@@ -4210,6 +4215,9 @@
             ) {
                 return text;
             }
+            if (window.MathDisplayNormalizer) {
+                return window.MathDisplayNormalizer.normalizeMathText(text, { mathContext: true });
+            }
             if (!looksLikeTexMath(trimmed)) return text;
             return `$${trimmed}$`;
         }
@@ -5174,6 +5182,9 @@
                         return new Promise((resolve) => {
                             const qmc = document.getElementById('question-media-container');
                             const targets = [questionText, qmc].filter(Boolean);
+                            if (window.MathDisplayNormalizer) {
+                                targets.forEach((target) => window.MathDisplayNormalizer.normalizeElement(target));
+                            }
                             if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
                                 window.MathJax.typesetPromise(targets)
                                     .then(() => resolve())
@@ -5498,6 +5509,7 @@
             resetQuestionScroll();
             renderChoices(payload);
             applyMultiPartUiContract(payload);
+            if (subquestionsContainer) renderMathContent(subquestionsContainer);
             resetQuestionScroll();
             console.log('[FRONTEND PRACTICE] rendered question_uid', payload && payload.question_uid);
             console.log('[FRONTEND PRACTICE] rendered question_text_preview=', previewQuestionText(questionMainText));
@@ -5636,7 +5648,7 @@
                     body: JSON.stringify(buildCheckAnswerPayload(userAnswer))
                 })
                     .then(r => r.json())
-                    .then(data => {
+                    .then(async data => {
                         // 停止載入訊息
                         stopLoadingMessage();
 
@@ -5667,7 +5679,11 @@
                             return;
                         }
 
-                        resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
+                        if (window.CorrectAnswerFeedback) {
+                            await window.CorrectAnswerFeedback.render(resultDisplay, data);
+                        } else {
+                            resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
+                        }
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';
                         if (Array.isArray(data.per_part_results) && isTableFillQuestion(currentQuestion)) {
                             applyTableGradingResult(data.per_part_results);

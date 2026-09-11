@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B2_SubSection_1_4_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_11663",
+      "textbook_example_id": 11663,
+      "status": "verified",
+      "problem_type_id": "calculate_trig_period_from_argument_scale",
+      "domain_operation": "calculate_trig_period_from_argument_scale",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11663/generate.py"
+    },
+    {
+      "component_id": "src_11664",
+      "textbook_example_id": 11664,
+      "status": "verified",
+      "problem_type_id": "calculate_trig_period_from_argument_scale",
+      "domain_operation": "calculate_trig_period_from_argument_scale",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11664/generate.py"
+    },
+    {
+      "component_id": "src_11665",
+      "textbook_example_id": 11665,
+      "status": "verified",
+      "problem_type_id": "classify_trig_expression_sign_change",
+      "domain_operation": "classify_trig_expression_sign_change",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_11665/generate.py"
+    },
+    {
+      "component_id": "src_11666",
+      "textbook_example_id": 11666,
+      "status": "verified",
+      "problem_type_id": "compare_trig_values_by_monotonicity",
+      "domain_operation": "compare_trig_values_by_monotonicity",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11666/generate.py"
+    },
+    {
+      "component_id": "src_11667",
+      "textbook_example_id": 11667,
+      "status": "verified",
+      "problem_type_id": "classify_trig_equation_feasibility",
+      "domain_operation": "classify_trig_equation_feasibility",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11667/generate.py"
+    },
+    {
+      "component_id": "src_11668",
+      "textbook_example_id": 11668,
+      "status": "verified",
+      "problem_type_id": "solve_trig_value_quadratic_constraint",
+      "domain_operation": "solve_trig_value_quadratic_constraint",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11668/generate.py"
+    },
+    {
+      "component_id": "src_11669",
+      "textbook_example_id": 11669,
+      "status": "verified",
+      "problem_type_id": "analyze_affine_transformed_trig_graph",
+      "domain_operation": "analyze_affine_transformed_trig_graph",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11669/generate.py"
+    },
+    {
+      "component_id": "src_11670",
+      "textbook_example_id": 11670,
+      "status": "verified",
+      "problem_type_id": "analyze_affine_transformed_trig_graph",
+      "domain_operation": "analyze_affine_transformed_trig_graph",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11670/generate.py"
+    },
+    {
+      "component_id": "src_11671",
+      "textbook_example_id": 11671,
+      "status": "verified",
+      "problem_type_id": "analyze_tangent_absolute_graph_period",
+      "domain_operation": "analyze_tangent_absolute_graph_period",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11671/generate.py"
+    },
+    {
+      "component_id": "src_11672",
+      "textbook_example_id": 11672,
+      "status": "verified",
+      "problem_type_id": "calculate_trig_period_from_argument_scale",
+      "domain_operation": "calculate_trig_period_from_argument_scale",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11672/generate.py"
+    },
+    {
+      "component_id": "src_11673",
+      "textbook_example_id": 11673,
+      "status": "verified",
+      "problem_type_id": "evaluate_trig_decimal",
+      "domain_operation": "evaluate_trig_decimal",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11673/generate.py"
+    },
+    {
+      "component_id": "src_11674",
+      "textbook_example_id": 11674,
+      "status": "verified",
+      "problem_type_id": "count_sine_cosine_intersections",
+      "domain_operation": "count_sine_cosine_intersections",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11674/generate.py"
+    },
+    {
+      "component_id": "src_11675",
+      "textbook_example_id": 11675,
+      "status": "verified",
+      "problem_type_id": "analyze_affine_transformed_trig_graph",
+      "domain_operation": "analyze_affine_transformed_trig_graph",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11675/generate.py"
+    }
+  ]
+}

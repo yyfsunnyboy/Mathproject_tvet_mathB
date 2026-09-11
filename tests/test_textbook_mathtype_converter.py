@@ -380,3 +380,18 @@ def test_b2_1_1_font_style_records_preserve_formulas_and_text(tmp_path: Path):
         remaining = iter(converted.iter(f"{{{W_NS}}}t"))
         for node in original.iter(f"{{{W_NS}}}t"):
             assert any(candidate.text == node.text for candidate in remaining)
+
+
+def test_b2_1_3_horizontal_brace_formula_is_recovered(tmp_path: Path):
+    source = next((PROJECT_ROOT / "textbook_import/source/vocational/math_B2").glob(
+        "*1-3*課本.docx"))
+    output = tmp_path / "B2_1_3_Latex.docx"
+    report = convert_docx_mathtype_to_latex_docx(source, output)
+    formulas = {f["formula_index"]: f for f in report["formulas"]}
+    assert report["mathtype_ole"] == report["converted_ok"] == 322
+    assert report["converted_failed"] == 0
+    assert formulas[276]["status"] == "ok"
+    assert r"\underbrace" in formulas[276]["latex"]
+    assert "正弦、餘弦互換" in formulas[276]["latex"]
+    with zipfile.ZipFile(output) as converted:
+        assert b"MATH_PARSE_FAILED" not in converted.read("word/document.xml")

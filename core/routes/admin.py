@@ -3436,6 +3436,8 @@ def admin_examples():
         "with_formula_missing": 0,
         "missing_no_asset": 0,
         "image_placeholder_no_asset": 0,
+        "math_parse_failed_rows": 0,
+        "math_parse_failed_tokens": 0,
     }
     for ex in pagination.items:
         meta = {}
@@ -3455,6 +3457,11 @@ def admin_examples():
         ex._formula_assets = meta.get("formula_assets", []) if isinstance(meta, dict) and isinstance(meta.get("formula_assets"), list) else []
         ex._formula_assets_count = len(ex._formula_assets)
         ptxt = str(getattr(ex, "problem_text", "") or "")
+        diagnostic_text = "\n".join(str(getattr(ex, field, "") or "") for field in (
+            "problem_text", "correct_answer", "detailed_solution"
+        ))
+        parse_failed_tokens = len(re.findall(r"\[MATH_PARSE_FAILED(?:_[^\]]*|:[^\]]*)\]", diagnostic_text))
+        ex._math_parse_failed_tokens = parse_failed_tokens
         ex._has_formula_image_placeholder = bool(re.search(r"\[FORMULA_IMAGE_\d+\]", ptxt))
         ex._has_formula_missing_placeholder = "[FORMULA_MISSING]" in ptxt
         ex._needs_formula_review = bool(meta.get("needs_formula_review")) if isinstance(meta, dict) else False
@@ -3477,6 +3484,9 @@ def admin_examples():
             page_formula_stats["missing_no_asset"] += 1
         if ex._formula_status == "image_placeholder_no_asset":
             page_formula_stats["image_placeholder_no_asset"] += 1
+        if parse_failed_tokens:
+            page_formula_stats["math_parse_failed_rows"] += 1
+            page_formula_stats["math_parse_failed_tokens"] += parse_failed_tokens
 
     gencode_status_map = _load_examples_gencode_status_map(pagination.items)
     

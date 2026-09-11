@@ -219,6 +219,99 @@ def format_correct_answer_display(correct_answer: Any, current: dict[str, Any]) 
     return str(correct_answer)
 
 
+def build_correct_answer_display(current: dict[str, Any]) -> dict[str, Any] | None:
+    """Build the student-safe, post-submit canonical-answer presentation contract.
+
+    This intentionally exposes presentation values only. Checker configuration,
+    oracle provenance, and other internal contract metadata are not returned.
+    """
+    skill_id = str(current.get("skill", current.get("skill_id", ""))).strip()
+    ctx = refresh_runtime_question_session(current, skill_id=skill_id)
+    ac = resolve_answer_contract_for_runtime(ctx, skill_id=skill_id)
+    ac = ac if isinstance(ac, dict) else {}
+    answer_type = str(ac.get("answer_type") or ctx.get("answer_type") or "short_answer").strip().lower()
+    canonical = ac.get("canonical_answer")
+    if canonical is None:
+        canonical = ctx.get("correct_answer", ctx.get("answer"))
+
+    if answer_type == "drawing":
+        reference = ac.get("reference") or ac.get("reference_answer") or ac.get("expected_drawing_spec")
+        rubric = ac.get("rubric") or ac.get("grading_rubric")
+        if reference is None and rubric is None:
+            return None
+        return {"answer_type": "drawing", "reference": reference, "rubric": rubric}
+
+    if answer_type in {"multi_part", "table_fill"} or isinstance(ac.get("parts"), list):
+        values = canonical if isinstance(canonical, dict) else {}
+        items: list[dict[str, str]] = []
+        for index, part in enumerate(ac.get("parts") or []):
+            if not isinstance(part, dict):
+                continue
+            key = str(part.get("key") or part.get("field_key") or index + 1)
+            value = part.get("canonical_answer", part.get("expected_answer", values.get(key)))
+            if value is None:
+                continue
+            items.append({"key": key, "label": str(part.get("label") or key), "value": str(value)})
+        if not items and isinstance(canonical, dict):
+            items = [{"key": str(k), "label": str(k), "value": str(v)} for k, v in canonical.items()]
+        if not items:
+            return None
+        return {"answer_type": answer_type, "items": items}
+
+    if answer_type in {"single_choice", "choice"}:
+        choices = ctx.get("choices") or ctx.get("options") or []
+        raw = str(canonical or "").strip()
+        label = raw.upper() if len(raw) == 1 and raw.isalpha() else ""
+        option_text = ""
+        for index, choice in enumerate(choices if isinstance(choices, list) else []):
+            choice_label = chr(65 + index)
+            if isinstance(choice, dict):
+                choice_label = str(choice.get("label") or choice_label).strip()
+                choice_value = str(choice.get("value") or choice.get("text") or choice.get("content") or "").strip()
+            else:
+                choice_value = str(choice).strip()
+            if raw in {choice_label, choice_value} or label == choice_label.upper():
+                label, option_text = choice_label, choice_value
+                break
+        if not option_text and raw:
+            option_text = raw
+        if not label and option_text:
+            for index, choice in enumerate(choices if isinstance(choices, list) else []):
+                text = str(choice.get("text") or choice.get("content") or choice.get("value") or "") if isinstance(choice, dict) else str(choice)
+                if text.strip() == option_text:
+                    label = chr(65 + index)
+                    break
+        return {"answer_type": "single_choice", "label": label, "option_text": option_text}
+
+    if canonical is None:
+        return None
+    return {"answer_type": answer_type or "short_answer", "value": format_correct_answer_display(canonical, ctx)}
+
+
+def attach_correct_answer_feedback(result: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]:
+    """Attach canonical feedback only after an unsuccessful submit verdict."""
+    out = dict(result)
+    is_correct = out.get("all_correct", out.get("correct", out.get("is_correct")))
+    out.setdefault("all_correct", is_correct is True)
+    if is_correct is True or out.get("system_error") or out.get("state_lost"):
+        return out
+    display = build_correct_answer_display(current)
+    if display is not None:
+        out["correct_answer_display"] = display
+    required_form_failed = bool(out.get("required_form_failed"))
+    if required_form_failed:
+        out["mathematically_equivalent"] = True
+        out["required_form_valid"] = False
+        out["required_form_feedback"] = "數值/數學內容可能正確，但答案格式不符合要求。"
+        hint = ""
+        ac = resolve_answer_contract_for_runtime(current, skill_id=str(current.get("skill_id") or current.get("skill") or ""))
+        if isinstance(ac, dict):
+            hint = str(ac.get("required_form_hint") or ac.get("format_hint") or ac.get("required_form") or "").strip()
+        if hint:
+            out["required_form_hint"] = hint
+    return out
+
+
 def log_check_answer_debug(
     *,
     skill_id: str,
@@ -560,7 +653,10 @@ def grade_answer_for_current_question(
         extra=expr_debug,
     )
     display = format_correct_answer_display(correct_answer, payload)
-    return normalize_grading_result({
+    final_result = normalize_grading_result({
         "correct": is_correct,
         "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",
     })
+    if expr_debug:
+        final_result["required_form_failed"] = bool(expr_debug.get("required_form_failed"))
+    return final_result

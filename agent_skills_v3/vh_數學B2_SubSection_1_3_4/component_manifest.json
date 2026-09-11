@@ -1,0 +1,84 @@
+{
+  "skill_id": "vh_數學B2_SubSection_1_3_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_11630",
+      "textbook_example_id": 11630,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11630/generate.py"
+    },
+    {
+      "component_id": "src_11631",
+      "textbook_example_id": 11631,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11631/generate.py"
+    },
+    {
+      "component_id": "src_11632",
+      "textbook_example_id": 11632,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11632/generate.py"
+    },
+    {
+      "component_id": "src_11633",
+      "textbook_example_id": 11633,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11633/generate.py"
+    },
+    {
+      "component_id": "src_11647",
+      "textbook_example_id": 11647,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11647/generate.py"
+    },
+    {
+      "component_id": "src_11649",
+      "textbook_example_id": 11649,
+      "status": "verified",
+      "problem_type_id": "solve_signed_trig_constraints",
+      "domain_operation": "solve_signed_trig_constraints",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11649/generate.py"
+    },
+    {
+      "component_id": "src_11653",
+      "textbook_example_id": 11653,
+      "status": "verified",
+      "problem_type_id": "classify_trig_derived_point_quadrant",
+      "domain_operation": "classify_trig_derived_point_quadrant",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11653/generate.py"
+    }
+  ]
+}
