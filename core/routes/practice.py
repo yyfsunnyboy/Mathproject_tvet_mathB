@@ -10,7 +10,7 @@
 =============================================================================
 """
 
-from flask import Blueprint, request, jsonify, current_app, render_template, session, url_for, redirect
+from flask import Blueprint, request, jsonify, current_app, render_template, session, url_for, redirect, has_app_context
 from urllib.parse import unquote as _url_unquote
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -83,6 +83,7 @@ from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
     persist_b4_chap2_gated_event,
 )
 from core.practice_attempt_service import persist_practice_attempt
+from core.database_runtime import release_db_session_before_external_call
 # Phase 6N: Chap2 chapter mode integration
 from core.vocational_math_b4.services.b4_chap2_chapter_mode import (
     B4_CHAP2_CHAPTER_SKILL_IDS,
@@ -309,7 +310,9 @@ def _resolve_textbook_example_id_for_images(payload: dict[str, Any]) -> int | No
 
 def _attach_student_image_assets(payload: dict[str, Any]) -> dict[str, Any]:
     """Attach notes.image_assets as browser-ready image_assets. Never raises."""
-    out = dict(payload) if isinstance(payload, dict) else {}
+    from core.question_image_assets import normalize_production_question_asset_payload
+
+    out = normalize_production_question_asset_payload(payload)
     try:
         from core.question_image_assets import list_student_image_assets_from_notes
         from models import TextbookExample
@@ -342,7 +345,8 @@ def _attach_student_image_assets(payload: dict[str, Any]) -> dict[str, Any]:
         if assets:
             out["visual_backed"] = True
     except Exception as exc:
-        current_app.logger.warning("[PRACTICE image_assets] attach failed: %s", exc)
+        if has_app_context():
+            current_app.logger.warning("[PRACTICE image_assets] attach failed: %s", exc)
         out.setdefault("image_assets", [])
     return out
 
@@ -2713,6 +2717,10 @@ def check_answer():
                     
                     # ?園?撠店甇瑕嚗????店嚗?
                     conversation_history = session.get('conversation_history', [])
+
+                    release_db_session_before_external_call(
+                        db, logger=current_app.logger
+                    )
                     
                     # ?澆憓撥??AI 閮箸
                     error_diagnosis = diagnose_error(
@@ -2774,6 +2782,10 @@ def check_answer():
                 conversation_history = session.get('conversation_history', [])
                 
                 current_app.logger.info(f"[?蔭?桀??刻] ?澆 AI 閮箸...")
+
+                release_db_session_before_external_call(
+                    db, logger=current_app.logger
+                )
                 
                 # ?澆 AI 閮箸
                 error_diagnosis = diagnose_error(

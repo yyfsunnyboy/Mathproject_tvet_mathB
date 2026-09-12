@@ -57,7 +57,27 @@ class Config:
     # ==========================================
     # 3. 安全性設定
     # ==========================================
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-me'
+    DEV_SECRET_KEY = 'dev-secret-key-change-me'
+
+    @staticmethod
+    def resolve_secret_key(*, production: bool = False) -> str:
+        """Return a session signing key, failing closed in production."""
+        secret_key = str(os.environ.get('SECRET_KEY') or '').strip()
+        if secret_key:
+            if production and (
+                secret_key == Config.DEV_SECRET_KEY or len(secret_key) < 32
+            ):
+                raise RuntimeError(
+                    'Production SECRET_KEY must be a non-default value of at least 32 characters.'
+                )
+            return secret_key
+        if production:
+            raise RuntimeError('Production startup requires the SECRET_KEY environment variable.')
+        return Config.DEV_SECRET_KEY
+
+    # Development imports remain backward compatible. create_app() resolves the
+    # value again so production startup can fail closed.
+    SECRET_KEY = os.environ.get('SECRET_KEY') or DEV_SECRET_KEY
 
     # ==========================================
     # 3.5. RAG 配置

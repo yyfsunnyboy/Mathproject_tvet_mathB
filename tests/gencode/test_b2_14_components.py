@@ -10,6 +10,7 @@ from core.gencode.b2_14_component_specs import SPECS,VIS
 from core.gencode.checker_registry import validate_answer_contract_capability
 from core.gencode.runtime_skill_wrapper import check_answer
 from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+from core.question_image_assets import production_question_asset_relpath
 
 ROOT=Path(__file__).resolve().parents[2]; V3_ROOT=ROOT/"agent_skills_v3"
 
@@ -48,7 +49,8 @@ def test_skill_answer_type_oracle_and_visual_counts():
     assert Counter(s["skill_id"] for s in SPECS.values())=={"vh_數學B2_SubSection_1_4_3":8,"vh_數學B2_SubSection_1_4_4":13}
     assert Counter(s["answer_type"] for s in SPECS.values())=={"short_answer":4,"single_choice":2,"multi_part":15}
     assert Counter(s["oracle_source"] for s in SPECS.values())=={"source_provided":6,"domain_operation":15}
-    assert len(VIS)==8 and all((ROOT/path).is_file() for path in VIS.values())
+    production_paths=[production_question_asset_relpath(path) for path in VIS.values()]
+    assert len(VIS)==8 and all(path and (ROOT/path).is_file() for path in production_paths)
 
 @pytest.mark.parametrize("example_id",sorted(SPECS))
 def test_component_twenty_seed_verified_contract(example_id:int):

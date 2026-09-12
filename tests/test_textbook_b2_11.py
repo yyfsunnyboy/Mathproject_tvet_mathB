@@ -149,7 +149,9 @@ def test_visual_enrichment_uses_audited_source_only(section, tmp_path):
         debug_dir=tmp_path / "debug", write_notes=False, dpi=72)
     assert report["errors"] == 0
     assert report["questions_matched"] == report["high_confidence"] == 20
-    assert report["visual_candidates"] == 6
+    # All six audited figures are explanatory/helpful, not QUESTION_REQUIRED.
+    assert report["visual_candidates"] == 0
+    assert not (tmp_path / "static" / "question_assets").exists()
     assert [r.notes for r in rows] == before
     assert TextbookExample.query.count() == 0
     probe = [{"source_description": "例2", "visual_bbox": None}]

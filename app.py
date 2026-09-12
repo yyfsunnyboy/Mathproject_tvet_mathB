@@ -15,6 +15,7 @@ import re
 from sqlalchemy.orm import aliased
 import sys
 import os
+import time
 
 # Windows 主控台常為 cp950：請求流程中的 log 若含 emoji 會 UnicodeEncodeError
 if hasattr(sys.stdout, "reconfigure"):
@@ -55,7 +56,7 @@ from matplotlib import font_manager
 import matplotlib.pyplot as plt
 
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, abort, g, jsonify
 from werkzeug.utils import safe_join
 from sqlalchemy import inspect, Table, MetaData, text, func
 from sqlalchemy.exc import IntegrityError
@@ -75,6 +76,7 @@ from core.session_safety import (
     trim_session_for_cookie_limit,
     trim_session_to_keep_keys,
 )
+from core.database_runtime import install_sqlite_connection_hardening
 from config import Config
 from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
 from core.utils import get_all_active_skills
@@ -102,7 +104,9 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-def create_app():
+def create_app(*, production: bool | None = None):
+    if production is None:
+        production = str(os.environ.get("MATHPROJECT_ENV") or "").strip().lower() == "production"
     app = Flask(__name__, template_folder='templates', static_folder='static')
 
     # --- Matplotlib Font Settings for Chinese Characters ---
@@ -129,7 +133,7 @@ def create_app():
     app.config.update(
         SQLALCHEMY_DATABASE_URI=Config.SQLALCHEMY_DATABASE_URI,
         SQLALCHEMY_TRACK_MODIFICATIONS=Config.SQLALCHEMY_TRACK_MODIFICATIONS,
-        SECRET_KEY=Config.SECRET_KEY,
+        SECRET_KEY=Config.resolve_secret_key(production=production),
         GEMINI_API_KEY=Config.GEMINI_API_KEY,
         GEMINI_MODEL_NAME=Config.GEMINI_MODEL_NAME,
         ENABLE_VISION_OCR_FALLBACK=getattr(Config, "ENABLE_VISION_OCR_FALLBACK", False),
@@ -138,6 +142,10 @@ def create_app():
         ,SQLALCHEMY_ENGINE_OPTIONS={
             "connect_args": {"timeout": 30}  # 增加等待解鎖的時間到 30 秒
         }
+    )
+    app.config.update(
+        DEBUG=False if production else app.config.get("DEBUG", False),
+        MATHPROJECT_ENV="production" if production else "development",
     )
 
     try:
@@ -160,6 +168,40 @@ def create_app():
     # 初始化擴充套件
     db.init_app(app)
     login_manager.init_app(app)
+
+    @app.before_request
+    def _start_request_timer():
+        g._request_started_at = time.perf_counter()
+
+    @app.after_request
+    def _log_slow_request(response):
+        started_at = getattr(g, "_request_started_at", None)
+        if started_at is not None:
+            elapsed_ms = (time.perf_counter() - started_at) * 1000.0
+            try:
+                threshold_ms = float(os.environ.get("SLOW_REQUEST_THRESHOLD_MS", "2000"))
+            except (TypeError, ValueError):
+                threshold_ms = 2000.0
+            if elapsed_ms >= threshold_ms:
+                app.logger.warning(
+                    "Slow request method=%s path=%s status=%s elapsed_ms=%.1f",
+                    request.method,
+                    request.path,
+                    response.status_code,
+                    elapsed_ms,
+                )
+        return response
+
+    @app.teardown_request
+    def _log_uncaught_request_exception(exc):
+        if exc is not None:
+            app.logger.error(
+                "Uncaught HTTP exception method=%s path=%s type=%s",
+                request.method,
+                request.path,
+                type(exc).__name__,
+                exc_info=(type(exc), exc, exc.__traceback__),
+            )
 
     @app.after_request
     def keep_session_cookie_small(response):
@@ -215,6 +257,18 @@ def create_app():
         if current_user.is_authenticated:
             return redirect(url_for('dashboard'))
         return redirect(url_for('login'))
+
+    @app.route('/healthz')
+    def healthz():
+        try:
+            db.session.execute(text("SELECT 1"))
+            return jsonify({"status": "ok", "app": "alive", "database": "ok"}), 200
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Health check database failure")
+            return jsonify({"status": "unavailable", "app": "alive", "database": "error"}), 503
+        finally:
+            db.session.remove()
 
     @app.route('/uploads/question_assets/<path:filename>')
     def question_asset_file(filename):
@@ -721,6 +775,7 @@ def create_app():
                                      hide_curriculum_switch=hide_curriculum_switch)
 
     with app.app_context():
+        install_sqlite_connection_hardening(db.engine, logger=app.logger)
         init_db(db.engine)
         
         # 確保 PromptTemplate 已經載入，使得 SQLAlchemy 能識別並在 create_all() 中建立這個資料表
@@ -740,16 +795,6 @@ def create_app():
             app.logger.info(f"Prompt template bootstrap done. created={created_count}, updated={updated_count}, skipped={skipped_count}")
         except Exception as e:
             app.logger.error(f"Prompt template bootstrap failed: {e}")
-        # 啟用 WAL (Write-Ahead Logging) 模式以提高併發性並減少鎖定
-        try:
-            with db.engine.connect() as conn:
-                # 啟用 WAL 模式，允許讀取和寫入並行
-                conn.execute(text("PRAGMA journal_mode=WAL"))
-                # 設定同步等級為 NORMAL，在 WAL 模式下是安全且高效的選擇
-                conn.execute(text("PRAGMA synchronous=NORMAL"))
-        except Exception as e:
-            app.logger.error(f"Failed to set WAL mode for SQLite: {e}")
-
         if os.environ.get('SEED_DB_ONLY') != '1':
             configure_gemini(
                 api_key=app.config['GEMINI_API_KEY'],
@@ -764,6 +809,12 @@ def create_app():
                 init_adv_rag(app)
             except Exception as e:
                 app.logger.error(f"Advanced RAG initialization failed: {e}")
+
+        if production:
+            app.logger.info(
+                "MathProject production application initialized debug=%s database=sqlite",
+                app.debug,
+            )
 
     return app
 

@@ -6,6 +6,9 @@ configs/prompts/prompt_registry.yaml.bak
 
 # 忽略上傳的檔案 (Word/PDF)
 uploads/
+# Source-fidelity-gated QUESTION_REQUIRED assets are deployment artifacts.
+!static/question_assets/
+!static/question_assets/**
 *.docx
 *.pdf
 /backup/

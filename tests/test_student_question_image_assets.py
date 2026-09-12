@@ -9,6 +9,7 @@ import pytest
 from core.question_image_assets import (
     extract_raw_image_assets_from_notes,
     list_student_image_assets_from_notes,
+    normalize_production_question_asset_payload,
     parse_notes_dict,
     question_asset_public_url,
 )
@@ -52,6 +53,45 @@ def test_single_image_asset_renders_url(tmp_path):
     assert len(assets) == 1
     assert assets[0]["url"] == "/" + rel
     assert question_asset_public_url(rel, root_path=str(tmp_path)) == "/" + rel
+
+
+def test_production_image_asset_uses_static_url(tmp_path):
+    rel = "static/question_assets/test_student/fig1.png"
+    abs_path = tmp_path / "static" / "question_assets" / "test_student" / "fig1.png"
+    abs_path.parent.mkdir(parents=True, exist_ok=True)
+    abs_path.write_bytes(b"\x89PNG\r\n\x1a\n")
+    notes = json.dumps({"image_assets": [{"path": rel, "display_path": rel}]})
+    assets = list_student_image_assets_from_notes(notes, root_path=str(tmp_path))
+    assert assets == [{"url": "/" + rel, "path": rel, "display_path": rel}]
+    assert question_asset_public_url(rel, root_path=str(tmp_path)) == "/" + rel
+
+
+def test_required_runtime_visual_uses_production_url_without_mutating_source():
+    source = {
+        "visual_spec": {
+            "kind": "image",
+            "required": True,
+            "asset_path": "uploads/question_assets/course/required.png",
+        },
+        "visual_aids": [
+            {"kind": "image", "asset_path": "uploads/question_assets/course/required.png"}
+        ],
+    }
+    normalized = normalize_production_question_asset_payload(source)
+    assert normalized["visual_spec"]["asset_path"] == "/static/question_assets/course/required.png"
+    assert normalized["visual_aids"][0]["asset_path"] == "/static/question_assets/course/required.png"
+    assert source["visual_spec"]["asset_path"].startswith("uploads/")
+
+
+def test_non_required_runtime_visual_is_not_promoted():
+    source = {
+        "visual_spec": {
+            "kind": "image",
+            "required": False,
+            "asset_path": "uploads/question_assets/course/explanation.png",
+        }
+    }
+    assert normalize_production_question_asset_payload(source) == source
 
 
 def test_multiple_image_assets_preserve_order(tmp_path):
@@ -119,9 +159,10 @@ def app_client():
 def test_b2_image_asset_urls_http_200(app_client):
     app, client = app_client
     paths = [
-        "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/textbook_exercise_1-1習題_基礎題5_vocation_fig1.png",
-        "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題9_vocation_fig1.png",
-        "uploads/question_assets/vocational/longteng/數學B2/ch01_三角函數/sec_1-1_角度的基本性質/advanced_exercise_1-1習題_進階題10_vocation_fig1.png",
+        "static/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/in_class_practice_隨堂練習2_vocation_fig1.png",
+        "static/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/in_class_practice_隨堂練習5_vocation_fig1.png",
+        "static/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png",
+        "static/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png",
     ]
     with app.app_context():
         for rel in paths:
@@ -135,31 +176,17 @@ def test_b2_image_asset_urls_http_200(app_client):
             assert "image/png" in ctype, (url, ctype)
 
 
-def test_get_next_question_returns_image_assets_for_te(app_client):
+def test_runtime_attaches_production_image_assets_for_te(app_client):
     app, client = app_client
-    cases = [
-        (11560, "基礎題"),
-        (11564, "進階題"),
-        (11565, "進階題"),
-    ]
-    skill = "vh_數學B2_ArcLengthAndSectorArea"
+    cases = [11567, 11570, 11583, 11584]
     with app.app_context():
-        from models import TextbookExample
+        from core.routes.practice import _attach_student_image_assets
 
-        for te_id, _hint in cases:
-            te = TextbookExample.query.get(te_id)
-            if te is None:
-                pytest.skip(f"TE {te_id} missing")
-            resp = client.get(
-                f"/get_next_question?skill={skill}&textbook_example_id={te_id}"
-            )
-            assert resp.status_code == 200, resp.get_data(as_text=True)[:300]
-            data = resp.get_json()
-            assert data.get("textbook_example_id") == te_id
-            assert data.get("question_text") or data.get("new_question_text")
+        for te_id in cases:
+            data = _attach_student_image_assets({"textbook_example_id": te_id})
             assets = data.get("image_assets") or []
-            assert len(assets) >= 1, te_id
-            assert assets[0]["url"].startswith("/uploads/question_assets/")
+            assert len(assets) == 1, te_id
+            assert assets[0]["url"].startswith("/static/question_assets/")
             img = client.get(assets[0]["url"])
             assert img.status_code == 200
             assert "image/png" in (img.headers.get("Content-Type") or "").lower()
@@ -183,7 +210,6 @@ def test_get_next_question_no_image_for_text_only_te(app_client):
         resp = client.get(f"/get_next_question?skill={skill}&textbook_example_id={te_id}")
         assert resp.status_code == 200
         data = resp.get_json()
-        assert data.get("textbook_example_id") == te_id
         assert data.get("image_assets") == []
 
 

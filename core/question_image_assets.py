@@ -4,9 +4,14 @@ import re
 import hashlib
 import shutil
 import subprocess
+from copy import deepcopy
 from typing import Any
 
 from flask import current_app
+
+
+TEMPORARY_QUESTION_ASSET_ROOT = "uploads/question_assets"
+PRODUCTION_QUESTION_ASSET_ROOT = "static/question_assets"
 
 
 STRONG_IMAGE_KEYWORDS = [
@@ -168,14 +173,34 @@ def build_question_asset_dir(
     ch_slug = _chapter_slug(chapter_title)
     sec_slug = _section_slug(section_title)
     return os.path.join(
-        "uploads",
-        "question_assets",
+        *TEMPORARY_QUESTION_ASSET_ROOT.split("/"),
         curriculum_slug,
         publisher_slug,
         volume_slug,
         ch_slug,
         sec_slug,
     ).replace("\\", "/")
+
+
+def build_production_question_asset_dir(
+    curriculum: str,
+    publisher: str,
+    volume: str,
+    chapter_title: str | None,
+    section_title: str | None,
+    source_filename: str | None = None,
+) -> str:
+    """Return the Git-deployable root for gated QUESTION_REQUIRED assets."""
+    staging = build_question_asset_dir(
+        curriculum,
+        publisher,
+        volume,
+        chapter_title,
+        section_title,
+        source_filename,
+    )
+    suffix = staging.removeprefix(TEMPORARY_QUESTION_ASSET_ROOT).lstrip("/")
+    return f"{PRODUCTION_QUESTION_ASSET_ROOT}/{suffix}".rstrip("/")
 
 
 def build_question_assets_dir(curriculum_info, chapter_title, section_title):
@@ -415,25 +440,70 @@ def extract_raw_image_assets_from_notes(notes: Any) -> list[dict]:
 
 
 def normalize_question_asset_relpath(path: Any) -> str | None:
-    """Normalize a stored path to uploads/question_assets/... relative path."""
+    """Normalize a stored question-asset path to a safe app-relative path."""
     raw = str(path or "").strip().replace("\\", "/")
     if not raw:
         return None
     raw = raw.lstrip("/")
     if raw.startswith("http://") or raw.startswith("https://"):
         return None
-    if raw.startswith("uploads/question_assets/"):
+    if raw.startswith(f"{TEMPORARY_QUESTION_ASSET_ROOT}/"):
+        return raw
+    if raw.startswith(f"{PRODUCTION_QUESTION_ASSET_ROOT}/"):
         return raw
     if raw.startswith("question_assets/"):
-        return "uploads/" + raw
+        return "static/" + raw
     return None
+
+
+def production_question_asset_relpath(path: Any) -> str | None:
+    """Map a legacy staging reference to the production storage contract."""
+    rel = normalize_question_asset_relpath(path)
+    if not rel:
+        return None
+    if rel.startswith(f"{TEMPORARY_QUESTION_ASSET_ROOT}/"):
+        suffix = rel.removeprefix(TEMPORARY_QUESTION_ASSET_ROOT).lstrip("/")
+        return f"{PRODUCTION_QUESTION_ASSET_ROOT}/{suffix}"
+    return rel
+
+
+def normalize_production_question_asset_payload(payload: Any) -> dict[str, Any]:
+    """Rewrite QUESTION_REQUIRED runtime image references to the static contract."""
+    out = deepcopy(payload) if isinstance(payload, dict) else {}
+    visual = out.get("visual_spec")
+    if not isinstance(visual, dict) or visual.get("required") is not True:
+        return out
+
+    def convert(value: Any, *, public_url: bool = False) -> Any:
+        rel = production_question_asset_relpath(value)
+        if not rel:
+            return value
+        return f"/{rel}" if public_url else rel
+
+    if visual.get("kind") == "image":
+        visual["asset_path"] = convert(visual.get("asset_path"), public_url=True)
+    aids = out.get("visual_aids")
+    if isinstance(aids, list):
+        for aid in aids:
+            if isinstance(aid, dict) and aid.get("kind") == "image":
+                aid["asset_path"] = convert(aid.get("asset_path"), public_url=True)
+    metadata = out.get("metadata")
+    if isinstance(metadata, dict) and metadata.get("source_visual_asset"):
+        metadata["source_visual_asset"] = convert(metadata["source_visual_asset"])
+    response_contract = out.get("visual_response_contract")
+    if isinstance(response_contract, dict) and response_contract.get("reference_asset"):
+        response_contract["reference_asset"] = convert(
+            response_contract["reference_asset"]
+        )
+    return out
 
 
 def question_asset_public_url(path: Any, *, root_path: str | None = None) -> str | None:
     """
     Build a browser URL for a question asset.
 
-    Reuses the existing Flask route: /uploads/question_assets/<path>
+    Production assets use Flask's /static route. Legacy staging assets retain
+    the existing /uploads/question_assets route.
     Returns None if path is invalid or the file is missing on disk.
     """
     rel = normalize_question_asset_relpath(path)

@@ -16,6 +16,7 @@ from core.gencode.b2_12_component_specs import COMPONENT_SPECS
 from core.gencode.checker_registry import validate_answer_contract_capability
 from core.gencode.runtime_skill_wrapper import check_answer
 from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+from core.question_image_assets import production_question_asset_relpath
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -152,7 +153,9 @@ def test_required_source_visuals_are_mounted_and_exist() -> None:
         payload = _load_generator(example_id).generate(seed=0)
         visual = payload["visual_spec"]
         assert visual["required"] is True
-        assert (ROOT / visual["asset_path"]).is_file()
+        production_path = production_question_asset_relpath(visual["asset_path"])
+        assert production_path and production_path.startswith("static/question_assets/")
+        assert (ROOT / production_path).is_file()
 
 
 def test_generators_contain_no_local_math_or_grading_authority() -> None:

@@ -16,6 +16,10 @@ from core.gencode.services.gencode_status_query_service import (
     build_admin_skills_gencode_status_map,
     inspect_skill_runtime_publication,
 )
+from core.question_image_assets import (
+    normalize_production_question_asset_payload,
+    production_question_asset_relpath,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 COUNTS = {"vh_數學B2_SubSection_1_4_3": 8, "vh_數學B2_SubSection_1_4_4": 13}
@@ -69,15 +73,18 @@ def test_manifest_wrapper_facade_and_runtime_selectability(skill_id: str, expect
 def test_all_published_components_runtime_checker_and_visual(example_id: int) -> None:
     spec = SPECS[example_id]
     wrapper = _wrapper(spec["skill_id"])
-    payload = wrapper.generate(seed=19, component_id=f"src_{example_id}")
+    payload = normalize_production_question_asset_payload(
+        wrapper.generate(seed=19, component_id=f"src_{example_id}")
+    )
     assert payload["component_id"] == f"src_{example_id}"
     assert payload.get("fallback_used", False) is False
     assert payload["answer_contract"]
     assert wrapper.check(payload["correct_answer"], payload["correct_answer"], payload) is True
     assert wrapper.check(_wrong(payload), payload["correct_answer"], payload) is False
     if example_id in VIS:
-        assert payload["visual_spec"]["asset_path"] == VIS[example_id]
-        assert (ROOT / VIS[example_id]).is_file()
+        production_path = production_question_asset_relpath(VIS[example_id])
+        assert payload["visual_spec"]["asset_path"] == "/" + production_path
+        assert (ROOT / production_path).is_file()
         assert payload["visual_spec"]["usage"] == "practice_scratchpad_background"
     else:
         assert not (payload.get("visual_spec") or {}).get("required")

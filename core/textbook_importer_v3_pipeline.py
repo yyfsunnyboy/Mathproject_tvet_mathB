@@ -1184,6 +1184,7 @@ def run_v3_pair_pipeline(
                         project_root=root,
                         debug_dir=debug_dir,
                         write_notes=True,
+                        publish_assets=True,
                     )
                     try:
                         db.session.commit()

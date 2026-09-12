@@ -21,6 +21,8 @@ from typing import Any
 from core.question_image_assets import (
     build_question_asset_dir,
     build_question_asset_filename,
+    build_production_question_asset_dir,
+    production_question_asset_relpath,
     question_needs_image,
 )
 from core.textbook_question_anchor import normalize_question_label
@@ -895,12 +897,16 @@ def enrich_textbook_examples_with_pdf_visuals(
     project_root: str | Path | None = None,
     debug_dir: str | Path | None = None,
     write_notes: bool = True,
+    publish_assets: bool | None = None,
     dpi: int = DEFAULT_DPI,
 ) -> dict[str, Any]:
     """Match/detect/crop/link PDF visuals for TextbookExample rows. Non-fatal per question."""
     import fitz
 
     root = Path(project_root) if project_root else Path.cwd()
+    publishing = bool(write_notes if publish_assets is None else publish_assets)
+    if publishing and not write_notes:
+        raise ValueError("publish_assets requires write_notes=True")
     pdf = Path(pdf_path)
     summary: dict[str, Any] = {
         "ok": True,
@@ -986,14 +992,32 @@ def enrich_textbook_examples_with_pdf_visuals(
         if score >= HIGH_CONFIDENCE:
             summary["high_confidence"] += 1
 
-        classification = str(row.get("visual_classification") or "none")
-        if classification == "required" and row.get("should_mount"):
+        classification = str(row.get("visual_classification") or "none").strip().lower()
+        is_question_required = classification in {"required", "question_required"}
+        source_fidelity_pass = bool(
+            is_question_required
+            and row.get("should_mount")
+            and row.get("pdf_match")
+            and score >= HIGH_CONFIDENCE
+            and not row.get("needs_review")
+        )
+        if source_fidelity_pass:
             summary["visual_candidates"] += 1
-        elif classification == "helpful":
+        elif is_question_required:
+            summary["skipped_low_confidence"] += 1
+            pub["status"] = "skipped_source_fidelity"
+            summary["rows"].append(pub)
+            continue
+        elif classification in {"helpful", "explanation_only"}:
             # Helpful/explanatory figures are useful for source audit, but they
             # are not part of the question contract and must never be mounted.
             summary["skipped_none"] += 1
             pub["status"] = "skipped_explanation_only"
+            summary["rows"].append(pub)
+            continue
+        elif classification == "solution_only":
+            summary["skipped_none"] += 1
+            pub["status"] = "skipped_solution_only"
             summary["rows"].append(pub)
             continue
         elif classification == "decorative":
@@ -1031,7 +1055,15 @@ def enrich_textbook_examples_with_pdf_visuals(
 
         label = normalize_question_label(str(row.get("source_description") or ""))
         source_type = str(row.get("source_type") or row.get("problem_type") or "textbook_exercise")
-        rel_dir = build_question_asset_dir(curriculum, publisher, volume, chapter_title, section_title)
+        rel_dir = (
+            build_production_question_asset_dir(
+                curriculum, publisher, volume, chapter_title, section_title
+            )
+            if publishing
+            else build_question_asset_dir(
+                curriculum, publisher, volume, chapter_title, section_title
+            )
+        )
         crop_specs = row.get("visual_crops") or [
             {
                 "page": row.get("visual_page") or (row.get("pdf_match") or {}).get("page"),
@@ -1047,14 +1079,30 @@ def enrich_textbook_examples_with_pdf_visuals(
                 bbox = spec.get("bbox")
                 if not page_no or not bbox:
                     raise ValueError("missing_bbox")
-                filename = build_question_asset_filename(
-                    source_type=source_type,
-                    question_title=label,
-                    question_id_or_dedupe=anchor_id,
-                    fig_index=fig_index,
-                    ext="png",
+                existing_assets = notes.get("image_assets")
+                existing = next(
+                    (
+                        item
+                        for item in existing_assets or []
+                        if isinstance(item, dict)
+                        and item.get("asset_slot") == f"pdf_visual_{fig_index:02d}"
+                    ),
+                    None,
                 )
-                rel_path = f"{rel_dir}/{filename}".replace("\\", "/")
+                rel_path = (
+                    production_question_asset_relpath(existing.get("path"))
+                    if publishing and existing
+                    else None
+                )
+                if not rel_path:
+                    filename = build_question_asset_filename(
+                        source_type=source_type,
+                        question_title=label,
+                        question_id_or_dedupe=anchor_id,
+                        fig_index=fig_index,
+                        ext="png",
+                    )
+                    rel_path = f"{rel_dir}/{filename}".replace("\\", "/")
                 abs_path = root / rel_path
                 reused = abs_path.is_file()
                 meta_img = crop_pdf_bbox(pdf, page_no, list(bbox), abs_path, dpi=dpi)

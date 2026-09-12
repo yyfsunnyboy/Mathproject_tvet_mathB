@@ -1,4 +1,5 @@
 Flask
+waitress
 Flask-SQLAlchemy
 Flask-Login
 pandas

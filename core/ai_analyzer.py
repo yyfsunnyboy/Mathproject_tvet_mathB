@@ -591,6 +591,10 @@ JSON:
 }}
 """
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content(
             prompt,
             generation_config={"max_output_tokens": 2000, "temperature": 0.1}
@@ -707,6 +711,13 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
         _, b64 = image_data_url.split(',', 1)
         img_data = base64.b64decode(b64)
 
+        # Do not keep Flask-SQLAlchemy's request connection checked out while
+        # uploading to or waiting for an external model.
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
+
         # 寫入臨時檔案
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as f:
             f.write(img_data)
@@ -730,6 +741,7 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
                       .replace("{correct_answer}", correct_answer or ""))
 
             model = get_model()
+            release_db_session_before_external_call(db, logger=current_app.logger)
             resp = model.generate_content(
                 [prompt, file],
                 generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -1104,6 +1116,10 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
     # Keep the legacy Gemini flow below as fallback for quick rollback.
     try:
         tutor_client = get_ai_client(role='tutor')
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
         tutor_response = tutor_client.generate_content(
             prompt + " (IMPORTANT: Output ONLY valid JSON. Escape all backslashes.)"
         )
