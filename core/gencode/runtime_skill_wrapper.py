@@ -792,6 +792,9 @@ def dispatch_generate(
         router_kwargs["problem_type_id"] = effective_problem_type_id
     payload = generate_fn(level=level, seed=seed, **router_kwargs)
     if isinstance(payload, dict):
+        # The production facade owns the skill identity. Individual component
+        # generators may omit it, but every outward payload must carry it.
+        payload.setdefault("skill_id", skill_id)
         selected_component_id = str(payload.get("component_id") or "")
         selected_problem_type_id = str(payload.get("problem_type_id") or "")
         selected_index = -1

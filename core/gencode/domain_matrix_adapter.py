@@ -416,13 +416,43 @@ def _build_line_equation_answer_contract(
             "equivalence_type": "numeric_exact",
             "semantic_answer": semantic_answer,
         }
+    equation_tasks = {
+        "point_slope",
+        "two_points",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "intercept_form_equation",
+        "intercept_form_from_intercept_sum_and_slope",
+        "triangle_area_bisector_line_equation",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "line_through_intersection_parallel_to_line",
+        "perpendicular_bisector_application",
+        "line_through_point_perpendicular_to_segment",
+        "construct_parallel_line_at_distance",
+    }
+    if task_type in equation_tasks:
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "equation",
+            "answer_shape": "linear_equation",
+            "checker": "linear_equation_equivalent_checker",
+            "checker_key": "linear_equation_equivalent_checker",
+            "answer_equivalence": "linear_equation_equivalent",
+            "equivalence_type": "linear_equation_equivalent",
+            "equivalence": "linear_equation_equivalent",
+            "semantic_answer": semantic_answer,
+        }
     return {
         "presentation_mode": "short_answer",
         "answer_type": answer_type,
-        "checker": "linear_equation_equivalent_checker",
-        "checker_key": "linear_equation_equivalent_checker",
-        "answer_equivalence": "linear_equation_equivalent",
-        "equivalence": "linear_equation_equivalent",
+        "checker": "expression_equivalence_checker",
+        "checker_key": "expression_equivalence_checker",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "equivalence": "algebraic_equivalent",
         "semantic_answer": semantic_answer,
     }
 
@@ -765,6 +795,8 @@ def convert_line_equation_matrix_to_question_payload(
     payload: dict[str, Any] = {
         "question_text": question_text,
         "question": question_text,
+        "target_task": problem_type_id or task_type,
+        "task_family": "line_equation_family",
         "correct_answer": payload_correct,
         "answer": payload_answer,
         "display_answer": display_answer,
@@ -2869,24 +2901,35 @@ def convert_domain_matrix_to_question_payload(
             b = givens.get("b", 7)
             question_text = f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，試求A、B兩點的距離。"
         elif op == "absolute_value_inequality_zero_center_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             a = givens.get("a", 1)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
             ax_text = "x" if a == 1 else f"{a}x"
             question_text = f"解不等式：$\\left| {ax_text} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_shifted_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             b_val = givens.get("b", -3)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
             b_text = f"+ {b_val}" if b_val >= 0 else f"- {abs(b_val)}"
             question_text = f"解不等式：$\\left| x {b_text} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_linear_expression_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             a = givens.get("a", 1)
             b = givens.get("b", 0)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
-            b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
-            question_text = f"解不等式：$\\left| {a}x {b_text} \\right| {op_sign} {c}$。"
+            ax_text = "x" if a == 1 else "-x" if a == -1 else f"{a}x"
+            if b == 0:
+                inner = ax_text
+            else:
+                b_text = f"+ {b}" if b > 0 else f"- {abs(b)}"
+                inner = f"{ax_text} {b_text}"
+            question_text = f"解不等式：$\\left| {inner} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_interval_interpretation":
             # Keep symbolic parameters a,b in the stem. Numeric solved values are
             # givens["a_value"] / givens["b_value"] and must NOT be substituted
@@ -2899,9 +2942,11 @@ def convert_domain_matrix_to_question_payload(
                 f"則點 $(b, a)$ 屬於哪一象限？"
             )
         elif op == "absolute_value_inequality_integer_solution_count_choice":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             a = givens.get("a", 1)
             b = givens.get("b", 0)
-            op_sign = givens.get("op", "<=")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<=")))
             c = givens.get("c", 5)
             try:
                 a_num = int(a)
@@ -3128,6 +3173,28 @@ def convert_domain_matrix_to_question_payload(
             "allow_text_answer": True,
         } if problem_type_id == "histogram_distribution_update" else None,
     }
+    factorized_response_required = bool(
+        (problem_type_id == "polynomial_factoring" or op == "polynomial_factoring")
+        and "因式分解" in question_text
+        and (
+            (
+                isinstance(semantic_answer, dict)
+                and semantic_answer
+                and all("(" in str(value) and ")" in str(value) for value in semantic_answer.values())
+            )
+            or (
+                not isinstance(semantic_answer, dict)
+                and "(" in str(semantic_answer)
+                and ")" in str(semantic_answer)
+            )
+        )
+    )
+    if factorized_response_required:
+        answer_contract["required_form"] = "factorized"
+        if resolved_answer_type != "multi_part":
+            answer_contract["answer_equivalence"] = "required_factorized_form"
+            answer_contract["equivalence"] = "required_factorized_form"
+            answer_contract["equivalence_type"] = "required_factorized_form"
     if mode == "single_choice":
         from core.gencode.single_choice_contract import build_single_choice_contract
 

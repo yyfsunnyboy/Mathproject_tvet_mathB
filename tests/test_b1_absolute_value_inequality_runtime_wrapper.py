@@ -29,15 +29,15 @@ def test_runtime_wrapper_coverage_and_checks() -> None:
         observed.add(pt)
         eq = ((q.get("answer_contract") or {}).get("equivalence_type") or "").strip()
         if eq == "interval_set":
-            ok = mod.check(q["correct_answer"], q["correct_answer"], current_question=q)
-            bad = mod.check("x>9999", q["correct_answer"], current_question=q)
-            assert bool(ok.get("correct")) is True
-            assert bool(bad.get("correct")) is False
+            ok = mod.check(q["correct_answer"], q["correct_answer"], question_payload=q)
+            bad = mod.check("x>9999", q["correct_answer"], question_payload=q)
+            assert ok is True
+            assert bad is False
         elif eq == "choice_label":
-            ok = mod.check(q["answer"], q["answer"], current_question=q)
-            bad = mod.check("Z", q["answer"], current_question=q)
-            assert bool(ok.get("correct")) is True
-            assert bool(bad.get("correct")) is False
+            ok = mod.check(q["answer"], q["answer"], question_payload=q)
+            bad = mod.check("Z", q["answer"], question_payload=q)
+            assert ok is True
+            assert bad is False
             choice_labels.append(q["answer"])
     assert observed == verified
     if len(choice_labels) >= 20:

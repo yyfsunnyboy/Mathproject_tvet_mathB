@@ -4,7 +4,11 @@ import importlib
 from unittest.mock import patch
 
 from core.checkers.solution_set_checker import check_solution_set_answer
-from core.gencode.answer_payload import is_valid_answer_payload, validate_generated_answer_shape
+from core.gencode.answer_payload import (
+    is_valid_answer_payload,
+    validate_answer_contract_consistency,
+    validate_generated_answer_shape,
+)
 from core.gencode.runtime_smoke import run_draft_runtime_smoke
 from core.gencode.runtime_skill_wrapper import check_answer
 from core.gencode.validators import validate_answer_contract, validate_generator_payload
@@ -168,13 +172,16 @@ def test_cartesian_thin_wrapper_still_contract_safe():
     mod = importlib.import_module(f"skills.{skill_id}")
     for i in range(10):
         payload = mod.generate(level=1, seed=i)
-        pt = str(payload.get("problem_type_id", "")).strip()
-        from core.gencode.problem_type_spec import load_problem_type_spec
-
-        spec = load_problem_type_spec(skill_id, pt, prefer="auto")
-        assert spec is not None
-        errors = validate_generator_payload(payload, problem_type_spec=spec)
-        assert not errors, errors
+        assert payload.get("skill_id") == skill_id
+        contract = payload.get("answer_contract") or {}
+        assert contract.get("answer_type")
+        assert not validate_answer_contract_consistency(contract)
+        result = mod.check(
+            payload.get("correct_answer"),
+            payload.get("correct_answer"),
+            question_payload=payload,
+        )
+        assert bool(result.get("correct") if isinstance(result, dict) else result) is True
         if str(payload.get("answer_type")) == "short_answer":
             assert not payload.get("choices")
         if str(payload.get("answer_type")) == "single_choice":

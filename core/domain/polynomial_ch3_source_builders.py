@@ -6,6 +6,7 @@ No per-example_id branches. Callers inject source_problem_text via constraints.
 from __future__ import annotations
 
 import random
+import re
 from fractions import Fraction
 from typing import Any
 
@@ -225,12 +226,30 @@ def _build_formula_squares_multi(rng: random.Random, n_parts: int) -> dict[str, 
     return _bundle_parts(question, parts)
 
 
+def _square_term(term: str) -> str:
+    match = re.fullmatch(r"(-?\d*)x", term)
+    if match:
+        coefficient = int(match.group(1) or "1")
+        coefficient_text = "" if coefficient * coefficient == 1 else str(coefficient * coefficient)
+        return f"{coefficient_text}x^2"
+    return f"{term}^2"
+
+
+def _product_term(u: str, v: str) -> str:
+    u_match = re.fullmatch(r"(-?\d*)x", u)
+    v_match = re.fullmatch(r"-?\d+", v)
+    if u_match and v_match:
+        coefficient = int(u_match.group(1) or "1") * int(v)
+        return "x" if coefficient == 1 else "-x" if coefficient == -1 else f"{coefficient}x"
+    return f"({u})({v})"
+
+
 def _cube_sum(u: str, v: str) -> str:
-    return f"({u}+{v})({u}^2-{u}{v}+{v}^2)"
+    return f"({u}+{v})({_square_term(u)}-{_product_term(u, v)}+{_square_term(v)})"
 
 
 def _cube_diff(u: str, v: str) -> str:
-    return f"({u}-{v})({u}^2+{u}{v}+{v}^2)"
+    return f"({u}-{v})({_square_term(u)}+{_product_term(u, v)}+{_square_term(v)})"
 
 
 def _build_formula_cubes_multi(rng: random.Random, n_parts: int) -> dict[str, Any]:
