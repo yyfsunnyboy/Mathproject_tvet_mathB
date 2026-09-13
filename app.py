@@ -556,6 +556,17 @@ def create_app(*, production: bool | None = None):
             p.skill_id: (p.skill_id, p.consecutive_correct, p.questions_solved, p.current_level)
             for p in progress_records
         }
+
+        def _skill_card_metrics(skill_ids):
+            from core.skill_card_mastery import build_skill_card_mastery
+
+            return build_skill_card_mastery(
+                student_id=current_user.id,
+                skill_ids=skill_ids,
+                current_streak_by_skill={
+                    skill_id: values[1] for skill_id, values in progress_dict.items()
+                },
+            )
         
         if view_mode == 'curriculum':
             from core.utils import get_volumes_by_curriculum, get_chapters_by_curriculum_volume, get_skills_by_volume_chapter
@@ -567,12 +578,16 @@ def create_app(*, production: bool | None = None):
                 skills_raw = get_skills_by_volume_chapter(volume, chapter)
                 chapter_display = _clean_chapter_display(chapter)
 
+                card_metrics = _skill_card_metrics([s['skill_id'] for s in skills_raw])
+
                 all_skills_with_progress = []
                 for s in skills_raw:
                     prog = progress_dict.get(s['skill_id'], (s['skill_id'], 0, 0, 1))
+                    mastery = card_metrics[s['skill_id']]
                     all_skills_with_progress.append({
                         **s,
-                        'consecutive_correct': prog[1],
+                        **mastery,
+                        'consecutive_correct': mastery['current_streak'],
                         'questions_solved': prog[2],
                         'current_level': prog[3],
                     })
@@ -726,13 +741,17 @@ def create_app(*, production: bool | None = None):
 
             if selected_category:
                 skills = db.session.query(SkillInfo).filter_by(is_active=True, category=selected_category).order_by(SkillInfo.order_index).all()
+
+                card_metrics = _skill_card_metrics([skill.skill_id for skill in skills])
                 
                 dashboard_data = []
                 for skill in skills:
                     prog = progress_dict.get(skill.skill_id, (skill.skill_id, 0, 0, 1))
+                    mastery = card_metrics[skill.skill_id]
                     dashboard_data.append({
                         'skill': skill,
-                        'consecutive_correct': prog[1],
+                        **mastery,
+                        'consecutive_correct': mastery['current_streak'],
                         'questions_solved': prog[2],
                         'current_level': prog[3]
                     })

@@ -623,6 +623,27 @@
                 border-color 0.18s ease,
                 background 0.18s ease;
         }
+        .skill-card.status-unpracticed { background: #ffffff; border-color: #dde5d8; }
+        .skill-card.status-needs_improvement { background: #fdecec; border-color: #edb8b8; }
+        .skill-card.status-learning { background: #eef7eb; border-color: #c9dfc3; }
+        .skill-card.status-proficient { background: #d7ead2; border-color: #98bd91; }
+        .skill-card.status-mastered { background: #477454; border-color: #31583d; color: #ffffff; }
+        .skill-card.status-mastered h3,
+        .skill-card.status-mastered p,
+        .skill-card.status-mastered .progress-info { color: #ffffff; }
+        .skill-card.status-mastered .progress-bar { background: rgba(255,255,255,0.28); }
+        .skill-card.status-mastered .progress-fill { background: #f1f7ef; }
+        .skill-status-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .binding-issue {
+            color: #8a4b16;
+            font-weight: 700;
+        }
         .skill-card:hover {
             transform: translateY(-3px);
             background: linear-gradient(180deg, #fffefb 0%, #f6fbf4 100%);
@@ -633,6 +654,11 @@
             font-weight: 700;
             color: #2d5132;
         }
+        .skill-card.status-mastered:hover {
+            background: #3d6749;
+            border-color: #294b34;
+        }
+        .skill-card.status-mastered:hover h3 { color: #ffffff; }
         .skill-card h3 {
             font-size: 14px;
             font-weight: 600;
@@ -904,20 +930,30 @@
             <h4>{{ section_group.section }}</h4>
             <div class="skill-grid curriculum-skills">
                 {% for skill in section_group.skills %}
-                <div class="skill-card" style="width: 100%; max-width: 100%; height: 100%;">
+                <div class="skill-card status-{{ skill.card_status }}" style="width: 100%; max-width: 100%; height: 100%;">
                     <h3>{{ skill.skill_ch_name }}</h3>
                     <p>{{ skill.description }}</p>
 
                     <div class="progress-info">
+                        <div class="skill-status-row">
+                            <span>{{ skill.card_status_label }}</span>
+                            <span>熟練度 {{ skill.recent_accuracy_label }}</span>
+                        </div>
                         <div class="progress-bar">
                             <div class="progress-fill"
-                                style="width: {{ (skill.consecutive_correct / skill.consecutive_correct_required * 100) if skill.consecutive_correct_required else 0 }}%">
+                                style="width: {{ skill.recent_accuracy }}%">
                             </div>
                         </div>
-                        <small>連續答對 {{ skill.consecutive_correct }} / {{ skill.consecutive_correct_required }} 題 →
-                            晉級</small>
+                        {% if skill.binding_issue %}
+                        <small>連續答對 {{ skill.current_streak }} / 暫無門檻</small>
+                        {% else %}
+                        <small>連續答對 {{ skill.current_streak }} / {{ skill.pass_target }} 題</small>
+                        {% endif %}
                         <br>
-                        <small>當前等級：{{ skill.current_level }} 級 | 總練習 {{ skill.questions_solved }} 題</small>
+                        <small>最近 {{ skill.recent_attempt_count }} 題 | 累計作答 {{ skill.attempt_count }} 題</small>
+                        {% if skill.binding_issue %}
+                        <br><small class="binding-issue">教材參考題綁定異常</small>
+                        {% endif %}
                     </div>
 
                     {% set is_b4_ch1_tree_diagram = (
@@ -968,19 +1004,29 @@
         <p>類別：{{ category }} - 請選擇要練習的單元：</p>
         <div class="skill-grid">
             {% for data in dashboard_data %}
-            <div class="skill-card" style="height: 100%;">
+            <div class="skill-card status-{{ data.card_status }}" style="height: 100%;">
                 <h3>{{ data.skill.skill_ch_name }}</h3>
                 <p>{{ data.skill.description }}</p>
                 <div class="progress-info">
+                    <div class="skill-status-row">
+                        <span>{{ data.card_status_label }}</span>
+                        <span>熟練度 {{ data.recent_accuracy_label }}</span>
+                    </div>
                     <div class="progress-bar">
                         <div class="progress-fill"
-                            style="width: {{ (data.consecutive_correct / data.skill.consecutive_correct_required * 100) if data.skill.consecutive_correct_required else 0 }}%">
+                            style="width: {{ data.recent_accuracy }}%">
                         </div>
                     </div>
-                    <small>連續答對 {{ data.consecutive_correct }} / {{ data.skill.consecutive_correct_required }} 題 →
-                        晉級</small>
+                    {% if data.binding_issue %}
+                    <small>連續答對 {{ data.current_streak }} / 暫無門檻</small>
+                    {% else %}
+                    <small>連續答對 {{ data.current_streak }} / {{ data.pass_target }} 題</small>
+                    {% endif %}
                     <br>
-                    <small>當前等級：{{ data.current_level }} 級 | 總練習 {{ data.questions_solved }} 題</small>
+                    <small>最近 {{ data.recent_attempt_count }} 題 | 累計作答 {{ data.attempt_count }} 題</small>
+                    {% if data.binding_issue %}
+                    <br><small class="binding-issue">教材參考題綁定異常</small>
+                    {% endif %}
                 </div>
                 <a href="{{ url_for('practice.practice', skill_id=data.skill.skill_id) }}" class="btn-practice">
                     開始練習
