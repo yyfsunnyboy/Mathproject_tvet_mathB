@@ -772,6 +772,7 @@
   <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}"></script>
   <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
   <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 
   <script>
     function normalizeQuestionImageSource(rawImage) {
@@ -1995,16 +1996,10 @@
       transitionPopupState.wasRemediationActive = current;
     }
     async function handleCorrectAnswer(onConfirm) {
-      const messages = [
-        "🎉 答對了！很棒！讓我們繼續下一題吧！",
-        "正確！保持這個節奏！",
-        "做得好！你離目標又近了一步！"
-      ];
-      const picked = messages[Math.floor(Math.random() * messages.length)];
-      await showCenterMessageBox(picked);
-      if (typeof onConfirm === "function") {
-        return onConfirm();
-      }
+      return window.PracticeCorrectAnswerFlow.handleCorrectAnswer({
+        confirmMessage: showCenterMessageBox,
+        onConfirm,
+      });
     }
     function isTextboxAnswerCorrect(data) {
       if (!data || typeof data !== "object") return false;
@@ -2705,26 +2700,8 @@
         }
         setMessageContent(thinking, summarizeHandwritingResult(data));
         await typesetMath(thinking);
-        if (data && data.should_record_attempt === true) {
-          const submitAttempt = async () => {
-            const adaptivePayload = {
-              ...basePayload,
-              session_id: state.sessionId,
-              step_number: state.stepNumber,
-              user_answer: data.recognized_answer || "[handwriting]",
-              is_correct: data.is_correct === true,
-              answer_feedback: data.feedback || "",
-            };
-            const nextData = await postAdaptive(adaptivePayload);
-            resetChatHistory();
-            await applyAdaptiveResponse(nextData);
-          };
-          if (data.is_correct === true) {
-            await handleCorrectAnswer(submitAttempt);
-          } else {
-            await submitAttempt();
-          }
-        }
+        // AI handwriting is recognition/tutoring only. It never records an
+        // attempt or advances the question; authoritative submission does that.
       } catch (err) {
         console.error("analyzeHandwriting failed:", err);
         await addMessage("bot", "目前無法清楚辨識，請重新書寫。");

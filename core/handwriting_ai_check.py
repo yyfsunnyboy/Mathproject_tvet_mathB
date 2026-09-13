@@ -189,24 +189,7 @@ def build_handwriting_check_response(
             "should_record_attempt": False,
         }
 
-    final_correct = deterministic_final_answer_check(
-        normalized["recognized_answer"], ctx, checker=checker
-    )
-    if final_correct is None:
-        final_correct = normalized["final_answer_correct"]
-
     process_correct = normalized["process_correct"]
-    if mode == "final_answer_only":
-        feedback = "答對了。" if final_correct is True else normalized["feedback"] or "答錯了，請重新檢查。"
-        return {
-            **normalized,
-            "is_correct": bool(final_correct),
-            "final_answer_correct": final_correct,
-            "process_correct": None,
-            "feedback": feedback,
-            "should_record_attempt": final_correct is not None,
-        }
-
     if mode == "process_only":
         feedback = normalized["feedback"]
         if process_correct is True:
@@ -220,26 +203,44 @@ def build_handwriting_check_response(
             "should_record_attempt": False,
         }
 
+    final_correct = deterministic_final_answer_check(
+        normalized["recognized_answer"], ctx, checker=checker
+    )
+    if final_correct is None:
+        return {
+            **normalized,
+            "is_correct": False,
+            "final_answer_correct": None,
+            "feedback": normalized["feedback"] or "AI 助教已提供辨識結果，請使用正式提交完成批改。",
+            "should_record_attempt": False,
+        }
+    if mode == "final_answer_only":
+        feedback = "答對了。" if final_correct is True else normalized["feedback"] or "答錯了，請重新檢查。"
+        return {
+            **normalized,
+            "is_correct": bool(final_correct),
+            "final_answer_correct": final_correct,
+            "process_correct": None,
+            "feedback": feedback,
+            "should_record_attempt": final_correct is not None,
+        }
+
     if mode == "solution_with_steps":
         if process_correct is None:
             process_correct = bool(normalized["first_error_step"] is None)
-        is_correct = bool(final_correct is True and process_correct is True)
+        is_correct = final_correct is True
         feedback = normalized["feedback"]
         if process_correct is True and final_correct is False:
             feedback = feedback or "方法正確，但最後一步計算有誤。"
-        elif process_correct is False and final_correct is True:
-            step = normalized["first_error_step"]
-            suffix = f"第 {step} 步" if step is not None else "推導過程"
-            feedback = feedback or f"最終答案正確，但推導過程有錯誤，請檢查{suffix}。"
         elif is_correct:
-            feedback = feedback or "答對了。"
+            feedback = "答對了。"
         return {
             **normalized,
             "is_correct": is_correct,
             "final_answer_correct": final_correct,
             "process_correct": process_correct,
             "feedback": feedback or "請檢查你的推導過程。",
-            "should_record_attempt": final_correct is not None and process_correct is not None,
+            "should_record_attempt": final_correct is not None,
         }
 
     return {

@@ -146,7 +146,7 @@ def test_correct_process_wrong_final_answer_uses_specific_feedback():
     assert "方法正確" in result["feedback"]
 
 
-def test_wrong_process_accidentally_correct_answer_is_not_marked_correct():
+def test_authoritative_correct_answer_is_not_blocked_by_ai_process_feedback():
     result = _build(
         {
             "mode": "solution_with_steps",
@@ -158,10 +158,45 @@ def test_wrong_process_accidentally_correct_answer_is_not_marked_correct():
         }
     )
 
-    assert result["is_correct"] is False
+    assert result["is_correct"] is True
     assert result["final_answer_correct"] is True
     assert result["process_correct"] is False
-    assert "最終答案正確" in result["feedback"]
+    assert result["feedback"] == "答對了。"
+    assert result["should_record_attempt"] is True
+
+
+def test_ai_claim_cannot_override_authoritative_checker():
+    result = _build(
+        {
+            "mode": "final_answer_only",
+            "recognized_answer": "5",
+            "final_answer_correct": True,
+            "confidence": 0.99,
+        },
+        correct_answer="4",
+    )
+
+    assert result["is_correct"] is False
+    assert result["final_answer_correct"] is False
+    assert result["should_record_attempt"] is True
+
+
+def test_ai_claim_without_authoritative_answer_cannot_complete():
+    result = build_handwriting_check_response(
+        image_base64="data:image/png;base64,ink",
+        ctx=_ctx(correct_answer=None),
+        ai_result={
+            "mode": "final_answer_only",
+            "recognized_answer": "4",
+            "final_answer_correct": True,
+            "confidence": 0.99,
+        },
+        checker=_check("4"),
+    )
+
+    assert result["is_correct"] is False
+    assert result["final_answer_correct"] is None
+    assert result["should_record_attempt"] is False
 
 
 def test_process_only_does_not_record_attempt():

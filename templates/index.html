@@ -2119,6 +2119,7 @@
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 </head>
 
 <body>
@@ -3894,15 +3895,14 @@
         }
 
         function handleCorrectAnswer() {
-            // 功文式鼓勵：強調持續練習，而非單次答對
-            const messages = [
-                '🎉 答對了！很棒！讓我們繼續下一題吧！',
-                '正確！保持這個節奏！',
-                '做得好！你離目標又近了一步！'
-            ];
-            showCustomAlert(messages[Math.floor(Math.random() * messages.length)], () => {
-                resetAIChat();
-                setTimeout(loadQuestion, 500);
+            return window.PracticeCorrectAnswerFlow.handleCorrectAnswer({
+                confirmMessage: (message) => new Promise((resolve) => {
+                    showCustomAlert(message, resolve);
+                }),
+                onConfirm: () => {
+                    resetAIChat();
+                    setTimeout(loadQuestion, 500);
+                },
             });
         }
 
@@ -4911,7 +4911,7 @@
                 body: JSON.stringify(payload)
             })
             .then(r => r.json())
-            .then(data => {
+            .then(async data => {
                 stopPracticeCheckLoading();
 
                 if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
@@ -4939,7 +4939,7 @@
                     resultDisplay.className = 'correct';
                     updateStreak(true);
                     consecutiveWrongs = 0;
-                    handleCorrectAnswer();
+                    await handleCorrectAnswer();
                 } else {
                     if (submitBtn) submitBtn.disabled = false;
                     if (analyzeBtn) analyzeBtn.disabled = false;
@@ -5680,7 +5680,12 @@
                         }
 
                         if (window.CorrectAnswerFeedback) {
-                            await window.CorrectAnswerFeedback.render(resultDisplay, data);
+                            try {
+                                await window.CorrectAnswerFeedback.render(resultDisplay, data);
+                            } catch (feedbackError) {
+                                console.warn('正確答案回饋顯示失敗，不影響批改結果:', feedbackError);
+                                resultDisplay.textContent = data.result || (data.correct ? '答對了！' : '答錯了。');
+                            }
                         } else {
                             resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
                         }
@@ -5689,6 +5694,15 @@
                             applyTableGradingResult(data.per_part_results);
                         }
                         updateStreak(data.correct);
+
+                        // Authoritative correct verdict completes immediately through
+                        // the shared msgbox flow. Optional tutor/remediation UI cannot
+                        // delay or override this branch.
+                        if (data.correct) {
+                            consecutiveWrongs = 0;
+                            await handleCorrectAnswer();
+                            return;
+                        }
 
                         // [Phase 6] 處理前置單元推薦
                         console.log('[前置單元推薦] API 回應:', data);
@@ -5705,21 +5719,12 @@
                             }
                         }
 
-                        if (data.correct) {
-                            handleCorrectAnswer();
-                        } else {
-                            // 如果答錯
-                            consecutiveWrongs++;
-                            // 檢查是否觸發建議
-                            if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
-                                showPrereqSuggestionModal();
-                                consecutiveWrongs = 0; // 重置計數器
-                            }
-                        }
-
-                        // 如果答對，重置連續答錯計數器
-                        if (data.correct) {
-                            consecutiveWrongs = 0;
+                        // 如果答錯
+                        consecutiveWrongs++;
+                        // 檢查是否觸發建議
+                        if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
+                            showPrereqSuggestionModal();
+                            consecutiveWrongs = 0; // 重置計數器
                         }
                     })
                     .catch(err => {
@@ -5879,27 +5884,17 @@
                         const isTreeDiagramFreeResponse = window.currentProblemTypeId === 'tree_diagram_listing';
                         const isPascalTriangleFreeResponse = window.currentProblemTypeId === 'pascal_triangle_handwriting';
 
-                        // 手寫批改：後端在答對時會設 correct=true（並搭配 next_question / auto_next）。
-                        // 舊版曾回傳 next_question: "" 導致條件失敗，故以 correct 為準，與 /check_answer 語意一致。
+                        // AI 助教只提供辨識與提示；正式完成一律由 /check_answer 的
+                        // authoritative checker / answer_contract 決定。
                         if (isTreeDiagramFreeResponse || isPascalTriangleFreeResponse) {
                             const status = data.handwriting_status || (data.handwriting_analysis && data.handwriting_analysis.status) || '';
-                            const label = status ? `AI 檢查完成（${status}），可以按「下一題」繼續練習。` : 'AI 檢查完成，可以按「下一題」繼續練習。';
-                            enableHandwritingNextQuestion(label);
-                            updateStreak(data.correct === true);
-                        } else if (data.correct) {
-                            // 在題目下方顯示"正確"
-                            resultDisplay.textContent = '正確';
-                            resultDisplay.className = 'correct';
-
-                            updateStreak(true);
-
-                            // 手寫正確後改走和 textbox 相同成功流程
-                            handleCorrectAnswer();
-                        } else if (data.correct === false) {
-                            // 如果錯誤，清空 resultDisplay（AI 的建議會在聊天區顯示）
-                            resultDisplay.textContent = '';
+                            resultDisplay.textContent = status
+                                ? `AI 辨識完成（${status}）；請使用正式提交完成批改。`
+                                : 'AI 辨識完成；請使用正式提交完成批改。';
                             resultDisplay.className = '';
-                            updateStreak(false);
+                        } else {
+                            resultDisplay.textContent = 'AI 助教回饋已更新；正式答對流程以提交答案的批改結果為準。';
+                            resultDisplay.className = '';
                         }
 
                         // [Phase 6] 處理前置單元推薦 (AI Handwriting Check)
