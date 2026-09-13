@@ -83,7 +83,7 @@ def test_standard_practice_drawing_ai_check_uses_check_answer_before_handwriting
     assert "contract.checker_key === 'free_response_drawing_checker'" in guard_body
     assert "contract.answer_type === 'drawing'" in guard_body
     assert "contract.answer_shape === 'drawing'" in guard_body
-    assert "Boolean(q.expected_drawing_spec)" in guard_body
+    assert "Boolean(cq.expected_drawing_spec)" in guard_body
     assert "fetch('/check_answer'" in helper_body
     assert "composite_image_data_url" in payload_body
     assert "student_strokes_image_data_url" in payload_body
@@ -140,7 +140,8 @@ def test_ui_contract_dispatch_logic_and_guards():
 
     # Verify guards in AI button click handlers
     assert "ui.ai_check_required !== true" in adaptive
-    assert "ui.ai_check_required !== true" in standard
+    assert "ui.ai_check_required === true" in standard
+    assert "ui.ai_check_required === false" in standard
 
     # Verify expected_answer removal from handwriting analysis payload in standard template
     ai_body = _function_body(standard, "setupAIButton")

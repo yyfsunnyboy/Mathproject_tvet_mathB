@@ -2251,10 +2251,15 @@ def next_question():
 def check_answer():
     """API: 瑼Ｘ蝑?"""
     body = dict(request.json) if isinstance(request.json, dict) else {}
+    has_structured_answers = "answers" in body
     user_ans = body.get("answers", body.get("answer", ""))
     if isinstance(user_ans, str):
         user_ans = user_ans.strip()
-        if user_ans.startswith("[") and user_ans.endswith("]"):
+        # Only the explicit plural ``answers`` field carries JSON-encoded
+        # multi-input data.  A singular answer may legitimately be interval
+        # notation such as ``[-14, 10]`` and must remain a scalar string for
+        # the interval checker.
+        if has_structured_answers and user_ans.startswith("[") and user_ans.endswith("]"):
             try:
                 import json as _json
                 parsed = _json.loads(user_ans)

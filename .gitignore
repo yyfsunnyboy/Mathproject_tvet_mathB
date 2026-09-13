@@ -20,6 +20,10 @@ reports/gencode_qwen_dryrun/_pytest/
 reports/gencode_capability_candidates/
 reports/ollama_qwen35_json_probe/
 
+# Runtime/load-test artifacts
+reports/runtime_tests/*
+!reports/runtime_tests/*.md
+
 # Gencode / publish 本機診斷與 dryrun 產物（保留檔案，不進版控）
 reports/_inventory_visual_kinds.json
 reports/gencode_qwen_dryrun/_probe_preflight/
@@ -51,6 +55,10 @@ static/generated_plots/
 *.db
 *.sqlite
 *.sqlite3
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
 *.xlsx
 *.xls
 instance/
