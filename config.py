@@ -34,7 +34,9 @@ class Config:
     db_path = os.path.join(instance_path, 'kumon_math.db')
     
     # 資料庫連線 URI
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{db_path}'
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'MATHPROJECT_DATABASE_URI', f'sqlite:///{db_path}'
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # ==========================================

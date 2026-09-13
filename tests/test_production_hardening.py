@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 import pytest
-from sqlalchemy import text
+from sqlalchemy import event, text
 from werkzeug.security import generate_password_hash
 
 from config import Config
@@ -188,14 +188,52 @@ def test_login_practice_and_check_answer_regression(hardened_app):
     question = question_response.get_json() or {}
     assert question.get("question_uid")
 
-    answer_response = client.post(
-        "/check_answer",
-        json={
-            "skill_id": PRACTICE_SKILL,
-            "question_uid": question["question_uid"],
-            "problem_type_id": question.get("problem_type_id", ""),
-            "answer": "__wrong__",
-        },
-    )
+    commits = []
+    with hardened_app.app_context():
+        engine = hardened_app.extensions["sqlalchemy"].engine
+
+    def _count_commit(_connection):
+        commits.append(1)
+
+    event.listen(engine, "commit", _count_commit)
+    try:
+        answer_response = client.post(
+            "/check_answer",
+            json={
+                "skill_id": PRACTICE_SKILL,
+                "question_uid": question["question_uid"],
+                "problem_type_id": question.get("problem_type_id", ""),
+                "answer": "__wrong__",
+            },
+        )
+    finally:
+        event.remove(engine, "commit", _count_commit)
     assert answer_response.status_code == 200
     assert (answer_response.get_json() or {}).get("stale_question") is not True
+    assert len(commits) == 1
+
+
+def test_context_tutor_releases_connection_before_ai(hardened_app, monkeypatch):
+    analyzer = importlib.import_module("core.ai_analyzer")
+    observed = {"called": False}
+
+    class FakeResponse:
+        text = "next step"
+
+    class FakeModel:
+        def generate_content(self, *_args, **_kwargs):
+            from models import db
+
+            engine = hardened_app.extensions["sqlalchemy"].engine
+            assert engine.pool.checkedout() == 0
+            assert db.session().in_transaction() is False
+            observed["called"] = True
+            return FakeResponse()
+
+    monkeypatch.setattr(analyzer, "get_model", lambda: FakeModel())
+    with hardened_app.test_request_context("/chat_ai"):
+        from models import db
+
+        db.session.execute(text("SELECT 1"))
+        assert analyzer.ask_ai_text_with_context("hint", context="question") == "next step"
+    assert observed["called"] is True

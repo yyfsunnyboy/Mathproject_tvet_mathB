@@ -102,6 +102,7 @@ def persist_practice_attempt(
     current_question: dict[str, Any] | None = None,
     question_uid: str | None = None,
     source: str = SOURCE_GENERAL_PRACTICE,
+    commit: bool = True,
 ) -> PracticeAttempt | None:
     """Write one canonical attempt row. Never raises to caller."""
     sid = str(skill_id or "").strip()
@@ -132,7 +133,8 @@ def persist_practice_attempt(
             difficulty=_extract_difficulty(current_question),
         )
         db.session.add(row)
-        db.session.commit()
+        if commit:
+            db.session.commit()
         return row
     except Exception:
         db.session.rollback()

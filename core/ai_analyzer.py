@@ -833,6 +833,9 @@ def identify_skills_from_problem(problem_text):
         Do not include any other text or explanations. Just the JSON object.
         """
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = chat.send_message(
             prompt + " (IMPORTANT: Keep response concise. Do NOT solve the problem. Only guide steps. Do not reveal final answer. Use LaTeX format (surround with $). IMPORTANT: Escape all backslashes in JSON (e.g. use \\frac instead of \frac).)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -873,6 +876,9 @@ def ask_ai_text(user_question):
             student_answer=user_question,
             correct_answer="",
         )
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = model.generate_content(
             prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5},
@@ -926,6 +932,9 @@ def ask_ai_text_with_context(user_question, context="", correct_answer=""):
         prereq_text=context_text,
     )
     try:
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = model.generate_content(
             system_prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -1008,6 +1017,9 @@ def generate_quiz_from_image(image_file, description):
         """
 
         # Generate content with both the prompt and the image
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content([prompt, img])
         raw_text = response.text.strip()
 
@@ -1276,6 +1288,9 @@ def analyze_student_weakness(prompt_data):
         
         prompt = DEFAULT_WEAKNESS_ANALYSIS_PROMPT.format(prompt_data=prompt_data)
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content(
             prompt + " (IMPORTANT: Keep response concise. Do NOT solve the problem. Only guide steps. Do not reveal final answer. Use LaTeX format (surround with $). IMPORTANT: Escape all backslashes in JSON (e.g. use \\frac instead of \frac).)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -1378,6 +1393,9 @@ def analyze_question_image(image_file):
         Do not include any other text.
         """
 
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content([prompt, img])
         raw_text = response.text.strip()
         

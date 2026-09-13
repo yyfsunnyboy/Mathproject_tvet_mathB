@@ -575,10 +575,13 @@ def _emit_check_result(
         mark_question_answered(uid, out)
     if uid:
         out["question_uid"] = uid
+    pending_write = False
     if record_progress and _is_gradable:
         try:
-            update_progress(current_user.id, skill_id, bool(out.get("correct", False)))
+            update_progress(current_user.id, skill_id, bool(out.get("correct", False)), commit=False)
+            pending_write = True
         except Exception:
+            db.session.rollback()
             current_app.logger.exception(
                 "[PRACTICE] update_progress failed student_id=%s skill_id=%s",
                 getattr(current_user, "id", None),
@@ -590,13 +593,25 @@ def _emit_check_result(
         and not skip_practice_attempt
         and out.get("correct") is not None
     ):
-        persist_practice_attempt(
+        row = persist_practice_attempt(
             skill_id=skill_id,
             is_correct=bool(out.get("correct", False)),
             user_answer=ctx.get("user_answer"),
             current_question=ctx.get("current_question"),
             question_uid=uid or None,
+            commit=False,
         )
+        pending_write = pending_write or row is not None
+    if pending_write:
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception(
+                "[PRACTICE] answer transaction failed student_id=%s skill_id=%s",
+                getattr(current_user, "id", None),
+                skill_id,
+            )
     return jsonify(out)
 
 
@@ -1039,7 +1054,7 @@ def _choice_display_label_and_text(correct_value: object, choices: list) -> str:
                 return f"({label}) {ch_text}"
     return str(correct_value or "").strip()
 
-def update_progress(user_id, skill_id, is_correct):
+def update_progress(user_id, skill_id, is_correct, *, commit=True):
     """
     ?湔?冽?脣漲 (Progress)
     V2.0 ?湔嚗????矽?渡?蝝??????蝑?/?舀活?貉?蝺渡???
@@ -1068,7 +1083,8 @@ def update_progress(user_id, skill_id, is_correct):
             progress.consecutive_correct = 0
             progress.consecutive_wrong += 1
     
-    db.session.commit()
+    if commit:
+        db.session.commit()
 
 # ==========================================
 # Routes (頝舐)
@@ -2883,7 +2899,7 @@ def draw_diagram():
             "Return only a Python-friendly equation string, or 'No equation found'.\n"
             f"Question: {question_text}"
         )
-        
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content(prompt)
         equations_text = response.text.strip()
 

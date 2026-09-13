@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from sqlalchemy import case, func
+from sqlalchemy.orm import aliased
 
 from core.teacher_analysis_service import student_display_name
 from core.utils import (
@@ -11,7 +12,7 @@ from core.utils import (
     get_volumes_by_curriculum,
     normalize_curriculum,
 )
-from models import Class, ClassStudent, PracticeAttempt, Progress, SkillCurriculum, SkillInfo, db
+from models import Class, ClassStudent, PracticeAttempt, Progress, SkillCurriculum, SkillInfo, User, db
 
 VOCATIONAL_KEY = "vocational"
 _TAIPEI_OFFSET = timedelta(hours=8)
@@ -92,14 +93,60 @@ def _skill_meta(skill_id: str) -> dict[str, Any]:
     }
 
 
-def _latest_continue(user_id: int) -> dict[str, Any] | None:
-    attempt = (
-        PracticeAttempt.query.filter_by(student_id=user_id)
-        .order_by(PracticeAttempt.created_at.desc(), PracticeAttempt.id.desc())
-        .first()
+def _skill_meta_map(skill_ids: set[str]) -> dict[str, dict[str, Any]]:
+    """Load dashboard skill labels and curriculum placement without per-row queries."""
+    ids = {str(value or "").strip() for value in skill_ids if str(value or "").strip()}
+    if not ids:
+        return {}
+
+    infos = {
+        row.skill_id: row
+        for row in SkillInfo.query.filter(SkillInfo.skill_id.in_(ids)).all()
+    }
+    curriculum_rows = (
+        SkillCurriculum.query.filter(SkillCurriculum.skill_id.in_(ids))
+        .order_by(
+            SkillCurriculum.skill_id,
+            case((SkillCurriculum.curriculum == VOCATIONAL_KEY, 0), else_=1),
+            SkillCurriculum.display_order,
+            SkillCurriculum.id,
+        )
+        .all()
     )
+    curriculum_by_skill: dict[str, SkillCurriculum] = {}
+    for row in curriculum_rows:
+        curriculum_by_skill.setdefault(str(row.skill_id), row)
+
+    result: dict[str, dict[str, Any]] = {}
+    for skill_id in ids:
+        info = infos.get(skill_id)
+        row = curriculum_by_skill.get(skill_id)
+        result[skill_id] = {
+            "skill_id": skill_id,
+            "skill_name": (info.skill_ch_name if info else "") or skill_id,
+            "volume": row.volume if row else "",
+            "chapter": row.chapter if row else "",
+            "grade": row.grade if row else None,
+        }
+    return result
+
+
+def _latest_continue(
+    user_id: int,
+    *,
+    latest_attempt: PracticeAttempt | None = None,
+    skill_meta: dict[str, dict[str, Any]] | None = None,
+) -> dict[str, Any] | None:
+    attempt = latest_attempt
+    if attempt is None:
+        attempt = (
+            PracticeAttempt.query.filter_by(student_id=user_id)
+            .order_by(PracticeAttempt.created_at.desc(), PracticeAttempt.id.desc())
+            .first()
+        )
     if attempt is not None and attempt.skill_id:
-        meta = _skill_meta(str(attempt.skill_id))
+        sid = str(attempt.skill_id)
+        meta = dict((skill_meta or {}).get(sid) or _skill_meta(sid))
         meta["practiced_at"] = attempt.created_at
         meta["source"] = "practice_attempts"
         return meta
@@ -155,18 +202,18 @@ def _weekly_stats(user_id: int) -> dict[str, Any]:
 
 
 def _class_rows(user_id: int) -> list[dict[str, Any]]:
+    teacher = aliased(User)
     memberships = (
-        ClassStudent.query.filter_by(student_id=user_id)
+        db.session.query(ClassStudent, Class, teacher)
+        .join(Class, Class.id == ClassStudent.class_id)
+        .outerjoin(teacher, teacher.id == Class.teacher_id)
+        .filter(ClassStudent.student_id == user_id)
         .order_by(ClassStudent.joined_at.asc(), ClassStudent.id.asc())
         .all()
     )
     rows: list[dict[str, Any]] = []
-    for ms in memberships:
-        cls = db.session.get(Class, ms.class_id)
-        if cls is None:
-            continue
-        teacher = getattr(cls, "teacher", None)
-        teacher_name = student_display_name(teacher) if teacher is not None else "—"
+    for ms, cls, teacher_row in memberships:
+        teacher_name = student_display_name(teacher_row) if teacher_row is not None else "—"
         rows.append(
             {
                 "name": cls.name,
@@ -177,19 +224,26 @@ def _class_rows(user_id: int) -> list[dict[str, Any]]:
     return rows
 
 
-def _volume_cards(user_id: int) -> list[dict[str, Any]]:
+def _volume_cards(
+    user_id: int,
+    *,
+    attempts: list[PracticeAttempt] | None = None,
+    skill_meta: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     grouped = get_volumes_by_curriculum(VOCATIONAL_KEY) or {}
     grade_map = {10: "一年級", 11: "二年級", 12: "三年級"}
     latest_by_volume: dict[str, datetime] = {}
     latest_skill_by_volume: dict[str, str] = {}
-    attempts = (
-        PracticeAttempt.query.filter_by(student_id=user_id)
-        .order_by(PracticeAttempt.created_at.desc())
-        .limit(80)
-        .all()
-    )
+    if attempts is None:
+        attempts = (
+            PracticeAttempt.query.filter_by(student_id=user_id)
+            .order_by(PracticeAttempt.created_at.desc())
+            .limit(80)
+            .all()
+        )
     for att in attempts:
-        meta = _skill_meta(str(att.skill_id))
+        sid = str(att.skill_id)
+        meta = (skill_meta or {}).get(sid) or _skill_meta(sid)
         vol = str(meta.get("volume") or "")
         if vol and vol not in latest_skill_by_volume:
             latest_skill_by_volume[vol] = meta["skill_name"]
@@ -217,7 +271,18 @@ def build_vocational_home_context(user: Any) -> dict[str, Any]:
     display_name = student_display_name(user)
     class_rows = _class_rows(uid)
     primary = class_rows[0] if class_rows else None
-    continue_item = _latest_continue(uid)
+    recent_attempts = (
+        PracticeAttempt.query.filter_by(student_id=uid)
+        .order_by(PracticeAttempt.created_at.desc(), PracticeAttempt.id.desc())
+        .limit(80)
+        .all()
+    )
+    skill_meta = _skill_meta_map({str(row.skill_id) for row in recent_attempts})
+    continue_item = _latest_continue(
+        uid,
+        latest_attempt=recent_attempts[0] if recent_attempts else None,
+        skill_meta=skill_meta,
+    )
     if continue_item:
         continue_item = dict(continue_item)
         continue_item["recent_label"] = format_recent_activity(continue_item.get("practiced_at"))
@@ -231,6 +296,6 @@ def build_vocational_home_context(user: Any) -> dict[str, Any]:
         "class_rows": class_rows,
         "continue_learning": continue_item,
         "weekly_stats": _weekly_stats(uid),
-        "volume_cards": _volume_cards(uid),
+        "volume_cards": _volume_cards(uid, attempts=recent_attempts, skill_meta=skill_meta),
         "hide_curriculum_switch": True,
     }

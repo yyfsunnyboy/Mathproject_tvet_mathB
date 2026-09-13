@@ -755,6 +755,10 @@ def api_adv_rag_search():
 
 def _adv_rag_invoke_tutor(prompt: str, provider: str) -> dict:
     """與 advanced_rag_engine.adv_rag_chat 相同的 LLM 呼叫方式（不重複改 engine）。"""
+    from core.database_runtime import release_db_session_before_external_call
+    from models import db
+
+    release_db_session_before_external_call(db, logger=current_app.logger)
     provider = (provider or "local").strip().lower()
     if provider == "local":
         from core.ai_client import call_ai
