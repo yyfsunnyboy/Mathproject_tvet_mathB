@@ -400,7 +400,7 @@ def create_app(*, production: bool | None = None):
                 "ok": False,
                 "error_type": "api_key_empty",
                 "message": "GEMINI_API_KEY or GOOGLE_API_KEY is not configured in the environment"
-            })
+            }), 400
 
         try:
             from core.ai_settings import normalize_google_model_id
@@ -420,11 +420,15 @@ def create_app(*, production: bool | None = None):
             app.logger.info(f"[API KEY TEST] testing model: {model_name}")
 
             model = genai.GenerativeModel(model_name)
+            # This is the credential validation boundary: construction alone is
+            # insufficient because the SDK does not contact Google until here.
             _ = model.generate_content("1+1=?")
 
             if submitted_key:
                 from core.env_secrets import update_gemini_api_key
                 update_gemini_api_key(submitted_key)
+                from core.ai_analyzer import invalidate_gemini_client_cache
+                invalidate_gemini_client_cache()
 
             # 測試成功後存入 session
             session["AI_CLOUD_MODEL"] = model_name
@@ -465,29 +469,48 @@ def create_app(*, production: bool | None = None):
         except Exception as e:
             safe_err = sanitize_secret_text(repr(e), [api_key])
             app.logger.error(f"[API KEY TEST ERROR] model={model_name} err={safe_err}")
-            raw_err = f"{type(e).__name__}: {str(e)}"
+            # The legacy SDK configure call is process-global. If validation of
+            # a replacement failed, restore the currently saved credential.
+            saved_key, _saved_source = resolve_gemini_api_key()
+            if submitted_key and saved_key and saved_key != submitted_key:
+                genai.configure(api_key=saved_key)
+
+            raw_err = f"{type(e).__name__}: {sanitize_secret_text(str(e), [api_key])}"
             raw_err_lower = raw_err.lower()
-            is_model_not_found = (
+            is_invalid_key = (
+                "api_key_invalid" in raw_err_lower
+                or "api key not valid" in raw_err_lower
+                or "invalid api key" in raw_err_lower
+            )
+            is_permission_denied = "permission_denied" in raw_err_lower or "permission denied" in raw_err_lower
+            is_quota_error = (
+                "resource_exhausted" in raw_err_lower
+                or "quota" in raw_err_lower
+                or "429" in raw_err_lower
+            )
+            is_model_error = (
                 "notfound" in raw_err_lower
                 or "not found" in raw_err_lower
                 or "404" in raw_err_lower
                 or "is not supported for generatecontent" in raw_err_lower
             )
-            error_type = "model_not_found" if is_model_not_found else "api_key_invalid"
-            if is_model_not_found:
-                app.logger.warning(
-                    f"[API KEY TEST] model_not_found model={model_name}. "
-                    "Use a supported Gemini model id."
-                )
+            if is_invalid_key:
+                error_type, status, message = "api_key_invalid", 401, "Gemini API Key 無效或已撤銷。"
+            elif is_permission_denied:
+                error_type, status, message = "permission_denied", 403, "Gemini API 權限遭拒，請檢查專案與 API 權限。"
+            elif is_quota_error:
+                error_type, status, message = "quota_exceeded", 429, "Gemini API 配額不足或已達速率限制。"
+            elif is_model_error:
+                error_type, status, message = "model_not_found", 400, "指定的 Gemini 模型不存在或不可用。"
             else:
-                app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
+                error_type, status, message = "google_api_error", 502, "Gemini API 驗證失敗，請稍後再試。"
             return jsonify({
                 "success": False,
                 "ok": False,
                 "error_type": error_type,
-                "message": sanitize_secret_text(str(e), [api_key]),
+                "message": message,
                 "model": model_name
-            })
+            }), status
 
     @app.route('/debug/session_key_status')
     def debug_session_key_status():

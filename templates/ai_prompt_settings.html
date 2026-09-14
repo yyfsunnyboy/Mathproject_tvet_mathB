@@ -417,10 +417,16 @@
                 });
                 const testData = await testRes.json();
                 
-                if (!testData.success) {
+                if (!testRes.ok || testData.success !== true || testData.ok !== true) {
                     if (statusText) {
                         statusText.style.color = "#dc2626";
-                        statusText.innerText = testData.error_type === "model_not_found" ? "✖ 模型不可用" : "✖ 環境 Key 無效或未設定";
+                        const failureLabels = {
+                            api_key_invalid: "✖ API Key 無效",
+                            permission_denied: "✖ API 權限遭拒",
+                            quota_exceeded: "✖ API 配額不足",
+                            model_not_found: "✖ 模型不可用"
+                        };
+                        statusText.innerText = failureLabels[testData.error_type] || "✖ API 驗證失敗";
                     }
                     throw new Error(testData.message || "API Key 測試失敗或無效");
                 }

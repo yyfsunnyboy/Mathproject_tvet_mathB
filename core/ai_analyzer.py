@@ -37,6 +37,15 @@ def _gemini_key_fingerprint(api_key):
     return hashlib.sha256(key.encode("utf-8")).hexdigest() if key else None
 
 
+def invalidate_gemini_client_cache():
+    """Drop cached Gemini objects after a validated credential change."""
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
+    gemini_model = None
+    gemini_chat = None
+    gemini_model_name = None
+    gemini_key_fingerprint = None
+
+
 def _sanitize_sensitive_error_message(message):
     return sanitize_secret_text(str(message or ""), [])
 

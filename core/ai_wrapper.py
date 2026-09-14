@@ -71,7 +71,15 @@ def sanitize_secret_text(text, secrets):
     cleaned = str(text or "")
     for secret in secrets:
         if secret:
-            cleaned = cleaned.replace(secret, mask_api_key(secret) or "***")
+            last4 = str(secret).strip()[-4:]
+            cleaned = cleaned.replace(str(secret), f"***{last4}" if last4 else "***")
+    # Google errors may echo a credential in a URL even when the caller did not
+    # retain the exact submitted value. Never let query credentials reach logs/UI.
+    cleaned = re.sub(
+        r"(?i)([?&](?:key|api_key)=)([^&\s'\"<>]+)",
+        lambda match: f"{match.group(1)}***{match.group(2)[-4:]}",
+        cleaned,
+    )
     return cleaned
 
 
