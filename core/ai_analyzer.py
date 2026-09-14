@@ -1043,7 +1043,16 @@ def generate_quiz_from_image(image_file, description):
         return []
 
 
-def build_chat_prompt(skill_id, user_question, full_question_context, context, prereq_skills, correct_answer=""):
+def build_chat_prompt(
+    skill_id,
+    user_question,
+    full_question_context,
+    context,
+    prereq_skills,
+    correct_answer="",
+    authoritative_correct=None,
+    authoritative_status="unknown",
+):
     """
     Constructs the full system prompt for the chat AI.
     """
@@ -1067,6 +1076,16 @@ def build_chat_prompt(skill_id, user_question, full_question_context, context, p
     turn_block = f"【本輪學生提問】\n{user_question or '（學生未提供）'}"
     extra_blocks.append(turn_block)
 
+    is_authoritatively_correct = (
+        authoritative_correct is True
+        or str(authoritative_status or "").strip().lower() == "correct"
+    )
+    authoritative_correct_text = (
+        "true" if authoritative_correct is True
+        else "false" if authoritative_correct is False
+        else "unknown"
+    )
+
     json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）：
 {
   "hint_focus": "...",
@@ -1082,9 +1101,9 @@ def build_chat_prompt(skill_id, user_question, full_question_context, context, p
 
 欄位規範：
 - hint_focus：只指出一個核心概念，不超過 18 個中文字。
-- guided_question：只能問一個引導問題，不超過 28 個中文字。
-- micro_step：只能給一個下一步動作，不超過 22 個中文字。
-- follow_up_prompts：固定 3 個學生可能追問，各不超過 28 個中文字。
+- guided_question：未答對時只能問一個引導問題，不超過 28 個中文字；已答對時必須為空字串。
+- micro_step：未答對時只能給一個下一步動作，不超過 22 個中文字；已答對時必須為空字串。
+- follow_up_prompts：未答對時固定 3 個學生可能追問，各不超過 28 個中文字；已答對時必須為空陣列。
 - forbidden：若你輸出了任何違規內容請設為 true，否則 false。
 
 follow_up_prompts 規則：
@@ -1111,10 +1130,17 @@ follow_up_prompts 規則：
         user_answer=user_question,
         context=enhanced_context,
         prereq_text=prereq_text,
-        correct_answer=correct_answer or ""
+        correct_answer=correct_answer or "",
+        authoritative_correct=authoritative_correct_text,
+        authoritative_status=str(authoritative_status or "unknown").strip().lower(),
     )
 
-    logger.info(f"[Prompt Trace] route='/chat_ai' task_type='build_chat_prompt' prompt_key='chat_tutor_prompt' source='{source}' model_role='tutor'")
+    logger.info(
+        "[Prompt Trace] route='/chat_ai' task_type='build_chat_prompt' "
+        "prompt_key='chat_tutor_prompt' source='%s' model_role='tutor' authoritative_correct=%s",
+        source,
+        is_authoritatively_correct,
+    )
     
     return full_prompt
 

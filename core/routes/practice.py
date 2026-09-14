@@ -573,6 +573,14 @@ def _emit_check_result(
     )
     if uid and _is_gradable:
         mark_question_answered(uid, out)
+        # Preserve the checker verdict for chat tutoring.  The browser and the
+        # tutor model are not authorities and therefore cannot set this state.
+        session["chat_tutor_authoritative_result"] = {
+            "question_uid": uid,
+            "correct": bool(out.get("correct", False)),
+            "status": "correct" if bool(out.get("correct", False)) else "incorrect",
+        }
+        session.modified = True
     if uid:
         out["question_uid"] = uid
     pending_write = False

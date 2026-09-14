@@ -1275,6 +1275,26 @@ def _tutor_extract_structured_analysis(data):
     }
 
 
+def _tutor_authoritative_correct(authoritative_correct, authoritative_status):
+    """Only the checker verdict may select the completed tutor state."""
+    return (
+        authoritative_correct is True
+        or str(authoritative_status or "").strip().lower() == "correct"
+    )
+
+
+def _tutor_correct_response():
+    """Deterministic terminal response; no LLM guardrail may turn it into a prompt."""
+    return {
+        "reply": "答對了，做得很好！",
+        "hint_focus": "",
+        "guided_question": "",
+        "micro_step": "",
+        "follow_up_prompts": [],
+        "forbidden": False,
+    }
+
+
 def _tutor_deterministic_fallback(structured_analysis):
     mech = str(structured_analysis.get("error_mechanism") or "unknown")
     issue = str(structured_analysis.get("main_issue") or "")
@@ -1489,6 +1509,17 @@ def chat_ai():
 
     question_text = data.get('question_text', '')
     correct_answer = data.get('correct_answer', '').strip()
+    requested_question_uid = str(data.get('question_uid') or '').strip()
+    checker_result = session.get('chat_tutor_authoritative_result')
+    if not isinstance(checker_result, dict):
+        checker_result = {}
+    checker_question_uid = str(checker_result.get('question_uid') or '').strip()
+    if requested_question_uid and requested_question_uid == checker_question_uid:
+        authoritative_correct = checker_result.get('correct')
+        authoritative_status = str(checker_result.get('status') or 'unknown').strip().lower()
+    else:
+        authoritative_correct = None
+        authoritative_status = 'unknown'
 
 
 
@@ -1729,8 +1760,15 @@ def chat_ai():
 
         context=context,
         prereq_skills=prereq_skills,
-        correct_answer=correct_answer
+        correct_answer=correct_answer,
+        authoritative_correct=authoritative_correct,
+        authoritative_status=authoritative_status,
     )
+
+    # The checker is the sole completion authority. A correct verdict terminates
+    # tutoring before the LLM/compliance pipeline can add questions or more work.
+    if _tutor_authoritative_correct(authoritative_correct, authoritative_status):
+        return jsonify(_tutor_correct_response())
 
 
 

@@ -2417,7 +2417,8 @@
             question_text: state.currentQuestionText,
             question_context: state.currentContext,
             family_id: state.currentFamilyId,
-            subskill_nodes: state.currentSubskills
+            subskill_nodes: state.currentSubskills,
+            question_uid: state.currentQuestionUid
           })
         });
         const data = await response.json();

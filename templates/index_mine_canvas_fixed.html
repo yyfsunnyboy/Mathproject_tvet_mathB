@@ -3766,7 +3766,8 @@
                             context: contextPayload,
                             question_text: questionText,
                             image_data: imgData,
-                            correct_answer: window.currentExpectedAnswer || ""
+                            correct_answer: window.currentExpectedAnswer || "",
+                            question_uid: (currentQuestion && currentQuestion.question_uid) || ""
                         })
                     });
 
