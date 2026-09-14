@@ -4755,6 +4755,47 @@
             return composite;
         }
 
+        function getInkCanvasEl() {
+            return document.getElementById('handwriting-canvas') || canvas;
+        }
+
+        function isInkCanvasBlank(inkEl) {
+            const ink = inkEl || getInkCanvasEl();
+            if (!ink) return true;
+            try {
+                const inkCtx = ink.getContext('2d');
+                const image = inkCtx.getImageData(0, 0, ink.width, ink.height);
+                const pixels = image.data;
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] !== 0) return false;
+                }
+                return true;
+            } catch (err) {
+                console.error('isInkCanvasBlank failed:', err);
+                return false;
+            }
+        }
+
+        async function captureHandwritingImageForRecognition() {
+            const ink = getInkCanvasEl();
+            if (!ink) return '';
+            // Export only the bitmap currently visible on the live ink canvas.
+            // History is intentionally excluded: a cleared/erased canvas must never
+            // resurrect an older undo snapshot during AI recognition.
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = ink.width || 1;
+            exportCanvas.height = ink.height || 1;
+            const ect = exportCanvas.getContext('2d');
+            // Vision analyzers often fail on transparent ink-only PNGs; always export on white.
+            ect.fillStyle = '#ffffff';
+            ect.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            if (backgroundCanvas && backgroundCanvas.width && backgroundCanvas.height) {
+                ect.drawImage(backgroundCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
+            }
+            ect.drawImage(ink, 0, 0, exportCanvas.width, exportCanvas.height);
+            return exportCanvas.toDataURL('image/png');
+        }
+
         function isDrawingQuestion(questionInput) {
             const cq = questionInput || currentQuestion || {};
             const contract = cq.answer_contract || {};
@@ -5776,25 +5817,43 @@
 
         async function submitHandwritingAsAnswer() {
             const cq = currentQuestion || {};
-            const imageDataUrl = canvas.toDataURL('image/png');
+            if (isInkCanvasBlank()) {
+                resultDisplay.textContent = '請先在白板作答。';
+                resultDisplay.className = '';
+                return;
+            }
+            const imageDataUrl = await captureHandwritingImageForRecognition();
+            if (!imageDataUrl || imageDataUrl === 'data:,' || imageDataUrl === 'data:image/png;base64,') {
+                resultDisplay.textContent = '請先在白板作答。';
+                resultDisplay.className = '';
+                return;
+            }
             const recognitionResponse = await fetch('/api/practice/ai-check-handwriting', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     image_data_url: imageDataUrl,
                     image_base64: imageDataUrl,
+                    student_strokes_image_data_url: (getInkCanvasEl() || canvas).toDataURL('image/png'),
                     question_uid: cq.question_uid || '',
                     skill_id: cq.skill_id || getSkillId() || '',
                     question_text: questionText.innerText || '',
                     problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
                     presentation_mode: cq.presentation_mode || '',
                     answer_type: cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '',
+                    capture_debug: {
+                        captured_at: new Date().toISOString(),
+                        canvas_selector: '#handwriting-canvas',
+                        reused_cache: false,
+                        stroke_count: null,
+                        history_depth: Array.isArray(undoStack) ? Math.max(0, undoStack.length - 1) : null,
+                    },
                 }),
             });
             const recognition = await recognitionResponse.json();
             const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
-            if (recognition.completion_state === 'blank') {
-                resultDisplay.textContent = recognition.feedback || '先在白板寫下第一個算式或答案吧。';
+            if (recognition.completion_state === 'blank' || recognition.is_blank === true) {
+                resultDisplay.textContent = recognition.feedback || '請先在白板作答。';
                 resultDisplay.className = '';
                 return;
             }
