@@ -101,7 +101,7 @@ def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]
     # Standard practice uses the shared server-side question store rather than
     # the adaptive runtime store.  Never accept expected answers from the browser.
     try:
-        from core.practice_question_store import get_current
+        from core.session import get_current
 
         current = get_current()
         if isinstance(current, dict):

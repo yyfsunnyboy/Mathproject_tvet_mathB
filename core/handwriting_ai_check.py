@@ -79,7 +79,16 @@ def _answer_is_structurally_complete(answer: Any) -> bool:
     text = re.sub(r"(?:\\\)|\\\]|\$)+$", "", text).strip()
     # An answer ending at an operator/relation (for example ``x=``) is work in
     # progress. A compact answer such as ``x=±11`` is complete.
-    return re.search(r"(?:=|≤|≥|<|>|\+|-|±|×|÷|\*|/|\^|,|;|:)\s*$", text) is None
+    if re.search(r"(?:=|≤|≥|<|>|\+|-|±|×|÷|\*|/|\^|,|;|:)\s*$", text):
+        return False
+    if re.search(r"(?:\bor\b|\band\b|或|且)\s*$", text, flags=re.IGNORECASE):
+        return False
+    # A numeric left boundary followed by a relation and a bare variable is an
+    # unfinished chained inequality. Complete equations and bounded chains are
+    # unaffected by this general mathematical-shape rule.
+    if re.fullmatch(r"[+-]?(?:\d+(?:\.\d+)?|\d+/\d+)\s*(?:≤|≥|<|>)\s*[A-Za-z]", text):
+        return False
+    return True
 
 
 def handwriting_completion_state(normalized: dict[str, Any]) -> str:
@@ -107,6 +116,10 @@ def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any
         else data.get("answer")
         or data.get("final_answer")
         or data.get("recognized_text")
+        or data.get("expression")
+        or data.get("normalized_answer")
+        or data.get("recognized_latex")
+        or data.get("latex")
     )
     recognized_answer = (
         raw_recognized_answer
