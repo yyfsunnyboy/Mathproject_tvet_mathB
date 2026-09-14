@@ -749,9 +749,6 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
             temp_path = f.name
 
         try:
-            # 上傳到 Gemini
-            file = genai.upload_file(path=temp_path)
-
             # 從資料庫讀取 Prompt 模板
             prompt_template, source = get_ai_prompt_with_source()
             import logging
@@ -763,11 +760,14 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
                       .replace("{context}", context)
                       .replace("{prereq_text}", prereq_text))
 
-            model = get_model()
+            # Use the same role-aware client factory and credential resolver as
+            # tutor. Avoid the legacy SDK upload path, which consults its
+            # process-global credential before role resolution.
+            model = get_ai_client(role="vision_analyzer")
             release_db_session_before_external_call(db, logger=current_app.logger)
             resp = model.generate_content(
-                [prompt, file],
-                generation_config={"max_output_tokens": 4096, "temperature": 0.5}
+                prompt,
+                image_path=temp_path,
             )
             raw_text = resp.text.strip()
 

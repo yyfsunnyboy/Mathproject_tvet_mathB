@@ -115,12 +115,11 @@ def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]
 
 def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingCheckContext) -> dict[str, object]:
     from core.ai_analyzer import analyze
-    from core.ai_wrapper import resolve_gemini_api_key
 
     return analyze(
         image_data_url=str(payload.get("image_base64") or payload.get("image_data_url") or ""),
         context=ctx.question_text,
-        api_key=resolve_gemini_api_key(),
+        api_key=None,
         prerequisite_skills=[],
         correct_answer=str(ctx.correct_answer or ctx.semantic_answer or ""),
     )

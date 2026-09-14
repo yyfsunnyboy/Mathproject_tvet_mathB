@@ -17,6 +17,7 @@ import re
 import requests
 import json
 import logging
+import hashlib
 from flask import current_app, has_app_context, has_request_context, session
 from config import Config
 from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config
@@ -518,6 +519,7 @@ class GoogleAIClient:
     負責與 Google Generative AI 服務進行通訊 (需連網)。
     """
     def __init__(self, model_name, temperature=0.7, **kwargs):
+        self.role = str(kwargs.pop("role", "default") or "default")
         # 1. Config & API Key
         # Try multiple sources: kwargs > session > Config > environment variable
         api_key = kwargs.get('api_key')
@@ -529,8 +531,6 @@ class GoogleAIClient:
             raise ValueError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
         if not _looks_like_gemini_key(api_key):
             logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
-        logger.info(f"[AI KEY] source={api_key_source}")
-        logger.info(f"[AI MODEL] provider=google model={model_name}")
         self.api_key = str(api_key).strip()
 
         # 2. Model Parameters
@@ -581,6 +581,19 @@ class GoogleAIClient:
         
         else:
             raise ImportError("Critical Error: Neither 'google.genai' (New) nor 'google.generativeai' (Old) SDK is installed.")
+
+        key_fingerprint = hashlib.sha256(self.api_key.encode("utf-8")).hexdigest()[:12]
+        client_impl = "google.genai.Client" if self.is_new_sdk else "google.generativeai.GenerativeModel"
+        logger.info(
+            "[AI RUNTIME] role=%s provider=google model=%s credential_source=%s "
+            "key_fingerprint=sha256:%s last4=%s client_impl=%s",
+            self.role,
+            self.model_name,
+            api_key_source,
+            key_fingerprint,
+            self.api_key[-4:],
+            client_impl,
+        )
 
     def generate_content(self, prompt, image_path=None):
         try:
@@ -760,7 +773,13 @@ def get_ai_client(role='default'):
     # 2. 智慧派發 (Smart Dispatch)
     if provider in ('google', 'gemini'):
         try:
-            return GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
+            return GoogleAIClient(
+                model_name,
+                temperature,
+                max_tokens=max_tokens,
+                safety_settings=safety_settings,
+                role=role,
+            )
         except ValueError as e:
             ai_mode = "unknown"
             try:
