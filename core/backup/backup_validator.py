@@ -29,6 +29,16 @@ COLUMNS_DELIM = "|"
 
 # Minimum columns that must appear in exported sheets (ORM-aligned).
 TABLE_REQUIRED_COLUMNS: dict[str, tuple[str, ...]] = {
+    "prompt_templates": (
+        "id",
+        "prompt_key",
+        "title",
+        "category",
+        "content",
+        "default_content",
+        "required_variables",
+        "is_active",
+    ),
     "users": ("id", "username", "role", "real_name"),
     "classes": ("id", "name", "teacher_id"),
     "class_students": ("class_id", "student_id", "seat_no"),

@@ -237,7 +237,7 @@ def test_core_export_contains_all_account_dependent_sheets(app_ctx):
         sheets = pd.read_excel(io.BytesIO(response.data), sheet_name=None, engine="openpyxl")
         for name in get_core_table_names(include="export"):
             assert name in sheets, name
-        assert list(sheets.keys()) == get_core_table_names(include="export")
+        assert list(sheets.keys()) == get_core_table_names(include="export") + ["__manifest__"]
         hashes = set(sheets["users"]["password_hash"].astype(str).tolist())
         assert "hash-teacher-501" in hashes
         assert REDACTED_SECRET_VALUE not in hashes
@@ -315,7 +315,7 @@ def test_delete_core_student_scoped_keeps_admin_teacher_and_settings(app_ctx):
         assert Progress.query.count() == 0
         assert QuizAttempt.query.count() == 0
         assert SystemSetting.query.count() == seeded["settings_before"]
-        assert PromptTemplate.query.count() == seeded["prompts_before"]
+        assert PromptTemplate.query.count() == 0
         assert SystemSetting.query.filter_by(key=seeded["setting_key"]).count() == 1
         db.session.execute(text("PRAGMA foreign_keys = ON"))
         fk_rows = db.session.execute(text("PRAGMA foreign_key_check")).fetchall()
@@ -365,6 +365,6 @@ def test_template_mentions_learning_records():
     text_out = (PROJECT_ROOT / "templates" / "db_maintenance.html").read_text(encoding="utf-8")
     assert "學習紀錄" in text_out
     assert "全部國中、普通高中及高職教材資料" in text_out
-    assert "管理員、教師帳號、system_settings、prompt_templates 將保留" in text_out
+    assert "prompt_templates 可由核心備份還原" in text_out
     assert "system_settings" in text_out
     assert "prompt_templates" in text_out

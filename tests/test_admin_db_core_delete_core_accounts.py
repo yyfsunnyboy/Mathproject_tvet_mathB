@@ -157,7 +157,7 @@ def test_execute_deletes_students_keeps_admin_teacher(app_ctx):
         assert Progress.query.filter_by(user_id=502).count() == 0
         assert Progress.query.filter_by(user_id=501).count() == 1
         assert SystemSetting.query.count() == seeded["settings_before"]
-        assert PromptTemplate.query.count() == seeded["prompts_before"]
+        assert PromptTemplate.query.count() == 0
         db.session.execute(text("PRAGMA foreign_keys = ON"))
         assert db.session.execute(text("PRAGMA foreign_key_check")).fetchall() == []
 
@@ -212,7 +212,7 @@ def test_admin_session_survives_delete_core(app_ctx):
 def test_template_student_only_warning():
     text_out = (PROJECT_ROOT / "templates" / "db_maintenance.html").read_text(encoding="utf-8")
     assert "全部國中、普通高中及高職教材資料" in text_out
-    assert "system_settings、prompt_templates 將保留" in text_out
+    assert "prompt_templates 可由核心備份還原" in text_out
 
 
 def test_account_clear_specs_have_no_users_full_mode():

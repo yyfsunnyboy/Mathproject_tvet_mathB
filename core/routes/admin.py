@@ -939,7 +939,8 @@ def _hard_clear_core_data(*, execute: bool = False) -> dict:
     DELETE_CORE implementation:
     - student users / student learning rows / full classes roster
     - full wipe of all core textbook tables (junior_high + general + vocational)
-    Never uses Math-B scoped WHERE. Keeps admin/teacher and system_settings/prompt_templates.
+    Never uses Math-B scoped WHERE. Keeps admin/teacher and system_settings;
+    prompt_templates is cleared because it is restored by core import.
     """
     deleted: dict[str, int] = {name: 0 for name in CORE_TEXTBOOK_REPORT_TABLES}
     plan = _core_clear_plan()
@@ -2310,7 +2311,7 @@ def db_maintenance():
                     success_msg = (
                         "DELETE_CORE 完成：已刪除全部國中、普通高中及高職教材資料，"
                         "並刪除所有學生帳號、班級、班級成員與學生學習紀錄；"
-                        "管理員、教師帳號、system_settings、prompt_templates 已保留。"
+                        "管理員、教師帳號與 system_settings 已保留；prompt_templates 已清除，可由核心備份還原。"
                         f" students_deleted={deleted.get('users', 0)},"
                         f" classes={deleted.get('classes', 0)},"
                         f" class_students={deleted.get('class_students', 0)},"
@@ -2398,7 +2399,7 @@ def db_maintenance():
                 all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
                 flash(
                     (
-                        "DELETE_CORE 預覽（刪全部教材＋學生帳號／班級／學生學習紀錄；保留 admin／teacher／settings）："
+                        "DELETE_CORE 預覽（刪全部教材＋學生帳號／班級／學生學習紀錄＋prompt_templates；保留 admin／teacher／system_settings）："
                         f"users(student)={deleted.get('users', 0)}, "
                         f"classes={deleted.get('classes', 0)}, "
                         f"class_students={deleted.get('class_students', 0)}, "
