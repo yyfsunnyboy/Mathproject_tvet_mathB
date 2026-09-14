@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Prompt registry with DB-first lookup and safe rendering."""
+"""DB-authoritative prompt registry with bundled disaster defaults."""
 
 from core.prompts.default_templates import DEFAULT_PROMPT_TEMPLATES
 
@@ -8,9 +8,8 @@ def get_prompt_with_source(prompt_key, system_setting_fallback_key=None):
     """
     Get prompt text by key and return (content, source).
     Lookup chain:
-    1. PromptTemplate (DB)
-    2. SystemSetting (Legacy DB, if system_setting_fallback_key provided)
-    3. DEFAULT_PROMPT_TEMPLATES
+    1. PromptTemplate (DB; sole normal runtime authority)
+    2. DEFAULT_PROMPT_TEMPLATES (disaster fallback only)
     """
     key = str(prompt_key or "").strip()
     if not key:
@@ -27,15 +26,6 @@ def get_prompt_with_source(prompt_key, system_setting_fallback_key=None):
             return row.content, "db_prompt_template"
     except Exception:
         pass
-
-    if system_setting_fallback_key:
-        try:
-            from models import SystemSetting
-            setting = SystemSetting.query.filter_by(key=system_setting_fallback_key).first()
-            if setting and isinstance(setting.value, str) and setting.value.strip():
-                return setting.value, "db_system_setting"
-        except Exception:
-            pass
 
     default_item = DEFAULT_PROMPT_TEMPLATES.get(key)
     if isinstance(default_item, dict):

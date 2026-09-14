@@ -43,14 +43,6 @@ from core.gencode.pipeline_orchestrator import (
     publish_gencode_draft_skill,
     register_classifier_rulepack_from_draft,
 )
-from core.services.prompt_sync_service import (
-    PromptSyncError,
-    compare_prompt_db_vs_yaml,
-    export_single_prompt_to_yaml,
-    import_single_prompt_from_yaml,
-)
-
-
 def _admin_v3_json_safe(
     value,
     _seen=None,
@@ -5247,91 +5239,6 @@ def reset_prompt_template_content():
         })
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-def _validate_existing_prompt_key(prompt_key: str):
-    if not prompt_key:
-        return None, (jsonify({'success': False, 'message': 'prompt_key is required'}), 400)
-    template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
-    if template:
-        return template, None
-    # ?蹓曇???ML ??¯蹎劉 ?垮謓舀蝞?????獢???駁??皝?
-    try:
-        diff = compare_prompt_db_vs_yaml(prompt_key)
-        if diff.get("yaml_exists"):
-            return None, None
-    except Exception:
-        pass
-    return None, (jsonify({'success': False, 'message': f'?曆???prompt_key: {prompt_key}'}), 404)
-
-
-@core_bp.route('/admin/ai_prompt_settings/publish_to_yaml', methods=['POST'])
-@login_required
-def publish_single_prompt_to_yaml():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json(silent=True) or {}
-        prompt_key = str(data.get('prompt_key', '')).strip()
-        _, err = _validate_existing_prompt_key(prompt_key)
-        if err:
-            return err
-        result = export_single_prompt_to_yaml(prompt_key)
-        return jsonify(result)
-    except (PromptSyncError, FileNotFoundError) as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@core_bp.route('/admin/ai_prompt_settings/sync_from_yaml', methods=['POST'])
-@login_required
-def sync_single_prompt_from_yaml():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json(silent=True) or {}
-        prompt_key = str(data.get('prompt_key', '')).strip()
-        _, err = _validate_existing_prompt_key(prompt_key)
-        if err:
-            return err
-        result = import_single_prompt_from_yaml(prompt_key)
-        return jsonify(result)
-    except (PromptSyncError, FileNotFoundError) as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@core_bp.route('/admin/ai_prompt_settings/version_check')
-@login_required
-def ai_prompt_version_check():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        prompt_key = str(request.args.get('prompt_key', '')).strip()
-        if not prompt_key:
-            return jsonify({'success': False, 'message': 'prompt_key is required'}), 400
-        result = compare_prompt_db_vs_yaml(prompt_key)
-        return jsonify({'success': True, **result})
-    except PromptSyncError as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-    except FileNotFoundError:
-        # YAML ?澗???殉朱謓?蹇???200???豯止鼓 yaml_exists=False
-        return jsonify({
-            'success': True,
-            'prompt_key': prompt_key,
-            'db_exists': bool(PromptTemplate.query.filter_by(prompt_key=prompt_key).first()),
-            'yaml_exists': False,
-            'db_updated_at': None,
-            'yaml_updated_at': None,
-            'has_yaml_update': False,
-            'has_db_update': False,
-            'is_different': bool(PromptTemplate.query.filter_by(prompt_key=prompt_key).first()),
-        })
-    except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
 

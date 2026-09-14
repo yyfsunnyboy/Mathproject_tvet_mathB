@@ -70,7 +70,7 @@ from core.ai_analyzer import configure_gemini
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, sanitize_secret_text
 from core.rag_engine import init_rag
 from core.advanced_rag_engine import init_adv_rag
-from core.prompts.prompt_loader import bootstrap_prompt_registry
+from core.prompts.bootstrap_templates import bootstrap_prompt_templates
 from core.session_safety import (
     estimate_session_cookie_size,
     trim_session_for_cookie_limit,
@@ -810,8 +810,8 @@ def create_app(*, production: bool | None = None):
             print("WARNING: No Gemini API Key found. Please set it in /admin/ai_prompt_settings")
 
         try:
-            created_count, updated_count, skipped_count = bootstrap_prompt_registry(update_existing=False)
-            app.logger.info(f"Prompt template bootstrap done. created={created_count}, updated={updated_count}, skipped={skipped_count}")
+            created_count = bootstrap_prompt_templates()
+            app.logger.info(f"Prompt template bootstrap done. created={created_count}")
         except Exception as e:
             app.logger.error(f"Prompt template bootstrap failed: {e}")
         if os.environ.get('SEED_DB_ONLY') != '1':
