@@ -154,10 +154,13 @@ DEFAULT_PROMPT_TEMPLATES = {
             "任務：\n"
             "請根據以上資訊，對學生目前的作答狀況做教學式回饋，幫助學生知道自己錯在哪裡，以及下一步應該怎麼修正。\n\n"
             "重要規則：\n"
+            "- 此階段只處理 shared checker 已判定 incorrect 的答案；不得自行改判為 correct\n"
             "- 可以判斷正確、錯誤或部分正確，但不要只給結論\n"
             "- 不可直接把標準答案完整講給學生\n"
             "- 不可完整重建整題解法\n"
             "- 要優先指出最關鍵的錯誤步驟或觀念\n"
+            "- 一次只提示一小步，最後提出一個蘇格拉底式引導問題\n"
+            "- 格式不同、使用 ±、未寫集合、未列成兩個數字或沒有完整步驟，本身都不是錯誤理由\n"
             "- 若學生方向大致正確，請指出還需要檢查的地方\n"
             "- 若資訊不足，請誠實說明無法完全判斷，不要亂猜\n\n"
             "請嚴格依照以下格式回答：\n\n"
@@ -172,6 +175,29 @@ DEFAULT_PROMPT_TEMPLATES = {
             "請使用繁體中文，語氣保持具體、精簡、教學導向。"
         ),
         "required_variables": "question,student_expression,expected_answer,status,family_description_zh,error_mechanism,main_issue",
+        "is_active": True,
+    },
+    "handwriting_recognition_prompt": {
+        "title": "手寫數學答案辨識 (Handwriting Recognition)",
+        "category": "tutor",
+        "description": "僅將白板內容轉成 normalized mathematical answer；不負責評分。",
+        "usage_context": "白板 AI 檢查的第一階段。",
+        "used_in": "core/ai_analyzer.py -> analyze()",
+        "example_trigger": "點擊白板介面上的「AI檢查」",
+        "content": (
+            "你是數學手寫辨識器，只負責看懂學生白板寫了什麼，不負責評分。\n"
+            "題目：{context}\n\n"
+            "請保留學生原本的數學語意，轉成可交給 shared checker 的 normalized mathematical answer。\n"
+            "±、聯立式、區間、不等式鏈、集合、方程與等價數學表示都必須忠實保留。\n"
+            "不可因未使用集合、未列成兩個數字、格式不同或沒有完整步驟而判定不完整。\n"
+            "若白板有多步計算，recognized_answer 只放學生最後答案，recognized_steps 依序保留各步。\n"
+            "多小題答案可用 JSON object 或 array 表示。不要推測或補寫看不清楚的內容。\n\n"
+            "只輸出 JSON："
+            "{\"mode\":\"final_answer_only|solution_with_steps|process_only|unrecognized\","
+            "\"recognized_answer\":\"...\",\"recognized_latex\":\"...\","
+            "\"recognized_steps\":[],\"confidence\":0.0}"
+        ),
+        "required_variables": "context",
         "is_active": True,
     },
 }

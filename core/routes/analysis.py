@@ -2598,6 +2598,7 @@ def analyze_handwriting():
         print("calling handwriting analyzer (recognition then analysis)")
         print("question_text:", question_text)
         print("image length:", len(b64) if b64 else 0)
+        supplied_normalized_answer = str(data.get("normalized_answer") or "").strip()
         recognition_prompt = (
             "Transcribe all visible handwritten mathematical content from this student whiteboard image. "
             "Return ONLY valid JSON, no markdown, no extra text. "
@@ -2606,7 +2607,9 @@ def analyze_handwriting():
             "If the image is blank, illegible, or has no mathematical writing, set \"expression\" to \"\". "
             "Do not invent symbols or steps that are not clearly visible."
         )
-        if ai_provider == 'google':
+        if supplied_normalized_answer:
+            expr = supplied_normalized_answer
+        elif ai_provider == 'google':
             vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
             rec_response = call_google_model(
                 vision_cfg,
@@ -2625,10 +2628,11 @@ def analyze_handwriting():
                 retry_delay=1,
                 verbose=False,
             )
-        rec_raw = (getattr(rec_response, 'text', '') or '').strip()
-        rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
-        rec_parsed = clean_and_parse_json(rec_cleaned)
-        expr = _handwriting_expression_from_parsed(rec_parsed)
+        if not supplied_normalized_answer:
+            rec_raw = (getattr(rec_response, 'text', '') or '').strip()
+            rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
+            rec_parsed = clean_and_parse_json(rec_cleaned)
+            expr = _handwriting_expression_from_parsed(rec_parsed)
         if not _handwriting_expression_is_usable(expr):
             current_app.logger.info("analyze_handwriting: no usable expression after recognition pass")
             return _handwriting_not_recognized_response()

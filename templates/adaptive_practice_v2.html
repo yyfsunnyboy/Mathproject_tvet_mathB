@@ -2656,6 +2656,95 @@
       try {
         if (isCanvasBlank()) {
           setStatus("目前無法清楚辨識，請重新書寫。");
+          return;
+        }
+        const imageDataUrl = canvas.toDataURL("image/png");
+        await addMessage("user", "AI 檢查");
+        const thinking = await addMessage("bot", "正在辨識並批改手寫答案...");
+        analyzeCanvasBtn.disabled = true;
+        const recognitionResponse = await fetch("/api/practice/ai-check-handwriting", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image_data_url: imageDataUrl,
+            image_base64: imageDataUrl,
+            session_id: state.sessionId,
+            question_uid: state.currentQuestionUid,
+            skill_id: state.mainSkill || skillId,
+            question_text: state.currentQuestionText,
+            problem_type_id: state.currentProblemTypeId,
+            presentation_mode: state.currentPresentationMode,
+            answer_type: state.currentAnswerType,
+          })
+        });
+        const recognition = await recognitionResponse.json();
+        const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
+        if (recognition.completion_state === "blank") {
+          setMessageContent(thinking, recognition.feedback || "先在白板寫下第一個算式或答案吧。");
+          return;
+        }
+        if (recognition.completion_state === "in_progress") {
+          setMessageContent(thinking, recognition.feedback || "目前還在作答中；下一步要先完成哪個式子呢？");
+          return;
+        }
+        if (!recognitionResponse.ok || !normalizedAnswer) {
+          throw new Error(recognition.feedback || "目前無法清楚辨識，請重新書寫。");
+        }
+        const gradeResponse = await fetch("/check_answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            answer: normalizedAnswer,
+            ...(normalizedAnswer && typeof normalizedAnswer === "object"
+              ? { answers: normalizedAnswer, user_answer: normalizedAnswer }
+              : {}),
+            question_uid: state.currentQuestionUid,
+            skill_id: state.mainSkill || skillId,
+            problem_type_id: state.currentProblemTypeId,
+          })
+        });
+        const grade = await gradeResponse.json();
+        if (!gradeResponse.ok) throw new Error(grade.result || "手寫答案批改失敗。");
+        setMessageContent(thinking, grade.result || (grade.correct ? "答對了！" : "答案尚未正確。"));
+        await typesetMath(thinking);
+        if (grade.correct === true) {
+          const submitAttempt = async () => {
+            const nextData = await postAdaptive({
+              ...basePayload,
+              session_id: state.sessionId,
+              step_number: state.stepNumber,
+              user_answer: normalizedAnswer,
+              is_correct: true,
+              answer_feedback: grade.result || "答對了！",
+            });
+            resetChatHistory();
+            await applyAdaptiveResponse(nextData);
+          };
+          await handleCorrectAnswer(submitAttempt);
+          return;
+        }
+        const feedbackResponse = await fetch("/analyze_handwriting", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image_data_url: imageDataUrl,
+            normalized_answer: normalizedAnswer,
+            question_uid: state.currentQuestionUid,
+            question_text: state.currentQuestionText,
+          })
+        });
+        const feedback = await feedbackResponse.json();
+        setMessageContent(thinking, feedback.reply || "先找出第一個不一致的步驟，再試著修正它。");
+        await typesetMath(thinking);
+      } catch (err) {
+        setStatus(err.message || "手寫答案處理失敗，請稍後再試。");
+      } finally {
+        analyzeCanvasBtn.disabled = false;
+      }
+      return;
+      try {
+        if (isCanvasBlank()) {
+          setStatus("目前無法清楚辨識，請重新書寫。");
           await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
           return;
         }

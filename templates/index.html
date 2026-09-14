@@ -5774,7 +5774,82 @@
             };
         }
 
-        // === AI 分析 ===
+        async function submitHandwritingAsAnswer() {
+            const cq = currentQuestion || {};
+            const imageDataUrl = canvas.toDataURL('image/png');
+            const recognitionResponse = await fetch('/api/practice/ai-check-handwriting', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    image_data_url: imageDataUrl,
+                    image_base64: imageDataUrl,
+                    question_uid: cq.question_uid || '',
+                    skill_id: cq.skill_id || getSkillId() || '',
+                    question_text: questionText.innerText || '',
+                    problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
+                    presentation_mode: cq.presentation_mode || '',
+                    answer_type: cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '',
+                }),
+            });
+            const recognition = await recognitionResponse.json();
+            const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
+            if (recognition.completion_state === 'blank') {
+                resultDisplay.textContent = recognition.feedback || '先在白板寫下第一個算式或答案吧。';
+                resultDisplay.className = '';
+                return;
+            }
+            if (recognition.completion_state === 'in_progress') {
+                resultDisplay.textContent = recognition.feedback || '目前還在作答中；下一步要先完成哪個式子呢？';
+                resultDisplay.className = '';
+                return;
+            }
+            if (!recognitionResponse.ok || !normalizedAnswer) {
+                throw new Error(recognition.feedback || '目前無法清楚辨識，請重新書寫。');
+            }
+
+            const handwritingPayload = buildCheckAnswerPayload(normalizedAnswer);
+            if (normalizedAnswer && typeof normalizedAnswer === 'object') {
+                handwritingPayload.answer = normalizedAnswer;
+                handwritingPayload.answers = normalizedAnswer;
+                handwritingPayload.user_answer = normalizedAnswer;
+            }
+            const gradeResponse = await fetch('/check_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(handwritingPayload),
+            });
+            const grade = await gradeResponse.json();
+            if (!gradeResponse.ok) throw new Error(grade.result || '手寫答案批改失敗。');
+
+            resultDisplay.textContent = grade.result || (grade.correct ? '答對了！' : '答案尚未正確。');
+            resultDisplay.className = grade.correct ? 'correct' : 'incorrect';
+            updateStreak(grade.correct === true);
+            if (grade.correct === true) {
+                consecutiveWrongs = 0;
+                clearTutorPromptSuggestions();
+                await handleCorrectAnswer();
+                return;
+            }
+
+            const feedbackResponse = await fetch('/analyze_handwriting', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    image_data_url: imageDataUrl,
+                    normalized_answer: normalizedAnswer,
+                    question_uid: cq.question_uid || '',
+                    question_text: questionText.innerText || '',
+                }),
+            });
+            const feedback = await feedbackResponse.json();
+            const msg = document.createElement('div');
+            msg.className = 'bot-message latest';
+            msg.textContent = feedback.reply || '先找出第一個不一致的步驟，再試著修正它。';
+            chatHistory.appendChild(msg);
+            scrollAiTutorToBottom();
+        }
+
+        // === AI 分析 / 手寫正式答案提交 ===
         function setupAIButton() {
             if (!analyzeBtn) return;
 
@@ -5801,7 +5876,7 @@
                 }
             }
 
-            analyzeBtn.onclick = () => {
+            analyzeBtn.onclick = async () => {
                 if (isProcessing) return;
                 
                 const cq = currentQuestion || {};
@@ -5819,6 +5894,23 @@
                     );
                     return;
                 }
+
+                isProcessing = true;
+                analyzeBtn.textContent = '辨識並批改中...';
+                analyzeBtn.disabled = true;
+                showLoadingMessage();
+                try {
+                    await submitHandwritingAsAnswer();
+                } catch (err) {
+                    resultDisplay.textContent = err.message || '手寫答案處理失敗，請稍後再試。';
+                    resultDisplay.className = 'incorrect';
+                } finally {
+                    stopLoadingMessage();
+                    isProcessing = false;
+                    analyzeBtn.textContent = 'AI檢查';
+                    analyzeBtn.disabled = false;
+                }
+                return;
 
                 isProcessing = true;
                 analyzeBtn.textContent = '分析中...';

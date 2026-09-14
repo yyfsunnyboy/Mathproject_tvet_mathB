@@ -124,18 +124,58 @@ def test_standard_text_structured_and_drawing_paths_share_success_handler() -> N
     assert "await handleCorrectAnswer()" in drawing_body
 
 
-def test_ai_tutor_paths_cannot_trigger_success_or_next_question() -> None:
+def test_handwriting_recognition_uses_checker_before_success_flow() -> None:
     standard = STANDARD_TEMPLATE.read_text(encoding="utf-8")
     adaptive = ADAPTIVE_TEMPLATE.read_text(encoding="utf-8")
     standard_ai = _function_body(standard, "function setupAIButton")
     adaptive_ai = _function_body(adaptive, "async function analyzeHandwriting")
 
-    assert "handleCorrectAnswer" not in standard_ai
+    assert "submitHandwritingAsAnswer" in standard_ai
     assert "enableHandwritingNextQuestion" not in standard_ai
-    assert "updateStreak(" not in standard_ai
-    assert "handleCorrectAnswer" not in adaptive_ai
-    assert "postAdaptive(" not in adaptive_ai
-    assert "should_record_attempt === true" not in adaptive_ai
+    assert "fetch(\"/check_answer\"" in adaptive_ai
+    assert adaptive_ai.index('fetch("/check_answer"') < adaptive_ai.index("handleCorrectAnswer(submitAttempt)")
+    assert "if (grade.correct === true)" in adaptive_ai
+
+
+def test_standard_handwriting_is_submitted_as_first_class_answer() -> None:
+    source = STANDARD_TEMPLATE.read_text(encoding="utf-8")
+    body = _function_body(source, "async function submitHandwritingAsAnswer")
+
+    recognition_pos = body.index("/api/practice/ai-check-handwriting")
+    checker_pos = body.index("/check_answer")
+    correct_pos = body.index("if (grade.correct === true)")
+    success_pos = body.index("await handleCorrectAnswer()")
+    feedback_pos = body.index("/analyze_handwriting")
+    assert recognition_pos < checker_pos < correct_pos < success_pos < feedback_pos
+    assert "buildCheckAnswerPayload(normalizedAnswer)" in body
+    assert "updateStreak(grade.correct === true)" in body
+
+
+def test_wrong_handwriting_stays_on_question_and_requests_socratic_feedback() -> None:
+    standard = STANDARD_TEMPLATE.read_text(encoding="utf-8")
+    adaptive = ADAPTIVE_TEMPLATE.read_text(encoding="utf-8")
+    standard_body = _function_body(standard, "async function submitHandwritingAsAnswer")
+    adaptive_body = _function_body(adaptive, "async function analyzeHandwriting")
+
+    assert "/analyze_handwriting" in standard_body
+    assert "/analyze_handwriting" in adaptive_body
+    assert standard_body.index("if (grade.correct === true)") < standard_body.index("/analyze_handwriting")
+    assert adaptive_body.index("if (grade.correct === true)") < adaptive_body.index("/analyze_handwriting")
+
+
+def test_blank_and_in_progress_never_reach_check_answer() -> None:
+    standard = STANDARD_TEMPLATE.read_text(encoding="utf-8")
+    adaptive = ADAPTIVE_TEMPLATE.read_text(encoding="utf-8")
+    for body in (
+        _function_body(standard, "async function submitHandwritingAsAnswer"),
+        _function_body(adaptive, "async function analyzeHandwriting"),
+    ):
+        blank_pos = body.index("completion_state")
+        in_progress_pos = body.index("in_progress", blank_pos)
+        checker_pos = body.index("/check_answer")
+        assert blank_pos < checker_pos
+        assert in_progress_pos < checker_pos
+        assert "return;" in body[blank_pos:checker_pos]
 
 
 @pytest.mark.parametrize(

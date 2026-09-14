@@ -693,11 +693,11 @@ def get_model(role="tutor"):
 
 def get_ai_prompt():
     from core.prompts.registry import get_prompt_template
-    return get_prompt_template("handwriting_feedback_prompt", "ai_analyzer_prompt")
+    return get_prompt_template("handwriting_recognition_prompt")
 
 def get_ai_prompt_with_source():
     from core.prompts.registry import get_prompt_with_source
-    return get_prompt_with_source("handwriting_feedback_prompt", "ai_analyzer_prompt")
+    return get_prompt_with_source("handwriting_recognition_prompt")
 
 def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_answer=""):
     """
@@ -731,14 +731,12 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
             prompt_template, source = get_ai_prompt_with_source()
             import logging
             logger = logging.getLogger(__name__)
-            logger.info(f"[Prompt Trace] route='/analyze_work' task_type='handwriting_feedback' prompt_key='handwriting_feedback_prompt' source='{source}' model_role='vision_analyzer'")
-            logger.info(f"[analyze] handwriting prompt has_correct_answer={bool(correct_answer)}")
+            logger.info(f"[Prompt Trace] route='/api/practice/ai-check-handwriting' task_type='handwriting_recognition' prompt_key='handwriting_recognition_prompt' source='{source}' model_role='vision_analyzer'")
             
             # 使用 str.replace() 替換變數（避免 JSON 大括號衝突）
             prompt = (prompt_template
                       .replace("{context}", context)
-                      .replace("{prereq_text}", prereq_text)
-                      .replace("{correct_answer}", correct_answer or ""))
+                      .replace("{prereq_text}", prereq_text))
 
             model = get_model()
             release_db_session_before_external_call(db, logger=current_app.logger)

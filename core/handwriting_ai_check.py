@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Callable
 
 LOW_CONFIDENCE_THRESHOLD = 0.70
@@ -67,6 +68,31 @@ def _looks_blank_image(image_base64: str) -> bool:
     return False
 
 
+def _answer_is_structurally_complete(answer: Any) -> bool:
+    if isinstance(answer, dict):
+        return bool(answer) and all(_answer_is_structurally_complete(v) for v in answer.values())
+    if isinstance(answer, list):
+        return bool(answer) and all(_answer_is_structurally_complete(v) for v in answer)
+    text = _clean_text(answer)
+    if not text:
+        return False
+    text = re.sub(r"(?:\\\)|\\\]|\$)+$", "", text).strip()
+    # An answer ending at an operator/relation (for example ``x=``) is work in
+    # progress. A compact answer such as ``x=±11`` is complete.
+    return re.search(r"(?:=|≤|≥|<|>|\+|-|±|×|÷|\*|/|\^|,|;|:)\s*$", text) is None
+
+
+def handwriting_completion_state(normalized: dict[str, Any]) -> str:
+    answer = normalized.get("normalized_answer")
+    steps = normalized.get("recognized_steps") or []
+    mode = str(normalized.get("mode") or "").strip().lower()
+    if not _clean_text(answer) and not steps:
+        return "blank"
+    if mode == "process_only" or not _answer_is_structurally_complete(answer):
+        return "in_progress"
+    return "completed"
+
+
 def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any]:
     data = raw if isinstance(raw, dict) else {}
     steps = data.get("recognized_steps")
@@ -75,11 +101,17 @@ def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any
     steps = [_clean_text(step) for step in steps if _clean_text(step)]
 
     mode = _clean_text(data.get("mode")).lower()
-    recognized_answer = _clean_text(
+    raw_recognized_answer = (
         data.get("recognized_answer")
-        or data.get("answer")
+        if data.get("recognized_answer") not in (None, "")
+        else data.get("answer")
         or data.get("final_answer")
         or data.get("recognized_text")
+    )
+    recognized_answer = (
+        raw_recognized_answer
+        if isinstance(raw_recognized_answer, (dict, list))
+        else _clean_text(raw_recognized_answer)
     )
     if mode not in HANDWRITING_MODES:
         has_process = bool(steps) or bool(data.get("has_process") or data.get("contains_steps"))
@@ -103,6 +135,7 @@ def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any
     return {
         "mode": mode,
         "recognized_answer": recognized_answer,
+        "normalized_answer": recognized_answer,
         "recognized_latex": _clean_text(data.get("recognized_latex") or data.get("latex")),
         "recognized_steps": steps,
         "first_error_step": first_error_step,
@@ -131,7 +164,7 @@ def _checker_payload(ctx: HandwritingCheckContext) -> dict[str, Any]:
 
 
 def deterministic_final_answer_check(
-    recognized_answer: str,
+    recognized_answer: Any,
     ctx: HandwritingCheckContext,
     checker: Callable[..., bool] | None = None,
 ) -> bool | None:
@@ -161,16 +194,18 @@ def build_handwriting_check_response(
 ) -> dict[str, Any]:
     if _looks_blank_image(image_base64):
         return {
+            "completion_state": "blank",
             "mode": "unrecognized",
             "is_correct": False,
             "final_answer_correct": None,
             "process_correct": None,
             "recognized_answer": "",
+            "normalized_answer": "",
             "recognized_latex": "",
             "recognized_steps": [],
             "first_error_step": None,
             "error_type": "blank",
-            "feedback": "目前無法清楚辨識，請重新書寫。",
+            "feedback": "先在白板寫下第一個算式或答案吧。",
             "confidence": 0.0,
             "should_record_attempt": False,
         }
@@ -178,28 +213,31 @@ def build_handwriting_check_response(
     normalized = normalize_ai_handwriting_result(ai_result)
     mode = normalized["mode"]
     confidence = float(normalized["confidence"])
-    if mode == "unrecognized" or confidence < LOW_CONFIDENCE_THRESHOLD:
+    completion_state = handwriting_completion_state(normalized)
+    if completion_state == "blank":
         return {
             **normalized,
             "mode": "unrecognized",
+            "completion_state": "blank",
             "is_correct": False,
             "final_answer_correct": None,
             "process_correct": None,
-            "feedback": "目前無法清楚辨識，請重新書寫。",
+            "feedback": "先在白板寫下第一個算式或答案吧。",
             "should_record_attempt": False,
         }
 
     process_correct = normalized["process_correct"]
-    if mode == "process_only":
+    if completion_state == "in_progress" or confidence < LOW_CONFIDENCE_THRESHOLD:
         feedback = normalized["feedback"]
         if process_correct is True:
             feedback = feedback or "目前過程到這裡是正確的，但尚未寫出最後答案。"
         return {
             **normalized,
+            "completion_state": "in_progress",
             "is_correct": False,
             "final_answer_correct": None,
             "process_correct": process_correct,
-            "feedback": feedback or "目前尚未寫出最後答案，請繼續完成。",
+            "feedback": feedback or "目前還在作答中；下一步可以先確認等號右邊應寫什麼嗎？",
             "should_record_attempt": False,
         }
 
@@ -209,6 +247,7 @@ def build_handwriting_check_response(
     if final_correct is None:
         return {
             **normalized,
+            "completion_state": "completed",
             "is_correct": False,
             "final_answer_correct": None,
             "feedback": normalized["feedback"] or "AI 助教已提供辨識結果，請使用正式提交完成批改。",
@@ -218,6 +257,7 @@ def build_handwriting_check_response(
         feedback = "答對了。" if final_correct is True else normalized["feedback"] or "答錯了，請重新檢查。"
         return {
             **normalized,
+            "completion_state": "completed",
             "is_correct": bool(final_correct),
             "final_answer_correct": final_correct,
             "process_correct": None,
@@ -236,6 +276,7 @@ def build_handwriting_check_response(
             feedback = "答對了。"
         return {
             **normalized,
+            "completion_state": "completed",
             "is_correct": is_correct,
             "final_answer_correct": final_correct,
             "process_correct": process_correct,
@@ -246,6 +287,7 @@ def build_handwriting_check_response(
     return {
         **normalized,
         "mode": "unrecognized",
+        "completion_state": "blank",
         "is_correct": False,
         "final_answer_correct": None,
         "process_correct": None,

@@ -98,6 +98,18 @@ def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]
         for item in runtime_store.values():
             if isinstance(item, dict) and str(item.get("question_uid") or "").strip() == question_uid:
                 return dict(item)
+    # Standard practice uses the shared server-side question store rather than
+    # the adaptive runtime store.  Never accept expected answers from the browser.
+    try:
+        from core.practice_question_store import get_current
+
+        current = get_current()
+        if isinstance(current, dict):
+            current_uid = str(current.get("question_uid") or "").strip()
+            if not question_uid or not current_uid or question_uid == current_uid:
+                return dict(current)
+    except Exception:
+        current_app.logger.exception("[AI handwriting recognition] current question lookup failed")
     return {}
 
 
@@ -131,9 +143,6 @@ def ai_check_handwriting():
         answer_contract = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
 
     correct_answer = runtime.get("correct_answer", runtime.get("answer"))
-    if correct_answer in (None, ""):
-        # Backward-compatible fallback for tests and non-adaptive callers. The frontend does not need this.
-        correct_answer = payload.get("correct_answer")
 
     ctx = HandwritingCheckContext(
         question_uid=str(payload.get("question_uid") or runtime.get("question_uid") or ""),
