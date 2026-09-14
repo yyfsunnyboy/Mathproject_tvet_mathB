@@ -365,6 +365,6 @@ def test_template_mentions_learning_records():
     text_out = (PROJECT_ROOT / "templates" / "db_maintenance.html").read_text(encoding="utf-8")
     assert "學習紀錄" in text_out
     assert "全部國中、普通高中及高職教材資料" in text_out
-    assert "prompt_templates 可由核心備份還原" in text_out
+    assert "core restore 會從核心備份完整還原 prompt_templates" in text_out
     assert "system_settings" in text_out
     assert "prompt_templates" in text_out

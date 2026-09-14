@@ -163,14 +163,14 @@
                             （progress、practice_attempts 逐題作答歷程、quiz_attempts、student_abilities、mistake／adaptive／exam 等帳號依賴表）。
                             <br>
                             <strong>全部＋ DELETE_CORE：</strong>
-                            此操作會刪除全部國中、普通高中及高職教材資料、prompt_templates，並刪除所有學生帳號、班級、班級成員與學生學習紀錄；管理員、教師帳號與 system_settings 將保留。prompt_templates 可由核心備份還原。
+                            此操作會刪除全部國中、普通高中及高職教材資料，並刪除 prompt_templates、所有學生帳號、班級、班級成員與學生學習紀錄；僅管理員、教師帳號與 system_settings 保留。core restore 會從核心備份完整還原 prompt_templates。
                             另清除 textbook_examples、skill_curriculum、skills_info、skill_prerequisites、skill_family_bridge、gencode_component_tracker
                             中符合 vh_數學B% / outline_vocational_數學B% / source_volume=數學B% / vocational 的資料。
                             保留 system_settings 與 jh_數學 bridge。
-                            篩選模式僅清除選定範圍教材，不會清空帳號／班級／學習紀錄。
+                            篩選模式僅清除選定範圍教材，會保留 prompt_templates、帳號／班級與學習紀錄。
                         </p>
                         <form action="{{ url_for('core.db_maintenance') }}" method="POST"
-                              onsubmit="event.preventDefault(); (function(form){ var modeEl=document.getElementById('coreScopeMode'); var isAll=!modeEl || modeEl.value!=='filtered'; var msg=isAll ? '確認執行 DELETE_CORE？\n\n此操作會刪除全部國中、普通高中及高職教材資料、prompt_templates，並刪除所有學生帳號、班級、班級成員與學生學習紀錄；管理員、教師帳號與 system_settings 將保留。\n\n請確認已輸入 DELETE_CORE。' : '確認要依條件清空選定範圍的教材資料嗎？\n\n此操作不會刪除 users／classes／class_students／學習紀錄／prompt_templates。'; showModal(msg, form, isAll); })(this);">
+                              onsubmit="event.preventDefault(); (function(form){ var modeEl=document.getElementById('coreScopeMode'); var isAll=!modeEl || modeEl.value!=='filtered'; var msg=isAll ? '確認執行 DELETE_CORE？\n\n此操作會刪除全部國中、普通高中及高職教材資料，並刪除 prompt_templates、所有學生帳號、班級、班級成員與學生學習紀錄；僅管理員、教師帳號與 system_settings 保留。core restore 會完整還原 prompt_templates。\n\n請確認已輸入 DELETE_CORE。' : '確認要依條件清空選定範圍的教材資料嗎？\n\n此操作不會刪除 users／classes／class_students／學習紀錄／prompt_templates。'; showModal(msg, form, isAll); })(this);">
                             <input type="hidden" name="action" value="clear_all_data" id="coreActionField">
                             <input type="hidden" name="mode" value="core">
                             <div class="form-group">

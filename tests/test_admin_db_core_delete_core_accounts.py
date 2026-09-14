@@ -122,6 +122,9 @@ def test_preview_counts_students_only_for_users(app_ctx):
         body = r.get_data(as_text=True)
         assert r.status_code == 200
         assert f"users(student)={seeded['student_count']}" in body
+        assert f"prompt_templates={seeded['prompts_before']}" in body
+        assert "刪全部教材＋學生帳號／班級／學生學習紀錄＋prompt_templates" in body
+        assert "保留 admin／teacher／system_settings" in body
         assert User.query.filter_by(role="admin").count() == seeded["admin_count"]
         assert User.query.filter_by(role="teacher").count() == seeded["teacher_count"]
         assert User.query.filter_by(role="student").count() == seeded["student_count"]
@@ -157,6 +160,8 @@ def test_execute_deletes_students_keeps_admin_teacher(app_ctx):
         assert Progress.query.filter_by(user_id=502).count() == 0
         assert Progress.query.filter_by(user_id=501).count() == 1
         assert SystemSetting.query.count() == seeded["settings_before"]
+        assert SystemSetting.query.filter_by(key=seeded["setting_key"]).count() == 1
+        assert result["deleted"]["prompt_templates"] == seeded["prompts_before"]
         assert PromptTemplate.query.count() == 0
         db.session.execute(text("PRAGMA foreign_keys = ON"))
         assert db.session.execute(text("PRAGMA foreign_key_check")).fetchall() == []
@@ -212,7 +217,11 @@ def test_admin_session_survives_delete_core(app_ctx):
 def test_template_student_only_warning():
     text_out = (PROJECT_ROOT / "templates" / "db_maintenance.html").read_text(encoding="utf-8")
     assert "全部國中、普通高中及高職教材資料" in text_out
-    assert "prompt_templates 可由核心備份還原" in text_out
+    assert "並刪除 prompt_templates" in text_out
+    assert "僅管理員、教師帳號與 system_settings 保留" in text_out
+    assert "core restore 會從核心備份完整還原 prompt_templates" in text_out
+    assert "篩選模式僅清除選定範圍教材，會保留 prompt_templates" in text_out
+    assert "system_settings、prompt_templates 將保留" not in text_out
 
 
 def test_account_clear_specs_have_no_users_full_mode():

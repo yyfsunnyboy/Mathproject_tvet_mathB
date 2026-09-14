@@ -2403,6 +2403,7 @@ def db_maintenance():
                         f"users(student)={deleted.get('users', 0)}, "
                         f"classes={deleted.get('classes', 0)}, "
                         f"class_students={deleted.get('class_students', 0)}, "
+                        f"prompt_templates={deleted.get('prompt_templates', 0)}, "
                         f"progress={deleted.get('progress', 0)}, "
                         f"quiz_attempts={deleted.get('quiz_attempts', 0)}, "
                         f"student_abilities={deleted.get('student_abilities', 0)}, "
