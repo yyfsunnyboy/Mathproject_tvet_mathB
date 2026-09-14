@@ -2680,6 +2680,15 @@
             }
             return parsed;
         }
+
+        function resolvePracticeResponseLevel(response, existingLevel = getSafeSelectedLevel()) {
+            const source = response && typeof response === 'object' ? response : {};
+            const rawLevel = source.level ?? source.current_level ?? existingLevel ?? 1;
+            const parsed = Number.parseInt(rawLevel, 10);
+            if (!Number.isNaN(parsed) && parsed >= 1) return parsed;
+            const fallback = Number.parseInt(existingLevel, 10);
+            return !Number.isNaN(fallback) && fallback >= 1 ? fallback : 1;
+        }
         let consecutiveWrongs = 0; // 新增：追蹤連續答錯次數
         let redoStack = [];
         let blankCanvas = null;
@@ -4069,6 +4078,8 @@
         function resetPracticeQuestionDisplay(message) {
             practiceQuestionEpoch += 1;
             currentQuestion = null;
+            isInitialQuestionLoaded = false;
+            currentContext = '';
             window.currentProblemTypeId = '';
             window.currentExpectedAnswer = '';
             clearPracticeFeedback();
@@ -4087,6 +4098,16 @@
                 answerInput.placeholder = '請在此輸入答案';
             }
             if (submitBtn) submitBtn.disabled = false;
+            if (levelIndicator) levelIndicator.textContent = `等級：${getSafeSelectedLevel()}`;
+            if (subquestionsContainer) {
+                subquestionsContainer.innerHTML = '';
+                subquestionsContainer.style.display = 'none';
+            }
+            const questionMedia = document.getElementById('question-media-container');
+            if (questionMedia) {
+                questionMedia.innerHTML = '';
+                questionMedia.style.display = 'none';
+            }
             resetAIChat();
         }
 
@@ -4096,6 +4117,7 @@
                 try { return sessionStorage.getItem('practice_last_skill_id') || ''; } catch (e) { return ''; }
             })();
             console.log('[FRONTEND PRACTICE] skill entry', { activeSkill, lastSkill, pageSkill: PAGE_SKILL_ID });
+            clearSkillPracticeStorage(activeSkill);
             if (lastSkill && activeSkill && lastSkill !== activeSkill) {
                 clearSkillPracticeStorage(lastSkill);
                 resetPracticeQuestionDisplay('<span style="color:#7f8c8d;">已切換技能，載入新題目中…</span>');
@@ -4105,23 +4127,47 @@
             try { sessionStorage.setItem('practice_last_skill_id', activeSkill); } catch (e) { /* ignore */ }
         }
 
+        function normalizeLatestQuestionResponse(payload) {
+            const response = payload && typeof payload === 'object' ? payload : {};
+            const questionTextValue = resolveQuestionText(response);
+            const responseLevel = resolvePracticeResponseLevel(response);
+            const answerContract = response.answer_contract && typeof response.answer_contract === 'object'
+                ? { ...response.answer_contract }
+                : {};
+            return {
+                ...response,
+                question_text: questionTextValue,
+                new_question_text: questionTextValue,
+                question_uid: String(response.question_uid ?? ''),
+                answer_contract: answerContract,
+                current_level: responseLevel,
+                level: responseLevel,
+            };
+        }
+
         function snapshotPracticeQuestion(payload) {
             if (!payload || typeof payload !== 'object') {
                 return null;
             }
             const choices = getChoiceItems(payload);
             const questionTextValue = resolveQuestionText(payload);
+            const responseLevel = resolvePracticeResponseLevel(payload);
             const skillId = payload.skill_id || getSkillId() || '';
             return {
                 skill_id: skillId,
                 question_uid: payload.question_uid || '',
                 question_text_hash: payload.question_text_hash || '',
                 question_text: questionTextValue,
+                new_question_text: questionTextValue,
+                current_level: responseLevel,
+                level: responseLevel,
                 problem_type_id: payload.problem_type_id || payload.problem_type || '',
                 answer: payload.answer,
                 correct_answer: payload.correct_answer ?? payload.display_answer ?? payload.answer ?? '',
                 display_answer: payload.display_answer || '',
-                answer_contract: payload.answer_contract || {},
+                answer_contract: payload.answer_contract && typeof payload.answer_contract === 'object'
+                    ? { ...payload.answer_contract }
+                    : {},
                 checker: payload.checker || payload.checker_type || '',
                 equivalence: payload.equivalence || '',
                 choices: Array.isArray(choices) ? choices.slice() : [],
@@ -5111,6 +5157,7 @@
             currentQuestion = null;
             clearPracticeFeedback();
             clearGlobalPracticeStorageKeys();
+            clearSkillPracticeStorage(skill);
             clearTutorPromptSuggestions();
             resetAIChat();
             if (questionText) {
@@ -5169,6 +5216,7 @@
                         return;
                     }
 
+                    data = normalizeLatestQuestionResponse(data);
                     applyCurrentQuestion(data);
                     if (!currentQuestion) {
                         questionText.textContent = '題目載入失敗（技能不一致），請重新整理。';
@@ -5257,7 +5305,9 @@
                         streakCounter.style.display = 'none';
                     }
 
-                    levelIndicator.textContent = `等級：${data.current_level}`;
+                    const responseLevel = resolvePracticeResponseLevel(data, getSafeSelectedLevel());
+                    selectedLevel = responseLevel;
+                    if (levelIndicator) levelIndicator.textContent = `等級：${responseLevel}`;
                     currentContext = data.context_string || data.inequality_string || "";
 
                     // 5. 調整輸入框狀態
