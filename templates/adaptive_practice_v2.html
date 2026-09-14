@@ -2325,6 +2325,24 @@
       cctx.drawImage(canvas, 0, 0, composite.width, composite.height);
       return composite;
     }
+    function getInkCanvasEl() {
+      return document.getElementById("handwriting-canvas") || canvas;
+    }
+    async function captureHandwritingImageForRecognition() {
+      const ink = getInkCanvasEl();
+      if (!ink) return "";
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = ink.width || 1;
+      exportCanvas.height = ink.height || 1;
+      const ect = exportCanvas.getContext("2d");
+      ect.fillStyle = "#ffffff";
+      ect.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      if (backgroundCanvas && backgroundCanvas.width && backgroundCanvas.height) {
+        ect.drawImage(backgroundCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      }
+      ect.drawImage(ink, 0, 0, exportCanvas.width, exportCanvas.height);
+      return exportCanvas.toDataURL("image/png");
+    }
     function clearCanvas(resetHistory = true) {
       ctx.clearRect(0, 0, currentGeometry.cssWidth, currentGeometry.cssHeight);
       if (resetHistory) {
@@ -2655,10 +2673,14 @@
       }
       try {
         if (isCanvasBlank()) {
-          setStatus("目前無法清楚辨識，請重新書寫。");
+          setStatus("請先在白板作答。");
           return;
         }
-        const imageDataUrl = canvas.toDataURL("image/png");
+        const imageDataUrl = await captureHandwritingImageForRecognition();
+        if (!imageDataUrl || imageDataUrl === "data:," || imageDataUrl === "data:image/png;base64,") {
+          setStatus("請先在白板作答。");
+          return;
+        }
         await addMessage("user", "AI 檢查");
         const thinking = await addMessage("bot", "正在辨識並批改手寫答案...");
         analyzeCanvasBtn.disabled = true;
@@ -2668,6 +2690,7 @@
           body: JSON.stringify({
             image_data_url: imageDataUrl,
             image_base64: imageDataUrl,
+            student_strokes_image_data_url: (getInkCanvasEl() || canvas).toDataURL("image/png"),
             session_id: state.sessionId,
             question_uid: state.currentQuestionUid,
             skill_id: state.mainSkill || skillId,
@@ -2675,12 +2698,19 @@
             problem_type_id: state.currentProblemTypeId,
             presentation_mode: state.currentPresentationMode,
             answer_type: state.currentAnswerType,
+            capture_debug: {
+              captured_at: new Date().toISOString(),
+              canvas_selector: "#handwriting-canvas",
+              reused_cache: false,
+              stroke_count: null,
+              history_depth: Array.isArray(undoStack) ? Math.max(0, undoStack.length - 1) : null,
+            },
           })
         });
         const recognition = await recognitionResponse.json();
         const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
-        if (recognition.completion_state === "blank") {
-          setMessageContent(thinking, recognition.feedback || "先在白板寫下第一個算式或答案吧。");
+        if (recognition.completion_state === "blank" || recognition.is_blank === true) {
+          setMessageContent(thinking, recognition.feedback || "請先在白板作答。");
           return;
         }
         if (recognition.completion_state === "in_progress") {
@@ -2744,11 +2774,11 @@
       return;
       try {
         if (isCanvasBlank()) {
-          setStatus("目前無法清楚辨識，請重新書寫。");
-          await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
+          setStatus("請先在白板作答。");
+          await addMessage("bot", "請先在白板作答。");
           return;
         }
-        const imageDataUrl = canvas.toDataURL("image/png");
+        const imageDataUrl = await captureHandwritingImageForRecognition();
         await addMessage("user", "AI 檢查");
         const thinking = await addMessage("bot", "正在分析你的手寫內容...");
         analyzeCanvasBtn.disabled = true;

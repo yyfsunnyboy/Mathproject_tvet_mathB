@@ -223,6 +223,8 @@ def test_blank_canvas_is_unrecognized_and_not_recorded():
     assert result["completion_state"] == "blank"
     assert result["should_record_attempt"] is False
     assert result["error_type"] == "blank"
+    assert result["is_blank"] is True
+    assert "請先在白板作答" in result["feedback"]
 
 
 def test_low_confidence_is_not_recorded():
@@ -236,7 +238,8 @@ def test_ai_timeout_shape_is_not_recorded():
     result = _build(None)
 
     assert result["mode"] == "unrecognized"
-    assert result["completion_state"] == "blank"
+    assert result["completion_state"] == "in_progress"
+    assert result["is_blank"] is False
     assert result["should_record_attempt"] is False
 
 
@@ -245,6 +248,8 @@ def test_unrecognized_does_not_increase_fail_streak_contract():
 
     assert result["should_record_attempt"] is False
     assert result["is_correct"] is False
+    assert result["completion_state"] == "in_progress"
+    assert result["is_blank"] is False
 
 
 def test_response_does_not_leak_semantic_answer_or_contract():

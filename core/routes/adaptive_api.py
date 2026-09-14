@@ -3,6 +3,10 @@ from __future__ import annotations
 
 import json
 import re
+import base64
+import hashlib
+from datetime import datetime, timezone
+from pathlib import Path
 
 from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
@@ -10,7 +14,9 @@ from flask_login import current_user, login_required
 from core.adaptive.judge import judge_answer_with_feedback
 from core.gencode.answer_grading import build_correct_answer_display
 from core.handwriting_ai_check import (
+    BLANK_CANVAS_FEEDBACK,
     HandwritingCheckContext,
+    _looks_blank_image,
     build_handwriting_check_response,
 )
 from . import practice_bp
@@ -125,6 +131,33 @@ def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingChe
     )
 
 
+def _debug_save_handwriting_capture(image_data_url: str, metadata: object) -> None:
+    """DEBUG-only snapshot of the exact PNG received for the vision call."""
+    if not current_app.debug:
+        return
+    try:
+        encoded = str(image_data_url or "").split(",", 1)[-1]
+        image_bytes = base64.b64decode(encoded, validate=False)
+        debug_dir = Path(current_app.root_path) / "reports" / "runtime_tests" / "handwriting_debug"
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        (debug_dir / "latest_capture.png").write_bytes(image_bytes)
+        meta = metadata if isinstance(metadata, dict) else {}
+        current_app.logger.info(
+            "[HANDWRITING CAPTURE DEBUG] captured_at=%s server_received_at=%s "
+            "canvas=%s bytes=%s sha256=%s reused_cache=%s stroke_count=%s history_depth=%s",
+            str(meta.get("captured_at") or "unknown"),
+            datetime.now(timezone.utc).isoformat(),
+            str(meta.get("canvas_selector") or "unknown"),
+            len(image_bytes),
+            hashlib.sha256(image_bytes).hexdigest(),
+            bool(meta.get("reused_cache", False)),
+            meta.get("stroke_count"),
+            meta.get("history_depth"),
+        )
+    except Exception:
+        current_app.logger.exception("[HANDWRITING CAPTURE DEBUG] snapshot_failed")
+
+
 @practice_bp.route("/api/practice/ai-check-handwriting", methods=["POST"])
 @login_required
 def ai_check_handwriting():
@@ -135,6 +168,7 @@ def ai_check_handwriting():
         or payload.get("handwriting_image")
         or ""
     )
+    _debug_save_handwriting_capture(image_base64, payload.get("capture_debug"))
     runtime = _runtime_for_ai_handwriting(payload)
 
     answer_contract = runtime.get("answer_contract")
@@ -159,6 +193,30 @@ def ai_check_handwriting():
         rubric=str(runtime.get("rubric") or ""),
     )
 
+    # Blank canvas short-circuit: never invoke vision when there are no strokes.
+    if _looks_blank_image(image_base64):
+        return jsonify(
+            {
+                "completion_state": "blank",
+                "mode": "unrecognized",
+                "is_correct": False,
+                "final_answer_correct": None,
+                "process_correct": None,
+                "recognized_answer": "",
+                "normalized_answer": "",
+                "recognized_latex": "",
+                "recognized_steps": [],
+                "first_error_step": None,
+                "error_type": "blank",
+                "feedback": BLANK_CANVAS_FEEDBACK,
+                "confidence": 0.0,
+                "should_record_attempt": False,
+                "is_blank": True,
+                "vision_invoked": False,
+                "image_payload_nonempty": bool(str(image_base64 or "").strip()),
+            }
+        ), 200
+
     try:
         ai_result = _call_ai_handwriting_checker(payload, ctx)
     except Exception as exc:
@@ -166,10 +224,12 @@ def ai_check_handwriting():
         return jsonify(
             {
                 "mode": "unrecognized",
+                "completion_state": "in_progress",
                 "is_correct": False,
                 "final_answer_correct": None,
                 "process_correct": None,
                 "recognized_answer": "",
+                "normalized_answer": "",
                 "recognized_latex": "",
                 "recognized_steps": [],
                 "first_error_step": None,
@@ -177,6 +237,8 @@ def ai_check_handwriting():
                 "feedback": "目前無法清楚辨識，請重新書寫。",
                 "confidence": 0.0,
                 "should_record_attempt": False,
+                "is_blank": False,
+                "vision_invoked": True,
             }
         ), 200
 
@@ -185,6 +247,8 @@ def ai_check_handwriting():
         ctx=ctx,
         ai_result=ai_result,
     )
+    response["image_payload_nonempty"] = True
+    response["vision_invoked"] = True if response.get("vision_invoked") is None else response.get("vision_invoked")
     # Do not leak hidden answer/rubric/checker internals to the browser.
     for forbidden in ("correct_answer", "semantic_answer", "answer_contract", "rubric", "checker"):
         response.pop(forbidden, None)

@@ -190,16 +190,16 @@ def test_browser_runtime_completed_answer_reaches_shared_checker(
 
 
 @pytest.mark.parametrize(
-    ("ai_result", "expected_state"),
+    ("ai_result", "expected_state", "image"),
     [
-        ({"mode": "unrecognized", "expression": "", "confidence": 0.99}, "blank"),
-        ({"mode": "final_answer_only", "expression": "x=", "confidence": 0.99}, "in_progress"),
-        ({"mode": "final_answer_only", "expression": "x=13 or", "confidence": 0.99}, "in_progress"),
-        ({"mode": "final_answer_only", "expression": "-13≤x", "confidence": 0.99}, "in_progress"),
+        ({"mode": "unrecognized", "expression": "", "confidence": 0.99}, "blank", "blank"),
+        ({"mode": "final_answer_only", "expression": "x=", "confidence": 0.99}, "in_progress", "data:image/png;base64,ink"),
+        ({"mode": "final_answer_only", "expression": "x=13 or", "confidence": 0.99}, "in_progress", "data:image/png;base64,ink"),
+        ({"mode": "final_answer_only", "expression": "-13≤x", "confidence": 0.99}, "in_progress", "data:image/png;base64,ink"),
     ],
 )
 def test_browser_runtime_non_completed_states_do_not_record_attempt(
-    runtime_app, monkeypatch, ai_result, expected_state
+    runtime_app, monkeypatch, ai_result, expected_state, image
 ):
     import core.routes.adaptive_api as adaptive_api
 
@@ -216,7 +216,7 @@ def test_browser_runtime_non_completed_states_do_not_record_attempt(
 
     response = client.post(
         "/api/practice/ai-check-handwriting",
-        json={"image_data_url": "data:image/png;base64,ink", "question_uid": uid},
+        json={"image_data_url": image, "question_uid": uid},
     ).get_json()
     assert response["completion_state"] == expected_state
     with app.app_context():

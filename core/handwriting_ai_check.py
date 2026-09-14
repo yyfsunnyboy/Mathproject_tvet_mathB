@@ -57,6 +57,62 @@ def _to_bool_or_none(value: Any) -> bool | None:
     return None
 
 
+BLANK_CANVAS_FEEDBACK = "請先在白板作答。"
+
+
+def _decode_image_bytes(image_base64: str) -> bytes | None:
+    text = _clean_text(image_base64)
+    if not text:
+        return None
+    if "," in text and text.lower().startswith("data:image/"):
+        text = text.split(",", 1)[1]
+    try:
+        import base64
+
+        return base64.b64decode(text, validate=False)
+    except Exception:
+        return None
+
+
+def _png_bytes_look_blank(image_bytes: bytes) -> bool:
+    """Pixel-level blank check for captured handwriting images."""
+    try:
+        import io
+
+        from PIL import Image
+
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
+        alpha_bbox = img.getchannel("A").getbbox()
+        # Fully transparent canvas with no ink.
+        if alpha_bbox is None:
+            return True
+        rgb = img.convert("RGB")
+        dark_pixels = 0
+        opaque_pixels = 0
+        for r, g, b, a in img.getdata():
+            if a < 8:
+                continue
+            opaque_pixels += 1
+            if r <= 95 and g <= 95 and b <= 95:
+                dark_pixels += 1
+                if dark_pixels >= 12:
+                    return False
+            elif min(r, g, b) <= 210 and max(r, g, b) - min(r, g, b) >= 20:
+                # Non-gray / colored ink also counts as strokes.
+                dark_pixels += 1
+                if dark_pixels >= 12:
+                    return False
+        if opaque_pixels == 0:
+            return True
+        colors = rgb.getcolors(maxcolors=256)
+        if colors and len(colors) == 1 and colors[0][1] == (255, 255, 255):
+            return True
+        return dark_pixels < 12
+    except Exception:
+        # If decoding fails, do not pretend the canvas is blank.
+        return False
+
+
 def _looks_blank_image(image_base64: str) -> bool:
     text = _clean_text(image_base64)
     if not text:
@@ -65,7 +121,20 @@ def _looks_blank_image(image_base64: str) -> bool:
     lowered = text.lower()
     if lowered in {"blank", "empty", "data:image/png;base64,"}:
         return True
-    return False
+    image_bytes = _decode_image_bytes(text)
+    if image_bytes is None:
+        # Non-decodable placeholders (unit-test ink markers) are not blank canvases.
+        return False
+    try:
+        import io
+
+        from PIL import Image
+
+        Image.open(io.BytesIO(image_bytes)).load()
+    except Exception:
+        # Corrupt/non-image payloads should not short-circuit as blank canvas.
+        return False
+    return _png_bytes_look_blank(image_bytes)
 
 
 def _answer_is_structurally_complete(answer: Any) -> bool:
@@ -113,7 +182,8 @@ def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any
     raw_recognized_answer = (
         data.get("recognized_answer")
         if data.get("recognized_answer") not in (None, "")
-        else data.get("answer")
+        else data.get("recognized_expression")
+        or data.get("answer")
         or data.get("final_answer")
         or data.get("recognized_text")
         or data.get("expression")
@@ -218,25 +288,44 @@ def build_handwriting_check_response(
             "recognized_steps": [],
             "first_error_step": None,
             "error_type": "blank",
-            "feedback": "先在白板寫下第一個算式或答案吧。",
+            "feedback": BLANK_CANVAS_FEEDBACK,
             "confidence": 0.0,
             "should_record_attempt": False,
+            "is_blank": True,
+            "vision_invoked": False,
         }
 
     normalized = normalize_ai_handwriting_result(ai_result)
+    if isinstance(ai_result, dict) and ai_result.get("recognition_uncertain") is True:
+        return {
+            **normalized,
+            "mode": "unrecognized",
+            "completion_state": "recognition_uncertain",
+            "is_correct": False,
+            "final_answer_correct": None,
+            "process_correct": None,
+            "error_type": "recognition_uncertain",
+            "feedback": normalized["feedback"] or "辨識結果不一致，請確認或重寫。",
+            "should_record_attempt": False,
+            "is_blank": False,
+            "vision_invoked": True,
+        }
     mode = normalized["mode"]
     confidence = float(normalized["confidence"])
     completion_state = handwriting_completion_state(normalized)
     if completion_state == "blank":
+        # Image itself has strokes; empty recognition must not be treated as blank canvas.
         return {
             **normalized,
             "mode": "unrecognized",
-            "completion_state": "blank",
+            "completion_state": "in_progress",
             "is_correct": False,
             "final_answer_correct": None,
             "process_correct": None,
-            "feedback": "先在白板寫下第一個算式或答案吧。",
+            "feedback": normalized["feedback"] or "目前無法清楚辨識，請重新書寫。",
             "should_record_attempt": False,
+            "is_blank": False,
+            "vision_invoked": True,
         }
 
     process_correct = normalized["process_correct"]
@@ -252,6 +341,8 @@ def build_handwriting_check_response(
             "process_correct": process_correct,
             "feedback": feedback or "目前還在作答中；下一步可以先確認等號右邊應寫什麼嗎？",
             "should_record_attempt": False,
+            "is_blank": False,
+            "vision_invoked": True,
         }
 
     final_correct = deterministic_final_answer_check(
@@ -265,6 +356,8 @@ def build_handwriting_check_response(
             "final_answer_correct": None,
             "feedback": normalized["feedback"] or "AI 助教已提供辨識結果，請使用正式提交完成批改。",
             "should_record_attempt": False,
+            "is_blank": False,
+            "vision_invoked": True,
         }
     if mode == "final_answer_only":
         feedback = "答對了。" if final_correct is True else normalized["feedback"] or "答錯了，請重新檢查。"
@@ -276,6 +369,8 @@ def build_handwriting_check_response(
             "process_correct": None,
             "feedback": feedback,
             "should_record_attempt": final_correct is not None,
+            "is_blank": False,
+            "vision_invoked": True,
         }
 
     if mode == "solution_with_steps":
@@ -295,15 +390,19 @@ def build_handwriting_check_response(
             "process_correct": process_correct,
             "feedback": feedback or "請檢查你的推導過程。",
             "should_record_attempt": final_correct is not None,
+            "is_blank": False,
+            "vision_invoked": True,
         }
 
     return {
         **normalized,
         "mode": "unrecognized",
-        "completion_state": "blank",
+        "completion_state": "in_progress",
         "is_correct": False,
         "final_answer_correct": None,
         "process_correct": None,
         "feedback": "目前無法清楚辨識，請重新書寫。",
         "should_record_attempt": False,
+        "is_blank": False,
+        "vision_invoked": True,
     }

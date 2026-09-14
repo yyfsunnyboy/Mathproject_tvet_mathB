@@ -724,6 +724,38 @@ def get_ai_prompt_with_source():
     from core.prompts.registry import get_prompt_with_source
     return get_prompt_with_source("handwriting_recognition_prompt")
 
+
+def _handwriting_transcription_value(data):
+    if not isinstance(data, dict):
+        return ""
+    for key in (
+        "recognized_answer",
+        "recognized_expression",
+        "answer",
+        "final_answer",
+        "recognized_text",
+        "expression",
+        "normalized_answer",
+    ):
+        value = data.get(key)
+        if value not in (None, ""):
+            return str(value).strip()
+    return ""
+
+
+def _normalize_handwriting_transcription(value):
+    text = str(value or "").strip()
+    text = re.sub(r"^\$|\$$", "", text).strip()
+    return re.sub(r"\s+", "", text)
+
+
+def _needs_handwriting_image_verification(value):
+    """Verify compact answers where a vision model can easily add a glyph."""
+    compact = _normalize_handwriting_transcription(value)
+    if not compact or len(compact) > 12:
+        return False
+    return bool(re.fullmatch(r"[0-9A-Za-z.+\-*/^=()√±×÷]+", compact))
+
 def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_answer=""):
     """
     強制 Gemini 回傳純 JSON，失敗時自動重試一次
@@ -775,6 +807,33 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
             cleaned = re.sub(r'^```json\s*|\s*```$', '', raw_text, flags=re.MULTILINE)
             # [Fix] Use robust parser
             data = clean_and_parse_json(cleaned)
+
+            first_transcription = _handwriting_transcription_value(data)
+            if _needs_handwriting_image_verification(first_transcription):
+                verification_prompt = """只看這張原始白板圖片，獨立抄錄學生實際寫下的最終答案。
+不要解題、不要推測題目或正確答案、不要補上圖片中不存在的字元。
+只輸出 JSON：{\"recognized_answer\": \"圖片中實際看到的內容\"}。"""
+                verification_resp = model.generate_content(
+                    verification_prompt,
+                    image_path=temp_path,
+                )
+                verification_text = re.sub(
+                    r'^```json\s*|\s*```$',
+                    '',
+                    str(getattr(verification_resp, "text", "") or "").strip(),
+                    flags=re.MULTILINE,
+                )
+                verification_data = clean_and_parse_json(verification_text)
+                verified_transcription = _handwriting_transcription_value(verification_data)
+                if (
+                    not verified_transcription
+                    or _normalize_handwriting_transcription(first_transcription)
+                    != _normalize_handwriting_transcription(verified_transcription)
+                ):
+                    data["recognition_uncertain"] = True
+                    data["error_type"] = "recognition_uncertain"
+                    data["feedback"] = f"我辨識成 {first_transcription or '不確定'}，請確認或重寫。"
+                    data["verification_transcription"] = verified_transcription
             
             # [關鍵] 強制注入嚴格模式清洗 (圖片路徑)
             if 'reply' in data:
