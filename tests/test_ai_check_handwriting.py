@@ -365,6 +365,50 @@ def test_multi_part_normalized_answer_preserves_structure_for_shared_checker():
     assert result["is_correct"] is True
 
 
+def test_numbered_multi_part_handwriting_maps_fresh_parts_for_shared_checker():
+    expected = {"part_1": "-pi", "part_2": "300"}
+    contract = {
+        "answer_type": "multi_part",
+        "checker": "multi_part_answer_checker",
+        "answer_equivalence": "multi_part_answer",
+        "parts": [
+            {
+                "key": "part_1",
+                "checker": "expression_checker",
+                "equivalence_type": "algebraic_equivalent",
+                "expected_answer": "-pi",
+                "required_form": "pi_expression",
+            },
+            {
+                "key": "part_2",
+                "checker": "integer_checker",
+                "equivalence_type": "numeric_exact",
+                "expected_answer": "300",
+            },
+        ],
+    }
+    result = build_handwriting_check_response(
+        image_base64="data:image/png;base64,second-image",
+        ctx=_ctx(
+            expected,
+            answer_type="multi_part",
+            answer_contract=contract,
+            checker=contract["checker"],
+            equivalence=contract["answer_equivalence"],
+        ),
+        ai_result={
+            "mode": "final_answer_only",
+            "recognized_answer": "1. -π  2. 300°",
+            "confidence": 0.99,
+        },
+    )
+
+    assert result["recognized_answer"] == "1. -π  2. 300°"
+    assert result["normalized_answer"] == {"part_1": "-π", "part_2": "300°"}
+    assert result["completion_state"] == "completed"
+    assert result["is_correct"] is True
+
+
 def test_handwriting_prompts_do_not_turn_format_or_missing_steps_into_failure():
     recognition = DEFAULT_PROMPT_TEMPLATES["handwriting_recognition_prompt"]["content"]
     feedback = DEFAULT_PROMPT_TEMPLATES["handwriting_feedback_prompt"]["content"]

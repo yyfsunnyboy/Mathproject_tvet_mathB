@@ -540,11 +540,19 @@ def _log_practice_page_entry(skill_id: str, switch_info: dict[str, Any]) -> None
     )
 
 
-def _build_attempt_context(user_answer: Any, current_question: dict[str, Any] | None) -> dict[str, Any]:
-    return {
+def _build_attempt_context(
+    user_answer: Any,
+    current_question: dict[str, Any] | None,
+    submission_meta: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    context = {
         "user_answer": user_answer,
         "current_question": current_question if isinstance(current_question, dict) else None,
     }
+    if isinstance(submission_meta, dict):
+        context["handwriting_submission_id"] = str(submission_meta.get("handwriting_submission_id") or "")
+        context["handwriting_image_sha256"] = str(submission_meta.get("handwriting_image_sha256") or "")
+    return context
 
 
 def _emit_check_result(
@@ -571,16 +579,40 @@ def _emit_check_result(
     _is_gradable = _status in ("correct", "incorrect") or (
         _status == "" and not out.get("system_error") and not out.get("invalid_input")
     )
+    submission_id = str(ctx.get("handwriting_submission_id") or "")
+    image_sha256 = str(ctx.get("handwriting_image_sha256") or "")
+    if submission_id:
+        out["handwriting_submission_id"] = submission_id
+        out["handwriting_image_sha256"] = image_sha256
+        out["checker_input"] = ctx.get("user_answer")
+        out["checker_result"] = "correct" if bool(out.get("correct", False)) else "incorrect"
     if uid and _is_gradable:
-        mark_question_answered(uid, out)
+        mark_question_answered(
+            uid,
+            out,
+            handwriting_submission_id=submission_id,
+        )
         # Preserve the checker verdict for chat tutoring.  The browser and the
         # tutor model are not authorities and therefore cannot set this state.
-        session["chat_tutor_authoritative_result"] = {
+        authoritative_result = {
             "question_uid": uid,
             "correct": bool(out.get("correct", False)),
             "status": "correct" if bool(out.get("correct", False)) else "incorrect",
         }
+        if submission_id:
+            authoritative_result["handwriting_submission_id"] = submission_id
+        session["chat_tutor_authoritative_result"] = authoritative_result
         session.modified = True
+    if submission_id:
+        current_app.logger.info(
+            "[HANDWRITING SUBMISSION] submission_id=%s question_uid=%s image_sha256=%s "
+            "checker_input=%r checker_result=%s",
+            submission_id,
+            uid,
+            image_sha256,
+            ctx.get("user_answer"),
+            out["checker_result"],
+        )
     if uid:
         out["question_uid"] = uid
     pending_write = False
@@ -2316,7 +2348,7 @@ def check_answer():
         user_ans = normalize_table_student_answer(user_ans, current)
     if not isinstance(user_ans, (list, tuple, dict)):
         user_ans = _normalize_choice_alias_answer(user_ans, current)
-    attempt_ctx = _build_attempt_context(user_ans, current)
+    attempt_ctx = _build_attempt_context(user_ans, current, body)
     check_mode = str(
         current.get("check_mode") or current.get("grading_mode") or ""
     ).strip().lower()

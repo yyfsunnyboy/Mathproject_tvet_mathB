@@ -2931,6 +2931,8 @@
         let currentQuestion = null;
         let practiceQuestionEpoch = 0;
         let practiceCheckLoadingInterval = null;
+        let handwritingTransientState = null;
+        let handwritingSubmissionSequence = 0;
         let treeDiagramQuestionIndex = 0;
         let pascalTriangleQuestionIndex = 0;
 
@@ -4109,6 +4111,30 @@
                 questionMedia.style.display = 'none';
             }
             resetAIChat();
+        }
+
+        function beginFreshHandwritingSubmission(question) {
+            clearPracticeFeedback();
+            clearTutorPromptSuggestions();
+            document.querySelectorAll('.bot-message.latest').forEach((msg) => msg.remove());
+            handwritingSubmissionSequence += 1;
+            const capturedAt = new Date().toISOString();
+            const randomId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+                ? window.crypto.randomUUID()
+                : `${Date.now()}-${handwritingSubmissionSequence}`;
+            handwritingTransientState = {
+                submissionId: `hw-${randomId}`,
+                sequence: handwritingSubmissionSequence,
+                questionUid: String((question && question.question_uid) || ''),
+                capturedAt,
+                imageSha256: '',
+                recognizedRawText: '',
+                normalizedAnswer: null,
+                structuredAnalysis: null,
+                checkerResult: null,
+            };
+            console.log('[HANDWRITING SUBMISSION] fresh start', { ...handwritingTransientState });
+            return handwritingTransientState;
         }
 
         function handlePracticeSkillEntry() {
@@ -5867,11 +5893,7 @@
 
         async function submitHandwritingAsAnswer() {
             const cq = currentQuestion || {};
-            if (isInkCanvasBlank()) {
-                resultDisplay.textContent = '請先在白板作答。';
-                resultDisplay.className = '';
-                return;
-            }
+            const submission = beginFreshHandwritingSubmission(cq);
             const imageDataUrl = await captureHandwritingImageForRecognition();
             if (!imageDataUrl || imageDataUrl === 'data:,' || imageDataUrl === 'data:image/png;base64,') {
                 resultDisplay.textContent = '請先在白板作答。';
@@ -5891,8 +5913,9 @@
                     problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
                     presentation_mode: cq.presentation_mode || '',
                     answer_type: cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '',
+                    handwriting_submission_id: submission.submissionId,
                     capture_debug: {
-                        captured_at: new Date().toISOString(),
+                        captured_at: submission.capturedAt,
                         canvas_selector: '#handwriting-canvas',
                         reused_cache: false,
                         stroke_count: null,
@@ -5901,7 +5924,32 @@
                 }),
             });
             const recognition = await recognitionResponse.json();
+            if (
+                recognition.handwriting_submission_id
+                && recognition.handwriting_submission_id !== submission.submissionId
+            ) {
+                throw new Error('手寫辨識回傳已過期，請重新送出。');
+            }
+            const submissionAudit = recognition.submission_audit || {};
+            submission.imageSha256 = String(submissionAudit.image_sha256 || '');
+            submission.recognizedRawText = submissionAudit.recognized_raw_text ?? recognition.recognized_answer ?? '';
+            submission.normalizedAnswer = recognition.normalized_answer ?? recognition.recognized_answer ?? null;
+            submission.structuredAnalysis = submissionAudit.structured_answer || null;
             const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
+            console.log('[HANDWRITING SUBMISSION] recognition', {
+                submissionId: submission.submissionId,
+                questionUid: submission.questionUid,
+                imageSha256: submission.imageSha256,
+                captureTimestamp: submission.capturedAt,
+                recognizedRawText: submission.recognizedRawText,
+                normalizedAnswer: submission.normalizedAnswer,
+                structuredAnswer: submissionAudit.structured_answer || null,
+                part_1: submissionAudit.part_1 ?? null,
+                part_2: submissionAudit.part_2 ?? null,
+                completionState: recognition.completion_state || '',
+                previousStateReused: submissionAudit.previous_handwriting_state_reused === true,
+                structuredAnalysisFresh: submissionAudit.structured_analysis_from_current_request === true,
+            });
             if (recognition.completion_state === 'blank' || recognition.is_blank === true) {
                 resultDisplay.textContent = recognition.feedback || '請先在白板作答。';
                 resultDisplay.className = '';
@@ -5917,6 +5965,8 @@
             }
 
             const handwritingPayload = buildCheckAnswerPayload(normalizedAnswer);
+            handwritingPayload.handwriting_submission_id = submission.submissionId;
+            handwritingPayload.handwriting_image_sha256 = submission.imageSha256;
             if (normalizedAnswer && typeof normalizedAnswer === 'object') {
                 handwritingPayload.answer = normalizedAnswer;
                 handwritingPayload.answers = normalizedAnswer;
@@ -5929,6 +5979,14 @@
             });
             const grade = await gradeResponse.json();
             if (!gradeResponse.ok) throw new Error(grade.result || '手寫答案批改失敗。');
+            submission.checkerResult = grade.checker_result || (grade.correct ? 'correct' : 'incorrect');
+            console.log('[HANDWRITING SUBMISSION] checker', {
+                submissionId: submission.submissionId,
+                questionUid: submission.questionUid,
+                checkerInput: grade.checker_input ?? normalizedAnswer,
+                checkerResult: submission.checkerResult,
+                tutorAuthoritativeResult: grade.correct === true ? 'correct' : 'incorrect',
+            });
 
             resultDisplay.textContent = grade.result || (grade.correct ? '答對了！' : '答案尚未正確。');
             resultDisplay.className = grade.correct ? 'correct' : 'incorrect';
@@ -5948,9 +6006,23 @@
                     normalized_answer: normalizedAnswer,
                     question_uid: cq.question_uid || '',
                     question_text: questionText.innerText || '',
+                    handwriting_submission_id: submission.submissionId,
+                    handwriting_image_sha256: submission.imageSha256,
                 }),
             });
             const feedback = await feedbackResponse.json();
+            if (
+                feedback.handwriting_submission_id
+                && feedback.handwriting_submission_id !== submission.submissionId
+            ) {
+                throw new Error('AI 助教回傳已過期，已忽略上一輪分析。');
+            }
+            submission.structuredAnalysis = feedback.handwriting_analysis || null;
+            console.log('[HANDWRITING SUBMISSION] tutor', {
+                submissionId: submission.submissionId,
+                structuredAnalysisFresh: feedback.structured_analysis_from_current_request === true,
+                tutorAuthoritativeResult: feedback.tutor_authoritative_result || null,
+            });
             const msg = document.createElement('div');
             msg.className = 'bot-message latest';
             msg.textContent = feedback.reply || '先找出第一個不一致的步驟，再試著修正它。';

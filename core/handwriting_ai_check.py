@@ -230,6 +230,72 @@ def normalize_ai_handwriting_result(raw: dict[str, Any] | None) -> dict[str, Any
     }
 
 
+def _multi_part_keys(ctx: HandwritingCheckContext) -> list[str]:
+    contract = ctx.answer_contract if isinstance(ctx.answer_contract, dict) else {}
+    parts = contract.get("parts")
+    keys: list[str] = []
+    if isinstance(parts, list):
+        for part in parts:
+            if isinstance(part, dict):
+                key = _clean_text(part.get("key") or part.get("id") or part.get("name"))
+                if key and key not in keys:
+                    keys.append(key)
+    expected = ctx.correct_answer if ctx.correct_answer not in (None, "") else ctx.semantic_answer
+    if not keys and isinstance(expected, dict):
+        keys = [_clean_text(key) for key in expected.keys() if _clean_text(key)]
+    return keys
+
+
+def normalize_multi_part_handwriting_answer(value: Any, ctx: HandwritingCheckContext) -> Any:
+    """Map a fresh numbered transcription onto the current contract's part keys."""
+    keys = _multi_part_keys(ctx)
+    contract = ctx.answer_contract if isinstance(ctx.answer_contract, dict) else {}
+    is_multi_part = (
+        _clean_text(ctx.answer_type).lower() == "multi_part"
+        or _clean_text(contract.get("answer_type")).lower() == "multi_part"
+        or bool(keys)
+    )
+    if not is_multi_part or not keys:
+        return value
+
+    mapped: dict[str, Any] = {key: "" for key in keys}
+    if isinstance(value, dict):
+        for index, key in enumerate(keys, start=1):
+            for candidate in (key, str(index), f"part_{index}", f"part{index}"):
+                if candidate in value:
+                    mapped[key] = value[candidate]
+                    break
+        return mapped
+    if isinstance(value, (list, tuple)):
+        for index, key in enumerate(keys):
+            if index < len(value):
+                mapped[key] = value[index]
+        return mapped
+
+    text = _clean_text(value)
+    if not text:
+        return mapped
+    marker = re.compile(
+        r"(?:^|[\s;；])(?:\(\s*(\d+)\s*\)|part[_\s-]*(\d+)|(\d+)[.、:：)])\s*",
+        flags=re.IGNORECASE,
+    )
+    matches = list(marker.finditer(text))
+    if not matches:
+        return value
+    for pos, match in enumerate(matches):
+        number_text = next((group for group in match.groups() if group), "")
+        try:
+            part_index = int(number_text) - 1
+        except (TypeError, ValueError):
+            continue
+        if not 0 <= part_index < len(keys):
+            continue
+        end = matches[pos + 1].start() if pos + 1 < len(matches) else len(text)
+        segment = text[match.end():end].strip(" \t\r\n;；,")
+        mapped[keys[part_index]] = segment
+    return mapped
+
+
 def _checker_payload(ctx: HandwritingCheckContext) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "skill_id": ctx.skill_id,
@@ -296,6 +362,9 @@ def build_handwriting_check_response(
         }
 
     normalized = normalize_ai_handwriting_result(ai_result)
+    normalized["normalized_answer"] = normalize_multi_part_handwriting_answer(
+        normalized.get("recognized_answer"), ctx
+    )
     if isinstance(ai_result, dict) and ai_result.get("recognition_uncertain") is True:
         return {
             **normalized,
@@ -346,7 +415,7 @@ def build_handwriting_check_response(
         }
 
     final_correct = deterministic_final_answer_check(
-        normalized["recognized_answer"], ctx, checker=checker
+        normalized["normalized_answer"], ctx, checker=checker
     )
     if final_correct is None:
         return {

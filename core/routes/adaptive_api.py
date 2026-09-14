@@ -5,6 +5,7 @@ import json
 import re
 import base64
 import hashlib
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -158,6 +159,84 @@ def _debug_save_handwriting_capture(image_data_url: str, metadata: object) -> No
         current_app.logger.exception("[HANDWRITING CAPTURE DEBUG] snapshot_failed")
 
 
+def _handwriting_image_sha256(image_data_url: str) -> str:
+    text = str(image_data_url or "")
+    encoded = text.split(",", 1)[-1]
+    try:
+        image_bytes = base64.b64decode(encoded, validate=False)
+    except Exception:
+        image_bytes = text.encode("utf-8")
+    return hashlib.sha256(image_bytes).hexdigest()
+
+
+def _attach_handwriting_submission_audit(
+    response: dict[str, object],
+    *,
+    payload: dict[str, object],
+    ctx: HandwritingCheckContext,
+    image_base64: str,
+    ai_result: dict[str, object] | None,
+    previous_state_cleared: bool,
+) -> dict[str, object]:
+    out = dict(response)
+    submission_id = str(payload.get("handwriting_submission_id") or uuid.uuid4())
+    capture_debug = payload.get("capture_debug") if isinstance(payload.get("capture_debug"), dict) else {}
+    captured_at = str(capture_debug.get("captured_at") or datetime.now(timezone.utc).isoformat())
+    raw = ai_result if isinstance(ai_result, dict) else {}
+    recognized_raw = (
+        raw.get("recognized_answer")
+        if raw.get("recognized_answer") not in (None, "")
+        else raw.get("recognized_expression")
+        or raw.get("expression")
+        or raw.get("recognized_text")
+        or out.get("recognized_answer")
+        or ""
+    )
+    normalized = out.get("normalized_answer")
+    structured = normalized if isinstance(normalized, dict) else {}
+    audit = {
+        "submission_id": submission_id,
+        "question_uid": ctx.question_uid,
+        "image_sha256": _handwriting_image_sha256(image_base64),
+        "capture_timestamp": captured_at,
+        "server_received_at": datetime.now(timezone.utc).isoformat(),
+        "recognized_raw_text": recognized_raw,
+        "normalized_answer": normalized,
+        "structured_answer": structured,
+        "part_1": structured.get("part_1") if isinstance(structured, dict) else None,
+        "part_2": structured.get("part_2") if isinstance(structured, dict) else None,
+        "completion_state": out.get("completion_state"),
+        "checker_input": normalized,
+        "checker_result": out.get("final_answer_correct"),
+        "previous_handwriting_state_reused": False,
+        "previous_authoritative_state_cleared": previous_state_cleared,
+        "structured_analysis_from_current_request": True,
+        "tutor_authoritative_result": session.get("chat_tutor_authoritative_result"),
+    }
+    out["handwriting_submission_id"] = submission_id
+    out["submission_audit"] = audit
+    current_app.logger.info(
+        "[HANDWRITING SUBMISSION] submission_id=%s question_uid=%s image_sha256=%s "
+        "capture_timestamp=%s recognized_raw=%r normalized=%r structured=%r "
+        "part_1=%r part_2=%r completion=%s checker_input=%r checker_result=%r "
+        "previous_reused=false structured_current=true tutor_authoritative=%r",
+        submission_id,
+        ctx.question_uid,
+        audit["image_sha256"],
+        captured_at,
+        recognized_raw,
+        normalized,
+        structured,
+        audit["part_1"],
+        audit["part_2"],
+        audit["completion_state"],
+        audit["checker_input"],
+        audit["checker_result"],
+        audit["tutor_authoritative_result"],
+    )
+    return out
+
+
 @practice_bp.route("/api/practice/ai-check-handwriting", methods=["POST"])
 @login_required
 def ai_check_handwriting():
@@ -192,10 +271,20 @@ def ai_check_handwriting():
         choices=list(runtime.get("choices") or payload.get("choices") or []),
         rubric=str(runtime.get("rubric") or ""),
     )
+    transient_keys = (
+        "chat_tutor_authoritative_result",
+        "chat_tutor_temporary_state",
+        "handwriting_temporary_analysis",
+    )
+    previous_state_cleared = any(key in session for key in transient_keys)
+    for key in transient_keys:
+        session.pop(key, None)
+    if previous_state_cleared:
+        session.modified = True
 
     # Blank canvas short-circuit: never invoke vision when there are no strokes.
     if _looks_blank_image(image_base64):
-        return jsonify(
+        blank_response = _attach_handwriting_submission_audit(
             {
                 "completion_state": "blank",
                 "mode": "unrecognized",
@@ -214,14 +303,20 @@ def ai_check_handwriting():
                 "is_blank": True,
                 "vision_invoked": False,
                 "image_payload_nonempty": bool(str(image_base64 or "").strip()),
-            }
-        ), 200
+            },
+            payload=payload,
+            ctx=ctx,
+            image_base64=image_base64,
+            ai_result=None,
+            previous_state_cleared=previous_state_cleared,
+        )
+        return jsonify(blank_response), 200
 
     try:
         ai_result = _call_ai_handwriting_checker(payload, ctx)
     except Exception as exc:
         current_app.logger.warning("[AI handwriting check] failed: %s", exc)
-        return jsonify(
+        error_response = _attach_handwriting_submission_audit(
             {
                 "mode": "unrecognized",
                 "completion_state": "in_progress",
@@ -239,8 +334,14 @@ def ai_check_handwriting():
                 "should_record_attempt": False,
                 "is_blank": False,
                 "vision_invoked": True,
-            }
-        ), 200
+            },
+            payload=payload,
+            ctx=ctx,
+            image_base64=image_base64,
+            ai_result=None,
+            previous_state_cleared=previous_state_cleared,
+        )
+        return jsonify(error_response), 200
 
     response = build_handwriting_check_response(
         image_base64=image_base64,
@@ -252,6 +353,14 @@ def ai_check_handwriting():
     # Do not leak hidden answer/rubric/checker internals to the browser.
     for forbidden in ("correct_answer", "semantic_answer", "answer_contract", "rubric", "checker"):
         response.pop(forbidden, None)
+    response = _attach_handwriting_submission_audit(
+        response,
+        payload=payload,
+        ctx=ctx,
+        image_base64=image_base64,
+        ai_result=ai_result if isinstance(ai_result, dict) else None,
+        previous_state_cleared=previous_state_cleared,
+    )
     return jsonify(response), 200
 
 

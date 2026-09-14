@@ -1510,11 +1510,17 @@ def chat_ai():
     question_text = data.get('question_text', '')
     correct_answer = data.get('correct_answer', '').strip()
     requested_question_uid = str(data.get('question_uid') or '').strip()
+    requested_submission_id = str(data.get('handwriting_submission_id') or '').strip()
     checker_result = session.get('chat_tutor_authoritative_result')
     if not isinstance(checker_result, dict):
         checker_result = {}
     checker_question_uid = str(checker_result.get('question_uid') or '').strip()
-    if requested_question_uid and requested_question_uid == checker_question_uid:
+    checker_submission_id = str(checker_result.get('handwriting_submission_id') or '').strip()
+    submission_matches = (
+        not requested_submission_id
+        or requested_submission_id == checker_submission_id
+    )
+    if requested_question_uid and requested_question_uid == checker_question_uid and submission_matches:
         authoritative_correct = checker_result.get('correct')
         authoritative_status = str(checker_result.get('status') or 'unknown').strip().lower()
     else:
@@ -2357,6 +2363,28 @@ def analyze_handwriting():
 
 
     data = request.get_json(silent=True) or {}
+    handwriting_submission_id = str(data.get("handwriting_submission_id") or "").strip()
+    authoritative_result = session.get("chat_tutor_authoritative_result")
+    authoritative_result = authoritative_result if isinstance(authoritative_result, dict) else {}
+    if handwriting_submission_id:
+        requested_uid = str(data.get("question_uid") or "").strip()
+        authoritative_uid = str(authoritative_result.get("question_uid") or "").strip()
+        authoritative_submission_id = str(
+            authoritative_result.get("handwriting_submission_id") or ""
+        ).strip()
+        if (
+            not authoritative_submission_id
+            or handwriting_submission_id != authoritative_submission_id
+            or (requested_uid and requested_uid != authoritative_uid)
+        ):
+            return jsonify(
+                {
+                    "success": False,
+                    "stale_handwriting_submission": True,
+                    "handwriting_submission_id": handwriting_submission_id,
+                    "reason": "checker_result_not_for_current_submission",
+                }
+            ), 409
 
 
 
@@ -2650,6 +2678,11 @@ def analyze_handwriting():
         analysis_result = _handwriting_structured_analysis(
             expr, expected_answer, question_text, family_id
         )
+        if handwriting_submission_id:
+            analysis_result["status"] = str(
+                authoritative_result.get("status") or "unknown"
+            ).strip().lower()
+            analysis_result["checker_authoritative"] = True
         current_app.logger.info(
             "analyze_handwriting: analysis_source=%s family_id=%s status=%s",
             analysis_result.get("analysis_source"),
@@ -3101,6 +3134,18 @@ def analyze_handwriting():
 
 
 
+    if handwriting_submission_id:
+        result["handwriting_submission_id"] = handwriting_submission_id
+        result["structured_analysis_from_current_request"] = True
+        result["tutor_authoritative_result"] = authoritative_result
+        current_app.logger.info(
+            "[HANDWRITING SUBMISSION] submission_id=%s question_uid=%s image_sha256=%s "
+            "structured_current=true tutor_authoritative=%r",
+            handwriting_submission_id,
+            str(data.get("question_uid") or ""),
+            str(data.get("handwriting_image_sha256") or ""),
+            result["tutor_authoritative_result"],
+        )
     return jsonify(result)
 
 

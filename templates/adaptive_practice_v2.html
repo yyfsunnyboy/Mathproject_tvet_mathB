@@ -847,6 +847,8 @@
       assessmentCompleted: false,
       assessmentStopReason: "",
       demoRouteMsg: "系統尚未開始診斷。",
+      handwritingTransient: null,
+      handwritingSubmissionSequence: 0,
     };
     const centerMsgboxOverlay = document.getElementById("centerMsgboxOverlay");
     const centerMsgboxTitle = document.getElementById("centerMsgboxTitle");
@@ -2672,10 +2674,23 @@
         return;
       }
       try {
-        if (isCanvasBlank()) {
-          setStatus("請先在白板作答。");
-          return;
-        }
+        state.handwritingSubmissionSequence += 1;
+        const capturedAt = new Date().toISOString();
+        const randomId = (window.crypto && typeof window.crypto.randomUUID === "function")
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${state.handwritingSubmissionSequence}`;
+        state.handwritingTransient = {
+          submissionId: `hw-${randomId}`,
+          questionUid: String(state.currentQuestionUid || ""),
+          capturedAt,
+          imageSha256: "",
+          recognizedRawText: "",
+          normalizedAnswer: null,
+          structuredAnalysis: null,
+          checkerResult: null,
+        };
+        const submission = state.handwritingTransient;
+        setStatus("");
         const imageDataUrl = await captureHandwritingImageForRecognition();
         if (!imageDataUrl || imageDataUrl === "data:," || imageDataUrl === "data:image/png;base64,") {
           setStatus("請先在白板作答。");
@@ -2698,8 +2713,9 @@
             problem_type_id: state.currentProblemTypeId,
             presentation_mode: state.currentPresentationMode,
             answer_type: state.currentAnswerType,
+            handwriting_submission_id: submission.submissionId,
             capture_debug: {
-              captured_at: new Date().toISOString(),
+              captured_at: submission.capturedAt,
               canvas_selector: "#handwriting-canvas",
               reused_cache: false,
               stroke_count: null,
@@ -2708,6 +2724,14 @@
           })
         });
         const recognition = await recognitionResponse.json();
+        if (recognition.handwriting_submission_id && recognition.handwriting_submission_id !== submission.submissionId) {
+          throw new Error("手寫辨識回傳已過期，請重新送出。");
+        }
+        const submissionAudit = recognition.submission_audit || {};
+        submission.imageSha256 = String(submissionAudit.image_sha256 || "");
+        submission.recognizedRawText = submissionAudit.recognized_raw_text ?? recognition.recognized_answer ?? "";
+        submission.normalizedAnswer = recognition.normalized_answer ?? recognition.recognized_answer ?? null;
+        submission.structuredAnalysis = submissionAudit.structured_answer || null;
         const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
         if (recognition.completion_state === "blank" || recognition.is_blank === true) {
           setMessageContent(thinking, recognition.feedback || "請先在白板作答。");
@@ -2731,10 +2755,13 @@
             question_uid: state.currentQuestionUid,
             skill_id: state.mainSkill || skillId,
             problem_type_id: state.currentProblemTypeId,
+            handwriting_submission_id: submission.submissionId,
+            handwriting_image_sha256: submission.imageSha256,
           })
         });
         const grade = await gradeResponse.json();
         if (!gradeResponse.ok) throw new Error(grade.result || "手寫答案批改失敗。");
+        submission.checkerResult = grade.checker_result || (grade.correct ? "correct" : "incorrect");
         setMessageContent(thinking, grade.result || (grade.correct ? "答對了！" : "答案尚未正確。"));
         await typesetMath(thinking);
         if (grade.correct === true) {
@@ -2761,9 +2788,15 @@
             normalized_answer: normalizedAnswer,
             question_uid: state.currentQuestionUid,
             question_text: state.currentQuestionText,
+            handwriting_submission_id: submission.submissionId,
+            handwriting_image_sha256: submission.imageSha256,
           })
         });
         const feedback = await feedbackResponse.json();
+        if (feedback.handwriting_submission_id && feedback.handwriting_submission_id !== submission.submissionId) {
+          throw new Error("AI 助教回傳已過期，已忽略上一輪分析。");
+        }
+        submission.structuredAnalysis = feedback.handwriting_analysis || null;
         setMessageContent(thinking, feedback.reply || "先找出第一個不一致的步驟，再試著修正它。");
         await typesetMath(thinking);
       } catch (err) {

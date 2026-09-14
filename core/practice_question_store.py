@@ -562,7 +562,12 @@ def load_current_question(ref: dict[str, Any] | None = None) -> dict[str, Any]:
     return {}
 
 
-def mark_question_answered(question_uid: str, grade_result: dict[str, Any]) -> None:
+def mark_question_answered(
+    question_uid: str,
+    grade_result: dict[str, Any],
+    *,
+    handwriting_submission_id: str = "",
+) -> None:
     uid = str(question_uid or "").strip()
     if not uid:
         return
@@ -570,12 +575,21 @@ def mark_question_answered(question_uid: str, grade_result: dict[str, Any]) -> N
     row = (_STORE.get(owner_key) or {}).get(uid)
     if not isinstance(row, dict):
         return
-    row["status"] = STATUS_ANSWERED
-    row["grade_result"] = {
+    cached_result = {
         "correct": bool(grade_result.get("correct", False)),
         "result": str(grade_result.get("result", "")),
         "answered_at": time.time(),
     }
+    submission_id = str(handwriting_submission_id or "").strip()
+    if submission_id:
+        cached_result["handwriting_submission_id"] = submission_id
+        handwriting_results = row.get("handwriting_grade_results")
+        if not isinstance(handwriting_results, dict):
+            handwriting_results = {}
+            row["handwriting_grade_results"] = handwriting_results
+        handwriting_results[submission_id] = cached_result
+    row["status"] = STATUS_ANSWERED
+    row["grade_result"] = cached_result
 
 
 def estimate_session_cookie_bytes() -> int:
@@ -612,13 +626,18 @@ def duplicate_submission_response(
     question_uid: str,
     grade_result: dict[str, Any],
 ) -> dict[str, Any]:
-    return {
+    response = {
         "correct": bool(grade_result.get("correct", False)),
         "duplicate_submission": True,
         "question_uid": str(question_uid),
         "result": str(grade_result.get("result", "")),
         "message": "此題已批改過。",
     }
+    submission_id = str(grade_result.get("handwriting_submission_id") or "").strip()
+    if submission_id:
+        response["handwriting_submission_id"] = submission_id
+        response["checker_result"] = "correct" if response["correct"] else "incorrect"
+    return response
 
 
 def _log_stale(reason: str, **fields: Any) -> None:
@@ -636,6 +655,7 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
     req = body if isinstance(body, dict) else {}
     req_skill = str(req.get("skill_id", "")).strip()
     req_uid = str(req.get("question_uid", "")).strip()
+    req_submission_id = str(req.get("handwriting_submission_id", "")).strip()
     session_skill = str(session.get("current_skill_id", "")).strip()
 
     if not req_uid:
@@ -670,14 +690,27 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
         return None, question_expired_response()
 
     if status == STATUS_ANSWERED:
-        cached = payload.get("grade_result")
-        if isinstance(cached, dict):
-            return None, duplicate_submission_response(req_uid, cached)
-        _log_stale("answered_without_cache", uid=req_uid)
-        return None, duplicate_submission_response(
-            req_uid,
-            {"correct": False, "result": "此題已批改過。"},
-        )
+        if req_submission_id:
+            handwriting_results = payload.get("handwriting_grade_results")
+            cached_submission = (
+                handwriting_results.get(req_submission_id)
+                if isinstance(handwriting_results, dict)
+                else None
+            )
+            if isinstance(cached_submission, dict):
+                return None, duplicate_submission_response(req_uid, cached_submission)
+            # A new handwriting submission for the same question is a new
+            # grading event, even when a previous submission was incorrect or
+            # correct.  Continue with the preserved question contract.
+        else:
+            cached = payload.get("grade_result")
+            if isinstance(cached, dict):
+                return None, duplicate_submission_response(req_uid, cached)
+            _log_stale("answered_without_cache", uid=req_uid)
+            return None, duplicate_submission_response(
+                req_uid,
+                {"correct": False, "result": "此題已批改過。"},
+            )
 
     payload_skill = str(payload.get("skill_id", payload.get("skill", ""))).strip()
     if not req_skill:

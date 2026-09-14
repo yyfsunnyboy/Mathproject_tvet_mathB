@@ -58,8 +58,10 @@ def _normalize_scalar(value: Any) -> str:
 
 def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
     try:
-        student_frac = Fraction(str(student).strip())
-        expected_frac = Fraction(str(expected).strip())
+        # A handwritten degree answer commonly includes the semantic unit mark
+        # even when the generated numeric contract stores only the coefficient.
+        student_frac = Fraction(str(student).strip().replace("°", ""))
+        expected_frac = Fraction(str(expected).strip().replace("°", ""))
     except Exception:
         return False
     return student_frac == expected_frac
