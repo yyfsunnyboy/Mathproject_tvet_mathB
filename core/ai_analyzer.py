@@ -17,6 +17,7 @@ import json
 import tempfile
 import os
 import re
+import hashlib
 from flask import current_app
 import PIL.Image
 import io
@@ -27,6 +28,13 @@ from core.prompts.registry import render_prompt
 gemini_model = None
 gemini_chat = None
 gemini_model_name = None
+gemini_key_fingerprint = None
+
+
+def _gemini_key_fingerprint(api_key):
+    """Return a non-reversible identity used only for client invalidation."""
+    key = str(api_key or "").strip()
+    return hashlib.sha256(key.encode("utf-8")).hexdigest() if key else None
 
 
 def _sanitize_sensitive_error_message(message):
@@ -534,11 +542,12 @@ def _extract_reply_and_prompts_from_jsonish(text):
     return reply, prompts
 
 def configure_gemini(api_key, model_name):
-    global gemini_model, gemini_chat, gemini_model_name
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
     genai.configure(api_key=api_key)
     gemini_model = genai.GenerativeModel(model_name)
     gemini_chat = gemini_model.start_chat(history=[])
     gemini_model_name = model_name
+    gemini_key_fingerprint = _gemini_key_fingerprint(api_key)
 
 def diagnose_error(question_text, correct_answer, student_answer, prerequisite_units=None, conversation_history=None):
     """
@@ -653,7 +662,7 @@ JSON:
         }
 
 def get_model(role="tutor"):
-    global gemini_model, gemini_chat, gemini_model_name
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
 
     # Keep runtime behavior aligned with /admin/ai_prompt_settings
     try:
@@ -678,16 +687,23 @@ def get_model(role="tutor"):
         raise RuntimeError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
     if not (str(api_key).startswith("AIza") and len(str(api_key).strip()) >= 30):
         current_app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
-    current_app.logger.info(f"[AI KEY] source={source}")
+    current_app.logger.info(f"[AI KEY] source={source} last4={str(api_key)[-4:]}")
     current_app.logger.info(f"[AI MODEL] provider=google model={runtime_model}")
+
+    active_key_fingerprint = _gemini_key_fingerprint(api_key)
 
     # Always configure before constructing/using model
     genai.configure(api_key=api_key)
 
-    if gemini_model is None or gemini_model_name != runtime_model:
+    if (
+        gemini_model is None
+        or gemini_model_name != runtime_model
+        or gemini_key_fingerprint != active_key_fingerprint
+    ):
         gemini_model = genai.GenerativeModel(runtime_model)
         gemini_chat = None
         gemini_model_name = runtime_model
+        gemini_key_fingerprint = active_key_fingerprint
 
     return gemini_model
 
