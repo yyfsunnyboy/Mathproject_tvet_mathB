@@ -11,6 +11,7 @@ from fractions import Fraction
 from typing import Any
 
 from core.domain import polynomial_domain as pd
+from core.gencode.coordinate_math_formatter import inline_math
 
 
 def _src(rng: random.Random) -> str:
@@ -315,13 +316,13 @@ def _build_prime_value(rng: random.Random, src: str) -> dict[str, Any]:
             break
     poly = pd._poly_mul(_lin(lead, const), _lin(1, -k))
     question = (
-        f"已知$P={pd.poly_plain(poly)}$是質數，x為正整數，"
+        f"已知$P={pd.poly_plain(poly)}$是質數，{inline_math('x')}為正整數，"
     )
     if _part_count(src) >= 2:
-        question += "試求：(1) x之值。(2) 此質數P。"
+        question += f"試求：(1) {inline_math('x')}之值。(2) 此質數{inline_math('P')}。"
         parts = {"part_1": str(x_true), "part_2": str(p_val)}
         return _bundle_parts(question, parts, extra={"x": x_true, "P": p_val, "excluded_composite": True})
-    question = f"若x為正整數，且$P={pd.poly_plain(poly)}$是質數，試求此質數。"
+    question = f"若{inline_math('x')}為正整數，且$P={pd.poly_plain(poly)}$是質數，試求此質數。"
     return pd._scalar_bundle(question, str(p_val), extra_givens={"x": x_true, "P": p_val})
 
 
@@ -400,7 +401,7 @@ def _build_area_side_perimeter(rng: random.Random) -> dict[str, Any]:
     peri = f"4{side}"
     question = (
         f"已知一正方形的邊長為正整數，其面積為${pd.poly_latex(area, name=None)}$平方公分，"
-        f"且邊長可寫成x的一次式，試求此正方形的周長。"
+        f"且邊長可寫成{inline_math('x')}的一次式，試求此正方形的周長。"
     )
     return pd._scalar_bundle(question, peri, extra_givens={"side": side, "perimeter": peri})
 
@@ -892,7 +893,8 @@ def _identity_ab(rng: random.Random) -> dict[str, Any]:
     )
     den = pd._poly_mul(_lin(p, r), _lin(q, s))
     question = (
-        f"已知${lhs}=\\dfrac{{ax+b}}{{{pd.poly_plain(den)}}}$，試求a、b之值。"
+        f"已知${lhs}=\\dfrac{{ax+b}}{{{pd.poly_plain(den)}}}$，"
+        f"試求{inline_math('a')}、{inline_math('b')}之值。"
     )
     return _bundle_parts(
         question,

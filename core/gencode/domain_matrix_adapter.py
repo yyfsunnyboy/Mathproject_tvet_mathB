@@ -8,6 +8,10 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from core.gencode.coordinate_math_formatter import (
+    inline_math as _coordinate_inline_math,
+    point_with_coordinates as _coordinate_point_with_coordinates,
+)
 from core.gencode.resources.rational_display import (
     canonicalize_display_answer,
     canonicalize_multi_part_display,
@@ -869,6 +873,39 @@ def _latex_dollar(value: Any) -> str:
     return f"${_format_latex_math_text(str(value))}$"
 
 
+def _named_point_inline(label: str, value: Any) -> str:
+    """Render a point label and its coordinates as one MathJax atom."""
+    if isinstance(value, dict):
+        return _coordinate_point_with_coordinates(label, value.get("x"), value.get("y"))
+    if isinstance(value, (list, tuple)) and len(value) >= 2:
+        return _coordinate_point_with_coordinates(label, value[0], value[1])
+    raise ValueError(f"invalid_named_point:{label}")
+
+
+def _ensure_inline_math(value: Any) -> str:
+    """Keep an existing inline span or wrap one plain math atom."""
+    text = str(value or "").strip()
+    if (text.startswith("$") and text.endswith("$")) or (
+        text.startswith(r"\(") and text.endswith(r"\)")
+    ):
+        return text
+    return _coordinate_inline_math(text)
+
+
+def _point_list_inline(points: Any, fallback: Any) -> str:
+    """Render comma-separated coordinate pairs as separate inline spans."""
+    if isinstance(points, list) and points:
+        rendered = []
+        for point in points:
+            if not isinstance(point, (list, tuple)) or len(point) < 2:
+                return _ensure_inline_math(fallback)
+            rendered.append(
+                _coordinate_inline_math(f"\\left( {point[0]},{point[1]} \\right)")
+            )
+        return "、".join(rendered)
+    return _ensure_inline_math(fallback)
+
+
 def _format_latex_display_answer(value: str, task_type: str = "") -> str:
     text = str(value or "").strip()
     if not text:
@@ -1010,10 +1047,11 @@ def _build_line_equation_question_text(
         segment_length = _format_latex_math_text(givens.get("segment_length"))
         if point_a is None or not line or segment_length is None:
             raise ValueError("required_line_task_slot_missing:area_using_parallel_distance:givens")
-        pt = _format_point_for_question(point_a)
+        pt = _named_point_inline("A", point_a)
+        triangle_abc = _coordinate_inline_math("\\triangle ABC")
         return (
-            f"設 A 點坐標為 {pt}，且 B、C 兩點在直線 $L: {line}$ 上，"
-            f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 △ABC 的面積。"
+            f"設點 {pt}，且 {_coordinate_inline_math('B')}、{_coordinate_inline_math('C')} 兩點在直線 $L: {line}$ 上，"
+            f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 {triangle_abc} 的面積。"
         )
 
     if task_type == "parallel_lines_distance_single_choice":
@@ -1042,7 +1080,7 @@ def _build_line_equation_question_text(
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
-            f"已知直線的斜率為 {_latex_inline(slope)}，且 y 截距為 {_latex_inline(y_intercept)}，"
+            f"已知直線的斜率為 {_latex_inline(slope)}，且 {_coordinate_inline_math('y')} 截距為 {_latex_inline(y_intercept)}，"
             "試求此直線方程式。"
         )
 
@@ -1054,15 +1092,15 @@ def _build_line_equation_question_text(
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
-            f"設直線 L 的斜率為 {_latex_inline(slope)}，且 y 截距為 {_latex_inline(y_intercept)}，"
-            "求 L 的 x 截距。"
+            f"設直線 {_coordinate_inline_math('L')} 的斜率為 {_latex_inline(slope)}，且 {_coordinate_inline_math('y')} 截距為 {_latex_inline(y_intercept)}，"
+            f"求 {_coordinate_inline_math('L')} 的 {_coordinate_inline_math('x')} 截距。"
         )
 
     if task_type == "slope_intercept_read_slope_and_intercept":
         if "equation" not in givens:
             raise ValueError("required_line_task_slot_missing:slope_intercept_read_slope_and_intercept:equation")
         equation = givens.get("equation")
-        return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 y 截距。"
+        return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 {_coordinate_inline_math('y')} 截距。"
 
     # 2. Intercept Forms & Word Problems
     if task_type in {
@@ -1080,13 +1118,14 @@ def _build_line_equation_question_text(
             for slot in ("vertex", "edge_p1", "edge_p2", "midpoint"):
                 if slot not in givens:
                     raise ValueError(f"required_line_task_slot_missing:triangle_area_bisector_line_equation:{slot}")
-            vertex = _format_point_for_question(givens.get("vertex"))
-            edge_p1 = _format_point_for_question(givens.get("edge_p1"))
-            edge_p2 = _format_point_for_question(givens.get("edge_p2"))
-            midpoint = _format_point_for_question(givens.get("midpoint"))
+            vertex = _named_point_inline("B", givens.get("vertex"))
+            edge_p1 = _named_point_inline("A", givens.get("edge_p1"))
+            edge_p2 = _named_point_inline("C", givens.get("edge_p2"))
+            midpoint = _named_point_inline("D", givens.get("midpoint"))
             return (
-                f"已知三角形 ABC 中，A={edge_p1}、B={vertex}、C={edge_p2}。"
-                f"若直線通過 B 並通過 AC 的中點 D={midpoint}，求此平分三角形 ABC 面積的直線方程式。"
+                f"已知三角形 {_coordinate_inline_math('ABC')} 中，{edge_p1}、{vertex}、{edge_p2}。"
+                f"若直線通過 {_coordinate_inline_math('B')} 並通過 {_coordinate_inline_math('AC')} 的中點 {midpoint}，"
+                f"求此平分三角形 {_coordinate_inline_math('ABC')} 面積的直線方程式。"
             )
         if task_type == "parabola_secant_parallel_line_choice":
             if "p" not in givens or "q" not in givens:
@@ -1094,8 +1133,8 @@ def _build_line_equation_question_text(
             p = givens.get("p")
             q = givens.get("q")
             return (
-                f"若 A、B 兩點分別是拋物線 $y=x^2$ 與直線 $x={p}$、$x={q}$ 的交點，"
-                "則直線 AB 與下列哪一條直線平行？"
+                f"若 {_coordinate_inline_math('A')}、{_coordinate_inline_math('B')} 兩點分別是拋物線 $y=x^2$ 與直線 $x={p}$、$x={q}$ 的交點，"
+                f"則直線 {_coordinate_inline_math('AB')} 與下列哪一條直線平行？"
             )
         if task_type == "intercept_form_from_intercept_sum_and_slope":
             if "intercept_sum" not in givens or "slope" not in givens:
@@ -1103,17 +1142,17 @@ def _build_line_equation_question_text(
             intercept_sum = givens.get("intercept_sum")
             slope = givens.get("slope")
             return (
-                f"已知直線 L 在兩坐標軸上的截距和為 {_latex_dollar(intercept_sum)}，"
-                f"且 L 的斜率為 {_latex_dollar(slope)}，求 L 的方程式。"
+                f"已知直線 {_coordinate_inline_math('L')} 在兩坐標軸上的截距和為 {_latex_dollar(intercept_sum)}，"
+                f"且 {_coordinate_inline_math('L')} 的斜率為 {_latex_dollar(slope)}，求 {_coordinate_inline_math('L')} 的方程式。"
             )
         if task_type == "intercept_form_triangle_area":
             if equation:
                 return (
-                    f"已知直線方程式為 {_latex_dollar(equation)}，求它與 x 軸及 y 軸"
+                    f"已知直線方程式為 {_latex_dollar(equation)}，求它與 {_coordinate_inline_math('x')} 軸及 {_coordinate_inline_math('y')} 軸"
                     "所圍成的三角形面積。"
                 )
             return (
-                f"已知一直線的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
+                f"已知一直線的 {_coordinate_inline_math('x')} 截距為 {_latex_dollar(x_intercept)}，{_coordinate_inline_math('y')} 截距為 "
                 f"{_latex_dollar(y_intercept)}，求它與兩坐標軸所圍成的三角形面積。"
             )
         if equation:
@@ -1122,8 +1161,8 @@ def _build_line_equation_question_text(
                 "並求與兩坐標軸所圍成的三角形面積。"
             )
         return (
-            f"已知一直線 L 的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
-            f"{_latex_dollar(y_intercept)}，試求直線 L 的方程式與兩坐標軸所圍成的三角形面積。"
+            f"已知一直線 {_coordinate_inline_math('L')} 的 {_coordinate_inline_math('x')} 截距為 {_latex_dollar(x_intercept)}，{_coordinate_inline_math('y')} 截距為 "
+            f"{_latex_dollar(y_intercept)}，試求直線 {_coordinate_inline_math('L')} 的方程式與兩坐標軸所圍成的三角形面積。"
         )
 
     # 3. V3 General Form Line types
@@ -1199,20 +1238,24 @@ def _build_line_equation_question_text(
     if task_type == "slope_from_two_points":
         if "point_a" not in givens or "point_b" not in givens:
             raise ValueError("required_line_task_slot_missing:slope_from_two_points:points")
-        pa = givens.get("point_a_display") or _format_point_for_question(givens["point_a"])
-        pb = givens.get("point_b_display") or _format_point_for_question(givens["point_b"])
-        return f"試求過兩點 A{pa}、B{pb} 的直線斜率。"
+        pa = _named_point_inline("A", givens["point_a"])
+        pb = _named_point_inline("B", givens["point_b"])
+        return f"試求過兩點 {pa}、{pb} 的直線斜率。"
 
     if task_type in ("solve_parameter_from_known_slope", "solve_parameter_from_known_slope_choice"):
         if "slope" not in givens:
             raise ValueError("required_line_task_slot_missing:solve_parameter_from_known_slope:slope")
-        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
-        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pa = _ensure_inline_math(
+            givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        )
+        pb = _ensure_inline_math(
+            givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        )
         slope = givens["slope"]
         param = givens.get("parameter_name") or "a"
         return (
             f"若直線通過點 {pa} 與 {pb}，且其斜率為 {_latex_dollar(str(slope))}，"
-            f"試求 {param} 之值。"
+            f"試求 {_coordinate_inline_math(param)} 之值。"
         )
 
     if task_type == "collinear_three_points_parameter":
@@ -1261,20 +1304,24 @@ def _build_line_equation_question_text(
         )
 
     if task_type == "parallel_two_point_lines_parameter_choice":
-        l1 = givens.get("line_1_display") or ""
-        l2 = givens.get("line_2_display") or ""
+        l1 = _point_list_inline(
+            givens.get("line_1_points"), givens.get("line_1_display") or ""
+        )
+        l2 = _point_list_inline(
+            givens.get("line_2_points"), givens.get("line_2_display") or ""
+        )
         param = givens.get("parameter_name") or "a"
         return (
-            f"平面上過兩點 ${l1}$ 的直線和過另兩點 ${l2}$ 的直線平行，"
-            f"則 {param} ="
+            f"平面上過兩點 {l1} 的直線和過另兩點 {l2} 的直線平行，"
+            f"則 {_coordinate_inline_math(f'{param} =')}"
         )
 
     if task_type == "parallel_and_perpendicular_slopes_from_reference":
         m1 = givens.get("reference_slope") or "m1"
         return (
-            f"已知直線 L1 的斜率為 {_latex_dollar(str(m1))}，試問："
-            f"(1) 若直線 L2 平行 L1，試求 L2 的斜率。"
-            f"(2) 若直線 L3 垂直 L1，試求 L3 的斜率。"
+            f"已知直線 {_coordinate_inline_math('L_1')} 的斜率為 {_latex_dollar(str(m1))}，試問："
+            f"(1) 若直線 {_coordinate_inline_math('L_2')} 平行 {_coordinate_inline_math('L_1')}，試求 {_coordinate_inline_math('L_2')} 的斜率。"
+            f"(2) 若直線 {_coordinate_inline_math('L_3')} 垂直 {_coordinate_inline_math('L_1')}，試求 {_coordinate_inline_math('L_3')} 的斜率。"
         )
 
     if task_type == "triangle_right_angle_verification":
@@ -1307,13 +1354,13 @@ def _build_line_equation_question_text(
         segments = givens.get("segments") if isinstance(givens.get("segments"), list) else []
         point_bits = []
         for label, coords in points.items():
-            point_bits.append(f"{label}{_format_point_for_question(coords)}")
+            point_bits.append(_named_point_inline(str(label), coords))
         seg_bits = []
         for idx, seg in enumerate(segments):
             if not isinstance(seg, dict):
                 continue
             name = str(seg.get("name") or f"L{idx + 1}")
-            seg_bits.append(f"({idx + 1})直線{name}")
+            seg_bits.append(f"({idx + 1})直線{_coordinate_inline_math(name)}")
         joined_points = "、".join(point_bits) if point_bits else "已知各點"
         joined_segs = " ".join(seg_bits) if seg_bits else "各線段"
         return f"設{joined_points}，試求下列直線的斜率。{joined_segs}。"
@@ -1354,9 +1401,9 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_a")
         if "point_b" not in givens:
             raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_b")
-        pa = _format_point_for_question(givens["point_a"])
-        pb = _format_point_for_question(givens["point_b"])
-        return f"已知平面上兩點 A{pa}、B{pb}，求線段 AB 的垂直平分線（中垂線）方程式。"
+        pa = _named_point_inline("A", givens["point_a"])
+        pb = _named_point_inline("B", givens["point_b"])
+        return f"已知平面上兩點 {pa}、{pb}，求線段 {_coordinate_inline_math('AB')} 的垂直平分線（中垂線）方程式。"
 
     if task_type == "line_through_point_perpendicular_to_segment":
         if "point_b" not in givens:
@@ -1365,10 +1412,13 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_a")
         if "point_c" not in givens:
             raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_c")
-        pb = _format_point_for_question(givens["point_b"])
-        pa = _format_point_for_question(givens["point_a"])
-        pc = _format_point_for_question(givens["point_c"])
-        return f"若 A{pa}、B{pb}、C{pc} 為平面上三點，則過點 B 且與直線 AC 垂直的直線方程式為何？"
+        pb = _named_point_inline("B", givens["point_b"])
+        pa = _named_point_inline("A", givens["point_a"])
+        pc = _named_point_inline("C", givens["point_c"])
+        return (
+            f"若 {pa}、{pb}、{pc} 為平面上三點，則過點 {_coordinate_inline_math('B')} "
+            f"且與直線 {_coordinate_inline_math('AC')} 垂直的直線方程式為何？"
+        )
 
     if task_type == "distance_from_point_to_line":
         if "point" not in givens:
@@ -1377,7 +1427,7 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:distance_from_point_to_line:equation")
         pt = _format_point_for_question(givens["point"])
         eq = givens["equation"]
-        return f"試求平面上一點 {pt} 到直線 L : {eq} 的距離。"
+        return f"試求平面上一點 {pt} 到直線 {_latex_dollar(f'L: {eq}')} 的距離。"
 
     if task_type in (
         "distance_from_point_to_line_parameter",
@@ -1395,7 +1445,10 @@ def _build_line_equation_question_text(
         var_name = "k"
         if "a" in eq or "a" in str(givens.get("point")):
             var_name = "a"
-        return f"若點 {pt} 到直線 L : {eq} 的距離為 {dist}，試求 {var_name} 的值。"
+        return (
+            f"若點 {pt} 到直線 {_latex_dollar(f'L: {eq}')} 的距離為 {_latex_dollar(dist)}，"
+            f"試求 {_coordinate_inline_math(var_name)} 的值。"
+        )
 
     if task_type == "compare_point_to_line_distances":
         if "point" not in givens:
@@ -1404,16 +1457,16 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_1")
         if "equation_2" not in givens:
             raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_2")
-        pt = _format_point_for_question(givens["point"])
+        pt = _named_point_inline("P", givens["point"])
         eq1 = givens["equation_1"]
         eq2 = givens["equation_2"]
         target_direction = str(givens.get("target_direction") or "closer").strip().lower()
         if target_direction == "closer":
-            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較近？"
+            return f"已知平面上一點 {pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 {_coordinate_inline_math('P')} 到哪一條直線的距離較近？"
         elif target_direction == "farther":
-            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較遠？"
+            return f"已知平面上一點 {pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 {_coordinate_inline_math('P')} 到哪一條直線的距離較遠？"
         else:
-            return f"已知平面有一點 P{pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
+            return f"已知平面有一點 {pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
 
     # 4. Fallbacks for standard Point-Slope / Two-Points / Horizontal / Vertical
     if task_type == "two_points" or ("point_a" in givens and "point_b" in givens):
@@ -2892,14 +2945,17 @@ def convert_domain_matrix_to_question_payload(
     if not question_text:
         if op == "solve_basic_absolute_value_equation":
             rhs = givens.get("rhs", 8)
-            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求{_coordinate_inline_math('x')}之值。"
         elif op == "solve_basic_absolute_value_equation_no_solution":
             rhs = givens.get("rhs", -3)
-            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求{_coordinate_inline_math('x')}之值。"
         elif op == "number_line_distance_between_two_points":
             a = givens.get("a", -3)
             b = givens.get("b", 7)
-            question_text = f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，試求A、B兩點的距離。"
+            question_text = (
+                f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，"
+                f"試求{_coordinate_inline_math('A')}、{_coordinate_inline_math('B')}兩點的距離。"
+            )
         elif op == "absolute_value_inequality_zero_center_basic":
             from core.gencode.absolute_value_latex import format_abs_inequality_op
 

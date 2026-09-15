@@ -36,8 +36,8 @@ def test_src_4511_is_always_triangle_median_length() -> None:
         payload = generate_source_faithful_payload(4511, seed)
         assert payload["problem_type_id"] == "triangle_median_length"
         assert payload["presentation_mode"] == "single_choice"
-        assert "三角形 ABC" in payload["question_text"]
-        assert "AB 邊上的中線長" in payload["question_text"]
+        assert "三角形 $ABC$" in payload["question_text"]
+        assert r"$\overline{AB}$ 邊上的中線長" in payload["question_text"]
         assert "AP:PB" not in payload["question_text"]
         coords = payload["metadata"]["generation_coords"]
         midpoint = (

@@ -3952,8 +3952,8 @@ def build_graph_based_linear_application_inverse_matrix(
     known_output = slope * target_input + intercept
     return {
         "question": (
-            f"某方案的輸入量 x 與總費用 y 關係為 $y={slope}x+{intercept}$，"
-            f"其圖形如下。若總費用為 {known_output}，求輸入量 x。"
+            f"某方案的輸入量 $x$ 與總費用 $y$ 關係為 $y={slope}x+{intercept}$，"
+            f"其圖形如下。若總費用為 {known_output}，求輸入量 $x$。"
         ),
         "givens": {
             "slope": slope,
@@ -4167,7 +4167,7 @@ def build_linear_graph_feasibility_choice_matrix(
     return {
         "question": (
             f"下列何者不可能是函數族 $f(x)=ax{required_intercept:+d}$"
-            "（a≠0）的圖形？"
+            "（$a\\ne 0$）的圖形？"
         ),
         "givens": {"graph_condition": graph_condition},
         "answer": {"correct_label": correct_label},
