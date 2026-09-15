@@ -217,7 +217,7 @@ def test_consecutive_100_questions_no_cookie_bloat(logged_client) -> None:
     assert size < 3500
 
 
-def test_duplicate_submission_no_double_grade(logged_client) -> None:
+def test_incorrect_standard_submission_can_be_retried_as_new_attempt(logged_client) -> None:
     q = logged_client.get(
         f"/get_next_question?skill={quote(SKILL_DIVISION)}&problem_type={PT_DIVISION}&gen_seed=88&level=1"
     ).get_json() or {}
@@ -226,12 +226,15 @@ def test_duplicate_submission_no_double_grade(logged_client) -> None:
         json=_check_payload(q, "__wrong__"),
     ).get_json() or {}
     assert first.get("duplicate_submission") is not True
+    assert first["correct"] is False
+    assert first["consecutive_correct"] == 0
     second = logged_client.post(
         "/check_answer",
-        json=_check_payload(q, "__another_wrong__"),
+        json=_check_payload(q, q["correct_answer"]),
     ).get_json() or {}
-    assert second.get("duplicate_submission") is True
-    assert second.get("result") == first.get("result")
+    assert second.get("duplicate_submission") is not True
+    assert second["correct"] is True
+    assert second["consecutive_correct"] == 1
 
 
 def test_expired_question_after_window(logged_client) -> None:
