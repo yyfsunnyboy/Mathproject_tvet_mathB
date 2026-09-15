@@ -930,27 +930,27 @@
             <h4>{{ section_group.section }}</h4>
             <div class="skill-grid curriculum-skills">
                 {% for skill in section_group.skills %}
-                <div class="skill-card status-{{ skill.card_status }}" style="width: 100%; max-width: 100%; height: 100%;">
+                <div class="skill-card status-{{ skill.card_status }}" data-skill-id="{{ skill.skill_id }}" style="width: 100%; max-width: 100%; height: 100%;">
                     <h3>{{ skill.skill_ch_name }}</h3>
                     <p>{{ skill.description }}</p>
 
                     <div class="progress-info">
                         <div class="skill-status-row">
-                            <span>{{ skill.card_status_label }}</span>
-                            <span>熟練度 {{ skill.recent_accuracy_label }}</span>
+                            <span data-mastery-field="status">{{ skill.card_status_label }}</span>
+                            <span data-mastery-field="accuracy">熟練度 {{ skill.recent_accuracy_label }}</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill"
+                            <div class="progress-fill" data-mastery-field="progress"
                                 style="width: {{ skill.recent_accuracy }}%">
                             </div>
                         </div>
                         {% if skill.binding_issue %}
-                        <small>連續答對 {{ skill.current_streak }} / 暫無門檻</small>
+                        <small data-mastery-field="streak">連續答對 {{ skill.current_streak }} / 暫無門檻</small>
                         {% else %}
-                        <small>連續答對 {{ skill.current_streak }} / {{ skill.pass_target }} 題</small>
+                        <small data-mastery-field="streak">連續答對 {{ skill.current_streak }} / {{ skill.pass_target }} 題</small>
                         {% endif %}
                         <br>
-                        <small>最近 {{ skill.recent_attempt_count }} 題 | 累計作答 {{ skill.attempt_count }} 題</small>
+                        <small data-mastery-field="attempts">最近 {{ skill.recent_attempt_count }} 題 | 累計作答 {{ skill.attempt_count }} 題</small>
                         {% if skill.binding_issue %}
                         <br><small class="binding-issue">教材參考題綁定異常</small>
                         {% endif %}
@@ -1004,26 +1004,26 @@
         <p>類別：{{ category }} - 請選擇要練習的單元：</p>
         <div class="skill-grid">
             {% for data in dashboard_data %}
-            <div class="skill-card status-{{ data.card_status }}" style="height: 100%;">
+            <div class="skill-card status-{{ data.card_status }}" data-skill-id="{{ data.skill.skill_id }}" style="height: 100%;">
                 <h3>{{ data.skill.skill_ch_name }}</h3>
                 <p>{{ data.skill.description }}</p>
                 <div class="progress-info">
                     <div class="skill-status-row">
-                        <span>{{ data.card_status_label }}</span>
-                        <span>熟練度 {{ data.recent_accuracy_label }}</span>
+                        <span data-mastery-field="status">{{ data.card_status_label }}</span>
+                        <span data-mastery-field="accuracy">熟練度 {{ data.recent_accuracy_label }}</span>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill"
+                        <div class="progress-fill" data-mastery-field="progress"
                             style="width: {{ data.recent_accuracy }}%">
                         </div>
                     </div>
                     {% if data.binding_issue %}
-                    <small>連續答對 {{ data.current_streak }} / 暫無門檻</small>
+                    <small data-mastery-field="streak">連續答對 {{ data.current_streak }} / 暫無門檻</small>
                     {% else %}
-                    <small>連續答對 {{ data.current_streak }} / {{ data.pass_target }} 題</small>
+                    <small data-mastery-field="streak">連續答對 {{ data.current_streak }} / {{ data.pass_target }} 題</small>
                     {% endif %}
                     <br>
-                    <small>最近 {{ data.recent_attempt_count }} 題 | 累計作答 {{ data.attempt_count }} 題</small>
+                    <small data-mastery-field="attempts">最近 {{ data.recent_attempt_count }} 題 | 累計作答 {{ data.attempt_count }} 題</small>
                     {% if data.binding_issue %}
                     <br><small class="binding-issue">教材參考題綁定異常</small>
                     {% endif %}
@@ -1054,6 +1054,70 @@
             adaptiveBtn.innerHTML = '<i class="fa fa-sitemap"></i> 自適應評量與教學 <span class="dev-badge">開發中</span>';
 
             selfPracticeBtn.insertAdjacentElement("afterend", adaptiveBtn);
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var refreshUrl = {{ url_for('dashboard_skill_card_mastery') | tojson }};
+            var lastRefreshAt = 0;
+
+            function updateCard(card, mastery) {
+                Array.from(card.classList).forEach(function (name) {
+                    if (name.indexOf('status-') === 0) card.classList.remove(name);
+                });
+                card.classList.add('status-' + mastery.card_status);
+
+                var status = card.querySelector('[data-mastery-field="status"]');
+                var accuracy = card.querySelector('[data-mastery-field="accuracy"]');
+                var progress = card.querySelector('[data-mastery-field="progress"]');
+                var streak = card.querySelector('[data-mastery-field="streak"]');
+                var attempts = card.querySelector('[data-mastery-field="attempts"]');
+                if (status) status.textContent = mastery.card_status_label;
+                if (accuracy) accuracy.textContent = '熟練度 ' + mastery.recent_accuracy_label;
+                if (progress) progress.style.width = mastery.recent_accuracy + '%';
+                if (streak) {
+                    streak.textContent = mastery.binding_issue
+                        ? '連續答對 ' + mastery.current_streak + ' / 暫無門檻'
+                        : '連續答對 ' + mastery.current_streak + ' / ' + mastery.pass_target + ' 題';
+                }
+                if (attempts) {
+                    attempts.textContent = '最近 ' + mastery.recent_attempt_count
+                        + ' 題 | 累計作答 ' + mastery.attempt_count + ' 題';
+                }
+            }
+
+            function refreshVisibleMastery() {
+                var cards = Array.from(document.querySelectorAll('.skill-card[data-skill-id]'));
+                if (!cards.length) return;
+                var params = new URLSearchParams();
+                cards.forEach(function (card) { params.append('skill_id', card.dataset.skillId); });
+                lastRefreshAt = Date.now();
+                fetch(refreshUrl + '?' + params.toString(), {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('mastery refresh failed');
+                        return response.json();
+                    })
+                    .then(function (payload) {
+                        cards.forEach(function (card) {
+                            var mastery = payload.mastery && payload.mastery[card.dataset.skillId];
+                            if (mastery) updateCard(card, mastery);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.warn('Dashboard mastery refresh error:', error);
+                    });
+            }
+
+            window.addEventListener('pageshow', refreshVisibleMastery);
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && Date.now() - lastRefreshAt > 1000) {
+                    refreshVisibleMastery();
+                }
+            });
         })();
     </script>
 

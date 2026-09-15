@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import json
 import sys
 import warnings
 from typing import Any
@@ -167,6 +168,48 @@ def get_sorted_component_ids_for_skill(conn: sqlite3.Connection, skill_id: str, 
         return key
 
     sorted_ids = sorted(verified_component_ids, key=get_sort_key)
+
+    # Keep the curriculum order inside each problem type, but interleave types
+    # deterministically so a skill does not present one visual pattern in a block.
+    problem_type_by_component = {}
+    try:
+        cursor.execute(
+            """
+            SELECT component_id, induced_spec_payload
+            FROM gencode_component_tracker
+            WHERE skill_id = ?
+            """,
+            (skill_id,),
+        )
+        for component_id, raw_payload in cursor.fetchall():
+            try:
+                payload = json.loads(raw_payload or "{}")
+            except (TypeError, ValueError):
+                payload = {}
+            problem_type = str(payload.get("problem_type_id") or "").strip()
+            if problem_type:
+                problem_type_by_component[str(component_id)] = problem_type
+    except Exception:
+        # Older/test databases may not contain the tracker table. In that case
+        # the established curriculum order remains unchanged.
+        problem_type_by_component = {}
+
+    known_types = {
+        problem_type_by_component[cid]
+        for cid in sorted_ids
+        if cid in problem_type_by_component
+    }
+    if len(known_types) > 1 and all(cid in problem_type_by_component for cid in sorted_ids):
+        grouped = {}
+        for cid in sorted_ids:
+            grouped.setdefault(problem_type_by_component[cid], []).append(cid)
+        interleaved = []
+        group_names = list(grouped)
+        while len(interleaved) < len(sorted_ids):
+            for group_name in group_names:
+                if grouped[group_name]:
+                    interleaved.append(grouped[group_name].pop(0))
+        sorted_ids = interleaved
 
     # Output diagnostics for traceability
     sys.stdout.write(f"\n--- DIAGNOSTICS FOR SKILL: {skill_id} ---\n")

@@ -8,7 +8,7 @@ import pytest
 from app import create_app
 from core.routes.practice import _is_incorrect_resubmit, update_progress
 from core.skill_card_mastery import build_skill_card_mastery, get_pass_target
-from models import Progress, SkillInfo, TextbookExample, User, db
+from models import PracticeAttempt, Progress, SkillInfo, TextbookExample, User, db
 
 
 @pytest.fixture()
@@ -92,8 +92,46 @@ def test_practice_and_dashboard_share_reference_count_authority(streak_app):
 
 def test_standard_practice_ui_uses_authoritative_progress_fields():
     template = (Path(__file__).parents[1] / "templates" / "index.html").read_text(encoding="utf-8")
-    assert "連續答對 ${normalizedStreak} / ${normalizedTarget} 題" in template
-    assert "連續答對：暫無門檻" in template
+    assert "🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題" in template
+    assert "🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題" in template
+    assert "🔥 連續答對：暫無門檻" in template
     assert "data.consecutive_correct, data.pass_target" in template
+    assert "data.consecutive_correct !== undefined && getSafeSelectedLevel() === 1" not in template
+    assert "loadedTarget = data.pass_target !== undefined" in template
     assert "3 / 10" not in template
     assert "get_pass_target" in inspect.getsource(build_skill_card_mastery)
+
+
+def test_dashboard_mastery_refresh_endpoint_uses_shared_source(streak_app):
+    student_id = _seed_skill("dashboard_refresh", 4)
+    db.session.add(Progress(user_id=student_id, skill_id="dashboard_refresh", consecutive_correct=2))
+    db.session.add_all([
+        PracticeAttempt(student_id=student_id, skill_id="dashboard_refresh", is_correct=True, source="test"),
+        PracticeAttempt(student_id=student_id, skill_id="dashboard_refresh", is_correct=False, source="test"),
+    ])
+    db.session.commit()
+
+    with streak_app.test_client() as client:
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(student_id)
+            sess["_fresh"] = True
+        response = client.get(
+            "/api/dashboard/skill-card-mastery?skill_id=dashboard_refresh"
+        )
+
+    assert response.status_code == 200
+    mastery = response.get_json()["mastery"]["dashboard_refresh"]
+    assert mastery["current_streak"] == 2
+    assert mastery["recent_accuracy"] == 50.0
+    assert mastery["attempt_count"] == 2
+    assert mastery["pass_target"] == 4
+    assert mastery["card_status"] == "learning"
+
+
+def test_dashboard_template_refreshes_visible_cards_without_reload():
+    template = (Path(__file__).parents[1] / "templates" / "dashboard.html").read_text(encoding="utf-8")
+    assert "data-skill-id" in template
+    assert "window.addEventListener('pageshow', refreshVisibleMastery)" in template
+    assert "document.addEventListener('visibilitychange'" in template
+    assert "card.classList.add('status-' + mastery.card_status)" in template
+    assert "mastery.recent_attempt_count" in template

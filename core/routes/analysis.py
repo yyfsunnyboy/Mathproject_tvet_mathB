@@ -1005,25 +1005,36 @@ def _handwriting_family_meta(family_id):
     return mapping.get(fid, ("一般題型", "請根據題目內容判斷關鍵步驟與常見錯誤"))
 
 
-_HW_SECOND_STAGE_ERROR_HINT = re.compile(
-    r"(錯誤|有誤|不正確|不對|問題|偏差|少了|多了|漏掉|混淆|沒有對|不一致|不符|差在|"
-    r"哪裡|這一步|這一列|括號|符號|同類項|合併|化簡|分配|係數|次方|展開|去括號|負號|正負|"
-    r"方向正確|大致正確|尚未|需要修正|還沒|還差|不成立|算成|寫成|目前|關鍵小錯|"
-    r"推理|化簡|整理|最後一步|前一步|中間|"
-    r"代表|表示|意思是|也就是|因此|所以|因為|應該是|常見的誤解|這裡其實|這代表比例|比例應該|"
-    r"不是.{0,35}而是)"
+_HW_SECOND_STAGE_CORRECTIVE_LANGUAGE = re.compile(
+    r"(答錯|錯誤|有誤|不正確|不對|需要修正|再算|重算|重寫|重新作答|少了|多了|漏掉)"
 )
-_HW_SECOND_STAGE_GUIDANCE = re.compile(
-    r"(請|建議|下一步|試著|不妨|重新|再試|再算|再寫|再檢查|再核對|再確認|對照|核對|確認|"
-    r"逐步|一步一步|逐項|試算|試試|想一下|👉|不妨先|可以先|試著先|先.{0,14}再|"
-    r"可以|接著|然後|先看|先把|再把|檢查一下|想想看|重算|重整|化簡一次)"
+_HW_SECOND_STAGE_PROBLEM_CUE = re.compile(
+    r"(但|不過|可能|還沒|少了|多了|漏了|不同|對不上|不合|哪一|哪個|是否|還是|要不要)"
 )
+_HW_SECOND_STAGE_ACTION_CUE = re.compile(
+    r"(先|把|從|看看|想想|比較|代回|算算|找找|核對|檢查|試著)"
+)
+
+
+def _handwriting_reply_has_meaningful_question(text: str) -> bool:
+    """Return whether the reply asks a concrete, student-answerable question."""
+    questions = re.findall(r"(?:^|[。！!\n])\s*([^。！？!?\n]*[？?])", str(text or ""))
+    generic = ("懂了嗎", "知道嗎", "明白嗎", "會了嗎", "再想想嗎")
+    return any(len(item.strip(" ？?")) >= 5 and not any(g in item for g in generic) for item in questions)
+
+
+def _handwriting_reply_has_actionable_hint(text: str) -> bool:
+    """Accept natural guidance without requiring labels or prescribed phrases."""
+    value = str(text or "").strip()
+    if _handwriting_reply_has_meaningful_question(value):
+        return True
+    return bool(_HW_SECOND_STAGE_ACTION_CUE.search(value))
 
 
 def _hw_second_stage_reply_suggests_final_answer(text: str, expected: str) -> bool:
     """偵測是否像在公布標準答案（避免暴雷）；允許『你目前算成…』類 framing。"""
     exp = _clean_math_expr(str(expected or ""))
-    if len(exp) < 5:
+    if not exp:
         return False
     compact = _clean_math_expr(str(text or ""))
     if exp not in compact:
@@ -1064,7 +1075,7 @@ def _hw_second_stage_reply_suggests_final_answer(text: str, expected: str) -> bo
         return True
     if student_frame and not any(m in window for m in leak_markers):
         return False
-    if idx + len(exp) >= len(compact) - 2 and len(compact) <= len(exp) + 24:
+    if len(exp) >= 5 and idx + len(exp) >= len(compact) - 2 and len(compact) <= len(exp) + 24:
         return True
     return False
 
@@ -1079,6 +1090,23 @@ def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""
     reject_reasons = []
     non_empty = bool(text)
     exp_ans = str(expected_answer or "").strip()
+
+    if st == "correct":
+        continues_correction = bool(_HW_SECOND_STAGE_CORRECTIVE_LANGUAGE.search(text))
+        ok = non_empty and not continues_correction
+        if not non_empty:
+            reject_reasons.append("empty_reply")
+        if continues_correction:
+            reject_reasons.append("correct_status_continues_correction")
+        return {
+            "compliance_ok": ok,
+            "non_empty_reply": non_empty,
+            "has_error_explanation": True,
+            "has_guidance": True,
+            "gives_final_answer": False,
+            "status": st,
+            "reject_reasons": reject_reasons,
+        }
 
     if st not in ("partially_correct", "incorrect"):
         ok = non_empty
@@ -1095,10 +1123,11 @@ def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""
         }
 
     gives_final = _hw_second_stage_reply_suggests_final_answer(text, exp_ans)
-    has_err = bool(_HW_SECOND_STAGE_ERROR_HINT.search(text)) and len(text) >= 12
-    if (not has_err) and len(text) >= 8 and ("不是" in text and "而是" in text):
-        has_err = True
-    has_guide = bool(_HW_SECOND_STAGE_GUIDANCE.search(text))
+    has_question = _handwriting_reply_has_meaningful_question(text)
+    has_guide = _handwriting_reply_has_actionable_hint(text)
+    # A concrete Socratic question can itself identify the point the student
+    # needs to reconsider; no fixed label or error vocabulary is required.
+    has_err = non_empty and (has_question or bool(_HW_SECOND_STAGE_PROBLEM_CUE.search(text)))
 
     if not non_empty:
         reject_reasons.append("empty_reply")
@@ -1190,39 +1219,42 @@ def _handwriting_feedback_second_prompt(
 
 
 def _handwriting_rule_based_reply(analysis_result):
-    """白板流程用的 rule-based 回饋（含 second-stage 失敗 fallback）：具體提示＋下一步，不直接給答案。"""
+    """白板 second-stage fallback：最多三句白話提示，不直接給答案。"""
     ar = analysis_result or {}
     st = ar.get("status")
     mech = str(ar.get("error_mechanism") or "").strip()
-    issue = ERROR_MECHANISM_FEEDBACK.get(
-        mech, str(ar.get("main_issue") or "").strip() or ERROR_MECHANISM_FEEDBACK["unknown"]
-    )
-    action = ERROR_MECHANISM_ACTION_STEP.get(mech, ERROR_MECHANISM_ACTION_STEP["unknown"])
     expr_raw = str(ar.get("recognized_expression") or ar.get("final_expression") or "").strip()
-    expr_show = expr_raw if len(expr_raw) <= 320 else expr_raw[:317] + "…"
-    family_hint = str(ar.get("family_label_zh") or "").strip()
 
     if st == "correct":
-        return "✔ 答案正確！\n👉 進入下一題"
+        return "答對了，你抓到重點了！"
+
+    issue_by_mechanism = {
+        "structure_error": "拆開括號時可能漏了一項。",
+        "sign_error": "有一個正負號需要再想想。",
+        "combine_error": "有兩項可能不能直接合在一起。",
+        "operation_error": "第一步用的算法可能不適合這裡。",
+        "substitution_error": "有一個數可能放錯位置。",
+        "notation_error": "有一個符號還沒把意思說清楚。",
+        "unknown": "目前結果和題目要找的還沒對上。",
+    }
+    question_by_mechanism = {
+        "structure_error": "括號外的數或負號，要不要分給括號裡的每一項呢？",
+        "sign_error": "這個負號放進括號後，每一項的正負會怎麼變呢？",
+        "combine_error": "這兩項的變數和次方都一樣，真的可以合在一起嗎？",
+        "operation_error": "題目這一步要用加減、乘除，還是哪一個規則呢？",
+        "substitution_error": "把題目中的數一個一個對回去，這個位置應該放哪個數呢？",
+        "notation_error": "你寫的兩個條件是要同時成立，還是只要一個成立呢？",
+        "unknown": "從第一步開始看，哪一步算完後和前一行對不上呢？",
+    }
+    key = mech if mech in issue_by_mechanism else "unknown"
+    lines = []
     if st == "partially_correct":
-        lines = ["⚠️ 前面的整理大致正確，但還有一個關鍵步驟需要修正"]
-        if expr_show:
-            lines.append(f"你目前辨識到的式子：{expr_show}")
-        lines.append(f"錯誤提示：{issue}")
-        if family_hint:
-            lines.append(f"本題題型重點：{family_hint}")
-        lines.append(f"👉 具體下一步：{action}")
-        return "\n".join(lines)
-    if st == "incorrect":
-        lines = ["✘ 這題的推理或化簡仍有需要調整之處"]
-        if expr_show:
-            lines.append(f"你目前辨識到的式子：{expr_show}")
-        lines.append(f"錯誤提示：{issue}")
-        if family_hint:
-            lines.append(f"本題題型重點：{family_hint}")
-        lines.append(f"👉 具體下一步：{action}")
-        return "\n".join(lines)
-    return "目前我無法穩定判斷你的手寫結果，請確認筆跡清楚或再試一次。"
+        lines.append("你前面的方向是對的。")
+    elif expr_raw:
+        lines.append("你已經把想法寫出來了。")
+    lines.append(issue_by_mechanism[key])
+    lines.append(question_by_mechanism[key])
+    return "\n".join(lines[:3])
 
 
 def _handwriting_issue_is_clear(analysis_result):

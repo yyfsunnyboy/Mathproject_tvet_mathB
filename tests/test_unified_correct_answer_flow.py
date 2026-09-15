@@ -148,7 +148,7 @@ def test_standard_handwriting_is_submitted_as_first_class_answer() -> None:
     feedback_pos = body.index("/analyze_handwriting")
     assert recognition_pos < checker_pos < correct_pos < success_pos < feedback_pos
     assert "buildCheckAnswerPayload(normalizedAnswer)" in body
-    assert "updateStreak(grade.correct === true)" in body
+    assert "updateStreak(grade.correct === true, grade.consecutive_correct, grade.pass_target)" in body
 
 
 def test_wrong_handwriting_stays_on_question_and_requests_socratic_feedback() -> None:
@@ -230,7 +230,9 @@ def test_authoritative_answer_contract_accepts_supported_correct_types(
 def test_wrong_answer_does_not_enter_success_handler_branch() -> None:
     source = STANDARD_TEMPLATE.read_text(encoding="utf-8")
     submit_body = _function_body(source, "function setupSubmit")
-    completion_flow = submit_body.split("updateStreak(data.correct);", 1)[1]
+    completion_flow = submit_body.split(
+        "updateStreak(data.correct, data.consecutive_correct, data.pass_target);", 1
+    )[1]
     success_branch, wrong_branch = completion_flow.split("// [Phase 6]", 1)
 
     assert "handleCorrectAnswer" in success_branch

@@ -816,6 +816,25 @@ def create_app(*, production: bool | None = None):
                                      enrolled_classes=enrolled_classes,
                                      hide_curriculum_switch=hide_curriculum_switch)
 
+    @app.route('/api/dashboard/skill-card-mastery')
+    @login_required
+    def dashboard_skill_card_mastery():
+        """Refresh visible dashboard cards through the shared mastery aggregator."""
+        skill_ids = list(dict.fromkeys(
+            value.strip()
+            for value in request.args.getlist('skill_id')
+            if value and value.strip()
+        ))[:200]
+        from core.skill_card_mastery import build_skill_card_mastery
+
+        return jsonify({
+            'ok': True,
+            'mastery': build_skill_card_mastery(
+                student_id=current_user.id,
+                skill_ids=skill_ids,
+            ),
+        })
+
     with app.app_context():
         install_sqlite_connection_hardening(db.engine, logger=app.logger)
         init_db(db.engine)

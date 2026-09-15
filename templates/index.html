@@ -130,9 +130,9 @@
         }
 
         #streak-counter {
-            position: absolute;
-            top: 20px;
-            right: 25px;
+            position: static;
+            display: inline-block;
+            margin-left: 8px;
             background: #e74c3c;
             color: white;
             padding: 5px 12px;
@@ -2140,7 +2140,7 @@
                     {% endif %}
                     <span id="level-indicator"
                         style="background: #1abc9c; color: white; padding: 4px 10px; font-size: 0.7em; border-radius: 12px; vertical-align: middle;">等級：1</span><span
-                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>連續答對：0</span></h1>
+                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>{% if (pass_target or 0) | int > 0 %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題{% else %}🔥 連續答對：暫無門檻{% endif %}</span></h1>
                 <!-- 新增：難度選擇器 -->
                 <!-- 新增：難度選擇器 -->
                 <div class="level-selector">
@@ -3853,12 +3853,16 @@
 
         function renderStreakProgress(streak, passTarget) {
             if (!streakCounter) return;
+            if (PRACTICE_MODE !== 'standard') {
+                streakCounter.style.display = 'none';
+                return;
+            }
             const normalizedStreak = Number.isFinite(Number(streak)) ? Number(streak) : 0;
             const normalizedTarget = Number.isFinite(Number(passTarget)) ? Number(passTarget) : 0;
             currentStreak = normalizedStreak;
             streakCounter.textContent = normalizedTarget > 0
-                ? `連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
-                : '連續答對：暫無門檻';
+                ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
+                : '🔥 連續答對：暫無門檻';
             streakCounter.style.display = 'inline-block';
         }
 
@@ -5344,11 +5348,14 @@
                     });
 
                     // 4. 更新連續答對數
-                    if (data.consecutive_correct !== undefined && getSafeSelectedLevel() === 1) {
-                        currentStreak = data.consecutive_correct;
-                        renderStreakProgress(currentStreak, PRACTICE_PASS_TARGET);
-                    } else {
-                        streakCounter.style.display = 'none';
+                    if (PRACTICE_MODE === 'standard') {
+                        const loadedStreak = data.consecutive_correct !== undefined
+                            ? data.consecutive_correct
+                            : currentStreak;
+                        const loadedTarget = data.pass_target !== undefined
+                            ? data.pass_target
+                            : PRACTICE_PASS_TARGET;
+                        renderStreakProgress(loadedStreak, loadedTarget);
                     }
 
                     const responseLevel = resolvePracticeResponseLevel(data, getSafeSelectedLevel());
