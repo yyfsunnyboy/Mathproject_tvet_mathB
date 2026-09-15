@@ -2942,6 +2942,8 @@
         // 將後端資料傳給 JS
         const PRACTICE_MODE = {{ (practice_mode or 'standard') | tojson | safe }};
         const PAGE_SKILL_ID = {{ (skill_id or '') | tojson | safe }};
+        const INITIAL_CONSECUTIVE_CORRECT = {{ (consecutive_correct or 0) | int }};
+        const PRACTICE_PASS_TARGET = {{ (pass_target or 0) | int }};
         const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
         const SIMILAR_DEFAULT_MODEL = 'qwen3-vl-8b';
@@ -2968,6 +2970,9 @@
             subquestionsContainer = document.getElementById('subquestions-container');
             chatHistory = document.getElementById('chat-history');
             streakCounter = document.getElementById('streak-counter');
+            if (PRACTICE_MODE === 'standard') {
+                renderStreakProgress(INITIAL_CONSECUTIVE_CORRECT, PRACTICE_PASS_TARGET);
+            }
             levelIndicator = document.getElementById('level-indicator');
             canvas = document.getElementById('handwriting-canvas');
             ctx = canvas.getContext('2d');
@@ -3836,9 +3841,25 @@
         }
 
         // === 連續答對 ===
-        function updateStreak(correct) {
-            currentStreak = correct ? currentStreak + 1 : 0;
-            streakCounter.textContent = `連續答對：${currentStreak}`;
+        function updateStreak(correct, authoritativeStreak, passTarget) {
+            currentStreak = authoritativeStreak !== undefined
+                ? Number(authoritativeStreak)
+                : (correct ? currentStreak + 1 : 0);
+            renderStreakProgress(
+                currentStreak,
+                passTarget !== undefined ? passTarget : PRACTICE_PASS_TARGET
+            );
+        }
+
+        function renderStreakProgress(streak, passTarget) {
+            if (!streakCounter) return;
+            const normalizedStreak = Number.isFinite(Number(streak)) ? Number(streak) : 0;
+            const normalizedTarget = Number.isFinite(Number(passTarget)) ? Number(passTarget) : 0;
+            currentStreak = normalizedStreak;
+            streakCounter.textContent = normalizedTarget > 0
+                ? `連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
+                : '連續答對：暫無門檻';
+            streakCounter.style.display = 'inline-block';
         }
 
         // === 出題 ===
@@ -5050,7 +5071,7 @@
                 if (isCorrectVal === true) {
                     resultDisplay.textContent = data.result || '正確！';
                     resultDisplay.className = 'correct';
-                    updateStreak(true);
+                    updateStreak(true, data.consecutive_correct, data.pass_target);
                     consecutiveWrongs = 0;
                     await handleCorrectAnswer();
                 } else {
@@ -5061,7 +5082,7 @@
                     if (isCorrectVal === false) {
                         resultDisplay.textContent = data.result || '錯誤';
                         resultDisplay.className = 'incorrect';
-                        updateStreak(false);
+                    updateStreak(false, data.consecutive_correct, data.pass_target);
                         consecutiveWrongs++;
                         if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
                             showPrereqSuggestionModal();
@@ -5325,8 +5346,7 @@
                     // 4. 更新連續答對數
                     if (data.consecutive_correct !== undefined && getSafeSelectedLevel() === 1) {
                         currentStreak = data.consecutive_correct;
-                        streakCounter.textContent = `連續答對：${currentStreak}`;
-                        streakCounter.style.display = 'inline-block';
+                        renderStreakProgress(currentStreak, PRACTICE_PASS_TARGET);
                     } else {
                         streakCounter.style.display = 'none';
                     }
@@ -5810,7 +5830,7 @@
                         if (Array.isArray(data.per_part_results) && isTableFillQuestion(currentQuestion)) {
                             applyTableGradingResult(data.per_part_results);
                         }
-                        updateStreak(data.correct);
+                        updateStreak(data.correct, data.consecutive_correct, data.pass_target);
 
                         // Authoritative correct verdict completes immediately through
                         // the shared msgbox flow. Optional tutor/remediation UI cannot
@@ -5990,7 +6010,7 @@
 
             resultDisplay.textContent = grade.result || (grade.correct ? '答對了！' : '答案尚未正確。');
             resultDisplay.className = grade.correct ? 'correct' : 'incorrect';
-            updateStreak(grade.correct === true);
+            updateStreak(grade.correct === true, grade.consecutive_correct, grade.pass_target);
             if (grade.correct === true) {
                 consecutiveWrongs = 0;
                 clearTutorPromptSuggestions();

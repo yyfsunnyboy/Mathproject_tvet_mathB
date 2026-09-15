@@ -41,6 +41,7 @@ from core.practice_question_store import (
     clear_practice_display_state_for_skill_switch,
     clear_practice_state,
     estimate_session_cookie_bytes,
+    get_question_by_uid,
     mark_question_answered,
     prune_practice_session,
     resolve_check_context,
@@ -555,6 +556,15 @@ def _build_attempt_context(
     return context
 
 
+def _is_incorrect_resubmit(stale: dict[str, Any] | None) -> bool:
+    """An answered-but-incorrect standard item remains open for another attempt."""
+    return bool(
+        isinstance(stale, dict)
+        and stale.get("duplicate_submission")
+        and stale.get("correct") is False
+    )
+
+
 def _emit_check_result(
     question_uid: str,
     skill_id: str,
@@ -652,6 +662,15 @@ def _emit_check_result(
                 getattr(current_user, "id", None),
                 skill_id,
             )
+    if record_progress and _is_gradable:
+        progress = db.session.query(Progress).filter_by(
+            user_id=current_user.id,
+            skill_id=skill_id,
+        ).first()
+        from core.skill_card_mastery import get_pass_target
+
+        out["consecutive_correct"] = int(progress.consecutive_correct if progress else 0)
+        out["pass_target"] = get_pass_target(skill_id)
     return jsonify(out)
 
 
@@ -1296,11 +1315,22 @@ def practice(skill_id):
     tutor_config = get_effective_model_config('tutor')
     tutor_model_name = tutor_config.get('model', 'unknown')
 
+    progress = db.session.query(Progress).filter_by(
+        user_id=current_user.id,
+        skill_id=skill_id,
+    ).first() if current_user.is_authenticated else None
+    from core.skill_card_mastery import get_pass_target
+
+    consecutive_correct = int(progress.consecutive_correct if progress else 0)
+    pass_target = get_pass_target(skill_id)
+
     return render_template('index.html', 
                            skill_id=skill_id,
                            skill_ch_name=skill_ch_name,
                            prereq_skills=prereq_skills,
                            tutor_model_name=tutor_model_name,
+                           consecutive_correct=consecutive_correct,
+                           pass_target=pass_target,
                            practice_mode='standard',
                            manual_review_unavailable=manual_review_info)
 
@@ -2325,6 +2355,12 @@ def check_answer():
         body.setdefault('question_text_hash', str(ref.get('question_text_hash', '')))
         body.setdefault('problem_type_id', str(ref.get('problem_type_id', '')))
     current, stale = resolve_check_context(body)
+    if _is_incorrect_resubmit(stale):
+        current = get_question_by_uid(
+            str(body.get("question_uid", "")).strip(),
+            skill_id=str(body.get("skill_id", "")).strip(),
+        )
+        stale = None if current else stale
     if stale:
         return jsonify(stale), 409
 

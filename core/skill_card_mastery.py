@@ -29,6 +29,30 @@ STATUS_COLORS = {
 }
 
 
+def get_pass_targets(skill_ids: Sequence[str]) -> dict[str, int]:
+    """Return the global practice target: bound textbook-example count per skill."""
+    ids = list(dict.fromkeys(str(value or "").strip() for value in skill_ids))
+    ids = [skill_id for skill_id in ids if skill_id]
+    if not ids:
+        return {}
+    counts = {
+        str(skill_id): int(count or 0)
+        for skill_id, count in (
+            db.session.query(TextbookExample.skill_id, func.count(TextbookExample.id))
+            .filter(TextbookExample.skill_id.in_(ids))
+            .group_by(TextbookExample.skill_id)
+            .all()
+        )
+    }
+    return {skill_id: counts.get(skill_id, 0) for skill_id in ids}
+
+
+def get_pass_target(skill_id: str) -> int:
+    """Return one skill's global practice target, or zero when unbound."""
+    normalized = str(skill_id or "").strip()
+    return get_pass_targets([normalized]).get(normalized, 0)
+
+
 def classify_skill_card_status(
     *,
     attempt_count: int,
@@ -68,15 +92,7 @@ def build_skill_card_mastery(
         return {}
     limit = max(1, int(recent_limit))
 
-    reference_counts = {
-        str(skill_id): int(count or 0)
-        for skill_id, count in (
-            db.session.query(TextbookExample.skill_id, func.count(TextbookExample.id))
-            .filter(TextbookExample.skill_id.in_(ids))
-            .group_by(TextbookExample.skill_id)
-            .all()
-        )
-    }
+    reference_counts = get_pass_targets(ids)
 
     ranked_attempts = (
         db.session.query(
