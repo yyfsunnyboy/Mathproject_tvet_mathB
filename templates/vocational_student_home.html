@@ -144,6 +144,7 @@
         .course-card:hover { border-color: var(--green-main); background: var(--green-pale); }
         .course-card h3 { font-size: 20px; }
         .course-grade { font-size: 12px; color: var(--muted); }
+        .course-year { font-size: 14px; margin: 14px 0 8px; color: var(--green-deep); }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -211,6 +212,7 @@
             .stats-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
+    {% include 'partials/skill_card_styles.html' %}
 </head>
 <body>
     {% include '_student_navbar.html' %}
@@ -245,15 +247,16 @@
             <h2>繼續學習</h2>
             <div class="vhome-card vhome-continue">
                 {% if continue_learning %}
-                <div>
+                <div style="width:100%;">
                     <div class="vhome-kicker">{{ continue_learning.volume or '最近練習' }}</div>
                     {% if continue_learning.chapter %}
                     <div class="vhome-muted">{{ continue_learning.chapter }}</div>
                     {% endif %}
-                    <h3>{{ continue_learning.skill_name }}</h3>
                     <div class="vhome-muted">最近練習：{{ continue_learning.recent_label }}</div>
+                    <div style="margin-top:10px;">
+                        {% with skill_card=continue_learning %}{% include 'partials/skill_card.html' %}{% endwith %}
+                    </div>
                 </div>
-                <a class="btn-go" href="{{ url_for('practice.practice', skill_id=continue_learning.skill_id) }}">繼續練習</a>
                 {% else %}
                 <div>
                     <h3>開始你的第一次練習</h3>
@@ -265,8 +268,10 @@
 
         <section class="vhome-section">
             <h2>我的課程</h2>
+            {% for grade_group in volume_cards|groupby('grade_label') %}
+            <h3 class="course-year">{{ grade_group.grouper }}</h3>
             <div class="course-grid">
-                {% for card in volume_cards %}
+                {% for card in grade_group.list %}
                 <a class="course-card" href="{{ url_for('dashboard', view='curriculum', curriculum='vocational', volume=card.volume) }}">
                     <div class="vhome-kicker">📘 教材</div>
                     <h3>{{ card.volume }}</h3>
@@ -277,6 +282,20 @@
                     <div class="vhome-muted">{{ card.chapter_hint }}</div>
                     {% endif %}
                     <span class="btn-ghost">進入課程 →</span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <h3 class="course-year">三年級</h3>
+            <div class="course-grid grade3-mock-exams">
+                {% for card in mock_exam_cards %}
+                <a class="course-card" href="{{ url_for('core.vocational_mock_exam', exam_id=card.exam_id) }}">
+                    <div class="vhome-kicker">📝 模擬考複習</div>
+                    <h3>{{ card.label }}</h3>
+                    <div class="course-grade">技術型高中三年級</div>
+                    <div class="vhome-muted">依考試範圍複習既有課程技能</div>
+                    <span class="btn-ghost">查看考試範圍 →</span>
                 </a>
                 {% endfor %}
             </div>

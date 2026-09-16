@@ -283,23 +283,16 @@ def create_app(*, production: bool | None = None):
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
-            role = request.form.get('role', 'student') # 獲取身分，預設為學生
             
             user = db.session.query(User).filter_by(username=username).first()
 
             if user and check_password_hash(user.password_hash, password):
-                # 檢查身分是否相符
-                if user.role != role:
-                    flash(f'身分錯誤！此帳號為「{user.role}」帳號，請切換身分後再試。', 'warning')
-                    return redirect(url_for('login'))
-
                 login_user(user)
                 
-                # 根據身分導向不同頁面
-                if user.role == 'teacher':
+                # 身分只採用資料庫帳號資料，不信任前端傳入的 role。
+                if user.role == 'teacher' or user.is_admin:
                     return redirect(url_for('teacher_dashboard'))
-                else:
-                    return redirect(url_for('dashboard'))
+                return redirect(url_for('dashboard'))
             flash('帳號或密碼錯誤', 'danger')
         return render_template('login.html')
 
@@ -345,7 +338,7 @@ def create_app(*, production: bool | None = None):
     @app.route('/teacher_dashboard')
     @login_required
     def teacher_dashboard():
-        if current_user.role != 'teacher':
+        if current_user.role != 'teacher' and not current_user.is_admin:
             flash('權限不足，無法存取教師頁面', 'warning')
             return redirect(url_for('dashboard'))
         return render_template('teacher_dashboard.html', username=current_user.username)
@@ -717,6 +710,11 @@ def create_app(*, production: bool | None = None):
                                      hide_curriculum_switch=hide_curriculum_switch)
             elif curriculum:
                 volumes = get_volumes_by_curriculum(curriculum)
+                mock_exam_cards = []
+                if curriculum == 'vocational':
+                    from core.vocational_mock_exam_scope import mock_exam_cards as get_mock_exam_cards
+
+                    mock_exam_cards = get_mock_exam_cards()
 
                 # 新增：針對國中冊別的排序邏輯
                 if curriculum == 'junior_high':
@@ -756,6 +754,7 @@ def create_app(*, production: bool | None = None):
                                      curriculum=curriculum,
                                      volumes=volumes,
                                      grade_map=grade_map,
+                                     mock_exam_cards=mock_exam_cards,
                                      username=current_user.username,
                                      enrolled_classes=enrolled_classes,
                                      hide_curriculum_switch=hide_curriculum_switch)
@@ -773,6 +772,10 @@ def create_app(*, production: bool | None = None):
                     mastery = card_metrics[skill.skill_id]
                     dashboard_data.append({
                         'skill': skill,
+                        'skill_id': skill.skill_id,
+                        'skill_ch_name': skill.skill_ch_name,
+                        'skill_name': skill.skill_ch_name,
+                        'description': skill.description,
                         **mastery,
                         'consecutive_correct': mastery['current_streak'],
                         'questions_solved': prog[2],

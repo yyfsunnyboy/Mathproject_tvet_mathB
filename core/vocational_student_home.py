@@ -7,6 +7,8 @@ from sqlalchemy import case, func
 from sqlalchemy.orm import aliased
 
 from core.teacher_analysis_service import student_display_name
+from core.skill_card_mastery import build_skill_card_mastery
+from core.vocational_mock_exam_scope import mock_exam_cards
 from core.utils import (
     get_chapters_by_curriculum_volume,
     get_volumes_by_curriculum,
@@ -87,6 +89,8 @@ def _skill_meta(skill_id: str) -> dict[str, Any]:
     return {
         "skill_id": skill_id,
         "skill_name": (info.skill_ch_name if info else "") or skill_id,
+        "skill_ch_name": (info.skill_ch_name if info else "") or skill_id,
+        "description": (info.description if info else "") or "",
         "volume": row.volume if row else "",
         "chapter": row.chapter if row else "",
         "grade": row.grade if row else None,
@@ -124,6 +128,8 @@ def _skill_meta_map(skill_ids: set[str]) -> dict[str, dict[str, Any]]:
         result[skill_id] = {
             "skill_id": skill_id,
             "skill_name": (info.skill_ch_name if info else "") or skill_id,
+            "skill_ch_name": (info.skill_ch_name if info else "") or skill_id,
+            "description": (info.description if info else "") or "",
             "volume": row.volume if row else "",
             "chapter": row.chapter if row else "",
             "grade": row.grade if row else None,
@@ -286,6 +292,13 @@ def build_vocational_home_context(user: Any) -> dict[str, Any]:
     if continue_item:
         continue_item = dict(continue_item)
         continue_item["recent_label"] = format_recent_activity(continue_item.get("practiced_at"))
+        continue_item.update(
+            build_skill_card_mastery(
+                student_id=uid,
+                skill_ids=[continue_item["skill_id"]],
+            )[continue_item["skill_id"]]
+        )
+        continue_item["action_label"] = "繼續練習"
     return {
         "view_mode": "vocational_home",
         "curriculum": VOCATIONAL_KEY,
@@ -297,5 +310,6 @@ def build_vocational_home_context(user: Any) -> dict[str, Any]:
         "continue_learning": continue_item,
         "weekly_stats": _weekly_stats(uid),
         "volume_cards": _volume_cards(uid, attempts=recent_attempts, skill_meta=skill_meta),
+        "mock_exam_cards": mock_exam_cards(),
         "hide_curriculum_switch": True,
     }

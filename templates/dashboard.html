@@ -97,11 +97,6 @@
             color: #8a5a1f;
             border-color: #e0c87a;
         }
-        .skill-card mjx-container {
-            max-width: 100%;
-            overflow-x: auto;
-        }
-
         /* ── Dashboard Header Row ── */
         .dashboard-header-row {
             display: flex;
@@ -591,134 +586,6 @@
             font-size: 1.1em;
         }
 
-        /* ── Skill Grid + Cards ── */
-        .skill-grid {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            gap: 14px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .skill-grid.curriculum-skills {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            width: 100% !important;
-            grid-auto-flow: row !important;
-        }
-        .skill-card {
-            background: #fffdf9;
-            border: 1px solid #dde5d8;
-            border-radius: 18px;
-            box-shadow: 0 2px 10px rgba(60,80,60,0.04);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            box-sizing: border-box;
-            width: 100%;
-            max-width: 100%;
-            transition:
-                transform 0.18s ease,
-                box-shadow 0.18s ease,
-                border-color 0.18s ease,
-                background 0.18s ease;
-        }
-        .skill-card.status-unpracticed { background: #ffffff; border-color: #dde5d8; }
-        .skill-card.status-needs_improvement { background: #fdecec; border-color: #edb8b8; }
-        .skill-card.status-learning { background: #eef7eb; border-color: #c9dfc3; }
-        .skill-card.status-proficient { background: #d7ead2; border-color: #98bd91; }
-        .skill-card.status-mastered { background: #477454; border-color: #31583d; color: #ffffff; }
-        .skill-card.status-mastered h3,
-        .skill-card.status-mastered p,
-        .skill-card.status-mastered .progress-info { color: #ffffff; }
-        .skill-card.status-mastered .progress-bar { background: rgba(255,255,255,0.28); }
-        .skill-card.status-mastered .progress-fill { background: #f1f7ef; }
-        .skill-status-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        .binding-issue {
-            color: #8a4b16;
-            font-weight: 700;
-        }
-        .skill-card:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(180deg, #fffefb 0%, #f6fbf4 100%);
-            border-color: #89a889;
-            box-shadow: 0 10px 24px rgba(70,100,70,0.10);
-        }
-        .skill-card:hover h3 {
-            font-weight: 700;
-            color: #2d5132;
-        }
-        .skill-card.status-mastered:hover {
-            background: #3d6749;
-            border-color: #294b34;
-        }
-        .skill-card.status-mastered:hover h3 { color: #ffffff; }
-        .skill-card h3 {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.3;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 0;
-            margin-bottom: 6px;
-            color: var(--green-deep);
-            transition: font-weight 0.18s ease, color 0.18s ease;
-        }
-        .skill-card p {
-            font-size: 12.5px;
-            color: #5e6a61;
-            flex-grow: 1;
-            margin-bottom: 8px;
-        }
-        .progress-info {
-            font-size: 12px;
-            color: #5e6a61;
-            margin-bottom: 10px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e6ede2;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 6px;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #7ea37f 0%, #5f7f68 100%);
-            border-radius: 999px;
-            transition: width 0.5s ease;
-        }
-
-        /* btn-practice: 技能卡片 / 章節「開始練習」「單元練習」按鈕 */
-        .btn-practice {
-            display: block;
-            text-align: center;
-            background: #6f946f;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: var(--r-md);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition:
-                background 0.18s ease,
-                transform 0.18s ease;
-            margin-top: auto;
-            border: 1px solid #5a7d5a;
-        }
-        .btn-practice:hover {
-            background: #5f7f68;
-            transform: translateY(-1px);
-        }
-
         /* ── Skill Section Group ── */
         .skill-section-group {
             margin-bottom: 18px;
@@ -749,9 +616,6 @@
         /* ── Responsive ── */
         @media (max-width: 960px) {
             .dashboard-shell { padding: 12px 14px 28px; }
-            .skill-grid, .skill-grid.curriculum-skills {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
             .level-grid.categories-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -762,11 +626,9 @@
         @media (max-width: 640px) {
             .chalkboard-hero { min-height: 100px; padding: 0 16px; }
             .chalkboard-hero-inner h3 { font-size: 16px; }
-            .skill-grid, .skill-grid.curriculum-skills {
-                grid-template-columns: 1fr !important;
-            }
         }
     </style>
+    {% include 'partials/skill_card_styles.html' %}
 </head>
 
 <body>
@@ -900,6 +762,23 @@
             </div>
         </div>
         {% endfor %}
+        {% if curriculum == 'vocational' and mock_exam_cards %}
+        <div class="grade-row grade3-mock-exams">
+            <div class="grade-label">
+                <h4>三年級</h4>
+            </div>
+            <div class="level-grid volumes-grid">
+                {% for card in mock_exam_cards %}
+                <a href="{{ url_for('core.vocational_mock_exam', exam_id=card.exam_id) }}"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>{{ card.label }}</h3>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         {% elif level == 'chapters' %}
         <!-- 顯示章節 -->
         <p>{{ volume }} - 請選擇章節：</p>
@@ -930,56 +809,7 @@
             <h4>{{ section_group.section }}</h4>
             <div class="skill-grid curriculum-skills">
                 {% for skill in section_group.skills %}
-                <div class="skill-card status-{{ skill.card_status }}" data-skill-id="{{ skill.skill_id }}" style="width: 100%; max-width: 100%; height: 100%;">
-                    <h3>{{ skill.skill_ch_name }}</h3>
-                    <p>{{ skill.description }}</p>
-
-                    <div class="progress-info">
-                        <div class="skill-status-row">
-                            <span data-mastery-field="status">{{ skill.card_status_label }}</span>
-                            <span data-mastery-field="accuracy">熟練度 {{ skill.recent_accuracy_label }}</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" data-mastery-field="progress"
-                                style="width: {{ skill.recent_accuracy }}%">
-                            </div>
-                        </div>
-                        {% if skill.binding_issue %}
-                        <small data-mastery-field="streak">連續答對 {{ skill.current_streak }} / 暫無門檻</small>
-                        {% else %}
-                        <small data-mastery-field="streak">連續答對 {{ skill.current_streak }} / {{ skill.pass_target }} 題</small>
-                        {% endif %}
-                        <br>
-                        <small data-mastery-field="attempts">最近 {{ skill.recent_attempt_count }} 題 | 累計作答 {{ skill.attempt_count }} 題</small>
-                        {% if skill.binding_issue %}
-                        <br><small class="binding-issue">教材參考題綁定異常</small>
-                        {% endif %}
-                    </div>
-
-                    {% set is_b4_ch1_tree_diagram = (
-                        curriculum == 'vocational'
-                        and volume == '數學B4'
-                        and (chapter_display|string).startswith('1')
-                        and (
-                            skill.skill_id == 'vh_數學B4_TreeDiagramCounting'
-                            or skill.skill_ch_name == '樹狀圖'
-                            or 'TreeDiagramCounting' in (skill.skill_id|string)
-                        )
-                    ) %}
-                    {% set is_b4_ch1_pascal_triangle = (
-                        curriculum == 'vocational'
-                        and volume == '數學B4'
-                        and (chapter_display|string).startswith('1')
-                        and (
-                            skill.skill_id == 'vh_數學B4_PascalTriangle'
-                            or skill.skill_ch_name == '巴斯卡三角形'
-                            or 'PascalTriangle' in (skill.skill_id|string)
-                        )
-                    ) %}
-                    <a href="{{ url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='tree_diagram_listing', answer_type='handwriting', grading_mode='ai_judged_free_response', variant='early_stopping_game') if is_b4_ch1_tree_diagram else (url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='pascal_triangle_handwriting', answer_type='handwriting', grading_mode='ai_judged_free_response', pascal_triangle_index=0) if is_b4_ch1_pascal_triangle else url_for('practice.practice', skill_id=skill.skill_id)) }}" class="btn-practice">
-                        開始練習
-                    </a>
-                </div>
+                {% with skill_card=skill %}{% include 'partials/skill_card.html' %}{% endwith %}
                 {% endfor %}
             </div>
         </div>
@@ -1004,34 +834,7 @@
         <p>類別：{{ category }} - 請選擇要練習的單元：</p>
         <div class="skill-grid">
             {% for data in dashboard_data %}
-            <div class="skill-card status-{{ data.card_status }}" data-skill-id="{{ data.skill.skill_id }}" style="height: 100%;">
-                <h3>{{ data.skill.skill_ch_name }}</h3>
-                <p>{{ data.skill.description }}</p>
-                <div class="progress-info">
-                    <div class="skill-status-row">
-                        <span data-mastery-field="status">{{ data.card_status_label }}</span>
-                        <span data-mastery-field="accuracy">熟練度 {{ data.recent_accuracy_label }}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" data-mastery-field="progress"
-                            style="width: {{ data.recent_accuracy }}%">
-                        </div>
-                    </div>
-                    {% if data.binding_issue %}
-                    <small data-mastery-field="streak">連續答對 {{ data.current_streak }} / 暫無門檻</small>
-                    {% else %}
-                    <small data-mastery-field="streak">連續答對 {{ data.current_streak }} / {{ data.pass_target }} 題</small>
-                    {% endif %}
-                    <br>
-                    <small data-mastery-field="attempts">最近 {{ data.recent_attempt_count }} 題 | 累計作答 {{ data.attempt_count }} 題</small>
-                    {% if data.binding_issue %}
-                    <br><small class="binding-issue">教材參考題綁定異常</small>
-                    {% endif %}
-                </div>
-                <a href="{{ url_for('practice.practice', skill_id=data.skill.skill_id) }}" class="btn-practice">
-                    開始練習
-                </a>
-            </div>
+            {% with skill_card=data %}{% include 'partials/skill_card.html' %}{% endwith %}
             {% endfor %}
         </div>
         {% endif %}

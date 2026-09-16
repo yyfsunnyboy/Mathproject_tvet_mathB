@@ -1,0 +1,97 @@
+<style>
+    .skill-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 14px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .skill-grid.curriculum-skills {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        width: 100% !important;
+        grid-auto-flow: row !important;
+    }
+    @media (max-width: 960px) {
+        .skill-grid, .skill-grid.curriculum-skills {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+    @media (max-width: 640px) {
+        .skill-grid, .skill-grid.curriculum-skills {
+            grid-template-columns: 1fr !important;
+        }
+    }
+    .skill-card mjx-container { max-width: 100%; overflow-x: auto; }
+    .skill-card {
+        background: #fffdf9;
+        border: 1px solid #dde5d8;
+        border-radius: 18px;
+        box-shadow: 0 2px 10px rgba(60,80,60,0.04);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        transition: transform 0.18s ease, box-shadow 0.18s ease,
+                    border-color 0.18s ease, background 0.18s ease;
+    }
+    .skill-card.status-unpracticed { background: #ffffff; border-color: #dde5d8; }
+    .skill-card.status-needs_improvement { background: #fdecec; border-color: #edb8b8; }
+    .skill-card.status-learning { background: #eef7eb; border-color: #c9dfc3; }
+    .skill-card.status-proficient { background: #d7ead2; border-color: #98bd91; }
+    .skill-card.status-mastered { background: #477454; border-color: #31583d; color: #ffffff; }
+    .skill-card.status-mastered h3,
+    .skill-card.status-mastered p,
+    .skill-card.status-mastered .progress-info { color: #ffffff; }
+    .skill-card.status-mastered .progress-bar { background: rgba(255,255,255,0.28); }
+    .skill-card.status-mastered .progress-fill { background: #f1f7ef; }
+    .skill-status-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .binding-issue { color: #8a4b16; font-weight: 700; }
+    .skill-card:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(180deg, #fffefb 0%, #f6fbf4 100%);
+        border-color: #89a889;
+        box-shadow: 0 10px 24px rgba(70,100,70,0.10);
+    }
+    .skill-card:hover h3 { font-weight: 700; color: #2d5132; }
+    .skill-card.status-mastered:hover { background: #3d6749; border-color: #294b34; }
+    .skill-card.status-mastered:hover h3 { color: #ffffff; }
+    .skill-card h3 {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 0;
+        margin-bottom: 6px;
+        color: var(--green-deep, #55735c);
+        transition: font-weight 0.18s ease, color 0.18s ease;
+    }
+    .skill-card p { font-size: 12.5px; color: #5e6a61; flex-grow: 1; margin-bottom: 8px; }
+    .progress-info { font-size: 12px; color: #5e6a61; margin-bottom: 10px; }
+    .progress-bar {
+        width: 100%; height: 8px; background: #e6ede2; border-radius: 999px;
+        overflow: hidden; margin-bottom: 6px;
+    }
+    .progress-fill {
+        height: 100%; background: linear-gradient(90deg, #7ea37f 0%, #5f7f68 100%);
+        border-radius: 999px; transition: width 0.5s ease;
+    }
+    .btn-practice {
+        display: block; text-align: center; background: #6f946f; color: #fff;
+        padding: 8px 12px; border-radius: var(--r-md, 10px); text-decoration: none;
+        font-size: 13px; font-weight: 600; transition: background 0.18s ease, transform 0.18s ease;
+        margin-top: auto; border: 1px solid #5a7d5a;
+    }
+    .btn-practice:hover { background: #5f7f68; transform: translateY(-1px); }
+</style>

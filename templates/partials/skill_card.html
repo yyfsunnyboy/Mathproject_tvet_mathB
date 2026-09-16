@@ -1,0 +1,27 @@
+<div class="skill-card status-{{ skill_card.card_status }}" data-skill-id="{{ skill_card.skill_id }}" style="height: 100%;">
+    <h3>{{ skill_card.skill_ch_name or skill_card.skill_name }}</h3>
+    {% if skill_card.description %}<p>{{ skill_card.description }}</p>{% endif %}
+    <div class="progress-info">
+        <div class="skill-status-row">
+            <span data-mastery-field="status">{{ skill_card.card_status_label }}</span>
+            <span data-mastery-field="accuracy">熟練度 {{ skill_card.recent_accuracy_label }}</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" data-mastery-field="progress"
+                style="width: {{ skill_card.recent_accuracy }}%"></div>
+        </div>
+        {% if skill_card.binding_issue %}
+        <small data-mastery-field="streak">連續答對 {{ skill_card.current_streak }} / 暫無門檻</small>
+        {% else %}
+        <small data-mastery-field="streak">連續答對 {{ skill_card.current_streak }} / {{ skill_card.pass_target }} 題</small>
+        {% endif %}
+        <br>
+        <small data-mastery-field="attempts">最近 {{ skill_card.recent_attempt_count }} 題 | 累計作答 {{ skill_card.attempt_count }} 題</small>
+        {% if skill_card.binding_issue %}
+        <br><small class="binding-issue">教材參考題綁定異常</small>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('practice.practice', skill_id=skill_card.skill_id) }}" class="btn-practice">
+        {{ skill_card.action_label|default('開始練習') }}
+    </a>
+</div>

@@ -27,4 +27,5 @@ from . import (
     adaptive_api,
     free_response_practice,
     b4_chap2_teacher_audit,
+    vocational_mock_exam,
 )
