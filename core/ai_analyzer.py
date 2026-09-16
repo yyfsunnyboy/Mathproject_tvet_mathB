@@ -1158,6 +1158,17 @@ def build_chat_prompt(
     turn_block = f"【本輪學生提問】\n{user_question or '（學生未提供）'}"
     extra_blocks.append(turn_block)
 
+    reference_markers = ("剛剛", "這一步", "這樣", "兩種方法", "那個", "所以")
+    if any(marker in str(user_question or "") for marker in reference_markers):
+        extra_blocks.append(
+            "【指涉語句承接規則】\n"
+            "本輪含有『剛剛／這一步／這樣／兩種方法／那個／所以』等指涉語句。"
+            "若同一題近期對話已清楚指出所指概念、方法、步驟或 drawing feedback，"
+            "回覆必須先用一句短句明確說出你承接的是什麼，再給蘇格拉底式提示；"
+            "不得像第一次看到本輪句子一樣另開新解釋。"
+            "不得硬編歷史中不存在的前文；若近期對話仍不足以確定指涉，才請學生簡短澄清。"
+        )
+
     is_authoritatively_correct = (
         authoritative_correct is True
         or str(authoritative_status or "").strip().lower() == "correct"

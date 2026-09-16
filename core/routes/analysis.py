@@ -39,6 +39,8 @@ from core.ai_analyzer import (
     enforce_strict_mode,
 )
 from core.ai_client import call_ai, call_google_model
+from core.ai_conversation_context import add_turn as add_ai_context_turn
+from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
 from core.adaptive.judge import (
     judge_answer_with_feedback,
     _as_symbolic_tolerant,
@@ -1156,6 +1158,7 @@ def _handwriting_feedback_second_prompt(
     question_context,
     prereq_text,
     family_id,
+    conversation_context="",
 ):
     status = str((analysis_result or {}).get("status") or "unknown")
     question = (question_text or question_context or "").strip()
@@ -1176,10 +1179,13 @@ def _handwriting_feedback_second_prompt(
     
     try:
         from core.prompts.composer import compose_prompt
+        extra_blocks = [json_format_str]
+        if conversation_context:
+            extra_blocks.insert(0, conversation_context)
         full_prompt, source = compose_prompt(
             base_key=None,
             task_key="handwriting_feedback_prompt",
-            extra_blocks=[json_format_str],
+            extra_blocks=extra_blocks,
             question=question,
             student_expression=student_expression,
             expected_answer=expected_answer,
@@ -1214,7 +1220,8 @@ def _handwriting_feedback_second_prompt(
             "- 不要直接寫出或暗示題目的最終數值／最終化簡答案；不要替學生把整題解完。\n"
             "- 不要規定固定套語或結尾句型（例如不必強迫寫「請再檢查一次」「想一下再試一次」等）。\n"
             "- 不要限制 reply 行數；語氣簡潔、像老師批改即可；不要聊天。\n\n"
-            + json_format_str
+            + (f"\n\n{conversation_context}" if conversation_context else "")
+            + "\n\n" + json_format_str
         )
 
 
@@ -1542,6 +1549,7 @@ def chat_ai():
     question_text = data.get('question_text', '')
     correct_answer = data.get('correct_answer', '').strip()
     requested_question_uid = str(data.get('question_uid') or '').strip()
+    conversation_context = format_ai_context_for_prompt(requested_question_uid)
     requested_submission_id = str(data.get('handwriting_submission_id') or '').strip()
     checker_result = session.get('chat_tutor_authoritative_result')
     if not isinstance(checker_result, dict):
@@ -1709,6 +1717,8 @@ def chat_ai():
     )
     if structured_summary:
         full_question_context = f"{full_question_context}\n\n[structured_analysis]\n{structured_summary}"
+    if conversation_context:
+        full_question_context = f"{full_question_context}\n\n{conversation_context}"
 
 
 
@@ -1806,7 +1816,19 @@ def chat_ai():
     # The checker is the sole completion authority. A correct verdict terminates
     # tutoring before the LLM/compliance pipeline can add questions or more work.
     if _tutor_authoritative_correct(authoritative_correct, authoritative_status):
-        return jsonify(_tutor_correct_response())
+        terminal = _tutor_correct_response()
+        add_ai_context_turn(
+            requested_question_uid, role="student", kind="chat_message", content=user_question
+        )
+        add_ai_context_turn(
+            requested_question_uid,
+            role="tutor",
+            kind="tutor_reply",
+            content=terminal.get("reply", ""),
+            authoritative_correct=True,
+            authoritative_status=authoritative_status,
+        )
+        return jsonify(terminal)
 
 
 
@@ -1946,6 +1968,17 @@ def chat_ai():
     result["micro_step"] = guidance["micro_step"]
     result["forbidden"] = False
     result["reply"] = _tutor_guidance_to_reply(guidance)
+    add_ai_context_turn(
+        requested_question_uid, role="student", kind="chat_message", content=user_question
+    )
+    add_ai_context_turn(
+        requested_question_uid,
+        role="tutor",
+        kind="tutor_reply",
+        content=result["reply"],
+        authoritative_correct=authoritative_correct if isinstance(authoritative_correct, bool) else None,
+        authoritative_status=authoritative_status,
+    )
 
 
 
@@ -2749,7 +2782,12 @@ def analyze_handwriting():
         else:
             current_app.logger.info(f"[analyze_handwriting] routing_to_second_stage status={hw_status}")
             prompt = _handwriting_feedback_second_prompt(
-                analysis_result, question_text, question_context, prereq_text, family_id
+                analysis_result,
+                question_text,
+                question_context,
+                prereq_text,
+                family_id,
+                format_ai_context_for_prompt(str(data.get("question_uid") or "").strip()),
             )
             if ai_provider == 'google':
                 tutor_cfg = dict(Config.MODEL_ROLES.get('architect') or {})
@@ -2840,6 +2878,20 @@ def analyze_handwriting():
                 result["next_question"] = False
             if not isinstance(result.get("follow_up_prompts"), list):
                 result["follow_up_prompts"] = []
+            recognized = str(analysis_result.get("recognized_expression") or "").strip()
+            summary = str(result.get("reply") or "").strip()
+            add_ai_context_turn(
+                str(data.get("question_uid") or "").strip(),
+                role="student",
+                kind="handwriting_feedback",
+                content=f"辨識式：{recognized}\n回饋摘要：{summary}",
+                authoritative_correct=(
+                    authoritative_result.get("correct")
+                    if isinstance(authoritative_result.get("correct"), bool)
+                    else None
+                ),
+                authoritative_status=str(authoritative_result.get("status") or ""),
+            )
             print("analyzer result:", result)
     except Exception as analyzer_exc:
         current_app.logger.exception("analyze_handwriting analyzer failed: %s", analyzer_exc)

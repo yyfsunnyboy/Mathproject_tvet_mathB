@@ -21,6 +21,7 @@ _STORE: dict[str, dict[str, dict[str, Any]]] = {}
 _MAX_RECENT_QUESTIONS = 3
 _COOKIE_TARGET_BYTES = 3500
 _PRACTICE_SESSION_TTL_SECONDS = 1800
+AI_CONVERSATION_MAX_TURNS = 8
 
 STATUS_GENERATED = "generated"
 STATUS_ANSWERED = "answered"
@@ -429,6 +430,46 @@ def get_question_by_uid(
         if stored_skill and stored_skill != expected_skill:
             return None
     return dict(row)
+
+
+def get_question_conversation_context(question_uid: str) -> list[dict[str, Any]]:
+    """Return the bounded AI conversation context for one stored question."""
+    uid = str(question_uid or "").strip()
+    if not uid:
+        return []
+    row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+    if not isinstance(row, dict):
+        return []
+    turns = row.get("ai_conversation_context")
+    if not isinstance(turns, list):
+        return []
+    return [dict(turn) for turn in turns[-AI_CONVERSATION_MAX_TURNS:] if isinstance(turn, dict)]
+
+
+def append_question_conversation_turn(question_uid: str, turn: dict[str, Any]) -> bool:
+    """Append one safe conversational turn without changing grading state."""
+    uid = str(question_uid or "").strip()
+    if not uid or not isinstance(turn, dict):
+        return False
+    row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+    if not isinstance(row, dict):
+        return False
+    turns = row.get("ai_conversation_context")
+    if not isinstance(turns, list):
+        turns = []
+    safe_turn = {
+        "role": str(turn.get("role") or "").strip()[:24],
+        "kind": str(turn.get("kind") or "").strip()[:40],
+        "content": str(turn.get("content") or "").strip()[:1200],
+    }
+    if "authoritative_correct" in turn:
+        value = turn.get("authoritative_correct")
+        safe_turn["authoritative_correct"] = value if isinstance(value, bool) else None
+    if turn.get("authoritative_status"):
+        safe_turn["authoritative_status"] = str(turn.get("authoritative_status"))[:32]
+    turns.append(safe_turn)
+    row["ai_conversation_context"] = turns[-AI_CONVERSATION_MAX_TURNS:]
+    return True
 
 
 def clear_practice_cache_for_owner(owner_key: str | None = None) -> None:

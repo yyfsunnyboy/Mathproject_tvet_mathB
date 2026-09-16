@@ -13,6 +13,8 @@ from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
 
 from core.adaptive.judge import judge_answer_with_feedback
+from core.ai_conversation_context import add_turn as add_ai_context_turn
+from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
 from core.gencode.answer_grading import build_correct_answer_display
 from core.handwriting_ai_check import (
     BLANK_CANVAS_FEEDBACK,
@@ -123,12 +125,34 @@ def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]
 def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingCheckContext) -> dict[str, object]:
     from core.ai_analyzer import analyze
 
+    shared_context = format_ai_context_for_prompt(ctx.question_uid)
+    checker_context = ctx.question_text
+    if shared_context:
+        checker_context = f"{checker_context}\n\n{shared_context}"
     return analyze(
         image_data_url=str(payload.get("image_base64") or payload.get("image_data_url") or ""),
-        context=ctx.question_text,
+        context=checker_context,
         api_key=None,
         prerequisite_skills=[],
         correct_answer=str(ctx.correct_answer or ctx.semantic_answer or ""),
+    )
+
+
+def _persist_drawing_feedback(ctx: HandwritingCheckContext, response: dict[str, object]) -> None:
+    """Store only a readable drawing-check summary; never image or raw payload data."""
+    feedback = _trim_text(response.get("feedback"), max_len=400)
+    if not ctx.question_uid or not feedback:
+        return
+    verdict = response.get("final_answer_correct")
+    add_ai_context_turn(
+        ctx.question_uid,
+        role="student",
+        kind="drawing_feedback",
+        content=f"student_action=drawing_check\nfeedback_summary={feedback}",
+        authoritative_correct=verdict if isinstance(verdict, bool) else None,
+        authoritative_status=(
+            "correct" if verdict is True else "incorrect" if verdict is False else "unknown"
+        ),
     )
 
 
@@ -310,6 +334,7 @@ def ai_check_handwriting():
             ai_result=None,
             previous_state_cleared=previous_state_cleared,
         )
+        _persist_drawing_feedback(ctx, blank_response)
         return jsonify(blank_response), 200
 
     try:
@@ -341,6 +366,7 @@ def ai_check_handwriting():
             ai_result=None,
             previous_state_cleared=previous_state_cleared,
         )
+        _persist_drawing_feedback(ctx, error_response)
         return jsonify(error_response), 200
 
     response = build_handwriting_check_response(
@@ -361,6 +387,7 @@ def ai_check_handwriting():
         ai_result=ai_result if isinstance(ai_result, dict) else None,
         previous_state_cleared=previous_state_cleared,
     )
+    _persist_drawing_feedback(ctx, response)
     return jsonify(response), 200
 
 
