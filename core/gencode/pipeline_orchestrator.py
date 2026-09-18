@@ -11,6 +11,7 @@ import ast
 import copy
 import shutil
 import re
+import threading
 from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
@@ -63,6 +64,9 @@ DRAFT_DIR = GENCODE_DRAFT_DIR
 CLASSIFIER_DRAFT_DIR = REPORT_DIR / "classifier_drafts"
 CLASSIFIER_RULEPACK_PATH = PROJECT_ROOT / "configs" / "gencode" / "classifiers" / "phase1_rule_packs.yaml"
 CLASSIFIER_RULEPACK_BACKUP_DIR = PROJECT_ROOT / "backups" / "gencode_classifier_rulepacks"
+
+_YAML_CACHE_LOCK = threading.RLock()
+_YAML_CACHE: dict[str, tuple[tuple[int, int], dict[str, Any]]] = {}
 
 SOP_INTEGRATION_DIR = Path("docs") / "系統SOP" / "Gencode_AgentSkillV2整合"
 V3_PRODUCTION_PUBLISH_ENABLED: bool = False
@@ -854,13 +858,26 @@ def _load_yaml(path: Path) -> dict[str, Any]:
         import yaml  # type: ignore
     except Exception:
         return {}
-    if not path.exists():
-        return {}
     try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
+        resolved = path.resolve()
+        stat = resolved.stat()
+    except OSError:
         return {}
+    cache_key = str(resolved)
+    signature = (int(stat.st_mtime_ns), int(stat.st_size))
+    with _YAML_CACHE_LOCK:
+        cached = _YAML_CACHE.get(cache_key)
+        if cached is not None and cached[0] == signature:
+            return cached[1]
+        try:
+            data = yaml.safe_load(resolved.read_text(encoding="utf-8"))
+        except Exception:
+            # Preserve the original empty-dict behavior, but retry on the next
+            # call instead of permanently caching a transient/malformed read.
+            return {}
+        normalized = data if isinstance(data, dict) else {}
+        _YAML_CACHE[cache_key] = (signature, normalized)
+        return normalized
 
 
 def _write_yaml(path: Path, data: dict[str, Any]) -> None:
@@ -868,6 +885,12 @@ def _write_yaml(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     text = yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
     path.write_text(text, encoding="utf-8")
+    try:
+        cache_key = str(path.resolve())
+    except OSError:
+        cache_key = str(path)
+    with _YAML_CACHE_LOCK:
+        _YAML_CACHE.pop(cache_key, None)
 
 
 def _load_registered_classifier_rulepack(skill_id: str) -> dict[str, Any] | None:
@@ -1057,7 +1080,9 @@ def register_classifier_rulepack_from_draft(skill_id: str, confirm: bool = False
         backup = CLASSIFIER_RULEPACK_BACKUP_DIR / f"phase1_rule_packs.{ts}.yaml"
         shutil.copy2(CLASSIFIER_RULEPACK_PATH, backup)
         backup_path = str(backup)
-    root = _load_yaml(CLASSIFIER_RULEPACK_PATH)
+    # Cached YAML values are shared read-only snapshots.  This registration
+    # flow mutates the root before writing, so isolate it from the cache.
+    root = copy.deepcopy(_load_yaml(CLASSIFIER_RULEPACK_PATH))
     if not root:
         root = {"version": 1, "skills": []}
     skills = root.get("skills", []) if isinstance(root.get("skills"), list) else []
@@ -4862,6 +4887,7 @@ def run_v3_no_llm_phase1_for_example(
     textbook_row: dict[str, Any],
     *,
     conn: Any = None,
+    skill_examples: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Deterministic, no-LLM Phase 1 preflight for a single textbook example."""
     skill_key = str(skill_id or "").strip()
@@ -4897,7 +4923,11 @@ def run_v3_no_llm_phase1_for_example(
 
     registered_pack = _load_registered_classifier_rulepack(skill_key)
     if registered_pack:
-        examples = _load_textbook_examples_for_skill_conn(conn, skill_key) if conn is not None else [textbook_row]
+        examples = (
+            skill_examples
+            if skill_examples is not None
+            else (_load_textbook_examples_for_skill_conn(conn, skill_key) if conn is not None else [textbook_row])
+        )
         if not examples:
             examples = [textbook_row]
         entries = _classify_examples_with_rulepack(skill_id=skill_key, examples=examples, pack=registered_pack)

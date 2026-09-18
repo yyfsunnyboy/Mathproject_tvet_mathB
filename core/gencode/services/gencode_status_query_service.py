@@ -1264,7 +1264,13 @@ def _fetch_batch_tracker_rows_for_skills(
     conn: sqlite3.Connection,
     skill_ids: list[str],
 ) -> dict[str, list[dict[str, object]]]:
-    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    keys = list(
+        dict.fromkeys(
+            str(skill_id or "").strip()
+            for skill_id in skill_ids
+            if str(skill_id or "").strip()
+        )
+    )
     if not keys or not _tracker_table_exists(conn):
         return {key: [] for key in keys}
     placeholders = ",".join("?" for _ in keys)
@@ -1630,7 +1636,15 @@ def build_admin_skills_gencode_status_map(
     production_base_dir: str = "agent_skills_v3",
     audit_variation: bool = False,
 ) -> dict[str, dict[str, object]]:
-    keys = [str(skill_id or "").strip() for skill_id in skill_ids if str(skill_id or "").strip()]
+    # Curriculum joins may contain more than one row for the same skill. Build
+    # enrichment once per skill and let the route reuse the resulting map.
+    keys = list(
+        dict.fromkeys(
+            str(skill_id or "").strip()
+            for skill_id in skill_ids
+            if str(skill_id or "").strip()
+        )
+    )
     if not keys:
         return {}
     if audit_variation:
@@ -1660,7 +1674,11 @@ def build_admin_skills_gencode_status_map(
     )
     from core.gencode.services.v3_skill_capability_preflight_service import (
         evaluate_skill_v3_capability,
+        load_textbook_rows_for_skills,
     )
+
+    preflight_rows = load_textbook_rows_for_skills(conn, keys)
+    phase1_rows = load_textbook_rows_for_skills(conn, keys, full_rows=True)
 
     result: dict[str, dict[str, object]] = {}
     for skill_key in keys:
@@ -1695,7 +1713,12 @@ def build_admin_skills_gencode_status_map(
             production_base_dir=production_base_dir,
         )
         try:
-            capability = evaluate_skill_v3_capability(conn, skill_key, probe_examples=True)
+            capability_kwargs: dict[str, object] = {"probe_examples": True}
+            if preflight_rows is not None:
+                capability_kwargs["textbook_rows"] = preflight_rows.get(skill_key, [])
+            if phase1_rows is not None:
+                capability_kwargs["phase1_skill_examples"] = phase1_rows.get(skill_key, [])
+            capability = evaluate_skill_v3_capability(conn, skill_key, **capability_kwargs)
         except Exception:
             capability = {
                 "skill_id": skill_key,

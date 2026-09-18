@@ -22,6 +22,59 @@ _VALID_STATUSES = frozenset(
 )
 
 
+_TEXTBOOK_PREFLIGHT_COLUMNS = (
+    "id",
+    "skill_id",
+    "problem_text",
+    "correct_answer",
+    "detailed_solution",
+    "source_description",
+    "problem_type",
+    "notes",
+)
+
+
+def _rows_to_dicts(cursor: Any, rows: list[Any]) -> list[dict[str, Any]]:
+    columns = [str(col[0]) for col in (getattr(cursor, "description", None) or [])]
+    result: list[dict[str, Any]] = []
+    for row in rows:
+        if hasattr(row, "keys"):
+            result.append(dict(row))
+        else:
+            result.append({columns[index]: row[index] for index in range(min(len(columns), len(row)))})
+    return result
+
+
+def load_textbook_rows_for_skills(
+    conn: sqlite3.Connection,
+    skill_ids: list[str],
+    *,
+    full_rows: bool = False,
+) -> dict[str, list[dict[str, Any]]] | None:
+    """Batch-load rows for list-page capability checks; None means fall back safely."""
+    keys = list(dict.fromkeys(str(skill_id or "").strip() for skill_id in skill_ids))
+    keys = [key for key in keys if key]
+    if not keys:
+        return {}
+    grouped: dict[str, list[dict[str, Any]]] = {key: [] for key in keys}
+    selected = "*" if full_rows else ", ".join(_TEXTBOOK_PREFLIGHT_COLUMNS)
+    try:
+        # Keep below SQLite's common 999-variable limit.
+        for offset in range(0, len(keys), 800):
+            chunk = keys[offset : offset + 800]
+            placeholders = ",".join("?" for _ in chunk)
+            cursor = conn.execute(
+                f"SELECT {selected} FROM textbook_examples "
+                f"WHERE skill_id IN ({placeholders}) ORDER BY skill_id ASC, id ASC",
+                chunk,
+            )
+            for row in _rows_to_dicts(cursor, cursor.fetchall()):
+                grouped.setdefault(str(row.get("skill_id") or ""), []).append(row)
+    except Exception:
+        return None
+    return grouped
+
+
 def _load_textbook_rows(conn: sqlite3.Connection, skill_id: str) -> list[dict[str, Any]]:
     rows = conn.execute(
         """
@@ -143,13 +196,19 @@ def _probe_example_resolvable(
     skill_id: str,
     row: dict[str, Any],
     conn: sqlite3.Connection,
+    skill_examples: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Use the same no-LLM Phase1 authority as Admin V3 (read-only; no tracker writes)."""
     from core.gencode.pipeline_orchestrator import run_v3_no_llm_phase1_for_example
 
     example_id = int(row.get("id") or 0)
     try:
-        induced = run_v3_no_llm_phase1_for_example(skill_id, row, conn=conn)
+        induced = run_v3_no_llm_phase1_for_example(
+            skill_id,
+            row,
+            conn=conn,
+            skill_examples=skill_examples,
+        )
     except Exception as exc:
         return {
             "textbook_example_id": example_id,
@@ -182,6 +241,8 @@ def evaluate_skill_v3_capability(
     skill_id: str,
     *,
     probe_examples: bool = True,
+    textbook_rows: list[dict[str, Any]] | None = None,
+    phase1_skill_examples: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """
     Read-only capability preflight for one skill.
@@ -190,7 +251,7 @@ def evaluate_skill_v3_capability(
     """
     skill_key = str(skill_id or "").strip()
     wiring = _check_domain_wiring(skill_key)
-    rows = _load_textbook_rows(conn, skill_key)
+    rows = list(textbook_rows) if textbook_rows is not None else _load_textbook_rows(conn, skill_key)
     total = len(rows)
 
     example_probes: list[dict[str, Any]] = []
@@ -199,7 +260,12 @@ def evaluate_skill_v3_capability(
 
     if probe_examples and wiring.get("registered") and wiring.get("wiring_ok"):
         for row in rows:
-            probe = _probe_example_resolvable(skill_id=skill_key, row=row, conn=conn)
+            probe = _probe_example_resolvable(
+                skill_id=skill_key,
+                row=row,
+                conn=conn,
+                skill_examples=phase1_skill_examples,
+            )
             example_probes.append(probe)
             eid = int(probe["textbook_example_id"])
             if probe.get("resolvable"):
