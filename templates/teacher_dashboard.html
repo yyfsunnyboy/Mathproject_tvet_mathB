@@ -21,7 +21,9 @@
         html, body {
             font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
                          "Segoe UI", "Microsoft JhengHei", sans-serif;
-            background: #f7f6f2;
+            background:
+                radial-gradient(circle at 8% 5%, rgba(214, 232, 207, 0.42), transparent 26rem),
+                linear-gradient(180deg, #f7f9f5 0%, #f4f6f1 100%);
             color: #2f3a32;
             -webkit-font-smoothing: antialiased;
             font-size: 15px;
@@ -30,27 +32,35 @@
 
         /* ── Design Tokens ── */
         :root {
-            --paper-bg:      #f7f6f2;
-            --paper-soft:    #fbfaf7;
+            --paper-bg:      #f5f7f3;
+            --paper-soft:    #fafbf8;
             --card-bg:       #ffffff;
-            --card-warm:     #fcfbf8;
+            --card-warm:     #fbfcf9;
 
             --ink:           #2f3a32;
             --ink-soft:      #4a544d;
             --muted:         #7b857d;
 
-            --green-main:    #6b8f71;
-            --green-deep:    #55735c;
-            --green-soft:    #dfe8dc;
-            --green-pale:    #eef4ea;
+            --green-main:    #62846a;
+            --green-deep:    #46634e;
+            --green-soft:    #d9e8d6;
+            --green-pale:    #eef6eb;
             --green-muted:   rgba(107,143,113,0.13);
             --green-ring:    rgba(107,143,113,0.24);
+
+            --blue-pale:     #edf5fa;
+            --blue-soft:     #d8e9f3;
+            --blue-main:     #5f8298;
+            --orange-pale:   #fff5e8;
+            --orange-soft:   #f3dfc2;
+            --orange-main:   #a97940;
+            --lavender-pale: #f3f0fa;
 
             --sand:          #ede6d9;
             --sand-soft:     #f6f1e8;
 
-            --border:        #dde5d8;
-            --border-soft:   #edf1e8;
+            --border:        #e2e9df;
+            --border-soft:   #edf2eb;
 
             --ok:            #4a7c59;
             --ok-bg:         #edf6f0;
@@ -63,181 +73,377 @@
             --danger-bg:     #fdeeee;
             --danger-text:   #9b3a36;
 
-            --shadow-soft:   0 8px 28px rgba(68,83,70,0.08);
-            --shadow-card:   0 2px 12px rgba(68,83,70,0.07);
+            --shadow-soft:   0 18px 42px rgba(68,83,70,0.09);
+            --shadow-card:   0 8px 24px rgba(68,83,70,0.07);
             --shadow-xs:     0 1px 4px rgba(68,83,70,0.06);
 
             --r-sm: 8px;
             --r-md: 12px;
-            --r-lg: 16px;
-            --r-xl: 20px;
+            --r-lg: 18px;
+            --r-xl: 24px;
             --ease: cubic-bezier(0.4, 0, 0.2, 1);
             --dur: 0.16s;
         }
 
         /* ── Dashboard Shell ── */
         .dashboard-shell {
-            max-width: 1380px;
-            margin: 24px auto;
-            padding: 0 22px 40px;
+            max-width: 1440px;
+            margin: 30px auto;
+            padding: 0 28px 56px;
         }
 
         /* ── Welcome Banner ── */
         .welcome-banner {
-            background: var(--card-bg);
-            border: 1px solid var(--border-soft);
-            border-left: 4px solid var(--green-main);
-            border-radius: var(--r-lg);
-            padding: 20px 28px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-xs);
+            min-height: 196px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            background:
+                radial-gradient(circle at 84% 24%, rgba(255,255,255,0.72) 0 4px, transparent 5px),
+                radial-gradient(circle at 91% 68%, rgba(255,255,255,0.54) 0 3px, transparent 4px),
+                linear-gradient(125deg, #e8f3e4 0%, #f4f8ee 56%, #edf5ea 100%);
+            background-size: auto, auto, auto;
+            border: 0;
+            border-radius: 24px;
+            padding: 34px 42px;
+            margin-bottom: 24px;
+            box-shadow: 0 16px 40px rgba(75, 103, 80, 0.10);
             position: relative;
             overflow: hidden;
         }
-        .welcome-banner::after {
-            content: "📗";
+        .welcome-banner::before {
+            content: "";
             position: absolute;
-            right: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 52px;
-            opacity: 0.07;
+            width: 280px;
+            height: 280px;
+            right: -78px;
+            top: -105px;
+            border: 44px solid rgba(255,255,255,0.30);
+            border-radius: 50%;
             pointer-events: none;
-            user-select: none;
         }
-        .welcome-banner h2 {
-            font-size: 19px;
-            font-weight: 700;
+        .welcome-content { position: relative; z-index: 2; max-width: 780px; }
+        .welcome-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 10px;
+            color: var(--green-deep);
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: 0.12em;
+        }
+        .welcome-eyebrow::before {
+            content: "";
+            width: 22px;
+            height: 2px;
+            border-radius: 99px;
+            background: var(--green-main);
+        }
+        .welcome-banner h1 {
+            font-size: clamp(27px, 3vw, 38px);
+            font-weight: 780;
             color: var(--ink);
-            margin-bottom: 4px;
-            letter-spacing: -0.01em;
+            margin-bottom: 10px;
+            line-height: 1.2;
+            letter-spacing: -0.035em;
         }
         .welcome-banner p {
-            font-size: 13.5px;
-            color: var(--muted);
-            line-height: 1.65;
-            max-width: 680px;
+            font-size: 15px;
+            color: #607066;
+            line-height: 1.8;
+            max-width: 720px;
         }
+        .hero-visual {
+            position: relative;
+            z-index: 1;
+            flex: 0 0 190px;
+            height: 132px;
+        }
+        .hero-orbit {
+            position: absolute;
+            inset: 3px 20px 3px 10px;
+            border: 1px dashed rgba(70,99,78,0.24);
+            border-radius: 50%;
+            transform: rotate(-10deg);
+        }
+        .hero-symbol {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(70,99,78,0.12);
+        }
+        .hero-symbol--main {
+            width: 76px;
+            height: 76px;
+            left: 56px;
+            top: 27px;
+            background: rgba(255,255,255,0.90);
+            font-size: 34px;
+            transform: rotate(-4deg);
+        }
+        .hero-symbol--book {
+            width: 42px;
+            height: 42px;
+            right: 2px;
+            top: 4px;
+            background: var(--orange-pale);
+            font-size: 19px;
+            transform: rotate(8deg);
+        }
+        .hero-symbol--idea {
+            width: 40px;
+            height: 40px;
+            left: 4px;
+            bottom: 2px;
+            background: var(--blue-pale);
+            font-size: 18px;
+            transform: rotate(-8deg);
+        }
+
+        /* ── Summary ── */
+        .summary-section { margin-bottom: 28px; }
+        .summary-heading {
+            margin: 0 0 12px 4px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: 0.11em;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+        .summary-card {
+            min-height: 142px;
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            grid-template-rows: auto auto auto;
+            column-gap: 20px;
+            align-content: center;
+            padding: 25px 28px;
+            border-radius: 20px;
+            box-shadow: 0 10px 28px rgba(68,83,70,0.065);
+        }
+        .summary-card--classes { background: linear-gradient(135deg, #edf6e9, #f8fbf5); }
+        .summary-card--students { background: linear-gradient(135deg, #eaf4fa, #f7fbfd); }
+        .summary-icon {
+            width: 64px;
+            height: 64px;
+            grid-row: 1 / span 3;
+            align-self: center;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.86);
+            box-shadow: 0 8px 20px rgba(68,83,70,0.08);
+            font-size: 27px;
+        }
+        .summary-card--classes .summary-icon { color: var(--green-deep); }
+        .summary-card--students .summary-icon { color: var(--blue-main); }
+        .summary-label { color: var(--ink-soft); font-size: 14px; font-weight: 720; }
+        .summary-value {
+            margin: 4px 0;
+            color: var(--ink);
+            font-size: clamp(34px, 4vw, 42px);
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            line-height: 1;
+        }
+        .summary-note { color: var(--muted); font-size: 12.5px; }
 
         /* ── Two-Column Workbench ── */
         .dashboard-workbench {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-            gap: 20px;
+            grid-template-columns: minmax(0, 2fr) minmax(350px, 1fr);
+            gap: 24px;
             align-items: start;
         }
         .dashboard-main-column,
         .dashboard-side-column {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 22px;
             min-width: 0;
         }
 
         /* ── Card ── */
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--border-soft);
-            border-radius: var(--r-lg);
-            box-shadow: var(--shadow-card);
+            border: 0;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
             padding: 0;
             overflow: hidden;
         }
         .card-head {
-            padding: 16px 20px 14px;
-            border-bottom: 1px solid var(--border-soft);
+            padding: 25px 28px 0;
+            border-bottom: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
         }
         .card-head h3 {
-            font-size: 14.5px;
-            font-weight: 700;
+            font-size: 21px;
+            font-weight: 760;
             color: var(--ink);
             letter-spacing: 0.01em;
         }
         .card-body {
-            padding: 18px 20px;
-        }
-
-        /* ── Overview Stats ── */
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-        .stat-box {
-            background: var(--card-warm);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
-            padding: 16px 12px 14px;
-            text-align: center;
-            transition: background var(--dur) var(--ease),
-                        border-color var(--dur) var(--ease),
-                        box-shadow var(--dur) var(--ease);
-        }
-        .stat-box:hover {
-            background: var(--green-pale);
-            border-color: var(--green-soft);
-            box-shadow: var(--shadow-card);
-        }
-        .stat-icon {
-            font-size: 22px;
-            margin-bottom: 6px;
-            opacity: 0.72;
-            line-height: 1;
-        }
-        .stat-number {
-            font-size: 1.75em;
-            font-weight: 700;
-            color: var(--green-main);
-            line-height: 1.15;
-        }
-        .stat-label {
-            font-size: 12.5px;
-            color: var(--muted);
-            margin-top: 4px;
-            font-weight: 500;
+            padding: 22px 28px 28px;
         }
 
         /* ── Class Management ── */
         .btn-create-class {
             background: var(--green-main);
             color: #fff;
-            border: 1px solid var(--green-deep);
-            border-radius: var(--r-md);
-            padding: 7px 15px;
+            border: 0;
+            border-radius: 12px;
+            padding: 10px 17px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(107,143,113,0.22);
-            transition: background var(--dur) var(--ease);
+            box-shadow: 0 8px 18px rgba(70,99,78,0.20);
+            transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
             font-family: inherit;
         }
-        .btn-create-class:hover { background: var(--green-deep); }
+        .btn-create-class:hover { background: var(--green-deep); transform: translateY(-1px); }
+
+        .section-heading-copy { min-width: 0; }
+        .section-kicker {
+            display: block;
+            margin-bottom: 3px;
+            color: var(--green-main);
+            font-size: 11px;
+            font-weight: 760;
+            letter-spacing: 0.11em;
+        }
+        .section-description {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
 
         .class-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
-        /* 動態生成的班級卡 */
-        .class-grid .stat-box {
-            text-align: left;
+        .class-item {
             position: relative;
-            padding: 14px 16px;
-            background: var(--card-warm);
+            min-height: 270px;
+            display: flex;
+            flex-direction: column;
+            background:
+                linear-gradient(145deg, rgba(238,246,235,0.72), rgba(255,255,255,0.96) 58%);
+            border: 0;
+            border-radius: 18px;
+            padding: 22px;
+            min-width: 0;
+            box-shadow: inset 0 0 0 1px rgba(98,132,106,0.08), 0 8px 22px rgba(68,83,70,0.06);
+            transition: box-shadow var(--dur) var(--ease),
+                        transform var(--dur) var(--ease);
         }
-        .class-grid .stat-box:hover {
-            background: var(--green-pale);
-            border-color: var(--green-soft);
+        .class-item:nth-child(even) {
+            background: linear-gradient(145deg, rgba(255,245,232,0.68), rgba(255,255,255,0.96) 58%);
+        }
+        .class-item:hover {
+            box-shadow: inset 0 0 0 1px rgba(98,132,106,0.16), 0 14px 30px rgba(68,83,70,0.10);
+            transform: translateY(-3px);
+        }
+        .class-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 34px;
+        }
+        .class-icon {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: rgba(255,255,255,0.88);
+            box-shadow: 0 6px 16px rgba(70,99,78,0.09);
+            font-size: 19px;
+        }
+        .class-name {
+            color: var(--ink);
+            font-size: 19px;
+            font-weight: 760;
+            line-height: 1.3;
+        }
+        .class-student-count {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .class-student-count strong {
+            color: var(--green-deep);
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+        .class-code-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 12.5px;
+        }
+        .class-code {
+            padding: 5px 9px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.82);
+            color: var(--ink-soft);
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+        .icon-button {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            cursor: pointer;
+        }
+        .icon-button:hover { background: rgba(255,255,255,0.9); }
+        .class-actions { margin-top: auto; padding-top: 22px; }
+        .manage-students-button {
+            width: 100%;
+            border: 0;
+            border-radius: 11px;
+            padding: 10px 12px;
+            background: rgba(98,132,106,0.12);
+            color: var(--green-deep);
+            font: 700 13px/1.3 inherit;
+            cursor: pointer;
+            transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+        }
+        .manage-students-button:hover { background: var(--green-main); color: #fff; }
+        .delete-class-button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: var(--danger-text);
         }
         .empty-state {
             color: var(--muted);
             font-size: 14px;
-            padding: 24px 0;
+            padding: 56px 0;
             text-align: center;
             width: 100%;
         }
@@ -246,55 +452,75 @@
         .tool-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 11px;
+        }
+        .management-card {
+            background: linear-gradient(180deg, #edf4ea 0%, #f6f8f3 100%);
+            box-shadow: 0 16px 36px rgba(68,83,70,0.08);
         }
         .tool-card {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px 10px;
-            background: var(--card-warm);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
+            gap: 11px;
+            padding: 14px 12px;
+            background: rgba(255,255,255,0.86);
+            border: 0;
+            border-radius: 14px;
             text-decoration: none;
             cursor: pointer;
-            min-height: 94px;
+            min-height: 88px;
+            box-shadow: 0 5px 14px rgba(68,83,70,0.045);
             transition: background var(--dur) var(--ease),
                         border-color var(--dur) var(--ease),
                         box-shadow var(--dur) var(--ease),
                         transform var(--dur) var(--ease);
         }
         .tool-card:hover {
-            background: var(--green-pale);
-            border-color: var(--green-main);
-            box-shadow: var(--shadow-card);
-            transform: translateY(-2px);
+            background: #fff;
+            box-shadow: 0 12px 24px rgba(68,83,70,0.11);
+            transform: translateY(-3px);
         }
         .tool-icon-wrap {
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
             background: var(--green-pale);
-            border: 1px solid var(--green-soft);
-            border-radius: 10px;
+            border: 0;
+            border-radius: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 19px;
             line-height: 1;
             transition: background var(--dur) var(--ease);
         }
         .tool-card:hover .tool-icon-wrap {
             background: var(--green-soft);
         }
+        .tool-card:nth-child(3n + 2) .tool-icon-wrap { background: var(--blue-pale); }
+        .tool-card:nth-child(3n) .tool-icon-wrap { background: var(--orange-pale); }
         .tool-label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--ink-soft);
-            text-align: center;
+            font-size: 13px;
+            font-weight: 720;
+            color: var(--ink);
+            text-align: left;
             line-height: 1.35;
         }
+        .tool-description {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11.5px;
+            line-height: 1.35;
+        }
+        .tool-copy { min-width: 0; flex: 1; }
+        .tool-chevron {
+            margin-left: auto;
+            color: #a7b2aa;
+            font-size: 16px;
+            transition: transform var(--dur) var(--ease), color var(--dur) var(--ease);
+        }
+        .tool-card:hover .tool-chevron { color: var(--green-main); transform: translateX(2px); }
 
         /* ── Modals ── */
         .modal-overlay {
@@ -502,7 +728,7 @@
         *::-webkit-scrollbar-thumb { background: #c0d4bc; border-radius: 99px; }
 
         /* Responsive */
-        @media (max-width: 960px) {
+        @media (max-width: 1080px) {
             .dashboard-workbench {
                 grid-template-columns: 1fr;
             }
@@ -510,10 +736,27 @@
                 grid-template-columns: repeat(4, 1fr);
             }
         }
+        @media (max-width: 780px) {
+            .welcome-banner { padding: 30px; min-height: 180px; }
+            .hero-visual { flex-basis: 150px; transform: scale(0.86); transform-origin: right center; }
+            .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
         @media (max-width: 640px) {
-            .tool-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-grid { grid-template-columns: 1fr 1fr 1fr; }
-            .dashboard-shell { padding: 0 14px 32px; }
+            .dashboard-shell { margin-top: 18px; padding: 0 14px 32px; }
+            .welcome-banner { padding: 26px 24px; min-height: 190px; }
+            .welcome-banner h1 { font-size: 28px; }
+            .hero-visual { display: none; }
+            .summary-grid,
+            .class-grid { grid-template-columns: 1fr; }
+            .summary-card { min-height: 126px; padding: 22px; }
+            .card-head { align-items: flex-start; padding: 22px 20px 0; }
+            .card-body { padding: 20px; }
+            .tool-card { align-items: flex-start; }
+        }
+        @media (max-width: 430px) {
+            .tool-grid { grid-template-columns: 1fr; }
+            .btn-create-class { padding: 9px 12px; }
+            .section-description { display: none; }
         }
     </style>
 </head>
@@ -525,52 +768,77 @@
 
         <!-- Welcome Banner -->
         <section class="welcome-banner">
-            <h2>歡迎回來！</h2>
-            <p>這是您的教學管理中心。您可以在此管理班級、查閱學生學習歷程、維護課程與技能資料庫。</p>
+            <div class="welcome-content">
+                <span class="welcome-eyebrow">TEACHER WORKSPACE</span>
+                <h1>歡迎回來，老師！</h1>
+                <p>這是您的教學管理中心。您可以在此管理班級、查閱學生學習歷程、維護課程與技能資料庫。</p>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="hero-orbit"></div>
+                <span class="hero-symbol hero-symbol--main">🎓</span>
+                <span class="hero-symbol hero-symbol--book">📚</span>
+                <span class="hero-symbol hero-symbol--idea">✦</span>
+            </div>
+        </section>
+
+        <!-- 關鍵數據 -->
+        <section class="summary-section" aria-labelledby="summary-title">
+            <h2 id="summary-title" class="summary-heading">教學概覽</h2>
+            <div class="summary-grid">
+                <article class="summary-card summary-card--classes">
+                    <div class="summary-icon" aria-hidden="true">🏫</div>
+                    <div class="summary-label">班級數</div>
+                    <div id="class-count" class="summary-value">{{ class_count }}</div>
+                    <div class="summary-note">目前管理中的班級</div>
+                </article>
+                <article class="summary-card summary-card--students">
+                    <div class="summary-icon" aria-hidden="true">👥</div>
+                    <div class="summary-label">學生總數</div>
+                    <div id="student-count" class="summary-value">{{ student_count }}</div>
+                    <div class="summary-note">所屬班級的不重複學生</div>
+                </article>
+            </div>
         </section>
 
         <div class="dashboard-workbench">
 
-            <!-- ── 左欄：概覽 + 班級管理 ── -->
+            <!-- ── 左欄：班級管理 ── -->
             <main class="dashboard-main-column">
-
-                <!-- 快速概覽 -->
-                <section class="card overview-card">
-                    <div class="card-head">
-                        <h3>快速概覽</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="stat-grid">
-                            <div class="stat-box">
-                                <div class="stat-icon">🏫</div>
-                                <div class="stat-number">0</div>
-                                <div class="stat-label">班級數</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-icon">👨‍🎓</div>
-                                <div class="stat-number">0</div>
-                                <div class="stat-label">學生總數</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-icon">📝</div>
-                                <div class="stat-number">0</div>
-                                <div class="stat-label">待批改作業</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <!-- 班級管理 -->
                 <section class="card class-card">
                     <div class="card-head">
-                        <h3>班級管理</h3>
+                        <div class="section-heading-copy">
+                            <span class="section-kicker">MY CLASSES</span>
+                            <h3>班級管理</h3>
+                            <p class="section-description">查看班級人數與管理學生名單</p>
+                        </div>
                         <button onclick="openCreateClassModal()" class="btn-create-class">
                             + 建立新班級
                         </button>
                     </div>
                     <div class="card-body">
                         <div id="classList" class="class-grid">
-                            <p class="empty-state">載入中...</p>
+                            {% for cls in classes %}
+                            <article class="class-item">
+                                <div class="class-heading">
+                                    <span class="class-icon" aria-hidden="true">🏫</span>
+                                    <h4 class="class-name">{{ cls.name }}</h4>
+                                </div>
+                                <button type="button" onclick="deleteClass({{ cls.id }})" class="icon-button delete-class-button" title="刪除班級" aria-label="刪除 {{ cls.name }}">🗑️</button>
+                                <div class="class-student-count"><strong>{{ cls.student_count }}</strong><span>位學生</span></div>
+                                <div class="class-code-row">
+                                    <span>班級代碼</span>
+                                    <span id="code-{{ cls.id }}" class="class-code">{{ cls.class_code }}</span>
+                                    <button type="button" onclick="copyCode('{{ cls.class_code }}')" class="icon-button" title="複製邀請碼" aria-label="複製邀請碼">📋</button>
+                                    <button type="button" onclick="regenerateCode({{ cls.id }})" class="icon-button" title="產生新代碼" aria-label="產生新代碼">🔄</button>
+                                </div>
+                                <div class="class-actions">
+                                    <button type="button" onclick='openStudentModal({{ cls.id }}, {{ cls.name|tojson }})' class="manage-students-button">管理學生</button>
+                                </div>
+                            </article>
+                            {% else %}
+                            <p class="empty-state">目前還沒有班級，請建立第一個班級。</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </section>
@@ -581,41 +849,45 @@
             <aside class="dashboard-side-column">
                 <section class="card management-card">
                     <div class="card-head">
-                        <h3>教師工具箱</h3>
+                        <div class="section-heading-copy">
+                            <span class="section-kicker">QUICK ACCESS</span>
+                            <h3>教師工具箱</h3>
+                            <p class="section-description">快速前往常用管理功能</p>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="tool-grid">
                             <a href="{{ url_for('teacher_analysis') }}" class="tool-card">
                                 <div class="tool-icon-wrap">📊</div>
-                                <div class="tool-label">學生分析報告</div>
+                                <div class="tool-copy"><div class="tool-label">學生分析報告</div><div class="tool-description">查閱學生學習歷程</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.admin_curriculum') }}" class="tool-card">
                                 <div class="tool-icon-wrap">📚</div>
-                                <div class="tool-label">課程分類管理</div>
+                                <div class="tool-copy"><div class="tool-label">課程分類管理</div><div class="tool-description">維護課程分類資料</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.admin_skills') }}" class="tool-card">
                                 <div class="tool-icon-wrap">⚙️</div>
-                                <div class="tool-label">單元管理</div>
+                                <div class="tool-copy"><div class="tool-label">單元管理</div><div class="tool-description">管理技能與單元內容</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.admin_prerequisites') }}" class="tool-card">
                                 <div class="tool-icon-wrap">🔗</div>
-                                <div class="tool-label">技能關聯</div>
+                                <div class="tool-copy"><div class="tool-label">技能關聯</div><div class="tool-description">維護技能先備關係</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.admin_examples') }}" class="tool-card">
                                 <div class="tool-icon-wrap">📖</div>
-                                <div class="tool-label">例題管理</div>
+                                <div class="tool-copy"><div class="tool-label">例題管理</div><div class="tool-description">查看與維護例題</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.admin_textbook_importer_v3') }}" class="tool-card">
                                 <div class="tool-icon-wrap">🤖</div>
-                                <div class="tool-label">AI 教材匯入</div>
+                                <div class="tool-copy"><div class="tool-label">AI 教材匯入</div><div class="tool-description">匯入既有教材內容</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.db_maintenance') }}" class="tool-card">
                                 <div class="tool-icon-wrap">🗃️</div>
-                                <div class="tool-label">資料庫管理</div>
+                                <div class="tool-copy"><div class="tool-label">資料庫管理</div><div class="tool-description">執行資料維護作業</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                             <a href="{{ url_for('core.ai_prompt_settings_page') }}" class="tool-card">
                                 <div class="tool-icon-wrap">✨</div>
-                                <div class="tool-label">AI 設定</div>
+                                <div class="tool-copy"><div class="tool-label">AI 設定</div><div class="tool-description">管理既有 AI 參數</div></div><span class="tool-chevron" aria-hidden="true">›</span>
                             </a>
                         </div>
                     </div>
@@ -757,6 +1029,35 @@
             document.getElementById('newClassName').value = '';
         }
 
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>'"]/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[character]);
+        }
+
+        function renderClassCard(cls) {
+            const className = escapeHtml(cls.name);
+            const classCode = escapeHtml(cls.class_code);
+            return `
+                <article class="class-item">
+                    <div class="class-heading">
+                        <span class="class-icon" aria-hidden="true">🏫</span>
+                        <h4 class="class-name">${className}</h4>
+                    </div>
+                    <button type="button" onclick="deleteClass(${cls.id})" class="icon-button delete-class-button" title="刪除班級" aria-label="刪除 ${className}">🗑️</button>
+                    <div class="class-student-count"><strong>${cls.student_count}</strong><span>位學生</span></div>
+                    <div class="class-code-row">
+                        <span>班級代碼</span>
+                        <span id="code-${cls.id}" class="class-code">${classCode}</span>
+                        <button type="button" onclick="copyCode('${classCode}')" class="icon-button" title="複製邀請碼" aria-label="複製邀請碼">📋</button>
+                        <button type="button" onclick="regenerateCode(${cls.id})" class="icon-button" title="產生新代碼" aria-label="產生新代碼">🔄</button>
+                    </div>
+                    <div class="class-actions">
+                        <button type="button" data-class-name="${className}" onclick="openStudentModal(${cls.id}, this.dataset.className)" class="manage-students-button">管理學生</button>
+                    </div>
+                </article>`;
+        }
+
         async function loadClasses() {
             try {
                 const response = await fetch("{{ url_for('core.get_teacher_classes') }}");
@@ -764,32 +1065,15 @@
 
                 if (data.success) {
                     const container = document.getElementById('classList');
+                    document.getElementById('class-count').textContent = data.classes.length;
+                    document.getElementById('student-count').textContent = data.student_count;
+
                     if (data.classes.length === 0) {
-                        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #7f8c8d;">目前還沒有班級，請點擊右上角建立！</p>';
+                        container.innerHTML = '<p class="empty-state">目前還沒有班級，請建立第一個班級。</p>';
                         return;
                     }
 
-                    container.innerHTML = data.classes.map(cls => `
-                        <div class="stat-box" style="text-align: left; position: relative;">
-                            <div style="font-size: 1.2em; font-weight: bold; color: #2c3e50;">${cls.name}</div>
-                            <div style="margin-top: 10px; color: #7f8c8d; display: flex; align-items: center; gap: 5px;">
-                                <span>班級代碼：</span>
-                                <span id="code-${cls.id}" style="background-color: #f1c40f; color: #fff; padding: 2px 5px; border-radius: 3px; font-weight: bold;">
-                                    ${cls.class_code}
-                                </span>
-                                <button onclick="copyCode('${cls.class_code}')" title="複製邀請碼" style="background: none; border: none; cursor: pointer; font-size: 1em;">📋</button>
-                                <button onclick="regenerateCode(${cls.id})" title="產生新代碼" style="background: none; border: none; cursor: pointer; font-size: 1em;">🔄</button>
-                            </div>
-                            <div style="margin-top: 5px; color: #7f8c8d;">學生人數：${cls.student_count} 人</div>
-                            <div style="margin-top: 15px;">
-                                <button onclick="openStudentModal(${cls.id}, '${cls.name}')" style="background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 0.9em;">管理學生</button>
-                            </div>
-                            <button onclick="deleteClass(${cls.id})" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #e74c3c; cursor: pointer;" title="刪除班級">🗑️</button>
-                        </div>
-                    `).join('');
-
-                    // 更新概覽數據
-                    document.querySelector('.stat-number').textContent = data.classes.length;
+                    container.innerHTML = data.classes.map(renderClassCard).join('');
                 }
             } catch (error) {
                 console.error('Error loading classes:', error);
@@ -1025,7 +1309,8 @@
     </script>
 
 <!-- teacher-dashboard-skin-v3 已整合至 <head> style 區塊，此處移除避免衝突 -->
-<style id="teacher-dashboard-skin-v3-removed">
+{% if false %}
+<style id="teacher-dashboard-skin-v3-removed" media="not all">
 /* CSS 已整合至 head style 區塊 — 此 block 故意留空 */
 /* PLACEHOLDER_START
   --paper-bg:      #f7f6f2;
@@ -1603,6 +1888,7 @@ button {
   font-size: 14px !important;
 PLACEHOLDER_END */
 </style>
+{% endif %}
 </body>
 
 </html>

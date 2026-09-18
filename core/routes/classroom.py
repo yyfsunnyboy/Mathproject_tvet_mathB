@@ -13,6 +13,7 @@
 from flask import request, jsonify, flash, redirect, url_for, current_app
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
+from sqlalchemy import func
 import pandas as pd
 
 from . import core_bp
@@ -97,14 +98,24 @@ def delete_class(class_id):
 @login_required
 def get_teacher_classes():
     """獲取教師的所有班級"""
-    if current_user.role != 'teacher':
+    if current_user.role != 'teacher' and not current_user.is_admin:
         return jsonify({"success": False, "message": "權限不足"}), 403
         
     try:
-        classes = db.session.query(Class).filter_by(teacher_id=current_user.id).order_by(Class.created_at.desc()).all()
+        classes_query = db.session.query(Class)
+        student_count_query = (
+            db.session.query(func.count(func.distinct(ClassStudent.student_id)))
+            .join(Class, Class.id == ClassStudent.class_id)
+        )
+        if not current_user.is_admin:
+            classes_query = classes_query.filter(Class.teacher_id == current_user.id)
+            student_count_query = student_count_query.filter(Class.teacher_id == current_user.id)
+
+        classes = classes_query.order_by(Class.created_at.desc()).all()
         return jsonify({
             "success": True,
-            "classes": [c.to_dict() for c in classes]
+            "classes": [c.to_dict() for c in classes],
+            "student_count": student_count_query.scalar() or 0,
         })
     except Exception as e:
         current_app.logger.error(f"獲取班級列表失敗: {e}")

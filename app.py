@@ -78,7 +78,17 @@ from core.session_safety import (
 )
 from core.database_runtime import install_sqlite_connection_hardening
 from config import Config
-from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
+from models import (
+    Class,
+    ClassStudent,
+    Progress,
+    SkillCurriculum,
+    SkillInfo,
+    SkillPrerequisites,
+    User,
+    db,
+    init_db,
+)
 from core.utils import get_all_active_skills
 
 def _prepare_skill_data_from_record(record):
@@ -341,7 +351,27 @@ def create_app(*, production: bool | None = None):
         if current_user.role != 'teacher' and not current_user.is_admin:
             flash('權限不足，無法存取教師頁面', 'warning')
             return redirect(url_for('dashboard'))
-        return render_template('teacher_dashboard.html', username=current_user.username)
+
+        classes_query = db.session.query(Class)
+        if not current_user.is_admin:
+            classes_query = classes_query.filter(Class.teacher_id == current_user.id)
+        classes = classes_query.order_by(Class.created_at.desc()).all()
+
+        student_count_query = (
+            db.session.query(func.count(func.distinct(ClassStudent.student_id)))
+            .join(Class, Class.id == ClassStudent.class_id)
+        )
+        if not current_user.is_admin:
+            student_count_query = student_count_query.filter(Class.teacher_id == current_user.id)
+        student_count = student_count_query.scalar() or 0
+
+        return render_template(
+            'teacher_dashboard.html',
+            username=current_user.username,
+            classes=[class_obj.to_dict() for class_obj in classes],
+            class_count=len(classes),
+            student_count=student_count,
+        )
 
     @app.route('/teacher/analysis')
     @login_required
