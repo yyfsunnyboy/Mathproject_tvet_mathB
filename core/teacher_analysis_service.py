@@ -71,7 +71,9 @@ class PracticeStats:
 
 def teacher_analysis_authorized(user: Any) -> bool:
     """Align with b4_chap2_teacher_audit: admin or teacher role."""
-    if not getattr(user, "is_authenticated", False):
+    from core.guest_demo import is_guest_demo
+
+    if not getattr(user, "is_authenticated", False) and not is_guest_demo():
         return False
     if getattr(user, "is_admin", False):
         return True

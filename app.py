@@ -235,6 +235,9 @@ def create_app(*, production: bool | None = None):
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
     app.register_blueprint(live_show_bp) # 註冊科展展演用的 blueprint
 
+    from core.guest_demo import install_guest_demo
+    install_guest_demo(app, db)
+
     # [公開唯讀 Demo 模式] 註冊 demo blueprint：/demo, /demo/practice, /demo/teacher-overview
     # 全部使用固定假資料、無需登入、不提供任何寫入操作，與既有登入/教師權限邏輯完全獨立。
     from core.routes.demo import demo_bp

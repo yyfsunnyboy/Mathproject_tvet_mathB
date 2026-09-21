@@ -40,6 +40,7 @@ from sympy.parsing.sympy_parser import (
 
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
 from core.prompts.composer import compose_prompt
+from core.guest_demo import is_guest_demo
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 集中式 Prompt 管理
@@ -712,7 +713,7 @@ def start_review_session():
         history = normalize_history(history)
 
         # 若 history 為空，嘗試從 DB 恢復
-        if (not history.get('item_history') and student_id not in ('unknown', 'guest')):
+        if (not is_guest_demo() and not history.get('item_history') and student_id not in ('unknown', 'guest')):
             _ensure_state_table()
             saved = _load_review_state(student_id)
             if saved:
@@ -902,7 +903,7 @@ def submit_feedback():
             if hasattr(engine.akt_inference, 'skills_list') and skill_id < len(engine.akt_inference.skills_list):
                 skill_name = engine.akt_inference.skills_list[skill_id]
                 
-            if skill_name != "unknown" and student_id not in ('unknown', 'guest'):
+            if not is_guest_demo() and skill_name != "unknown" and student_id not in ('unknown', 'guest'):
                 comp_score = float(apr_after * 100.0)
                 nc = db.session.query(NodeCompetency).filter_by(user_id=int(student_id), node_id=skill_name).first()
                 if nc:
@@ -921,7 +922,7 @@ def submit_feedback():
             logger.warning(f"無法更新 NodeCompetency: {db_err}")
         
         # ── 持久化學習歷史 ────────────────────────────────────────────────
-        if student_id not in ('unknown', 'guest'):
+        if not is_guest_demo() and student_id not in ('unknown', 'guest'):
             _ensure_state_table()
             _save_review_state(student_id, updated_history, apr_after)
         

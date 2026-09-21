@@ -85,6 +85,7 @@ from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
 )
 from core.practice_attempt_service import persist_practice_attempt
 from core.database_runtime import release_db_session_before_external_call
+from core.guest_demo import is_guest_demo
 # Phase 6N: Chap2 chapter mode integration
 from core.vocational_math_b4.services.b4_chap2_chapter_mode import (
     B4_CHAP2_CHAPTER_SKILL_IDS,
@@ -582,6 +583,14 @@ def _emit_check_result(
         from core.gencode.answer_grading import attach_correct_answer_feedback
 
         out = attach_correct_answer_feedback(out, current_question)
+    # Guest Demo is interactive but read-only.  The checker has already run by
+    # the time this helper is called, so return the normal grading payload
+    # before touching question history, streak/mastery state, or any DB-backed
+    # persistence that requires a real student id.
+    if uid:
+        out["question_uid"] = uid
+    if is_guest_demo():
+        return jsonify(out)
     # Only mark the question as answered in the store when the result carries a
     # definitive verdict (correct / incorrect). parse_error and system_error are
     # not genuine student answers and must not pollute the question store.
@@ -623,10 +632,8 @@ def _emit_check_result(
             ctx.get("user_answer"),
             out["checker_result"],
         )
-    if uid:
-        out["question_uid"] = uid
     pending_write = False
-    if record_progress and _is_gradable:
+    if record_progress and _is_gradable and not is_guest_demo():
         try:
             update_progress(current_user.id, skill_id, bool(out.get("correct", False)), commit=False)
             pending_write = True
@@ -640,6 +647,7 @@ def _emit_check_result(
     if (
         record_progress
         and _is_gradable
+        and not is_guest_demo()
         and not skip_practice_attempt
         and out.get("correct") is not None
     ):
@@ -662,7 +670,7 @@ def _emit_check_result(
                 getattr(current_user, "id", None),
                 skill_id,
             )
-    if record_progress and _is_gradable:
+    if record_progress and _is_gradable and not is_guest_demo():
         progress = db.session.query(Progress).filter_by(
             user_id=current_user.id,
             skill_id=skill_id,
@@ -676,6 +684,8 @@ def _emit_check_result(
 
 def _record_compact_practice_progress(skill_id: str, is_correct: bool) -> None:
     """Keep adaptive review hints small enough for Flask's cookie session."""
+    if is_guest_demo():
+        return
     import time
 
     sid = str(skill_id or "").strip()
@@ -1518,12 +1528,13 @@ def get_adaptive_question():
                 return jsonify({"error": "憿澈銝剖歇?∪??拍?憿?臭??刻??"}), 404
 
         if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id_for_generate):
-            persist_b4_chap2_gated_event(
-                gated_event_type="not_enabled_skill",
-                skill_id=str(skill_id_for_generate),
-                problem_type_id=None,
-                public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
-            )
+            if not is_guest_demo():
+                persist_b4_chap2_gated_event(
+                    gated_event_type="not_enabled_skill",
+                    skill_id=str(skill_id_for_generate),
+                    problem_type_id=None,
+                    public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
+                )
             return jsonify({"error": B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
         inner_router_seed = gen_seed
@@ -1779,12 +1790,13 @@ def next_question():
 
     # Phase 6C-1R2: gated Chap2 skills ??clear gate error instead of importing missing skills.<id>
     if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
-        persist_b4_chap2_gated_event(
-            gated_event_type="not_enabled_skill",
-            skill_id=str(skill_id),
-            problem_type_id=str(problem_type).strip() if problem_type else None,
-            public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
-        )
+        if not is_guest_demo():
+            persist_b4_chap2_gated_event(
+                gated_event_type="not_enabled_skill",
+                skill_id=str(skill_id),
+                problem_type_id=str(problem_type).strip() if problem_type else None,
+                public_message=B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR,
+            )
         return jsonify({"error": B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
     # Phase 7B: gated Chap3 skills
@@ -1979,12 +1991,13 @@ def next_question():
                         data = _build_b4_pascal_triangle_runtime_payload(pascal_triangle_index)
                     elif is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
                         if problem_type and is_b4_chapter2_excluded_problem_type(problem_type):
-                            persist_b4_chap2_gated_event(
-                                gated_event_type="reserved_problem_type",
-                                skill_id=str(skill_id),
-                                problem_type_id=str(problem_type),
-                                public_message=B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
-                            )
+                            if not is_guest_demo():
+                                persist_b4_chap2_gated_event(
+                                    gated_event_type="reserved_problem_type",
+                                    skill_id=str(skill_id),
+                                    problem_type_id=str(problem_type),
+                                    public_message=B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR,
+                                )
                             return jsonify(
                                 {"error": B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR}
                             ), 422
@@ -2604,19 +2617,20 @@ def check_answer():
             is_correct_chap2 = False
             chap2_checker_name = "checker_exception"
 
-        try:
-            persist_b4_chap2_deterministic_answer_event(
-                skill_id=skill_id,
-                current_question=current,
-                user_answer=user_ans,
-                is_correct=is_correct_chap2,
-                checker_name=chap2_checker_name,
-            )
-        except Exception:
-            current_app.logger.exception(
-                "[Chap2 Phase6C1R2] visibility audit persist failed skill_id=%s",
-                skill_id,
-            )
+        if not is_guest_demo():
+            try:
+                persist_b4_chap2_deterministic_answer_event(
+                    skill_id=skill_id,
+                    current_question=current,
+                    user_answer=user_ans,
+                    is_correct=is_correct_chap2,
+                    checker_name=chap2_checker_name,
+                )
+            except Exception:
+                current_app.logger.exception(
+                    "[Chap2 Phase6C1R2] visibility audit persist failed skill_id=%s",
+                    skill_id,
+                )
 
         return _emit_check_result(
             question_uid,
@@ -2777,6 +2791,14 @@ def check_answer():
 
     is_correct = bool(result.get("correct", False))
 
+    if is_guest_demo():
+        return _emit_check_result(
+            question_uid,
+            skill_id,
+            result,
+            attempt_context=attempt_ctx,
+        )
+
     # --- [Phase 8] Update compact review hints and stats ---
     _record_compact_practice_progress(skill_id, is_correct)
 
@@ -2918,15 +2940,16 @@ def check_answer():
             traceback.print_exc()
     
     # [IRT] ???湔撠??亥???敺桃?暺?釭
-    try:
-        difficulty = current.get('current_level', 1)
-        q_text = current.get('question_text', '')
-        update_node_competencies(current_user.id, skill_id, q_text, is_correct, difficulty)
-    except Exception as e:
-        current_app.logger.error(f"IRT ?湔蝭暺?仃?? {e}")
+    if not is_guest_demo():
+        try:
+            difficulty = current.get('current_level', 1)
+            q_text = current.get('question_text', '')
+            update_node_competencies(current_user.id, skill_id, q_text, is_correct, difficulty)
+        except Exception as e:
+            current_app.logger.error(f"IRT ?湔蝭暺?仃?? {e}")
 
     # ?亦??荔??芸?閮??圈憿
-    if not is_correct:
+    if not is_correct and not is_guest_demo():
         try:
             q_text = current.get('question_text')
             existing_entry = db.session.query(MistakeNotebookEntry).filter_by(
