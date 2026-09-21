@@ -22,6 +22,7 @@ from core.handwriting_ai_check import (
     _looks_blank_image,
     build_handwriting_check_response,
 )
+from core.guest_demo import guest_demo_allowed, is_guest_demo
 from . import practice_bp
 from core.adaptive.session_engine import get_rag_hint, submit_and_get_next
 from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
@@ -262,7 +263,7 @@ def _attach_handwriting_submission_audit(
 
 
 @practice_bp.route("/api/practice/ai-check-handwriting", methods=["POST"])
-@login_required
+@guest_demo_allowed
 def ai_check_handwriting():
     payload = request.get_json(silent=True) or {}
     image_base64 = str(
@@ -334,7 +335,8 @@ def ai_check_handwriting():
             ai_result=None,
             previous_state_cleared=previous_state_cleared,
         )
-        _persist_drawing_feedback(ctx, blank_response)
+        if not is_guest_demo():
+            _persist_drawing_feedback(ctx, blank_response)
         return jsonify(blank_response), 200
 
     try:
@@ -366,7 +368,8 @@ def ai_check_handwriting():
             ai_result=None,
             previous_state_cleared=previous_state_cleared,
         )
-        _persist_drawing_feedback(ctx, error_response)
+        if not is_guest_demo():
+            _persist_drawing_feedback(ctx, error_response)
         return jsonify(error_response), 200
 
     response = build_handwriting_check_response(
@@ -387,7 +390,8 @@ def ai_check_handwriting():
         ai_result=ai_result if isinstance(ai_result, dict) else None,
         previous_state_cleared=previous_state_cleared,
     )
-    _persist_drawing_feedback(ctx, response)
+    if not is_guest_demo():
+        _persist_drawing_feedback(ctx, response)
     return jsonify(response), 200
 
 

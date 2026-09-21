@@ -75,7 +75,7 @@ def classify_skill_card_status(
 
 def build_skill_card_mastery(
     *,
-    student_id: int,
+    student_id: int | None,
     skill_ids: Sequence[str],
     current_streak_by_skill: Mapping[str, int] | None = None,
     recent_limit: int = RECENT_ATTEMPT_LIMIT,
@@ -93,7 +93,34 @@ def build_skill_card_mastery(
     limit = max(1, int(recent_limit))
 
     reference_counts = get_pass_targets(ids)
+    if student_id is None:
+        # Anonymous/Guest Demo has no student identity. Return before any
+        # personal PracticeAttempt or Progress query and never borrow records.
+        return {
+            skill_id: {
+                "skill_id": skill_id,
+                "pass_target": reference_counts.get(skill_id, 0),
+                "reference_count": reference_counts.get(skill_id, 0),
+                "binding_issue": reference_counts.get(skill_id, 0) == 0,
+                "binding_issue_code": (
+                    "missing_textbook_references"
+                    if reference_counts.get(skill_id, 0) == 0
+                    else None
+                ),
+                "current_streak": 0,
+                "attempt_count": 0,
+                "recent_attempt_count": 0,
+                "recent_correct_count": 0,
+                "recent_accuracy": 0.0,
+                "recent_accuracy_label": "0%",
+                "card_status": "unpracticed",
+                "card_status_label": "展示模式／尚無個人學習紀錄",
+                "card_color": STATUS_COLORS["unpracticed"],
+            }
+            for skill_id in ids
+        }
 
+    normalized_student_id = int(student_id)
     ranked_attempts = (
         db.session.query(
             PracticeAttempt.skill_id.label("skill_id"),
@@ -109,7 +136,7 @@ def build_skill_card_mastery(
             .label("attempt_count"),
         )
         .filter(
-            PracticeAttempt.student_id == int(student_id),
+            PracticeAttempt.student_id == normalized_student_id,
             PracticeAttempt.skill_id.in_(ids),
         )
         .subquery()
@@ -139,7 +166,7 @@ def build_skill_card_mastery(
             str(skill_id): int(streak or 0)
             for skill_id, streak in (
                 db.session.query(Progress.skill_id, Progress.consecutive_correct)
-                .filter(Progress.user_id == int(student_id), Progress.skill_id.in_(ids))
+                .filter(Progress.user_id == normalized_student_id, Progress.skill_id.in_(ids))
                 .all()
             )
         }

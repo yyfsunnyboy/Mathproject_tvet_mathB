@@ -5509,7 +5509,7 @@ def admin_example_v3_preview_generate(id: int):
     from core.gencode.services.v3_component_preview_service import generate_component_preview
 
     try:
-        result = generate_component_preview(example_id, seed=seed)
+        result = generate_component_preview(example_id, seed=seed, persist=False)
         return jsonify(result), 200
     except ValueError as e:
         return jsonify({

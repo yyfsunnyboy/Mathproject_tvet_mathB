@@ -150,6 +150,52 @@ def test_global_status_rules_reference_targets_and_two_batch_queries(mastery_app
     assert cards["global_recent_window"]["card_color"] == "medium_green"
 
 
+def test_none_student_returns_unpracticed_without_reading_personal_records(mastery_app) -> None:
+    student = User(username="real_student_must_not_leak", password_hash="x", role="student")
+    db.session.add(student)
+    db.session.flush()
+    _add_skill("guest_no_data_skill", references=2)
+    _add_attempts(student.id, "guest_no_data_skill", [True, True, True])
+    db.session.add(
+        Progress(
+            user_id=student.id,
+            skill_id="guest_no_data_skill",
+            consecutive_correct=3,
+            questions_solved=3,
+        )
+    )
+    db.session.commit()
+
+    selects: list[str] = []
+
+    def _capture_selects(_conn, _cursor, statement, _parameters, _context, _executemany):
+        if statement.lstrip().upper().startswith("SELECT"):
+            selects.append(statement)
+
+    event.listen(db.engine, "before_cursor_execute", _capture_selects)
+    try:
+        cards = build_skill_card_mastery(
+            student_id=None,
+            skill_ids=["guest_no_data_skill"],
+            current_streak_by_skill={"guest_no_data_skill": 999},
+        )
+    finally:
+        event.remove(db.engine, "before_cursor_execute", _capture_selects)
+
+    card = cards["guest_no_data_skill"]
+    assert card["card_status"] == "unpracticed"
+    assert card["card_status_label"] == "展示模式／尚無個人學習紀錄"
+    assert card["current_streak"] == 0
+    assert card["attempt_count"] == 0
+    assert card["recent_attempt_count"] == 0
+    assert card["recent_correct_count"] == 0
+    assert card["recent_accuracy"] == 0.0
+    assert card["pass_target"] == 2
+    assert len(selects) == 1
+    assert "practice_attempts" not in selects[0].lower()
+    assert "progress" not in selects[0].lower()
+
+
 def test_dashboard_uses_dynamic_target_and_recent_accuracy_without_n_plus_one(mastery_app) -> None:
     student = User(
         username="dashboard_mastery_student",

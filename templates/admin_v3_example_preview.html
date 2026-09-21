@@ -638,9 +638,11 @@
 
             if (!response.ok || data.success === false) {
                 throw {
-                    message: data.message || '無法生成例題',
+                    message: data.error === 'login_required_for_persistence'
+                        ? '展示模式不會儲存或修改正式資料，此功能目前無法執行。'
+                        : (data.message || '無法生成例題'),
                     detail: data.detail || `HTTP 錯誤碼: ${response.status}`,
-                    code: data.error_code || 'unknown_error'
+                    code: data.error_code || data.error || 'unknown_error'
                 };
             }
 

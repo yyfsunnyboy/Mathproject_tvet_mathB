@@ -155,7 +155,11 @@ PRACTICE_PRUNE_SESSION_KEYS: frozenset[str] = (
 def get_practice_owner_key() -> str:
     try:
         if current_user is not None and getattr(current_user, "is_authenticated", False):
-            return f"user:{current_user.id}"
+            # Anonymous/Guest principals have no database identity.  Read the
+            # id only after Flask-Login has positively authenticated the user.
+            user_id = getattr(current_user, "id", None)
+            if user_id is not None:
+                return f"user:{user_id}"
     except Exception:
         pass
     sid = str(session.get("_practice_owner_sid", "")).strip()
