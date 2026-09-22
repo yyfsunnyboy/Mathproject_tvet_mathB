@@ -600,6 +600,7 @@ def run_v3_pair_pipeline(
     task_id: str = "",
     task_queue: queue.Queue | None = None,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
     emit_stream_end: bool = True,
     app: Any = None,
 ) -> dict[str, Any]:
@@ -735,7 +736,37 @@ def run_v3_pair_pipeline(
         found = int(formula_metrics.get("mathtype_found") or 0)
         converted = int(formula_metrics.get("mathtype_converted") or 0)
         failures = int(formula_metrics.get("formula_failures") or 0)
-        if failures or converted != found:
+        scoped = target_source_types is not None
+        if scoped:
+            from core.textbook_importer_v3_scope import analyze_scoped_conversion
+
+            scoped_curriculum_info = build_curriculum_info_for_v3_import(
+                latex_docx_path=latex_path,
+                original_docx_filename=docx.name,
+                curriculum=curriculum,
+                publisher=publisher,
+                grade=grade,
+                volume=volume,
+            )
+            scoped_curriculum_info["source_scope"] = scoped_curriculum_info.get("source_scope") or "section_textbook"
+            scope_report = analyze_scoped_conversion(
+                docx, latex_path, scoped_curriculum_info, convert_report,
+                set(target_source_types),
+            )
+            report["scoped_import"] = scope_report
+            formula_metrics.update(scope_report["counts"])
+            formula_metrics["unresolved_scope"] = len(scope_report["unresolved"])
+            if scope_report["unresolved"]:
+                return fail(STAGE_FORMULA_CONVERSION, "source_fidelity_scope_unresolved",
+                            "Formula or question scope could not be resolved",
+                            details=scope_report["unresolved"])
+            if int(scope_report["counts"].get("required_formula_failed") or 0):
+                return fail(STAGE_FORMULA_CONVERSION, "source_fidelity_formula_failed",
+                            "Required question formula conversion failed",
+                            details=scope_report["failures"])
+            if int(scope_report["counts"].get("non_required_formula_failed") or 0):
+                report.setdefault("warnings", []).append("non_required_formula_conversion_failed")
+        elif failures or converted != found:
             return fail(
                 STAGE_FORMULA_CONVERSION,
                 "source_fidelity_formula_failed",
@@ -749,6 +780,26 @@ def run_v3_pair_pipeline(
             status="success",
             metrics=formula_metrics,
         )
+
+        if scoped and not allow_phase4:
+            # Scoped dry-run stops before curriculum/skill persistence and Phase 4.
+            report["ok"] = True
+            report["would_write"] = scope_report["would_write_count"]
+            _emit(tid, task_queue, stage=STAGE_DB_WRITE, status="skipped",
+                  message="scoped dry-run; no DB writes")
+            _emit(tid, task_queue, stage=STAGE_COMPLETE, status="success")
+            report["stages"] = (V3_IMPORT_TASKS.get(tid) or {}).get("stages", {})
+            tracker.restore()
+            state = V3_IMPORT_TASKS.get(tid)
+            if state is not None:
+                state["status"] = "success"
+                state["result"] = report
+                state["updated_at"] = _utc_now()
+            if task_queue is not None:
+                task_queue.put({"type": "result", "result": report})
+                if emit_stream_end:
+                    task_queue.put("END_OF_STREAM")
+            return report
 
         curriculum_info = build_curriculum_info_for_v3_import(
             latex_docx_path=latex_path,
@@ -846,6 +897,13 @@ def run_v3_pair_pipeline(
                 curriculum_info=curriculum_info,
             )
             block_meta = dict(tpv2._DOCX_BLOCK_META or {})
+            if scoped:
+                block_meta = {
+                    key: value for key, value in block_meta.items()
+                    if value.get("source_type") in target_source_types
+                }
+                question_blocks = {key: value for key, value in question_blocks.items() if key in block_meta}
+                tpv2._DOCX_BLOCK_META = dict(block_meta)
             for block_title, block in block_meta.items():
                 block["problem_text"] = str((question_blocks or {}).get(block_title) or "")
             parse_metrics = {
@@ -1034,6 +1092,7 @@ def run_v3_pair_pipeline(
                         question_blocks,
                         curriculum_info,
                         task_queue,
+                        target_source_types=target_source_types,
                     )
                 except Exception as exc:
                     db.session.rollback()
@@ -1147,6 +1206,18 @@ def run_v3_pair_pipeline(
                     message="allow_phase4=false",
                     metrics=link_metrics,
                 )
+            elif scoped:
+                report["metrics"]["image_linking"] = {
+                    "status": "needs_review",
+                    "candidates": scope_report["image_candidate_count"],
+                    "needs_review": scope_report["image_needs_review_count"],
+                    "linked_count": 0,
+                }
+                _emit(tid, task_queue, stage=STAGE_PDF_VISUAL, status="skipped",
+                      message="scoped image candidates require review")
+                _emit(tid, task_queue, stage=STAGE_IMAGE_LINKING, status="skipped",
+                      message="scoped image candidates require review",
+                      metrics=report["metrics"]["image_linking"])
             elif not pdf or not Path(pdf).is_file():
                 _emit(
                     tid,
@@ -1401,11 +1472,22 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         pdf_linked += int(ilm.get("linked_count") or 0)
         pdf_reused += int(ilm.get("reused_count") or 0)
 
+    def formula_fidelity_failed(pair: dict[str, Any]) -> bool:
+        conversion = ((pair.get("metrics") or {}).get("formula_conversion") or {})
+        if pair.get("scoped_import") is not None:
+            return bool(
+                int(conversion.get("required_formula_failed") or 0)
+                or int(conversion.get("unresolved_scope") or 0)
+            )
+        return (
+            int(conversion.get("formula_failures") or 0) > 0
+            or int(conversion.get("mathtype_found") or 0)
+            != int(conversion.get("mathtype_converted") or 0)
+        )
+
     fidelity_failures = [
         p for p in pairs
-        if int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("formula_failures") or 0) > 0
-        or int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("mathtype_found") or 0)
-        != int(((p.get("metrics") or {}).get("formula_conversion") or {}).get("mathtype_converted") or 0)
+        if formula_fidelity_failed(p)
         or int(((p.get("metrics") or {}).get("ai_alignment") or {}).get("section_outline_fallback_count") or 0) > 0
         or int(((p.get("metrics") or {}).get("pdf_visual") or {}).get("errors") or 0) > 0
     ]
@@ -1496,6 +1578,7 @@ def run_v3_batch_pipeline(
     task_id: str | None = None,
     task_queue: queue.Queue | None = None,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
 ) -> dict[str, Any]:
     """Run pipeline for each stored source pair."""
     from core.textbook_processor import grade_for_vocational_math_volume
@@ -1556,6 +1639,7 @@ def run_v3_batch_pipeline(
             task_id=tid,
             task_queue=task_queue,
             allow_phase4=allow_phase4,
+            target_source_types=target_source_types,
             emit_stream_end=False,
             app=None,
         )
@@ -1586,6 +1670,7 @@ def enqueue_v3_batch_pipeline(
     publisher: str = "longteng",
     grade: int = 10,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
     storage_meta: dict[str, Any] | None = None,
 ) -> str:
     """Background-thread runner compatible with importer SSE / status poll."""
@@ -1626,6 +1711,7 @@ def enqueue_v3_batch_pipeline(
                     task_id=task_id,
                     task_queue=q,
                     allow_phase4=allow_phase4,
+                    target_source_types=target_source_types,
                 )
                 if storage_meta:
                     batch["storage_directory"] = storage_meta.get("directory")

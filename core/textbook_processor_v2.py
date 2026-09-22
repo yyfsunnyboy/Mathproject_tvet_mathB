@@ -1376,6 +1376,7 @@ def _build_anchor_blocks_v2(
     section_code: str = "",
     section_title: str = "",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> tuple[dict[str, str], dict[str, dict[str, str]]]:
     blocks: dict[str, str] = {}
     meta: dict[str, dict[str, str]] = {}
@@ -1391,6 +1392,7 @@ def _build_anchor_blocks_v2(
     current_exercise_level = ""
     problem_lines: list[str] = []
     solution_lines: list[str] = []
+    source_line_indices: set[int] = set()
 
     active_section_code = normalize_section_code(section_code)
     if not active_section_code and curriculum_info:
@@ -1412,7 +1414,7 @@ def _build_anchor_blocks_v2(
     current_concept_display_order = 0
 
     def flush_one() -> None:
-        nonlocal cur_key, cur_anchor, cur_source_type, in_solution, problem_lines, solution_lines
+        nonlocal cur_key, cur_anchor, cur_source_type, in_solution, problem_lines, solution_lines, source_line_indices
         if not cur_key:
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
@@ -1449,12 +1451,23 @@ def _build_anchor_blocks_v2(
                 formal_skill_id=formal_sid,
                 display_order=display_order,
             )
+            if read_only:
+                meta[cur_key]["source_line_indices"] = sorted(source_line_indices)
         cur_key = ""
         cur_anchor = ""
         cur_source_type = ""
         in_solution = False
         problem_lines = []
         solution_lines = []
+        source_line_indices = set()
+
+    def append_problem(value: str) -> None:
+        problem_lines.append(value)
+        source_line_indices.add(idx)
+
+    def append_solution(value: str) -> None:
+        solution_lines.append(value)
+        source_line_indices.add(idx)
 
     def start_block(anchor: str, source_type: str, first_problem_line: str = "") -> None:
         nonlocal cur_key, cur_anchor, cur_source_type, in_solution
@@ -1463,8 +1476,9 @@ def _build_anchor_blocks_v2(
         cur_key = anchor
         cur_source_type = source_type
         in_solution = False
+        source_line_indices.add(idx)
         if first_problem_line.strip():
-            problem_lines.append(first_problem_line.strip())
+            append_problem(first_problem_line.strip())
 
     scope_label = str((curriculum_info or {}).get("source_scope") or "section_textbook")
     line_list = list(lines or [])
@@ -1475,9 +1489,9 @@ def _build_anchor_blocks_v2(
         if not line:
             if cur_key:
                 if in_solution:
-                    solution_lines.append("")
+                    append_solution("")
                 else:
-                    problem_lines.append("")
+                    append_problem("")
             continue
 
         next_raw = [
@@ -1553,7 +1567,7 @@ def _build_anchor_blocks_v2(
                 continue
             ch_title = str((curriculum_info or {}).get("chapter") or "").strip()
             vol_label = str((curriculum_info or {}).get("volume") or "").strip()
-            existing_sid = _find_existing_skill_id_by_section_and_ch_name(
+            existing_sid = None if read_only else _find_existing_skill_id_by_section_and_ch_name(
                 curriculum_info=curriculum_info,
                 section_code=active_section_code,
                 concept_name=docx_concept_name,
@@ -1584,7 +1598,8 @@ def _build_anchor_blocks_v2(
             if is_b2_11(curriculum_info):
                 raise ValueError(f"B2 1-1 requires existing heading skill: {docx_concept_name}")
             nearby = "\n".join(recent_context_lines[-6:] + [line]).strip()
-            resolved = _resolve_formal_concept_en_id_v2(
+            resolved = ({"concept_name": docx_concept_name, "concept_en_id": "", "formal_skill_id": ""}
+                        if read_only else _resolve_formal_concept_en_id_v2(
                 concept_name=docx_concept_name,
                 concept_code=concept_code,
                 section_title=active_section_title,
@@ -1592,7 +1607,7 @@ def _build_anchor_blocks_v2(
                 volume=vol_label,
                 nearby_text=nearby,
                 curriculum_info=curriculum_info,
-            )
+            ))
             concept_name = str(resolved.get("concept_name") or docx_concept_name).strip()
             if concept_name != docx_concept_name:
                 _log_info(
@@ -1615,7 +1630,7 @@ def _build_anchor_blocks_v2(
                         concept_code=concept_code,
                     )
                     active_section_code = new_sec
-            if not _det_meta.get("duplicate_merge"):
+            if not read_only and not _det_meta.get("duplicate_merge"):
                 _persist_formal_skill_from_docx_heading(
                     concept_code=concept_code,
                     concept_name=concept_name,
@@ -1681,7 +1696,7 @@ def _build_anchor_blocks_v2(
         if in_exam_mode and _KEY_RE.match(line):
             in_key_mode = True
             in_solution = True
-            solution_lines.append("KEY")
+            append_solution("KEY")
             continue
         if in_exam_mode and in_key_mode and _EXAM_STOP_RE.match(line):
             flush_one()
@@ -1745,7 +1760,7 @@ def _build_anchor_blocks_v2(
                 body = str(em.group(2) or "").strip()
                 if not _looks_like_exercise_question_start(n, body):
                     if cur_key:
-                        problem_lines.append(line)
+                        append_problem(line)
                     continue
                 sec = f"{current_exercise_section}習題" if current_exercise_section else "習題"
                 lvl = current_exercise_level or "基礎題"
@@ -1776,7 +1791,7 @@ def _build_anchor_blocks_v2(
                         continue
             if trigger_hit and cur_source_type == "textbook_example" and problem_lines:
                 in_solution = True
-                solution_lines.append(line)
+                append_solution(line)
                 continue
             if in_exam_mode:
                 marker = _EXAM_MARKER_RE.search(line)
@@ -1786,24 +1801,24 @@ def _build_anchor_blocks_v2(
                     cur_anchor = f"{year}統測{cat}"
                     cur_key = cur_anchor
                 if in_key_mode:
-                    solution_lines.append(line)
+                    append_solution(line)
                 else:
-                    problem_lines.append(line)
+                    append_problem(line)
                 continue
             m_sol_inline = _SOLUTION_MARKER_INLINE_RE.match(line)
             if _SOLUTION_MARKER_ONLY_RE.match(line):
                 in_solution = True
-                solution_lines.append("解")
+                append_solution("解")
                 continue
             if m_sol_inline:
                 in_solution = True
                 tail = str(m_sol_inline.group(1) or "").strip()
-                solution_lines.append("解" + (f"\n{tail}" if tail else ""))
+                append_solution("解" + (f"\n{tail}" if tail else ""))
                 continue
             if in_solution:
-                solution_lines.append(line)
+                append_solution(line)
             else:
-                problem_lines.append(line)
+                append_problem(line)
     flush_one()
     return blocks, meta
 
@@ -1814,6 +1829,7 @@ def phase2_mathb_section_anchor_slice(
     section_code: str = "",
     section_title: str = "",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> dict[str, dict[str, str]]:
     """Deterministic anchor slicer for converted LaTeX DOCX (Math B section textbook)."""
     _, meta = _build_anchor_blocks_v2(
@@ -1821,6 +1837,7 @@ def phase2_mathb_section_anchor_slice(
         section_code=section_code,
         section_title=section_title,
         curriculum_info=curriculum_info,
+        read_only=read_only,
     )
     return meta
 
@@ -2214,7 +2231,7 @@ def _scan_line_flushes_current_block(
 # ---------------------------------------------------------------------------
 
 
-def _phase1_emit_paragraph_line(lines: list[str], para) -> None:
+def _phase1_emit_paragraph_line(lines: list[str], para, *, locations: list[int] | None = None, paragraph_index: int = -1) -> None:
     """正規化 + 觸發注入，需先正規化再建 key。"""
     text_clean = _normalize_docx_line_text(_docx_paragraph_text_with_symbols(para))
     if not text_clean:
@@ -2223,6 +2240,8 @@ def _phase1_emit_paragraph_line(lines: list[str], para) -> None:
         lines.append(f"{_QUESTION_TRIGGER_PREFIX} {text_clean}")
     else:
         lines.append(text_clean)
+    if locations is not None:
+        locations.append(paragraph_index)
 
 
 def _docx_paragraph_text_with_symbols(para) -> str:
@@ -2257,7 +2276,7 @@ def _docx_paragraph_text_with_symbols(para) -> str:
     return Paragraph(node, para._parent).text
 
 
-def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = None) -> list[str]:
+def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = None, locations: list[int] | None = None) -> list[str]:
     """Read all DOCX paragraphs and table cells into normalized lines."""
     from docx import Document
     from docx.table import Table
@@ -2265,9 +2284,26 @@ def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = 
 
     doc = Document(file_path)
     lines: list[str] = []
+    paragraph_paths: dict[str, int] = {}
+    if locations is not None:
+        from pathlib import Path
+        from core.textbook_importer_v3_docx import _element_xml_path, parse_docx_structure
+        structure = parse_docx_structure(Path(file_path).read_bytes(), include_blocks=True)
+        for item in structure.get("blocks") or []:
+            paragraphs = ([item] if item.get("type") == "paragraph" else [
+                para for row in item.get("rows") or []
+                for cell in row.get("cells") or []
+                for para in cell.get("paragraphs") or []
+            ])
+            for para in paragraphs:
+                paragraph_paths[str(para.get("xml_path") or "")] = int(para["paragraph_index"])
+    def emit(para) -> None:
+        path = _element_xml_path(para._p) if locations is not None else ""
+        _phase1_emit_paragraph_line(lines, para, locations=locations,
+                                    paragraph_index=paragraph_paths.get(path, -1))
     for block in doc.element.body.iterchildren():
         if block.tag.endswith("}p"):
-            _phase1_emit_paragraph_line(lines, Paragraph(block, doc))
+            emit(Paragraph(block, doc))
         elif block.tag.endswith("}tbl"):
             tbl = Table(block, doc)
             if (is_b2_11(curriculum_info) and len(tbl.rows) == 2
@@ -2278,11 +2314,13 @@ def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = 
                 lines.append("| " + " | ".join(rows[0]) + " |")
                 lines.append("| " + " | ".join(["---"] * 12) + " |")
                 lines.append("| " + " | ".join(rows[1]) + " |")
+                if locations is not None:
+                    locations.extend([-1, -1, -1])
                 continue
             for row in tbl.rows:
                 for cell in row.cells:
                     for para in cell.paragraphs:
-                        _phase1_emit_paragraph_line(lines, para)
+                        emit(para)
     return lines
 
 
@@ -2296,6 +2334,7 @@ def phase2_deterministic_block_slice(
     *,
     source_scope: str = "section_textbook",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> dict[str, str]:
     """
     Layout-Aware 確定性題塊切分。
@@ -2824,6 +2863,7 @@ def phase2_deterministic_block_slice(
         section_code=section_code or "",
         section_title=sec_title,
         curriculum_info=curriculum_info if is_vocational_mathb else None,
+        read_only=read_only,
     )
     anchor_blocks = {k: str(v.get("problem_text") or "").strip() for k, v in anchor_meta.items()}
     # Anchor-first: use explicit DOCX anchors as canonical blocks when available.
@@ -4817,6 +4857,7 @@ def phase4_absolute_hydrate_and_save(
     question_blocks: dict[str, str],
     curriculum_info: dict,
     queue,
+    target_source_types: set[str] | None = None,
 ) -> dict[str, int]:
     """絕對注水題幹並 Upsert 題庫。"""
     coords = _import_scope_coords(curriculum_info)
@@ -4922,6 +4963,9 @@ def phase4_absolute_hydrate_and_save(
                         block_meta = _DOCX_BLOCK_META.get(matched_key or "", {})
                         if block_meta.get("source_type"):
                             source_type = str(block_meta.get("source_type"))
+                        if target_source_types is not None and source_type not in target_source_types:
+                            skipped += 1
+                            continue
 
                         item_auth = ImportAuthorityResolver.resolve_phase4_item_authority(
                             source_scope=str(

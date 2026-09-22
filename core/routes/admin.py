@@ -1792,6 +1792,18 @@ def admin_textbook_importer_v3():
     current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
 
     if request.method == 'POST':
+        scope_raw = str(request.form.get('target_source_types') or '').strip()
+        target_source_types = None
+        if scope_raw:
+            target_source_types = {part.strip() for part in scope_raw.split(',') if part.strip()}
+            allowed_scoped_types = {
+                'textbook_example', 'in_class_practice', 'self_assessment', 'exam_practice'
+            }
+            if not target_source_types or not target_source_types.issubset(allowed_scoped_types):
+                return jsonify({'ok': False, 'error': 'invalid_target_source_types'}), 400
+        scoped_dry_run = target_source_types is not None and str(
+            request.form.get('dry_run', 'true')
+        ).strip().lower() not in {'false', '0', 'no'}
         if not has_gemini_api_key:
             return jsonify({
                 "ok": False,
@@ -1841,7 +1853,8 @@ def admin_textbook_importer_v3():
                 volume=volume_val,
                 publisher=str(request.form.get("publisher") or "longteng"),
                 grade=grade_val,
-                allow_phase4=True,
+                allow_phase4=not scoped_dry_run,
+                target_source_types=target_source_types,
                 storage_meta=storage,
             )
             payload["task_id"] = task_id

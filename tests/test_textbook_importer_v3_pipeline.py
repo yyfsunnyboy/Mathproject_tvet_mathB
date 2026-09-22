@@ -220,6 +220,181 @@ def test_pipeline_gemini_failure_skips_db_write(pair_paths, tmp_path: Path):
     mock_phase4.assert_not_called()
 
 
+def test_legacy_allow_phase4_false_does_not_enable_read_only(pair_paths, tmp_path: Path):
+    docx, pdf = pair_paths
+    latex = docx.with_name(docx.stem + "_Latex.docx")
+    app = _mock_app()
+    phase2_kwargs = {}
+
+    def fake_convert(src, out=None):
+        dest = Path(out) if out else latex
+        dest.write_bytes(b"latex")
+        return {
+            "mathtype_ole": 1,
+            "converted_ok": 1,
+            "converted_failed": 0,
+            "eq_fields": 0,
+            "eq_converted_ok": 0,
+            "original_unchanged": True,
+            "output": str(dest),
+        }
+
+    fake_blocks = {"例1": "題幹"}
+    fake_meta = {
+        "例1": {
+            "anchor": "例1",
+            "source_type": "textbook_example",
+            "problem_text": "題幹",
+            "concept_code": "1-1.1",
+            "concept_name": "有向角",
+            "concept_en_id": "DirectedAngle",
+            "formal_skill_id": "vh_數學B2_DirectedAngle",
+            "section_code": "1-1",
+        }
+    }
+    curriculum_info = {
+        "curriculum": "vocational",
+        "volume": "數學B2",
+        "section_code": "1-1",
+        "chapter": "1 三角函數",
+        "section": "1-1 角度的基本性質",
+        "grade": 10,
+        "source_scope": "section_textbook",
+        "parse_filename": docx.name,
+        "original_filename": docx.name,
+        "saved_filename": latex.name,
+        "publisher": "longteng",
+    }
+
+    def fake_phase2(*args, **kwargs):
+        phase2_kwargs.update(kwargs)
+        return fake_blocks
+
+    with patch(
+        "core.textbook_importer_v3_pipeline.parse_docx_summary",
+        return_value={
+            "summary": {
+                "tables": 1,
+                "table_cells": 2,
+                "mathtype_ole": 1,
+                "eq_fields": 0,
+                "independent_images": 0,
+            }
+        },
+    ), patch(
+        "core.textbook_importer_v3_pipeline.convert_docx_mathtype_to_latex_docx",
+        side_effect=fake_convert,
+    ), patch(
+        "core.textbook_importer_v3_pipeline.build_curriculum_info_for_v3_import",
+        return_value=dict(curriculum_info),
+    ), patch(
+        "core.textbook_importer_v3_pipeline.audit_v3_skill_extraction",
+        return_value={
+            "curriculum_binding": "PASS",
+            "curriculum_info": dict(curriculum_info, structural_skill_candidates=[fake_meta["例1"]]),
+            "skill_candidates": [fake_meta["例1"]],
+        },
+    ), patch("core.textbook_processor_v2.phase1_extract_docx_lines", return_value=["l1"]), patch(
+        "core.textbook_processor_v2._resolve_import_source_metadata",
+        return_value={
+            "curriculum_info": dict(curriculum_info),
+            "source_scope": "section_textbook",
+        },
+    ), patch(
+        "core.textbook_importer_v3_pipeline._fill_chapter_section_from_outline_or_lines",
+        side_effect=lambda info, lines: dict(info),
+    ), patch(
+        "core.textbook_processor_v2._lookup_outline_section_curriculum_row",
+        return_value=None,
+    ), patch(
+        "core.textbook_processor_v2.phase2_deterministic_block_slice",
+        side_effect=fake_phase2,
+    ), patch(
+        "core.textbook_processor_v2._DOCX_BLOCK_META",
+        fake_meta,
+    ), patch(
+        "core.textbook_importer_v3_pipeline._ensure_formal_concepts_for_headings",
+        return_value=[
+            {
+                "action": "existing",
+                "skill_id": "vh_數學B2_DirectedAngle",
+                "concept_name": "有向角",
+            }
+        ],
+    ) as mock_ensure, patch(
+        "core.textbook_formal_concept.get_section_formal_skill_candidates",
+        return_value=[{"skill_id": "vh_數學B2_DirectedAngle"}],
+    ), patch("core.ai_analyzer.get_model", return_value=MagicMock()), patch(
+        "core.textbook_processor_v2.phase3_ai_metadata_alignment",
+        side_effect=RuntimeError("gemini down"),
+    ), patch(
+        "core.textbook_processor_v2.phase4_absolute_hydrate_and_save"
+    ) as mock_phase4, patch(
+        "core.textbook_importer_v3_scope.analyze_scoped_conversion"
+    ) as mock_scope, patch("models.db") as mock_db:
+        mock_db.session.commit = MagicMock()
+        mock_db.session.rollback = MagicMock()
+        report = run_v3_pair_pipeline(
+            project_root=tmp_path,
+            docx_path=docx,
+            pdf_path=pdf,
+            curriculum="vocational",
+            volume="數學B2",
+            allow_phase4=False,
+            emit_stream_end=False,
+            app=app,
+        )
+
+    assert report["ok"] is False
+    assert report["error"]["error_code"] == "gemini_api_error"
+    assert "scoped_import" not in report
+    mock_scope.assert_not_called()
+    mock_phase4.assert_not_called()
+    mock_ensure.assert_not_called()
+    assert phase2_kwargs
+    assert phase2_kwargs.get("read_only", False) is False
+    assert "target_source_types" not in phase2_kwargs
+
+
+def test_ui_legacy_formula_gate_uses_whole_document_counts():
+    ui = build_v3_ui_result_payload({
+        "task_id": "legacy",
+        "pairs": [{
+            "ok": True,
+            "base_name": "legacy",
+            "metrics": {
+                "formula_conversion": {
+                    "mathtype_found": 10,
+                    "mathtype_converted": 9,
+                    "formula_failures": 1,
+                }
+            },
+        }],
+    })
+    assert ui["status"] == "needs_repair"
+
+
+def test_ui_scoped_formula_gate_ignores_non_required_failures():
+    ui = build_v3_ui_result_payload({
+        "task_id": "scoped",
+        "pairs": [{
+            "ok": True,
+            "base_name": "scoped",
+            "scoped_import": {"target_count": 11},
+            "metrics": {
+                "formula_conversion": {
+                    "mathtype_found": 10,
+                    "mathtype_converted": 9,
+                    "formula_failures": 1,
+                    "required_formula_failed": 0,
+                    "unresolved_scope": 0,
+                }
+            },
+        }],
+    })
+    assert ui["status"] == "success"
+
+
 def test_pipeline_happy_path_calls_phase4_and_pdf_visual(pair_paths, tmp_path: Path):
     docx, pdf = pair_paths
     latex = docx.with_name(docx.stem + "_Latex.docx")

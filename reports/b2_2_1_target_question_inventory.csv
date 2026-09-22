@@ -1,0 +1,22 @@
+﻿index,source_type,source_label,question_start_80,paragraph_span_0_based,table_position,target,target_reason,formula_count,mathtype_ole_count,word_eq_count,omml_count,formula_failed_count,image_count,skill,section,concept,WOULD_WRITE
+1,textbook_example,例1,在△ABC中，已知、且，試求△ABC的面積。,21-23,table 2 row 0 col 0,True,allowed source_type,9,8,1,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+2,in_class_practice,隨堂練習1,在△ABC中，已知、且，試求△ABC的面積。,25-26,table 3 row 0 col 0,True,allowed source_type,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+3,textbook_example,例2,在△ABC中，若，，且，試求a及其外接圓半徑R。,59-64,table 5 row 0 col 0,True,allowed source_type,7,6,1,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+4,in_class_practice,隨堂練習2,在△ABC中，若，，且，試求c及其外接圓半徑R。,69-70,table 6 row 0 col 0,True,allowed source_type,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+5,textbook_example,例3,△ABC中，已知，，，試求。,73-79,table 7 row 0 col 0,True,allowed source_type,13,12,1,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+6,in_class_practice,隨堂練習3,△ABC中，已知，，，試求。,81-82,table 8 row 0 col 0,True,allowed source_type,4,4,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,正弦定理,YES
+7,textbook_example,例4,在△ABC中，已知、且，試求a之長。,117-124,table 10 row 0 col 0,True,allowed source_type,11,10,1,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,餘弦定理,YES
+8,in_class_practice,隨堂練習4,在△ABC中，已知、且，試求a之長。,126-127,table 10 row 1 col 0,True,allowed source_type,3,3,0,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,餘弦定理,YES
+9,textbook_example,例5,設△ABC的三邊長、、，試求。,130-135,table 11 row 0 col 0,True,allowed source_type,8,7,1,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,餘弦定理,YES
+10,in_class_practice,隨堂練習5,設△ABC的三邊長、、，試求。,137-138,table 11 row 1 col 0,True,allowed source_type,4,4,0,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,餘弦定理,YES
+11,exam_practice,113統測B,小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路， 無法通行，只好先繞到B地再到C地。已知AC路段的直 線距離為300 公尺，AB路段的直線距離為800 公尺,142-151,body paragraph,True,allowed source_type,2,2,0,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,餘弦定理,YES
+12,textbook_exercise,2-1習題 基礎題 1,設表示△ABC的面積，a、b和c分別表示、和之對邊長，且R為其外接圓半徑，則 (1) 。 (2) 。 (3) 。 (4) ， ，。 (5) ， ，。,159-164,body paragraph,False,source_type outside four allowed types,16,16,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+13,textbook_exercise,2-1習題 基礎題 2,在△ABC中，已知、且，試求△ABC的面積。,166-166,body paragraph,False,source_type outside four allowed types,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+14,textbook_exercise,2-1習題 基礎題 3,在△ABC中，已知、，且，試求a及其外接圓半徑R。,168-168,body paragraph,False,source_type outside four allowed types,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+15,textbook_exercise,2-1習題 基礎題 4,在△ABC中，已知、，且，試求。,170-170,body paragraph,False,source_type outside four allowed types,4,4,0,0,0,1,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+16,textbook_exercise,2-1習題 基礎題 5,在△ABC中，若、，且，試求。,172-172,body paragraph,False,source_type outside four allowed types,4,4,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+17,textbook_exercise,2-1習題 基礎題 6,設△ABC的三邊長、、，試求。,174-174,body paragraph,False,source_type outside four allowed types,4,4,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+18,textbook_exercise,2-1習題 基礎題 7,設△ABC的三邊長、、，試求。,176-176,body paragraph,False,source_type outside four allowed types,4,4,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+19,textbook_exercise,2-1習題 基礎題 8,設△ABC中，a、b、c為三邊長，若，試求。 （提示：將式子左式化成）,178-178,body paragraph,False,source_type outside four allowed types,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+20,advanced_exercise,2-1習題 進階題 9,如圖，國外某一湖泊，建商想在湖泊旁蓋A、B兩棟度假飯店，今在湖之遠處C點，測得公里、公里，且，試求A、B兩棟飯店的直線距離。,182-182,body paragraph,False,source_type outside four allowed types,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO
+21,advanced_exercise,2-1習題 進階題 10,歐洲某大城市為提升旅遊品質吸引遊客到訪，決定在A、B、C三大觀光景點等距離的地方，設置免費的Wi−Fi基地臺，已知三景點間的距離為公尺、公尺、公尺，則基地臺與三,184-184,body paragraph,False,source_type outside four allowed types,3,3,0,0,0,0,unresolved (DB bypassed),2-1 正弦定理與餘弦定理,,NO

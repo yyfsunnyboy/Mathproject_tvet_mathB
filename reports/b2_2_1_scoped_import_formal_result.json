@@ -1,0 +1,1172 @@
+{
+  "backup": {
+    "backup_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_before_b2_2_1_scoped_20260922_165122.db",
+    "success": true,
+    "size": 5677056,
+    "source_sha256": "a5ff6f24c0fe0f1e1ef6137dc40139d8c5a3190e85bd1eb654852750a8c5da5c",
+    "backup_sha256": "a5ff6f24c0fe0f1e1ef6137dc40139d8c5a3190e85bd1eb654852750a8c5da5c"
+  },
+  "before": {
+    "sha256": "a5ff6f24c0fe0f1e1ef6137dc40139d8c5a3190e85bd1eb654852750a8c5da5c",
+    "counts": {
+      "textbook_examples": 4329,
+      "skills_info": 539,
+      "skill_curriculum": 548
+    },
+    "existing_2_1_ids": []
+  },
+  "preconfirm": {
+    "target_count": 11,
+    "target_source_type_counts": {
+      "exam_practice": 1,
+      "in_class_practice": 5,
+      "self_assessment": 0,
+      "textbook_example": 5
+    },
+    "required_formula_count": 73,
+    "required_formula_failed": 0,
+    "required_formula_success": 73,
+    "unresolved": [],
+    "unresolved_count": 0,
+    "would_write": [
+      {
+        "index": 1,
+        "label": "例1",
+        "source_type": "textbook_example",
+        "section": "2-1",
+        "problem_start": "在△ABC中，已知\\({\\overline{ AB }} =4\\)、\\({\\overline{ AC }} =\\sqrt[] { 3 }\\)且\\(\\angle ",
+        "formula_count": 9,
+        "image_count": 1,
+        "would_write": "YES"
+      },
+      {
+        "index": 2,
+        "label": "隨堂練習1",
+        "source_type": "in_class_practice",
+        "section": "2-1",
+        "problem_start": "在△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)、\\(b=6\\)且\\(\\angle C=30{}^\\circ\\)，試求△ABC的面積。",
+        "formula_count": 3,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 3,
+        "label": "例2",
+        "source_type": "textbook_example",
+        "section": "2-1",
+        "problem_start": "在△ABC中，若\\(\\angle A=45{}^\\circ\\)，\\(\\angle B=60{}^\\circ\\)，且\\(b=3\\sqrt[] { 6 }\\)，試求",
+        "formula_count": 13,
+        "image_count": 1,
+        "would_write": "YES"
+      },
+      {
+        "index": 4,
+        "label": "隨堂練習2",
+        "source_type": "in_class_practice",
+        "section": "2-1",
+        "problem_start": "在△ABC中，若\\(\\angle B=30{}^\\circ\\)，\\(\\angle C=120{}^\\circ\\)，且\\(b=6\\)，試求c及其外接圓半徑R。",
+        "formula_count": 3,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 5,
+        "label": "例3",
+        "source_type": "textbook_example",
+        "section": "2-1",
+        "problem_start": "△ABC中，已知\\(\\angle A=60{}^\\circ\\)，\\(a=6\\)，\\(b=2\\sqrt[] { 6 }\\)，試求\\(\\angle B\\)。",
+        "formula_count": 13,
+        "image_count": 1,
+        "would_write": "YES"
+      },
+      {
+        "index": 6,
+        "label": "隨堂練習3",
+        "source_type": "in_class_practice",
+        "section": "2-1",
+        "problem_start": "△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)，\\(b=2\\sqrt[] { 2 }\\)，\\(\\angle A=60{}^\\circ\\)，試求\\(\\a",
+        "formula_count": 4,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 7,
+        "label": "例4",
+        "source_type": "textbook_example",
+        "section": "2-1",
+        "problem_start": "在△ABC中，已知\\(b=5\\)、\\(c=3\\)且\\(\\angle A=120{}^\\circ\\)，試求a之長。",
+        "formula_count": 11,
+        "image_count": 1,
+        "would_write": "YES"
+      },
+      {
+        "index": 8,
+        "label": "隨堂練習4",
+        "source_type": "in_class_practice",
+        "section": "2-1",
+        "problem_start": "在△ABC中，已知\\(b=1+\\sqrt[] { 3 }\\)、\\(c=2\\)且\\(\\angle A=30{}^\\circ\\)，試求a之長。",
+        "formula_count": 3,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 9,
+        "label": "例5",
+        "source_type": "textbook_example",
+        "section": "2-1",
+        "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=5\\)、\\(c=3\\)，試求\\(\\angle A\\)。",
+        "formula_count": 8,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 10,
+        "label": "隨堂練習5",
+        "source_type": "in_class_practice",
+        "section": "2-1",
+        "problem_start": "設△ABC的三邊長\\(a=3\\)、\\(b=8\\)、\\(c=7\\)，試求\\(\\angle C\\)。",
+        "formula_count": 4,
+        "image_count": 0,
+        "would_write": "YES"
+      },
+      {
+        "index": 11,
+        "label": "113統測B",
+        "source_type": "exam_practice",
+        "section": "2-1",
+        "problem_start": "小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路，\n無法通行，只好先繞到B地再到C地。已知AC路段的直\n線距離為300 公尺，AB路段的直線距離為800 公尺",
+        "formula_count": 2,
+        "image_count": 1,
+        "would_write": "YES"
+      }
+    ],
+    "image_candidates": 5,
+    "image_needs_review": 5,
+    "work_docx": "D:\\Python\\Mathproject_tvet_mathB\\tmp_b2_21_formal_import\\第二章 2-1 正弦定理與餘弦定理-課本.docx",
+    "latex_docx": "D:\\Python\\Mathproject_tvet_mathB\\tmp_b2_21_formal_import\\第二章 2-1 正弦定理與餘弦定理-課本_Latex.docx",
+    "convert_ok": 185,
+    "convert_failed": 0
+  },
+  "gate": {
+    "ok": true,
+    "reason": "ok"
+  },
+  "import_report": {
+    "ok": true,
+    "error": null,
+    "metrics": {
+      "word_scan": {
+        "word_tables": 12,
+        "table_cells": 21,
+        "mathtype_found": 185,
+        "eq_fields": 5,
+        "independent_images": 17,
+        "formula_preview_media": 170
+      },
+      "formula_conversion": {
+        "mathtype_found": 185,
+        "mathtype_converted": 185,
+        "formula_failures": 0,
+        "eq_fields": 5,
+        "eq_converted": 5,
+        "latex_docx": "D:\\Python\\Mathproject_tvet_mathB\\tmp_b2_21_formal_import\\第二章 2-1 正弦定理與餘弦定理-課本_Latex.docx",
+        "original_unchanged": true,
+        "required_formula_count": 73,
+        "required_formula_success": 73,
+        "required_formula_failed": 0,
+        "non_required_formula_count": 117,
+        "non_required_formula_success": 117,
+        "non_required_formula_failed": 0,
+        "unresolved_scope": 0
+      },
+      "skill_extraction": {
+        "section_heading": {
+          "source_heading_text": "2-1 正弦定理與餘弦定理",
+          "source_order": 1,
+          "style": "00-1-1",
+          "font": "華康中明體",
+          "latin_font": "Times New Roman",
+          "size": 18.0,
+          "bold": true
+        },
+        "skill_candidates": [
+          {
+            "source_heading_text": "2-1.1 正弦定理",
+            "source_order": 6,
+            "style": "01-1-1.1",
+            "font": "華康中明體",
+            "latin_font": "Times New Roman",
+            "size": 15.0,
+            "bold": true,
+            "concept_code": "2-1.1",
+            "concept_name": "正弦定理",
+            "section_code": "2-1",
+            "validation": "PASS"
+          },
+          {
+            "source_heading_text": "2-1.2 餘弦定理",
+            "source_order": 109,
+            "style": "01-1-1.1",
+            "font": "華康中明體",
+            "latin_font": "Times New Roman",
+            "size": 15.0,
+            "bold": true,
+            "concept_code": "2-1.2",
+            "concept_name": "餘弦定理",
+            "section_code": "2-1",
+            "validation": "PASS"
+          }
+        ],
+        "candidate_count": 2,
+        "unresolved_headings": [],
+        "unresolved_heading_count": 0,
+        "outline_result": {
+          "curriculum": "vocational",
+          "volume": "數學B2",
+          "chapter": "第2章 三角函數的應用",
+          "section": "2-1 正弦定理與餘弦定理",
+          "section_code": "2-1",
+          "authority_source": "v3_source_context",
+          "skill_id": "outline_vocational_數學B2_21",
+          "dry_run": true,
+          "wrote": false,
+          "skill_info_created": false,
+          "skill_curriculum_created": false,
+          "action": "existing",
+          "existing": {
+            "skill_id": "outline_vocational_數學B2_21",
+            "chapter": "第2章 三角函數的應用",
+            "section": "2-1 正弦定理與餘弦定理",
+            "paragraph": null,
+            "grade": 10,
+            "display_order": 21
+          },
+          "incoming": {
+            "skill_id": "outline_vocational_數學B2_21",
+            "chapter": "2 三角函數的應用",
+            "section": "2-1 正弦定理與餘弦定理",
+            "paragraph": null,
+            "grade": 10,
+            "display_order": 21
+          }
+        },
+        "outline_conflict": 0,
+        "curriculum_info": {
+          "curriculum": "vocational",
+          "publisher": "longteng",
+          "grade": 10,
+          "volume": "數學B2",
+          "section_code": "2-1",
+          "import_mode": "docx_problems",
+          "original_filename": "第二章 2-1 正弦定理與餘弦定理-課本.docx",
+          "saved_filename": "第二章 2-1 正弦定理與餘弦定理-課本_Latex.docx",
+          "parse_filename": "第二章 2-1 正弦定理與餘弦定理-課本.docx",
+          "chapter_index": 2,
+          "source_scope": "section_textbook",
+          "filename_meta": {
+            "chapter_label": "第2章",
+            "chapter_index": 2,
+            "section_code": "2-1",
+            "section_index": 1,
+            "section_title": "2-1 正弦定理與餘弦定理",
+            "source_scope": "section_textbook",
+            "volume_hint": null,
+            "parse_filename": "第二章 2-1 正弦定理與餘弦定理-課本.docx"
+          },
+          "form_section_code": "2-1",
+          "filename_section_code": "2-1",
+          "chapter": "第2章 三角函數的應用",
+          "section": "2-1 正弦定理與餘弦定理",
+          "structural_skill_candidates": [
+            {
+              "source_heading_text": "2-1.1 正弦定理",
+              "source_order": 6,
+              "style": "01-1-1.1",
+              "font": "華康中明體",
+              "latin_font": "Times New Roman",
+              "size": 15.0,
+              "bold": true,
+              "concept_code": "2-1.1",
+              "concept_name": "正弦定理",
+              "section_code": "2-1",
+              "validation": "PASS"
+            },
+            {
+              "source_heading_text": "2-1.2 餘弦定理",
+              "source_order": 109,
+              "style": "01-1-1.1",
+              "font": "華康中明體",
+              "latin_font": "Times New Roman",
+              "size": 15.0,
+              "bold": true,
+              "concept_code": "2-1.2",
+              "concept_name": "餘弦定理",
+              "section_code": "2-1",
+              "validation": "PASS"
+            }
+          ]
+        },
+        "curriculum_binding": "PASS"
+      },
+      "question_parse": {
+        "phase1_lines": 140,
+        "phase2_blocks": 11,
+        "block_anchor_count": 11
+      },
+      "curriculum_binding": {
+        "outline_action": "existing",
+        "outline_skill_id": "outline_vocational_數學B2_21",
+        "concepts_found": 2,
+        "formal_skills": [
+          {
+            "action": "existing",
+            "skill_id": "vh_數學B2_SubSection_2_1_1",
+            "concept_name": "正弦定理"
+          },
+          {
+            "action": "existing",
+            "skill_id": "vh_數學B2_SubSection_2_1_2",
+            "concept_name": "餘弦定理"
+          }
+        ],
+        "section_candidate_count": 2,
+        "section_candidates": [
+          "vh_數學B2_SubSection_2_1_1",
+          "vh_數學B2_SubSection_2_1_2"
+        ],
+        "formal_skills_created": 0,
+        "formal_skills_reused": 2
+      },
+      "gemini": {
+        "request_count": 0,
+        "requests": [],
+        "input_character_count_total": 0,
+        "output_character_count_total": 0,
+        "prompt_token_count_total": null,
+        "candidates_token_count_total": null,
+        "total_token_count_total": null,
+        "usage_metadata_available": false,
+        "model": "gemini-3.5-flash"
+      },
+      "ai_alignment": {
+        "metadata_source": "deterministic_docx_structure",
+        "metadata_alignment": "PASS",
+        "unresolved_skill_bindings": [],
+        "needs_skill_resolution": [],
+        "section_outline_fallback_count": 0,
+        "phase3_questions": 11,
+        "gemini_requests": 0,
+        "gemini_total_tokens": null
+      },
+      "anchor": {
+        "anchor_count": 11,
+        "collision_count": 0,
+        "summary": {
+          "total": null,
+          "by_question_type": null,
+          "collision_count": 0
+        }
+      },
+      "db_backup": {
+        "backup_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_before_v3_phase4_20260922_165131.db",
+        "source_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+        "created": true
+      },
+      "db_write": {
+        "inserted": 11,
+        "updated": 0,
+        "skipped": 0,
+        "total": 11,
+        "section_count_before": 0,
+        "section_count_after": 11,
+        "textbook_example_total_before": 4329,
+        "textbook_example_total_after": 4340,
+        "skill_distribution": {
+          "vh_數學B2_SubSection_2_1_1": 6,
+          "vh_數學B2_SubSection_2_1_2": 5
+        },
+        "correct_answer_null_count": 11,
+        "backup": {
+          "backup_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_before_v3_phase4_20260922_165131.db",
+          "source_path": "D:\\Python\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+          "created": true
+        }
+      },
+      "image_linking": {
+        "status": "needs_review",
+        "candidates": 5,
+        "needs_review": 5,
+        "linked_count": 0
+      }
+    },
+    "warnings": null,
+    "scoped_import_counts": {
+      "required_formula_count": 73,
+      "required_formula_success": 73,
+      "required_formula_failed": 0,
+      "non_required_formula_count": 117,
+      "non_required_formula_success": 117,
+      "non_required_formula_failed": 0
+    },
+    "scoped_would_write": 11
+  },
+  "after": {
+    "sha256": "20f6dd10bac831bcb0fc41a6febdd0b0e7e7837aea7dc9719ded31efd8b7ccd1",
+    "counts": {
+      "textbook_examples": 4340,
+      "skills_info": 541,
+      "skill_curriculum": 550
+    },
+    "sha256_note": "Recomputed after SQLite quiet period; original script hash was stale because the live connection had not fully flushed when first sampled."
+  },
+  "verify": {
+    "all_section_rows": [
+      {
+        "id": 11676,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例1",
+        "source_description": "例1",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，已知\\({\\overline{ AB }} =4\\)、\\({\\overline{ AC }} =\\sqrt[] { 3 }\\)且\\(\\angle ",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11677,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習1",
+        "source_description": "隨堂練習1",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)、\\(b=6\\)且\\(\\angle C=30{}^\\circ\\)，試求△ABC的面積。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11678,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例2",
+        "source_description": "例2",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，若\\(\\angle A=45{}^\\circ\\)，\\(\\angle B=60{}^\\circ\\)，且\\(b=3\\sqrt[] { 6 }\\)，試求",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11679,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習2",
+        "source_description": "隨堂練習2",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，若\\(\\angle B=30{}^\\circ\\)，\\(\\angle C=120{}^\\circ\\)，且\\(b=6\\)，試求c及其外接圓半徑R。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11680,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例3",
+        "source_description": "例3",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "△ABC中，已知\\(\\angle A=60{}^\\circ\\)，\\(a=6\\)，\\(b=2\\sqrt[] { 6 }\\)，試求\\(\\angle B\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11681,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習3",
+        "source_description": "隨堂練習3",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)，\\(b=2\\sqrt[] { 2 }\\)，\\(\\angle A=60{}^\\circ\\)，試求\\(\\a",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11682,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例4",
+        "source_description": "例4",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "在△ABC中，已知\\(b=5\\)、\\(c=3\\)且\\(\\angle A=120{}^\\circ\\)，試求a之長。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11683,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習4",
+        "source_description": "隨堂練習4",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "在△ABC中，已知\\(b=1+\\sqrt[] { 3 }\\)、\\(c=2\\)且\\(\\angle A=30{}^\\circ\\)，試求a之長。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11684,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例5",
+        "source_description": "例5",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=5\\)、\\(c=3\\)，試求\\(\\angle A\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11685,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習5",
+        "source_description": "隨堂練習5",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "設△ABC的三邊長\\(a=3\\)、\\(b=8\\)、\\(c=7\\)，試求\\(\\angle C\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11686,
+        "new": true,
+        "source_type": "exam_practice",
+        "problem_type": "exam_practice",
+        "source_label": "113統測B",
+        "source_description": "113統測B",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路，\n無法通行，只好先繞到B地再到C地。已知AC路段的直\n線距離為300 公尺，AB路段的直線距離為800 公尺",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      }
+    ],
+    "new_rows": [
+      {
+        "id": 11676,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例1",
+        "source_description": "例1",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，已知\\({\\overline{ AB }} =4\\)、\\({\\overline{ AC }} =\\sqrt[] { 3 }\\)且\\(\\angle ",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11677,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習1",
+        "source_description": "隨堂練習1",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)、\\(b=6\\)且\\(\\angle C=30{}^\\circ\\)，試求△ABC的面積。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11678,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例2",
+        "source_description": "例2",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，若\\(\\angle A=45{}^\\circ\\)，\\(\\angle B=60{}^\\circ\\)，且\\(b=3\\sqrt[] { 6 }\\)，試求",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11679,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習2",
+        "source_description": "隨堂練習2",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "在△ABC中，若\\(\\angle B=30{}^\\circ\\)，\\(\\angle C=120{}^\\circ\\)，且\\(b=6\\)，試求c及其外接圓半徑R。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11680,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例3",
+        "source_description": "例3",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "△ABC中，已知\\(\\angle A=60{}^\\circ\\)，\\(a=6\\)，\\(b=2\\sqrt[] { 6 }\\)，試求\\(\\angle B\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11681,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習3",
+        "source_description": "隨堂練習3",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_1",
+        "problem_start": "△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)，\\(b=2\\sqrt[] { 2 }\\)，\\(\\angle A=60{}^\\circ\\)，試求\\(\\a",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11682,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例4",
+        "source_description": "例4",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "在△ABC中，已知\\(b=5\\)、\\(c=3\\)且\\(\\angle A=120{}^\\circ\\)，試求a之長。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11683,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習4",
+        "source_description": "隨堂練習4",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "在△ABC中，已知\\(b=1+\\sqrt[] { 3 }\\)、\\(c=2\\)且\\(\\angle A=30{}^\\circ\\)，試求a之長。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11684,
+        "new": true,
+        "source_type": "textbook_example",
+        "problem_type": "textbook_example",
+        "source_label": "例5",
+        "source_description": "例5",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=5\\)、\\(c=3\\)，試求\\(\\angle A\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11685,
+        "new": true,
+        "source_type": "in_class_practice",
+        "problem_type": "in_class_practice",
+        "source_label": "隨堂練習5",
+        "source_description": "隨堂練習5",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "設△ABC的三邊長\\(a=3\\)、\\(b=8\\)、\\(c=7\\)，試求\\(\\angle C\\)。",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      },
+      {
+        "id": 11686,
+        "new": true,
+        "source_type": "exam_practice",
+        "problem_type": "exam_practice",
+        "source_label": "113統測B",
+        "source_description": "113統測B",
+        "source_section": "2-1 正弦定理與餘弦定理",
+        "source_chapter": "第2章 三角函數的應用",
+        "skill_id": "vh_數學B2_SubSection_2_1_2",
+        "problem_start": "小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路，\n無法通行，只好先繞到B地再到C地。已知AC路段的直\n線距離為300 公尺，AB路段的直線距離為800 公尺",
+        "has_math_parse_failed": false,
+        "visual_assets": [],
+        "notes_keys": [
+          "anchor",
+          "needs_skill_resolution",
+          "question_anchor",
+          "section_outline_skill_id",
+          "skill_assignment_status",
+          "source_order"
+        ]
+      }
+    ],
+    "new_type_counts": {
+      "textbook_example": 5,
+      "in_class_practice": 5,
+      "exam_practice": 1
+    },
+    "non_target_new": []
+  },
+  "image_associations": [
+    {
+      "question_index": 1,
+      "label": "例1",
+      "source_type": "textbook_example",
+      "paragraph_index": 23,
+      "filename": "image25.jpeg",
+      "relationship_id": "rId57",
+      "needs_review": true
+    },
+    {
+      "question_index": 3,
+      "label": "例2",
+      "source_type": "textbook_example",
+      "paragraph_index": 62,
+      "filename": "image59.jpeg",
+      "relationship_id": "rId126",
+      "needs_review": true
+    },
+    {
+      "question_index": 5,
+      "label": "例3",
+      "source_type": "textbook_example",
+      "paragraph_index": 78,
+      "filename": "image78.jpeg",
+      "relationship_id": "rId163",
+      "needs_review": true
+    },
+    {
+      "question_index": 7,
+      "label": "例4",
+      "source_type": "textbook_example",
+      "paragraph_index": 122,
+      "filename": "image117.jpeg",
+      "relationship_id": "rId240",
+      "needs_review": true
+    },
+    {
+      "question_index": 11,
+      "label": "113統測B",
+      "source_type": "exam_practice",
+      "paragraph_index": 142,
+      "filename": "image138.jpeg",
+      "relationship_id": "rId281",
+      "needs_review": true
+    }
+  ],
+  "sys_executable": "C:\\Users\\Owner\\anaconda3\\python.exe",
+  "verified_rows": [
+    {
+      "id": 11676,
+      "source_type": "textbook_example",
+      "source_label": "例1",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "在△ABC中，已知\\({\\overline{ AB }} =4\\)、\\({\\overline{ AC }} =\\sqrt[] { 3 }\\)且\\(\\angle ",
+      "formula_count": 9,
+      "image_association": [
+        {
+          "question_index": 1,
+          "label": "例1",
+          "source_type": "textbook_example",
+          "paragraph_index": 23,
+          "filename": "image25.jpeg",
+          "relationship_id": "rId57",
+          "needs_review": true
+        }
+      ],
+      "image_linked": false,
+      "image_needs_review": true,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11677,
+      "source_type": "in_class_practice",
+      "source_label": "隨堂練習1",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "在△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)、\\(b=6\\)且\\(\\angle C=30{}^\\circ\\)，試求△ABC的面積。",
+      "formula_count": 3,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11678,
+      "source_type": "textbook_example",
+      "source_label": "例2",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "在△ABC中，若\\(\\angle A=45{}^\\circ\\)，\\(\\angle B=60{}^\\circ\\)，且\\(b=3\\sqrt[] { 6 }\\)，試求",
+      "formula_count": 13,
+      "image_association": [
+        {
+          "question_index": 3,
+          "label": "例2",
+          "source_type": "textbook_example",
+          "paragraph_index": 62,
+          "filename": "image59.jpeg",
+          "relationship_id": "rId126",
+          "needs_review": true
+        }
+      ],
+      "image_linked": false,
+      "image_needs_review": true,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11679,
+      "source_type": "in_class_practice",
+      "source_label": "隨堂練習2",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "在△ABC中，若\\(\\angle B=30{}^\\circ\\)，\\(\\angle C=120{}^\\circ\\)，且\\(b=6\\)，試求c及其外接圓半徑R。",
+      "formula_count": 3,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11680,
+      "source_type": "textbook_example",
+      "source_label": "例3",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "△ABC中，已知\\(\\angle A=60{}^\\circ\\)，\\(a=6\\)，\\(b=2\\sqrt[] { 6 }\\)，試求\\(\\angle B\\)。",
+      "formula_count": 13,
+      "image_association": [
+        {
+          "question_index": 5,
+          "label": "例3",
+          "source_type": "textbook_example",
+          "paragraph_index": 78,
+          "filename": "image78.jpeg",
+          "relationship_id": "rId163",
+          "needs_review": true
+        }
+      ],
+      "image_linked": false,
+      "image_needs_review": true,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11681,
+      "source_type": "in_class_practice",
+      "source_label": "隨堂練習3",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "problem_start": "△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)，\\(b=2\\sqrt[] { 2 }\\)，\\(\\angle A=60{}^\\circ\\)，試求\\(\\a",
+      "formula_count": 4,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11682,
+      "source_type": "textbook_example",
+      "source_label": "例4",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "problem_start": "在△ABC中，已知\\(b=5\\)、\\(c=3\\)且\\(\\angle A=120{}^\\circ\\)，試求a之長。",
+      "formula_count": 11,
+      "image_association": [
+        {
+          "question_index": 7,
+          "label": "例4",
+          "source_type": "textbook_example",
+          "paragraph_index": 122,
+          "filename": "image117.jpeg",
+          "relationship_id": "rId240",
+          "needs_review": true
+        }
+      ],
+      "image_linked": false,
+      "image_needs_review": true,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11683,
+      "source_type": "in_class_practice",
+      "source_label": "隨堂練習4",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "problem_start": "在△ABC中，已知\\(b=1+\\sqrt[] { 3 }\\)、\\(c=2\\)且\\(\\angle A=30{}^\\circ\\)，試求a之長。",
+      "formula_count": 3,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11684,
+      "source_type": "textbook_example",
+      "source_label": "例5",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=5\\)、\\(c=3\\)，試求\\(\\angle A\\)。",
+      "formula_count": 8,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11685,
+      "source_type": "in_class_practice",
+      "source_label": "隨堂練習5",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "problem_start": "設△ABC的三邊長\\(a=3\\)、\\(b=8\\)、\\(c=7\\)，試求\\(\\angle C\\)。",
+      "formula_count": 4,
+      "image_association": [],
+      "image_linked": false,
+      "image_needs_review": false,
+      "import_status": "inserted"
+    },
+    {
+      "id": 11686,
+      "source_type": "exam_practice",
+      "source_label": "113統測B",
+      "section": "2-1 正弦定理與餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "problem_start": "小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路，\n無法通行，只好先繞到B地再到C地。已知AC路段的直\n線距離為300 公尺，AB路段的直線距離為800 公尺",
+      "formula_count": 2,
+      "image_association": [
+        {
+          "question_index": 11,
+          "label": "113統測B",
+          "source_type": "exam_practice",
+          "paragraph_index": 142,
+          "filename": "image138.jpeg",
+          "relationship_id": "rId281",
+          "needs_review": true
+        }
+      ],
+      "image_linked": false,
+      "image_needs_review": true,
+      "import_status": "inserted"
+    }
+  ]
+}
