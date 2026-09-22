@@ -8,7 +8,8 @@ from core.textbook_processor_v2 import _docx_paragraph_text_with_symbols, phase1
 
 @pytest.mark.parametrize('font,code,expected', [
     ('Symbol', 'F02D', '−'), ('Symbol', '002D', '−'),
-    ('Symbol', 'F02B', '+'), ('Wingdings', 'F02D', '[MATH_PARSE_FAILED:symbol:Wingdings:F02D]'),
+    ('Symbol', 'F02B', '+'), ('Symbol', 'F0B0', '°'),
+    ('Wingdings', 'F02D', '[MATH_PARSE_FAILED:symbol:Wingdings:F02D]'),
 ])
 def test_font_aware_symbol_order_and_source_unchanged(font, code, expected, tmp_path):
     doc = Document()

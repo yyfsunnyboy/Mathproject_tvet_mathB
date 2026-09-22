@@ -1792,15 +1792,32 @@ def admin_textbook_importer_v3():
     current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
 
     if request.method == 'POST':
-        scope_raw = str(request.form.get('target_source_types') or '').strip()
+        scope_values = request.form.getlist('target_source_types')
+        scope_raw = ','.join(str(value or '') for value in scope_values).strip()
         target_source_types = None
         if scope_raw:
             target_source_types = {part.strip() for part in scope_raw.split(',') if part.strip()}
             allowed_scoped_types = {
-                'textbook_example', 'in_class_practice', 'self_assessment', 'exam_practice'
+                'textbook_example', 'in_class_practice', 'textbook_exercise',
+                'advanced_exercise',
+                'self_assessment', 'exam_practice'
             }
             if not target_source_types or not target_source_types.issubset(allowed_scoped_types):
                 return jsonify({'ok': False, 'error': 'invalid_target_source_types'}), 400
+        elif request.form.get('source_type_scope_present'):
+            return jsonify({'ok': False, 'error': 'invalid_target_source_types'}), 400
+        legacy_insert_missing_only = target_source_types is not None and str(
+            request.form.get('insert_missing_only') or ''
+        ).strip().lower() in {'true', '1', 'on', 'yes'}
+        import_mode = str(request.form.get('import_mode') or '').strip() or (
+            'insert_missing_only' if legacy_insert_missing_only else 'update_existing'
+        )
+        if import_mode not in {'update_existing', 'insert_missing_only', 'replace_section'}:
+            return jsonify({'ok': False, 'error': 'invalid_import_mode'}), 400
+        if target_source_types is None and import_mode != 'update_existing':
+            return jsonify({'ok': False, 'error': 'import_mode_requires_scope'}), 400
+        if import_mode == 'replace_section' and str(request.form.get('replace_confirmed') or '').lower() != 'true':
+            return jsonify({'ok': False, 'error': 'replace_confirmation_required'}), 400
         scoped_dry_run = target_source_types is not None and str(
             request.form.get('dry_run', 'true')
         ).strip().lower() not in {'false', '0', 'no'}
@@ -1814,6 +1831,8 @@ def admin_textbook_importer_v3():
         docx_files = request.files.getlist('textbook_docx[]')
         if not docx_files or all(not (f and f.filename) for f in docx_files):
             docx_files = request.files.getlist('textbook_docx')
+        if import_mode == 'replace_section' and len([f for f in docx_files if f and f.filename]) != 1:
+            return jsonify({'ok': False, 'error': 'replace_requires_one_section_pair'}), 400
 
         pdf_files = request.files.getlist('textbook_pdf[]')
         if not pdf_files or all(not (f and f.filename) for f in pdf_files):
@@ -1855,6 +1874,7 @@ def admin_textbook_importer_v3():
                 grade=grade_val,
                 allow_phase4=not scoped_dry_run,
                 target_source_types=target_source_types,
+                import_mode=import_mode,
                 storage_meta=storage,
             )
             payload["task_id"] = task_id

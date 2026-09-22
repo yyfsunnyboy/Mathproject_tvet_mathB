@@ -435,6 +435,8 @@
         <!-- TODO V3 backend: connect dual-source DOCX + PDF importer -->
         <form id="importerV3Form" method="POST" enctype="multipart/form-data"
             action="{{ url_for('core.admin_textbook_importer_v3') }}">
+            <input type="hidden" name="source_type_scope_present" value="1">
+            <input type="hidden" name="dry_run" value="false">
 
             <!-- STEP 1：教材設定 -->
             <div class="card shadow-sm step-card">
@@ -554,6 +556,27 @@
                     <p class="text-secondary mb-4" id="volumeConfirmStep3">
                         本次匯入冊別：<strong id="volumeConfirmLabelStep3">數學B2</strong>
                     </p>
+
+                    <fieldset class="border rounded p-3 mb-4">
+                        <legend class="float-none w-auto px-2 fs-6 fw-bold mb-1">匯入題型範圍</legend>
+                        <p class="text-secondary small mb-2">技高課本預設匯入例題、練習與進階題。</p>
+                        <div class="d-flex flex-wrap column-gap-4 row-gap-2">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="textbook_example" id="scopeExample" checked><label class="form-check-label" for="scopeExample">課本例題</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="in_class_practice" id="scopePractice" checked><label class="form-check-label" for="scopePractice">隨堂練習</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="textbook_exercise" id="scopeExercise" checked><label class="form-check-label" for="scopeExercise">基礎習題</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="self_assessment" id="scopeAssessment" checked><label class="form-check-label" for="scopeAssessment">自我評量</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="exam_practice" id="scopeExam" checked><label class="form-check-label" for="scopeExam">歷屆／統測題</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="target_source_types" value="advanced_exercise" id="scopeAdvanced" checked><label class="form-check-label" for="scopeAdvanced">進階題</label></div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="border rounded p-3 mb-3">
+                        <legend class="float-none w-auto px-2 fs-6 fw-bold mb-1">匯入模式</legend>
+                        <div class="form-check"><input class="form-check-input" type="radio" name="import_mode" value="update_existing" id="modeUpdate"><label class="form-check-label" for="modeUpdate">更新既有題目並新增缺題</label></div>
+                        <div class="form-check"><input class="form-check-input" type="radio" name="import_mode" value="insert_missing_only" id="modeInsertMissing" checked><label class="form-check-label" for="modeInsertMissing">只新增缺少題目，跳過既有題目</label></div>
+                        <div class="form-check"><input class="form-check-input" type="radio" name="import_mode" value="replace_section" id="modeReplace"><label class="form-check-label" for="modeReplace">刪除本小節教材題目後重新匯入</label></div>
+                    </fieldset>
+                    <div class="form-check mb-4"><input class="form-check-input" type="checkbox" id="importDryRun"><label class="form-check-label" for="importDryRun">僅預覽（dry-run，不寫入 DB）</label></div>
 
                     <div id="batchProgressPanel" class="batch-progress-panel" aria-live="polite">
                         <div id="batchCurrentSource">目前教材：<span class="empty-value">—</span></div>
@@ -1458,6 +1481,7 @@
 
             function buildUploadFormData(completePairs, overwriteExisting) {
                 var formData = new FormData(form);
+                formData.set('dry_run', document.getElementById('importDryRun').checked ? 'true' : 'false');
                 formData.delete('textbook_docx[]');
                 formData.delete('textbook_pdf[]');
                 formData.delete('overwrite_existing');
@@ -1480,6 +1504,20 @@
                     return;
                 }
 
+                var replaceSelected = document.getElementById('modeReplace').checked;
+                if (replaceSelected) {
+                    if (validation.completePairs.length !== 1 || validation.completePairs[0].classification.type !== 'section') {
+                        alert('重新匯入模式一次只能選擇一個可辨識的小節教材。');
+                        return;
+                    }
+                    var selectedPair = validation.completePairs[0];
+                    var scopeText = '冊別：' + volumeSelect.value + '\n章／節：' +
+                        getClassificationLabel(selectedPair.classification) + '\n教材：' + selectedPair.baseName;
+                    if (!window.confirm('將刪除目前小節既有教材題目後重新匯入。\n' +
+                        '此操作只影響本小節教材題目，不影響學生學習紀錄。\n\n' +
+                        scopeText + '\n\n是否繼續？')) return;
+                }
+
                 hideOverwriteModal();
                 resetProcessingPanel();
                 showProcessingPanel();
@@ -1487,6 +1525,7 @@
                 setProcessingStep('file_validation', 'active');
 
                 var formData = buildUploadFormData(validation.completePairs, !!overwriteExisting);
+                if (replaceSelected) formData.set('replace_confirmed', 'true');
 
                 fetch(form.action, {
                     method: 'POST',

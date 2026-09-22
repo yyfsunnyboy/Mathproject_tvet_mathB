@@ -915,6 +915,37 @@ def _is_fallback_skill_id(skill_id: str) -> bool:
     return bool(_FALLBACK_SKILL_ID_RE.search(sid))
 
 
+_NON_SUBSECTION_FALLBACK_RE = re.compile(
+    r"SelfAssessment|MixedExercise|UnknownConcept|UnknownFormalConcept|Concept_|ConceptHash",
+    re.IGNORECASE,
+)
+_BOUND_SUBSECTION_ID_RE = re.compile(r"^vh_.+_SubSection_(\d+)_(\d+)_(\d+)$")
+
+
+def _is_bound_formal_subsection_skill(
+    skill_id: str, row: SkillCurriculum, skill: SkillInfo | None,
+    *, curriculum: str, volume: str, chapter_title: str, section_code: str,
+) -> bool:
+    """Accept a numbered SubSection only with an exact existing curriculum binding."""
+    sid = _normalize_skill_id_quality(skill_id)
+    match = _BOUND_SUBSECTION_ID_RE.fullmatch(sid)
+    if not match or _NON_SUBSECTION_FALLBACK_RE.search(sid) or skill is None:
+        return False
+    if not bool(getattr(skill, "is_active", False)):
+        return False
+    if not str(getattr(skill, "skill_ch_name", "") or "").strip():
+        return False
+    if f"{int(match.group(1))}-{int(match.group(2))}" != str(section_code or "").strip():
+        return False
+    return (
+        str(getattr(row, "skill_id", "") or "") == sid
+        and str(getattr(row, "curriculum", "") or "") == curriculum
+        and str(getattr(row, "volume", "") or "") == volume
+        and _same_chapter_identity(str(getattr(row, "chapter", "") or ""), chapter_title)
+        and _section_code_boundary_matches(section_code, str(getattr(row, "section", "") or ""))
+    )
+
+
 def _mathb_fallback_formal_en_id(section_code: str, source_type: str) -> str:
     """已停用：不得建立 MixedExercise / UnknownConcept 正式 skill。"""
     _ = section_code, source_type
@@ -984,8 +1015,6 @@ def _get_formal_skills_for_section_v2(
         SkillCurriculum.volume == vol,
         SkillCurriculum.skill_id.startswith("vh_"),
     )
-    if ch:
-        q = q.filter(SkillCurriculum.chapter == ch)
     prefix = f"{code} " if code else ""
     if code:
         q = q.filter(SkillCurriculum.section.startswith(prefix))
@@ -998,6 +1027,8 @@ def _get_formal_skills_for_section_v2(
     ).all():
         sid = str(getattr(row, "skill_id", "") or "").strip()
         if not sid or not sid.startswith("vh_") or sid.startswith("outline_") or sid in seen:
+            continue
+        if ch and not _same_chapter_identity(row.chapter, ch):
             continue
         sec_label = str(getattr(row, "section", "") or "")
         if code and not _section_code_boundary_matches(code, sec_label):
@@ -1033,7 +1064,7 @@ def validate_existing_skill_binding_for_import(
     sid = _normalize_skill_id_quality(skill_id)
     if not sid:
         return False, "empty_skill_id"
-    if _is_fallback_skill_id(sid):
+    if _is_fallback_skill_id(sid) and not _BOUND_SUBSECTION_ID_RE.fullmatch(sid):
         return False, "fallback_pattern"
     if not sid.startswith("vh_"):
         return False, "not_vh_prefix"
@@ -1050,9 +1081,9 @@ def validate_existing_skill_binding_for_import(
         SkillCurriculum.curriculum == curr,
         SkillCurriculum.volume == vol,
     )
-    if chapter_title:
-        q = q.filter(SkillCurriculum.chapter == chapter_title)
     rows = q.all()
+    if chapter_title:
+        rows = [row for row in rows if _same_chapter_identity(row.chapter, chapter_title)]
     if not rows:
         return False, "skill_not_in_skillcurriculum"
     bounded = [
@@ -1062,6 +1093,14 @@ def validate_existing_skill_binding_for_import(
     ]
     if code and not bounded:
         return False, "section_code_mismatch"
+    if _is_fallback_skill_id(sid) and not any(
+        _is_bound_formal_subsection_skill(
+            sid, row, SkillInfo.query.get(sid), curriculum=curr, volume=vol,
+            chapter_title=chapter_title, section_code=code,
+        )
+        for row in bounded
+    ):
+        return False, "fallback_pattern"
     return True, ""
 
 
@@ -1081,9 +1120,9 @@ def _lookup_formal_skill_curriculum_row(
         SkillCurriculum.curriculum == str(curriculum or "").strip(),
         SkillCurriculum.volume == str(volume or "").strip(),
     )
-    if chapter_title:
-        q = q.filter(SkillCurriculum.chapter == chapter_title)
     rows = q.order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.id.asc()).all()
+    if chapter_title:
+        rows = [row for row in rows if _same_chapter_identity(row.chapter, chapter_title)]
     code = str(section_code or "").strip()
     if code:
         bounded = [
@@ -1115,6 +1154,8 @@ def _get_self_assessment_skill_candidates_v2(
     chapter_index: int | None = None,
 ) -> list[dict]:
     """章末自我評量：僅從既有 SkillCurriculum / SkillInfo 取候選 vh_ skill。"""
+    # A chapter index alone cannot prove title identity; the outline supplies both.
+    _ = chapter_index
     curr = str(curriculum or "").strip()
     vol = str(volume or "").strip()
     code = unicodedata.normalize("NFKC", str(section_code or "").strip())
@@ -1127,11 +1168,8 @@ def _get_self_assessment_skill_candidates_v2(
         SkillCurriculum.skill_id.startswith("vh_"),
     )
     ch = str(chapter_title or "").strip()
-    if ch:
-        q = q.filter(SkillCurriculum.chapter == ch)
-    elif chapter_index is not None:
-        ch_prefix = f"{int(chapter_index)} "
-        q = q.filter(SkillCurriculum.chapter.startswith(ch_prefix))
+    if not _chapter_identity(ch):
+        return []
 
     prefix = f"{code} "
     q = q.filter(SkillCurriculum.section.startswith(prefix))
@@ -1145,15 +1183,22 @@ def _get_self_assessment_skill_candidates_v2(
         sid = _normalize_skill_id_quality(str(getattr(row, "skill_id", "") or ""))
         if not sid or sid in seen:
             continue
-        if sid.startswith("outline_") or _is_fallback_skill_id(sid):
+        if not _same_chapter_identity(row.chapter, ch):
+            continue
+        if sid.startswith("outline_"):
             continue
         sec_label = str(getattr(row, "section", "") or "")
         if not _section_code_boundary_matches(code, sec_label):
             continue
-        if SkillInfo.query.get(sid) is None:
+        skill = SkillInfo.query.get(sid)
+        if skill is None:
+            continue
+        if _is_fallback_skill_id(sid) and not _is_bound_formal_subsection_skill(
+            sid, row, skill, curriculum=curr, volume=vol,
+            chapter_title=ch, section_code=code,
+        ):
             continue
         seen.add(sid)
-        skill = SkillInfo.query.get(sid)
         candidates.append(
             {
                 "skill_id": sid,
@@ -1238,6 +1283,7 @@ def _ai_select_formal_skill_for_problem_v2(
                     "concept_name": str(hit.get("concept_name") or "").strip(),
                     "concept_en_id": str(hit.get("concept_en_id") or "").strip(),
                     "formal_skill_id": pick_id,
+                    "reason": str(parsed.get("reason") or "").strip(),
                 }
     except Exception as exc:
         _log_info(f"[antigravity][AI_SKILL_SELECT] failed title={source_description!r}: {exc}")
@@ -1848,6 +1894,7 @@ def phase2_mathb_chapter_self_assessment_slice(
     curriculum_info: dict | None = None,
     chapter_index: int | None = None,
     title_prefix: str = "",
+    read_only: bool = False,
 ) -> dict[str, dict[str, str]]:
     """Chapter-end self-assessment slicer for vocational Math B."""
     blob = "\n".join(str(ln or "") for ln in (lines or []))
@@ -1877,10 +1924,11 @@ def phase2_mathb_chapter_self_assessment_slice(
     cur_key = ""
     cur_anchor = ""
     problem_lines: list[str] = []
+    source_line_indices: set[int] = set()
     started = False
 
     def flush_one() -> None:
-        nonlocal cur_key, cur_anchor, problem_lines
+        nonlocal cur_key, cur_anchor, problem_lines, source_line_indices
         if not cur_key:
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
@@ -1895,19 +1943,24 @@ def phase2_mathb_chapter_self_assessment_slice(
                 section_title=current_section_title,
                 formal_skill_id="",
             )
+            if read_only:
+                meta[cur_key]["source_line_indices"] = sorted(source_line_indices)
         cur_key = ""
         cur_anchor = ""
         problem_lines = []
+        source_line_indices = set()
 
     def start_question(num: int, first_line: str) -> None:
         nonlocal cur_key, cur_anchor, problem_lines
         flush_one()
         cur_anchor = f"{prefix} 題{num}"
         cur_key = cur_anchor
+        if read_only:
+            source_line_indices.add(line_index)
         if first_line.strip():
             problem_lines.append(first_line.strip())
 
-    for raw in lines or []:
+    for line_index, raw in enumerate(lines or []):
         trigger_hit, trigger_payload = _split_question_trigger(str(raw or ""))
         line = _normalize_docx_line_text(trigger_payload if trigger_hit else raw)
         if not line:
@@ -1941,6 +1994,8 @@ def phase2_mathb_chapter_self_assessment_slice(
             continue
         if cur_key:
             problem_lines.append(line)
+            if read_only:
+                source_line_indices.add(line_index)
 
     flush_one()
     _ = curriculum_info
@@ -2259,7 +2314,7 @@ def _docx_paragraph_text_with_symbols(para) -> str:
     if not symbols:
         return str(para.text or '')
     node = deepcopy(para._p)
-    symbol_chars = {0x2B: '+', 0x2D: '−'}
+    symbol_chars = {0x2B: '+', 0x2D: '−', 0xB0: '°'}
     for symbol in node.xpath('.//w:sym'):
         font = symbol.get(qn('w:font'), '')
         code = symbol.get(qn('w:char'), '')
@@ -2352,9 +2407,27 @@ def phase2_deterministic_block_slice(
     sa_ctx: dict[str, Any] | None = None
     if is_sa_scope or scope != "section_textbook":
         sa_ctx = detect_chapter_self_assessment_context(blob)
+    if is_sa_scope and sa_ctx and not (
+        _CH_SA_CH_MARKER_RE.search(blob) or _CH_SA_ZH_CHAPTER_RE.search(blob)
+    ):
+        # A chapter-end worksheet may omit its chapter number in the body.
+        # Use the filename's authoritative chapter metadata for question labels.
+        chapter_index = (curriculum_info or {}).get("chapter_index")
+        try:
+            chapter_number = int(chapter_index)
+        except (TypeError, ValueError):
+            chapter_number = None
+        if chapter_number is not None:
+            sa_ctx = dict(sa_ctx)
+            sa_ctx["chapter_num"] = chapter_number
+            sa_ctx["title_prefix"] = f"第{chapter_number}章自我評量"
     if is_sa_scope and not sa_ctx:
         m_ch = _CH_SA_CH_MARKER_RE.search(blob)
-        ch_num = int(m_ch.group(1)) if m_ch else 1
+        try:
+            file_ch_num = int((curriculum_info or {}).get("chapter_index") or 1)
+        except (TypeError, ValueError):
+            file_ch_num = 1
+        ch_num = int(m_ch.group(1)) if m_ch else file_ch_num
         sa_ctx = {
             "mode": "chapter_self_assessment",
             "chapter_num": ch_num,
@@ -2844,6 +2917,7 @@ def phase2_deterministic_block_slice(
             curriculum_info=curriculum_info,
             chapter_index=sa_ch_index,
             title_prefix=sa_prefix,
+            read_only=read_only,
         )
         sa_blocks = {
             k: str(v.get("problem_text") or "").strip()
@@ -3263,6 +3337,9 @@ def _sanitize_db_latex_delimiters(text: str) -> str:
 
 def _extract_loose_question_number(title: str) -> str | None:
     """從 Gemini 標題寬鬆擷取題號（例 9）。"""
+    question = re.search(r"題\s*(\d+)", str(title or ""))
+    if question:
+        return question.group(1)
     m = re.search(r"(\d+)", str(title or ""))
     return m.group(1) if m else None
 
@@ -3347,6 +3424,21 @@ def normalize_chapter_title_for_db(chapter_title: str) -> str:
     num = str(m.group(1)).strip()
     rest = str(m.group(2) or "").strip()
     return f"{num} {rest}".strip() if rest else num
+
+
+def _chapter_identity(chapter_title: str) -> tuple[int, str] | None:
+    """Compare chapter number and title, independent of the printed prefix."""
+    normalized = _normalize_outline_chapter_title_strict(chapter_title)
+    match = re.fullmatch(r"(\d+)\s+(.+)", normalized)
+    if not match:
+        return None
+    title = re.sub(r"\s+", " ", unicodedata.normalize("NFKC", match.group(2))).strip()
+    return (int(match.group(1)), title.casefold()) if title else None
+
+
+def _same_chapter_identity(left: str, right: str) -> bool:
+    first, second = _chapter_identity(left), _chapter_identity(right)
+    return first is not None and first == second
 
 
 MATHB1_CHAPTER1_CANONICAL_TITLE = "1 坐標系與函數圖形"
@@ -4858,8 +4950,10 @@ def phase4_absolute_hydrate_and_save(
     curriculum_info: dict,
     queue,
     target_source_types: set[str] | None = None,
-) -> dict[str, int]:
-    """絕對注水題幹並 Upsert 題庫。"""
+    insert_missing_only: bool = False,
+    commit: bool = True,
+) -> dict[str, Any]:
+    """絕對注水題幹並 Upsert 題庫；opt-in backfill 可跳過既有題。"""
     coords = _import_scope_coords(curriculum_info)
     subject, vol_num = parse_volume(coords["volume"])
     is_vocational_mathb = coords["curriculum"] == "vocational" and subject == "B"
@@ -4869,6 +4963,8 @@ def phase4_absolute_hydrate_and_save(
     updated = 0
     hydrated = 0
     skipped = 0
+    existing_skipped = 0
+    backfill_decisions: list[dict[str, Any]] = []
     outline_shield_skipped = 0
     skills_category_fixed = 0
     skipped_fragment_count = 0
@@ -5171,6 +5267,18 @@ def phase4_absolute_hydrate_and_save(
                                 title=title,
                             )
 
+                        if existing is not None and insert_missing_only:
+                            skipped += 1
+                            existing_skipped += 1
+                            backfill_decisions.append({
+                                "source_type": source_type,
+                                "source_label": source_description,
+                                "existing_db_id": existing.id,
+                                "skill_id": existing.skill_id,
+                                "decision": "EXISTING_SKIP",
+                            })
+                            continue
+
                         try:
                             difficulty_level = int(item.get("difficulty_level", 1))
                         except Exception:
@@ -5221,13 +5329,24 @@ def phase4_absolute_hydrate_and_save(
                             )
                             db.session.add(new_row)
                             inserted += 1
+                            if insert_missing_only:
+                                backfill_decisions.append({
+                                    "source_type": source_type,
+                                    "source_label": source_description,
+                                    "existing_db_id": None,
+                                    "skill_id": skill_id,
+                                    "decision": "NEW_INSERT",
+                                })
 
                         if category_fixed:
                             skills_category_fixed += 1
                         if source_type == "self_assessment":
                             self_assessment_imported += 1
 
-    db.session.commit()
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     total = inserted + updated
     if queue is not None:
         queue.put(
@@ -5253,6 +5372,8 @@ def phase4_absolute_hydrate_and_save(
         "total": total,
         "hydrated": hydrated,
         "skipped": skipped,
+        "existing_skipped": existing_skipped,
+        "backfill_decisions": backfill_decisions,
         "curriculums_added": 0,
         "skills_added": 0,
         "skills_processed": 0,

@@ -869,6 +869,27 @@
             border-top: 1px solid var(--dashboard-border);
         }
         .teacher-sidebar__footer .teacher-sidebar__link { font-size: 15px; }
+        .teacher-sidebar__footer .teacher-sidebar__link--student-cta {
+            min-height: 52px;
+            padding: 10px 14px;
+            background: #b45309;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 800;
+            box-shadow: 0 3px 8px rgba(146, 64, 14, .22);
+            transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
+        }
+        .teacher-sidebar__footer .teacher-sidebar__link--student-cta:hover {
+            background: #92400e;
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(146, 64, 14, .3);
+            transform: translateY(-2px);
+        }
+        .teacher-sidebar__footer .teacher-sidebar__link--student-cta:focus-visible {
+            outline: 3px solid #fbbf24;
+            outline-offset: 2px;
+        }
 
         .teacher-app-frame { min-height: 100vh; margin-left: var(--dashboard-sidebar-width); }
         .teacher-topbar {
@@ -1264,7 +1285,7 @@
                 </a>
             </nav>
             <div class="teacher-sidebar__footer">
-                <a href="{{ url_for('dashboard') }}" class="teacher-sidebar__link"><span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span><span class="teacher-sidebar__label">學生模式</span></a>
+                <a href="{{ url_for('dashboard') }}" class="teacher-sidebar__link teacher-sidebar__link--student-cta" aria-label="進入學生模式"><span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span><span class="teacher-sidebar__label">進入學生模式</span></a>
                 <a href="{{ url_for('logout') }}" class="teacher-sidebar__link"><span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5M17 17l4-5-4-5M21 12H9"/></svg></span><span class="teacher-sidebar__label">登出</span></a>
             </div>
         </aside>

@@ -1,0 +1,1044 @@
+{
+  "elapsed_seconds": 19.99,
+  "db_sha_before": "fd1997eb3470bd0934eb99e88020fae67541956a775d5aa2a5bbcd4daed2ea41",
+  "db_sha_after": "fd1997eb3470bd0934eb99e88020fae67541956a775d5aa2a5bbcd4daed2ea41",
+  "db_unchanged": true,
+  "report": {
+    "ok": true,
+    "task_id": "145aafdc-689a-40a9-a165-0eabb7614f07",
+    "base_name": "第二章 自我評量-課本",
+    "docx_path": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本.docx",
+    "pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本.pdf",
+    "stages": {
+      "FILE_VALIDATION": {
+        "status": "success",
+        "ui_step": "file_validation",
+        "message": "pair accepted",
+        "updated_at": "2026-09-22T15:56:45.452234+00:00"
+      },
+      "SOURCE_STORAGE": {
+        "status": "success",
+        "ui_step": "file_validation",
+        "message": "source files on disk",
+        "updated_at": "2026-09-22T15:56:45.452240+00:00"
+      },
+      "WORD_SCAN": {
+        "status": "success",
+        "ui_step": "word_parse",
+        "message": "",
+        "updated_at": "2026-09-22T15:56:45.482157+00:00",
+        "metrics": {
+          "word_tables": 0,
+          "table_cells": 0,
+          "mathtype_found": 63,
+          "eq_fields": 0,
+          "independent_images": 4,
+          "formula_preview_media": 63
+        }
+      },
+      "FORMULA_CONVERSION": {
+        "status": "success",
+        "ui_step": "equation_convert",
+        "message": "",
+        "updated_at": "2026-09-22T15:56:46.406994+00:00",
+        "metrics": {
+          "mathtype_found": 63,
+          "mathtype_converted": 63,
+          "formula_failures": 0,
+          "eq_fields": 0,
+          "eq_converted": 0,
+          "latex_docx": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本_Latex.docx",
+          "original_unchanged": true,
+          "required_formula_count": 63,
+          "required_formula_success": 63,
+          "required_formula_failed": 0,
+          "non_required_formula_count": 0,
+          "non_required_formula_success": 0,
+          "non_required_formula_failed": 0,
+          "unresolved_scope": 0
+        }
+      },
+      "QUESTION_PARSE": {
+        "status": "pending",
+        "ui_step": "question_parse",
+        "message": ""
+      },
+      "CURRICULUM_BINDING": {
+        "status": "pending",
+        "ui_step": "curriculum_binding",
+        "message": ""
+      },
+      "AI_ALIGNMENT": {
+        "status": "pending",
+        "ui_step": "ai_alignment",
+        "message": ""
+      },
+      "ANCHOR": {
+        "status": "pending",
+        "ui_step": "ai_alignment",
+        "message": ""
+      },
+      "DB_WRITE": {
+        "status": "skipped",
+        "ui_step": "db_write",
+        "message": "scoped dry-run; no DB writes",
+        "updated_at": "2026-09-22T15:57:05.433017+00:00"
+      },
+      "PDF_VISUAL": {
+        "status": "pending",
+        "ui_step": "pdf_alignment",
+        "message": ""
+      },
+      "IMAGE_LINKING": {
+        "status": "pending",
+        "ui_step": "asset_linking",
+        "message": ""
+      },
+      "COMPLETE": {
+        "status": "success",
+        "ui_step": "db_write",
+        "message": "",
+        "updated_at": "2026-09-22T15:57:05.433029+00:00"
+      }
+    },
+    "metrics": {
+      "word_scan": {
+        "word_tables": 0,
+        "table_cells": 0,
+        "mathtype_found": 63,
+        "eq_fields": 0,
+        "independent_images": 4,
+        "formula_preview_media": 63
+      },
+      "formula_conversion": {
+        "mathtype_found": 63,
+        "mathtype_converted": 63,
+        "formula_failures": 0,
+        "eq_fields": 0,
+        "eq_converted": 0,
+        "latex_docx": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本_Latex.docx",
+        "original_unchanged": true,
+        "required_formula_count": 63,
+        "required_formula_success": 63,
+        "required_formula_failed": 0,
+        "non_required_formula_count": 0,
+        "non_required_formula_success": 0,
+        "non_required_formula_failed": 0,
+        "unresolved_scope": 0
+      }
+    },
+    "error": null,
+    "latex_docx": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本_Latex.docx",
+    "scoped_import": {
+      "questions": [
+        {
+          "index": 1,
+          "label": "CH2自我評量 題1",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            2
+          ],
+          "problem_start": "已知△ABC中，外接圓面積為\\(9\\pi\\)且\\({\\overline{ BC }} =3\\)，試求\\(sinA\\)之值為何？",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 3,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 2,
+          "label": "CH2自我評量 題2",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            4
+          ],
+          "problem_start": "已知△ABC中，\\(\\angle A=105{}^\\circ\\)，\\(\\angle B=45{}^\\circ\\)，則\\({\\overline{ AB }}\\)與",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 9,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 3,
+          "label": "CH2自我評量 題3",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            6
+          ],
+          "problem_start": "已知△ABC中，a、b、c分別為\\(\\angle A\\)、\\(\\angle B\\)、\\(\\angle C\\)的對邊長，若\\(a=6\\)，\\(\\angle B=1",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 11,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 4,
+          "label": "CH2自我評量 題4",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            8
+          ],
+          "problem_start": "有一塊三角形空地，量得三角形兩邊長分別是3公尺、4公尺，且這兩邊之夾角為\\(60{}^\\circ\\)，試求此三角形之另一邊長度為幾公尺？",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 2,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 5,
+          "label": "CH2自我評量 題5",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            10
+          ],
+          "problem_start": "接續上題，試求此三角形空地面積為多少平方公尺？ (A)\\(3\\sqrt[] { 3 }\\)",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 2,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 6,
+          "label": "CH2自我評量 題6",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            12
+          ],
+          "problem_start": "已知△ABC中，\\(\\angle A=60{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ AC }} =5\\",
+          "section": "2-1 正弦定理與餘弦定理",
+          "skill_id": null,
+          "formula_count": 6,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 7,
+          "label": "CH2自我評量 題7",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            15
+          ],
+          "problem_start": "如圖，有一河流寬度為\\({\\overline{ BC }}\\)，若已知\\({\\overline{ AC }} =50\\)公尺，\\({\\overline{ BC ",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 6,
+          "formula_failed": 0,
+          "image_candidates": [
+            {
+              "paragraph_index": 15,
+              "relationship_id": "rId74",
+              "filename": "image34.jpeg",
+              "needs_review": true
+            }
+          ],
+          "would_write": "YES"
+        },
+        {
+          "index": 8,
+          "label": "CH2自我評量 題8",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            17
+          ],
+          "problem_start": "小寬在校門口，觀測到學校附近一棟大樓頂部的仰角為60°，已知該大樓高300公尺，則小寬在校門口與該棟大樓的直線距離為",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 2,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 9,
+          "label": "CH2自我評量 題9",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            19
+          ],
+          "problem_start": "小群測量一山峰峰頂的仰角為45°，已知山高300公尺，求小群水平後退多少公尺後，再測量山峰之仰角為30°？ (A)\\(300\\sqrt[] { 3 }-300\\",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 3,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 10,
+          "label": "CH2自我評量 題10",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            21
+          ],
+          "problem_start": "阿輝參加元旦升旗典禮，若建築物上之旗桿長為20公尺，今阿輝於地面上A處測得建築物頂端的仰角為45°，旗桿頂端的仰角為60°，則此建築物的高度為 (A)\\(20\\",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 4,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 11,
+          "label": "CH2自我評量 題11",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            23
+          ],
+          "problem_start": "如圖，一湖的邊上有A、B兩處，小誠站在C處，測得\\({\\overline{ AC }} =500\\)公尺，\\({\\overline{ BC }} =800\\)公",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 3,
+          "formula_failed": 0,
+          "image_candidates": [
+            {
+              "paragraph_index": 23,
+              "relationship_id": "rId105",
+              "filename": "image50.jpeg",
+              "needs_review": true
+            }
+          ],
+          "would_write": "YES"
+        },
+        {
+          "index": 12,
+          "label": "CH2自我評量 題12",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            25
+          ],
+          "problem_start": "如圖，某人欲測得A、C兩點的距離，得資料如下：\\({\\overline{ AB }} =20\\sqrt[] { 6 }\\)公里，\\(\\angle CAB=75{",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 4,
+          "formula_failed": 0,
+          "image_candidates": [
+            {
+              "paragraph_index": 25,
+              "relationship_id": "rId112",
+              "filename": "image54.jpeg",
+              "needs_review": true
+            }
+          ],
+          "would_write": "YES"
+        },
+        {
+          "index": 13,
+          "label": "CH2自我評量 題13",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            28
+          ],
+          "problem_start": "已知某大樓高度為508公尺。若某人站在此大樓最頂端並測得地面上A點之俯角為30°，則A點距此大樓距離為 (A) 254公尺",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 2,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 14,
+          "label": "CH2自我評量 題14",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            30
+          ],
+          "problem_start": "有一測量員發現：當他從A點測量時，山是在他的東邊偏北60°且山的仰角為45°；若由A點向東直行200公尺到B點測量時，則山在他的西邊偏北60°。試求山高是多少公",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 2,
+          "formula_failed": 0,
+          "image_candidates": [],
+          "would_write": "YES"
+        },
+        {
+          "index": 15,
+          "label": "CH2自我評量 題15",
+          "source_type": "self_assessment",
+          "target": true,
+          "paragraph_indices": [
+            32
+          ],
+          "problem_start": "一根10公尺長的梯子斜架在圍牆上，若梯子的頂端剛好接在圍牆的最上方，梯子和地面的夾角是50°，如圖，則圍牆的高度介在哪個範圍之間？（單位：公尺）",
+          "section": "2-2 三角測量",
+          "skill_id": null,
+          "formula_count": 4,
+          "formula_failed": 0,
+          "image_candidates": [
+            {
+              "paragraph_index": 32,
+              "relationship_id": "rId129",
+              "filename": "image63.jpeg",
+              "needs_review": true
+            }
+          ],
+          "would_write": "YES"
+        }
+      ],
+      "question_count": 15,
+      "target_count": 15,
+      "target_source_type_counts": {
+        "self_assessment": 15
+      },
+      "counts": {
+        "required_formula_count": 63,
+        "required_formula_success": 63,
+        "required_formula_failed": 0,
+        "non_required_formula_count": 0,
+        "non_required_formula_success": 0,
+        "non_required_formula_failed": 0
+      },
+      "failures": [],
+      "unresolved": [],
+      "image_candidate_count": 4,
+      "image_needs_review_count": 4,
+      "would_write_count": 15,
+      "runtime": {
+        "sys_executable": "C:\\Program Files\\Python314\\python.exe",
+        "olefile": "C:\\Users\\yehiv\\AppData\\Roaming\\Python\\Python314\\site-packages\\olefile\\__init__.py",
+        "converter": "C:\\Projects\\Mathproject_tvet_mathB\\core\\textbook_mathtype_converter.py"
+      }
+    },
+    "phase4_preflight": {
+      "questions": [
+        {
+          "question_number": 1,
+          "source_label": "CH2自我評量 題1",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "已知△ABC中，外接圓面積為\\(9\\pi\\)且\\({\\overline{ BC }} =3\\)，試求\\(sinA\\)之值為何？",
+          "formula_count": 3,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理",
+          "ai_reason": "題目涉及外接圓半徑與邊長、對角正弦值的關係，符合正弦定理公式 a/sinA = 2R。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 2,
+          "source_label": "CH2自我評量 題2",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "已知△ABC中，\\(\\angle A=105{}^\\circ\\)，\\(\\angle B=45{}^\\circ\\)，則\\({\\overline{ AB }}\\)與\\({\\overline{ AC }}\\",
+          "formula_count": 9,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理",
+          "ai_reason": "題目給定三角形兩內角，求邊長比值，適用正弦定理 (a/sinA = b/sinB)。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 3,
+          "source_label": "CH2自我評量 題3",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "已知△ABC中，a、b、c分別為\\(\\angle A\\)、\\(\\angle B\\)、\\(\\angle C\\)的對邊長，若\\(a=6\\)，\\(\\angle B=105{}^\\circ\\)，\\(\\angl",
+          "formula_count": 11,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理",
+          "ai_reason": "題目給定兩角與一對邊，求另一邊長，符合正弦定理的應用情境。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 4,
+          "source_label": "CH2自我評量 題4",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "有一塊三角形空地，量得三角形兩邊長分別是3公尺、4公尺，且這兩邊之夾角為\\(60{}^\\circ\\)，試求此三角形之另一邊長度為幾公尺？",
+          "formula_count": 2,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理",
+          "ai_reason": "題目給定兩邊長及其夾角，求第三邊長，符合餘弦定理的應用情境。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 5,
+          "source_label": "CH2自我評量 題5",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "接續上題，試求此三角形空地面積為多少平方公尺？ (A)\\(3\\sqrt[] { 3 }\\)",
+          "formula_count": 2,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理",
+          "ai_reason": "題目為三角形面積計算，通常需先利用餘弦定理求出邊長或角度，再運用面積公式求解。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 6,
+          "source_label": "CH2自我評量 題6",
+          "source_type": "self_assessment",
+          "subsection": "2-1",
+          "question_preview": "已知△ABC中，\\(\\angle A=60{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ AC }} =5\\)，則\\({\\overline{ BC ",
+          "formula_count": 6,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理",
+          "ai_reason": "題目已知兩邊及其夾角，求第三邊長，應使用餘弦定理。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_1",
+              "skill_name": "正弦定理"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_1_2",
+              "skill_name": "餘弦定理"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_1_1",
+            "vh_數學B2_SubSection_2_1_2"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 7,
+          "source_label": "CH2自我評量 題7",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "如圖，有一河流寬度為\\({\\overline{ BC }}\\)，若已知\\({\\overline{ AC }} =50\\)公尺，\\({\\overline{ BC }} \\bot {\\overline{ ",
+          "formula_count": 6,
+          "image_candidates": [
+            {
+              "paragraph_index": 15,
+              "relationship_id": "rId74",
+              "filename": "image34.jpeg",
+              "needs_review": true
+            }
+          ],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及直角三角形的邊長關係，利用三角比即可求解，符合直角三角形的測量範疇。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 8,
+          "source_label": "CH2自我評量 題8",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "小寬在校門口，觀測到學校附近一棟大樓頂部的仰角為60°，已知該大樓高300公尺，則小寬在校門口與該棟大樓的直線距離為",
+          "formula_count": 2,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及仰角與大樓高度，可構成直角三角形，利用三角函數求解距離。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 9,
+          "source_label": "CH2自我評量 題9",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "小群測量一山峰峰頂的仰角為45°，已知山高300公尺，求小群水平後退多少公尺後，再測量山峰之仰角為30°？ (A)\\(300\\sqrt[] { 3 }-300\\)公尺 (B) 300公尺 (C)\\(3",
+          "formula_count": 3,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及仰角測量，且透過山高與水平距離的直角三角形關係求解，屬於直角三角形的測量範疇。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 10,
+          "source_label": "CH2自我評量 題10",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "阿輝參加元旦升旗典禮，若建築物上之旗桿長為20公尺，今阿輝於地面上A處測得建築物頂端的仰角為45°，旗桿頂端的仰角為60°，則此建築物的高度為 (A)\\(20\\left ( { \\sqrt[] { 3",
+          "formula_count": 4,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及仰角測量，且可透過建立直角三角形關係式求解建築物高度，符合直角三角形的測量範疇。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 11,
+          "source_label": "CH2自我評量 題11",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "如圖，一湖的邊上有A、B兩處，小誠站在C處，測得\\({\\overline{ AC }} =500\\)公尺，\\({\\overline{ BC }} =800\\)公尺，且\\(\\angle ACB=60{}",
+          "formula_count": 3,
+          "image_candidates": [
+            {
+              "paragraph_index": 23,
+              "relationship_id": "rId105",
+              "filename": "image50.jpeg",
+              "needs_review": true
+            }
+          ],
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量",
+          "ai_reason": "題目給定兩邊及其夾角，需利用餘弦定理求解非直角三角形的邊長。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 12,
+          "source_label": "CH2自我評量 題12",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "如圖，某人欲測得A、C兩點的距離，得資料如下：\\({\\overline{ AB }} =20\\sqrt[] { 6 }\\)公里，\\(\\angle CAB=75{}^\\circ\\)，\\(\\angle B",
+          "formula_count": 4,
+          "image_candidates": [
+            {
+              "paragraph_index": 25,
+              "relationship_id": "rId112",
+              "filename": "image54.jpeg",
+              "needs_review": true
+            }
+          ],
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量",
+          "ai_reason": "題目涉及非直角三角形的邊長與角度關係，需利用正弦定理求解，故歸類於非直角三角形測量。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 13,
+          "source_label": "CH2自我評量 題13",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "已知某大樓高度為508公尺。若某人站在此大樓最頂端並測得地面上A點之俯角為30°，則A點距此大樓距離為 (A) 254公尺",
+          "formula_count": 2,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及大樓高度與地面點的俯角，可構成一個直角三角形，利用三角比求解距離。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 14,
+          "source_label": "CH2自我評量 題14",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "有一測量員發現：當他從A點測量時，山是在他的東邊偏北60°且山的仰角為45°；若由A點向東直行200公尺到B點測量時，則山在他的西邊偏北60°。試求山高是多少公尺？（若由低處觀測點仰望高處的目標物時，",
+          "formula_count": 2,
+          "image_candidates": [],
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量",
+          "ai_reason": "題目涉及山的高度測量，屬於將平面方位角與仰角結合的立體測量問題。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        },
+        {
+          "question_number": 15,
+          "source_label": "CH2自我評量 題15",
+          "source_type": "self_assessment",
+          "subsection": "2-2",
+          "question_preview": "一根10公尺長的梯子斜架在圍牆上，若梯子的頂端剛好接在圍牆的最上方，梯子和地面的夾角是50°，如圖，則圍牆的高度介在哪個範圍之間？（單位：公尺）",
+          "formula_count": 4,
+          "image_candidates": [
+            {
+              "paragraph_index": 32,
+              "relationship_id": "rId129",
+              "filename": "image63.jpeg",
+              "needs_review": true
+            }
+          ],
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量",
+          "ai_reason": "題目涉及梯子、圍牆與地面構成的直角三角形，利用三角函數求解圍牆高度，屬於直角三角形的測量。",
+          "existing_db_id": null,
+          "candidate_skills": [
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_1",
+              "skill_name": "測量的名詞與術語"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_2",
+              "skill_name": "求解平面三角測量問題的原則"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_3",
+              "skill_name": "直角三角形的測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_4",
+              "skill_name": "非直角三角形測量"
+            },
+            {
+              "skill_id": "vh_數學B2_SubSection_2_2_5",
+              "skill_name": "簡單的立體測量"
+            }
+          ],
+          "candidate_skill_ids": [
+            "vh_數學B2_SubSection_2_2_1",
+            "vh_數學B2_SubSection_2_2_2",
+            "vh_數學B2_SubSection_2_2_3",
+            "vh_數學B2_SubSection_2_2_4",
+            "vh_數學B2_SubSection_2_2_5"
+          ],
+          "decision": "NEW_INSERT",
+          "reason": ""
+        }
+      ],
+      "counts": {
+        "NEW_INSERT": 15,
+        "EXISTING_SKIP": 0,
+        "WOULD_UPDATE": 0,
+        "BLOCKED_SKILL": 0,
+        "BLOCKED_AMBIGUOUS": 0
+      },
+      "ai_alignment_required": false,
+      "ai_alignment_unavailable": false,
+      "ready": true,
+      "db_actual_changes": 0
+    },
+    "preflight_ready": true,
+    "allow_ai_alignment": true,
+    "would_write": 15
+  }
+}

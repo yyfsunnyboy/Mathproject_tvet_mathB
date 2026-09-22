@@ -33,6 +33,10 @@ def analyze_scoped_conversion(
         str(converted_docx), curriculum_info=curriculum_info, locations=locations
     )
     source_scope = str(curriculum_info.get("source_scope") or "section_textbook")
+    self_assessment_target = (
+        source_scope == "chapter_self_assessment"
+        and "self_assessment" in target_source_types
+    )
     blocks = tpv2.phase2_deterministic_block_slice(
         lines, source_scope=source_scope, curriculum_info=curriculum_info,
         read_only=True,
@@ -97,6 +101,11 @@ def analyze_scoped_conversion(
             continue
         owners = owner_by_paragraph.get(paragraph_index, [])
         target_owners = [owner for owner in owners if questions[owner - 1]["target"]]
+        if self_assessment_target and not owners:
+            unresolved.append({"formula_index": formula_index, "kind": kind,
+                               "paragraph_index": paragraph_index,
+                               "reason": "unresolved_formula_scope"})
+            continue
         if not owners and any(
             q["target"] and q["paragraph_indices"]
             and min(q["paragraph_indices"]) <= paragraph_index <= max(q["paragraph_indices"])
