@@ -759,19 +759,536 @@
             .section-description { display: none; }
         }
     </style>
+    <style id="teacher-dashboard-three-panel-layout">
+        :root {
+            --dashboard-background: #f8faf9;
+            --dashboard-surface: #ffffff;
+            --dashboard-text: #17202a;
+            --dashboard-text-secondary: #52606d;
+            --dashboard-border: #dfe4e8;
+            --dashboard-primary: #276749;
+            --dashboard-primary-dark: #1f5139;
+            --dashboard-info: #2563a6;
+            --dashboard-sidebar-width: 212px;
+            --dashboard-header-height: 68px;
+        }
+
+        html, body {
+            min-height: 100%;
+            background: var(--dashboard-background);
+            color: var(--dashboard-text);
+            font-size: 16px;
+        }
+        body { overflow-x: hidden; }
+        .admin-navbar { display: none !important; }
+
+        .teacher-app-shell { min-height: 100vh; }
+        .teacher-sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 1000;
+            width: var(--dashboard-sidebar-width);
+            display: flex;
+            flex-direction: column;
+            background: var(--dashboard-surface);
+            border-right: 1px solid var(--dashboard-border);
+        }
+        .teacher-sidebar__brand {
+            min-height: var(--dashboard-header-height);
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 18px;
+            color: var(--dashboard-text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--dashboard-border);
+        }
+        .teacher-sidebar__mark {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 34px;
+            color: #fff;
+            background: var(--dashboard-primary);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .teacher-sidebar__brand-copy { min-width: 0; }
+        .teacher-sidebar__brand-name {
+            display: block;
+            color: var(--dashboard-text);
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+        .teacher-sidebar__brand-role {
+            display: block;
+            margin-top: 2px;
+            color: var(--dashboard-text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        .teacher-sidebar__nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 20px 12px;
+        }
+        .teacher-sidebar__link {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 13px;
+            color: #334155;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background .15s ease, color .15s ease;
+        }
+        .teacher-sidebar__link:hover { background: #f1f5f3; color: var(--dashboard-primary-dark); }
+        .teacher-sidebar__link--active,
+        .teacher-sidebar__link--active:hover { background: var(--dashboard-primary); color: #fff; }
+        .teacher-sidebar__icon {
+            width: 20px;
+            height: 20px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 20px;
+        }
+        .teacher-sidebar__icon svg,
+        .teacher-topbar svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+        .teacher-sidebar__footer {
+            margin-top: auto;
+            padding: 14px 12px 18px;
+            border-top: 1px solid var(--dashboard-border);
+        }
+        .teacher-sidebar__footer .teacher-sidebar__link { font-size: 15px; }
+
+        .teacher-app-frame { min-height: 100vh; margin-left: var(--dashboard-sidebar-width); }
+        .teacher-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            height: var(--dashboard-header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 0 28px;
+            background: rgba(255,255,255,.98);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .teacher-topbar__title { color: var(--dashboard-text); font-size: 20px; font-weight: 800; }
+        .teacher-topbar__subtitle { margin-left: 10px; color: var(--dashboard-text-secondary); font-size: 14px; font-weight: 600; }
+        .teacher-topbar__account { display: flex; align-items: center; gap: 14px; }
+        .teacher-topbar__notification {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            color: #475569;
+            background: #fff;
+            border: 1px solid var(--dashboard-border);
+            border-radius: 8px;
+        }
+        .teacher-topbar__notification svg { width: 19px; height: 19px; }
+        .teacher-topbar__user { display: flex; align-items: center; gap: 9px; color: var(--dashboard-text); font-size: 15px; font-weight: 700; }
+        .teacher-topbar__avatar {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            color: var(--dashboard-primary-dark);
+            background: #e8f2ec;
+            border: 1px solid #cfe0d5;
+            border-radius: 50%;
+            font-weight: 800;
+        }
+
+        .dashboard-shell { max-width: 1700px; margin: 0 auto; padding: 28px 28px 44px; }
+        .welcome-banner {
+            min-height: 0;
+            display: block;
+            margin: 0 0 22px;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;
+        }
+        .welcome-banner::before { display: none; }
+        .welcome-content { max-width: none; }
+        .welcome-eyebrow {
+            display: block;
+            margin: 0 0 5px;
+            color: var(--dashboard-primary);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .welcome-eyebrow::before { display: none; }
+        .welcome-banner h1 {
+            margin: 0 0 5px;
+            color: var(--dashboard-text);
+            font-size: clamp(30px, 2.2vw, 34px);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            line-height: 1.25;
+        }
+        .welcome-banner p { max-width: none; color: var(--dashboard-text-secondary); font-size: 16px; line-height: 1.6; }
+        .hero-visual { display: none; }
+
+        .summary-section { margin-bottom: 22px; }
+        .summary-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+        .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .summary-card {
+            min-height: 124px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-rows: auto 1fr auto;
+            column-gap: 18px;
+            align-content: center;
+            padding: 20px 24px 18px 27px;
+            background: var(--dashboard-surface);
+            border: 1px solid var(--dashboard-border);
+            border-left: 5px solid var(--dashboard-primary);
+            border-radius: 9px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        .summary-card--students { border-left-color: var(--dashboard-info); }
+        .summary-icon {
+            width: 42px;
+            height: 42px;
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            align-self: start;
+            color: var(--dashboard-primary);
+            background: #edf5f0;
+            border-radius: 8px;
+            box-shadow: none;
+            font-size: 20px;
+        }
+        .summary-card--students .summary-icon { color: var(--dashboard-info); background: #edf4fb; }
+        .summary-label { color: var(--dashboard-text); font-size: 19px; font-weight: 700; }
+        .summary-value { margin: 2px 0; color: var(--dashboard-text); font-size: clamp(42px, 3vw, 48px); font-weight: 800; line-height: 1; }
+        .summary-note { color: var(--dashboard-text-secondary); font-size: 14px; }
+
+        .dashboard-workbench { grid-template-columns: minmax(0, 1.8fr) minmax(360px, 1fr); gap: 20px; align-items: start; }
+        .dashboard-main-column, .dashboard-side-column { gap: 20px; }
+        .card { background: var(--dashboard-surface); border: 1px solid var(--dashboard-border); border-radius: 9px; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+        .card-head { align-items: center; padding: 21px 22px 17px; border-bottom: 1px solid var(--dashboard-border); }
+        .card-head h3 { color: var(--dashboard-text); font-size: 25px; font-weight: 800; letter-spacing: -.015em; }
+        .card-body { padding: 20px 22px 22px; }
+        .section-kicker { display: none; }
+        .section-description { margin-top: 3px; color: var(--dashboard-text-secondary); font-size: 14px; }
+        .btn-create-class {
+            padding: 10px 16px;
+            background: var(--dashboard-primary);
+            border: 1px solid var(--dashboard-primary);
+            border-radius: 8px;
+            box-shadow: none;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .btn-create-class:hover { background: var(--dashboard-primary-dark); transform: none; }
+
+        .class-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .class-item,
+        .class-item:nth-child(even) {
+            min-height: 235px;
+            padding: 19px;
+            background: #fff;
+            border: 1px solid var(--dashboard-border);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .class-item:hover { border-color: #a7c4b1; box-shadow: 0 3px 10px rgba(39,103,73,.07); transform: none; }
+        .class-heading { gap: 10px; padding-right: 30px; }
+        .class-icon { width: 38px; height: 38px; flex-basis: 38px; background: #edf5f0; border-radius: 8px; box-shadow: none; font-size: 18px; }
+        .class-name { color: var(--dashboard-text); font-size: 22px; font-weight: 800; }
+        .class-student-count { margin-top: 18px; color: var(--dashboard-text-secondary); font-size: 15px; }
+        .class-student-count strong { color: var(--dashboard-primary-dark); font-size: 38px; }
+        .class-code-row { margin-top: 15px; color: var(--dashboard-text-secondary); font-size: 14px; }
+        .class-code { padding: 4px 8px; color: #334155; background: #f4f6f5; border: 1px solid #e5e9e7; border-radius: 6px; font-size: 14px; }
+        .icon-button { color: #475569; border-radius: 6px; }
+        .icon-button:hover { background: #eef2f0; }
+        .class-actions { padding-top: 17px; }
+        .manage-students-button { padding: 10px 12px; color: #fff; background: var(--dashboard-primary); border: 1px solid var(--dashboard-primary); border-radius: 7px; font-size: 15px; }
+        .manage-students-button:hover { background: var(--dashboard-primary-dark); }
+
+        .management-card { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+        .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .tool-card {
+            min-height: 91px;
+            gap: 9px;
+            padding: 13px 11px;
+            background: #fff;
+            border: 1px solid var(--dashboard-border);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .tool-card:hover { background: #f8faf9; border-color: #a7c4b1; box-shadow: none; transform: none; }
+        .tool-icon-wrap { width: 35px; height: 35px; flex-basis: 35px; background: #edf5f0; border-radius: 7px; font-size: 17px; }
+        .tool-card:nth-child(3n + 2) .tool-icon-wrap { background: #edf4fb; }
+        .tool-card:nth-child(3n) .tool-icon-wrap { background: #f4f2ea; }
+        .tool-label { color: var(--dashboard-text); font-size: 16px; font-weight: 800; line-height: 1.3; }
+        .tool-description { margin-top: 3px; color: var(--dashboard-text-secondary); font-size: 14px; line-height: 1.35; }
+        .tool-chevron { color: #64748b; font-size: 18px; }
+
+        @media (max-width: 1180px) {
+            :root { --dashboard-sidebar-width: 196px; }
+            .dashboard-shell { padding: 24px 20px 36px; }
+            .dashboard-workbench { grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr); gap: 16px; }
+            .class-grid { grid-template-columns: 1fr; }
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            :root { --dashboard-sidebar-width: 74px; }
+            .teacher-sidebar__brand { justify-content: center; padding: 0; }
+            .teacher-sidebar__brand-copy, .teacher-sidebar__label { display: none; }
+            .teacher-sidebar__nav, .teacher-sidebar__footer { padding-left: 10px; padding-right: 10px; }
+            .teacher-sidebar__link { justify-content: center; padding: 0; }
+            .dashboard-workbench { grid-template-columns: 1fr; }
+            .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            :root { --dashboard-sidebar-width: 0px; }
+            .teacher-sidebar { display: none; }
+            .teacher-topbar { padding: 0 16px; }
+            .teacher-topbar__subtitle { display: none; }
+            .teacher-topbar__user > span:not(.teacher-topbar__avatar) { display: none; }
+            .dashboard-shell { padding: 20px 14px 30px; }
+            .summary-grid, .tool-grid { grid-template-columns: 1fr; }
+            .card-head { align-items: flex-start; }
+        }
+
+        /* Reference-aligned desktop composition */
+        .teacher-sidebar {
+            top: var(--dashboard-header-height);
+            height: calc(100vh - var(--dashboard-header-height));
+        }
+        .teacher-sidebar__brand { display: none; }
+        .teacher-sidebar__nav { padding-top: 18px; }
+        .teacher-app-frame { padding-top: var(--dashboard-header-height); }
+        .teacher-topbar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 1100;
+            padding: 0 26px;
+        }
+        .teacher-topbar__identity { display: flex; align-items: center; gap: 14px; }
+        .teacher-topbar__product-mark {
+            width: 34px;
+            height: 34px;
+            color: #203642;
+        }
+        .teacher-topbar__product-mark svg { stroke-width: 1.8; }
+        .teacher-topbar__divider { width: 1px; height: 28px; background: #cbd5dc; margin: 0 3px; }
+        .teacher-topbar__title { font-size: 21px; }
+        .teacher-topbar__subtitle { margin-left: 0; font-size: 16px; }
+        .teacher-topbar__account::before { content: ""; width: 1px; height: 28px; background: #d8dee3; order: 1; }
+        .teacher-topbar__notification { border: 0; order: 0; }
+        .teacher-topbar__user { order: 2; font-size: 16px; }
+        .teacher-topbar__avatar { color: #fff; background: #2f4853; border: 0; }
+
+        .dashboard-shell { padding-top: 25px; padding-bottom: 0; }
+        .welcome-banner { position: relative; margin-bottom: 20px; }
+        .welcome-eyebrow { display: none; }
+        .welcome-banner h1 { margin-bottom: 2px; font-size: 32px; }
+        .welcome-banner p { color: #536579; }
+        .dashboard-date {
+            position: absolute;
+            top: 13px;
+            right: 0;
+            color: #42546a;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: .02em;
+        }
+
+        .summary-card {
+            min-height: 140px;
+            grid-template-columns: 104px minmax(0, 1fr);
+            grid-template-rows: auto auto auto;
+            column-gap: 22px;
+            padding: 22px 28px;
+        }
+        .summary-icon {
+            width: 88px;
+            height: 88px;
+            grid-column: 1;
+            grid-row: 1 / span 3;
+            align-self: center;
+            color: #087333;
+            background: #e8f4eb;
+            border-radius: 13px;
+        }
+        .summary-icon svg { width: 48px; height: 48px; fill: currentColor; }
+        .summary-card--students .summary-icon { color: #166fc4; background: #eaf4fc; }
+        .summary-label { align-self: end; font-size: 18px; }
+        .summary-value { align-self: center; font-size: 46px; }
+        .summary-note { align-self: start; font-size: 15px; }
+
+        .dashboard-workbench { grid-template-columns: minmax(0, 1.55fr) minmax(440px, 1fr); }
+        .card-head { min-height: 104px; padding: 22px 24px 18px; }
+        .card-head h3 { font-size: 27px; }
+        .section-description { font-size: 15px; }
+        .btn-create-class { min-height: 48px; padding: 0 22px; font-size: 16px; }
+        .btn-create-class__plus { margin-right: 7px; font-size: 25px; font-weight: 400; vertical-align: -2px; }
+
+        .class-grid { gap: 18px; }
+        .class-item,
+        .class-item:nth-child(even) { min-height: 330px; padding: 20px; }
+        .class-heading { padding: 0 0 18px; border-bottom: 1px solid var(--dashboard-border); }
+        .class-icon { width: 56px; height: 56px; flex-basis: 56px; font-size: 28px; background: #edf5fb; }
+        .class-name { font-size: 24px; }
+        .delete-class-button {
+            top: 22px;
+            right: 20px;
+            color: #526579;
+            font-size: 0 !important;
+        }
+        .delete-class-button::after { content: "•••"; font-size: 17px; letter-spacing: 2px; }
+        .class-student-count { gap: 11px; margin-top: 20px; }
+        .class-student-count .class-student-icon { width: 34px; height: 34px; color: #3f755d; }
+        .class-student-count .class-student-icon svg { width: 100%; height: 100%; fill: currentColor; }
+        .class-student-count strong { color: var(--dashboard-text); font-size: 40px; }
+        .class-student-count span:last-child { font-size: 16px; }
+        .class-code-row {
+            min-height: 48px;
+            margin-top: 18px;
+            padding: 8px 12px;
+            flex-wrap: nowrap;
+            gap: 5px;
+            background: #f3f6f8;
+            border-radius: 7px;
+        }
+        .class-code-label { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-weight: 700; }
+        .class-code-label svg { width: 18px; height: 18px; fill: currentColor; }
+        .class-code { margin-left: auto; padding: 0; background: transparent; border: 0; color: #17202a; }
+        .class-code-row .icon-button { width: 24px; height: 26px; flex: 0 0 24px; font-size: 13px !important; }
+        .class-actions { padding-top: 20px; }
+        .manage-students-button { min-height: 50px; position: relative; font-size: 16px; }
+        .manage-students-button::after { content: "›"; position: absolute; right: 18px; top: 50%; transform: translateY(-54%); font-size: 30px; font-weight: 300; }
+
+        .management-card .card-body { padding-top: 15px; }
+        .tool-card { min-height: 78px; padding: 11px 10px; }
+        .tool-icon-wrap { width: 46px; height: 46px; flex-basis: 46px; font-size: 23px; }
+        .tool-label { font-size: 16px; }
+        .tool-description { font-size: 13px; }
+
+        .teacher-dashboard-footer {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin: 26px -28px 0;
+            padding: 0 28px;
+            color: #6b7c8f;
+            background: #fff;
+            border-top: 1px solid var(--dashboard-border);
+            font-size: 13px;
+        }
+        .teacher-dashboard-footer__group { display: flex; align-items: center; gap: 12px; }
+        .teacher-dashboard-footer__separator { color: #c1cbd3; }
+
+        @media (max-width: 1360px) {
+            .dashboard-workbench { grid-template-columns: minmax(0, 1.55fr) minmax(380px, 1fr); }
+            .summary-card { grid-template-columns: 84px minmax(0, 1fr); }
+            .summary-icon { width: 70px; height: 70px; }
+            .summary-icon svg { width: 40px; height: 40px; }
+            .class-item, .class-item:nth-child(even) { padding: 17px; }
+            .class-code-row { padding-left: 8px; padding-right: 8px; }
+            .class-code-label { font-size: 12px; }
+            .class-code { font-size: 12px; }
+        }
+        @media (max-width: 1180px) {
+            .dashboard-workbench { grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr); }
+            .class-grid { grid-template-columns: 1fr; }
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .teacher-sidebar { top: var(--dashboard-header-height); }
+            .teacher-topbar__title { font-size: 19px; }
+            .dashboard-date { display: none; }
+            .dashboard-workbench { grid-template-columns: 1fr; }
+            .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .teacher-topbar__product-mark, .teacher-topbar__divider { display: none; }
+            .teacher-dashboard-footer { margin-left: -14px; margin-right: -14px; padding: 14px; flex-direction: column; align-items: flex-start; }
+            .summary-card { grid-template-columns: 70px minmax(0, 1fr); padding: 18px; }
+            .summary-icon { width: 58px; height: 58px; }
+        }
+    </style>
 </head>
 
 <body>
     {% include '_admin_navbar.html' %}
+
+    <div class="teacher-app-shell">
+        <aside class="teacher-sidebar" aria-label="教師端主導覽">
+            <a href="{{ url_for('teacher_dashboard') }}" class="teacher-sidebar__brand">
+                <span class="teacher-sidebar__mark" aria-hidden="true">M</span>
+                <span class="teacher-sidebar__brand-copy">
+                    <span class="teacher-sidebar__brand-name">教學管理系統</span>
+                    <span class="teacher-sidebar__brand-role">教師端</span>
+                </span>
+            </a>
+            <nav class="teacher-sidebar__nav">
+                <a href="{{ url_for('teacher_dashboard') }}" class="teacher-sidebar__link teacher-sidebar__link--active" aria-current="page">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5M9 21v-7h6v7"/></svg></span><span class="teacher-sidebar__label">首頁</span>
+                </a>
+                <a href="#class-management" class="teacher-sidebar__link">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M8 13h3M8 16h5"/></svg></span><span class="teacher-sidebar__label">班級管理</span>
+                </a>
+                <a href="{{ url_for('core.admin_curriculum') }}" class="teacher-sidebar__link">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v17H7.5A3.5 3.5 0 0 0 4 22z"/><path d="M4 5.5V22M8 7h8M8 11h8"/></svg></span><span class="teacher-sidebar__label">課程管理</span>
+                </a>
+                <a href="{{ url_for('core.admin_textbook_importer_v3') }}" class="teacher-sidebar__link">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4zM20 4h-4a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h4z"/></svg></span><span class="teacher-sidebar__label">教學資源</span>
+                </a>
+                <a href="{{ url_for('teacher_analysis') }}" class="teacher-sidebar__link">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="teacher-sidebar__label">學習分析</span>
+                </a>
+                <a href="{{ url_for('core.ai_prompt_settings_page') }}" class="teacher-sidebar__link">
+                    <span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.15.39.37.73.66 1 .3.27.67.4 1.06.4H21v4h-.1A1.7 1.7 0 0 0 19.4 15z"/></svg></span><span class="teacher-sidebar__label">系統設定</span>
+                </a>
+            </nav>
+            <div class="teacher-sidebar__footer">
+                <a href="{{ url_for('dashboard') }}" class="teacher-sidebar__link"><span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></span><span class="teacher-sidebar__label">學生模式</span></a>
+                <a href="{{ url_for('logout') }}" class="teacher-sidebar__link"><span class="teacher-sidebar__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5M17 17l4-5-4-5M21 12H9"/></svg></span><span class="teacher-sidebar__label">登出</span></a>
+            </div>
+        </aside>
+
+        <div class="teacher-app-frame">
+            <header class="teacher-topbar">
+                <div class="teacher-topbar__identity">
+                    <span class="teacher-topbar__product-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 5.5c5.2 0 9.6 1.3 13 4v18c-3.4-2.7-7.8-4-13-4zM29 5.5c-5.2 0-9.6 1.3-13 4v18c3.4-2.7 7.8-4 13-4z"/></svg></span>
+                    <span class="teacher-topbar__title">教學管理系統</span><span class="teacher-topbar__divider" aria-hidden="true"></span><span class="teacher-topbar__subtitle">教師端</span>
+                </div>
+                <div class="teacher-topbar__account">
+                    <span class="teacher-topbar__notification" title="通知" aria-label="通知"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span>
+                    <span class="teacher-topbar__user"><span class="teacher-topbar__avatar" aria-hidden="true">{{ (username or current_user.username)[0] | upper }}</span><span>{{ username or current_user.username }}</span></span>
+                </div>
+            </header>
 
     <div class="dashboard-shell">
 
         <!-- Welcome Banner -->
         <section class="welcome-banner">
             <div class="welcome-content">
-                <span class="welcome-eyebrow">TEACHER WORKSPACE</span>
-                <h1>歡迎回來，老師！</h1>
-                <p>這是您的教學管理中心。您可以在此管理班級、查閱學生學習歷程、維護課程與技能資料庫。</p>
+                <h1>教學概覽</h1>
+                <p>歡迎使用教學管理系統，以下是您目前的教學狀況。</p>
+                <time id="dashboard-date" class="dashboard-date" aria-label="今天日期"></time>
             </div>
             <div class="hero-visual" aria-hidden="true">
                 <div class="hero-orbit"></div>
@@ -786,13 +1303,13 @@
             <h2 id="summary-title" class="summary-heading">教學概覽</h2>
             <div class="summary-grid">
                 <article class="summary-card summary-card--classes">
-                    <div class="summary-icon" aria-hidden="true">🏫</div>
+                    <div class="summary-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="24" cy="22" r="9"/><circle cx="43" cy="25" r="7"/><circle cx="10" cy="25" r="6"/><path d="M8 49c0-10 7-17 16-17s16 7 16 17v4H8zM38 36c3-3 8-4 12-2 6 3 8 8 8 15v3H43v-4c0-5-2-9-5-12zM10 34c3 0 6 1 8 3-3 3-5 7-5 12v3H2v-4c0-7 2-11 8-14z"/></svg></div>
                     <div class="summary-label">班級數</div>
                     <div id="class-count" class="summary-value">{{ class_count }}</div>
                     <div class="summary-note">目前管理中的班級</div>
                 </article>
                 <article class="summary-card summary-card--students">
-                    <div class="summary-icon" aria-hidden="true">👥</div>
+                    <div class="summary-icon" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="23" cy="22" r="9"/><circle cx="43" cy="25" r="7"/><path d="M5 52v-5c0-10 8-17 18-17s18 7 18 17v5zM39 35c3-2 7-3 11-1 7 3 9 8 9 15v3H45v-5c0-5-2-9-6-12z"/></svg></div>
                     <div class="summary-label">學生總數</div>
                     <div id="student-count" class="summary-value">{{ student_count }}</div>
                     <div class="summary-note">所屬班級的不重複學生</div>
@@ -805,7 +1322,7 @@
             <!-- ── 左欄：班級管理 ── -->
             <main class="dashboard-main-column">
                 <!-- 班級管理 -->
-                <section class="card class-card">
+                <section id="class-management" class="card class-card">
                     <div class="card-head">
                         <div class="section-heading-copy">
                             <span class="section-kicker">MY CLASSES</span>
@@ -813,7 +1330,7 @@
                             <p class="section-description">查看班級人數與管理學生名單</p>
                         </div>
                         <button onclick="openCreateClassModal()" class="btn-create-class">
-                            + 建立新班級
+                            <span class="btn-create-class__plus" aria-hidden="true">+</span>建立新班級
                         </button>
                     </div>
                     <div class="card-body">
@@ -825,9 +1342,9 @@
                                     <h4 class="class-name">{{ cls.name }}</h4>
                                 </div>
                                 <button type="button" onclick="deleteClass({{ cls.id }})" class="icon-button delete-class-button" title="刪除班級" aria-label="刪除 {{ cls.name }}">🗑️</button>
-                                <div class="class-student-count"><strong>{{ cls.student_count }}</strong><span>位學生</span></div>
+                                <div class="class-student-count"><span class="class-student-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="15" cy="12" r="7"/><circle cx="29" cy="14" r="5"/><path d="M2 34c0-9 5-15 13-15s13 6 13 15zM27 22c8-3 12 3 12 12h-8c0-5-1-9-4-12z"/></svg></span><strong>{{ cls.student_count }}</strong><span>位學生</span></div>
                                 <div class="class-code-row">
-                                    <span>班級代碼</span>
+                                    <span class="class-code-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6a2 2 0 0 1 2-2h7l9 9-7 7-9-9z"/><circle cx="7" cy="8" r="1.5" fill="#fff"/></svg>班級代碼</span>
                                     <span id="code-{{ cls.id }}" class="class-code">{{ cls.class_code }}</span>
                                     <button type="button" onclick="copyCode('{{ cls.class_code }}')" class="icon-button" title="複製邀請碼" aria-label="複製邀請碼">📋</button>
                                     <button type="button" onclick="regenerateCode({{ cls.id }})" class="icon-button" title="產生新代碼" aria-label="產生新代碼">🔄</button>
@@ -895,7 +1412,13 @@
             </aside>
 
         </div><!-- /.dashboard-workbench -->
+        <footer class="teacher-dashboard-footer">
+            <div class="teacher-dashboard-footer__group"><span>教學管理系統</span><span class="teacher-dashboard-footer__separator">|</span><span>教師端管理介面</span></div>
+            <div class="teacher-dashboard-footer__group"><span>清楚掌握班級與學習狀況</span></div>
+        </footer>
     </div><!-- /.dashboard-shell -->
+        </div><!-- /.teacher-app-frame -->
+    </div><!-- /.teacher-app-shell -->
 
     <!-- 管理學生 Modal -->
     <div id="studentModal" class="modal-overlay" style="display:none;">
@@ -979,7 +1502,18 @@
 
     <script>
         // 頁面載入時獲取班級列表
-        document.addEventListener('DOMContentLoaded', loadClasses);
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateElement = document.getElementById('dashboard-date');
+            if (dateElement) {
+                const now = new Date();
+                const dateText = new Intl.DateTimeFormat('zh-TW', {
+                    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+                }).format(now);
+                dateElement.dateTime = now.toISOString().slice(0, 10);
+                dateElement.textContent = dateText;
+            }
+            loadClasses();
+        });
 
         async function openRagSettingsModal() {
             try {
@@ -1045,9 +1579,9 @@
                         <h4 class="class-name">${className}</h4>
                     </div>
                     <button type="button" onclick="deleteClass(${cls.id})" class="icon-button delete-class-button" title="刪除班級" aria-label="刪除 ${className}">🗑️</button>
-                    <div class="class-student-count"><strong>${cls.student_count}</strong><span>位學生</span></div>
+                    <div class="class-student-count"><span class="class-student-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="15" cy="12" r="7"/><circle cx="29" cy="14" r="5"/><path d="M2 34c0-9 5-15 13-15s13 6 13 15zM27 22c8-3 12 3 12 12h-8c0-5-1-9-4-12z"/></svg></span><strong>${cls.student_count}</strong><span>位學生</span></div>
                     <div class="class-code-row">
-                        <span>班級代碼</span>
+                        <span class="class-code-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6a2 2 0 0 1 2-2h7l9 9-7 7-9-9z"/><circle cx="7" cy="8" r="1.5" fill="#fff"/></svg>班級代碼</span>
                         <span id="code-${cls.id}" class="class-code">${classCode}</span>
                         <button type="button" onclick="copyCode('${classCode}')" class="icon-button" title="複製邀請碼" aria-label="複製邀請碼">📋</button>
                         <button type="button" onclick="regenerateCode(${cls.id})" class="icon-button" title="產生新代碼" aria-label="產生新代碼">🔄</button>
