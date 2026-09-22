@@ -2084,6 +2084,7 @@ def importer_stream(task_id):
 @core_bp.route('/db_maintenance', methods=['GET', 'POST'])
 @login_required
 def db_maintenance():
+    from core.guest_demo import is_guest_demo
     def sanitize_dataframe_for_excel(df):
         if df is None:
             return pd.DataFrame()
@@ -2109,8 +2110,8 @@ def db_maintenance():
 
     core_scope_form_state = _core_scope_form_state({"scope_mode": "all"})
     core_scope_options = _collect_core_scope_options()
-    last_op = str(session.get("last_db_maintenance_op") or "").strip().lower()
-    import_job_id = session.get("last_import_job_id")
+    last_op = "" if is_guest_demo() else str(session.get("last_db_maintenance_op") or "").strip().lower()
+    import_job_id = None if is_guest_demo() else session.get("last_import_job_id")
     import_job_payload = get_large_result_from_server_store(import_job_id, kind="import") if import_job_id else None
     import_result_missing = bool(import_job_id and import_job_payload is None and last_op == "import")
     import_summary = None
@@ -2119,7 +2120,7 @@ def db_maintenance():
         import_summary = summarize_import_result(stored_result)
     # Only surface import status as "current operation" when the latest op was import.
     show_import_as_current = bool(last_op == "import" and (import_summary or import_result_missing))
-    recent_import_jobs = list_recent_import_jobs(limit=10)
+    recent_import_jobs = [] if is_guest_demo() else list_recent_import_jobs(limit=10)
 
     if request.method == 'POST':
         action = request.form.get('action')

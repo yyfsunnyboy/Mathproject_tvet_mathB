@@ -33,6 +33,7 @@ PRACTICE_AUTH_SESSION_KEYS: frozenset[str] = frozenset(
         "_fresh",
         "_id",
         "_user_id",
+        "guest_demo",
         "_remember",
         "_remember_seconds",
         "csrf_token",

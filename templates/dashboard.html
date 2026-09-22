@@ -651,7 +651,9 @@
         <div class="dashboard-header-row">
             <h2>學習儀表板</h2>
             <div class="curriculum-pills">
-                {% if not hide_curriculum_switch %}
+                {% if session.get('guest_demo') %}
+                <span class="cpill-name cpill-active" aria-label="固定課綱">技術型高中</span>
+                {% elif not hide_curriculum_switch %}
                 {% for c, name in [('junior_high', '國中'), ('general', '普高'), ('vocational', '技高')] %}
                 <div class="curriculum-pill-wrap">
                     <a href="{{ url_for('dashboard', view='curriculum', curriculum=c) }}"

@@ -150,9 +150,9 @@
             {% if view in ('student', 'unit') and student %}
                 <span class="sep">&gt;</span>
                 {% if view == 'student' %}
-                    <span>{{ student_overview.display_name if student_overview else student.username }}</span>
+                    <span>{{ (student_overview.display_name if student_overview else student.username)|review_student_name }}</span>
                 {% else %}
-                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, range=time_range.key) }}">{{ student_overview.display_name if student_overview else student.username }}</a>
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, range=time_range.key) }}">{{ (student_overview.display_name if student_overview else student.username)|review_student_name }}</a>
                 {% endif %}
             {% endif %}
             {% if view == 'unit' and unit_detail %}
@@ -253,7 +253,7 @@
             {% else %}
                 {% for row in attention_students %}
                 <div class="attention-item">
-                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name }}</a>
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name|review_student_name }}</a>
                     <span>{{ row.status.reason }}</span>
                 </div>
                 {% endfor %}
@@ -287,8 +287,8 @@
                     {% for row in student_rows %}
                     <tr class="clickable" onclick="location.href='{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}'">
                         <td>
-                            {% if row.seat_no is not none %}<div style="color:#555;font-size:0.95em;">{{ row.seat_no }} {{ row.display_name }}</div>{% else %}<strong>{{ row.display_name }}</strong>{% endif %}
-                            <span class="reason-hint">{{ row.student.username }}</span>
+                            {% if row.seat_no is not none %}<div style="color:#555;font-size:0.95em;">{{ row.seat_no }} {{ row.display_name|review_student_name }}</div>{% else %}<strong>{{ row.display_name|review_student_name }}</strong>{% endif %}
+                            <span class="reason-hint">{{ row.student.username|review_student_username }}</span>
                         </td>
                         <td>{{ row.stats.total }}</td>
                         <td>{{ row.stats.correct }}</td>
@@ -312,7 +312,7 @@
         {# ========== STUDENT: 單元列表 ========== #}
         {% if view == 'student' %}
         <div class="page-header">
-            <h1>👤 {{ student_overview.display_name }}</h1>
+            <h1>👤 {{ student_overview.display_name|review_student_name }}</h1>
             <p>學習概況</p>
         </div>
 
@@ -358,7 +358,7 @@
         {# ========== UNIT: 單元詳細 ========== #}
         {% if view == 'unit' and unit_detail %}
         <div class="page-header">
-            <h1>{{ student_overview.display_name }}</h1>
+            <h1>{{ student_overview.display_name|review_student_name }}</h1>
             <p>{{ unit_detail.unit_label }}</p>
         </div>
 

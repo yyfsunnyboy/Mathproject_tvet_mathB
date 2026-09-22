@@ -2129,6 +2129,12 @@
     <div class="container">
         <!-- 練習區 -->
         <div class="practice-area">
+            {% if session.get('guest_demo') is true %}
+            <div class="alert alert-error" role="alert" data-guest-demo-warning
+                 style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;border-radius:6px;padding:15px 20px;margin-bottom:20px;">
+                此為展示頁面，AI 助教與 AI 批改功能需登入後使用。
+            </div>
+            {% endif %}
             <div class="practice-header-block">
                 <h1 id="skill-title"> {{
                     skill_ch_name
@@ -2314,7 +2320,7 @@
             <h3 id="tutor-model-label" style="margin-bottom: 0; padding-bottom: 2px;">AI 助教（載入中...）</h3>
             <div id="chat-history" style="padding-top: 5px;">
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">你好！有問題問我～</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             </div>
             <!-- 1. 固定建議提示區 (來自資料庫) -->
@@ -3961,7 +3967,7 @@
             if (!chatContainer) return;
             chatContainer.innerHTML = `
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">你好！有問題問我～</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             `;
         }
@@ -7637,6 +7643,29 @@ span[style*="粗細"],
 }
 
 </style>
+{% if session.get('guest_demo') is true %}
+<script>
+    document.addEventListener('click', (event) => {
+        const action = event.target.closest('#chat-send-button, #analyze-handwriting-button, #upload-image-button, #upload-question-btn, #similar-upload-btn, #submit-button');
+        if (!action) return;
+        if (action.id === 'submit-button') {
+            const mode = typeof currentQuestion !== 'undefined' && currentQuestion
+                ? String(currentQuestion.check_mode || currentQuestion.grading_mode || '').toLowerCase() : '';
+            if (!['ai_judged_free_response', 'visual_ai_checked', 'handwriting_ai_checked', 'review_mode'].includes(mode)) return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const message = '此為展示頁面，請登入後再行操作。';
+        if (action.id === 'chat-send-button') {
+            const history = document.getElementById('chat-history');
+            if (history) history.textContent = '此為展示頁面，AI 助教功能請登入後使用。';
+        } else {
+            const result = document.getElementById('result-display');
+            if (result) result.textContent = message;
+        }
+    }, true);
+</script>
+{% endif %}
 </body>
 
 </html>

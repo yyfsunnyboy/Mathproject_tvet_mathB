@@ -925,6 +925,20 @@
         }
 
     </script>
+    {% if session.get('guest_demo') is true %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const key = document.getElementById('gemini-api-key');
+            if (key) { key.value = ''; key.disabled = true; key.placeholder = '••••••••'; }
+            document.querySelector('.container')?.addEventListener('click', (event) => {
+                if (!event.target.closest('button')) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                showAlert('此為展示頁面，請登入後再行操作。', false);
+            }, true);
+        });
+    </script>
+    {% endif %}
 </body>
 </html>
 
