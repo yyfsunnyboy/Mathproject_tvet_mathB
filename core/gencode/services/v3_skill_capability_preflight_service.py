@@ -16,9 +16,16 @@ CAPABILITY_READY = "ready"
 CAPABILITY_PARTIAL = "partial"
 CAPABILITY_MISSING = "missing"
 CAPABILITY_INVALID = "invalid"
+CAPABILITY_NEEDS_CAPABILITY = "needs_capability"
 
 _VALID_STATUSES = frozenset(
-    {CAPABILITY_READY, CAPABILITY_PARTIAL, CAPABILITY_MISSING, CAPABILITY_INVALID}
+    {
+        CAPABILITY_READY,
+        CAPABILITY_PARTIAL,
+        CAPABILITY_MISSING,
+        CAPABILITY_INVALID,
+        CAPABILITY_NEEDS_CAPABILITY,
+    }
 )
 
 
@@ -226,12 +233,15 @@ def _probe_example_resolvable(
         "reason": "" if ok else str(induced.get("reason") or status or "unresolved"),
         "problem_type_id": problem_type_id,
         "classification_source": str(induced.get("classification_source") or ""),
+        "suggested_domain": str(induced.get("suggested_domain") or induced.get("domain_key") or ""),
     }
 
 
 def _next_action_for(status: str) -> str:
     if status == CAPABILITY_READY:
         return "rebuild_and_verify"
+    if status == CAPABILITY_NEEDS_CAPABILITY:
+        return "stop_for_missing_capability"
     if status in (CAPABILITY_PARTIAL, CAPABILITY_MISSING, CAPABILITY_INVALID):
         return "start_system_ai_capability_fill"
     return "start_system_ai_capability_fill"
@@ -250,14 +260,25 @@ def evaluate_skill_v3_capability(
 
     Does not write tracker, dryrun artifacts, or production.
     """
+    from core.gencode.services.v3_example_disposition import (
+        DISPOSITION_INTENTIONAL_SKIP,
+        DISPOSITION_NEEDS_CAPABILITY,
+        DISPOSITION_RESOLVABLE,
+        disposition_from_phase1_probe,
+        summarize_dispositions,
+    )
+
     skill_key = str(skill_id or "").strip()
     wiring = _check_domain_wiring(skill_key)
     rows = list(textbook_rows) if textbook_rows is not None else _load_textbook_rows(conn, skill_key)
     total = len(rows)
 
     example_probes: list[dict[str, Any]] = []
+    dispositions: list[dict[str, Any]] = []
     resolvable_ids: list[int] = []
     unresolved_ids: list[int] = []
+    intentional_skip_ids: list[int] = []
+    needs_capability_ids: list[int] = []
 
     if probe_examples and wiring.get("registered") and wiring.get("wiring_ok"):
         for row in rows:
@@ -268,33 +289,79 @@ def evaluate_skill_v3_capability(
                 skill_examples=phase1_skill_examples,
             )
             example_probes.append(probe)
-            eid = int(probe["textbook_example_id"])
-            if probe.get("resolvable"):
+            disposition = disposition_from_phase1_probe(probe)
+            dispositions.append(disposition)
+            eid = int(disposition["textbook_example_id"])
+            kind = str(disposition.get("disposition") or "")
+            if kind == DISPOSITION_RESOLVABLE:
                 resolvable_ids.append(eid)
+            elif kind == DISPOSITION_INTENTIONAL_SKIP:
+                intentional_skip_ids.append(eid)
             else:
                 unresolved_ids.append(eid)
+                needs_capability_ids.append(eid)
     elif rows and not wiring.get("registered"):
         unresolved_ids = [int(r.get("id") or 0) for r in rows]
+        needs_capability_ids = list(unresolved_ids)
+        dispositions = [
+            {
+                "textbook_example_id": eid,
+                "disposition": DISPOSITION_NEEDS_CAPABILITY,
+                "reason": "domain_registry_missing",
+                "suggested_domain": "",
+                "problem_type_id": "",
+            }
+            for eid in unresolved_ids
+        ]
     elif rows and wiring.get("registered") and not wiring.get("wiring_ok"):
         unresolved_ids = [int(r.get("id") or 0) for r in rows]
+        needs_capability_ids = list(unresolved_ids)
+        dispositions = [
+            {
+                "textbook_example_id": eid,
+                "disposition": DISPOSITION_NEEDS_CAPABILITY,
+                "reason": "domain_wiring_invalid",
+                "suggested_domain": str(wiring.get("domain_key") or ""),
+                "problem_type_id": "",
+            }
+            for eid in unresolved_ids
+        ]
+
+    disposition_summary = summarize_dispositions(dispositions) if dispositions else {
+        "example_count": total,
+        "eligible_count": total,
+        "resolvable_ids": resolvable_ids,
+        "resolvable_count": len(resolvable_ids),
+        "skip_count": len(intentional_skip_ids),
+        "skip_examples": [],
+        "needs_capability_count": len(needs_capability_ids),
+        "needs_capability_examples": [],
+        "intentional_skip_ids": intentional_skip_ids,
+        "needs_capability_ids": needs_capability_ids,
+    }
+    eligible_count = int(disposition_summary.get("eligible_count") or max(0, total - len(intentional_skip_ids)))
 
     missing_layers = list(wiring.get("missing_layers") or [])
     if total == 0:
         missing_layers.append("textbook_examples")
-    if wiring.get("registered") and wiring.get("wiring_ok") and unresolved_ids:
+    if wiring.get("registered") and wiring.get("wiring_ok") and needs_capability_ids:
         missing_layers.append("example_operation_resolution")
 
-    # Status decision
+    # Status decision: intentional skips do not block READY.
     if not wiring.get("registered"):
         status = CAPABILITY_MISSING
     elif not wiring.get("wiring_ok"):
         status = CAPABILITY_INVALID
     elif total == 0:
         status = CAPABILITY_PARTIAL
-    elif len(unresolved_ids) == 0 and len(resolvable_ids) == total:
+    elif needs_capability_ids:
+        status = CAPABILITY_NEEDS_CAPABILITY
+    elif eligible_count == 0 and intentional_skip_ids:
+        # All examples intentionally skipped — nothing left to build.
+        status = CAPABILITY_READY
+    elif len(resolvable_ids) == eligible_count:
         status = CAPABILITY_READY
     elif len(resolvable_ids) == 0:
-        # Domain wired but no example maps — treat as incomplete capability coverage
         status = CAPABILITY_PARTIAL
     else:
         status = CAPABILITY_PARTIAL
@@ -312,10 +379,17 @@ def evaluate_skill_v3_capability(
         "entrypoint": wiring.get("entrypoint") or "",
         "registry_revision": wiring.get("registry_revision") or "",
         "textbook_example_count": total,
+        "eligible_example_count": eligible_count,
         "resolvable_example_count": len(resolvable_ids),
-        "unresolved_example_count": len(unresolved_ids),
+        "unresolved_example_count": len(needs_capability_ids),
+        "intentional_skip_count": len(intentional_skip_ids),
+        "needs_capability_count": len(needs_capability_ids),
         "resolvable_example_ids": resolvable_ids,
-        "unresolved_example_ids": unresolved_ids,
+        "unresolved_example_ids": needs_capability_ids,
+        "intentional_skip_ids": intentional_skip_ids,
+        "needs_capability_ids": needs_capability_ids,
+        "skip_examples": list(disposition_summary.get("skip_examples") or []),
+        "needs_capability_examples": list(disposition_summary.get("needs_capability_examples") or []),
         "missing_layers": list(dict.fromkeys(missing_layers)),
         "allow_v3_rebuild": allow_rebuild,
         "next_action": next_action,
@@ -327,15 +401,17 @@ def evaluate_skill_v3_capability(
                 CAPABILITY_PARTIAL: "能力不完整",
                 CAPABILITY_MISSING: "尚未建立出題能力",
                 CAPABILITY_INVALID: "能力接線錯誤",
+                CAPABILITY_NEEDS_CAPABILITY: "缺少 domain capability",
             }.get(status, status),
             "primary_action_label": {
-                CAPABILITY_READY: "重新建置與驗證",
-                CAPABILITY_PARTIAL: "系統AI補全能力",
-                CAPABILITY_MISSING: "系統AI補全能力",
-                CAPABILITY_INVALID: "系統AI補全能力",
-            }.get(status, "系統AI補全能力"),
+                CAPABILITY_READY: "REBUILD",
+                CAPABILITY_PARTIAL: "建立 V3",
+                CAPABILITY_MISSING: "建立 V3",
+                CAPABILITY_INVALID: "建立 V3",
+                CAPABILITY_NEEDS_CAPABILITY: "NEEDS_CAPABILITY",
+            }.get(status, "建立 V3"),
             "secondary_action_label": "匯出診斷",
-            "tooltip": "Gencode V3會使用既有domain能力重新建置，不會自行建立新API。缺口由系統AI角色補全隔離candidate，不會自動寫入正式core。",
+            "tooltip": "Gencode V3會使用既有domain能力重新建置，不會自行建立新API。intentional skip 不阻塞 READY；真正缺少 capability 時會安全停止。",
         },
     }
 

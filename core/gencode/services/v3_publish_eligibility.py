@@ -252,6 +252,7 @@ def evaluate_v3_publish_eligibility(
 
     normalized = _normalize_coverage(coverage or get_v3_skill_component_coverage(conn, skill_key))
     total = int(normalized.get("total_examples") or 0)
+    eligible_examples = int(normalized.get("eligible_count") or max(0, total - int(normalized.get("intentional_skip_count") or 0)))
     verified = int(normalized.get("verified_count") or 0)
     failed = int(normalized.get("failed_count") or 0)
     missing = int(normalized.get("missing_tracker_count") or 0)
@@ -265,6 +266,10 @@ def evaluate_v3_publish_eligibility(
     if total < 1:
         reason = "no_textbook_examples"
         full_coverage = False
+    elif eligible_examples < 1:
+        # All intentional skips — nothing to publish, treat as allowed/no-op ready.
+        reason = "eligible"
+        full_coverage = True
     elif eligible_count < 1:
         if verified < 1:
             reason = "NO_VERIFIED_COMPONENTS"
@@ -289,10 +294,10 @@ def evaluate_v3_publish_eligibility(
     elif missing > 0:
         reason = "eligible"
         full_coverage = False
-    elif verified != total:
+    elif verified != eligible_examples:
         reason = "eligible"
         full_coverage = False
-    elif eligible_count != total:
+    elif eligible_count != eligible_examples:
         reason = "eligible"
         full_coverage = False
     elif failed > 0:
@@ -316,6 +321,7 @@ def evaluate_v3_publish_eligibility(
         "resolved_domain_key": fixed_domain_key,
         "coverage": normalized,
         "eligible_component_count": eligible_count,
+        "eligible_example_count": eligible_examples,
         "domain_blocked_component_count": domain_blocked_count,
         "integrity_blocked_component_count": integrity_blocked_count,
         "integrity_gate_component_count": integrity_gate_component_count,

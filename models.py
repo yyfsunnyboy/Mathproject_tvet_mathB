@@ -666,8 +666,12 @@ def init_db(engine, *, seed_bridges: bool = False):
     from core.gencode.schema.gencode_component_tracker_inspection import (
         ensure_gencode_component_tracker_table,
     )
+    from core.gencode.schema.gencode_v3_orchestrator_jobs_inspection import (
+        ensure_gencode_v3_orchestrator_jobs_table,
+    )
 
     ensure_gencode_component_tracker_table(conn)
+    ensure_gencode_v3_orchestrator_jobs_table(conn)
 
     conn.commit()
     conn.close()

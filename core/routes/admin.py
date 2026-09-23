@@ -4053,6 +4053,139 @@ def _resolve_admin_v3_publish_roots() -> tuple[str, str]:
     return str(prod_path), str(stag_path)
 
 
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_build', methods=['POST'])
+@login_required
+def admin_run_skill_v3_build(skill_id: str):
+    """One-click V3 build: start/resume async by default; poll status endpoint."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    force = bool(payload.get("force") or request.args.get("force") in {"1", "true", "True"})
+    resume = payload.get("resume", True)
+    if isinstance(resume, str):
+        resume = resume.strip().lower() not in {"0", "false", "no"}
+    mode = str(payload.get("mode") or request.args.get("mode") or "auto").strip() or "auto"
+    smoke = bool(payload.get("smoke", True))
+    # Default async for UI; sync=true reserved for tests / maintenance.
+    async_raw = payload.get("async", request.args.get("async", True))
+    if isinstance(async_raw, str):
+        async_mode = async_raw.strip().lower() not in {"0", "false", "no"}
+    else:
+        async_mode = bool(async_raw)
+    sync_raw = payload.get("sync", request.args.get("sync"))
+    if sync_raw is not None:
+        if isinstance(sync_raw, str):
+            async_mode = sync_raw.strip().lower() in {"0", "false", "no"}
+        else:
+            async_mode = not bool(sync_raw)
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    if skill_key.startswith("outline_"):
+        return jsonify({
+            "ok": False,
+            "success": False,
+            "error": "outline_skill_not_supported_for_v3_build",
+            "error_code": "OUTLINE_SKILL_BLOCKED",
+            "final_status": "BLOCKED",
+            "message": "outline skill 不可啟動 V3 建立流程",
+        }), 400
+
+    from core.gencode.services.v3_build_orchestrator_service import start_v3_build_job
+    from core.gencode.v3_production_publish_service import (
+        resolve_and_validate_v3_publish_roots,
+        V3PublishRootValidationError,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        try:
+            project_root_raw = str(payload.get("project_root", "") or "").strip()
+            staging_root_raw = str(payload.get("staging_root", "") or "").strip()
+            if not project_root_raw:
+                project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+            if not staging_root_raw:
+                staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+            project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
+        except V3PublishRootValidationError as exc:
+            return jsonify({
+                "ok": False,
+                "success": False,
+                "error": exc.error_code,
+                "failed_stage": "publish_root_validation",
+                "previous_production_preserved": True,
+                "details": exc.details,
+            }), 400
+
+        result = start_v3_build_job(
+            raw_conn,
+            skill_key,
+            project_root=str(project_path),
+            staging_root=str(staging_path),
+            mode=mode,
+            force=force,
+            smoke=smoke,
+            resume=bool(resume),
+            async_mode=async_mode,
+            app=current_app._get_current_object(),
+        )
+        if async_mode:
+            return jsonify(result), 202
+        status = str(result.get("status") or "")
+        http_status = 200
+        if status == "needs_capability":
+            http_status = 409
+        elif status == "failed":
+            http_status = 207
+        elif status == "blocked":
+            http_status = 400
+        return jsonify(result), http_status
+    except ValueError as exc:
+        return jsonify({"ok": False, "success": False, "error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"ok": False, "success": False, "error": str(exc)}), 500
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
+
+
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_build_status', methods=['GET'])
+@login_required
+def admin_skill_v3_build_status(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    from core.gencode.services.v3_build_orchestrator_service import (
+        STAGE_LABELS,
+        get_orchestrator_job,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        job = get_orchestrator_job(raw_conn, skill_key)
+        if not job:
+            return jsonify({"ok": True, "job": None}), 200
+        stage = str(job.get("stage") or "")
+        job["stage_label"] = STAGE_LABELS.get(stage, stage)
+        job["ui_status"] = (
+            "建置中"
+            if job.get("status") == "running"
+            else str(job.get("final_status") or job.get("status") or "").upper()
+        )
+        return jsonify({"ok": True, "job": job}), 200
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
+
+
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_dryrun', methods=['POST'])
 @login_required
 def admin_run_skill_v3_dryrun(skill_id: str):

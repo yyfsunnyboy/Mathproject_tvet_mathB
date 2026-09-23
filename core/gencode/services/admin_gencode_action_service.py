@@ -407,6 +407,7 @@ def run_admin_v3_dryrun_for_skill(
     processed_count = 0
     skipped_verified_count = 0
     skipped_count = 0
+    intentional_skip_count = 0
     rebuilt_count = 0
     unchanged_count = 0
     compile_passed_count = 0
@@ -548,6 +549,46 @@ def run_admin_v3_dryrun_for_skill(
 
             message = str(dryrun_result.get("status") or "draft_written")
             if message in {"failed", "needs_human_review"}:
+                from core.gencode.services.v3_example_disposition import is_intentional_skip_signal
+
+                skip_reason_text = str(
+                    dryrun_result.get("error_code")
+                    or dryrun_result.get("skip_reason")
+                    or ""
+                )
+                phase1 = dryrun_result.get("phase1_preflight") if isinstance(dryrun_result.get("phase1_preflight"), dict) else {}
+                induced = phase1.get("induced_spec") if isinstance(phase1.get("induced_spec"), dict) else {}
+                intentional = is_intentional_skip_signal(
+                    reason=str(phase1.get("reason") or induced.get("reason") or ""),
+                    classification_source=str(induced.get("classification_source") or ""),
+                    error_log=skip_reason_text,
+                    payload=induced if induced else {"phase1_preflight": phase1},
+                )
+                if intentional or (
+                    str(dryrun_result.get("skip_reason") or "") == "phase1_classification_unresolved"
+                    and str(phase1.get("reason") or "").startswith("BLOCKED:")
+                ):
+                    skipped_count += 1
+                    intentional_skip_count += 1
+                    # Intentional skips are not component rebuilds.
+                    rebuilt_count = max(0, rebuilt_count - 1)
+                    component_entry["status"] = "intentional_skip"
+                    component_entry["skip_reason"] = "intentional_skip"
+                    component_entry["error"] = None
+                    component_entry["rebuild_completed"] = False
+                    component_results.append(component_entry)
+                    results.append(
+                        {
+                            **component_entry,
+                            "status": "intentional_skip",
+                            "message": "intentional_skip",
+                            "cache_hit": False,
+                            "force_regenerate": bool(dryrun_result.get("force_regenerate", force or must_regenerate)),
+                        }
+                    )
+                    success_count += 1
+                    continue
+
                 failed_count += 1
                 component_entry["status"] = "failed" if message == "failed" else post_status
                 component_entry["error"] = (
@@ -707,6 +748,7 @@ def run_admin_v3_dryrun_for_skill(
     completed_at = _now_iso()
     duration_ms = int((time.perf_counter() - started_monotonic) * 1000)
     requested_count = len(example_ids)
+    eligible_requested = max(0, requested_count - intentional_skip_count)
 
     coverage = get_v3_skill_component_coverage(conn, skill_key)
     verified_count = int(coverage.get("verified_count") or 0)
@@ -715,10 +757,10 @@ def run_admin_v3_dryrun_for_skill(
     if must_regenerate:
         run_success = (
             failed_count == 0
-            and rebuilt_count == requested_count
-            and (not smoke or smoke_passed_count == requested_count)
-            and (not smoke or compile_passed_count == requested_count)
-            and (not smoke or validation_passed_count == requested_count)
+            and rebuilt_count == eligible_requested
+            and (not smoke or smoke_passed_count == eligible_requested)
+            and (not smoke or compile_passed_count == eligible_requested)
+            and (not smoke or validation_passed_count == eligible_requested)
         )
         user_message = (
             "重新生成完成"
@@ -726,10 +768,12 @@ def run_admin_v3_dryrun_for_skill(
             else "重新生成未完全完成"
         )
     elif verify_existing_only and rebuilt_count == 0:
-        run_success = failed_count == 0 and skipped_count == requested_count
+        run_success = failed_count == 0 and (skipped_count + intentional_skip_count) >= requested_count
         user_message = "未重新生成；已驗證既有產物"
     else:
-        run_success = failed_count == 0 and (success_count == requested_count or processed_count + skipped_count == requested_count)
+        run_success = failed_count == 0 and (
+            success_count == requested_count or processed_count + skipped_count == requested_count
+        )
         user_message = "dryrun 完成" if run_success else "dryrun 未完全完成"
 
     variation_report = {}
@@ -761,6 +805,8 @@ def run_admin_v3_dryrun_for_skill(
         "requested_count": requested_count,
         "rebuilt_count": rebuilt_count,
         "skipped_count": skipped_count,
+        "intentional_skip_count": intentional_skip_count,
+        "eligible_requested_count": eligible_requested,
         "unchanged_count": unchanged_count,
         "compile_passed_count": compile_passed_count,
         "smoke_passed_count": smoke_passed_count,
@@ -930,11 +976,37 @@ def run_admin_v3_dryrun_publish_closed_loop_for_skill(
 
     eligibility = evaluate_v3_publish_eligibility(conn, skill_key, coverage=coverage)
 
+    already_ready = bool(eligibility.get("allowed")) and bool(coverage.get("publish_ready"))
     should_auto_publish = (
         bool(eligibility.get("allowed"))
         and bool(generation_result.get("success"))
         and rebuilt_count > 0
     )
+    # Idempotent rebuild: eligible already published — no production rewrite required.
+    if already_ready and rebuilt_count == 0 and bool(generation_result.get("success")):
+        publish_contract = _publish_contract_from_result(
+            publish_result={
+                "published": True,
+                "published_components": int(coverage.get("verified_count") or 0),
+                "reason": "already_published_idempotent",
+            },
+            coverage=coverage,
+            attempted=False,
+        )
+        refreshed_coverage = get_v3_skill_component_coverage(conn, skill_key)
+        return {
+            **generation_result,
+            "success": True,
+            "ok": True,
+            "skill_id": skill_key,
+            "generation": generation,
+            "eligibility": eligibility,
+            "publish": publish_contract,
+            "coverage": refreshed_coverage,
+            "published_count_this_run": 0,
+            "final_status": "READY",
+            "idempotent": True,
+        }
     if should_auto_publish:
         publish_attempted = True
         try:

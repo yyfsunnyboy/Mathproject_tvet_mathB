@@ -1465,9 +1465,12 @@ def _build_skill_list_gencode_status_view(
 
     total_examples = int(coverage.get("total_examples") or 0)
     verified_count = int(coverage.get("verified_count") or 0)
+    intentional_skip_count = int(coverage.get("intentional_skip_count") or 0)
     failed_count = int(coverage.get("failed_count") or 0) + int(
         coverage.get("needs_human_review_count") or 0
     )
+    # Intentional skips are tracked separately and must not inflate failure UX.
+    failed_count = max(0, failed_count)
     missing_tracker_ids = [
         row["textbook_example_id"]
         for row in coverage.get("examples", [])
@@ -1619,6 +1622,8 @@ def _build_skill_list_gencode_status_view(
         "coverage_warnings": coverage_warnings,
         "publish_ready": bool(coverage.get("publish_ready")),
         "publish_eligible": bool(coverage.get("publish_ready")),
+        "intentional_skip_count": intentional_skip_count,
+        "eligible_count": int(coverage.get("eligible_count") or max(0, total_examples - intentional_skip_count)),
         "teacher_status": teacher_status,
         **file_status,
         **prod_info,
@@ -1737,6 +1742,40 @@ def build_admin_skills_gencode_status_map(
         view["allow_v3_rebuild"] = bool(capability.get("allow_v3_rebuild"))
         view["capability_next_action"] = capability.get("next_action")
         view["capability_ui"] = capability.get("ui") or {}
+        try:
+            from core.gencode.services.v3_build_orchestrator_service import (
+                derive_skill_v3_ui_status,
+                get_orchestrator_job,
+            )
+
+            job = get_orchestrator_job(conn, skill_key)
+            ui_meta = derive_skill_v3_ui_status(
+                capability_status=str(capability.get("capability_status") or ""),
+                coverage=view.get("coverage") if isinstance(view.get("coverage"), dict) else coverage_map.get(skill_key),
+                job=job,
+                production_info={
+                    "v3_package_exists": bool(view.get("v3_package_exists")),
+                    "production_wrapper_exists": bool(view.get("production_wrapper_exists")),
+                    "production_component_count": int(view.get("production_component_count") or 0),
+                },
+            )
+            view["orchestrator_job"] = job
+            view["v3_ui_status"] = ui_meta.get("ui_status")
+            view["v3_cta_label"] = ui_meta.get("cta_label")
+            view["v3_primary_action"] = ui_meta.get("primary_action")
+            if ui_meta.get("allow_v3_rebuild") is not None:
+                view["allow_v3_rebuild"] = bool(ui_meta.get("allow_v3_rebuild"))
+            if ui_meta.get("needs_capability_examples"):
+                view["needs_capability_examples"] = ui_meta.get("needs_capability_examples")
+            else:
+                view["needs_capability_examples"] = capability.get("needs_capability_examples") or []
+            view["skip_examples"] = capability.get("skip_examples") or []
+        except Exception:
+            view["v3_ui_status"] = "建立 V3"
+            view["v3_cta_label"] = "建立 V3"
+            view["v3_primary_action"] = "build"
+            view["needs_capability_examples"] = []
+            view["skip_examples"] = []
         result[skill_key] = view
     return result
 

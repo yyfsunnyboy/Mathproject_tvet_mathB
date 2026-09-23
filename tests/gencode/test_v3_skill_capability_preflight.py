@@ -141,11 +141,13 @@ def test_partial_skill_does_not_allow_full_rebuild():
         with pytest.raises(CapabilityPreflightBlocked):
             assert_skill_allows_v3_rebuild(conn, skill_id)
 
-    assert preflight["capability_status"] == CAPABILITY_PARTIAL
+    from core.gencode.services.v3_skill_capability_preflight_service import CAPABILITY_NEEDS_CAPABILITY
+
+    assert preflight["capability_status"] == CAPABILITY_NEEDS_CAPABILITY
     assert preflight["allow_v3_rebuild"] is False
     assert preflight["resolvable_example_count"] == 1
     assert preflight["unresolved_example_count"] == 1
-    assert preflight["next_action"] == "start_system_ai_capability_fill"
+    assert preflight["next_action"] == "stop_for_missing_capability"
     conn.close()
 
 

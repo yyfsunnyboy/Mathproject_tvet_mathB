@@ -137,6 +137,15 @@ def _verified_choice_contract_blocks_publish(tracker_map: dict[int, dict[str, ob
     return False
 
 
+def _is_intentional_skip_tracker(tracker: dict[str, object] | None) -> bool:
+    if not tracker:
+        return False
+    from core.gencode.services.v3_example_disposition import disposition_from_tracker_row
+
+    example_id = int(tracker.get("textbook_example_id") or 0)
+    return disposition_from_tracker_row(tracker, example_id) == "intentional_skip"
+
+
 def _build_coverage_payload(
     skill_key: str,
     example_ids: list[int],
@@ -151,12 +160,38 @@ def _build_coverage_payload(
     bootstrap_failed_count = 0
     pipeline_failed_count = 0
     needs_human_review_count = 0
+    intentional_skip_count = 0
     unverified_count = 0
+    eligible_example_ids: list[int] = []
+    intentional_skip_ids: list[int] = []
 
     for example_id in example_ids:
         tracker = tracker_map.get(example_id)
         error_log = None
         error_code = ""
+        intentional_skip = _is_intentional_skip_tracker(tracker)
+        if intentional_skip:
+            intentional_skip_count += 1
+            intentional_skip_ids.append(example_id)
+            status = "intentional_skip"
+            component_id = derive_component_id(example_id)
+            if tracker is not None:
+                component_id = str(tracker.get("component_id") or component_id)
+                error_log = tracker.get("gencode_error_log")
+                error_code = _payload_error_code(tracker.get("induced_spec_payload"), error_log)
+            examples.append(
+                {
+                    "textbook_example_id": example_id,
+                    "component_id": component_id,
+                    "status": status,
+                    "gencode_error_log": error_log,
+                    "error_code": error_code,
+                    "intentional_skip": True,
+                }
+            )
+            continue
+
+        eligible_example_ids.append(example_id)
         if tracker is None:
             status = "missing_tracker"
             component_id = derive_component_id(example_id)
@@ -193,20 +228,28 @@ def _build_coverage_payload(
                 "status": status,
                 "gencode_error_log": error_log,
                 "error_code": error_code,
+                "intentional_skip": False,
             }
         )
 
+    eligible_count = len(eligible_example_ids)
     publish_ready = (
-        verified_count >= 1
+        eligible_count >= 1
+        and verified_count == eligible_count
         and missing_tracker_count == 0
         and failed_count == 0
         and unverified_count == 0
         and not _verified_choice_contract_blocks_publish(tracker_map)
     )
+    # All-skip skill: nothing eligible to publish, treat as ready-empty.
+    if eligible_count == 0 and intentional_skip_count == len(example_ids) and example_ids:
+        publish_ready = True
 
     return {
         "skill_id": skill_key,
         "total_examples": len(example_ids),
+        "eligible_count": eligible_count,
+        "eligible_example_ids": eligible_example_ids,
         "verified_count": verified_count,
         "missing_tracker_count": missing_tracker_count,
         "failed_count": failed_count,
@@ -216,6 +259,8 @@ def _build_coverage_payload(
         "pipeline_failed_count": pipeline_failed_count,
         "published_count": verified_count,
         "needs_human_review_count": needs_human_review_count,
+        "intentional_skip_count": intentional_skip_count,
+        "intentional_skip_ids": intentional_skip_ids,
         "unverified_count": unverified_count,
         "publish_ready": publish_ready,
         "examples": examples,

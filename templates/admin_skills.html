@@ -745,38 +745,65 @@
                                 {% set cap = gencode.get('capability') or {} %}
                                 {% set cap_status = gencode.get('capability_status') or cap.get('capability_status') or '' %}
                                 {% set cap_ui = gencode.get('capability_ui') or cap.get('ui') or {} %}
+                                {% set v3_ui = gencode.get('v3_ui_status') or '' %}
+                                {% set eligible_count = gencode.get('eligible_count', cap.get('eligible_example_count', total_examples)) %}
+                                {% set skip_count = gencode.get('intentional_skip_count', cap.get('intentional_skip_count', 0)) %}
+                                {% if skill.skill_id.startswith('outline_') %}
+                                <div>outline skill（不支援 V3 一鍵建立）</div>
+                                {% else %}
                                 <div title="{{ cap_ui.get('tooltip', 'Gencode V3會使用既有domain能力重新建置，不會自行建立新API。') }}">
-                                    出題能力：{{ cap_ui.get('status_label', '未評估') }}
+                                    V3 狀態：<strong>{{ v3_ui or cap_ui.get('status_label', '未評估') }}</strong>
                                     {% if cap.get('textbook_example_count') is not none %}
-                                    （可解析 {{ cap.get('resolvable_example_count', 0) }}/{{ cap.get('textbook_example_count', 0) }}）
+                                    （可解析 {{ cap.get('resolvable_example_count', 0) }}/{{ eligible_count }} eligible）
                                     {% endif %}
                                 </div>
-                                可用題目：{{ verified_count }}/{{ total_examples }}<br>
+                                可用題目：{{ verified_count }}/{{ eligible_count }}
+                                {% if skip_count %}（intentional skip {{ skip_count }}）{% endif %}<br>
                                 尚未加入技能包：{{ not_packaged_count }}<br>
                                 已更新到學生端：{{ published_count }}<br>
                                 生成失敗：{{ failed_count }}
+                                {% endif %}
                             </div>
                             <div class="v3-actions" style="margin-top: 6px;">
                                 {% set allow_rebuild = gencode.get('allow_v3_rebuild') %}
+                                {% set cta = gencode.get('v3_cta_label') or '' %}
+                                {% set primary_action = gencode.get('v3_primary_action') or '' %}
                                 {% if not skill.skill_id.startswith('outline_') %}
-                                {% if cap_status == 'ready' and allow_rebuild %}
+                                {% if v3_ui == '建置中' %}
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                    建置中…{% if gencode.get('orchestrator_job') and gencode.get('orchestrator_job').get('stage') %}（{{ gencode.get('orchestrator_job').get('stage') }}）{% endif %}
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    onclick="pollSkillV3BuildStatus('{{ skill.skill_id }}')">查看進度</button>
+                                {% elif v3_ui == 'NEEDS_CAPABILITY' or cap_status == 'needs_capability' %}
+                                <button type="button" class="btn btn-warning btn-sm"
+                                    title="缺少已註冊 domain capability，不會自動新增 Python/YAML"
+                                    onclick="showNeedsCapability('{{ skill.skill_id }}')">
+                                    ⚠ NEEDS_CAPABILITY
+                                </button>
+                                {% elif v3_ui == 'READY' or (cap_status == 'ready' and allow_rebuild and gencode.get('publish_ready')) %}
                                 <button type="button" class="btn btn-primary btn-sm"
-                                    title="Gencode V3會使用既有domain能力重新建置，不會自行建立新API。"
-                                    onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', 'regenerate', '重新建置與驗證')">
-                                    重新建置與驗證
+                                    title="使用既有 domain 能力；已 published 的 component 不會重建"
+                                    onclick="runSkillV3Build('{{ skill.skill_id }}', false, 'REBUILD')">
+                                    REBUILD
+                                </button>
+                                {% elif v3_ui == 'FAILED' %}
+                                <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="runSkillV3Build('{{ skill.skill_id }}', true, '重試建立 V3')">
+                                    重試建立 V3
                                 </button>
                                 {% else %}
                                 <button type="button" class="btn btn-primary btn-sm"
-                                    title="先檢查 V3 出題能力，再使用既有補全流程建立能力。"
-                                    onclick="inspectSkillCapability('{{ skill.skill_id }}', '{{ cap_status or 'missing' }}')">
-                                    {{ '建立 V3' if cap_status == 'missing' else '補全 V3' }}
+                                    title="一鍵建立 V3：自動匹配既有 capability；缺 capability 時安全停止"
+                                    onclick="runSkillV3Build('{{ skill.skill_id }}', false, '建立 V3')">
+                                    建立 V3
                                 </button>
+                                {% endif %}
                                 <button type="button" class="btn btn-secondary btn-sm"
                                     title="匯出維護用診斷（非正式主流程）"
                                     onclick="exportSkillCapabilityDiagnosis('{{ skill.skill_id }}')">
                                     匯出診斷
                                 </button>
-                                {% endif %}
                                 {% endif %}
                                 {# 查看組件 — 有任何 component 資料時可用 #}
                                 {% if total_examples > 0 or tracker_count > 0 %}
@@ -1195,6 +1222,151 @@
             if (backdrop) {
                 backdrop.style.display = 'none';
             }
+        }
+
+        function formatV3StageProgress(stages) {
+            const list = Array.isArray(stages) ? stages : [];
+            if (!list.length) return '';
+            return list.map((s) => {
+                const st = String(s.status || 'pending');
+                const mark = st === 'done' ? '✓' : (st === 'failed' ? '✗' : (st === 'needs_capability' ? '⚠' : '·'));
+                return `${mark} ${s.label || s.name || ''}`;
+            }).join('<br>');
+        }
+
+        function showNeedsCapability(skillId) {
+            const targetUrl = "{{ url_for('core.admin_skill_v3_build_status', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                .replace('SKILL_ID_PLACEHOLDER', skillId);
+            const preflightUrl = "{{ url_for('core.admin_skill_v3_capability_preflight', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                .replace('SKILL_ID_PLACEHOLDER', skillId);
+            Swal.fire({ title: '讀取 NEEDS_CAPABILITY…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Promise.all([
+                fetch(targetUrl).then((r) => r.json()).catch(() => ({})),
+                fetch(preflightUrl).then((r) => r.json()).catch(() => ({})),
+            ]).then(([jobResp, preflightResp]) => {
+                const job = (jobResp && jobResp.job) || {};
+                const pre = (preflightResp && (preflightResp.preflight || preflightResp)) || {};
+                const items = job.needs_capability_examples || pre.needs_capability_examples || [];
+                const rows = (items || []).map((it) => {
+                    const eid = it.example_id || it.textbook_example_id || '?';
+                    const reason = it.reason || '';
+                    const domain = it.suggested_domain || '';
+                    const pattern = it.detected_pattern || '';
+                    return `#${eid} — ${reason}${pattern ? ' / ' + pattern : ''}${domain ? ' / domain=' + domain : ''}`;
+                }).join('<br>') || '（無明細）';
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠ NEEDS_CAPABILITY',
+                    html: `缺少已註冊、已驗證的 domain capability。<br>系統不會自動新增 Python / registry / YAML。<br><br>${rows}`,
+                });
+            }).catch((err) => {
+                Swal.fire({ icon: 'error', title: '讀取失敗', text: err.message || String(err) });
+            });
+        }
+
+        function runSkillV3Build(skillId, force = false, actionLabel = '建立 V3') {
+            const confirmText = force
+                ? '將強制重新建置尚未 verified 的 component（已 published 仍預設沿用）。是否繼續？'
+                : '將啟動一鍵 V3 流程：匹配既有 capability → 建置 → 驗證 → smoke → publish。缺 capability 時會安全停止。是否繼續？';
+            Swal.fire({
+                title: actionLabel,
+                text: confirmText,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: actionLabel,
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+                Swal.fire({
+                    title: `${actionLabel} 已啟動`,
+                    html: '建置中…正在等待第一個 stage…',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                const targetUrl = "{{ url_for('core.admin_run_skill_v3_build', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                    .replace('SKILL_ID_PLACEHOLDER', skillId);
+                fetch(targetUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        smoke: true,
+                        force: !!force,
+                        mode: force ? 'regenerate' : 'auto',
+                        resume: !force,
+                        async: true,
+                    })
+                }).then(async (response) => {
+                    const data = await response.json();
+                    if (!response.ok && response.status !== 202) {
+                        throw new Error(data.error || data.message || '建立 V3 啟動失敗');
+                    }
+                    return pollSkillV3BuildStatus(skillId, data.job_id || null);
+                }).catch((error) => {
+                    Swal.fire({ title: '執行失敗', text: error.message, icon: 'error' });
+                });
+            });
+        }
+
+        function pollSkillV3BuildStatus(skillId, expectedJobId = null, attempt = 0) {
+            const statusUrl = "{{ url_for('core.admin_skill_v3_build_status', skill_id='SKILL_ID_PLACEHOLDER') }}"
+                .replace('SKILL_ID_PLACEHOLDER', skillId);
+            return fetch(statusUrl)
+                .then(async (response) => {
+                    const body = await response.json();
+                    const job = (body && body.job) || null;
+                    if (!job) {
+                        if (attempt < 3) {
+                            await new Promise((r) => setTimeout(r, 800));
+                            return pollSkillV3BuildStatus(skillId, expectedJobId, attempt + 1);
+                        }
+                        throw new Error('找不到 job 狀態');
+                    }
+                    const progress = formatV3StageProgress(job.stages || []);
+                    const counts = job.counts || {};
+                    const countLine = `examples ${counts.example_count || 0} / published ${counts.published_count || 0} / skip ${counts.skip_count || 0} / needs_capability ${counts.needs_capability_count || 0} / missing ${counts.missing_count || 0}`;
+                    const stageLine = `目前 stage：${job.stage_label || job.stage || ''}（${job.status || ''}）`;
+                    if (job.status === 'running') {
+                        Swal.fire({
+                            title: '建置中…',
+                            html: `${stageLine}<br>${countLine}<br><br>${progress}`,
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                        await new Promise((r) => setTimeout(r, 1200));
+                        return pollSkillV3BuildStatus(skillId, expectedJobId, attempt + 1);
+                    }
+                    if (job.status === 'needs_capability') {
+                        const items = job.needs_capability_examples || [];
+                        const detail = items.map((it) => `#${it.example_id}: ${it.reason || ''}`).join('<br>') || '';
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: '⚠ NEEDS_CAPABILITY',
+                            html: `${countLine}<br><br>${progress}<br><br>${detail}<br><br>production 未變更`,
+                        }).then(() => window.location.reload());
+                    }
+                    if (job.status === 'failed') {
+                        const errs = (job.errors || []).map((e) => `${e.stage}: ${e.message || e.code}`).join('<br>');
+                        return Swal.fire({
+                            icon: 'error',
+                            title: 'FAILED',
+                            html: `${stageLine}<br>${countLine}<br><br>${progress}<br><br>${errs || ''}<br>production 保留舊版本`,
+                            confirmButtonText: '重試',
+                        }).then((r) => {
+                            if (r.isConfirmed) {
+                                runSkillV3Build(skillId, false, '重試建立 V3');
+                            } else {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                    const ok = job.status === 'ready';
+                    return Swal.fire({
+                        icon: ok ? 'success' : 'info',
+                        title: ok ? 'READY' : (job.final_status || job.status || '完成'),
+                        html: `${countLine}<br><br>${progress}${job.idempotent ? '<br>idempotent：未重建已 published component' : ''}`,
+                    }).then(() => window.location.reload());
+                });
         }
 
         function runSkillV3BatchDryrun(skillId, mode = 'regenerate', actionLabel = '重新建置與驗證') {
