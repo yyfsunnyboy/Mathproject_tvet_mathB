@@ -2208,7 +2208,7 @@
       if (choice && typeof choice === "object" && !Array.isArray(choice)) {
         const label = String(choice.label || choiceLabelAt(index)).trim().toUpperCase() || choiceLabelAt(index);
         const text = String(choice.text || choice.content || choice.value || "").trim();
-        return { label, text: text || String(choice || "").trim() };
+        return { label, text: text || String(choice || "").trim(), display: choice.display || "" };
       }
       return { label: choiceLabelAt(index), text: String(choice || "").trim() };
     }
@@ -2229,7 +2229,7 @@
         .map((choice, idx) => {
           const safeChoice = escapeHtml(String(choice.text || ""));
           const label = escapeHtml(String(choice.label || choiceLabelAt(idx)));
-          const rendered = escapeHtml(renderChoiceText(`(${choice.label}) ${choice.text}`, idx));
+          const rendered = escapeHtml(renderChoiceText(`(${choice.label}) ${choice.display || choice.text}`, idx));
           return `<button type="button" class="choice-item" data-choice-index="${idx}" data-choice-label="${label}" data-choice-text="${safeChoice}"><span class="choice-label">(${label})</span><span class="choice-content">${rendered.replace(/^(\([A-Za-z]\)\s*)/, "")}</span></button>`;
         })
         .join("");

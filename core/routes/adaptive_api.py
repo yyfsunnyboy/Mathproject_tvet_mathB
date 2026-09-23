@@ -16,6 +16,7 @@ from core.adaptive.judge import judge_answer_with_feedback
 from core.ai_conversation_context import add_turn as add_ai_context_turn
 from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
 from core.gencode.answer_grading import build_correct_answer_display
+from core.gencode.choice_math_display import normalize_choice_displays
 from core.handwriting_ai_check import (
     BLANK_CANVAS_FEEDBACK,
     HandwritingCheckContext,
@@ -506,6 +507,8 @@ def _adaptive_runtime_store() -> dict:
 def _response_for_frontend(response: dict) -> dict:
     sanitized = dict(response)
     q = dict(sanitized.get("new_question_data", {}) or {})
+    if isinstance(q.get("choices"), list):
+        q["choices"] = normalize_choice_displays(q["choices"])
     q.pop("answer", None)
     q.pop("correct_answer", None)
     sanitized["new_question_data"] = q

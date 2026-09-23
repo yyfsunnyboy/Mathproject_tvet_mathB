@@ -13,7 +13,8 @@
         const canonical = String(value || '').trim();
         if (!canonical) return canonical;
         if (typeof globalThis !== 'undefined' && globalThis.MathDisplayNormalizer) {
-            return globalThis.MathDisplayNormalizer.normalizeMathText(canonical, { mathContext: true });
+            const normalized = globalThis.MathDisplayNormalizer.normalizeMathText(canonical, { mathContext: true });
+            if (normalized !== canonical) return normalized;
         }
         if (/^[+-]?\d+(?:\.\d+)?$/.test(canonical)) return canonical;
         if (/^\(\s*[+-]?\d+(?:\.\d+)?(?:\/\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?(?:\/\d+)?\s*\)$/.test(canonical)) {
