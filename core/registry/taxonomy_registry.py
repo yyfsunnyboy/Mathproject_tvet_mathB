@@ -36,6 +36,52 @@ _B2_14_OPERATIONS = (
 )
 _B2_14_SKILLS = tuple(f"vh_數學B2_SubSection_1_4_{index}" for index in range(1, 5))
 
+_B2_21_SINE_OPERATIONS = (
+    "compute_triangle_area_sas",
+    "solve_side_and_circumradius_by_sines",
+    "solve_angle_by_law_of_sines",
+    "compute_sin_from_side_and_circumradius",
+    "solve_side_ratio_by_law_of_sines",
+    "solve_side_by_law_of_sines",
+)
+_B2_21_SINE_SKILL = "vh_數學B2_SubSection_2_1_1"
+
+_B2_21_COSINE_OPERATIONS = (
+    "solve_side_by_law_of_cosines",
+    "solve_angle_by_law_of_cosines",
+    "solve_cosine_identity_angle",
+    "solve_detour_extra_distance_by_cosines",
+    "compute_circumradius_from_three_sides",
+)
+_B2_21_COSINE_SKILL = "vh_數學B2_SubSection_2_1_2"
+
+_B2_223_MEASUREMENT_OPERATIONS = (
+    "solve_height_from_sight_line_elevation",
+    "solve_adjacent_from_hypotenuse_ground_angle",
+    "solve_opposite_from_adjacent_elevation",
+    "solve_horizontal_from_height_elevation",
+    "solve_horizontal_from_height_depression",
+    "solve_two_elevation_horizontal_shift",
+    "solve_two_elevation_unknown_height",
+    "solve_building_height_with_flagpole_elevations",
+    "solve_broken_tree_original_height",
+    "solve_height_decimal_from_sight_line_elevation",
+)
+_B2_223_MEASUREMENT_SKILL = "vh_數學B2_SubSection_2_2_3"
+
+_B2_224_OBLIQUE_OPERATIONS = (
+    "solve_side_by_law_of_sines",
+    "solve_side_by_law_of_cosines",
+)
+_B2_224_OBLIQUE_SKILL = "vh_數學B2_SubSection_2_2_4"
+
+_B2_225_SOLID_OPERATIONS = (
+    "solve_tower_two_elevation_path_and_river_width",
+    "solve_height_from_two_elevation_tan_ratios",
+    "solve_height_from_isosceles_bearing_walk_elevation",
+)
+_B2_225_SOLID_SKILL = "vh_數學B2_SubSection_2_2_5"
+
 
 class SkillDomainNotRegisteredError(KeyError):
     """Raised when skill_id has no fixed domain binding in Registry."""
@@ -412,6 +458,41 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         }
         for skill_id in _B2_14_SKILLS
     },
+    _B2_21_SINE_SKILL: {
+        "fixed_domain_key": "trigonometry.law_of_sines",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_law_of_sines",
+    },
+    _B2_21_COSINE_SKILL: {
+        "fixed_domain_key": "trigonometry.law_of_cosines",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_law_of_cosines",
+    },
+    _B2_223_MEASUREMENT_SKILL: {
+        "fixed_domain_key": "trigonometry.right_triangle_measurement",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_right_triangle_measurement",
+    },
+    _B2_224_OBLIQUE_SKILL: {
+        "fixed_domain_key": "trigonometry.oblique_triangle_measurement",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_oblique_triangle_measurement_compose_sines_cosines",
+    },
+    _B2_225_SOLID_SKILL: {
+        "fixed_domain_key": "trigonometry.solid_measurement",
+        "domain": "trigonometry",
+        "curriculum_profile": "vocational_high_b",
+        "registry_revision": REGISTRY_REVISION,
+        "mapping_reason": "textbook_skill_simple_solid_measurement",
+    },
     "vh_數學B2_RatioAndRatioValue": {
         "fixed_domain_key": "geometry.similarity",
         "domain_module": "core.domain.geometry_similarity_domain",
@@ -497,6 +578,41 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "allowed_types": list(_B2_14_OPERATIONS),
         }
         for skill_id in _B2_14_SKILLS
+    },
+    _B2_21_SINE_SKILL: {
+        "fixed_domain_key": "trigonometry.law_of_sines",
+        "domain_module": "core.domain.trigonometry_law_of_sines_domain",
+        "entrypoint": "build_trigonometry_law_of_sines_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": list(_B2_21_SINE_OPERATIONS),
+    },
+    _B2_21_COSINE_SKILL: {
+        "fixed_domain_key": "trigonometry.law_of_cosines",
+        "domain_module": "core.domain.trigonometry_law_of_cosines_domain",
+        "entrypoint": "build_trigonometry_law_of_cosines_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": list(_B2_21_COSINE_OPERATIONS),
+    },
+    _B2_223_MEASUREMENT_SKILL: {
+        "fixed_domain_key": "trigonometry.right_triangle_measurement",
+        "domain_module": "core.domain.trigonometry_right_triangle_measurement_domain",
+        "entrypoint": "build_trigonometry_right_triangle_measurement_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": list(_B2_223_MEASUREMENT_OPERATIONS),
+    },
+    _B2_224_OBLIQUE_SKILL: {
+        "fixed_domain_key": "trigonometry.oblique_triangle_measurement",
+        "domain_module": "core.domain.trigonometry_oblique_triangle_measurement_domain",
+        "entrypoint": "build_trigonometry_oblique_triangle_measurement_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": list(_B2_224_OBLIQUE_OPERATIONS),
+    },
+    _B2_225_SOLID_SKILL: {
+        "fixed_domain_key": "trigonometry.solid_measurement",
+        "domain_module": "core.domain.trigonometry_solid_measurement_domain",
+        "entrypoint": "build_trigonometry_solid_measurement_matrix",
+        "default_curriculum_profile": "vocational_high_b",
+        "allowed_types": list(_B2_225_SOLID_OPERATIONS),
     },
 }
 
@@ -602,6 +718,8 @@ def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
         list(_B2_13_SKILL_OPERATIONS[key])
         if key in _B2_13_SKILL_OPERATIONS
         else list(_B2_14_OPERATIONS) if key in _B2_14_SKILLS
+        else list(_B2_21_SINE_OPERATIONS) if key == _B2_21_SINE_SKILL
+        else list(_B2_21_COSINE_OPERATIONS) if key == _B2_21_COSINE_SKILL
         else get_allowed_operations(fixed_domain_key, skill_id=key)
     )
     merged["registry_revision"] = get_registry_revision(key)

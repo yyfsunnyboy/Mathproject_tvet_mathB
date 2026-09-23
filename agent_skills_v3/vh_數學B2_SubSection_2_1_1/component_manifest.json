@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B2_SubSection_2_1_1",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_11676",
+      "textbook_example_id": 11676,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_area_sas",
+      "domain_operation": "compute_triangle_area_sas",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11676/generate.py"
+    },
+    {
+      "component_id": "src_11677",
+      "textbook_example_id": 11677,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_area_sas",
+      "domain_operation": "compute_triangle_area_sas",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11677/generate.py"
+    },
+    {
+      "component_id": "src_11678",
+      "textbook_example_id": 11678,
+      "status": "verified",
+      "problem_type_id": "solve_side_and_circumradius_by_sines",
+      "domain_operation": "solve_side_and_circumradius_by_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11678/generate.py"
+    },
+    {
+      "component_id": "src_11679",
+      "textbook_example_id": 11679,
+      "status": "verified",
+      "problem_type_id": "solve_side_and_circumradius_by_sines",
+      "domain_operation": "solve_side_and_circumradius_by_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11679/generate.py"
+    },
+    {
+      "component_id": "src_11680",
+      "textbook_example_id": 11680,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_sines",
+      "domain_operation": "solve_angle_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11680/generate.py"
+    },
+    {
+      "component_id": "src_11681",
+      "textbook_example_id": 11681,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_sines",
+      "domain_operation": "solve_angle_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11681/generate.py"
+    },
+    {
+      "component_id": "src_11707",
+      "textbook_example_id": 11707,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_area_sas",
+      "domain_operation": "compute_triangle_area_sas",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11707/generate.py"
+    },
+    {
+      "component_id": "src_11708",
+      "textbook_example_id": 11708,
+      "status": "verified",
+      "problem_type_id": "solve_side_and_circumradius_by_sines",
+      "domain_operation": "solve_side_and_circumradius_by_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11708/generate.py"
+    },
+    {
+      "component_id": "src_11709",
+      "textbook_example_id": 11709,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_sines",
+      "domain_operation": "solve_angle_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11709/generate.py"
+    },
+    {
+      "component_id": "src_11710",
+      "textbook_example_id": 11710,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_sines",
+      "domain_operation": "solve_angle_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11710/generate.py"
+    },
+    {
+      "component_id": "src_11716",
+      "textbook_example_id": 11716,
+      "status": "verified",
+      "problem_type_id": "compute_sin_from_side_and_circumradius",
+      "domain_operation": "compute_sin_from_side_and_circumradius",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11716/generate.py"
+    },
+    {
+      "component_id": "src_11717",
+      "textbook_example_id": 11717,
+      "status": "verified",
+      "problem_type_id": "solve_side_ratio_by_law_of_sines",
+      "domain_operation": "solve_side_ratio_by_law_of_sines",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11717/generate.py"
+    },
+    {
+      "component_id": "src_11718",
+      "textbook_example_id": 11718,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_sines",
+      "domain_operation": "solve_side_by_law_of_sines",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11718/generate.py"
+    }
+  ]
+}

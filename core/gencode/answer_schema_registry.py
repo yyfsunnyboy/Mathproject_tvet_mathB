@@ -181,6 +181,19 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "simplify_fundamental_trig_expression": "multi_part_scalar",
     "sector_arc_and_area": "multi_part_scalar",
     "compute_chord_and_arc_length": "multi_part_scalar",
+    "solve_height_from_sight_line_elevation": "numeric_scalar",
+    "solve_adjacent_from_hypotenuse_ground_angle": "numeric_scalar",
+    "solve_opposite_from_adjacent_elevation": "numeric_scalar",
+    "solve_horizontal_from_height_elevation": "numeric_scalar",
+    "solve_horizontal_from_height_depression": "numeric_scalar",
+    "solve_two_elevation_horizontal_shift": "numeric_scalar",
+    "solve_two_elevation_unknown_height": "numeric_scalar",
+    "solve_building_height_with_flagpole_elevations": "numeric_scalar",
+    "solve_broken_tree_original_height": "numeric_scalar",
+    "solve_height_decimal_from_sight_line_elevation": "numeric_scalar",
+    "solve_tower_two_elevation_path_and_river_width": "multi_part_scalar",
+    "solve_height_from_two_elevation_tan_ratios": "numeric_scalar",
+    "solve_height_from_isosceles_bearing_walk_elevation": "numeric_scalar",
 }
 
 PROBLEM_TYPE_ANSWER_SCHEMA: dict[str, str] = dict(DOMAIN_OPERATION_ANSWER_SCHEMA)

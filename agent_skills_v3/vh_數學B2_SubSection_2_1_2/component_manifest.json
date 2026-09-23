@@ -1,0 +1,139 @@
+{
+  "skill_id": "vh_數學B2_SubSection_2_1_2",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 12,
+  "components": [
+    {
+      "component_id": "src_11682",
+      "textbook_example_id": 11682,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11682/generate.py"
+    },
+    {
+      "component_id": "src_11683",
+      "textbook_example_id": 11683,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11683/generate.py"
+    },
+    {
+      "component_id": "src_11684",
+      "textbook_example_id": 11684,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_cosines",
+      "domain_operation": "solve_angle_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11684/generate.py"
+    },
+    {
+      "component_id": "src_11685",
+      "textbook_example_id": 11685,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_cosines",
+      "domain_operation": "solve_angle_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11685/generate.py"
+    },
+    {
+      "component_id": "src_11686",
+      "textbook_example_id": 11686,
+      "status": "verified",
+      "problem_type_id": "solve_detour_extra_distance_by_cosines",
+      "domain_operation": "solve_detour_extra_distance_by_cosines",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_11686/generate.py"
+    },
+    {
+      "component_id": "src_11711",
+      "textbook_example_id": 11711,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_cosines",
+      "domain_operation": "solve_angle_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11711/generate.py"
+    },
+    {
+      "component_id": "src_11712",
+      "textbook_example_id": 11712,
+      "status": "verified",
+      "problem_type_id": "solve_angle_by_law_of_cosines",
+      "domain_operation": "solve_angle_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11712/generate.py"
+    },
+    {
+      "component_id": "src_11713",
+      "textbook_example_id": 11713,
+      "status": "verified",
+      "problem_type_id": "solve_cosine_identity_angle",
+      "domain_operation": "solve_cosine_identity_angle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11713/generate.py"
+    },
+    {
+      "component_id": "src_11714",
+      "textbook_example_id": 11714,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11714/generate.py"
+    },
+    {
+      "component_id": "src_11715",
+      "textbook_example_id": 11715,
+      "status": "verified",
+      "problem_type_id": "compute_circumradius_from_three_sides",
+      "domain_operation": "compute_circumradius_from_three_sides",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11715/generate.py"
+    },
+    {
+      "component_id": "src_11719",
+      "textbook_example_id": 11719,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11719/generate.py"
+    },
+    {
+      "component_id": "src_11727",
+      "textbook_example_id": 11727,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11727/generate.py"
+    }
+  ]
+}

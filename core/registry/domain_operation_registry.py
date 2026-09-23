@@ -1305,3 +1305,388 @@ register_domain_spec(DomainCapabilitySpec(
 ))
 
 
+_B2_21_SINE_ADAPTER = "core.gencode.b2_21_law_of_sines_capability_adapter.adapt_b2_21_law_of_sines_matrix"
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.law_of_sines",
+    domain_module="core.domain.trigonometry_law_of_sines_domain",
+    entrypoint="build_trigonometry_law_of_sines_matrix",
+    capabilities=frozenset({
+        "compute_triangle_area_sas",
+        "solve_side_and_circumradius_by_sines",
+        "solve_angle_by_law_of_sines",
+        "compute_sin_from_side_and_circumradius",
+        "solve_side_ratio_by_law_of_sines",
+        "solve_side_by_law_of_sines",
+    }),
+    operations={
+        "compute_triangle_area_sas": _op(
+            "compute_triangle_area_sas",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("two_sides", "included_angle"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("compute_triangle_area_sas",),
+        ),
+        "solve_side_and_circumradius_by_sines": _op(
+            "solve_side_and_circumradius_by_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("two_angles", "one_side", "circumradius"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_and_circumradius_by_sines",),
+        ),
+        "solve_angle_by_law_of_sines": _op(
+            "solve_angle_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("ssa", "unique_angle"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_angle_by_law_of_sines",),
+        ),
+        "compute_sin_from_side_and_circumradius": _op(
+            "compute_sin_from_side_and_circumradius",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("side", "circumradius_or_area"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("compute_sin_from_side_and_circumradius",),
+        ),
+        "solve_side_ratio_by_law_of_sines": _op(
+            "solve_side_ratio_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("two_angles", "side_ratio"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_ratio_by_law_of_sines",),
+        ),
+        "solve_side_by_law_of_sines": _op(
+            "solve_side_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("aas_or_asa", "target_side"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_by_law_of_sines",),
+        ),
+    },
+))
+
+
+_B2_21_COSINE_ADAPTER = "core.gencode.b2_21_law_of_cosines_capability_adapter.adapt_b2_21_law_of_cosines_matrix"
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.law_of_cosines",
+    domain_module="core.domain.trigonometry_law_of_cosines_domain",
+    entrypoint="build_trigonometry_law_of_cosines_matrix",
+    capabilities=frozenset({
+        "solve_side_by_law_of_cosines",
+        "solve_angle_by_law_of_cosines",
+        "solve_cosine_identity_angle",
+        "solve_detour_extra_distance_by_cosines",
+        "compute_circumradius_from_three_sides",
+    }),
+    operations={
+        "solve_side_by_law_of_cosines": _op(
+            "solve_side_by_law_of_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "single_choice", "short_answer"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("two_sides", "included_angle"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_side_by_law_of_cosines",),
+        ),
+        "solve_angle_by_law_of_cosines": _op(
+            "solve_angle_by_law_of_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("three_sides",),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_angle_by_law_of_cosines",),
+        ),
+        "solve_cosine_identity_angle": _op(
+            "solve_cosine_identity_angle",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("cosine_identity",),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_cosine_identity_angle",),
+        ),
+        "solve_detour_extra_distance_by_cosines": _op(
+            "solve_detour_extra_distance_by_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("application_path", "included_angle"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_detour_extra_distance_by_cosines",),
+        ),
+        "compute_circumradius_from_three_sides": _op(
+            "compute_circumradius_from_three_sides",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("three_sides", "circumradius"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("compute_circumradius_from_three_sides",),
+        ),
+    },
+))
+
+
+_B2_223_MEASUREMENT_ADAPTER = (
+    "core.gencode.b2_223_right_triangle_measurement_capability_adapter"
+    ".adapt_b2_223_right_triangle_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.right_triangle_measurement",
+    domain_module="core.domain.trigonometry_right_triangle_measurement_domain",
+    entrypoint="build_trigonometry_right_triangle_measurement_matrix",
+    capabilities=frozenset({
+        "solve_height_from_sight_line_elevation",
+        "solve_adjacent_from_hypotenuse_ground_angle",
+        "solve_opposite_from_adjacent_elevation",
+        "solve_horizontal_from_height_elevation",
+        "solve_horizontal_from_height_depression",
+        "solve_two_elevation_horizontal_shift",
+        "solve_two_elevation_unknown_height",
+        "solve_building_height_with_flagpole_elevations",
+        "solve_broken_tree_original_height",
+        "solve_height_decimal_from_sight_line_elevation",
+    }),
+    operations={
+        "solve_height_from_sight_line_elevation": _op(
+            "solve_height_from_sight_line_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("sight_line", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_height_from_sight_line_elevation",),
+        ),
+        "solve_adjacent_from_hypotenuse_ground_angle": _op(
+            "solve_adjacent_from_hypotenuse_ground_angle",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("ladder_or_hypotenuse", "ground_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_adjacent_from_hypotenuse_ground_angle",),
+        ),
+        "solve_opposite_from_adjacent_elevation": _op(
+            "solve_opposite_from_adjacent_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("adjacent_distance", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_opposite_from_adjacent_elevation",),
+        ),
+        "solve_horizontal_from_height_elevation": _op(
+            "solve_horizontal_from_height_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_horizontal_from_height_elevation",),
+        ),
+        "solve_horizontal_from_height_depression": _op(
+            "solve_horizontal_from_height_depression",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "depression_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_horizontal_from_height_depression",),
+        ),
+        "solve_two_elevation_horizontal_shift": _op(
+            "solve_two_elevation_horizontal_shift",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "two_elevations"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_two_elevation_horizontal_shift",),
+        ),
+        "solve_two_elevation_unknown_height": _op(
+            "solve_two_elevation_unknown_height",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("advance_distance", "two_elevations"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_two_elevation_unknown_height",),
+        ),
+        "solve_building_height_with_flagpole_elevations": _op(
+            "solve_building_height_with_flagpole_elevations",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("flagpole_length", "two_elevations_same_station"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_building_height_with_flagpole_elevations",),
+        ),
+        "solve_broken_tree_original_height": _op(
+            "solve_broken_tree_original_height",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("broken_tree", "tan_and_cos"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_broken_tree_original_height",),
+        ),
+        "solve_height_decimal_from_sight_line_elevation": _op(
+            "solve_height_decimal_from_sight_line_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("sight_line", "non_special_elevation", "decimal_round"),
+            runtime_contract="b2_223_right_triangle_measurement_decimal_v1",
+            provided_capabilities=("solve_height_decimal_from_sight_line_elevation",),
+        ),
+    },
+))
+
+
+_B2_224_OBLIQUE_ADAPTER = (
+    "core.gencode.b2_224_oblique_triangle_measurement_capability_adapter"
+    ".adapt_b2_224_oblique_triangle_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.oblique_triangle_measurement",
+    domain_module="core.domain.trigonometry_oblique_triangle_measurement_domain",
+    entrypoint="build_trigonometry_oblique_triangle_measurement_matrix",
+    capabilities=frozenset({
+        "solve_side_by_law_of_sines",
+        "solve_side_by_law_of_cosines",
+    }),
+    operations={
+        "solve_side_by_law_of_sines": _op(
+            "solve_side_by_law_of_sines",
+            "build_trigonometry_oblique_triangle_measurement_matrix",
+            payload_adapter=_B2_224_OBLIQUE_ADAPTER,
+            validator="validate_trigonometry_oblique_triangle_measurement_matrix",
+            supported_answer_types=("single_choice", "expression", "short_answer"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("oblique_triangle", "law_of_sines", "measurement"),
+            runtime_contract="b2_224_oblique_measurement_delegate_sines_v1",
+            provided_capabilities=("solve_side_by_law_of_sines",),
+        ),
+        "solve_side_by_law_of_cosines": _op(
+            "solve_side_by_law_of_cosines",
+            "build_trigonometry_oblique_triangle_measurement_matrix",
+            payload_adapter=_B2_224_OBLIQUE_ADAPTER,
+            validator="validate_trigonometry_oblique_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("oblique_triangle", "law_of_cosines", "measurement"),
+            runtime_contract="b2_224_oblique_measurement_delegate_cosines_v1",
+            provided_capabilities=("solve_side_by_law_of_cosines",),
+        ),
+    },
+))
+
+
+_B2_225_SOLID_ADAPTER = (
+    "core.gencode.b2_225_solid_measurement_capability_adapter"
+    ".adapt_b2_225_solid_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.solid_measurement",
+    domain_module="core.domain.trigonometry_solid_measurement_domain",
+    entrypoint="build_trigonometry_solid_measurement_matrix",
+    capabilities=frozenset({
+        "solve_tower_two_elevation_path_and_river_width",
+        "solve_height_from_two_elevation_tan_ratios",
+        "solve_height_from_isosceles_bearing_walk_elevation",
+    }),
+    operations={
+        "solve_tower_two_elevation_path_and_river_width": _op(
+            "solve_tower_two_elevation_path_and_river_width",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("tower_height", "two_elevations", "right_path_river"),
+            runtime_contract="b2_225_solid_measurement_compose_v1",
+            provided_capabilities=("solve_tower_two_elevation_path_and_river_width",),
+        ),
+        "solve_height_from_two_elevation_tan_ratios": _op(
+            "solve_height_from_two_elevation_tan_ratios",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("advance_distance", "two_tan_elevations"),
+            runtime_contract="b2_225_solid_measurement_tan_ratio_v1",
+            provided_capabilities=("solve_height_from_two_elevation_tan_ratios",),
+        ),
+        "solve_height_from_isosceles_bearing_walk_elevation": _op(
+            "solve_height_from_isosceles_bearing_walk_elevation",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("bearing_walk", "elevation", "isosceles_horizontal"),
+            runtime_contract="b2_225_solid_measurement_bearing_v1",
+            provided_capabilities=("solve_height_from_isosceles_bearing_walk_elevation",),
+        ),
+    },
+))
+
