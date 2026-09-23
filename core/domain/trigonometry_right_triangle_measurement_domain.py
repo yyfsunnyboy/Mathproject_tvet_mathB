@@ -10,6 +10,8 @@ from typing import Any
 
 import sympy as sp
 
+from core.gencode.numeric_display import format_display_number
+
 
 HEIGHT_FROM_SIGHT_OP = "solve_height_from_sight_line_elevation"
 ADJACENT_FROM_LADDER_OP = "solve_adjacent_from_hypotenuse_ground_angle"
@@ -450,9 +452,9 @@ def build_trigonometry_right_triangle_measurement_matrix(
         near = result["near_elevation_degrees"]
         far = result["far_elevation_degrees"]
         question = (
-            f"已知高度 ${canonical_exact(height)}$ 公尺，先測得仰角 "
-            f"${canonical_exact(near)}^\\circ$，再水平移動後仰角變為 "
-            f"${canonical_exact(far)}^\\circ$，試求水平移動距離。"
+            f"已知高度 ${canonical_exact(height)}$ 公尺。兩觀測點與目標底端在同一直線且位於同側，"
+            f"由較近觀測點測得仰角 ${canonical_exact(near)}^\\circ$，沿該直線背離目標移動至較遠觀測點後，"
+            f"仰角變為 ${canonical_exact(far)}^\\circ$，試求兩觀測點間的水平距離。"
         )
         answer_value = result["canonical"]
         parts = {"shift": answer_value}
@@ -573,8 +575,8 @@ def build_trigonometry_right_triangle_measurement_matrix(
         sight = result["sight_length"]
         elev = result["elevation_degrees"]
         question = (
-            f"放出 ${canonical_exact(sight)}$ 公尺長的線，仰角為 "
-            f"${canonical_exact(elev)}^\\circ$，"
+            f"放出 ${format_display_number(sight)}$ 公尺長的線，仰角為 "
+            f"${format_display_number(elev)}^\\circ$，"
             f"試求高度（四捨五入到小數點後第 {precision} 位）。"
         )
         answer_value = result["canonical"]

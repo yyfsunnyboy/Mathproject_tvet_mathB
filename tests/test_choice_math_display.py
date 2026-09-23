@@ -74,6 +74,10 @@ def test_choice_contract_and_practice_api_include_display_without_changing_value
     ('(1+sqrt(2))/(3-sqrt(2))', r'\frac{1 + \sqrt{2}}{3 - \sqrt{2}}'),
     ('2*3', r'2 \times 3'),
     ('sqrt(1+sqrt(2))', r'\sqrt{1 + \sqrt{2}}'),
+    ('sqrt(5 - 2*sqrt(3))', r'\sqrt{5 - 2\sqrt{3}}'),
+    ('900*sqrt(5 - 2*sqrt(3))', r'900\sqrt{5 - 2\sqrt{3}}'),
+    ('900*sqrt(5 - 2*sqrt(3)) + 1800', r'900\sqrt{5 - 2\sqrt{3}} + 1800'),
+    ('900 + 900*sqrt(5 - 2*sqrt(3))', r'900 + 900\sqrt{5 - 2\sqrt{3}}'),
 ])
 def test_numeric_expression_display(source, latex):
     assert format_choice_math_display(source) == r'\(' + latex + r'\)'

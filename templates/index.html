@@ -2115,6 +2115,7 @@
     </style>
 
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
@@ -4239,6 +4240,7 @@
                     || '',
                 interaction_type: payload.interaction_type || '',
                 visual_spec: payload.visual_spec || null,
+                diagram_spec: payload.diagram_spec || null,
                 visual_aids: Array.isArray(payload.visual_aids) ? payload.visual_aids.slice() : payload.visual_aids,
                 image_assets: Array.isArray(payload.image_assets) ? payload.image_assets.slice() : [],
                 image_url: payload.image_url || '',
@@ -4524,6 +4526,13 @@
             qmc.appendChild(wrap);
             qmc.style.display = 'block';
             return true;
+        }
+
+        function renderQuestionDiagramSpec(payload) {
+            const qmc = document.getElementById('question-media-container');
+            const runtime = window.TriangleDiagramRuntime;
+            if (!qmc || !runtime || !payload) return false;
+            return runtime.render(qmc, payload.diagram_spec);
         }
 
         function collectTableAnswers() {
@@ -5316,6 +5325,10 @@
                             qmc.innerHTML = data.table_data.html;
                             qmc.style.display = 'block';
                         }
+                        saveState();
+                    } else if (renderQuestionDiagramSpec(data)) {
+                        const layer = getScratchpadBackgroundLayer();
+                        if (layer) layer.resetQuestionBackground();
                         saveState();
                     } else {
                         applyQuestionScratchpadBackground(data).then(() => {

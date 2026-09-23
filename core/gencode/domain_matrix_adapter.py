@@ -3375,6 +3375,7 @@ def convert_domain_matrix_to_question_payload(
             )
             else normalized["visual_spec"]
         ),
+        "diagram_spec": matrix.get("diagram_spec"),
         "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
         "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,

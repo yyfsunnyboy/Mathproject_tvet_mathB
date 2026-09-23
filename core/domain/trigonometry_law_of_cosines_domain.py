@@ -27,6 +27,7 @@ OPS = frozenset(
 
 _SPECIAL_ACUTE = (30, 45, 60)
 _SPECIAL_OBTUSE = (120, 135, 150)
+_SAMPLE_QUALITY_RETRIES = 24
 _BOOKKEEPING = (
     "skill_id",
     "phase1_classification",
@@ -223,31 +224,112 @@ def _choice_payload(canonical: str, distractors: list[str], rng: random.Random) 
     return {"choices": choices, "correct_label": correct, "semantic_answer": canonical}
 
 
+def _has_nested_radical(value: Any) -> bool:
+    expr = _exact(value, name="quality_value")
+    radicals = [
+        node
+        for node in sp.preorder_traversal(expr)
+        if isinstance(node, sp.Pow) and node.exp == sp.Rational(1, 2)
+    ]
+    return any(
+        any(
+            isinstance(child, sp.Pow) and child.exp == sp.Rational(1, 2)
+            for child in sp.preorder_traversal(radical.base)
+        )
+        for radical in radicals
+    )
+
+
+def _largest_integer_atom(value: Any) -> int:
+    expr = _exact(value, name="quality_value")
+    return max((abs(int(atom)) for atom in expr.atoms(sp.Integer)), default=0)
+
+
+def _sample_quality_ok(
+    operation: str,
+    givens: dict[str, Any],
+    result: dict[str, Any],
+) -> bool:
+    expressions = list(givens.values()) + list(result.values())
+    numeric = [value for value in expressions if isinstance(value, (int, float, sp.Basic))]
+    if any(_has_nested_radical(value) for value in numeric):
+        return False
+
+    if operation in {SIDE_BY_COSINES_OP, ANGLE_BY_COSINES_OP}:
+        sides = [
+            _positive_exact(value, name=key)
+            for key, value in givens.items()
+            if key.startswith("side_")
+        ]
+        if not sides or max(float(side) for side in sides) > 30:
+            return False
+        coefficient_values = [
+            value
+            for key, value in result.items()
+            if key not in {"included_angle_degrees", "answer_degrees", "canonical", "find"}
+            and isinstance(value, (int, float, sp.Basic))
+        ]
+        if operation == SIDE_BY_COSINES_OP and any(
+            _largest_integer_atom(value) > 50 for value in coefficient_values
+        ):
+            return False
+    elif operation == EXTRA_PATH_OP:
+        distances = [givens.get("direct_side"), givens.get("first_leg")]
+        if any(float(_positive_exact(value, name="distance")) > 1200 for value in distances):
+            return False
+        if any(_largest_integer_atom(value) > 3600 for value in numeric):
+            return False
+    return True
+
+
+def _sample_with_quality(
+    rng: random.Random,
+    operation: str,
+    sampler: Any,
+    solver: Any,
+) -> tuple[dict[str, Any], dict[str, Any], int]:
+    for attempt in range(1, _SAMPLE_QUALITY_RETRIES + 1):
+        givens = sampler(rng)
+        try:
+            result = solver(givens)
+        except ValueError:
+            continue
+        if _sample_quality_ok(operation, givens, result):
+            return givens, result, attempt
+    raise RuntimeError(f"law_of_cosines_quality_retry_exhausted:{operation}")
+
+
 def _sample_side(rng: random.Random) -> dict[str, Any]:
-    angle = rng.choice(_SPECIAL_ACUTE + _SPECIAL_OBTUSE)
-    b = sp.Integer(rng.choice((2, 3, 4, 5, 6, 8)))
-    c = sp.Integer(rng.choice((2, 3, 4, 5, 6)))
-    # Prefer exact nice radicals for common angles.
-    if angle == 60 and rng.random() < 0.5:
-        b, c = sp.Integer(3), sp.Integer(4)
-    if angle == 120 and rng.random() < 0.4:
-        b, c = sp.Integer(5), sp.Integer(3)
+    # Curated SAS families retain random variation while keeping the resulting
+    # side integral or a single textbook-style radical.
+    b, c, angle = rng.choice(
+        (
+            (3, 4, 60),
+            (3, 5, 120),
+            (5, 5, 60),
+            (6, 8, 90),
+            (2, 3, 90),
+            (3, 3, 120),
+            (4, 4, 90),
+            (2, 6, 60),
+        )
+    )
+    b = sp.Integer(b)
+    c = sp.Integer(c)
     return {"side_b": b, "side_c": c, "included_angle_degrees": angle}
 
 
 def _sample_angle(rng: random.Random) -> dict[str, Any]:
-    # Build SSS from known nice angle via reverse cosine.
-    angle = rng.choice(_SPECIAL_ACUTE + _SPECIAL_OBTUSE)
+    # Integer SSS triples whose target cosine is a standard textbook value.
+    a, b, c = rng.choice(
+        (
+            (7, 5, 3),   # A = 120 degrees
+            (5, 3, 4),   # A = 90 degrees
+            (3, 3, 3),   # A = 60 degrees
+            (7, 8, 5),   # A = 60 degrees
+        )
+    )
     find = rng.choice(("A", "B", "C"))
-    b = sp.Integer(rng.choice((3, 5, 7, 8)))
-    c = sp.Integer(rng.choice((3, 4, 5, 7)))
-    a2 = sp.simplify(b**2 + c**2 - 2 * b * c * _cos_deg(angle))
-    if a2 <= 0:
-        a2 = sp.Integer(rng.choice((9, 16, 25)))
-        # Fall back: derive angle instead of forcing.
-        a = sp.sqrt(a2)
-        return {"side_a": a, "side_b": b, "side_c": c, "find": "A"}
-    a = sp.simplify(sp.sqrt(a2))
     if find == "A":
         return {"side_a": a, "side_b": b, "side_c": c, "find": "A"}
     if find == "B":
@@ -256,15 +338,19 @@ def _sample_angle(rng: random.Random) -> dict[str, Any]:
 
 
 def _sample_extra(rng: random.Random) -> dict[str, Any]:
-    angle = rng.choice((30, 60, 120))
-    scale = sp.Integer(rng.choice((100, 200, 300)))
-    first = scale * rng.choice((2, 3, 4, 8))
-    direct = scale * rng.choice((1, 2, 3))
-    if first == direct:
-        first = direct * 2
+    direct, first, angle = rng.choice(
+        (
+            (300, 800, 60),
+            (300, 300, 60),
+            (400, 300, 90),
+            (300, 500, 120),
+            (200, 200, 120),
+            (300, 600, 60),
+        )
+    )
     return {
-        "direct_side": direct,
-        "first_leg": first,
+        "direct_side": sp.Integer(direct),
+        "first_leg": sp.Integer(first),
         "included_angle_degrees": angle,
     }
 
@@ -277,7 +363,6 @@ def _sample_circumradius(rng: random.Random) -> dict[str, Any]:
         (5, 5, 4),
         (6, 8, 10),
         (5, 7, 8),
-        (50, 70, 80),
     )
     a, b, c = rng.choice(triples)
     return {"side_a": sp.Integer(a), "side_b": sp.Integer(b), "side_c": sp.Integer(c)}
@@ -307,14 +392,26 @@ def build_trigonometry_law_of_cosines_matrix(
         payload.setdefault("as_choice", True)
 
     distractors: list[str] = []
+    sample_attempts = 0
     if op == SIDE_BY_COSINES_OP:
         if not {"side_b", "side_c", "included_angle_degrees"} <= set(payload):
-            payload = {**_sample_side(rng), **payload}
-        result = solve_side_by_law_of_cosines(
-            side_b=payload["side_b"],
-            side_c=payload["side_c"],
-            included_angle_degrees=payload["included_angle_degrees"],
-        )
+            sampled, result, sample_attempts = _sample_with_quality(
+                rng,
+                op,
+                _sample_side,
+                lambda values: solve_side_by_law_of_cosines(
+                    side_b=values["side_b"],
+                    side_c=values["side_c"],
+                    included_angle_degrees=values["included_angle_degrees"],
+                ),
+            )
+            payload = {**sampled, **payload}
+        else:
+            result = solve_side_by_law_of_cosines(
+                side_b=payload["side_b"],
+                side_c=payload["side_c"],
+                included_angle_degrees=payload["included_angle_degrees"],
+            )
         question = (
             f"在△ABC中，已知 $b={canonical_exact(payload['side_b'])}$、"
             f"$c={canonical_exact(payload['side_c'])}$ 且 "
@@ -331,13 +428,25 @@ def build_trigonometry_law_of_cosines_matrix(
         ]
     elif op == ANGLE_BY_COSINES_OP:
         if not {"side_a", "side_b", "side_c"} <= set(payload):
-            payload = {**_sample_angle(rng), **payload}
-        result = solve_angle_by_law_of_cosines(
-            side_a=payload["side_a"],
-            side_b=payload["side_b"],
-            side_c=payload["side_c"],
-            find=str(payload.get("find") or "A"),
-        )
+            sampled, result, sample_attempts = _sample_with_quality(
+                rng,
+                op,
+                _sample_angle,
+                lambda values: solve_angle_by_law_of_cosines(
+                    side_a=values["side_a"],
+                    side_b=values["side_b"],
+                    side_c=values["side_c"],
+                    find=str(values.get("find") or "A"),
+                ),
+            )
+            payload = {**sampled, **payload}
+        else:
+            result = solve_angle_by_law_of_cosines(
+                side_a=payload["side_a"],
+                side_b=payload["side_b"],
+                side_c=payload["side_c"],
+                find=str(payload.get("find") or "A"),
+            )
         find = result["find"]
         question = (
             f"設△ABC的三邊長 $a={canonical_exact(payload['side_a'])}$、"
@@ -377,12 +486,23 @@ def build_trigonometry_law_of_cosines_matrix(
         ]
     elif op == EXTRA_PATH_OP:
         if not {"direct_side", "first_leg", "included_angle_degrees"} <= set(payload):
-            payload = {**_sample_extra(rng), **payload}
-        result = solve_detour_extra_distance_by_cosines(
-            direct_side=payload["direct_side"],
-            first_leg=payload["first_leg"],
-            included_angle_degrees=payload["included_angle_degrees"],
-        )
+            sampled, result, sample_attempts = _sample_with_quality(
+                rng,
+                op,
+                _sample_extra,
+                lambda values: solve_detour_extra_distance_by_cosines(
+                    direct_side=values["direct_side"],
+                    first_leg=values["first_leg"],
+                    included_angle_degrees=values["included_angle_degrees"],
+                ),
+            )
+            payload = {**sampled, **payload}
+        else:
+            result = solve_detour_extra_distance_by_cosines(
+                direct_side=payload["direct_side"],
+                first_leg=payload["first_leg"],
+                included_angle_degrees=payload["included_angle_degrees"],
+            )
         question = (
             f"小仲規劃從 A 地直線到 C 地，距離為 ${canonical_exact(payload['direct_side'])}$ 公尺，"
             f"因道路施工改繞 B 地。已知 AB=${canonical_exact(payload['first_leg'])}$ 公尺，"
@@ -467,6 +587,8 @@ def build_trigonometry_law_of_cosines_matrix(
             "difficulty_profile": difficulty_profile or "easy",
             "presentation_mode": presentation,
             "answer_type": answer_type,
+            "quality_sample_attempts": sample_attempts,
+            "quality_gate_applied": sample_attempts > 0,
         },
         "visual_spec": {"kind": "none"},
         "domain_result": _json_value(result),

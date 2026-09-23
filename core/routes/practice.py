@@ -310,6 +310,15 @@ def _resolve_textbook_example_id_for_images(payload: dict[str, Any]) -> int | No
     return None
 
 
+def _may_reuse_textbook_image(payload: dict[str, Any]) -> bool:
+    source_kind = str(payload.get("source_kind") or "").strip()
+    question_source = str(payload.get("question_source") or payload.get("source") or "").strip()
+    return bool(payload.get("reuse_textbook_image")) or (
+        source_kind == "textbook_example"
+        or question_source == "db_textbook_example"
+    )
+
+
 def _attach_student_image_assets(payload: dict[str, Any]) -> dict[str, Any]:
     """Attach notes.image_assets as browser-ready image_assets. Never raises."""
     from core.question_image_assets import normalize_production_question_asset_payload
@@ -333,11 +342,12 @@ def _attach_student_image_assets(payload: dict[str, Any]) -> dict[str, Any]:
                 out["visual_backed"] = bool(out.get("visual_backed") or normalized)
                 return out
 
+        may_reuse_textbook_image = _may_reuse_textbook_image(out)
         notes = out.get("notes")
         assets: list[dict[str, Any]] = []
-        if notes is not None:
+        if notes is not None and may_reuse_textbook_image:
             assets = list_student_image_assets_from_notes(notes)
-        if not assets:
+        if not assets and may_reuse_textbook_image:
             te_id = _resolve_textbook_example_id_for_images(out)
             if te_id is not None:
                 te = db.session.get(TextbookExample, te_id)
@@ -488,6 +498,8 @@ def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
         "textbook_example_id": data.get("textbook_example_id") or meta.get("textbook_example_id"),
         "generator_key": data.get("generator_key") or data.get("component_id"),
         "source_kind": data.get("source_kind") or meta.get("source_kind"),
+        "diagram_spec": data.get("diagram_spec") or meta.get("diagram_spec"),
+        "reuse_textbook_image": bool(data.get("reuse_textbook_image")),
         "ui_contract": data.get("ui_contract") or (data.get("answer_contract") or {}).get("ui_contract", {}),
     }
 
@@ -1645,6 +1657,7 @@ def get_adaptive_question():
                 "context_string": data.get("context_string", ""),
                 "image_base64": data.get("image_base64", ""),
                 "visual_spec": data.get("visual_spec", {}),
+                "diagram_spec": data.get("diagram_spec"),
                 "visual_aids": data.get("visual_aids", []),
                 "answer_type": data.get("answer_type", "text"),
                 "problem_type_id": data.get("problem_type_id") or data.get("problem_type"),
@@ -2261,6 +2274,7 @@ def next_question():
             "current_level": difficulty_level,
             "image_base64": _materialize_question_image(data.get("image_base64", "")),
             "visual_spec": data.get("visual_spec", {}),
+            "diagram_spec": data.get("diagram_spec"),
             "visual_aids": session_data.get("visual_aids", data.get("visual_aids", [])),
             "table_data": session_data.get("table_data", data.get("table_data", {})),
             "table_question": session_data.get("table_question", data.get("table_question", {})),

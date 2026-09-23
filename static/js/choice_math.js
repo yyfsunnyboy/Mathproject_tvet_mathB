@@ -38,7 +38,7 @@
 
     function choiceDisplay(choice) {
         if (choice && typeof choice === 'object' && choice.display) {
-            return String(choice.display);
+            return formatChoiceMathDisplay(choice.display);
         }
         if (choice && typeof choice === 'object') {
             return formatChoiceMathDisplay(choice.text || choice.value || '');

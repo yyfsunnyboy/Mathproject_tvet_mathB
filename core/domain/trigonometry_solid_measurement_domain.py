@@ -233,10 +233,11 @@ def build_trigonometry_solid_measurement_matrix(
             far_elevation_degrees=raw["far_elevation_degrees"],
         )
         question = (
-            f"塔高 ${canonical_exact(result['tower_height'])}$ 公尺，同岸近處仰角 "
-            f"${canonical_exact(result['near_elevation_degrees'])}^\\circ$，對岸遠處仰角 "
-            f"${canonical_exact(result['far_elevation_degrees'])}^\\circ$，"
-            f"且近處觀測方向與河岸垂直。試求近處水平距、遠處水平距與河寬。"
+            f"塔底為 C，塔高 ${canonical_exact(result['tower_height'])}$ 公尺。A、B 為地面觀測點，"
+            f"在 A 點測得塔頂仰角 ${canonical_exact(result['near_elevation_degrees'])}^\\circ$，"
+            f"在 B 點測得塔頂仰角 ${canonical_exact(result['far_elevation_degrees'])}^\\circ$。"
+            "已知 AC 垂直河岸，AB 沿河岸，且 $AC\\perp AB$；A、C 位於同岸，B 位於對岸，"
+            "線段 AB 代表河寬。試求 AC、BC 與河寬 AB。"
         )
         answer_value = result["canonical"]
         parts = dict(result["canonical"])

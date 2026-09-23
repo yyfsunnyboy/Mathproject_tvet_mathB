@@ -96,6 +96,19 @@ def test_choice_fallback_with_present_but_noop_normalizer():
     assert result.stdout == r'\(3\sqrt{2}\)'
 
 
+def test_choice_runtime_normalizes_raw_nested_sqrt_display():
+    script = r'''
+      globalThis.MathDisplayNormalizer = require('./static/js/math_display_normalizer.js');
+      const c = require('./static/js/choice_math.js');
+      process.stdout.write(c.choiceDisplay({
+        text:'900*sqrt(5 - 2*sqrt(3))',
+        display:'900*sqrt(5 - 2*sqrt(3))'
+      }));
+    '''
+    result = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, check=True)
+    assert result.stdout == r'\(900\sqrt{5 - 2\sqrt{3}}\)'
+
+
 def test_adaptive_display_is_preserved_and_escaped():
     source = (ROOT / 'templates/adaptive_practice_v2.html').read_text(encoding='utf-8')
     assert 'display: choice.display' in source

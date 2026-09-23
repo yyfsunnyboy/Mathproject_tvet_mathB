@@ -7,6 +7,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+import sympy as sp
 
 from core.domain.trigonometry_law_of_cosines_domain import (
     OPS,
@@ -128,3 +129,53 @@ def test_published_generator_smoke_if_present():
         assert a["answer"] == b["answer"]
         q = str(a.get("question_text") or a.get("question") or "")
         assert q and "placeholder" not in q.lower()
+
+
+def _has_nested_radical(value: object) -> bool:
+    expr = sp.sympify(str(value))
+    radicals = [
+        node for node in sp.preorder_traversal(expr)
+        if isinstance(node, sp.Pow) and node.exp == sp.Rational(1, 2)
+    ]
+    return any(
+        any(
+            isinstance(child, sp.Pow) and child.exp == sp.Rational(1, 2)
+            for child in sp.preorder_traversal(radical.base)
+        )
+        for radical in radicals
+    )
+
+
+def test_level_one_generation_quality_has_no_nested_radicals():
+    from skills import vh_數學B2_SubSection_2_1_2 as skill
+
+    for seed in range(50):
+        payload = skill.generate(level=1, seed=seed)
+        values = [payload.get("correct_answer"), payload.get("answer")]
+        values.extend(
+            choice.get("value", choice.get("text")) if isinstance(choice, dict) else choice
+            for choice in payload.get("choices", [])
+        )
+        assert not any(_has_nested_radical(value) for value in values if value not in (None, "")), (
+            seed,
+            payload.get("component_id"),
+            values,
+        )
+
+
+def test_sampled_level_one_sides_stay_in_textbook_range():
+    for seed in range(50):
+        for operation in ("solve_side_by_law_of_cosines", "solve_angle_by_law_of_cosines"):
+            matrix = build_trigonometry_law_of_cosines_matrix(
+                operation=operation,
+                seed=seed,
+                curriculum_profile="vocational_high_b",
+                difficulty_profile="easy",
+            )
+            side_values = [
+                sp.sympify(value)
+                for key, value in matrix["givens"].items()
+                if key.startswith("side_")
+            ]
+            assert side_values
+            assert max(float(value) for value in side_values) <= 30

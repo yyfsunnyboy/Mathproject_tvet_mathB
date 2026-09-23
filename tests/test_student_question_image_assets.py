@@ -183,13 +183,43 @@ def test_runtime_attaches_production_image_assets_for_te(app_client):
         from core.routes.practice import _attach_student_image_assets
 
         for te_id in cases:
-            data = _attach_student_image_assets({"textbook_example_id": te_id})
+            data = _attach_student_image_assets({
+                "textbook_example_id": te_id,
+                "source_kind": "textbook_example",
+            })
             assets = data.get("image_assets") or []
             assert len(assets) == 1, te_id
             assert assets[0]["url"].startswith("/static/question_assets/")
             img = client.get(assets[0]["url"])
             assert img.status_code == 200
             assert "image/png" in (img.headers.get("Content-Type") or "").lower()
+
+
+def test_dynamic_question_does_not_reuse_textbook_image_without_compatibility(app_client):
+    app, _client = app_client
+    with app.app_context():
+        from core.routes.practice import _attach_student_image_assets
+
+        data = _attach_student_image_assets({
+            "textbook_example_id": 11702,
+            "component_id": "src_11702",
+            "source_kind": "example",
+            "question_text": "動態變形題",
+        })
+        assert data["image_assets"] == []
+
+
+def test_textbook_image_reuse_requires_original_source_or_explicit_compatibility():
+    from core.routes.practice import _may_reuse_textbook_image
+
+    assert not _may_reuse_textbook_image({
+        "textbook_example_id": 11702,
+        "component_id": "src_11702",
+        "source_kind": "example",
+    })
+    assert _may_reuse_textbook_image({"source_kind": "textbook_example"})
+    assert _may_reuse_textbook_image({"question_source": "db_textbook_example"})
+    assert _may_reuse_textbook_image({"source_kind": "example", "reuse_textbook_image": True})
 
 
 def test_get_next_question_no_image_for_text_only_te(app_client):

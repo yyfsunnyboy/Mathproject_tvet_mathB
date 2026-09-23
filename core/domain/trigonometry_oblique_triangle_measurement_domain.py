@@ -28,6 +28,36 @@ _DELEGATE = {
 }
 
 
+def _triangle_diagram_spec(operation: str, givens: dict[str, Any]) -> dict[str, Any]:
+    if operation == SIDE_BY_SINES_OP:
+        parameters = {
+            "angles_deg": {
+                "A": givens["known_angle_degrees"],
+                "C": givens["target_angle_degrees"],
+            },
+            "sides": {"a": givens["known_side"]},
+        }
+        show = {"angles": ["A", "C"], "sides": ["a"], "unknown_sides": ["c"]}
+    else:
+        parameters = {
+            "angles_deg": {"A": givens["included_angle_degrees"]},
+            "sides": {"b": givens["side_b"], "c": givens["side_c"]},
+        }
+        show = {"angles": ["A"], "sides": ["b", "c"], "unknown_sides": ["a"]}
+    return {
+        "version": 1,
+        "type": "triangle",
+        "vertices": ["A", "B", "C"],
+        "parameters": parameters,
+        "side_vertices": {
+            "a": ["B", "C"],
+            "b": ["C", "A"],
+            "c": ["A", "B"],
+        },
+        "show": show,
+    }
+
+
 def build_trigonometry_oblique_triangle_measurement_matrix(
     *,
     operation: str | None = None,
@@ -56,18 +86,26 @@ def build_trigonometry_oblique_triangle_measurement_matrix(
             **raw,
         )
     else:
-        matrix = build_trigonometry_law_of_cosines_matrix(
-            operation=op,
-            seed=seed,
-            curriculum_profile=curriculum_profile,
-            difficulty_profile=difficulty_profile,
-            **raw,
-        )
+        matrix = None
+        for offset in range(24):
+            candidate = build_trigonometry_law_of_cosines_matrix(
+                operation=op,
+                seed=None if seed is None else seed + offset,
+                curriculum_profile=curriculum_profile,
+                difficulty_profile=difficulty_profile,
+                **raw,
+            )
+            if str((candidate.get("givens") or {}).get("included_angle_degrees")) != "90":
+                matrix = candidate
+                break
+        if matrix is None:
+            raise RuntimeError("oblique_triangle_non_right_sample_exhausted")
 
     facts = matrix.setdefault("validation_facts", {})
     facts["domain_operation"] = op
     facts["cross_domain_delegate"] = _DELEGATE[op]
     facts["composition_skill"] = "vh_數學B2_SubSection_2_2_4"
+    matrix["diagram_spec"] = _triangle_diagram_spec(op, matrix["givens"])
 
     # Light stem rewrite for measurement context when still using generic △ABC stem.
     if not raw.get("question_text"):
