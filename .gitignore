@@ -27,14 +27,33 @@ reports/runtime_tests/*
 # Gencode / publish 本機診斷與 dryrun 產物（保留檔案，不進版控）
 reports/_inventory_visual_kinds.json
 reports/gencode_qwen_dryrun/_probe_preflight/
-reports/gencode_v3_dryrun/_slope_of_a_line_probe/
-reports/gencode_v3_dryrun/vh_數學B1_SlopeOfALine/
-reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfParallelLines/
-reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfPerpendicularLines/
+reports/gencode_v3_dryrun/
+reports/gencode_v3_publish_staging/
+reports/domain_capability_proposals/
+reports/pytest_tmp/
+reports/b2_*_gencode_audit.json
+reports/b2_*_gencode_v3_build_report.json
+reports/b2_*_v3_reconcile_report.json
+reports/b2_ch2_*dryrun*
+reports/b2_ch2_*runtime_smoke*
+reports/b2_ch2_*acceptance*
+reports/b2_ch2_*audit*
+reports/b2_ch2_*apply*
+reports/b2_ch2_*inventory*
+reports/b2_ch2_outline_rebind_*.json
 runtime/v3_publish_staging/
 scripts/_probe_*.py
 scripts/_repair_slope_of_aline_5.py
 skills/*.py.bak
+
+# 本機一次性診斷腳本 / 暫存目錄（不進版控）
+scratch/_*
+tmp/
+/tmp_*.py
+.pytest_*/
+.tmp_pytest_*/
+.test-tmp*/
+.test_tmp*/
 
 # 忽略轉檔產生的暫存圖片資料夾
 media/
