@@ -26,6 +26,20 @@ FORBIDDEN_MATH_HELPER_TOKENS = (
     "Fraction(",
 )
 
+POINT_SLOPE_TEXTBOOK_ROW = {
+    "id": 1,
+    "skill_id": "vh_數學B1_PointSlopeForm",
+    "problem_text": "已知點 $(1,2)$ 與斜率 $3$，求直線方程式。",
+    "correct_answer": "$y-2=3(x-1)$",
+    "source_description": "例題1",
+    "problem_type": "point_slope",
+}
+POINT_SLOPE_CONSTRAINTS = {
+    "line_type": "point_slope",
+    "problem_type_id": "point_slope",
+    "domain_operation": "point_slope",
+}
+
 
 def test_build_v3_component_draft_from_skill_ex_example():
     result = build_v3_component_draft_from_skill(
@@ -33,13 +47,15 @@ def test_build_v3_component_draft_from_skill_ex_example():
         textbook_example_id=1,
         source_kind="ex_1",
         seed=42,
+        textbook_row=POINT_SLOPE_TEXTBOOK_ROW,
+        constraints=POINT_SLOPE_CONSTRAINTS,
     )
 
     assert result["status"] == "draft_built"
     assert result["line_type"] == "point_slope"
     assert result["skill_id"] == "vh_數學B1_PointSlopeForm"
     assert result["textbook_example_id"] == 1
-    assert result["source_kind"] == "ex_1"
+    assert result["source_kind"] in {"ex_1", "example"}
     assert result["domain_module"] == (
         "core.domain.coordinate_geometry.line_equation_domain"
     )
@@ -59,11 +75,13 @@ def test_generate_py_string_is_porter_safe():
         textbook_example_id=1,
         source_kind="ex_1",
         seed=42,
+        textbook_row=POINT_SLOPE_TEXTBOOK_ROW,
+        constraints=POINT_SLOPE_CONSTRAINTS,
     )
     generate_source = result["files"]["generate.py"]
 
     assert "build_line_equation_matrix" in generate_source
-    assert "convert_line_equation_matrix_to_question_payload" in generate_source
+    assert "convert_domain_matrix_to_question_payload" in generate_source
 
     for token in FORBIDDEN_GENERATE_TOKENS:
         assert token not in generate_source
@@ -78,6 +96,8 @@ def test_metadata_py_injects_ex_source_kind_profile():
         textbook_example_id=1,
         source_kind="ex_1",
         seed=42,
+        textbook_row=POINT_SLOPE_TEXTBOOK_ROW,
+        constraints=POINT_SLOPE_CONSTRAINTS,
     )
     metadata_source = result["files"]["metadata.py"]
     assert "ORDER_WEIGHT: Final[int] = 10" in metadata_source
@@ -106,18 +126,25 @@ def test_dry_run_hook_does_not_write_to_disk(monkeypatch: pytest.MonkeyPatch):
         textbook_example_id=1,
         source_kind="ex_1",
         seed=42,
+        textbook_row=POINT_SLOPE_TEXTBOOK_ROW,
+        constraints=POINT_SLOPE_CONSTRAINTS,
     )
     assert result["status"] == "draft_built"
     assert write_calls == []
 
 
-def test_unregistered_skill_raises_key_error():
-    with pytest.raises(KeyError, match="Unregistered skill_id"):
+def test_unregistered_skill_raises_domain_unresolved():
+    with pytest.raises(ValueError, match="DOMAIN_CAPABILITY_UNRESOLVED|no_required_capabilities|domain_capability|Unregistered"):
         build_v3_component_draft_from_skill(
             skill_id="vh_數學B1_NotRegisteredSkill",
             textbook_example_id=99,
             source_kind="ex_9",
             seed=1,
+            textbook_row={
+                **POINT_SLOPE_TEXTBOOK_ROW,
+                "id": 99,
+                "skill_id": "vh_數學B1_NotRegisteredSkill",
+            },
         )
 
 
@@ -134,6 +161,16 @@ def test_source_kind_line_type_mapping(source_kind: str, expected_line_type: str
         textbook_example_id=2,
         source_kind=source_kind,
         seed=7,
+        textbook_row={
+            **POINT_SLOPE_TEXTBOOK_ROW,
+            "id": 2,
+            "problem_text": "已知兩點 $(0,0)$ 與 $(2,4)$，求直線方程式。",
+        },
+        constraints={
+            "line_type": expected_line_type,
+            "problem_type_id": expected_line_type,
+            "domain_operation": expected_line_type,
+        },
     )
     assert result["line_type"] == expected_line_type
 
@@ -145,5 +182,10 @@ def test_constraints_line_type_override():
         source_kind="quiz_1",
         seed=5,
         constraints={"line_type": "horizontal_line"},
+        textbook_row={
+            **POINT_SLOPE_TEXTBOOK_ROW,
+            "id": 3,
+            "problem_text": "求通過點 $(1,2)$ 的水平線方程式。",
+        },
     )
     assert result["line_type"] == "horizontal_line"

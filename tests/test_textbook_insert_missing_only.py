@@ -50,6 +50,10 @@ def test_phase4_opt_in_backfill(monkeypatch, existing, insert_missing_only, inse
         processor, "_phase4_resolve_mathb_formal_binding",
         lambda **kwargs: ("concept", "new_skill", SimpleNamespace()),
     )
+    monkeypatch.setattr(
+        processor, "validate_existing_skill_binding_for_import",
+        lambda *args, **kwargs: (True, ""),
+    )
     monkeypatch.setattr(processor, "_curriculum_authority_coords", lambda row: {
         "curriculum": "vocational", "volume": "數學B2",
         "chapter_title": "第2章", "section_title": "2-1 測試", "skill_id": "new_skill",

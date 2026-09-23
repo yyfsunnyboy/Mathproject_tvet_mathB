@@ -184,7 +184,7 @@ def _fetch_textbook_example_ids_for_skill(
         """
         SELECT id
         FROM textbook_examples
-        WHERE skill_id = ?
+        WHERE skill_id = ? AND skill_id NOT LIKE 'outline_%'
         ORDER BY id ASC
         """,
         (str(skill_id or "").strip(),),

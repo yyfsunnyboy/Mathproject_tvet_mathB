@@ -419,6 +419,29 @@ def _chapter_self_assessment_outline_skip(chapter: str) -> dict[str, Any]:
     }
 
 
+def _textbook_example_scope_query(curriculum_info: dict[str, Any], volume: str):
+    """Return the display/count scope used by the importer result UI."""
+    from models import TextbookExample
+
+    query = TextbookExample.query.filter_by(
+        source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
+        source_volume=str(curriculum_info.get("volume") or volume),
+    )
+    if str(curriculum_info.get("source_scope") or "") == "chapter_self_assessment":
+        chapter = str(curriculum_info.get("chapter") or "").strip()
+        if not chapter:
+            raise V3PipelineError(
+                STAGE_CURRICULUM_BINDING,
+                "missing_authoritative_chapter",
+                "Chapter self-assessment requires chapter authority",
+            )
+        return query.filter_by(
+            source_chapter=chapter,
+            problem_type="self_assessment",
+        )
+    return query.filter_by(source_section=str(curriculum_info.get("section") or ""))
+
+
 def _fill_chapter_section_from_outline_or_lines(
     curriculum_info: dict[str, Any],
     lines: list[str],
@@ -1416,11 +1439,8 @@ def run_v3_pair_pipeline(
 
                 replace_coords: dict[str, str] | None = None
                 replace_deleted_ids: list[int] = []
-                te_before = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).count()
+                display_scope_query = _textbook_example_scope_query(curriculum_info, volume)
+                te_before = display_scope_query.count()
                 te_total_before = TextbookExample.query.count()
 
                 try:
@@ -1450,23 +1470,19 @@ def run_v3_pair_pipeline(
                         details={"error_type": type(exc).__name__},
                     )
 
-                te_after = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).count()
+                display_scope_query = _textbook_example_scope_query(curriculum_info, volume)
+                te_after = display_scope_query.count()
                 te_total_after = TextbookExample.query.count()
 
-                section_rows = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).all()
+                section_rows = display_scope_query.all()
                 skill_dist: dict[str, int] = {}
+                source_section_dist: dict[str, int] = {}
                 null_answer = 0
                 for row in section_rows:
                     sid = str(row.skill_id or "")
                     skill_dist[sid] = skill_dist.get(sid, 0) + 1
+                    source_section = str(row.source_section or "")
+                    source_section_dist[source_section] = source_section_dist.get(source_section, 0) + 1
                     if row.correct_answer is None or str(row.correct_answer).strip() == "":
                         null_answer += 1
 
@@ -1480,6 +1496,7 @@ def run_v3_pair_pipeline(
                     "textbook_example_total_before": te_total_before,
                     "textbook_example_total_after": te_total_after,
                     "skill_distribution": skill_dist,
+                    "source_section_distribution": source_section_dist,
                     "correct_answer_null_count": null_answer,
                     "backup": backup_info,
                 }

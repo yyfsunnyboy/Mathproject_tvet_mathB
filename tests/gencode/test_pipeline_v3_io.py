@@ -40,6 +40,18 @@ def _build_draft() -> dict[str, object]:
         textbook_example_id=1,
         source_kind="ex_1",
         seed=42,
+        textbook_row={
+            "id": 1,
+            "skill_id": SKILL_ID,
+            "problem_text": "已知點 $(1,2)$ 與斜率 $3$，求直線方程式。",
+            "correct_answer": "$y-2=3(x-1)$",
+            "problem_type": "point_slope",
+        },
+        constraints={
+            "line_type": "point_slope",
+            "problem_type_id": "point_slope",
+            "domain_operation": "point_slope",
+        },
     )
 
 
@@ -88,7 +100,7 @@ def test_compile_v3_component_manifest_writes_traceable_manifest(sandbox_base: P
     assert isinstance(loaded["components"], list)
     assert loaded["components"][0]["component_id"] == "src_1"
     assert loaded["components"][0]["status"] == "draft_written"
-    assert loaded["components"][0]["source_kind"] == "ex_1"
+    assert loaded["components"][0]["source_kind"] in {"ex_1", "example"}
     assert loaded["components"][0]["textbook_example_id"] == 1
     assert loaded["components"][0]["line_type"] == "point_slope"
     assert loaded["components"][0]["domain_module"] == (

@@ -758,28 +758,25 @@
                             </div>
                             <div class="v3-actions" style="margin-top: 6px;">
                                 {% set allow_rebuild = gencode.get('allow_v3_rebuild') %}
-                                {% if allow_rebuild %}
+                                {% if not skill.skill_id.startswith('outline_') %}
+                                {% if cap_status == 'ready' and allow_rebuild %}
                                 <button type="button" class="btn btn-primary btn-sm"
                                     title="Gencode V3會使用既有domain能力重新建置，不會自行建立新API。"
                                     onclick="runSkillV3BatchDryrun('{{ skill.skill_id }}', 'regenerate', '重新建置與驗證')">
                                     重新建置與驗證
                                 </button>
-                                {% elif cap_status in ['partial', 'missing', 'invalid'] %}
+                                {% else %}
                                 <button type="button" class="btn btn-primary btn-sm"
-                                    title="使用系統AI角色 architect／coder 產生隔離 candidate（不會寫入正式core）。"
-                                    onclick="startSkillCapabilityAiFill('{{ skill.skill_id }}')">
-                                    系統AI補全能力
+                                    title="先檢查 V3 出題能力，再使用既有補全流程建立能力。"
+                                    onclick="inspectSkillCapability('{{ skill.skill_id }}', '{{ cap_status or 'missing' }}')">
+                                    {{ '建立 V3' if cap_status == 'missing' else '補全 V3' }}
                                 </button>
                                 <button type="button" class="btn btn-secondary btn-sm"
                                     title="匯出維護用診斷（非正式主流程）"
                                     onclick="exportSkillCapabilityDiagnosis('{{ skill.skill_id }}')">
                                     匯出診斷
                                 </button>
-                                {% else %}
-                                <button type="button" class="btn btn-secondary btn-sm" disabled
-                                    title="Gencode V3會使用既有domain能力重新建置，不會自行建立新API。">
-                                    能力評估中
-                                </button>
+                                {% endif %}
                                 {% endif %}
                                 {# 查看組件 — 有任何 component 資料時可用 #}
                                 {% if total_examples > 0 or tracker_count > 0 %}
@@ -790,7 +787,7 @@
                                 </a>
                                 {% endif %}
                                 {# 更新到學生端 — 僅 publish_ready 且能力就緒時可用 #}
-                                {% if gencode.get('publish_ready') and allow_rebuild %}
+                                {% if not skill.skill_id.startswith('outline_') and gencode.get('publish_ready') and allow_rebuild %}
                                 <button type="button" class="btn btn-danger btn-sm"
                                     title="使用目前已驗證題目重新編譯並發布 production wrapper"
                                     onclick="repackageSkillV3('{{ skill.skill_id }}')">
@@ -812,12 +809,6 @@
                                     }|tojson }})'>
                                     <i class="bi bi-pencil-fill"></i>
                                 </button>
-                                {% if not (production_wrapper_exists and v3_package_exists) %}
-                                <button type="button" class="btn btn-secondary"
-                                    onclick="regenerateSkillCode('{{ skill.skill_id }}')" title="舊版 AI 單檔 codegen">
-                                    <i class="bi bi-arrow-clockwise"></i> V2 舊版重建
-                                </button>
-                                {% endif %}
                                 <a href="{{ url_for('core.admin_prerequisites', skill_id=skill.skill_id) }}"
                                     class="btn btn-prereq" title="設定前置技能"><i class="bi bi-diagram-2-fill"></i></a>
                                 <form method="POST"
@@ -1179,83 +1170,6 @@
                 }
             });
         });
-
-        // 全域函式：重新生成技能程式碼 (使用 SweetAlert2)
-        function regenerateSkillCode(skillId) {
-            // 1. 確認對話框 (美化版)
-            Swal.fire({
-                title: '確定要重新生成嗎？',
-                text: `這將會覆蓋現有的 ${skillId}.py 檔案。`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '是的，重新生成！',
-                cancelButtonText: '取消'
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                    // 2. 顯示 Loading (美化版)
-                    Swal.fire({
-                        title: 'AI 正在撰寫程式碼...',
-                        html: '請稍候，這可能需要 10-20 秒。<br><br><b>正在處理中...</b>',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // 3. 發送請求 (使用動態 URL 生成)
-                    // 先生成一個帶有佔位符的網址，再用 JS 替換掉佔位符
-                    const targetUrl = "{{ url_for('core.admin_regenerate_skill_code', skill_id='SKILL_ID_PLACEHOLDER') }}".replace('SKILL_ID_PLACEHOLDER', skillId);
-
-                    fetch(targetUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' }
-                    })
-                        .then(async response => {
-                            const contentType = response.headers.get("content-type");
-                            if (contentType && contentType.indexOf("application/json") !== -1) {
-                                return response.json().then(data => {
-                                    if (!response.ok) throw new Error(data.message || '伺服器錯誤');
-                                    return data;
-                                });
-                            } else {
-                                const text = await response.text();
-                                console.error("Server Error HTML:", text);
-                                let errorMsg = '伺服器發生內部錯誤 (500)';
-                                const titleMatch = text.match(/<title>(.*?)<\/title>/);
-                                if (titleMatch) errorMsg += ': ' + titleMatch[1];
-                                throw new Error(errorMsg);
-                            }
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                // 4. 成功提示 (美化版)
-                                Swal.fire({
-                                    title: '✨ 生成成功！',
-                                    text: `技能程式碼 ${skillId}.py 已建立完成。`,
-                                    icon: 'success',
-                                    confirmButtonText: '太棒了！'
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                throw new Error(data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Fetch Error:', error);
-                            // 5. 錯誤提示 (美化版)
-                            Swal.fire({
-                                title: '❌ 執行失敗',
-                                text: error.message,
-                                icon: 'error'
-                            });
-                        });
-                }
-            });
-        }
 
         function openV3Drawer(templateId) {
             const source = document.getElementById(templateId);

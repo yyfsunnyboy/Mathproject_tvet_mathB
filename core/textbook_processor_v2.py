@@ -1058,18 +1058,16 @@ def validate_existing_skill_binding_for_import(
     curriculum_info: dict | None,
     chapter_title: str = "",
 ) -> tuple[bool, str]:
-    """Phase4 寫入前防呆：self_assessment 只能綁定既有 DB skill。"""
-    if str(source_type or "").strip() != "self_assessment":
-        return True, ""
+    """Phase4 gate: every persisted question must bind to an in-scope leaf."""
     sid = _normalize_skill_id_quality(skill_id)
     if not sid:
         return False, "empty_skill_id"
+    if sid.startswith("outline_"):
+        return False, "outline_skill"
     if _is_fallback_skill_id(sid) and not _BOUND_SUBSECTION_ID_RE.fullmatch(sid):
         return False, "fallback_pattern"
     if not sid.startswith("vh_"):
         return False, "not_vh_prefix"
-    if sid.startswith("outline_"):
-        return False, "outline_skill"
     if SkillInfo.query.get(sid) is None:
         return False, "skill_not_in_skillinfo"
     coords = _import_scope_coords(curriculum_info or {})
@@ -4604,9 +4602,19 @@ def _phase4_resolve_mathb_formal_binding(
     if sec_code and not _section_code_boundary_matches(sec_code, section_auth["section_title"]):
         return None
     if mapping_status == "section_outline_fallback":
-        if requested_skill_id != section_curriculum.skill_id:
-            return None
-        return section_auth["section_title"], section_curriculum.skill_id, section_curriculum
+        _log_info(
+            f"[PHASE4_SKIP] reason=unresolved_leaf title={anchor!r} "
+            f"section_code={sec_code!r} requested_skill_id={requested_skill_id!r}"
+        )
+        return None
+    if mapping_status == "unresolved_leaf" or not requested_skill_id and str(
+        block_meta.get("needs_skill_resolution") or ""
+    ).lower() in {"true", "1"}:
+        _log_info(
+            f"[PHASE4_SKIP] reason=unresolved_leaf title={anchor!r} "
+            f"section_code={sec_code!r}"
+        )
+        return None
 
     outline_item = ImportAuthority(
         source_scope=str((curriculum_info or {}).get("source_scope") or "section_textbook"),
@@ -5158,6 +5166,27 @@ def phase4_absolute_hydrate_and_save(
                                 continue
                             concept_name_final, skill_id, authority_row = resolved
                             auth = _curriculum_authority_coords(authority_row)
+                            binding_ok, binding_reason = validate_existing_skill_binding_for_import(
+                                skill_id,
+                                source_type=source_type,
+                                section_code=item_sec_code,
+                                curriculum_info=curriculum_info,
+                                chapter_title=auth["chapter_title"],
+                            )
+                            if not binding_ok:
+                                _shield_log_phase4_skip(
+                                    f"invalid_final_skill:{binding_reason}",
+                                    title=title,
+                                    section_code=item_sec_code,
+                                    queue=queue,
+                                    gemini_section_title=gemini_section_title,
+                                )
+                                outline_shield_skipped += 1
+                                skipped += 1
+                                if source_type == "self_assessment":
+                                    self_assessment_skipped += 1
+                                    needs_review += 1
+                                continue
                             _log_info(
                                 f"[antigravity] mathb formal-bind title={title!r} "
                                 f"sec_code={item_sec_code!r} skill_id={skill_id!r} "

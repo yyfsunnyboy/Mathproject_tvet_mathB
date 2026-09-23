@@ -57,7 +57,7 @@ def _fetch_textbook_example_ids(conn: sqlite3.Connection, skill_id: str) -> list
         """
         SELECT id
         FROM textbook_examples
-        WHERE skill_id = ?
+        WHERE skill_id = ? AND skill_id NOT LIKE 'outline_%'
         ORDER BY id ASC
         """,
         (skill_id,),

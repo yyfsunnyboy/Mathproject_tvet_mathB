@@ -43,7 +43,6 @@ from models import db, SkillInfo, SkillCurriculum, TextbookExample
 from core.ai_analyzer import get_model
 from flask import current_app, has_app_context
 import traceback
-from core.code_generator import auto_generate_skill_code
 from core.math_formula_normalizer import (
     detect_suspicious_formula,
     normalize_converted_docx_latex_text,
@@ -1109,17 +1108,17 @@ def resolve_question_bank_section_skill_id(
         if has_app_context():
             current_app.logger.warning(
                 "[QUESTION BANK SKILL ALIGN WARNING] section_code=%s section_title=%s "
-                "reason=fallback_outline fallback_outline_skill_id=%s",
+                "reason=unresolved_leaf hierarchy_outline_skill_id=%s",
                 code,
                 anchor_title,
                 sid,
             )
-        return sid, "fallback_outline"
+        return None, "unresolved_leaf"
 
     if has_app_context():
         current_app.logger.warning(
             "[QUESTION BANK SKILL ALIGN WARNING] section_code=%s section_title=%s "
-            "reason=fallback_outline fallback_outline_skill_id=",
+            "reason=unresolved_leaf hierarchy_outline_skill_id=",
             code,
             anchor_title,
         )
@@ -1143,7 +1142,9 @@ def resolve_question_bank_skill_for_section(
     )
     return {
         "skill_id": sid or "",
-        "needs_review": source in ("fallback_outline", "not_found", "missing_section_code"),
+        "mapping_status": "unresolved_leaf" if not sid else source,
+        "needs_skill_resolution": not bool(sid),
+        "needs_review": source in ("unresolved_leaf", "not_found", "missing_section_code"),
         "source": source,
         "section_code": code,
     }
@@ -3287,29 +3288,9 @@ def process_textbook_file(
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
 
-        # 步驟 5: 產生對應的技能程式碼 (選用)
-        code_gen_status = "skipped"
-        if skip_code_gen:
-            message = "Skip code generation by request."
-            current_app.logger.info(message)
-            queue.put(f"INFO: {message}")
-        elif processed_skill_ids:
-            queue.put(f"INFO: start code generation for {len(processed_skill_ids)} skills")
-            for idx, skill_id in enumerate(processed_skill_ids):
-                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 正在寫入 {skill_id}.py ...")
-                try:
-                    # [修正] 強制 Architect 重新載入最新 Prompt
-                    success, msg = auto_generate_skill_code(skill_id, queue, force_architect_refresh=True)
-                    if success:
-                        queue.put(f"INFO: {skill_id} code generated")
-                    else:
-                        queue.put(f"WARN: {skill_id} code generation failed")
-                except Exception as e:
-                    queue.put(f"ERROR: 技能 {skill_id} 程式碼寫入失敗: {e}")
-                    current_app.logger.error(f"Generate Error {skill_id}: {e}")
-                
-                time.sleep(2) # Rate Limit
-            code_gen_status = f"{len(processed_skill_ids)} generated"
+        # Import only textbook and skill data. V3 capability and components are
+        # created through the existing /skills workflow after import.
+        queue.put("INFO: 教材匯入完成；請於 /skills 建立或補全 V3 出題能力。")
 
         return {
             "status": "success", 
@@ -3321,7 +3302,7 @@ def process_textbook_file(
                         f"新增隨堂練習 {in_class_practice_count} 筆\n"
                         f"練習題需審核 {practice_needs_review_count} 筆\n"
                         f"練習題跳過 {practice_skipped_count} 筆\n"
-                        f"自動產生程式碼 {code_gen_status}")
+                        f"V3 出題能力請至 /skills 建立或補全")
         }
 
     except Exception as e:

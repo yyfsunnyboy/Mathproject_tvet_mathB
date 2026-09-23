@@ -1156,7 +1156,7 @@ def _load_examples(skill_id: str, db_path: str = "instance/kumon_math.db") -> li
     """Load textbook examples strictly by skill_id (no chapter/section cross-skill merge)."""
     con = sqlite3.connect(str(PROJECT_ROOT / db_path))
     con.row_factory = sqlite3.Row
-    rows = [dict(r) for r in con.execute("SELECT * FROM textbook_examples WHERE skill_id=? ORDER BY rowid", (skill_id,)).fetchall()]
+    rows = [dict(r) for r in con.execute("SELECT * FROM textbook_examples WHERE skill_id=? AND skill_id NOT LIKE 'outline_%' ORDER BY rowid", (skill_id,)).fetchall()]
     con.close()
     validated: list[dict[str, Any]] = []
     for row in rows:

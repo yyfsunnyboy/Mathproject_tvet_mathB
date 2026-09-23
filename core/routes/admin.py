@@ -2912,70 +2912,6 @@ def admin_skills():
         filters=selected,
     )
 
-    v2_started = _time.time()
-    gencode_status_map = {}
-    root_candidates = [
-        Path(current_app.root_path),
-        Path(current_app.root_path).parent,
-        Path(current_app.root_path).parent.parent,
-    ]
-    project_root = next(
-        (p for p in root_candidates if (p / "skills").exists()),
-        Path(current_app.root_path),
-    )
-    skills_dir = project_root / "skills"
-    drafts_dir = project_root / "reports" / "gencode_closed_loop" / "drafts"
-    for s in skills:
-        sid = str(s["skill_id"])
-        formal_rel = f"skills/{sid}.py"
-        draft_rel = f"reports/gencode_closed_loop/drafts/{sid}.py"
-        formal_abs = skills_dir / f"{sid}.py"
-        draft_abs = drafts_dir / f"{sid}.py"
-        formal_exists = formal_abs.exists()
-        draft_exists = draft_abs.exists()
-        if formal_exists:
-            gencode_status_map[sid] = {
-                "status": "generated",
-                "label": "已產生",
-                "button_label": "重新產生",
-                "formal_exists": True,
-                "draft_exists": draft_exists,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel if draft_exists else "",
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs) if draft_exists else "",
-            }
-        elif draft_exists:
-            gencode_status_map[sid] = {
-                "status": "draft",
-                "label": "草稿中",
-                "button_label": "繼續",
-                "formal_exists": False,
-                "draft_exists": True,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel,
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs),
-            }
-        else:
-            gencode_status_map[sid] = {
-                "status": "missing",
-                "label": "未產生",
-                "button_label": "AI 產生",
-                "formal_exists": False,
-                "draft_exists": False,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel,
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs),
-            }
-    _log_skills_route_phase(
-        "v2_gencode_file_checks",
-        _time.time() - v2_started,
-        count=len(gencode_status_map),
-        filters=selected,
-    )
-
     v3_started = _time.time()
     v3_gencode_status_map = _load_skills_v3_gencode_status_map(
         [str(s["skill_id"]) for s in skills]
@@ -2991,7 +2927,6 @@ def admin_skills():
     response = render_template('admin_skills.html',
                            skills_data=skills_data,
                            skills=skills,
-                           gencode_status_map=gencode_status_map,
                            v3_gencode_status_map=v3_gencode_status_map,
                            filters=filters_data,
                            selected_filters=selected,
@@ -3136,18 +3071,6 @@ def admin_toggle_skill(skill_id):
     db.session.commit()
     flash(f'技能已{"啟用" if skill.is_active else "停用"}。', 'success')
     return redirect(url_for('core.admin_skills'))
-
-@core_bp.route('/skills/<skill_id>/regenerate', methods=['POST'])
-@login_required
-def admin_regenerate_skill_code(skill_id):
-    try:
-        from core.code_generator import auto_generate_skill_code
-        # [?賣? ?綜竣??????綜筐??梁捂??箸?????Architect?潑?踐???????Prompt
-        result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=True)
-        success = result[0] if isinstance(result, tuple) else result
-        return jsonify({"success": success, "message": "?賹????" if success else "?剜??"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
 
 @core_bp.route('/skills/<skill_id>/details', methods=['GET'])
 @login_required
@@ -3393,21 +3316,6 @@ def admin_promote_question():
         upload_entry.predicted_skill_id = skill_id
 
         db.session.commit()
-
-        # 4. ?怨?謒?????
-        try:
-            # [STEP 1] Force Architect to re-analyze examples and update SkillInfo.gemini_prompt
-            print(f"Triggering Architect for {skill_id}...")
-            from core.prompt_architect import generate_v9_spec
-            generate_v9_spec(skill_id, model_tag='cloud_pro')
-
-            # [STEP 2] Now call Coder -> Uses NEW Prompt
-            from core.code_generator import auto_generate_skill_code
-            # Run in background ideally, but here synchronous for feedback
-            auto_generate_skill_code(skill_id, queue=None)
-        except Exception as e:
-            print(f"Auto-generate failed: {e}") 
-            # We don't fail the promotion if generation fails, just log it.
 
         return jsonify({'success': True, 'message': 'Prerequisites updated successfully'})
 

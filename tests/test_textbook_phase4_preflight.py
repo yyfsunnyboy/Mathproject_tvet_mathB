@@ -6,6 +6,7 @@ from sqlalchemy import event
 from models import SkillCurriculum, SkillInfo, TextbookExample, db
 import core.textbook_processor_v2 as processor
 from core.textbook_importer_v3_preflight import preflight_self_assessment_phase4
+from core.textbook_importer_v3_pipeline import _textbook_example_scope_query
 
 
 CHAPTER = "第2章 三角函數的應用"
@@ -173,3 +174,79 @@ def test_preflight_reuses_formal_resolution_and_identity_when_ai_returns_choice(
             "EXISTING_SKIP", "NEW_INSERT",
         ]
         assert db.session.query(TextbookExample).count() == before
+
+
+def test_final_skill_guard_rejects_empty_outline_and_wrong_scope(tmp_path):
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{tmp_path / 'guard.db'}"
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        _seed()
+        valid = processor.validate_existing_skill_binding_for_import(
+            "vh_數學B2_SubSection_2_1_1", source_type="textbook_exercise",
+            section_code="2-1", curriculum_info=INFO, chapter_title=CHAPTER,
+        )
+        empty = processor.validate_existing_skill_binding_for_import(
+            "", source_type="textbook_exercise", section_code="2-1",
+            curriculum_info=INFO, chapter_title=CHAPTER,
+        )
+        outline = processor.validate_existing_skill_binding_for_import(
+            "outline_vocational_數學B2_21", source_type="textbook_exercise",
+            section_code="2-1", curriculum_info=INFO, chapter_title=CHAPTER,
+        )
+        wrong = processor.validate_existing_skill_binding_for_import(
+            "vh_數學B2_SubSection_2_1_1", source_type="textbook_exercise",
+            section_code="2-2", curriculum_info=INFO, chapter_title=CHAPTER,
+        )
+        assert valid == (True, "")
+        assert empty == (False, "empty_skill_id")
+        assert outline == (False, "outline_skill")
+        assert wrong == (False, "section_code_mismatch")
+
+
+def test_chapter_self_assessment_display_scope_counts_all_sections(tmp_path):
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{tmp_path / 'counts.db'}"
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        _seed()
+        for number in range(1, 16):
+            section_code = "2-1" if number <= 6 else "2-2"
+            section = f"{section_code} 測試小節"
+            skill = (
+                "vh_數學B2_SubSection_2_1_1"
+                if number <= 6 else "vh_數學B2_SubSection_2_2_1"
+            )
+            db.session.add(TextbookExample(
+                skill_id=skill, source_curriculum="vocational", source_volume=VOLUME,
+                source_chapter=CHAPTER, source_section=section,
+                source_description=f"CH2自我評量 題{number}",
+                problem_text=f"題目 {number}", problem_type="self_assessment",
+            ))
+        db.session.commit()
+        chapter_rows = _textbook_example_scope_query({**INFO, "chapter": CHAPTER}, VOLUME).all()
+        assert len(chapter_rows) == 15
+        assert sum(row.source_section.startswith("2-1") for row in chapter_rows) == 6
+        assert sum(row.source_section.startswith("2-2") for row in chapter_rows) == 9
+        section_21 = TextbookExample.query.filter_by(
+            source_curriculum="vocational", source_volume=VOLUME,
+            source_chapter=CHAPTER, source_section="2-1 測試小節",
+            problem_type="self_assessment",
+        ).count()
+        assert section_21 == 6
+        assert all(not row.skill_id.startswith("outline_") for row in chapter_rows)
+
+
+def test_chapter_scope_requires_chapter_but_not_document_section(tmp_path):
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{tmp_path / 'authority.db'}"
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        query = _textbook_example_scope_query({**INFO, "chapter": CHAPTER, "section": ""}, VOLUME)
+        assert query.count() == 0
+        import pytest
+        with pytest.raises(Exception, match="Chapter self-assessment requires chapter authority"):
+            _textbook_example_scope_query({**INFO, "chapter": "", "section": ""}, VOLUME)

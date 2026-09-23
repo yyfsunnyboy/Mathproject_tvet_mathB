@@ -65,7 +65,8 @@ def load_textbook_rows_for_skills(
             placeholders = ",".join("?" for _ in chunk)
             cursor = conn.execute(
                 f"SELECT {selected} FROM textbook_examples "
-                f"WHERE skill_id IN ({placeholders}) ORDER BY skill_id ASC, id ASC",
+                f"WHERE skill_id IN ({placeholders}) AND skill_id NOT LIKE 'outline_%' "
+                f"ORDER BY skill_id ASC, id ASC",
                 chunk,
             )
             for row in _rows_to_dicts(cursor, cursor.fetchall()):
@@ -81,7 +82,7 @@ def _load_textbook_rows(conn: sqlite3.Connection, skill_id: str) -> list[dict[st
         SELECT id, skill_id, problem_text, correct_answer, detailed_solution,
                source_description, problem_type, notes
         FROM textbook_examples
-        WHERE skill_id = ?
+        WHERE skill_id = ? AND skill_id NOT LIKE 'outline_%'
         ORDER BY id ASC
         """,
         (str(skill_id).strip(),),

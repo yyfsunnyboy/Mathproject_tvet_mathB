@@ -63,7 +63,7 @@ def resolve_heading_identity(info, code, name):
 
 
 def align_structural_metadata(keys, block_meta, info):
-    """Preserve blocks; structurally unbound exercises use the section outline."""
+    """Preserve blocks; structurally unbound exercises remain unresolved."""
     from models import SkillCurriculum
 
     if len(keys) != len(set(keys)) or set(keys) != set(block_meta):
@@ -125,17 +125,17 @@ def align_structural_metadata(keys, block_meta, info):
                 if classified:
                     name, sid = classified
                 else:
-                    sid = outline_skill_id
-                    name = info['section']
+                    sid = ''
+                    name = ''
                     needs_resolution.append(title)
         resolution = {
             'source_order': order,
             'anchor': title,
-            'needs_skill_resolution': bool(not structurally_bound and sid == outline_skill_id),
+            'needs_skill_resolution': bool(not structurally_bound and not sid),
             'skill_assignment_status': ('structurally_bound' if structurally_bound else
                                         ('deterministic_content_classification'
-                                         if sid != outline_skill_id else 'section_outline_fallback')),
-            'section_outline_skill_id': outline_skill_id if sid == outline_skill_id else None,
+                                         if sid else 'unresolved_leaf')),
+            'section_outline_skill_id': outline_skill_id if not sid else None,
         }
         item = dict(title=title, source_description=title, source_order=order,
                     source_type=block['source_type'], skill_id=sid,

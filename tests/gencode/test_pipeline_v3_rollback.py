@@ -26,6 +26,17 @@ PAYLOAD = {
     "source_kind": "ex_1",
     "presentation_mode": "short_answer",
     "line_type": "point_slope",
+    "problem_type_id": "point_slope",
+    "domain_operation": "point_slope",
+    "fixed_domain_key": "coordinate_geometry.line_equation",
+    "resolution_source": "derived_capability_match",
+    "binding_status": "derived",
+    "required_capabilities": ["point_slope"],
+    "matched_capabilities": ["point_slope"],
+    "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+    "entrypoint": "build_line_equation_matrix",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
 }
 V2_LEGACY_CODE = "V2_LEGACY_CODE"
 

@@ -69,8 +69,8 @@ def _assert_alignment_outline_fallback():
     assert out['needs_skill_resolution'] == ['習題1']
     assert out['section_outline_fallback_count'] == 1
     exercise = concepts[1]['practice_questions'][0]
-    assert exercise['skill_id'] == 'outline_test'
-    assert exercise['mapping_status'] == 'section_outline_fallback'
+    assert exercise['skill_id'] == ''
+    assert exercise['mapping_status'] == 'unresolved_leaf'
     assert exercise['needs_skill_resolution'] is True
     with pytest.raises(ValueError):
         align_structural_metadata(['例2'], blocks, info)

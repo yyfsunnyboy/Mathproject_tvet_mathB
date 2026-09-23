@@ -80,8 +80,10 @@ def preflight_self_assessment_phase4(
                 "question_preview": str(meta.get("problem_text") or "")[:100],
                 "formula_count": int(question.get("formula_count") or 0),
                 "image_candidates": list(question.get("image_candidates") or []),
-                "skill_id": None,
+                "skill_id": "",
                 "skill_name": None,
+                "mapping_status": "unresolved_leaf",
+                "needs_skill_resolution": True,
                 "ai_reason": None,
                 "existing_db_id": None,
                 "candidate_skills": [],
@@ -171,6 +173,14 @@ def preflight_self_assessment_phase4(
                 or ""
             ).strip()
             item["ai_reason"] = str((selected or {}).get("reason") or "") or None
+            if not pick_id:
+                item["decision"] = "BLOCKED_SKILL"
+                item["reason"] = "unresolved_leaf"
+                continue
+            if pick_id.startswith("outline_"):
+                item["decision"] = "BLOCKED_SKILL"
+                item["reason"] = "outline_skill_not_persistable"
+                continue
             if not pick_id or pick_id not in allowed:
                 item["decision"] = (
                     "BLOCKED_AMBIGUOUS" if len(candidates) > 1 else "BLOCKED_SKILL"
@@ -209,6 +219,8 @@ def preflight_self_assessment_phase4(
             hit = next(c for c in candidates if c["skill_id"] == pick_id)
             binding = tpv2._curriculum_authority_coords(formal_curriculum)
             item["skill_id"] = pick_id
+            item["mapping_status"] = "resolved_leaf"
+            item["needs_skill_resolution"] = False
             item["skill_name"] = str(
                 hit.get("concept_name") or selected.get("concept_name") or ""
             ).strip()

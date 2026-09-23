@@ -7,7 +7,6 @@ import sys
 import importlib.util
 import ast
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
-from core.code_generator import auto_generate_skill_code
 from config import Config
 
 # 合法 pattern_id 清單（與 domain_functions.py / SKILL.md 對齊，防止假 ID 觸發強制萃取）
@@ -161,39 +160,9 @@ class AdaptiveScaler:
         difficulty_names = {1: "EASY (簡單)", 2: "NORMAL (標準)", 3: "HARD (進階/挑戰)"}
         print(f"[INFO] 正在為 {skill_name} 生成 {difficulty_names.get(level)} 等級的題目代碼...")
         
-        # 使用 auto_generate_skill_code
-        # 它會回傳一個結果路徑或狀態
+        # V2 auto_generate_skill_code is retired. Scaler uses shared helpers only.
         try:
-            # 這裡我們利用 ablation_id=2 (Regex Healed)
-            # auto_generate_skill_code 會將檔案寫入 agent_tools/reports/...
-            # 我們需要抓到它是哪一個檔案
             from core.code_utils.file_utils import ensure_dir
-            
-            # [Optimization] 這裡我們直接傳入 level 參數作為 kwargs，
-            # 但目前的 auto_generate_skill_code 可能不會直接把 level 傳給 AI。
-            # 沒關係，SKILL.md 裡面的 generate(level) 會處理。
-            
-            # 執行生成
-            # 注意：auto_generate_skill_code 會回傳生成的 code 字串 (在 V50.0 版本中是有回傳的嗎？)
-            # 讓我們檢查一下 auto_generate_skill_code 的定義。
-            # 根據 outline，它回傳的可能是成果路徑。
-            
-            # 這裡我們做一個簡化：直接呼叫後，從回傳或生成的路徑讀取。
-            # 但為了效率，我們可以直接從 generate_skill_code 邏輯中提取。
-            
-            # 其實，我們可以更直接一點：因為我們要的是「執行」，
-            # 我們可以直接呼叫 auto_generate_skill_code，然後它會存檔。
-            # 然後我們再去載入那個檔。
-            
-            # [修正] 其實在 V50.0 版本的 code_generator 中，
-            # auto_generate_skill_code 的實作會把檔案存在特定的 report 目錄下。
-            
-            # 為了測試，我們先假設它能運作。
-            # 如果要更精準，我應該檢查 auto_generate_skill_code 的回傳值。
-            
-            # [Hack] 這裡我改用更底層的 _build_prompt + _call_ai + _basic_cleanup 
-            # 這樣可以直接拿到 code 字串。
-            
             from core.code_generator import _build_prompt, _call_ai, _basic_cleanup, _advanced_healer, _inject_domain_libs
             
             # 1. 構建 Prompt
