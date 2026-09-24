@@ -66,14 +66,44 @@ def _assert_alignment_outline_fallback():
     assert concepts[0]['examples'][0]['detailed_solution'] == '來源詳解'
     assert concepts[0]['examples'][0]['correct_answer'] == ''
     assert out['unresolved_skill_bindings'] == []
-    assert out['needs_skill_resolution'] == ['習題1']
-    assert out['section_outline_fallback_count'] == 1
     exercise = concepts[1]['practice_questions'][0]
     assert exercise['skill_id'] == ''
-    assert exercise['mapping_status'] == 'unresolved_leaf'
-    assert exercise['needs_skill_resolution'] is True
     with pytest.raises(ValueError):
         align_structural_metadata(['例2'], blocks, info)
+
+
+def test_section_exercise_with_multiple_leaves_is_deferred_to_bounded_resolver(monkeypatch):
+    """No heading must not become unresolved before section-candidate routing."""
+    monkeypatch.setattr(
+        'core.textbook_processor_v2._get_formal_skills_for_section_v2',
+        lambda **_kwargs: [
+            {'skill_id': 'vh_one', 'concept_name': '概念一'},
+            {'skill_id': 'vh_two', 'concept_name': '概念二'},
+        ],
+    )
+    from models import db, SkillCurriculum, SkillInfo
+    app = Flask('bounded_section_candidates_test')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+        db.session.add(SkillInfo(skill_id='outline_test', skill_en_name='Outline',
+                                 skill_ch_name='綱要', description='', gemini_prompt=''))
+        db.session.add(SkillCurriculum(skill_id='outline_test', curriculum='vocational',
+                                       grade=10, volume='數學B2', chapter='第2章',
+                                       section='2-4 測試'))
+        db.session.flush()
+        info = dict(chapter='第2章', section='2-4 測試', section_code='2-4',
+                    curriculum='vocational', volume='數學B2',
+                    structural_skill_candidates=[])
+        blocks = {'2-4習題 基礎題 1': dict(source_type='textbook_exercise', problem_text='題幹')}
+        out = align_structural_metadata(list(blocks), blocks, info)
+        item = out['chapters'][0]['sections'][0]['concepts'][0]['practice_questions'][0]
+        assert item['skill_id'] == ''
+        assert item['mapping_status'] == 'section_candidate_pending'
+        assert item['needs_skill_resolution'] is False
+        assert json.loads(item['notes'])['candidate_skill_ids'] == ['vh_one', 'vh_two']
+        assert out['needs_skill_resolution'] == []
 
 
 @pytest.mark.parametrize('api_key', ['invalid', None])

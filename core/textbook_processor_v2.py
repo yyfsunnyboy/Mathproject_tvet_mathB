@@ -4970,6 +4970,7 @@ def phase4_absolute_hydrate_and_save(
     inserted = 0
     updated = 0
     hydrated = 0
+    resolved_count = 0
     skipped = 0
     existing_skipped = 0
     backfill_decisions: list[dict[str, Any]] = []
@@ -4980,6 +4981,7 @@ def phase4_absolute_hydrate_and_save(
     self_assessment_imported = 0
     self_assessment_skipped = 0
     needs_review = 0
+    unresolved_skill_bindings: list[dict[str, str]] = []
     anchor_compact_map = {_compact_title_key(k): k for k in _DOCX_BLOCK_META.keys()}
 
     if queue is not None:
@@ -5160,9 +5162,17 @@ def phase4_absolute_hydrate_and_save(
                                     curriculum_info=curriculum_info,
                                 )
                                 outline_shield_skipped += 1
+                                skipped += 1
+                                needs_review += 1
+                                unresolved_skill_bindings.append({
+                                    "source_label": str(block_meta.get("anchor") or title),
+                                    "section": str(item_sec_code or ""),
+                                    "source_type": str(source_type or ""),
+                                    "mapping_status": str(item.get("mapping_status") or ""),
+                                    "skip_reason": "unresolved_leaf",
+                                })
                                 if source_type == "self_assessment":
                                     self_assessment_skipped += 1
-                                    needs_review += 1
                                 continue
                             concept_name_final, skill_id, authority_row = resolved
                             auth = _curriculum_authority_coords(authority_row)
@@ -5187,6 +5197,7 @@ def phase4_absolute_hydrate_and_save(
                                     self_assessment_skipped += 1
                                     needs_review += 1
                                 continue
+                            resolved_count += 1
                             _log_info(
                                 f"[antigravity] mathb formal-bind title={title!r} "
                                 f"sec_code={item_sec_code!r} skill_id={skill_id!r} "
@@ -5387,7 +5398,8 @@ def phase4_absolute_hydrate_and_save(
             f"loose_match_skipped_count={loose_match_skipped_count} "
             f"self_assessment={self_assessment_imported} "
             f"self_assessment_skipped={self_assessment_skipped} "
-            f"needs_review={needs_review}"
+            f"needs_review={needs_review} "
+            f"unresolved_skill_bindings={len(unresolved_skill_bindings)}"
         )
         queue.put(
             "INFO: Import complete: "
@@ -5400,6 +5412,7 @@ def phase4_absolute_hydrate_and_save(
         "updated": updated,
         "total": total,
         "hydrated": hydrated,
+        "resolved": resolved_count,
         "skipped": skipped,
         "existing_skipped": existing_skipped,
         "backfill_decisions": backfill_decisions,
@@ -5414,6 +5427,7 @@ def phase4_absolute_hydrate_and_save(
         "self_assessments_imported": self_assessment_imported,
         "self_assessment_skipped": self_assessment_skipped,
         "needs_review": needs_review,
+        "unresolved_skill_bindings": unresolved_skill_bindings,
     }
 
 

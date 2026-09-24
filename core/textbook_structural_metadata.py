@@ -63,7 +63,13 @@ def resolve_heading_identity(info, code, name):
 
 
 def align_structural_metadata(keys, block_meta, info):
-    """Preserve blocks; structurally unbound exercises remain unresolved."""
+    """Preserve blocks and defer ambiguous section exercises to bounded resolution.
+
+    A section textbook already has authoritative curriculum coordinates.  An
+    exercise without an immediately preceding concept heading must therefore
+    be resolved only against the existing formal leaves in *that* section,
+    rather than being treated as a whole-curriculum unknown.
+    """
     from models import SkillCurriculum
 
     if len(keys) != len(set(keys)) or set(keys) != set(block_meta):
@@ -84,6 +90,18 @@ def align_structural_metadata(keys, block_meta, info):
         sid = heading.get('formal_skill_id') or (matching[0].skill_id if len(matching) == 1 else None)
         if sid:
             formal_by_code[heading['concept_code']] = (heading['concept_name'], sid)
+
+    # This is deliberately a closed, existing-only candidate set.  The Phase4
+    # resolver re-reads and validates the same set before it accepts any
+    # semantic choice; no skill can be created by this path.
+    from core.textbook_processor_v2 import _get_formal_skills_for_section_v2
+    section_candidates = _get_formal_skills_for_section_v2(
+        curriculum=info['curriculum'],
+        volume=info['volume'],
+        chapter_title=info['chapter'],
+        section_title=info['section'],
+        section_code=info['section_code'],
+    )
 
     def classify_by_content(block):
         """Resolve an exercise only when content gives one deterministic scope."""
@@ -114,6 +132,7 @@ def align_structural_metadata(keys, block_meta, info):
     for order, (title, block) in enumerate(block_meta.items(), 1):
         code, name = block.get('concept_code', ''), block.get('concept_name', '')
         sid = block.get('formal_skill_id', '')
+        classified = None
         if code and (code not in allowed or allowed[code] != name):
             raise ValueError('Block heading differs from structural authority')
         structurally_bound = bool(code and sid)
@@ -124,18 +143,35 @@ def align_structural_metadata(keys, block_meta, info):
                 classified = classify_by_content(block)
                 if classified:
                     name, sid = classified
+                elif len(section_candidates) == 1:
+                    candidate = section_candidates[0]
+                    name = str(candidate.get('concept_name') or '')
+                    sid = str(candidate.get('skill_id') or '')
                 else:
                     sid = ''
                     name = ''
-                    needs_resolution.append(title)
+                    # Do not mark this as unresolved yet.  Phase4 owns the
+                    # existing bounded semantic resolver and can select only
+                    # from section_candidates.  ``unresolved_leaf`` remains
+                    # reserved for a failed bounded resolution.
         resolution = {
             'source_order': order,
             'anchor': title,
-            'needs_skill_resolution': bool(not structurally_bound and not sid),
+            'needs_skill_resolution': bool(
+                not structurally_bound and not sid and not section_candidates
+            ),
             'skill_assignment_status': ('structurally_bound' if structurally_bound else
                                         ('deterministic_content_classification'
-                                         if sid else 'unresolved_leaf')),
+                                         if classified else
+                                         ('section_single_candidate'
+                                          if sid else
+                                          ('section_candidate_pending'
+                                           if section_candidates else 'unresolved_leaf')))),
             'section_outline_skill_id': outline_skill_id if not sid else None,
+            'candidate_skill_ids': [
+                str(candidate.get('skill_id') or '')
+                for candidate in section_candidates
+            ],
         }
         item = dict(title=title, source_description=title, source_order=order,
                     source_type=block['source_type'], skill_id=sid,

@@ -1492,6 +1492,10 @@ def run_v3_pair_pipeline(
                         null_answer += 1
 
                 db_metrics = {
+                    "parsed_questions": len(question_blocks or {}),
+                    "resolved_questions": int(phase4_stats.get("resolved", 0) or 0),
+                    "imported_questions": int(phase4_stats.get("total", 0) or 0),
+                    "questions_written": int(phase4_stats.get("total", 0) or 0),
                     "inserted": phase4_stats.get("inserted", 0),
                     "updated": phase4_stats.get("updated", 0),
                     "skipped": phase4_stats.get("skipped", 0),
@@ -1504,6 +1508,10 @@ def run_v3_pair_pipeline(
                     "source_section_distribution": source_section_dist,
                     "correct_answer_null_count": null_answer,
                     "backup": backup_info,
+                    "unresolved_skill_bindings": phase4_stats.get(
+                        "unresolved_skill_bindings", []
+                    ),
+                    "needs_review_count": int(phase4_stats.get("needs_review", 0) or 0),
                 }
                 if insert_missing_only:
                     db_metrics["existing_skipped"] = phase4_stats.get("existing_skipped", 0)
