@@ -32,6 +32,10 @@ REL_NS = NS["r"]
 W_NS = NS["w"]
 INDEPENDENT_IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
 FORMULA_PREVIEW_EXTS = {".wmf", ".emf"}
+# Only MathType equation OLE objects enter formula conversion. Embedded Word
+# documents (Word.Document.12) and other Office objects must stay out of the
+# MathType / source-fidelity formula gate even when mislabeled near equations.
+MATHTYPE_OLE_PROG_IDS = frozenset({"Equation.DSMT4"})
 
 QUESTION_FIGURE_EVIDENCE = ("下圖中", "依圖", "試用筆連接", "實線為", "虛線為")
 
@@ -355,6 +359,7 @@ class _DocxStructureParser:
             "table_cells": 0,
             "mathtype_ole": 0,
             "mathtype_ole_in_table_cells": 0,
+            "non_mathtype_ole_skipped": 0,
             "ole_embeddings_resolved": 0,
             "ole_cfb_validated": 0,
             "eq_fields": 0,
@@ -578,6 +583,12 @@ class _DocxStructureParser:
             seen_ole_ids.add(ole_key)
 
             prog_id = str(ole_elem.get("ProgID") or "").strip()
+            if prog_id not in MATHTYPE_OLE_PROG_IDS:
+                # Keep non-MathType embedded objects out of formula conversion.
+                self._summary["non_mathtype_ole_skipped"] = (
+                    int(self._summary.get("non_mathtype_ole_skipped") or 0) + 1
+                )
+                continue
             rel_id = ole_elem.get(f"{{{REL_NS}}}id")
             embedding_path, _ = _resolve_relationship_target("word/document.xml", rel_id or "", self.rel_maps)
             preview_rel_id = self._find_preview_image_rel_id(ole_elem)

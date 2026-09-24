@@ -27,7 +27,12 @@ CT_NS = "http://schemas.openxmlformats.org/package/2006/content-types"
 EXPECTED_REFERENCE_STATS = REFERENCE_STATISTICS
 
 
-def _build_minimal_docx_zip(document_xml: str, *, extra_files: dict[str, bytes] | None = None) -> bytes:
+def _build_minimal_docx_zip(
+    document_xml: str,
+    *,
+    extra_files: dict[str, bytes] | None = None,
+    extra_relationships: list[tuple[str, str, str]] | None = None,
+) -> bytes:
     content_types = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="{CT_NS}">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
@@ -38,10 +43,15 @@ def _build_minimal_docx_zip(document_xml: str, *, extra_files: dict[str, bytes] 
 <Relationships xmlns="{REL_PKG_NS}">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>"""
+    extra_rel_xml = "".join(
+        f'<Relationship Id="{rel_id}" Type="{rel_type}" Target="{target}"/>'
+        for rel_id, rel_type, target in (extra_relationships or [])
+    )
     doc_rels = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="{REL_PKG_NS}">
   <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" Target="embeddings/oleObject1.bin"/>
   <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.wmf"/>
+  {extra_rel_xml}
 </Relationships>"""
 
     buf = io.BytesIO()
@@ -106,6 +116,12 @@ def test_mathtype_ole_discovery_and_media_classification():
           <o:OLEObject Type="Embed" ProgID="Equation.DSMT4" r:id="rId5"/>
         </w:object>
       </w:r>
+      <w:r>
+        <w:object>
+          <v:shape><v:imagedata r:id="rId4"/></v:shape>
+          <o:OLEObject Type="Embed" ProgID="Word.Document.12" r:id="rId6"/>
+        </w:object>
+      </w:r>
     </w:p>
     <w:tbl>
       <w:tr>
@@ -127,15 +143,22 @@ def test_mathtype_ole_discovery_and_media_classification():
     parsed = parse_docx_structure(
         _build_minimal_docx_zip(
             document_xml,
-            extra_files={"word/media/image2.png": b"PNG"},
+            extra_files={
+                "word/media/image2.png": b"PNG",
+                "word/embeddings/Microsoft_Word_Document1.docx": b"PK\x03\x04fake",
+            },
+            extra_relationships=[
+                ('rId6', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject', 'embeddings/Microsoft_Word_Document1.docx'),
+            ],
         )
     )
     ole_formulas = parsed.get("mathtype_oles") or [f for f in parsed["formulas"] if f["kind"] == "mathtype_ole"]
     assert len(ole_formulas) == 2
-    assert ole_formulas[0]["prog_id"] == "Equation.DSMT4"
+    assert all(o["prog_id"] == "Equation.DSMT4" for o in ole_formulas)
     assert ole_formulas[0]["embedding_path"] == "word/embeddings/oleObject1.bin"
     assert ole_formulas[1]["location"]["table_index"] == 0
     assert parsed["summary"]["mathtype_ole_in_table_cells"] == 1
+    assert parsed["summary"]["non_mathtype_ole_skipped"] == 1
 
     media_types = {m["path"]: m["type"] for m in parsed["media"]}
     assert media_types["word/media/image1.wmf"] == "formula_preview"

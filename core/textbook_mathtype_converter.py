@@ -285,6 +285,7 @@ def convert_docx_mathtype_to_latex_docx(
                 "formula_index": formula_index,
                 "relationship_id": rel_id,
                 "embedding_path": embed_path,
+                "prog_id": ole.get("prog_id"),
                 "location": ole.get("location"),
                 "equation_native_found": False,
                 "mtef_version": None,

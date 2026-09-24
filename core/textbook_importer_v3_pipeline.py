@@ -1013,6 +1013,11 @@ def run_v3_pair_pipeline(
             formula_metrics.update(scope_report["counts"])
             formula_metrics["unresolved_scope"] = len(scope_report["unresolved"])
             if scope_report["unresolved"]:
+                print(
+                    "[FORMULA_SCOPE_ERROR] unresolved_count=%s details=%s"
+                    % (len(scope_report["unresolved"]), scope_report["unresolved"][:5]),
+                    flush=True,
+                )
                 return fail(STAGE_FORMULA_CONVERSION, "source_fidelity_scope_unresolved",
                             "Formula or question scope could not be resolved",
                             details=scope_report["unresolved"])

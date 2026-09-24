@@ -117,9 +117,43 @@ class MTEF:
                 fsDef.style = Helper.bytes2int(self.reader.read(1))
                 # Keep style records out of the latex AST (same as upstream MTEF-py).
             elif record == RecordType.SIZE:
+                # MTEF5 SIZE has three encodings (see Design Science MTEF v5):
+                #   101 → explicit point size (int16)
+                #   100 → large delta (lsize uint8 + dsize int16)
+                #   else → lsize uint8 + (dsize + 128) uint8
+                # Always reading two raw bytes desyncs the stream when size
+                # select is 101 (common for vector-arrow accents) and the
+                # following payload is misread as an unknown record (e.g. 32).
                 mtSize = MtSize()
-                mtSize.lsize = Helper.bytes2int(self.reader.read(1)) # uint8
-                mtSize.dsize = Helper.bytes2int(self.reader.read(1)) # uint8
+                size_select = Helper.bytes2int(self.reader.read(1))  # uint8
+                if size_select == 101:
+                    raw = self.reader.read(2)
+                    if len(raw) != 2:
+                        self.Valid = False
+                        self._failure_stage = "mtef_parse_failed"
+                        self._failure_reason = "size_101_truncated"
+                        break
+                    mtSize.lsize = size_select
+                    mtSize.dsize = int.from_bytes(raw, "little", signed=True)
+                elif size_select == 100:
+                    lsize_b = self.reader.read(1)
+                    raw = self.reader.read(2)
+                    if len(lsize_b) != 1 or len(raw) != 2:
+                        self.Valid = False
+                        self._failure_stage = "mtef_parse_failed"
+                        self._failure_reason = "size_100_truncated"
+                        break
+                    mtSize.lsize = Helper.bytes2int(lsize_b)
+                    mtSize.dsize = int.from_bytes(raw, "little", signed=True)
+                else:
+                    dsize_b = self.reader.read(1)
+                    if len(dsize_b) != 1:
+                        self.Valid = False
+                        self._failure_stage = "mtef_parse_failed"
+                        self._failure_reason = "size_delta_truncated"
+                        break
+                    mtSize.lsize = size_select
+                    mtSize.dsize = Helper.bytes2int(dsize_b) - 128
             elif record == RecordType.SUB:
                 self.nodes.append(MtAST(RecordType.SUB, None, None))
             elif record == RecordType.SUB2:
@@ -161,6 +195,8 @@ class MTEF:
                 self.Valid = False
                 self._unknown_record = record
                 self._unknown_offset = self.reader.tell() - 1
+                self._failure_stage = "mtef_unsupported_record"
+                self._failure_reason = f"unsupported_record:{record}"
                 break
 
         return None
@@ -475,13 +511,19 @@ class MTEF:
         return None
 
     def Translate(self):
+        if not self.Valid:
+            return ''
         latexStr, err = self.makeLatex(self.ast)
         if err is not None:
-            pass  # silenced
-        if self.Valid:
-            return latexStr
-        else:
+            self._failure_stage = getattr(self, "_failure_stage", None) or "mtef_parse_failed"
+            self._failure_reason = str(err)
             return ''
+        if latexStr is None:
+            latexStr = ''
+        if not str(latexStr).strip():
+            self._failure_stage = "mtef_serializer_empty"
+            self._failure_reason = "serializer_produced_empty_latex"
+        return latexStr
 
     def makeAST(self):
         """
@@ -961,35 +1003,43 @@ class MTEF:
 
                 return buf, None
             elif tmpl.selector == SelectorType.tmLIM:
-                # 读取数据 LimBoxClass
-                mainSlot = ''
-                lowerSlot = ''
-                upperSlot = ''
-                idx = 0
-                for astData in ast.children:
-                    if idx == 0:
-                        mainSlot, _ = self.makeLatex(astData)
-                    elif idx == 1:
-                        lowerSlot, _ = self.makeLatex(astData)
-                    else:
-                        upperSlot, _ = self.makeLatex(astData)
-                    idx += 1
+                # LimBoxClass: main / lower / upper.
+                # Vector arrows in this corpus are often encoded as tmLIM with an
+                # empty lower slot and upper slot = U+20D1 COMBINING RIGHT ARROW
+                # ABOVE (proven from MTEF records, not from nearby prose).
+                kids = ast.children or []
+                mainAST = kids[0] if len(kids) > 0 else None
+                lowerAST = kids[1] if len(kids) > 1 else None
+                upperAST = kids[2] if len(kids) > 2 else None
 
-                # 转成latex代码
+                mainSlot, _ = self.makeLatex(mainAST) if mainAST is not None else ("", None)
+                lowerSlot, _ = self.makeLatex(lowerAST) if lowerAST is not None else ("", None)
+
+                arrow_dir = self._lim_arrow_accent_direction(upperAST)
+                main_clean = (mainSlot or "").strip()
+                lower_clean = (lowerSlot or "").strip()
+                if arrow_dir and main_clean and not lower_clean:
+                    if arrow_dir == "left":
+                        buf += "\\overleftarrow{%s}" % main_clean
+                    else:
+                        # Single-letter vectors: \vec{a}; multi-char: \overrightarrow{AB}
+                        if len(main_clean) == 1 and main_clean.isalpha():
+                            buf += "\\vec{%s}" % main_clean
+                        else:
+                            buf += "\\overrightarrow{%s}" % main_clean
+                    return buf, None
+
+                upperSlot, _ = self.makeLatex(upperAST) if upperAST is not None else ("", None)
                 mainStr = ''
                 lowerStr = ''
                 upperStr = ''
-                if mainSlot != "":
+                if main_clean:
                     mainStr = "\\mathop { %s }" % mainSlot
-                if lowerSlot != "":
+                if lower_clean:
                     lowerStr = "\\limits_{ %s }" % lowerSlot
-                if upperSlot != "":
-                    upperStr = ""
-
-                # 组成整体公式
-                tmplStr = "%s %s %s" % (mainStr, lowerStr, upperStr)
-                buf += tmplStr
-
+                if (upperSlot or "").strip():
+                    upperStr = "\\limits^{ %s }" % upperSlot
+                buf += "%s %s %s" % (mainStr, lowerStr, upperStr)
                 return buf, None
             elif tmpl.selector in {SelectorType.tmHBRACE, SelectorType.tmHBRACK}:
                 # Horizontal fences have a main slot and an annotation slot.
@@ -1244,6 +1294,26 @@ class MTEF:
             return buf, None
 
         return '', None
+
+    @staticmethod
+    def _lim_arrow_accent_direction(upper_ast):
+        """Return 'right'/'left' if upper LimBox slot is only a combining arrow accent."""
+        if upper_ast is None:
+            return None
+        # Unwrap a single LINE wrapper.
+        nodes = [upper_ast]
+        if upper_ast.tag == RecordType.LINE:
+            nodes = list(upper_ast.children or [])
+        chars = [n for n in nodes if n.tag == RecordType.CHAR]
+        if len(chars) != 1 or len(nodes) != 1:
+            return None
+        mtcode = getattr(chars[0].value, "mtcode", None)
+        # U+20D1 COMBINING RIGHT ARROW ABOVE, U+20D0 COMBINING LEFT ARROW ABOVE
+        if mtcode == 0x20D1:
+            return "right"
+        if mtcode == 0x20D0:
+            return "left"
+        return None
 
 
     @classmethod
