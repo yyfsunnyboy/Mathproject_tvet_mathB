@@ -217,6 +217,9 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
     from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
 
     out = normalize_single_choice_payload(out)
+    from core.gencode.vocational_choice_contract import normalize_legacy_vocational_choices
+
+    out = normalize_legacy_vocational_choices(out, skill_id=sid)
     ac = resolve_answer_contract_for_runtime(out, skill_id=sid)
     if ac:
         out["answer_contract"] = ac

@@ -19,6 +19,7 @@
     let storedImageSource = null;
     let storedQuestionImages = [];
     let storedImageSources = [];
+    let storedReferenceDiagram = false;
     let lastRenderBounds = null;
     let lastRenderMeta = null;
 
@@ -182,6 +183,7 @@
     }
 
     function resetQuestionBackground() {
+        storedReferenceDiagram = false;
         storedVisualSpec = null;
         storedQuestionImage = null;
         storedImageSource = null;
@@ -226,6 +228,13 @@
             : computeQuestionBackgroundRegion(cssWidth, cssHeight);
         const grid = isMulti ? computeImageGrid(images.length, cssWidth, cssHeight) : null;
         const rects = images.map(function (image, index) {
+            if (storedReferenceDiagram && !isMulti) {
+                const width = cssWidth <= 760
+                    ? Math.min(240, cssWidth * 0.45)
+                    : Math.min(300, cssWidth * 0.32);
+                const height = Math.min(220, width * image.naturalHeight / image.naturalWidth);
+                return { x: 24, y: 24, width: width, height: height, scale: width / image.naturalWidth };
+            }
             const cell = isMulti ? grid.cells[index] : region;
             return computeContainRect(
                 image.naturalWidth,
@@ -362,6 +371,7 @@
     }
 
     function setImagesBackground(images, imageSources, backgroundCtx, cssWidth, cssHeight) {
+        storedReferenceDiagram = false;
         storedQuestionImages = Array.isArray(images) ? images.filter(Boolean) : [];
         storedImageSources = Array.isArray(imageSources) ? imageSources.filter(Boolean) : [];
         storedQuestionImage = storedQuestionImages[0] || null;
@@ -388,6 +398,16 @@
             };
             img.src = imageSource;
         });
+    }
+
+    function setReferenceDiagramBackground(image, backgroundCtx, cssWidth, cssHeight) {
+        storedQuestionImages = image ? [image] : [];
+        storedQuestionImage = image || null;
+        storedImageSources = [];
+        storedImageSource = null;
+        storedVisualSpec = null;
+        storedReferenceDiagram = true;
+        return redrawQuestionBackground(backgroundCtx, cssWidth, cssHeight, null);
     }
 
     function loadImageBackgrounds(imageSources) {
@@ -522,6 +542,7 @@
         setVisualSpecBackground: setVisualSpecBackground,
         setImageBackground: setImageBackground,
         setImagesBackground: setImagesBackground,
+        setReferenceDiagramBackground: setReferenceDiagramBackground,
         loadImageBackground: loadImageBackground,
         loadImageBackgrounds: loadImageBackgrounds,
         extractImageFromPayload: extractImageFromPayload,

@@ -42,8 +42,13 @@ def _figure_slot_display_label(key: str) -> str:
 
 def _finalize_question_payload(payload: dict[str, Any]) -> dict[str, Any]:
     from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
+    from core.gencode.choice_contract_validator import validate_vocational_multiple_choice
 
-    return normalize_single_choice_payload(payload)
+    finalized = normalize_single_choice_payload(payload)
+    errors = validate_vocational_multiple_choice(finalized)
+    if errors:
+        raise ValueError("invalid_vocational_multiple_choice:" + ",".join(errors))
+    return finalized
 
 
 def _subquestions_from_multi_field_contract(
@@ -2111,6 +2116,7 @@ def _convert_descriptive_statistics_payload(
             source_answer_label=source_answer_label or None,
             seed=generation_seed,
             preserve_source_choices=preserve_source,
+            curriculum_profile=validation_facts.get("curriculum_profile"),
         )
         resolved_answer_type = "single_choice"
         checker_key = "choice_label_checker"
@@ -3277,6 +3283,7 @@ def convert_domain_matrix_to_question_payload(
                 source_answer_label=source_answer_label or None,
                 seed=kwargs.get("seed"),
                 preserve_source_choices=preserve_source,
+                curriculum_profile=validation_facts.get("curriculum_profile"),
             )
             choices = [
                 {"label": str(c.get("label") or c.get("key")), "text": str(c.get("text") or "")}

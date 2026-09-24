@@ -367,6 +367,30 @@ def test_scratchpad_layer_clear_background_keeps_state_for_redraw() -> None:
     assert payload["calls"].count("clear") >= 2
 
 
+def test_reference_diagram_question_transitions_clear_and_redraw() -> None:
+    script = (
+        "const layers=require(process.argv[1]);"
+        "const calls=[];"
+        "const ctx={canvas:{width:600,height:400},clearRect(){calls.push('clear')},"
+        "fillRect(){},drawImage(image){calls.push(image.id)},save(){},restore(){},"
+        "set fillStyle(_) {},set globalAlpha(_) {}};"
+        "const image=(id)=>({id,naturalWidth:380,naturalHeight:235});"
+        "const results=[];"
+        "function next(id){layers.resetQuestionBackground();layers.clearBackgroundCanvas(ctx,600,400);"
+        "if(id)layers.setReferenceDiagramBackground(image(id),ctx,600,400);"
+        "results.push({id,has:layers.hasQuestionBackground(),stored:layers.getStoredBackground().questionImage?.id||null,draw:calls.filter(x=>x==='A'||x==='B').at(-1)||null});"
+        "calls.length=0;}"
+        "for(let i=0;i<3;i++){next('A');next('B');next(null);next('A');next(null);next(null)}"
+        "process.stdout.write(JSON.stringify(results));"
+    )
+    rows = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert len(rows) == 18
+    for row in rows:
+        assert row["has"] is bool(row["id"])
+        assert row["stored"] == row["id"]
+        assert row["draw"] == row["id"]
+
+
 def test_non_renderable_visual_spec_does_not_store_background() -> None:
     mod = importlib.import_module(
         "agent_skills_v3.vh_數學B1_PropertiesOfPerpendicularLines.components.src_4526.generate"

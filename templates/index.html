@@ -4529,10 +4529,19 @@
         }
 
         function renderQuestionDiagramSpec(payload) {
-            const qmc = document.getElementById('question-media-container');
             const runtime = window.TriangleDiagramRuntime;
-            if (!qmc || !runtime || !payload) return false;
-            return runtime.render(qmc, payload.diagram_spec);
+            const layer = getScratchpadBackgroundLayer();
+            if (!runtime || !layer || !payload || !backgroundCtx) return false;
+            const markup = runtime.createSvgMarkup(payload.diagram_spec);
+            if (!markup) return false;
+            const question = currentQuestion;
+            const source = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(markup);
+            layer.loadImageBackground(source).then((image) => {
+                if (currentQuestion !== question || !image) return;
+                const size = resolveScratchpadCssSize();
+                layer.setReferenceDiagramBackground(image, backgroundCtx, size.cw, size.ch);
+            }).catch((error) => console.warn('Triangle diagram failed to load', error));
+            return true;
         }
 
         function collectTableAnswers() {
@@ -5327,8 +5336,6 @@
                         }
                         saveState();
                     } else if (renderQuestionDiagramSpec(data)) {
-                        const layer = getScratchpadBackgroundLayer();
-                        if (layer) layer.resetQuestionBackground();
                         saveState();
                     } else {
                         applyQuestionScratchpadBackground(data).then(() => {
@@ -5555,6 +5562,10 @@
             if (!isChoiceQuestionPayload(payload) || !Array.isArray(choices) || choices.length === 0) {
                 questionChoices.style.display = 'none';
                 return;
+            }
+            const skillId = String((payload && payload.skill_id) || PAGE_SKILL_ID || '');
+            if (skillId.startsWith('vh_') && choices.length !== 4) {
+                console.warn('[PRACTICE] Invalid vocational choice count', skillId, choices.length);
             }
             questionChoices.style.display = '';
             questionChoices.classList.add('choice-list');

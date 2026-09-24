@@ -68,7 +68,7 @@
             return `<circle cx="${p.x}" cy="${p.y}" r="3.5"/><text class="triangle-vertex" x="${p.labelX}" y="${p.labelY}">${name}</text>`;
         }).join('');
         return `<svg class="deterministic-triangle" viewBox="0 0 380 235" role="img" aria-label="依題目參數繪製的三角形 ABC" xmlns="http://www.w3.org/2000/svg">`
-            + '<style>.deterministic-triangle{max-width:440px;width:100%;height:auto}.deterministic-triangle polygon{fill:#eff6ff;stroke:#172554;stroke-width:3}.deterministic-triangle circle{fill:#172554}.deterministic-triangle text{font-family:Arial,"Noto Sans TC",sans-serif;fill:#111827;font-size:17px}.deterministic-triangle .triangle-vertex{font-weight:700;font-size:19px}.deterministic-triangle .triangle-unknown{fill:#b91c1c;font-weight:700}</style>'
+            + '<style>.deterministic-triangle{display:block;max-width:100%;max-height:100%}.deterministic-triangle polygon{fill:#eff6ff;stroke:#172554;stroke-width:3}.deterministic-triangle circle{fill:#172554}.deterministic-triangle text{font-family:Arial,"Noto Sans TC",sans-serif;fill:#111827;font-size:17px}.deterministic-triangle .triangle-vertex{font-weight:700;font-size:19px}.deterministic-triangle .triangle-unknown{fill:#b91c1c;font-weight:700}</style>'
             + '<polygon points="45,190 118,35 330,190"/>' + vertices + labels.join('') + '</svg>';
     }
 

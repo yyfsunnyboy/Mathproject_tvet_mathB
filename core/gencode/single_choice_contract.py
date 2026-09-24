@@ -10,6 +10,7 @@ from typing import Any
 from core.gencode.choice_contract_validator import (
     MAX_SINGLE_CHOICE_COUNT,
     MIN_SINGLE_CHOICE_COUNT,
+    VOCATIONAL_MC_CHOICE_COUNT,
     normalize_canonical_choices,
 )
 
@@ -60,6 +61,7 @@ def build_single_choice_contract(
     source_answer_label: str | None = None,
     seed: int | None = None,
     preserve_source_choices: bool = False,
+    curriculum_profile: str | None = None,
 ) -> dict[str, Any]:
     """Build canonical single-choice payload fields.
 
@@ -68,11 +70,14 @@ def build_single_choice_contract(
   ``distractor_candidates`` around ``correct_answer`` (domain-owned values).
     """
     canonical = _clean_choice_text(correct_answer)
+    choice_count = (VOCATIONAL_MC_CHOICE_COUNT if str(curriculum_profile or "").startswith("vocational") else MAX_SINGLE_CHOICE_COUNT)
     if preserve_source_choices and source_choices and source_answer_label:
         choices, correct_label = _normalize_source_choices(
             list(source_choices),
             source_answer_label=str(source_answer_label),
         )
+        if choice_count == VOCATIONAL_MC_CHOICE_COUNT and len(choices) != choice_count:
+            raise ValueError("source_choice_count_invalid")
         return {
             "choices": choices,
             "correct_label": correct_label,
@@ -98,10 +103,10 @@ def build_single_choice_contract(
         unique_wrong.append(text)
 
     option_texts = [canonical] + unique_wrong
-    if len(option_texts) < MIN_SINGLE_CHOICE_COUNT:
+    if len(option_texts) < (choice_count if choice_count == VOCATIONAL_MC_CHOICE_COUNT else MIN_SINGLE_CHOICE_COUNT):
         raise ValueError("insufficient_distractor_candidates")
 
-    option_texts = option_texts[:MAX_SINGLE_CHOICE_COUNT]
+    option_texts = option_texts[:choice_count]
     rng = random.Random(int(seed) if seed is not None else sum(ord(ch) for ch in canonical))
     rng.shuffle(option_texts)
 

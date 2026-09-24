@@ -10,7 +10,45 @@ from core.gencode.choice_math_display import format_choice_math_display
 
 MIN_SINGLE_CHOICE_COUNT = 2
 MAX_SINGLE_CHOICE_COUNT = 8
+VOCATIONAL_MC_CHOICE_COUNT = 4
 _VALID_CHOICE_CHECKERS = frozenset({"choice_label_checker"})
+
+
+def is_vocational_choice(payload: dict[str, Any], skill_id: str = "") -> bool:
+    """Use curriculum metadata first, with legacy vh_ skill IDs as fallback."""
+    meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    facts = payload.get("validation_facts") if isinstance(payload.get("validation_facts"), dict) else {}
+    profile = str(payload.get("curriculum_profile") or facts.get("curriculum_profile") or meta.get("curriculum_profile") or "").lower()
+    if profile:
+        return profile.startswith("vocational")
+    return str(skill_id or payload.get("skill_id") or "").startswith("vh_")
+
+
+def validate_vocational_multiple_choice(payload: dict[str, Any], skill_id: str = "") -> list[str]:
+    """Strict generator/build validation; runtime repair is a separate path."""
+    choice_type = str(payload.get("answer_type") or payload.get("question_type") or "").lower()
+    checker = str(payload.get("checker") or payload.get("checker_type") or "").lower()
+    if not is_vocational_choice(payload, skill_id) or not (
+        requires_choice_contract(payload)
+        or choice_type in {"choice", "single_choice", "multiple_choice"}
+        or "choice" in checker
+    ):
+        return []
+    choices = normalize_canonical_choices(payload.get("choices"))
+    errors = []
+    if len(choices) != VOCATIONAL_MC_CHOICE_COUNT:
+        errors.append("vocational_choice_count")
+    if [c["label"] for c in choices] != list("ABCD"):
+        errors.append("vocational_choice_labels")
+    values = [c["value"].strip().casefold() for c in choices]
+    if any(not value or value in {"?", "...", "待補"} for value in values):
+        errors.append("vocational_choice_blank_or_placeholder")
+    if len(set(values)) != len(values):
+        errors.append("vocational_choice_duplicate")
+    answer = _resolve_answer(payload)
+    if sum(_answer_matches_choice(answer, c) for c in choices) != 1:
+        errors.append("vocational_answer_mapping")
+    return errors
 
 
 def _payload_dict(payload: dict[str, Any] | None) -> dict[str, Any]:
@@ -176,6 +214,8 @@ def validate_choice_contract(payload: dict[str, Any]) -> dict[str, Any]:
                 blockers.append(f"{CHOICE_CONTRACT_INCOMPLETE}:answer_not_in_choices")
             elif len(matches) > 1:
                 blockers.append(f"{CHOICE_CONTRACT_INCOMPLETE}:ambiguous_answer_mapping")
+
+    blockers.extend(f"{CHOICE_CONTRACT_INCOMPLETE}:{error}" for error in validate_vocational_multiple_choice(p))
 
     question_text = str(p.get("question_text") or p.get("question") or "")
     if normalized:

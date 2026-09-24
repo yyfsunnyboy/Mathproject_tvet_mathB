@@ -39,3 +39,33 @@ def test_practice_template_prioritizes_triangle_diagram_before_image_fallback():
     diagram_branch = template.index("else if (renderQuestionDiagramSpec(data))")
     image_fallback = template.index("applyQuestionScratchpadBackground(data)", diagram_branch)
     assert diagram_branch < image_fallback
+
+
+def test_triangle_uses_scratchpad_background_once_and_keeps_canvas_contract():
+    template = TEMPLATE.read_text(encoding="utf-8")
+    branch = template.split("function renderQuestionDiagramSpec(payload) {", 1)[1].split("function collectTableAnswers", 1)[0]
+    assert "setReferenceDiagramBackground(image, backgroundCtx" in branch
+    assert "runtime.render(qmc" not in branch
+    assert template.count('id="drawing-background-canvas"') == 1
+    assert template.count('id="handwriting-canvas"') == 1
+    assert 'id="analyze-handwriting-button"' in template
+    assert "cctx.drawImage(backgroundCanvas" in template
+
+
+def test_question_change_clears_old_reference_before_rendering_new_diagram():
+    template = TEMPLATE.read_text(encoding="utf-8")
+    load_branch = template.split("function loadQuestion() {", 1)[1].split("function isChoiceQuestionPayload", 1)[0]
+    assert load_branch.index("resetScratchpadForNextQuestion();") < load_branch.index("renderQuestionDiagramSpec(data)")
+    diagram_branch = load_branch.split("} else if (renderQuestionDiagramSpec(data)) {", 1)[1].split("} else {", 1)[0]
+    assert "resetQuestionBackground" not in diagram_branch
+
+
+def test_triangle_svg_has_viewbox_without_large_fixed_dimensions():
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert 'viewBox="0 0 380 235"' in source
+    assert 'width="900"' not in source
+    assert 'height="600"' not in source
+    layers = (SCRIPT.parent / "scratchpad_layers.js").read_text(encoding="utf-8")
+    assert "Math.min(240, cssWidth * 0.45)" in layers
+    assert "Math.min(300, cssWidth * 0.32)" in layers
+    assert "Math.min(220," in layers

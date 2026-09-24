@@ -238,6 +238,15 @@ def create_app(*, production: bool | None = None):
     from core.guest_demo import install_guest_demo
     install_guest_demo(app, db)
 
+    @app.before_request
+    def _question_api_auth_response():
+        # The practice page can be viewed without a login, but its question API
+        # requires one. Keep that boundary while returning JSON to fetch callers.
+        from core.guest_demo import is_guest_demo
+
+        if request.endpoint == "practice.next_question" and not current_user.is_authenticated and not is_guest_demo():
+            return jsonify(error="authentication_required", message="請先登入後再練習。"), 401
+
     # [公開唯讀 Demo 模式] 註冊 demo blueprint：/demo, /demo/practice, /demo/teacher-overview
     # 全部使用固定假資料、無需登入、不提供任何寫入操作，與既有登入/教師權限邏輯完全獨立。
     from core.routes.demo import demo_bp
