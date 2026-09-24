@@ -95,3 +95,6 @@ These are legacy artifacts and must not be reintroduced into runtime routing pat
 3. Verify with focused checks.
 4. Report touched files and runtime impact clearly.
 
+## 15) Vocational Practice Runtime
+修改 vocational practice / generator runtime 前，先閱讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
+
