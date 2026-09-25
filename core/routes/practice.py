@@ -2520,6 +2520,86 @@ def check_answer():
     from core.gencode.answer_payload import answer_type_family, resolve_answer_contract_for_runtime
 
     _drawing_ac = resolve_answer_contract_for_runtime(current, skill_id=skill_id)
+
+    # Additive isolated gate: directed-segment drawing check (does not alter legacy drawing/AI).
+    from core.checkers.vector_drawing_checker import (
+        check_vector_drawing_answer,
+        drawing_check_enabled,
+    )
+
+    _student_strokes = body.get("student_strokes")
+    if (
+        drawing_check_enabled(_drawing_ac, current)
+        and isinstance(_student_strokes, list)
+        and (
+            str(user_ans).strip() in {"[vector_drawing]", "[drawing]", ""}
+            or body.get("vector_drawing_check") is True
+        )
+    ):
+        current_app.logger.info(
+            "[PRACTICE check_answer] vector_drawing dispatch skill_id=%s problem_type_id=%s",
+            skill_id,
+            current.get("problem_type_id", ""),
+        )
+        expected = (
+            (_drawing_ac or {}).get("expected_answer")
+            or (_drawing_ac or {}).get("semantic_answer")
+            or current.get("correct_answer")
+            or current.get("answer")
+        )
+        vec_result = check_vector_drawing_answer(
+            student_strokes=_student_strokes,
+            labeled_point_canvas_positions=body.get("labeled_point_canvas_positions"),
+            expected_answer=expected,
+            answer_contract=_drawing_ac if isinstance(_drawing_ac, dict) else {},
+            payload=current,
+            canvas_css_size=body.get("canvas_css_size"),
+        )
+        status = str(vec_result.get("status") or "uncertain")
+        if status == "correct":
+            contract_result = {
+                "correct": True,
+                "is_correct": True,
+                "status": "correct",
+                "result": vec_result.get("result"),
+                "message": vec_result.get("result"),
+                "checker": "vector_drawing_checker",
+                "vector_drawing": vec_result,
+            }
+            should_record = True
+        elif status == "uncertain":
+            contract_result = {
+                "correct": None,
+                "is_correct": None,
+                "status": "parse_error",
+                "invalid_input": False,
+                "result": vec_result.get("result"),
+                "message": vec_result.get("result"),
+                "checker": "vector_drawing_checker",
+                "vector_drawing": vec_result,
+            }
+            should_record = False
+        else:
+            contract_result = {
+                "correct": False,
+                "is_correct": False,
+                "status": "incorrect",
+                "result": vec_result.get("result"),
+                "message": vec_result.get("result"),
+                "checker": "vector_drawing_checker",
+                "vector_drawing": vec_result,
+            }
+            should_record = True
+        if should_record:
+            _record_compact_practice_progress(skill_id, bool(contract_result.get("correct")))
+        return _emit_check_result(
+            question_uid,
+            skill_id,
+            contract_result,
+            record_progress=should_record,
+            attempt_context=attempt_ctx,
+        )
+
     if is_drawing_answer_contract(_drawing_ac, current) or answer_type_family(str(_drawing_ac.get("answer_type", ""))) == "drawing":
         from core.gencode.answer_grading import grade_answer_for_current_question
 

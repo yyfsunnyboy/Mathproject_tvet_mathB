@@ -37,6 +37,8 @@
         </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared practice inline-math typography contract (MathJax SVG baseline). -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_math_typography.css') }}?v=practice-math-typo-1">
     <style>
         /* === 全局樣式 === */
         * {
@@ -1519,39 +1521,8 @@
             margin-right: auto;
         }
 
-        /* Inline LaTeX: keep \(...\) in sentence flow; only \[...\] centers as block */
-        #question-text mjx-container:not([display="true"]) {
-            display: inline-block !important;
-            width: auto !important;
-            max-width: none !important;
-            margin: 0 0.15em !important;
-            vertical-align: middle !important;
-            text-align: left !important;
-        }
-
-        #question-text mjx-container[display="true"] {
-            display: block !important;
-            width: auto !important;
-            max-width: 100% !important;
-            margin: 0.5em auto !important;
-            text-align: center !important;
-        }
-
-        #question-text mjx-container svg {
-            display: inline-block !important;
-            width: auto !important;
-            max-width: none !important;
-            height: auto !important;
-            margin: 0 !important;
-            vertical-align: middle !important;
-        }
-
-        #question-choices mjx-container:not([display="true"]) {
-            display: inline-block !important;
-            width: auto !important;
-            margin: 0 0.12em !important;
-            vertical-align: middle !important;
-        }
+        /* Inline math typography is owned by static/css/practice_math_typography.css
+           (.practice-math-surface). Do not re-force vertical-align: middle here. */
 
         #question-media-container img,
         #question-media-container svg {
@@ -2194,7 +2165,7 @@
             </div>
             <div class="practice-question-block">
                 <div class="question-content" id="question-container">
-                    <div id="question-text">
+                    <div id="question-text" class="practice-math-surface">
                         {% if manual_review_unavailable %}
                         <div class="manual-review-unavailable" data-manual-review-unavailable="true">
                             <strong>{{ manual_review_unavailable.display_name }}：暫緩 / 尚未開放一般自動判分練習</strong>
@@ -2207,7 +2178,7 @@
                     </div>
                     <!-- question-media-container: 統計圖表、折線圖等視覺資產顯示在此 -->
                     <div id="question-media-container" style="display:none;"></div>
-                    <div id="question-choices" style="margin-top: 10px;"></div>
+                    <div id="question-choices" class="practice-math-surface" style="margin-top: 10px;"></div>
                 </div>
                 {% if is_similar_practice %}
                 <div class="similar-toolbar">
@@ -2221,10 +2192,10 @@
                 {% endif %}
             </div>
             <div class="practice-answer-block">
-                <div id="subquestions-container" class="subquestions-container" style="display:none;"></div>
+                <div id="subquestions-container" class="subquestions-container practice-math-surface" style="display:none;"></div>
                 <div class="input-group"><input type="text" id="answer-input" placeholder="{% if manual_review_unavailable %}此題型尚未開放一般自動判分{% else %}輸入答案...{% endif %}"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}><button
                         id="submit-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
-                <div id="result-display"></div>
+                <div id="result-display" class="practice-math-surface"></div>
 
                 <!-- [Phase 6] Prerequisite Suggestion Card -->
                 <div id="prerequisite-suggestion" style="display: none;">
@@ -2677,6 +2648,10 @@
         let isErasing = false;
         let isDrawing = false;
         let undoStack = [];
+        let strokeLogStack = [];
+        let redoStrokeLogStack = [];
+        let inkStrokeLog = [];
+        let currentStrokePoints = null;
         let selectedLevel = 1; // 新增：用於儲存當前選擇的難度
 
         function getSafeSelectedLevel() {
@@ -2911,6 +2886,15 @@
         // === 通用函式：呼叫 MathJax 渲染指定元素 ===
         function renderMathContent(element) {
             if (!element) return;
+            // Keep practice surfaces on the shared MathJax typography contract.
+            if (element.classList && (
+                element.id === 'question-text'
+                || element.id === 'question-choices'
+                || element.id === 'subquestions-container'
+                || element.id === 'result-display'
+            )) {
+                element.classList.add('practice-math-surface');
+            }
             if (window.MathDisplayNormalizer) {
                 window.MathDisplayNormalizer.normalizeElement(element);
             }
@@ -3513,6 +3497,10 @@
             canvas.style.touchAction = 'none';
 
             undoStack = [];
+            strokeLogStack = [];
+            redoStrokeLogStack = [];
+            inkStrokeLog = [];
+            currentStrokePoints = null;
             redoStack = [];
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             const cw = canvas.clientWidth || canvas.width;
@@ -3576,8 +3564,13 @@
             const current = canvas.toDataURL();
             if (undoStack.length > 0 && undoStack[undoStack.length - 1] === current) return;
             redoStack = [];
+            redoStrokeLogStack = [];
             undoStack.push(current);
-            if (undoStack.length > 50) undoStack.shift();
+            strokeLogStack.push(JSON.stringify(inkStrokeLog));
+            if (undoStack.length > 50) {
+                undoStack.shift();
+                strokeLogStack.shift();
+            }
             updateUndoRedoButtons();
         }
 
@@ -3588,6 +3581,7 @@
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
             setPenStyle();
+            currentStrokePoints = [{ x: pos.x, y: pos.y }];
             saveState();
         }
 
@@ -3596,11 +3590,21 @@
             const pos = getMousePos(canvas, e);
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
+            if (currentStrokePoints) {
+                currentStrokePoints.push({ x: pos.x, y: pos.y });
+            }
         }
 
         function stopDraw() {
             if (isDrawing) {
                 isDrawing = false;
+                if (currentStrokePoints && currentStrokePoints.length >= 2 && !isErasing) {
+                    inkStrokeLog.push({
+                        points: currentStrokePoints.slice(),
+                        erasing: false,
+                    });
+                }
+                currentStrokePoints = null;
                 saveState();
             }
         }
@@ -3692,6 +3696,12 @@
         function undo() {
             if (undoStack.length <= 1) return;
             redoStack.push(undoStack.pop());
+            redoStrokeLogStack.push(strokeLogStack.pop());
+            try {
+                inkStrokeLog = JSON.parse(strokeLogStack[strokeLogStack.length - 1] || '[]');
+            } catch (err) {
+                inkStrokeLog = [];
+            }
             const img = new Image();
             img.onload = () => {
                 const cw = canvas.clientWidth || canvas.width;
@@ -3714,6 +3724,15 @@
                 ctx.drawImage(img, 0, 0, cw, ch);
                 undoStack.push(nextSnapshot);
                 redoStack.pop();
+                const restoredLog = redoStrokeLogStack.pop();
+                if (restoredLog !== undefined) {
+                    strokeLogStack.push(restoredLog);
+                    try {
+                        inkStrokeLog = JSON.parse(restoredLog || '[]');
+                    } catch (err) {
+                        inkStrokeLog = [];
+                    }
+                }
                 updateUndoRedoButtons();
             };
             img.src = nextSnapshot;
@@ -3731,6 +3750,10 @@
                 }
                 undoStack = [];
                 redoStack = [];
+                strokeLogStack = [];
+                redoStrokeLogStack = [];
+                inkStrokeLog = [];
+                currentStrokePoints = null;
                 saveState();
             });
         }
@@ -4614,8 +4637,8 @@
                 .map((part, index) => ({
                     key: String(part.key || part.field_key),
                     field_key: String(part.key || part.field_key),
-                    label: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
-                    prompt: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    label: String(part.display_label || part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    prompt: String(part.display_label || part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
                     group_label: String(part.group_label || ''),
                     input_type: String(part.input_type || 'text'),
                     choices: Array.isArray(part.choices) ? part.choices : [],
@@ -4929,6 +4952,116 @@
                 ui.response_mode === 'drawing' ||
                 Boolean(cq.expected_drawing_spec)
             );
+        }
+
+        function isVectorDrawingCheckQuestion(questionInput) {
+            const cq = questionInput || currentQuestion || {};
+            const contract = cq.answer_contract || {};
+            const dc = (contract.drawing_check && typeof contract.drawing_check === 'object')
+                ? contract.drawing_check
+                : ((cq.drawing_check && typeof cq.drawing_check === 'object') ? cq.drawing_check : {});
+            if (dc.enabled === true) {
+                return true;
+            }
+            const shape = String(contract.answer_shape || cq.answer_shape || '').toLowerCase();
+            return shape === 'directed_segment_drawing' || shape === 'vector_drawing';
+        }
+
+        function buildLabeledPointCanvasPositions(cq) {
+            const question = cq || currentQuestion || {};
+            const visualSpec = question.visual_spec || (question.metadata && question.metadata.visual_spec) || null;
+            const runtime = window.VisualSpecRuntime;
+            const layer = getScratchpadBackgroundLayer();
+            if (!visualSpec || !runtime || !runtime.projectLabeledPoints || !layer) {
+                return {};
+            }
+            const size = resolveScratchpadCssSize();
+            const region = layer.computeQuestionBackgroundRegion
+                ? layer.computeQuestionBackgroundRegion(size.cw, size.ch)
+                : { x: 0, y: 0, width: size.cw, height: size.ch, edgePadding: 12 };
+            const projected = runtime.projectLabeledPoints(visualSpec, {
+                x: region.x,
+                y: region.y,
+                width: region.width,
+                height: region.height,
+                showLabel: false
+            }, {
+                padding: Math.min(region.edgePadding || 12, 10)
+            });
+            return (projected && projected.points) || {};
+        }
+
+        function submitVectorDrawingCheck(triggerSource) {
+            if (isProcessing) return;
+            isProcessing = true;
+            if (submitBtn) submitBtn.disabled = true;
+            if (analyzeBtn) analyzeBtn.disabled = true;
+
+            const submitEpoch = practiceQuestionEpoch;
+            const submitQuestionUid = currentQuestion && currentQuestion.question_uid ? String(currentQuestion.question_uid) : '';
+            const size = resolveScratchpadCssSize();
+
+            stopPracticeCheckLoading();
+            resultDisplay.className = '';
+            resultDisplay.style.background = '#fff3cd';
+            resultDisplay.style.color = '#856404';
+            resultDisplay.style.border = '1px solid #ffeaa7';
+            let dots = 0;
+            practiceCheckLoadingInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                resultDisplay.textContent = `正在檢查向量作圖${'.'.repeat(dots)}`;
+            }, 300);
+
+            const payload = buildCheckAnswerPayload('[vector_drawing]');
+            payload.answer = '[vector_drawing]';
+            payload.vector_drawing_check = true;
+            payload.student_strokes = Array.isArray(inkStrokeLog) ? inkStrokeLog.slice() : [];
+            payload.labeled_point_canvas_positions = buildLabeledPointCanvasPositions(currentQuestion);
+            payload.canvas_css_size = { width: size.cw, height: size.ch };
+            payload.trigger_source = triggerSource || 'ai-check-button';
+
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(async data => {
+                stopPracticeCheckLoading();
+                if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+                    applyDrawingUiContract();
+                    return;
+                }
+                const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
+                if (isCorrectVal === true) {
+                    resultDisplay.textContent = data.result || data.message || '作圖正確。';
+                    resultDisplay.className = 'correct';
+                    updateStreak(true, data.consecutive_correct, data.pass_target);
+                    consecutiveWrongs = 0;
+                    await handleCorrectAnswer();
+                } else {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+                    resultDisplay.textContent = data.result || data.message || '作圖尚未正確。';
+                    resultDisplay.className = 'incorrect';
+                    if (isCorrectVal === false) {
+                        updateStreak(false, data.consecutive_correct, data.pass_target);
+                    }
+                    applyDrawingUiContract();
+                }
+            })
+            .catch(() => {
+                stopPracticeCheckLoading();
+                if (submitBtn) submitBtn.disabled = false;
+                if (analyzeBtn) analyzeBtn.disabled = false;
+                isProcessing = false;
+                resultDisplay.textContent = '向量作圖批改失敗，請稍後再試。';
+                resultDisplay.className = 'incorrect';
+            });
         }
 
         function getMergedUiContract(cq) {
@@ -6120,6 +6253,12 @@
                 const cq = currentQuestion || {};
                 const uiContract = resolveDrawingUiContract(cq);
 
+                // Isolated gate: directed-segment drawing answers only.
+                if (isVectorDrawingCheckQuestion(cq)) {
+                    submitVectorDrawingCheck('ai-check-button');
+                    return;
+                }
+
                 if (isDrawingQuestion(cq)) {
                     submitDrawingAnswerFromCanvas('ai-check-button');
                     return;
@@ -7077,32 +7216,8 @@ button#similar-reset-btn.level-button {
   border-radius: var(--r-md) !important;
 }
 
-/* MathJax — 自然融入文字（inline 保持句內；display math 才置中） */
+/* MathJax skin: spacing only. Baseline/scale owned by practice_math_typography.css */
 mjx-container { margin: 0 2px !important; }
-
-#question-text mjx-container:not([display="true"]) {
-  display: inline-block !important;
-  width: auto !important;
-  max-width: none !important;
-  margin: 0 0.15em !important;
-  vertical-align: middle !important;
-  text-align: left !important;
-}
-
-#question-text mjx-container[display="true"] {
-  display: block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  margin: 0.5em auto !important;
-  text-align: center !important;
-}
-
-#question-text mjx-container svg {
-  display: inline-block !important;
-  width: auto !important;
-  margin: 0 !important;
-  vertical-align: middle !important;
-}
 
 /* Diagram container */
 .diagram-container {

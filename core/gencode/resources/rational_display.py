@@ -7,6 +7,16 @@ from fractions import Fraction
 from typing import Any
 
 
+# Long classroom-float noise from sympy Float sstr / IEEE formatting.
+_FLOAT_NOISE_RE = re.compile(r"(?<![\d.\\])(-?\d+\.\d{6,})(?!\d)")
+_TRIVIAL_POS_VEC_COEFF_RE = re.compile(
+    r"(?<![\d.])1(\\(?:vec|overrightarrow)\{)"
+)
+_TRIVIAL_NEG_VEC_COEFF_RE = re.compile(
+    r"(?<![\d.])-1(\\(?:vec|overrightarrow)\{)"
+)
+
+
 def normalize_fraction_value(value: Any) -> Fraction:
     """Normalize int/str/Fraction/SymPy Rational-like values to Fraction."""
     if isinstance(value, bool):
@@ -16,7 +26,9 @@ def normalize_fraction_value(value: Any) -> Fraction:
     if isinstance(value, int):
         return Fraction(value, 1)
     if isinstance(value, float):
-        return Fraction(value).limit_denominator()
+        if abs(value) < 1e-15:
+            return Fraction(0, 1)
+        return Fraction(value).limit_denominator(10_000)
 
     text = str(value or "").strip()
     if not text:
@@ -28,6 +40,9 @@ def normalize_fraction_value(value: Any) -> Fraction:
     if match:
         sign = -1 if match.group(1) == "-" else 1
         return Fraction(sign * int(match.group(2)), int(match.group(3)))
+    # Sympy Float noise tokens
+    if re.fullmatch(r"-?\d+\.\d{6,}", text):
+        return Fraction(float(text)).limit_denominator(10_000)
     return Fraction(text)
 
 
@@ -46,6 +61,75 @@ def fraction_to_latex(value: Any) -> str:
         return str(frac.numerator)
     sign = "-" if frac.numerator < 0 else ""
     return f"{sign}\\frac{{{abs(frac.numerator)}}}{{{frac.denominator}}}"
+
+
+def compact_float_noise_token(token: str) -> str:
+    """Map noisy float tokens to compact exact/plain classroom forms (display only)."""
+    raw = str(token or "").strip()
+    if not raw:
+        return raw
+    try:
+        value = float(raw)
+    except ValueError:
+        return raw
+    if abs(value) < 1e-12:
+        return "0"
+    frac = Fraction(value).limit_denominator(10_000)
+    if abs(float(frac) - value) > 1e-9:
+        text = f"{value:.12g}"
+        if text in {"-0", "-0.0"}:
+            return "0"
+        return text
+    return fraction_to_plain(frac)
+
+
+def sanitize_float_noise_in_text(text: Any) -> str:
+    """Replace long float tails in student-facing text. Does not touch short decimals."""
+    source = str(text or "")
+    if not source:
+        return source
+    return _FLOAT_NOISE_RE.sub(lambda m: compact_float_noise_token(m.group(0)), source)
+
+
+def sanitize_trivial_vector_coefficients(text: Any) -> str:
+    """Display-only: 1\\vec{a} → \\vec{a}, -1\\vec{a} → -\\vec{a}."""
+    source = str(text or "")
+    if not source:
+        return source
+    source = _TRIVIAL_POS_VEC_COEFF_RE.sub(r"\1", source)
+    source = _TRIVIAL_NEG_VEC_COEFF_RE.sub(r"-\1", source)
+    return source
+
+
+def sanitize_student_math_display_text(text: Any) -> str:
+    """Shared student-facing cleanup for numeric float noise and trivial vec coeffs."""
+    return sanitize_trivial_vector_coefficients(sanitize_float_noise_in_text(text))
+
+
+def latex_coeff_times_symbol(coeff: Any, symbol_latex: str) -> str:
+    """Format coeff*symbol for LaTeX stems (1 → bare symbol, -1 → -symbol)."""
+    frac = normalize_fraction_value(coeff)
+    sym = str(symbol_latex or "").strip()
+    if not sym:
+        return fraction_to_latex(frac)
+    if frac == 0:
+        return "0"
+    if frac == 1:
+        return sym
+    if frac == -1:
+        return f"-{sym}"
+    return f"{fraction_to_latex(frac)}{sym}"
+
+
+def latex_difference_of_scaled_symbols(c1: Any, sym1: str, c2: Any, sym2: str) -> str:
+    """Render c1*sym1 - c2*sym2 with trivial coefficients removed."""
+    left = latex_coeff_times_symbol(c1, sym1)
+    right_frac = normalize_fraction_value(c2)
+    if right_frac == 0:
+        return left
+    if right_frac > 0:
+        return f"{left}-{latex_coeff_times_symbol(right_frac, sym2)}"
+    return f"{left}+{latex_coeff_times_symbol(-right_frac, sym2)}"
 
 
 def normalize_linear_expression_display(expr: Any) -> str:
@@ -84,6 +168,11 @@ def canonicalize_display_answer(value: Any, answer_type: str | None = None) -> s
     """Return a stable display answer string without changing answer semantics."""
     if isinstance(value, Fraction):
         return fraction_to_latex(value)
+    if isinstance(value, float):
+        frac = Fraction(value).limit_denominator(10_000)
+        if abs(float(frac) - value) <= 1e-9:
+            return fraction_to_latex(frac)
+        return compact_float_noise_token(str(value))
 
     text = str(value or "").strip()
     if not text:
@@ -93,6 +182,7 @@ def canonicalize_display_answer(value: Any, answer_type: str | None = None) -> s
     if normalized_answer_type in {"fraction", "rational", "rational_fraction"}:
         return fraction_to_latex(text)
 
+    text = sanitize_student_math_display_text(text)
     text = normalize_linear_expression_display(text)
     text = _replace_plain_fractions_with_latex(text)
     return text

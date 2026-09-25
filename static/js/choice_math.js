@@ -33,6 +33,11 @@
         match = canonical.match(/^([+-]?)(\d+)\/(\d+)$/);
         if (match) return `\\(${match[1]}\\frac{${match[2]}}{${match[3]}}\\)`;
 
+        // Bare TeX atoms (e.g. \overrightarrow{AB}, \vec{a}) must be delimited.
+        if (/\\[a-zA-Z]+/.test(canonical) && !/(?:\\\(|\\\[|\$\$|\$)/.test(canonical)) {
+            return `\\(${canonical}\\)`;
+        }
+
         return canonical;
     }
 

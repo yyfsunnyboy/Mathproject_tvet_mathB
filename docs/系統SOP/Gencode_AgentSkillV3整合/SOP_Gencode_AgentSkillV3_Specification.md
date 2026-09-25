@@ -88,6 +88,19 @@ but does not count as completed chapter coverage.
 Coverage must preserve the source problem's core reasoning topology,
 not merely its broad mathematical topic.
 
+#### Student-runtime production readiness
+
+Source coverage alone does not constitute production readiness.
+
+Published families must also satisfy student-facing fidelity:
+
+- parameterized regeneration (same seed reproducible; next-question not fixed/cached)
+- MCQ choices + answer mapping + checker as runtime contract
+- multi-part fields with student-visible labels
+- diagram semantic + pedagogical fidelity (minimum sufficient geometry; no unrelated dump)
+
+A renderable diagram alone does not constitute coverage.
+
 ### 2.3 開發禁令
 
 * 嚴禁將多道教材題目合併在同一個 component 資料夾中。

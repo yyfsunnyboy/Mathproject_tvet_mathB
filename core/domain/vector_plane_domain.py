@@ -95,8 +95,38 @@ OPS = frozenset(set(_CORE_OPS) | set(_GAP_OPS))
 
 
 def canonical_exact(value: Any) -> str:
+    """Student-facing exact scalar/display string (does not alter symbolic math objects).
+
+    Floats are nsimplified before printing so IEEE noise like ``4.00000000000000``
+    never reaches stems/MCQ text. Checker comparisons should use labels/semantic
+    values, not these display strings' float tails.
+    """
+    from core.gencode.resources.rational_display import (
+        compact_float_noise_token,
+        fraction_to_plain,
+        sanitize_float_noise_in_text,
+    )
+
+    if isinstance(value, float):
+        if abs(value) < 1e-15:
+            return "0"
+        # Prefer exact classroom rationals when the float is an exact simple number.
+        try:
+            return fraction_to_plain(value)
+        except Exception:
+            return compact_float_noise_token(str(value))
+
     expr = sp.simplify(sp.sympify(value))
-    return sp.sstr(sp.radsimp(expr), order="lex")
+    if isinstance(expr, sp.Float) or getattr(expr, "is_Float", False):
+        try:
+            expr = sp.nsimplify(expr, rational=True)
+        except Exception:
+            pass
+    expr = sp.radsimp(expr)
+    if expr == 0:
+        return "0"
+    text = sp.sstr(expr, order="lex")
+    return sanitize_float_noise_in_text(text)
 
 
 def _json_value(obj: Any) -> Any:
@@ -129,7 +159,17 @@ def format_pair(x: Any, y: Any) -> str:
 
 
 def latex_pair(x: Any, y: Any) -> str:
-    return rf"\left( {canonical_exact(x)},\ {canonical_exact(y)} \right)"
+    from core.gencode.resources.rational_display import fraction_to_latex
+
+    try:
+        left = fraction_to_latex(x)
+    except Exception:
+        left = canonical_exact(x)
+    try:
+        right = fraction_to_latex(y)
+    except Exception:
+        right = canonical_exact(y)
+    return rf"\left( {left},\ {right} \right)"
 
 
 def magnitude(x: Any, y: Any) -> sp.Expr:
@@ -679,12 +719,12 @@ def build_vector_plane_matrix(
     elif op == POINTS_LINEAR_COMBO_OP:
         if "points" not in payload:
             payload["points"] = {
-                "A": [0, -2],
-                "B": [2, 3],
-                "C": [-1, 3],
-                "D": [1, 0],
+                "A": list(_sample_pair(rng, nonzero=False)),
+                "B": list(_sample_pair(rng, nonzero=False)),
+                "C": list(_sample_pair(rng, nonzero=False)),
+                "D": list(_sample_pair(rng, nonzero=False)),
             }
-            payload["expression"] = "AB+CD"
+            payload["expression"] = rng.choice(["AB+CD", "AB-CD", "AC+BD", "AD+BC"])
         result = compute_point_vectors_linear_combination(
             points=payload["points"], expression=str(payload.get("expression") or "AB+CD")
         )
@@ -694,6 +734,15 @@ def build_vector_plane_matrix(
         )
         if payload.get("question_text"):
             question = str(payload["question_text"])
+        # Include concrete coordinates in stem when not overridden.
+        if not payload.get("question_text"):
+            pts = payload["points"]
+            bits = "、".join(
+                f"${lab}={latex_pair(*_as_pair(xy))}$" for lab, xy in pts.items()
+            )
+            question = (
+                f"設 {bits}，試求 ${str(payload.get('expression') or 'AB+CD')}$ 的坐標表示。"
+            )
         parts = {"vector": result["canonical"]}
         answer_value = result["canonical"]
         answer_type = "expression"
@@ -719,15 +768,23 @@ def build_vector_plane_matrix(
 
     elif op == PARALLEL_PARAM_OP:
         if "a" not in payload or "b" not in payload:
-            k_true = _rand_int(rng, -5, 5, nonzero=True)
+            # Construct b = t * a with one unknown component so a solution always exists.
             ax, ay = _sample_pair(rng)
-            payload["a"] = [ax, ay]
-            payload["b"] = [f"{k_true}", "k"] if rng.random() < 0.5 else ["k", f"{k_true}"]
-            # Build b = t * a with unknown in one component
             t = _rand_int(rng, -4, 4, nonzero=True)
-            payload["a"] = [2, -1]
-            payload["b"] = ["k", 3]  # 2*3 - (-1)*k = 0 ⇒ k=-6 classic pattern; use solve
-            # Better: a=(2,-1), b=(k,3) ⇒ 2*3-(-1)*k=0 ⇒ 6+k=0 ⇒ k=-6
+            if rng.random() < 0.5:
+                payload["a"] = [ax, ay]
+                payload["b"] = ["k", t * ay]
+                # Parallel: ax*(t*ay) - ay*k = 0 ⇒ k = t*ax (when ay!=0). If ay==0, k free /
+                # force ay nonzero.
+                if ay == 0:
+                    ay = _rand_int(rng, -5, 5, nonzero=True)
+                    payload["a"] = [ax, ay]
+                    payload["b"] = ["k", t * ay]
+            else:
+                if ax == 0:
+                    ax = _rand_int(rng, -5, 5, nonzero=True)
+                payload["a"] = [ax, ay]
+                payload["b"] = [t * ax, "k"]
         result = solve_parallel_vector_parameter(
             a=payload["a"], b=payload["b"], parameter=str(payload.get("parameter") or "k")
         )
@@ -750,7 +807,14 @@ def build_vector_plane_matrix(
 
     elif op == UNIT_VECTOR_OP:
         if "vector" not in payload:
-            payload["vector"] = [3, 4]
+            # Prefer Pythagorean triples for clean answers.
+            payload["vector"] = list(rng.choice([[3, 4], [5, 12], [6, 8], [8, 15], [7, 24], [9, 12]]))
+            if rng.random() < 0.5:
+                payload["vector"][0] *= -1
+            if rng.random() < 0.5:
+                payload["vector"][1] *= -1
+        if "direction" not in payload:
+            payload["direction"] = rng.choice(["same", "opposite"])
         direction = str(payload.get("direction") or "same")
         result = compute_unit_vector(vector=payload["vector"], direction=direction)
         vx, vy = _as_pair(payload["vector"])
@@ -781,9 +845,9 @@ def build_vector_plane_matrix(
 
     elif op == DOT_MAG_ANGLE_OP:
         if not {"mag_a", "mag_b", "angle_degrees"} <= set(payload):
-            payload["mag_a"] = 4
-            payload["mag_b"] = 3
-            payload["angle_degrees"] = 60
+            payload["mag_a"] = rng.choice([2, 3, 4, 5, 6])
+            payload["mag_b"] = rng.choice([2, 3, 4, 5])
+            payload["angle_degrees"] = rng.choice([30, 45, 60, 90, 120, 150])
         result = compute_dot_product_from_magnitudes_angle(
             mag_a=payload["mag_a"],
             mag_b=payload["mag_b"],
@@ -802,8 +866,15 @@ def build_vector_plane_matrix(
 
     elif op == PERPENDICULAR_PARAM_OP:
         if "a" not in payload or "b" not in payload:
-            payload["a"] = ["k", 3]
-            payload["b"] = ["k+2", -1]
+            k_slot = rng.choice(["x", "y"])
+            known = _rand_int(rng, -5, 5, nonzero=True)
+            shift = _rand_int(rng, -3, 3, nonzero=True)
+            if k_slot == "x":
+                payload["a"] = ["k", known]
+                payload["b"] = [f"k+{shift}" if shift > 0 else f"k{shift}", _rand_int(rng, -4, 4, nonzero=True)]
+            else:
+                payload["a"] = [known, "k"]
+                payload["b"] = [_rand_int(rng, -4, 4, nonzero=True), f"k+{shift}" if shift > 0 else f"k{shift}"]
         result = solve_perpendicular_vector_parameter(
             a=payload["a"], b=payload["b"], parameter=str(payload.get("parameter") or "k")
         )
@@ -826,8 +897,8 @@ def build_vector_plane_matrix(
 
     elif op == COSINE_FROM_DOT_OP:
         if "a" not in payload or "b" not in payload:
-            payload["a"] = [-1, 2]
-            payload["b"] = [-3, 1]
+            payload["a"] = list(_sample_pair(rng))
+            payload["b"] = list(_sample_pair(rng))
         result = compute_cosine_of_angle_from_dot(a=payload["a"], b=payload["b"])
         ax, ay = _as_pair(payload["a"])
         bx, by = _as_pair(payload["b"])
@@ -842,10 +913,10 @@ def build_vector_plane_matrix(
 
     elif op == LINEAR_COMBO_OP:
         if "terms" not in payload:
+            n_terms = rng.choice([2, 3])
             payload["terms"] = [
-                {"coeff": 3, "vector": [-2, -1]},
-                {"coeff": -2, "vector": [1, 5]},
-                {"coeff": 5, "vector": [0, 4]},
+                {"coeff": _rand_int(rng, -4, 4, nonzero=True), "vector": list(_sample_pair(rng))}
+                for _ in range(n_terms)
             ]
         result = compute_vector_linear_combination(terms=payload["terms"])
         term_bits = []
@@ -861,9 +932,11 @@ def build_vector_plane_matrix(
 
     elif op == SCALED_DIRECTION_OP:
         if "vector" not in payload:
-            payload["vector"] = [3, 4]
+            payload["vector"] = list(_sample_pair(rng))
         if "length" not in payload:
-            payload["length"] = 2
+            payload["length"] = rng.choice([1, 2, 3, 4, 5])
+        if "direction" not in payload:
+            payload["direction"] = rng.choice(["same", "opposite"])
         direction = str(payload.get("direction") or "same")
         result = compute_scaled_direction_vector(
             vector=payload["vector"], length=payload["length"], direction=direction
@@ -882,12 +955,12 @@ def build_vector_plane_matrix(
             answer_value = result["canonical"]
             parts = {"vector": result["canonical"]}
             answer_type = "expression"
-        explanation = [r"先求單位向量再乘長度。"]
+        explanation = ["先求單位向量，再乘上指定長度。"]
 
     elif op == TRIANGLE_CHAIN_OP:
         if "ab" not in payload or "bc" not in payload:
-            payload["ab"] = [-3, 4]
-            payload["bc"] = [0, -4]
+            payload["ab"] = list(_sample_pair(rng))
+            payload["bc"] = list(_sample_pair(rng))
         result = compute_triangle_chain_and_perimeter(ab=payload["ab"], bc=payload["bc"])
         abx, aby = _as_pair(payload["ab"])
         bcx, bcy = _as_pair(payload["bc"])
@@ -933,6 +1006,7 @@ def build_vector_plane_matrix(
             "difficulty_profile": difficulty_profile or "easy",
             "presentation_mode": presentation,
             "answer_type": answer_type,
+            "seed": 0 if seed is None else int(seed),
         },
         "visual_spec": {"kind": "none"},
         "domain_result": _json_value(result),
@@ -946,8 +1020,11 @@ def build_vector_plane_matrix(
 
 def validate_vector_plane_matrix(matrix: dict[str, Any]) -> bool:
     try:
-        op = matrix["validation_facts"]["domain_operation"]
-        rebuilt = build_vector_plane_matrix(operation=op, **matrix["givens"])
+        facts = matrix.get("validation_facts") if isinstance(matrix.get("validation_facts"), dict) else {}
+        op = facts["domain_operation"]
+        givens = dict(matrix.get("givens") or {})
+        seed = facts.get("seed", givens.pop("seed", None))
+        rebuilt = build_vector_plane_matrix(operation=op, seed=seed, **givens)
         return rebuilt["answer"] == matrix["answer"]
     except (KeyError, TypeError, ValueError):
         return False

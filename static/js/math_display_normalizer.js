@@ -80,9 +80,14 @@
       const latex = numericLatex(source.trim());
       if (latex !== null) return `\\(${latex}\\)`;
     }
-    if (!source || /\\(?:d?frac|tfrac)\s*\{/.test(source)) return source;
+    if (!source) return source;
     const alreadyDelimited = /(?:\\\(|\\\[|\$\$|\$)/.test(source);
     const wrap = (latex) => alreadyDelimited ? latex : `\\(${latex}\\)`;
+    // Bare TeX commands (vectors, fractions, roots) need delimiters for MathJax.
+    if (!alreadyDelimited && /\\[a-zA-Z]+/.test(source) && (options?.mathContext === true || !isPlainTextException(source))) {
+      return `\\(${source}\\)`;
+    }
+    if (/\\(?:d?frac|tfrac)\s*\{/.test(source)) return source;
     let text = source;
 
     text = text.replace(/\b(sin|cos|tan)\s*\(\s*(-?)(\d*)\s*\*?\s*(?:π|\\pi|pi)\s*\/\s*(\d+)\s*\)/gi,

@@ -5,8 +5,8 @@ from typing import Any
 from core.domain.vector_plane_domain import build_vector_plane_matrix
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
-PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "expression"
+PRESENTATION_MODE = "single_choice"
+ANSWER_TYPE = "choice"
 PROBLEM_TYPE_ID = "compute_chain_closure_vector_mcq"
 TEXTBOOK_EXAMPLE_ID = 11821
 DEFAULT_COMPONENT_ID = "src_11821" if TEXTBOOK_EXAMPLE_ID else ""
@@ -22,7 +22,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         "seed": seed,
         "curriculum_profile": "vocational_high_b",
         "difficulty_profile": "hard",
-        "answer_schema_key": "",
+        "answer_schema_key": "choice_label",
         "presentation_mode": PRESENTATION_MODE,
         "answer_type": ANSWER_TYPE,
         "fixed_domain_key": "vector.plane",
@@ -50,7 +50,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
-        answer_schema_key="",
+        answer_schema_key="choice_label",
         domain_operation="compute_chain_closure_vector_mcq",
         seed=seed,
     )

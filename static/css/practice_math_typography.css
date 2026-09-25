@@ -1,0 +1,51 @@
+/**
+ * Student-practice inline math typography contract.
+ *
+ * Canonical renderer on the practice page: MathJax 3 SVG (tex-svg).
+ * MathJax sets an inline vertical-align on each mjx-container for true
+ * math baseline alignment with surrounding Chinese text.
+ *
+ * NEVER force vertical-align: middle !important on practice surfaces —
+ * that was the chapter-wide baseline / apparent font-scale mismatch.
+ *
+ * Scope: only .practice-math-surface (stem / choices / multipart / feedback).
+ * Do not use skill-specific or per-family selectors.
+ */
+#question-text.practice-math-surface,
+#question-choices.practice-math-surface,
+#subquestions-container.practice-math-surface,
+#result-display.practice-math-surface,
+.practice-math-surface {
+  line-height: 1.75 !important;
+}
+
+/* Inline math: keep sentence flow; inherit surface font scale. */
+.practice-math-surface mjx-container:not([display="true"]) {
+  display: inline !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 0.12em !important;
+  padding: 0 !important;
+  text-align: left !important;
+  font-size: 100% !important;
+  line-height: inherit !important;
+  /* Intentionally omit vertical-align so MathJax inline style wins. */
+}
+
+/* Display math (\[...\]) may be block-centered. */
+.practice-math-surface mjx-container[display="true"] {
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0.45em auto !important;
+  text-align: center !important;
+}
+
+.practice-math-surface mjx-container svg {
+  display: inline !important;
+  width: auto !important;
+  max-width: none !important;
+  height: auto !important;
+  margin: 0 !important;
+  /* Do not force svg vertical-align; container owns baseline. */
+}

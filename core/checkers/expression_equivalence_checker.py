@@ -275,6 +275,22 @@ def check_expression_equivalence_debug(
         out["error_code"] = "ANSWER_PARSE_FAILED"
         return out
 
+    # Vector-valued oracles: accept keyboard-friendly forms before generic math parse.
+    from core.checkers.vector_answer_normalization import try_check_vector_answer
+
+    vector_debug = try_check_vector_answer(
+        ua_raw,
+        ca_raw,
+        answer_contract=answer_contract,
+        payload=payload,
+    )
+    if vector_debug is not None:
+        out.update({k: v for k, v in vector_debug.items() if k != "correct"})
+        out["correct"] = bool(vector_debug.get("correct"))
+        if vector_debug.get("format_hint"):
+            out["format_hint"] = vector_debug.get("format_hint")
+        return out
+
     out["normalized_user_expression"] = normalize_math_expression(ua_raw)
     out["normalized_correct_expression"] = normalize_math_expression(ca_raw)
     need_form = (

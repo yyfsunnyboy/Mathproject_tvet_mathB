@@ -41,6 +41,39 @@
 - wrapper generate 與 practice API assembly 是不同層
 - `question_uid` 是 practice API/runtime assembly 負責，不要求 raw skill wrapper 自帶
 
+### 3.1 Vector-valued keyboard input
+
+When the expected answer is **vector-valued** (directed segment, basis /
+symbolic vector expression, or `answer_shape` in
+`{directed_segment, vector_expression, ...}`), shared answer normalization
+must accept unambiguous keyboard-friendly forms before grading:
+
+- Directed segment: `BC`, `->BC`, `BC->`, `vec(BC)`, `\vec{BC}`,
+  `\overrightarrow{BC}` all normalize to the same segment; direction matters
+  (`BC` ≠ `CB`).
+- Symbolic vectors: `a`, `a+b`, `2a-b`, `(1/2)a+b` and equivalent parseable
+  forms are accepted; students must not be required to type `\vec{a}+\vec{b}`.
+
+Do **not** globally treat every two-letter token or letter symbol as a vector.
+Coercion is gated by expected-answer / schema context. Scalar and ordinary
+algebra answers stay on the generic math path.
+
+Invalid input may mention hints such as「可直接輸入 BC 表示向量 BC」;
+semantically valid keyboard forms must **PASS**, not return「答案格式不正確」.
+
+## 3.2 Directed-segment drawing answers
+
+For construction-style questions where a directed vector drawing is a valid
+answer (`drawing_check.enabled` / `answer_shape: directed_segment_drawing`),
+structured geometric checking is preferred over generic AI interpretation:
+
+- expected endpoints come from the canonical directed-segment answer
+- student strokes are compared to authoritative visual labeled points
+- AI may be used only as a fallback for ambiguous drawings (optional)
+
+Keyboard-equivalent answers (e.g. `AC` for `\overrightarrow{AC}`) remain
+available via §3.1 and must not be removed.
+
 ## 4. Diagram / image routing
 
 三種概念不可混為一談。
@@ -186,6 +219,64 @@ not merely its broad mathematical topic.
 - `diagram` / `MCQ` / `application` / `composite` / `past exam` 不得因工程困難永久 `intentional_skip`
 - 多題可共用同一 generator family，但每題 `source_example_id` 必須可追溯到 faithful family／capability／coverage evidence
 - 章節狀態僅在 `covered == total_source` 且 `blocked == 0` 時可標 CLOSED；否則為 PARTIAL
+
+## 9.2 Student-runtime production readiness（beyond source coverage）
+
+Source coverage alone does not constitute production readiness.
+
+A published GenCode family must be genuinely parameterized for repeated
+student practice:
+
+- Same explicit seed → reproducible same question
+- Different explicit seeds → parameterized meaningful variation
+- Normal student next-question → new production generation state
+  (must not replay a fixed seed, cached payload, or fixed-template instance)
+
+For MCQ, choices, answer mapping and checker behavior are part of the
+student runtime contract. Choice text containing TeX must remain MathJax-
+delimited through serialization; vocational MCQ remains exactly 4 choices.
+Do not convert MCQ families to text input to bypass UI contract issues.
+
+For multi-part questions, every input must have explicit student-visible
+meaning (`display_label` / `label`). Internal keys (`k1`, `alpha`, …) may
+exist in the payload but must not be the only student-facing label.
+
+For vector-valued free-response answers, keyboard-friendly notation is part
+of the student runtime contract (see §3.1): directed-segment and symbolic
+vector oracles must accept practical typed forms without requiring LaTeX.
+
+For diagram-backed GenCode, coverage requires semantic and pedagogical
+fidelity between:
+
+- problem stem
+- parameters
+- visual payload
+- input contract
+- answer
+
+A renderable diagram alone does not constitute coverage.
+Generated diagrams should expose the minimum sufficient mathematical
+structure and must not dump unrelated generator geometry.
+
+### 9.3 Student-facing inline math typography
+
+Student-facing inline math inside the same semantic surface (problem stem,
+MCQ choices, multipart labels, correct-answer feedback) must use **one**
+consistent rendering/typography contract:
+
+- Canonical practice-page renderer: MathJax 3 SVG (`tex-svg`)
+- Shared surface wrapper: `.practice-math-surface`
+- Shared styles: `static/css/practice_math_typography.css`
+- One base typography scale (`font-size: 100%` on inline `mjx-container`)
+- Baseline owned by MathJax inline `vertical-align` — do **not** force
+  `vertical-align: middle !important` on practice math containers
+- Do not mix incompatible inline render paths in one stem
+  (e.g. MathJax + KaTeX + raw styled spans) unless intentionally
+  normalized under this contract
+
+Generated content may not expose renderer-specific differences in font
+scale or baseline to students. This is a shared practice invariant for
+B2 / B3 / B4 — not a chapter exception.
 
 
 ## 10. Rules for future chapter imports

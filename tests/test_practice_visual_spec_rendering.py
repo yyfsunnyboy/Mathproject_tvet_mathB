@@ -99,6 +99,108 @@ def test_practice_template_uses_shared_visual_render_predicate() -> None:
     assert "圖表資料需由伺服器渲染" not in template
 
 
+def test_diagram_math_labels_are_formatted_for_canvas_display() -> None:
+    """Canvas fillText cannot MathJax; shared formatter must convert TeX labels."""
+    node_executable = shutil.which("node")
+    if not node_executable:
+        candidates = sorted(
+            (Path.home() / ".cache" / "codex-runtimes").glob(
+                "*/dependencies/node/bin/node.exe"
+            )
+        )
+        node_executable = str(candidates[0]) if candidates else None
+    assert node_executable, "Node.js runtime is required for frontend visual-spec tests"
+
+    cases = [
+        {"raw": "A", "expect": "A", "raw_latex": False},
+        {"raw": "B", "expect": "B", "raw_latex": False},
+        {"raw": "O", "expect": "O", "raw_latex": False},
+        {"raw": r"\vec{a}", "expect": "a\u20d7", "raw_latex": False},
+        {"raw": r"\vec{b}", "expect": "b\u20d7", "raw_latex": False},
+        {"raw": r"-\vec{a}", "expect": "-a\u20d7", "raw_latex": False},
+        {"raw": r"\vec{a}+\vec{b}", "expect": "a\u20d7+b\u20d7", "raw_latex": False},
+        {
+            "raw": r"\frac{1}{3}\vec{a}-\frac{1}{2}\vec{b}",
+            "expect": "(1/3)a\u20d7-(1/2)b\u20d7",
+            "raw_latex": False,
+        },
+        {"raw": r"\overrightarrow{AB}", "expect": "AB\u20d7", "raw_latex": False},
+    ]
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const cases=JSON.parse(process.argv[2]);"
+        "const out=cases.map(c=>({"
+        "raw:c.raw,"
+        "got:runtime.formatDiagramLabel(c.raw),"
+        "expect:c.expect,"
+        "ok:runtime.formatDiagramLabel(c.raw)===c.expect,"
+        "exposes:runtime.diagramLabelExposesRawLatex(c.raw)"
+        "}));"
+        "process.stdout.write(JSON.stringify(out));"
+    )
+    completed = subprocess.run(
+        [node_executable, "-e", script, str(RUNTIME_PATH), json.dumps(cases)],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    results = json.loads(completed.stdout)
+    assert all(row["ok"] for row in results), results
+    assert all(row["exposes"] is False for row in results), results
+
+
+def test_b2_ch3_vector_diagram_payload_labels_do_not_expose_raw_tex_after_format() -> None:
+    node_executable = shutil.which("node")
+    if not node_executable:
+        candidates = sorted(
+            (Path.home() / ".cache" / "codex-runtimes").glob(
+                "*/dependencies/node/bin/node.exe"
+            )
+        )
+        node_executable = str(candidates[0]) if candidates else None
+    assert node_executable, "Node.js runtime is required for frontend visual-spec tests"
+
+    from core.domain.vector_plane_domain import build_vector_plane_matrix
+
+    labels: list[str] = []
+    for op in (
+        "express_named_vectors_in_given_basis",
+        "construct_linear_combination_choice",
+        "identify_equal_vector_mcq",
+        "simplify_vector_path_expression",
+    ):
+        matrix = build_vector_plane_matrix(operation=op, seed=7)
+        visual = matrix.get("visual_spec") or {}
+        for arrow in visual.get("arrows") or []:
+            if isinstance(arrow, dict) and arrow.get("label"):
+                labels.append(str(arrow["label"]))
+        for point in visual.get("points") or []:
+            if isinstance(point, dict) and point.get("label"):
+                labels.append(str(point["label"]))
+    assert labels
+    script = (
+        "const runtime=require(process.argv[1]);"
+        "const labels=JSON.parse(process.argv[2]);"
+        "const out=labels.map(l=>({"
+        "raw:l,"
+        "display:runtime.formatDiagramLabel(l),"
+        "exposes:runtime.diagramLabelExposesRawLatex(l)"
+        "}));"
+        "process.stdout.write(JSON.stringify(out));"
+    )
+    completed = subprocess.run(
+        [node_executable, "-e", script, str(RUNTIME_PATH), json.dumps(labels)],
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    results = json.loads(completed.stdout)
+    assert all(not row["exposes"] for row in results), results
+    assert any("\u20d7" in row["display"] for row in results if "\\vec" in row["raw"]), results
+
+
 def test_practice_template_renders_answer_contract_parts_and_handwriting_canvas() -> None:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
     assert "function resolveMultiPartFields(payload)" in template

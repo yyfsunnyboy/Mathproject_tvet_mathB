@@ -1023,6 +1023,74 @@
         return clipped;
     }
 
+    function looksLikeMathDiagramLabel(raw) {
+        const text = String(raw == null ? '' : raw);
+        if (!text) {
+            return false;
+        }
+        return /\\[a-zA-Z]+/.test(text) || /\$\$|\\\(|\\\[|\$/.test(text);
+    }
+
+    /**
+     * Canvas diagrams cannot run MathJax/KaTeX inside fillText.
+     * Convert common LaTeX math-label forms to Unicode display text while
+     * leaving plain point labels (A/B/C/O) untouched.
+     */
+    function formatDiagramLabel(raw) {
+        let text = String(raw == null ? '' : raw).trim();
+        if (!text) {
+            return '';
+        }
+        if (!looksLikeMathDiagramLabel(text)) {
+            return text;
+        }
+
+        // Strip common math delimiters first.
+        text = text
+            .replace(/^\$\$([\s\S]*)\$\$$/g, '$1')
+            .replace(/^\$([\s\S]*)\$$/g, '$1')
+            .replace(/^\\\(([\s\S]*)\\\)$/g, '$1')
+            .replace(/^\\\[([\s\S]*)\\\]$/g, '$1')
+            .trim();
+
+        // Vector / directed-segment notations → base glyph + combining arrow.
+        text = text.replace(/\\overrightarrow\{([^{}]+)\}/g, function (_m, inner) {
+            return String(inner) + '\u20D7';
+        });
+        text = text.replace(/\\vec\{([^{}]+)\}/g, function (_m, inner) {
+            return String(inner) + '\u20D7';
+        });
+
+        // Simple fractions used by current B2 Ch3 diagram labels.
+        text = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, function (_m, num, den) {
+            return '(' + String(num) + '/' + String(den) + ')';
+        });
+
+        text = text
+            .replace(/\\cdot/g, '·')
+            .replace(/\\times/g, '×')
+            .replace(/\\pm/g, '±')
+            .replace(/\\left/g, '')
+            .replace(/\\right/g, '')
+            .replace(/\\,/g, ' ')
+            .replace(/\\;/g, ' ')
+            .replace(/\\!/g, '');
+
+        // Drop residual TeX braces / whitespace noise.
+        text = text.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+
+        // If any control word remains, surface a readable fallback rather than raw TeX.
+        if (/\\[a-zA-Z]+/.test(text)) {
+            text = text.replace(/\\([a-zA-Z]+)/g, '');
+            text = text.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+        }
+        return text;
+    }
+
+    function diagramLabelExposesRawLatex(raw) {
+        return /\\[a-zA-Z]+/.test(formatDiagramLabel(raw));
+    }
+
     function drawArrowHead(context, x1, y1, x2, y2, color, opacity) {
         const dx = x2 - x1;
         const dy = y2 - y1;
@@ -1121,6 +1189,10 @@
         if (!label) {
             return;
         }
+        const display = formatDiagramLabel(label);
+        if (!display) {
+            return;
+        }
         const t = 0.78;
         const x = x1 + (x2 - x1) * t;
         const y = y1 + (y2 - y1) * t;
@@ -1128,7 +1200,7 @@
         context.font = '600 11px sans-serif';
         context.textAlign = 'left';
         context.textBaseline = 'bottom';
-        context.fillText(label, mapX(x) + 4, mapY(y) - 2);
+        context.fillText(display, mapX(x) + 4, mapY(y) - 2);
     }
 
     function buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
@@ -1401,12 +1473,15 @@
             context.arc(mapX(xValue), mapY(yValue), width < 180 ? 2 : 2.5, 0, Math.PI * 2);
             context.fill();
             if (label) {
+                const display = formatDiagramLabel(label);
                 context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
                 context.textAlign = xValue >= 0 ? 'left' : 'right';
                 context.textBaseline = yValue >= 0 ? 'top' : 'bottom';
                 const dx = xValue >= 0 ? 5 : -5;
                 const dy = yValue >= 0 ? 4 : -3;
-                context.fillText(label, mapX(xValue) + dx, mapY(yValue) + dy);
+                if (display) {
+                    context.fillText(display, mapX(xValue) + dx, mapY(yValue) + dy);
+                }
             }
         });
         if (canClip) {
@@ -1646,6 +1721,43 @@
         };
     }
 
+    function projectLabeledPoints(visualSpec, destRect, options) {
+        const opts = normalizeOptions(options || {});
+        const spec = normalizeVisualSpecForRendering(visualSpec) || visualSpec || {};
+        const points = Array.isArray(spec.points) ? spec.points : [];
+        const axis = spec.axis_range || {};
+        const xRange = spec.x_range || [axis.x_min, axis.x_max];
+        const yRange = spec.y_range || [axis.y_min, axis.y_max];
+        const xMin = Number(xRange[0] ?? axis.x_min ?? -10);
+        const xMax = Number(xRange[1] ?? axis.x_max ?? 10);
+        const yMin = Number(yRange[0] ?? axis.y_min ?? -10);
+        const yMax = Number(yRange[1] ?? axis.y_max ?? 10);
+        const rect = destRect || { x: 0, y: 0, width: 300, height: 200, showLabel: false };
+        if (!(xMax > xMin) || !(yMax > yMin)) {
+            return { points: {}, unitScale: null };
+        }
+        const scaleMode = spec.scale_mode || resolveScaleMode(spec) || SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        const plot = buildPlotMapper(rect, xMin, xMax, yMin, yMax, opts, scaleMode);
+        const out = {};
+        points.forEach(function (point) {
+            const label = String(Array.isArray(point) ? '' : (point.label || '')).trim();
+            const xValue = Number(Array.isArray(point) ? point[0] : point.x);
+            const yValue = Number(Array.isArray(point) ? point[1] : point.y);
+            if (!label || !Number.isFinite(xValue) || !Number.isFinite(yValue)) {
+                return;
+            }
+            out[label] = { x: plot.mapX(xValue), y: plot.mapY(yValue) };
+        });
+        return {
+            points: out,
+            unitScale: plot.unitScale,
+            unitScaleX: plot.unitScaleX,
+            unitScaleY: plot.unitScaleY,
+            plotLeft: plot.plotLeft,
+            plotBottom: plot.plotBottom
+        };
+    }
+
     return {
         SCALE_MODE: SCALE_MODE,
         hasDrawablePrimitives: hasDrawablePrimitives,
@@ -1661,10 +1773,14 @@
         buildEqualScalePlotMapper: buildEqualScalePlotMapper,
         buildIndependentAxesPlotMapper: buildIndependentAxesPlotMapper,
         buildPlotMapper: buildPlotMapper,
+        projectLabeledPoints: projectLabeledPoints,
         getLastRenderBounds: getLastRenderBounds,
         getLastRenderMeta: getLastRenderMeta,
         renderToContext: renderToContext,
         renderToCanvas: renderToCanvas,
-        computeContainRect: computeContainRect
+        computeContainRect: computeContainRect,
+        looksLikeMathDiagramLabel: looksLikeMathDiagramLabel,
+        formatDiagramLabel: formatDiagramLabel,
+        diagramLabelExposesRawLatex: diagramLabelExposesRawLatex
     };
 }));

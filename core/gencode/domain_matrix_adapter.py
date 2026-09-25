@@ -18,6 +18,7 @@ from core.gencode.resources.rational_display import (
     canonicalize_part_display_answer,
     fraction_to_plain,
     normalize_fraction_value,
+    sanitize_student_math_display_text,
 )
 
 
@@ -94,27 +95,209 @@ def _subquestions_from_multi_field_contract(
     return subquestions
 
 
-def _multi_part_contract_parts(semantic_answer: Any) -> list[dict[str, Any]]:
+def _student_facing_part_label(key: str, *, explicit: str | None = None) -> str:
+    """Map internal part keys to student-visible labels (generic, not chapter-hardcoded)."""
+    if explicit is not None and str(explicit).strip():
+        return str(explicit).strip()
+    text = str(key or "").strip()
+    if not text:
+        return text
+    greek = {
+        "alpha": r"$\alpha$",
+        "beta": r"$\beta$",
+        "gamma": r"$\gamma$",
+        "theta": r"$\theta$",
+        "phi": r"$\phi$",
+        "lambda": r"$\lambda$",
+        "mu": r"$\mu$",
+    }
+    if text in greek:
+        return greek[text]
+    k_match = re.fullmatch(r"k(\d+)", text, flags=re.IGNORECASE)
+    if k_match:
+        return rf"$k_{{{k_match.group(1)}}}$"
+    if re.fullmatch(r"[A-Za-z]{2}", text):
+        return rf"$\overrightarrow{{{text}}}$"
+    if re.fullmatch(r"[A-Z]", text):
+        # Point coordinates / named point answers are student-visible as-is.
+        return text
+    if re.fullmatch(r"[xy]", text, flags=re.IGNORECASE):
+        return rf"${text.lower()}$"
+    if re.fullmatch(r"vec:[A-Za-z]", text, flags=re.IGNORECASE):
+        return rf"$\vec{{{text.split(':', 1)[1]}}}$"
+    # a_dot_b / a_dot_a → $\vec{a}\cdot\vec{b}$
+    dot_match = re.fullmatch(r"([a-z])_dot_([a-z])", text, flags=re.IGNORECASE)
+    if dot_match:
+        left, right = dot_match.group(1).lower(), dot_match.group(2).lower()
+        return rf"$\vec{{{left}}}\cdot\vec{{{right}}}$"
+    # mag_2a_3b / mag_a_plus_b → $|2\vec{a}-3\vec{b}|$ style
+    mag_match = re.fullmatch(r"mag_(.+)", text, flags=re.IGNORECASE)
+    if mag_match:
+        body = _vector_expr_key_to_latex(mag_match.group(1))
+        return rf"$\left|{body}\right|$"
+    dot_n = re.fullmatch(r"dot(\d+)", text, flags=re.IGNORECASE)
+    if dot_n:
+        return f"第{dot_n.group(1)}組內積"
+    if text in {"x_component", "y_component"}:
+        return r"$x$ 分量" if text.startswith("x") else r"$y$ 分量"
+    vocab = {
+        "magnitude": "大小",
+        "perimeter": "周長",
+        "simplified": "化簡結果",
+        "vector": "向量",
+        "value": "值",
+        "dot": "內積",
+        "cosine": r"$\cos\theta$",
+        "unit": "單位向量",
+        "angle_degrees": "夾角（度）",
+        "turn_degrees": "左轉角度（度）",
+    }
+    if text in vocab:
+        return vocab[text]
+    return text
+
+
+def _vector_expr_key_to_latex(body: str) -> str:
+    """Convert compact keys like ``2a_3b`` / ``2a-3b`` into TeX vector expressions.
+
+    Underscore between letter-terms defaults to minus (``mag_2a_3b`` → ``|2a-3b|``);
+    use ``_plus_`` / ``_minus_`` or explicit ``+/-`` when the sign must be forced.
+    """
+    raw = str(body or "").strip().replace("__", "_")
+    raw = raw.replace("_plus_", "+").replace("_minus_", "-")
+    # Preserve underscores that separate terms so default joining can be minus.
+    # e.g. "2a_3b" → tokens with implied '-' ; "2a+3b" / "2a-3b" keep signs.
+    token_src = raw if any(ch in raw for ch in "+-") else raw.replace("_", "-")
+    tokens = re.findall(r"([+-]?)(\d*)([a-zA-Z])", token_src.replace("_", ""))
+    if not tokens:
+        return raw
+    parts: list[str] = []
+    for idx, (sign, coeff, letter) in enumerate(tokens):
+        letter = letter.lower()
+        piece = rf"\vec{{{letter}}}"
+        if coeff:
+            piece = f"{coeff}{piece}"
+        if idx == 0:
+            parts.append(f"-{piece}" if sign == "-" else piece)
+        else:
+            op = "-" if sign == "-" else "+"
+            parts.append(f"{op}{piece}")
+    return "".join(parts)
+
+
+def _looks_like_internal_part_key(key: str, label: str) -> bool:
+    """True when student-facing label still exposes a backend/internal key."""
+    key_text = str(key or "").strip()
+    label_text = str(label or "").strip()
+    if not key_text or not label_text:
+        return True
+    if label_text != key_text:
+        return False
+    # Identical label==key is OK for plain point letters / short math vars.
+    if re.fullmatch(r"[A-Z]", key_text):
+        return False
+    if re.fullmatch(r"[xy]", key_text, flags=re.IGNORECASE):
+        return False
+    # snake_case / digit-suffixed internal identifiers must not leak.
+    if "_" in key_text or re.search(r"\d", key_text) or key_text in {
+        "perimeter",
+        "magnitude",
+        "vector",
+        "value",
+        "simplified",
+        "unit",
+        "cosine",
+        "dot",
+    }:
+        return True
+    return False
+
+
+def _multi_part_contract_parts(
+    semantic_answer: Any,
+    *,
+    part_labels: dict[str, Any] | None = None,
+    domain_operation: str | None = None,
+) -> list[dict[str, Any]]:
     """Build per-part checker rows from a dict answer. Duplicate values are kept."""
     if not isinstance(semantic_answer, dict):
         return []
+    from core.checkers.vector_answer_normalization import (
+        answer_shape_for_domain_operation,
+        expected_is_directed_segment,
+    )
+
+    labels = part_labels if isinstance(part_labels, dict) else {}
+    op_shape = answer_shape_for_domain_operation(domain_operation)
     parts: list[dict[str, Any]] = []
     for key, value in semantic_answer.items():
         text = str(value).strip()
         numeric = bool(text) and text.lstrip("+-").isdigit()
         checker = "integer_checker" if numeric else "expression_checker"
-        parts.append(
-            {
-                "key": str(key),
-                "label": str(key),
-                "field_key": str(key),
-                "checker": checker,
-                "checker_key": checker,
-                "equivalence_type": "numeric_exact" if numeric else "algebraic_equivalent",
-                "expected_answer": value,
-            }
-        )
+        key_text = str(key)
+        label = _student_facing_part_label(key_text, explicit=labels.get(key_text))
+        if _looks_like_internal_part_key(key_text, label):
+            # Last-resort humanization for unknown snake_case keys.
+            label = key_text.replace("_", " ").strip() or key_text
+            if _looks_like_internal_part_key(key_text, label):
+                label = f"小题 {len(parts) + 1}"
+        part_row: dict[str, Any] = {
+            "key": key_text,
+            "label": label,
+            "display_label": label,
+            "math_label": label if "$" in label or r"\(" in label else None,
+            "field_key": key_text,
+            "checker": checker,
+            "checker_key": checker,
+            "equivalence_type": "numeric_exact" if numeric else "algebraic_equivalent",
+            "expected_answer": value,
+        }
+        if expected_is_directed_segment(value) or key_text.lower() == "simplified":
+            part_row["answer_shape"] = "directed_segment"
+        elif op_shape == "vector_expression" and not (text.startswith("(") and text.endswith(")")):
+            if key_text.lower() in {"vector", "unit", "ab", "ac", "bc"} or not numeric:
+                # Named basis / symbolic vector parts only (skip pure magnitudes when clearly numeric radical).
+                if key_text.lower() in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):
+                    if key_text.lower() not in {"magnitude", "perimeter", "value", "dot", "cosine", "angle_degrees"}:
+                        part_row["answer_shape"] = "vector_expression"
+        parts.append(part_row)
     return parts
+
+
+def _apply_vector_keyboard_answer_shape(
+    answer_contract: dict[str, Any],
+    *,
+    domain_operation: str | None,
+    semantic_answer: Any,
+) -> dict[str, Any]:
+    """Annotate answer_contract so shared checkers enable keyboard-friendly vector input."""
+    from core.checkers.vector_answer_normalization import (
+        answer_shape_for_domain_operation,
+        expected_is_directed_segment,
+    )
+
+    ac = dict(answer_contract or {})
+    op_shape = answer_shape_for_domain_operation(domain_operation)
+    if expected_is_directed_segment(semantic_answer) or op_shape == "directed_segment":
+        ac["answer_shape"] = "directed_segment"
+    elif op_shape:
+        ac.setdefault("answer_shape", op_shape)
+    for part in ac.get("parts") or []:
+        if not isinstance(part, dict):
+            continue
+        expected = part.get("expected_answer")
+        if expected_is_directed_segment(expected) or str(part.get("key") or "").lower() == "simplified":
+            part["answer_shape"] = "directed_segment"
+        elif op_shape == "vector_expression" and "answer_shape" not in part:
+            text = str(expected or "")
+            key = str(part.get("key") or "").lower()
+            if key in {"magnitude", "perimeter", "value", "dot", "cosine", "angle_degrees"}:
+                continue
+            if text.startswith("(") and text.endswith(")"):
+                continue
+            if key in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):
+                part["answer_shape"] = "vector_expression"
+    return ac
 
 MATRIX_REQUIRED_FIELDS = (
     "givens",
@@ -912,7 +1095,7 @@ def _point_list_inline(points: Any, fallback: Any) -> str:
 
 
 def _format_latex_display_answer(value: str, task_type: str = "") -> str:
-    text = str(value or "").strip()
+    text = sanitize_student_math_display_text(str(value or "").strip())
     if not text:
         return text
     if len(text) == 1 and text.upper() in {"A", "B", "C", "D"}:
@@ -957,8 +1140,21 @@ def _format_latex_math_text(text: str) -> str:
 
 
 def _text_needs_math_latex(text: str) -> bool:
-    return any(token in str(text) for token in ("sqrt(", "\\sqrt", "/", "*"))
+    """True when choice/display text must stay in MathJax delimiters.
 
+    Bare TeX atoms such as ``\\overrightarrow{AB}`` must be wrapped; otherwise
+    ``_format_latex_math_text`` strips existing ``$...$`` and students see raw TeX.
+    """
+    source = str(text or "")
+    if any(token in source for token in ("sqrt(", "\\sqrt", "/", "*")):
+        return True
+    if re.search(r"\\[a-zA-Z]+", source):
+        return True
+    if source.startswith("$") and source.endswith("$") and len(source) >= 3:
+        return True
+    if source.startswith(r"\(") and source.endswith(r"\)"):
+        return True
+    return False
 
 def _build_line_equation_question_text(
     givens: dict[str, Any],
@@ -2672,6 +2868,19 @@ def convert_domain_matrix_to_question_payload(
     display_answer = str(answer.get("canonical_form", semantic_answer))
     mode = str(presentation_mode or "short_answer").strip()
     resolved_answer_type = str(answer_type or "integer").strip()
+    # Authoritative matrix MCQ contract wins over mis-wired component constants.
+    # Prevents "family ends with _mcq / matrix has choices" from collapsing to text input.
+    matrix_choice_rows = matrix.get("choices") if isinstance(matrix.get("choices"), list) else []
+    facts_mode = str(validation_facts.get("presentation_mode") or "").strip()
+    facts_atype = str(validation_facts.get("answer_type") or "").strip()
+    if (
+        (len(matrix_choice_rows) >= 2 and matrix.get("correct_label"))
+        or facts_mode == "single_choice"
+        or facts_atype in {"single_choice", "choice"}
+    ):
+        mode = "single_choice"
+        if resolved_answer_type not in {"single_choice", "choice"}:
+            resolved_answer_type = "single_choice"
     table_chart_ops = {
         "read_category_value",
         "compare_category_values",
@@ -3275,36 +3484,81 @@ def convert_domain_matrix_to_question_payload(
         # Only honor explicit preserve flag. Auto-preserving textbook choices while
         # the domain emits isomorphic variants would desync answer labels.
         preserve_source = bool(kwargs.get("preserve_source_choices"))
-        try:
-            choice_bundle = build_single_choice_contract(
-                display_answer,
-                list(normalized.get("distractors") or []),
-                source_choices=source_choices or None,
-                source_answer_label=source_answer_label or None,
-                seed=kwargs.get("seed"),
-                preserve_source_choices=preserve_source,
-                curriculum_profile=validation_facts.get("curriculum_profile"),
-            )
-            choices = [
-                {"label": str(c.get("label") or c.get("key")), "text": str(c.get("text") or "")}
-                for c in (choice_bundle.get("choices") or [])
-            ]
-            correct_label = str(choice_bundle.get("correct_label") or "A")
-        except ValueError:
-            # Factor-theorem expression answers must retry / fail closed instead
-            # of padding student-visible technical suffixes like `_1`.
-            factor_like = str(op or problem_type_id or "") in {
-                "factor_theorem_root_factor",
-                "polynomial_factoring",
-                "rational_expression_arithmetic",
-                "rational_equation_solve",
-            }
-            choices, correct_label = _build_choice_options(
-                display_answer,
-                normalized.get("distractors", []),
-                seed_text=f"{problem_type_id or op}|{display_answer}",
-                allow_technical_suffix=not factor_like,
-            )
+        matrix_choices = matrix.get("choices")
+        matrix_choice_rows: list[dict[str, Any]] = []
+        if isinstance(matrix_choices, list):
+            for row in matrix_choices:
+                if not isinstance(row, dict):
+                    continue
+                label = str(row.get("label") or row.get("key") or "").strip().upper()
+                raw_text = str(row.get("text") or row.get("value") or row.get("display") or "")
+                if label and raw_text:
+                    matrix_choice_rows.append(
+                        {
+                            "label": label,
+                            "text": _format_latex_display_answer(raw_text),
+                            "value": str(row.get("value") or raw_text),
+                            "display": _format_latex_display_answer(
+                                str(row.get("display") or raw_text)
+                            ),
+                        }
+                    )
+        if len(matrix_choice_rows) >= 2:
+            choices = matrix_choice_rows
+            if matrix.get("correct_label"):
+                correct_label = str(matrix.get("correct_label")).strip().upper()
+            else:
+                semantic = str(matrix.get("semantic_answer") or display_answer or "").strip()
+                correct_label = next(
+                    (
+                        c["label"]
+                        for c in matrix_choice_rows
+                        if str(c.get("value") or "").strip() == semantic
+                        or str(c.get("text") or "").strip().strip("$") == semantic.strip("$")
+                    ),
+                    "A",
+                )
+        else:
+            try:
+                choice_bundle = build_single_choice_contract(
+                    display_answer,
+                    list(normalized.get("distractors") or []),
+                    source_choices=source_choices or None,
+                    source_answer_label=source_answer_label or None,
+                    seed=kwargs.get("seed"),
+                    preserve_source_choices=preserve_source,
+                    curriculum_profile=validation_facts.get("curriculum_profile"),
+                )
+                choices = [
+                    {
+                        "label": str(c.get("label") or c.get("key")),
+                        "text": _format_latex_display_answer(str(c.get("text") or "")),
+                    }
+                    for c in (choice_bundle.get("choices") or [])
+                ]
+                correct_label = str(choice_bundle.get("correct_label") or "A")
+            except ValueError:
+                # Factor-theorem expression answers must retry / fail closed instead
+                # of padding student-visible technical suffixes like `_1`.
+                factor_like = str(op or problem_type_id or "") in {
+                    "factor_theorem_root_factor",
+                    "polynomial_factoring",
+                    "rational_expression_arithmetic",
+                    "rational_equation_solve",
+                }
+                choices, correct_label = _build_choice_options(
+                    display_answer,
+                    normalized.get("distractors", []),
+                    seed_text=f"{problem_type_id or op}|{display_answer}",
+                    allow_technical_suffix=not factor_like,
+                )
+                choices = [
+                    {
+                        **dict(c),
+                        "text": _format_latex_display_answer(str(c.get("text") or "")),
+                    }
+                    for c in choices
+                ]
         options = [str(choice["text"]) for choice in choices]
         payload_answer = correct_label
         payload_correct = correct_label
@@ -3324,10 +3578,42 @@ def convert_domain_matrix_to_question_payload(
         part_map = semantic_answer if isinstance(semantic_answer, dict) else {}
         if not part_map and isinstance(answer.get("parts"), dict):
             part_map = answer.get("parts") or {}
-        answer_contract["parts"] = _multi_part_contract_parts(part_map)
+        part_labels = answer.get("part_labels") if isinstance(answer.get("part_labels"), dict) else None
+        answer_contract["parts"] = _multi_part_contract_parts(
+            part_map,
+            part_labels=part_labels,
+            domain_operation=str(op or problem_type_id or ""),
+        )
         keys = [str(row.get("key") or "") for row in answer_contract["parts"]]
         if len(keys) != len(set(keys)):
             raise ValueError("duplicate_multi_part_field_key")
+
+    answer_contract = _apply_vector_keyboard_answer_shape(
+        answer_contract,
+        domain_operation=str(op or problem_type_id or ""),
+        semantic_answer=semantic_answer,
+    )
+    # Construction-style directed segments may also be answered by drawing A→C.
+    from core.checkers.vector_answer_normalization import DIRECTED_SEGMENT_ANSWER_OPS
+    from core.checkers.vector_drawing_checker import parse_directed_segment_endpoints
+
+    if str(op or problem_type_id or "") in DIRECTED_SEGMENT_ANSWER_OPS:
+        ends = parse_directed_segment_endpoints(semantic_answer)
+        drawing_check = {
+            "enabled": True,
+            "mode": "directed_segment",
+        }
+        if ends:
+            drawing_check["expected_from"] = ends[0]
+            drawing_check["expected_to"] = ends[1]
+        answer_contract["drawing_check"] = drawing_check
+
+    question_text = sanitize_student_math_display_text(question_text)
+    display_answer = (
+        sanitize_student_math_display_text(display_answer)
+        if isinstance(display_answer, str)
+        else display_answer
+    )
 
     return _finalize_question_payload({
         "question_text": question_text,

@@ -492,12 +492,18 @@ def grade_answer_for_current_question(
             payload=payload,
         )
         if expr_debug.get("error_code") == "ANSWER_PARSE_FAILED" or expr_debug.get("parser_error"):
+            hint = str(expr_debug.get("format_hint") or "").strip()
+            message = "答案格式不正確"
+            if hint:
+                message = f"{message}。{hint}"
             return normalize_grading_result({
                 "correct": False,
                 "invalid_input": True,
                 "error_code": "ANSWER_PARSE_FAILED",
-                "result": "答案格式不正確",
+                "result": message,
+                "message": message,
                 "parser_error": expr_debug.get("parser_error"),
+                "format_hint": hint or None,
             })
         is_correct = bool(expr_debug.get("correct"))
     elif checker in {"equation_checker", "linear_equation_equivalent_checker"} or family == "linear_equation" or equiv in {"equation_equivalent", "linear_equation_equivalent"}:
