@@ -535,12 +535,37 @@ def list_student_image_assets_from_notes(
     Convert notes.image_assets into student-displayable entries.
 
     Each item: {url, path, display_path}. Invalid/missing files are skipped.
+    Assets marked needs_review / rejected are not student-ready (existence alone
+    is not sufficient evidence of visual correctness).
     """
+    from core.textbook_pdf_visual_acceptance import student_asset_is_accepted
+
+    notes_dict: dict[str, Any] = {}
+    if isinstance(notes, dict):
+        notes_dict = notes
+    elif isinstance(notes, str) and notes.strip():
+        try:
+            parsed = json.loads(notes)
+            if isinstance(parsed, dict):
+                notes_dict = parsed
+        except Exception:
+            notes_dict = {}
+
     out: list[dict[str, Any]] = []
     for asset in extract_raw_image_assets_from_notes(notes):
         try:
+            if not student_asset_is_accepted(asset, notes=notes_dict):
+                continue
             display = asset.get("display_path") or asset.get("path") or ""
             url = question_asset_public_url(display, root_path=root_path)
+            if not url:
+                # Staging notes may still point at uploads/; prefer production
+                # static path when that file exists.
+                prod = production_question_asset_relpath(display)
+                if prod and prod != display:
+                    url = question_asset_public_url(prod, root_path=root_path)
+                    if url:
+                        display = prod
             if not url:
                 continue
             rel = normalize_question_asset_relpath(display) or ""

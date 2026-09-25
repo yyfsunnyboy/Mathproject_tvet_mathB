@@ -188,3 +188,52 @@ Message：`fix: harden B2 practice choices and diagram rendering`
 - chapter-specific validators
 
 不要重新修改已穩定的 B2 practice runtime，除非新章節揭露真正的共用 regression。
+
+
+## 11. Visual Asset Acceptance Contract
+
+適用：textbook PDF visual enrichment（`enrich_textbook_examples_with_pdf_visuals` / `notes.image_assets` / student practice image attach）。
+
+### Core rule
+
+**Asset existence is not sufficient evidence of visual correctness.**
+
+下列任一成立，**不得**把 mapping 靜默當成 student-ready accepted：
+
+- PNG 檔存在 / 可讀
+- `bbox` 欄位存在
+- `has_image=True` 曾被寫入
+
+Low-confidence 或結構上可疑的 PDF visual mapping，必須標成 review / rejected，不可當 accepted student asset。
+
+### Acceptance states
+
+沿用既有 `notes` / `image_assets` 欄位，不平行發明第二套 schema：
+
+| Field | Meaning |
+|---|---|
+| `image_assets[].visual_status` | `accepted` \| `needs_review` \| `rejected` |
+| `image_assets[].visual_review_reasons` | 結構原因列表 |
+| `notes.visual_status` / `notes.needs_image_review` | 題級 gate（與 asset 對齊） |
+
+Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒過來把舊圖整批藏掉）。
+
+### Deterministic gates（production；禁止 example_id / chapter hardcode）
+
+1. **Question boundary** — crop 不可實質跨越下一題 authoritative anchor；search band 不可無界向下擴張進頁尾。
+2. **Shared asset ownership** — 不可只因 same bbox / same SHA / nearby visual 就跨題 reuse。需有近乎相同 figure stem 等證據（合法例：例/隨堂同幹）。可疑共用 → `suspicious_shared_asset` → needs_review。
+3. **Multi-figure completeness** — 題幹含「圖（一）/圖（二）」等時，不可在只掛單一子圖時標為完整 accepted。
+4. **Contamination** — crop 與 PDF text-layer 明顯重疊「熟習度自評 / 輸入訊息 / 解」等非本題區域 → reject 或 needs_review。
+5. **Prefer review over guess** — 系統不確定時，允許 `needs_review`；禁止 `wrong mapping + accepted`。
+
+### Student runtime
+
+`list_student_image_assets_from_notes` 只暴露 accepted student-ready assets；`needs_review` / `rejected` 不得進入學生作答畫面。
+
+### Implementation anchors
+
+- `core/textbook_pdf_visual_acceptance.py`
+- `core/textbook_pdf_visual.py`（classify / enrich gate）
+- `core/question_image_assets.py`（student list gate）
+- regression：`tests/test_b2_ch3_visual_pipeline_hardening.py`
+- Ch1 vs Ch3 診斷：`reports/b2_visual_pipeline_ch1_vs_ch3.md`

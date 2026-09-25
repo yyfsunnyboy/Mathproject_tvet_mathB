@@ -25,6 +25,14 @@ from core.question_image_assets import (
     production_question_asset_relpath,
     question_needs_image,
 )
+from core.textbook_pdf_visual_acceptance import (
+    VISUAL_STATUS_ACCEPTED,
+    VISUAL_STATUS_NEEDS_REVIEW,
+    VISUAL_STATUS_REJECTED,
+    annotate_shared_asset_ownership,
+    evaluate_visual_acceptance,
+    search_band_bottom,
+)
 from core.textbook_question_anchor import normalize_question_label
 
 logger = logging.getLogger(__name__)
@@ -53,9 +61,20 @@ def normalize_pdf_text(text: str) -> str:
 
 
 def normalize_query_text(text: str) -> str:
+    """Normalize TE problem_text for PDF text-layer matching.
+
+    Strips LaTeX wrappers/commands so Chinese stems (e.g. 三等分點) survive;
+    PDF text layers do not contain command names like ``overline``.
+    """
     t = unicodedata.normalize("NFKC", str(text or ""))
-    t = re.sub(r"\\\((.*?)\\\)", r"\1", t)
-    t = re.sub(r"\\\[(.*?)\\\]", r"\1", t)
+    t = re.sub(r"\\\((.*?)\\\)", r"\1", t, flags=re.DOTALL)
+    t = re.sub(r"\\\[(.*?)\\\]", r"\1", t, flags=re.DOTALL)
+    # Drop common TeX commands; keep braced args' inner text via later brace strip.
+    t = re.sub(
+        r"\\(overline|overrightarrow|overleftarrow|vec|frac|left|right|mathrm|mathbf|text|textrm|textbf|textit)\b",
+        "",
+        t,
+    )
     t = re.sub(r"[{}^_\\]", "", t)
     return normalize_pdf_text(t)
 
@@ -223,7 +242,7 @@ def extract_match_phrases(problem_text: str, label: str = "") -> list[str]:
 
     def add(p: str) -> None:
         p = normalize_pdf_text(p)
-        if len(p) < 6:
+        if len(p) < 4:
             return
         if p in seen:
             return
@@ -245,13 +264,17 @@ def extract_match_phrases(problem_text: str, label: str = "") -> list[str]:
         add(raw[:18])
         add(raw[:12])
 
+    # Prefer stable Chinese content tokens (survive LaTeX-stripped stems).
+    for token in re.findall(r"[\u4e00-\u9fff]{4,12}", str(problem_text or "")):
+        add(token)
+
     label_n = normalize_pdf_text(normalize_question_label(label))
     if label_n and len(label_n) >= 3:
         add(label_n)
         add(f"【{label_n}】")
 
     phrases.sort(key=len, reverse=True)
-    return phrases[:12]
+    return phrases[:16]
 
 
 def _phrase_page_frequency(pages: list[dict[str, Any]], phrase: str) -> int:
@@ -526,29 +549,84 @@ def _text_has_strong_figure_cue(problem_text: str) -> bool:
     return any(k in t for k in _STRONG_FIGURE_KEYS)
 
 
+def _next_question_boundary_y(matches: list[dict[str, Any]], index: int) -> float | None:
+    """Next authoritative question start Y on the same page, if known."""
+    row = matches[index]
+    pm = row.get("pdf_match") or {}
+    page_no = int(pm.get("page") or 0)
+    if not page_no:
+        return None
+    for j in range(index + 1, len(matches)):
+        npm = matches[j].get("pdf_match") or {}
+        if not npm:
+            continue
+        if int(npm.get("page") or 0) != page_no:
+            if int(npm.get("page") or 0) > page_no:
+                return None
+            continue
+        y = npm.get("question_start_y")
+        if y is not None:
+            return float(y)
+    return None
+
+
+def _pick_compact_diagram_bbox(
+    draws: list[dict[str, Any]],
+    page: dict[str, Any],
+    *,
+    prefer_y: float | None = None,
+) -> list[float] | None:
+    """Prefer one compact right-side diagram near the stem over distant/large unions."""
+    if not draws:
+        return None
+    page_area = float(page["width"] * page["height"])
+
+    def _diagram_score(d: dict[str, Any]) -> float:
+        bb = d["bbox"]
+        area = float(d.get("area") or 0.0)
+        if area > 0.28 * page_area:
+            return -1.0
+        cx = (bb[0] + bb[2]) / 2.0
+        cy = (bb[1] + bb[3]) / 2.0
+        right_bonus = 2.0 if cx >= 0.45 * page["width"] else 1.0
+        proximity = 1.0
+        if prefer_y is not None:
+            proximity = 1.0 / (1.0 + abs(cy - float(prefer_y)) / 90.0)
+        return right_bonus * proximity / (area / page_area + 0.04)
+
+    ranked = sorted(draws, key=_diagram_score, reverse=True)
+    best = ranked[0] if ranked and _diagram_score(ranked[0]) > 0 else None
+    return list(best["bbox"]) if best is not None else None
+
+
 def classify_and_detect_visuals(
     matches: list[dict[str, Any]],
     pages: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """Detect visuals and classify: required|helpful|decorative|skipped_low_confidence|none."""
-    for row in matches:
+    for idx, row in enumerate(matches):
         score = float(row.get("match_score") or 0.0)
         regions = row.get("regions") or []
         problem_text = str(row.get("problem_text") or "")
         text_flag = question_needs_image(problem_text)
         strong_cue = _text_has_strong_figure_cue(problem_text)
+        next_q_y = _next_question_boundary_y(matches, idx)
+        row["next_question_y"] = next_q_y
 
         row["visual_classification"] = "none"
         row["should_mount"] = False
         row["visual_type"] = None
         row["visual_bbox"] = None
         row["visual_reason"] = "no_visual"
+        row["visual_status"] = None
+        row["visual_review_reasons"] = []
 
-        if not regions or score < HIGH_CONFIDENCE:
+        if not regions or score < (LOW_CONFIDENCE if strong_cue else HIGH_CONFIDENCE):
             row["visual_classification"] = "skipped_low_confidence"
             row["should_mount"] = False
             row["visual_reason"] = "low_match_confidence" if regions else "unmatched"
             row["needs_review"] = True
+            row["visual_status"] = VISUAL_STATUS_NEEDS_REVIEW
             continue
 
         img_hits: list[dict[str, Any]] = []
@@ -586,9 +664,9 @@ def classify_and_detect_visuals(
         soft_draws = [
             d
             for d in draw_hits
-            if d["area"] >= 6000
-            and (d["bbox"][2] - d["bbox"][0]) >= 60
-            and (d["bbox"][3] - d["bbox"][1]) >= 50
+            if d["area"] >= (2500 if strong_cue else 6000)
+            and (d["bbox"][2] - d["bbox"][0]) >= (40 if strong_cue else 60)
+            and (d["bbox"][3] - d["bbox"][1]) >= (40 if strong_cue else 50)
         ]
         significant_imgs: list[dict[str, Any]] = []
         for im in img_hits:
@@ -605,31 +683,141 @@ def classify_and_detect_visuals(
                 if qb[1] - 10 <= cy <= qb[3] + 10:
                     significant_imgs.append(im)
                     break
+        # Strong figure cue (如圖): search only within question band up to next Q.
+        if strong_cue and not soft_draws and not significant_draws and regions:
+            for reg in regions:
+                page = pages[reg["page"] - 1]
+                qb = reg["bbox"]
+                band_bottom = search_band_bottom(
+                    qb,
+                    page_height=float(page["height"]),
+                    next_question_y=next_q_y,
+                )
+                band = [
+                    max(0.0, qb[0] - 30.0),
+                    max(0.0, qb[1] - 20.0),
+                    min(float(page["width"]), qb[2] + 30.0),
+                    band_bottom,
+                ]
+                for d in page["drawings"]:
+                    if d["area"] < 6000 or d["area"] > 0.50 * page["width"] * page["height"]:
+                        continue
+                    if (d["bbox"][2] - d["bbox"][0]) < 60 or (d["bbox"][3] - d["bbox"][1]) < 50:
+                        continue
+                    if intersect_area(band, d["bbox"]) <= 0:
+                        continue
+                    soft_draws.append({"page": reg["page"], **d, "intersect": intersect_area(band, d["bbox"])})
+                for im in page["images"]:
+                    if im["area"] < 5000:
+                        continue
+                    if intersect_area(band, im["bbox"]) <= 0:
+                        continue
+                    cy = (im["bbox"][1] + im["bbox"][3]) / 2.0
+                    if cy < 55 or cy > page["height"] - 40:
+                        continue
+                    significant_imgs.append(
+                        {"page": reg["page"], **im, "intersect": intersect_area(band, im["bbox"])}
+                    )
 
         preferred_draws = significant_draws or (soft_draws if (strong_cue or text_flag or significant_imgs) else [])
+        stem_y = None
+        pm = row.get("pdf_match") or {}
+        if pm.get("question_start_y") is not None:
+            stem_y = float(pm["question_start_y"])
+        elif regions:
+            stem_y = float(regions[0]["bbox"][1])
+        # Strong cue fallback: right-panel fragments inside question boundary only.
+        if strong_cue and not preferred_draws and not soft_draws and not significant_imgs and regions:
+            page = pages[regions[0]["page"] - 1]
+            rb = regions[0]["bbox"]
+            right_x = float(page["width"]) * 0.42
+            band_bottom = search_band_bottom(
+                rb,
+                page_height=float(page["height"]),
+                next_question_y=next_q_y,
+            )
+            cluster = []
+            for d in page["drawings"]:
+                if d["area"] < 1800 or d["area"] > 0.45 * page["width"] * page["height"]:
+                    continue
+                bb = d["bbox"]
+                if bb[0] < right_x:
+                    continue
+                if intersect_area(rb, bb) <= 0 and intersect_area(
+                    [rb[0], rb[1], rb[2], band_bottom],
+                    bb,
+                ) <= 0:
+                    continue
+                if (bb[2] - bb[0]) < 25 or (bb[3] - bb[1]) < 25:
+                    continue
+                cluster.append(bb)
+            if len(cluster) >= 2 or (
+                len(cluster) == 1
+                and abs((cluster[0][2] - cluster[0][0]) * (cluster[0][3] - cluster[0][1])) >= 3500
+            ):
+                ub = union_bbox(cluster)
+                soft_draws = [
+                    {
+                        "page": regions[0]["page"],
+                        "bbox": list(ub),
+                        "area": abs((ub[2] - ub[0]) * (ub[3] - ub[1])),
+                        "intersect": 1.0,
+                    }
+                ]
+                preferred_draws = soft_draws
         visual_bbox = None
         visual_type = None
         classification = "none"
         reason = "text_and_formula_only"
         should_mount = False
 
-        # AI_REFERENCE policy: prefer keeping a usable figure over decorative skips.
-        # Accept leftover photo/layout if ownership (high-confidence region) is clear.
         photo_and_diagram = bool(significant_imgs) and bool(significant_draws or soft_draws)
 
         if strong_cue and (preferred_draws or soft_draws or significant_imgs):
             page = pages[regions[0]["page"] - 1]
+            max_w = 0.85 * page["width"]
+            max_h = 0.70 * page["height"]
             graph_draws = [
                 d for d in (preferred_draws or soft_draws)
-                if 100 <= d["bbox"][2] - d["bbox"][0] <= 0.65 * page["width"]
-                and 70 <= d["bbox"][3] - d["bbox"][1] <= 0.45 * page["height"]
+                if 100 <= d["bbox"][2] - d["bbox"][0] <= max_w
+                and 70 <= d["bbox"][3] - d["bbox"][1] <= max_h
+                and d["area"] < 0.50 * page["width"] * page["height"]
             ]
+            if not graph_draws:
+                graph_draws = [
+                    d
+                    for d in (preferred_draws or soft_draws)
+                    if d["area"] < 0.55 * page["width"] * page["height"]
+                    and (d["bbox"][2] - d["bbox"][0]) >= 40
+                    and (d["bbox"][3] - d["bbox"][1]) >= 40
+                ]
+            if not graph_draws and strong_cue and (preferred_draws or soft_draws):
+                graph_draws = list(preferred_draws or soft_draws)
             if graph_draws:
-                # PDF graphs are commonly emitted as one outer vector group plus
-                # nested axes/curves.  The outer compact group is the crop; a
-                # union with page-layout groups would swallow unrelated content.
-                visual_bbox = list(max(graph_draws, key=lambda d: d["area"])["bbox"])
-                visual_type = "diagram"
+                visual_bbox = _pick_compact_diagram_bbox(graph_draws, page, prefer_y=stem_y)
+                visual_type = "diagram" if visual_bbox else None
+                if visual_bbox is None and strong_cue:
+                    right_x = float(page["width"]) * 0.42
+                    rb = regions[0]["bbox"]
+                    band_bottom = search_band_bottom(
+                        rb,
+                        page_height=float(page["height"]),
+                        next_question_y=next_q_y,
+                    )
+                    cluster = []
+                    for d in page["drawings"]:
+                        bb = d["bbox"]
+                        if d["area"] < 1800 or d["area"] > 0.25 * page["width"] * page["height"]:
+                            continue
+                        if bb[0] < right_x:
+                            continue
+                        band = [rb[0], rb[1], rb[2], band_bottom]
+                        if intersect_area(band, bb) <= 0:
+                            continue
+                        cluster.append(bb)
+                    if cluster:
+                        visual_bbox = list(union_bbox(cluster))
+                        visual_type = "diagram"
             elif significant_imgs:
                 visual_bbox = union_bbox([i["bbox"] for i in significant_imgs])
                 visual_type = "embedded_image"
@@ -639,9 +827,15 @@ def classify_and_detect_visuals(
             reason = "figure_keyword_and_compact_visual_in_region" if visual_bbox else "figure_without_compact_visual"
             should_mount = bool(visual_bbox)
         elif text_flag and (preferred_draws or soft_draws or significant_imgs):
+            page = pages[regions[0]["page"] - 1]
             if preferred_draws or soft_draws:
-                top = sorted((preferred_draws or soft_draws), key=lambda d: -d["area"])[:10]
-                visual_bbox = union_bbox([d["bbox"] for d in top])
+                visual_bbox = _pick_compact_diagram_bbox(
+                    preferred_draws or soft_draws, page, prefer_y=stem_y
+                )
+                if visual_bbox is None:
+                    # Conservative fallback: largest single draw, never union top-N.
+                    top = max((preferred_draws or soft_draws), key=lambda d: float(d.get("area") or 0.0))
+                    visual_bbox = list(top["bbox"])
                 visual_type = "diagram"
             else:
                 visual_bbox = union_bbox([i["bbox"] for i in significant_imgs])
@@ -650,33 +844,35 @@ def classify_and_detect_visuals(
             reason = "figure_hint_and_visual_in_region"
             should_mount = True
         elif photo_and_diagram:
+            page = pages[regions[0]["page"] - 1]
             draws = significant_draws or soft_draws
-            top = sorted(draws, key=lambda d: -d["area"])[:10]
-            # Include co-located image so key labels/values in the figure pack remain.
-            boxes = [d["bbox"] for d in top] + [i["bbox"] for i in significant_imgs]
+            pick = _pick_compact_diagram_bbox(draws, page, prefer_y=stem_y)
+            boxes = ([pick] if pick else [max(draws, key=lambda d: d["area"])["bbox"]]) + [
+                i["bbox"] for i in significant_imgs
+            ]
             visual_bbox = union_bbox(boxes)
             visual_type = "diagram"
             classification = "helpful"
             reason = "photo_and_diagram_ai_reference"
             should_mount = True
         elif significant_imgs:
-            # High-confidence ownership already gated; keep as AI reference even if photo-like.
             visual_bbox = union_bbox([i["bbox"] for i in significant_imgs])
             visual_type = "embedded_image"
             classification = "helpful"
             reason = "embedded_image_ai_reference"
             should_mount = True
         elif preferred_draws or soft_draws:
-            # Mount only when soft/significant draws look like a compact figure, not page frames.
+            page = pages[regions[0]["page"] - 1]
             draws = preferred_draws or soft_draws
             compact = [
                 d
                 for d in draws
-                if d["area"] < 0.35 * pages[regions[0]["page"] - 1]["width"] * pages[regions[0]["page"] - 1]["height"]
+                if d["area"] < 0.35 * page["width"] * page["height"]
             ]
             if compact and (strong_cue or text_flag):
-                top = sorted(compact, key=lambda d: -d["area"])[:10]
-                visual_bbox = union_bbox([d["bbox"] for d in top])
+                visual_bbox = _pick_compact_diagram_bbox(compact, page, prefer_y=stem_y)
+                if visual_bbox is None:
+                    visual_bbox = list(max(compact, key=lambda d: d["area"])["bbox"])
                 visual_type = "diagram"
                 classification = "helpful"
                 reason = "compact_vector_with_figure_cue"
@@ -697,32 +893,102 @@ def classify_and_detect_visuals(
 
         if visual_bbox and regions:
             rb = regions[0]["bbox"]
+            page = pages[regions[0]["page"] - 1]
+            band_bottom = search_band_bottom(
+                rb,
+                page_height=float(page["height"]),
+                next_question_y=next_q_y,
+            )
             inter = intersect_area(visual_bbox, rb)
             varea = max(
                 1.0,
                 abs((visual_bbox[2] - visual_bbox[0]) * (visual_bbox[3] - visual_bbox[1])),
             )
             if inter < 0.15 * varea:
-                clipped = [
-                    max(visual_bbox[0], rb[0]),
-                    max(visual_bbox[1], rb[1]),
-                    min(visual_bbox[2], rb[2]),
-                    min(visual_bbox[3], rb[3]),
-                ]
-                if clipped[2] > clipped[0] + 5 and clipped[3] > clipped[1] + 5:
-                    visual_bbox = clipped
+                if strong_cue:
+                    band = [
+                        max(0.0, rb[0] - 40.0),
+                        max(0.0, rb[1] - 20.0),
+                        min(float(page["width"]), rb[2] + 40.0),
+                        band_bottom,
+                    ]
+                    if intersect_area(visual_bbox, band) >= 0.15 * varea:
+                        pass
+                    else:
+                        clipped = [
+                            max(visual_bbox[0], band[0]),
+                            max(visual_bbox[1], band[1]),
+                            min(visual_bbox[2], band[2]),
+                            min(visual_bbox[3], band[3]),
+                        ]
+                        if clipped[2] > clipped[0] + 5 and clipped[3] > clipped[1] + 5:
+                            visual_bbox = clipped
+                        else:
+                            should_mount = False
+                            classification = "skipped_low_confidence"
+                            reason = "visual_bbox_outside_question_region"
+                            visual_bbox = None
                 else:
-                    should_mount = False
-                    classification = "skipped_low_confidence"
-                    reason = "visual_bbox_outside_question_region"
-                    visual_bbox = None
+                    clipped = [
+                        max(visual_bbox[0], rb[0]),
+                        max(visual_bbox[1], rb[1]),
+                        min(visual_bbox[2], rb[2]),
+                        min(visual_bbox[3], rb[3]),
+                    ]
+                    if clipped[2] > clipped[0] + 5 and clipped[3] > clipped[1] + 5:
+                        visual_bbox = clipped
+                    else:
+                        should_mount = False
+                        classification = "skipped_low_confidence"
+                        reason = "visual_bbox_outside_question_region"
+                        visual_bbox = None
+
+        # Deterministic acceptance gate (boundary / contamination / multi-figure).
+        page_words = None
+        page_h = None
+        if regions:
+            page = pages[regions[0]["page"] - 1]
+            page_words = page.get("words") or []
+            page_h = float(page.get("height") or 0)
+        acceptance = evaluate_visual_acceptance(
+            problem_text=problem_text,
+            visual_bbox=visual_bbox,
+            question_bbox=regions[0]["bbox"] if regions else None,
+            next_question_y=next_q_y,
+            page_words=page_words,
+            match_score=score,
+            strong_cue=strong_cue,
+            page_height=page_h,
+            question_start_y=stem_y,
+        )
+        if acceptance.get("clipped_bbox") and visual_bbox:
+            visual_bbox = acceptance["clipped_bbox"]
+        status = acceptance.get("visual_status")
+        reasons = list(acceptance.get("visual_review_reasons") or [])
+        if status == VISUAL_STATUS_REJECTED:
+            should_mount = False
+            classification = "skipped_low_confidence"
+            reason = (reason + "|" + "|".join(reasons)).strip("|")
+            row["needs_review"] = True
+        elif status == VISUAL_STATUS_NEEDS_REVIEW:
+            # Prefer review over silently accepting a suspicious crop.
+            should_mount = False
+            classification = "skipped_low_confidence"
+            reason = (reason + "|" + "|".join(reasons)).strip("|")
+            row["needs_review"] = True
 
         row["visual_classification"] = classification
-        row["should_mount"] = bool(should_mount and visual_bbox)
+        row["should_mount"] = bool(should_mount and visual_bbox and status == VISUAL_STATUS_ACCEPTED)
         row["visual_type"] = visual_type
-        row["visual_bbox"] = visual_bbox
+        row["visual_bbox"] = visual_bbox if row["should_mount"] or status == VISUAL_STATUS_NEEDS_REVIEW else visual_bbox
         row["visual_reason"] = reason
         row["visual_page"] = regions[0]["page"] if regions else None
+        row["visual_status"] = status
+        row["visual_review_reasons"] = reasons
+        if acceptance.get("multi_figure_labels"):
+            row["multi_figure_labels"] = acceptance["multi_figure_labels"]
+
+    annotate_shared_asset_ownership(matches)
     return matches
 
 
@@ -824,8 +1090,13 @@ def upsert_notes_image_asset(
     if not replaced:
         new_assets.append(asset)
     notes["image_assets"] = new_assets
-    notes["has_image"] = True
-    notes["needs_image_review"] = False
+    status = str(asset.get("visual_status") or VISUAL_STATUS_ACCEPTED).strip().lower()
+    accepted = status == VISUAL_STATUS_ACCEPTED and not asset.get("needs_crop_review")
+    notes["has_image"] = bool(accepted)
+    notes["needs_image_review"] = not accepted
+    if asset.get("visual_review_reasons"):
+        notes["visual_review_reasons"] = list(asset.get("visual_review_reasons") or [])
+    notes["visual_status"] = status
     return notes
 
 
@@ -842,7 +1113,11 @@ def build_pdf_visual_asset_record(
     image_meta: dict[str, Any],
     anchor_id: str,
     asset_slot: str = ASSET_SLOT,
+    visual_status: str = VISUAL_STATUS_ACCEPTED,
+    visual_review_reasons: list[str] | None = None,
 ) -> dict[str, Any]:
+    status = str(visual_status or VISUAL_STATUS_ACCEPTED).strip().lower()
+    reasons = list(visual_review_reasons or [])
     return {
         "asset_type": "pdf_visual_crop",
         "asset_slot": asset_slot,
@@ -852,12 +1127,14 @@ def build_pdf_visual_asset_record(
         "page_index": int(page_1based) - 1,
         "source_page": int(page_1based),
         "bbox": list(bbox),
-        "needs_crop_review": False,
+        "needs_crop_review": status != VISUAL_STATUS_ACCEPTED,
         "needs_image_conversion": False,
         "reason": reason,
         "image_description": classification,
         "visual_type": visual_type,
         "visual_classification": classification,
+        "visual_status": status,
+        "visual_review_reasons": reasons,
         "match_method": match_method,
         "match_score": match_score,
         "question_anchor": anchor_id,
@@ -983,6 +1260,9 @@ def enrich_textbook_examples_with_pdf_visuals(
             "classification": row.get("visual_classification"),
             "should_mount": row.get("should_mount"),
             "visual_reason": row.get("visual_reason"),
+            "visual_status": row.get("visual_status"),
+            "visual_review_reasons": list(row.get("visual_review_reasons") or []),
+            "visual_bbox": row.get("visual_bbox"),
             "asset_path": None,
             "status": "scanned",
         }
@@ -994,11 +1274,13 @@ def enrich_textbook_examples_with_pdf_visuals(
 
         classification = str(row.get("visual_classification") or "none").strip().lower()
         is_question_required = classification in {"required", "question_required"}
+        strong_cue = _text_has_strong_figure_cue(str(row.get("problem_text") or ""))
+        min_score = LOW_CONFIDENCE if strong_cue else HIGH_CONFIDENCE
         source_fidelity_pass = bool(
             is_question_required
             and row.get("should_mount")
             and row.get("pdf_match")
-            and score >= HIGH_CONFIDENCE
+            and score >= min_score
             and not row.get("needs_review")
         )
         if source_fidelity_pass:
@@ -1120,6 +1402,10 @@ def enrich_textbook_examples_with_pdf_visuals(
                     image_meta=meta_img,
                     anchor_id=anchor_id,
                     asset_slot=f"pdf_visual_{fig_index:02d}",
+                    visual_status=str(
+                        row.get("visual_status") or VISUAL_STATUS_ACCEPTED
+                    ),
+                    visual_review_reasons=list(row.get("visual_review_reasons") or []),
                 )
                 mounted_assets.append(asset)
                 summary["mounted"] += 1
