@@ -22,6 +22,7 @@ from typing import Any
 from lxml import etree
 
 from core.mtef import equation_native_to_latex, mtef_bytes_to_latex
+from core.mtef.latex_normalize import normalize_parallel_latex
 from core.textbook_importer_v3_docx import (
     NS,
     REL_NS,
@@ -48,7 +49,7 @@ def wrap_latex_for_v2(latex: str) -> str:
 
     Prefer \\(...\\); also accept $...$ readers via the same content.
     """
-    text = (latex or "").strip()
+    text = normalize_parallel_latex((latex or "").strip())
     if not text:
         return ""
     if text.startswith("$") and text.endswith("$") and text.count("$") >= 2:

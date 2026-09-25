@@ -3327,10 +3327,13 @@ def phase3_ai_metadata_alignment(
 
 
 def _sanitize_db_latex_delimiters(text: str) -> str:
-    """入庫前將 \\[ / \\] 轉 $，避免欄位錯位。"""
+    """入庫前將 \\[ / \\] 轉 $，並正規化 MathType 平行符號。"""
     if not text:
         return ""
-    return str(text).replace(r"\[", "$").replace(r"\]", "$")
+    from core.mtef.latex_normalize import normalize_parallel_latex
+
+    sanitized = normalize_parallel_latex(str(text))
+    return sanitized.replace(r"\[", "$").replace(r"\]", "$")
 
 
 def _extract_loose_question_number(title: str) -> str | None:

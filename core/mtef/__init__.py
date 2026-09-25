@@ -5,6 +5,7 @@ Pipeline:
   OLE bytes / Equation Native stream → records → MtAST → LaTeX
 """
 
+from .latex_normalize import normalize_parallel_latex
 from .mtef import MTEF, oleCbHdr
 from .record import MtAST, RecordType, SelectorType
 
@@ -16,6 +17,7 @@ __all__ = [
     "oleCbHdr",
     "mtef_bytes_to_latex",
     "equation_native_to_latex",
+    "normalize_parallel_latex",
 ]
 
 

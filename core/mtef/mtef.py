@@ -1,6 +1,7 @@
 from io import BytesIO
 from .record import MtLine, MtChar, MtTmpl, MtPile, MtMatrix, MtEmbellRd, MtfontStyleDef, MtSize, MtfontDef, MtColorDefIndex, MtColorDef, MtEqnPrefs, RecordType, OptionType, CharTypeface, SelectorType, EmbellType, MtAST
 from .chars import Chars, SpecialChar
+from .latex_normalize import normalize_parallel_latex
 from .helper import Helper
 
 oleCbHdr = 28
@@ -520,6 +521,7 @@ class MTEF:
             return ''
         if latexStr is None:
             latexStr = ''
+        latexStr = normalize_parallel_latex(latexStr)
         if not str(latexStr).strip():
             self._failure_stage = "mtef_serializer_empty"
             self._failure_reason = "serializer_produced_empty_latex"
@@ -691,14 +693,22 @@ class MTEF:
                 typefaceFmt = "{ \\rm{ %s } }"
 
             hexCode = "%04x" % (mtcode or 0)
-            hexKey = "char/0x%s%s" % (hexCode, hexExtend)
-            sChar = Chars.get(hexKey)
-            if not sChar and hexExtend:
-                sChar = Chars.get("char/0x%s" % hexCode)
-            if not sChar and not hexExtend:
-                sChar = Chars.get("char/0x%s/mathmode" % hexCode)
-            if sChar:
-                char = sChar
+            # Prefer explicit Chars keys (including intentional empty mappings
+            # such as MathType U+EF01 mid-glyph for parallel) over chr(mtcode).
+            char_keys = []
+            if hexExtend:
+                char_keys.append("char/0x%s%s" % (hexCode, hexExtend))
+                char_keys.append("char/0x%s" % hexCode)
+            else:
+                char_keys.append("char/0x%s" % hexCode)
+                char_keys.append("char/0x%s/mathmode" % hexCode)
+            mapped = None
+            for key in char_keys:
+                if key in Chars:
+                    mapped = Chars[key]
+                    break
+            if mapped is not None:
+                char = mapped
             else:
                 sChar = SpecialChar.get(char)
                 if sChar:
