@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_2_3",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_11784",
+      "textbook_example_id": 11784,
+      "status": "verified",
+      "problem_type_id": "solve_point_from_vector_combination",
+      "domain_operation": "solve_point_from_vector_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11784/generate.py"
+    },
+    {
+      "component_id": "src_11820",
+      "textbook_example_id": 11820,
+      "status": "verified",
+      "problem_type_id": "solve_collinear_ratio_mcq",
+      "domain_operation": "solve_collinear_ratio_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11820/generate.py"
+    }
+  ]
+}

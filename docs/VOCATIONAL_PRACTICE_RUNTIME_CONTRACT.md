@@ -166,6 +166,28 @@ Message：`fix: harden B2 practice choices and diagram rendering`
 
 已在 browser 通過的相鄰情境是：有圖→有圖、無圖→無圖。
 
+## 9.1 Textbook exercise coverage（GenCode requirement）
+
+Textbook exercise coverage is a GenCode requirement.
+
+Formal source questions include examples, in-class practice,
+exercises, basic/advanced problems, self-assessment,
+and past examination questions.
+
+An intentional skip may be used as a temporary engineering disposition,
+but does not count as completed chapter coverage.
+
+Coverage must preserve the source problem's core reasoning topology,
+not merely its broad mathematical topic.
+
+因此：
+
+- 例題／隨堂／習作／基礎／進階／自我評量／歷屆考題皆進入 coverage matrix
+- `diagram` / `MCQ` / `application` / `composite` / `past exam` 不得因工程困難永久 `intentional_skip`
+- 多題可共用同一 generator family，但每題 `source_example_id` 必須可追溯到 faithful family／capability／coverage evidence
+- 章節狀態僅在 `covered == total_source` 且 `blocked == 0` 時可標 CLOSED；否則為 PARTIAL
+
+
 ## 10. Rules for future chapter imports
 
 新增下一章節 / B3 / B4 時，不要重新發明 practice contract。

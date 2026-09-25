@@ -3,7 +3,8 @@
 
 Operations cover coordinate representation, arithmetic, scalar multiples,
 parallelism, unit vectors, and dot-product / perpendicular relations.
-Diagram-only construction skills (3-1 drawing) are intentionally out of scope.
+Diagram families reuse coordinate_plane visual_spec (+ arrows); geometric path /
+section / composite topologies live in vector_plane_gap_coverage.
 """
 
 from __future__ import annotations
@@ -34,7 +35,7 @@ LINEAR_COMBO_OP = "compute_vector_linear_combination"
 SCALED_DIRECTION_OP = "compute_scaled_direction_vector"
 TRIANGLE_CHAIN_OP = "compute_triangle_chain_and_perimeter"
 
-OPS = frozenset(
+_CORE_OPS = frozenset(
     {
         COMPONENTS_MAGNITUDE_OP,
         EQUAL_VECTORS_OP,
@@ -55,6 +56,42 @@ OPS = frozenset(
         TRIANGLE_CHAIN_OP,
     }
 )
+
+# Declared here to avoid circular import with vector_plane_gap_coverage.
+_GAP_OPS = frozenset(
+    {
+        "simplify_vector_path_expression",
+        "express_named_vectors_in_given_basis",
+        "solve_scalar_multiple_relation_fill",
+        "express_section_point_vector",
+        "solve_section_coefficient_pair",
+        "identify_equal_vector_mcq",
+        "identify_resultant_path_mcq",
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "compute_directed_segment_mixed_multipart",
+        "compute_chain_closure_vector_mcq",
+        "solve_point_from_vector_combination",
+        "solve_collinear_ratio_mcq",
+        "solve_unknown_vector_linear_equation",
+        "solve_parallel_then_magnitude_mcq",
+        "identify_unit_vector_mcq",
+        "solve_navigation_heading_correction",
+        "classify_angle_quality_from_dot_mcq",
+        "compute_regular_polygon_edge_dot",
+        "compute_dot_identity_multipart",
+        "plot_navigation_points_coordinates",
+        "compute_midpoint_dot_product",
+        "solve_dot_product_parameter_mcq",
+        "solve_perpendicular_composite_parameter",
+        "classify_dot_sign_from_diagram_mcq",
+        "expand_perpendicular_dot_product",
+        "solve_angle_from_magnitude_identity",
+    }
+)
+
+OPS = frozenset(set(_CORE_OPS) | set(_GAP_OPS))
+
 
 
 def canonical_exact(value: Any) -> str:
@@ -463,6 +500,17 @@ def build_vector_plane_matrix(
     **data: Any,
 ) -> dict[str, Any]:
     op = str(operation or domain_operation or "").strip()
+    if op in _GAP_OPS:
+        from core.domain.vector_plane_gap_coverage import build_gap_matrix
+
+        return build_gap_matrix(
+            operation=op,
+            seed=seed,
+            constraints=constraints,
+            curriculum_profile=curriculum_profile,
+            difficulty_profile=difficulty_profile,
+            **data,
+        )
     if op not in OPS:
         raise ValueError(f"unsupported_vector_plane_operation:{op}")
     rng = random.Random(0 if seed is None else int(seed))

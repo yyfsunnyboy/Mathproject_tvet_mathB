@@ -74,6 +74,20 @@ $$\text{textbook\_example\_row} \rightarrow \text{component\_id} \rightarrow \te
 | Tracker | 一筆獨立 tracker 紀錄 |
 | Domain operation | 相同 capability **僅可共用 Domain operation**，**不得合併 generator** |
 
+#### Textbook coverage requirement
+
+Textbook exercise coverage is a GenCode requirement.
+
+Formal source questions include examples, in-class practice,
+exercises, basic/advanced problems, self-assessment,
+and past examination questions.
+
+An intentional skip may be used as a temporary engineering disposition,
+but does not count as completed chapter coverage.
+
+Coverage must preserve the source problem's core reasoning topology,
+not merely its broad mathematical topic.
+
 ### 2.3 開發禁令
 
 * 嚴禁將多道教材題目合併在同一個 component 資料夾中。

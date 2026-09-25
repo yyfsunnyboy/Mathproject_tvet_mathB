@@ -25,6 +25,7 @@
         'points',
         'lines',
         'segments',
+        'arrows',
         'curves',
         'series',
         'bars',
@@ -1019,6 +1020,51 @@
         context.moveTo(clipped.x1, clipped.y1);
         context.lineTo(clipped.x2, clipped.y2);
         context.stroke();
+        return clipped;
+    }
+
+    function drawArrowHead(context, x1, y1, x2, y2, color, opacity) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const ux = dx / len;
+        const uy = dy / len;
+        const size = Math.min(12, Math.max(7, len * 0.18));
+        const bx = x2 - ux * size;
+        const by = y2 - uy * size;
+        const px = -uy;
+        const py = ux;
+        context.fillStyle = applyFadedColor(color || '#1565c0', opacity);
+        context.beginPath();
+        context.moveTo(x2, y2);
+        context.lineTo(bx + px * size * 0.45, by + py * size * 0.45);
+        context.lineTo(bx - px * size * 0.45, by - py * size * 0.45);
+        context.closePath();
+        context.fill();
+    }
+
+    function drawArrows(context, mapX, mapY, visualSpec, points, clipBox, opacity) {
+        const arrows = Array.isArray(visualSpec.arrows) ? visualSpec.arrows : [];
+        arrows.forEach(function (arrow) {
+            if (!arrow) {
+                return;
+            }
+            const p1 = resolvePointReference(arrow.from || arrow.start || (arrow.points && arrow.points[0]), points);
+            const p2 = resolvePointReference(arrow.to || arrow.end || (arrow.points && arrow.points[1]), points);
+            if (!p1 || !p2) {
+                return;
+            }
+            const color = String(arrow.color || '#1565c0');
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = Number.isFinite(Number(arrow.lineWidth)) ? Number(arrow.lineWidth) : 2.2;
+            const clipped = drawLineSegment(context, mapX, mapY, p1.x, p1.y, p2.x, p2.y, clipBox);
+            if (clipped) {
+                drawArrowHead(context, clipped.x1, clipped.y1, clipped.x2, clipped.y2, color, opacity);
+            }
+            if (arrow.label) {
+                drawLineLabel(context, mapX, mapY, p1.x, p1.y, p2.x, p2.y, arrow.label, color, opacity);
+            }
+        });
     }
 
     function extendLineToBounds(p1, p2, xMin, xMax, yMin, yMax) {
@@ -1336,6 +1382,8 @@
                 drawLineSegment(context, mapX, mapY, xValue, yMin, xValue, yMax, clipBox);
             }
         });
+
+        drawArrows(context, mapX, mapY, visualSpec, points, clipBox, opacity);
 
         const hideUnlabeled = visualSpec.hide_unlabeled_points === true;
         points.forEach(function (point) {

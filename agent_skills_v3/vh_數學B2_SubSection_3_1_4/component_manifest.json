@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_1_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_11739",
+      "textbook_example_id": 11739,
+      "status": "verified",
+      "problem_type_id": "solve_scalar_multiple_relation_fill",
+      "domain_operation": "solve_scalar_multiple_relation_fill",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11739/generate.py"
+    },
+    {
+      "component_id": "src_11740",
+      "textbook_example_id": 11740,
+      "status": "verified",
+      "problem_type_id": "solve_scalar_multiple_relation_fill",
+      "domain_operation": "solve_scalar_multiple_relation_fill",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11740/generate.py"
+    },
+    {
+      "component_id": "src_11741",
+      "textbook_example_id": 11741,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11741/generate.py"
+    },
+    {
+      "component_id": "src_11742",
+      "textbook_example_id": 11742,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11742/generate.py"
+    },
+    {
+      "component_id": "src_11743",
+      "textbook_example_id": 11743,
+      "status": "verified",
+      "problem_type_id": "identify_resultant_path_mcq",
+      "domain_operation": "identify_resultant_path_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_11743/generate.py"
+    },
+    {
+      "component_id": "src_11744",
+      "textbook_example_id": 11744,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11744/generate.py"
+    },
+    {
+      "component_id": "src_11748",
+      "textbook_example_id": 11748,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11748/generate.py"
+    },
+    {
+      "component_id": "src_11749",
+      "textbook_example_id": 11749,
+      "status": "verified",
+      "problem_type_id": "construct_linear_combination_choice",
+      "domain_operation": "construct_linear_combination_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_11749/generate.py"
+    },
+    {
+      "component_id": "src_11750",
+      "textbook_example_id": 11750,
+      "status": "verified",
+      "problem_type_id": "solve_scalar_multiple_relation_fill",
+      "domain_operation": "solve_scalar_multiple_relation_fill",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11750/generate.py"
+    },
+    {
+      "component_id": "src_11751",
+      "textbook_example_id": 11751,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11751/generate.py"
+    },
+    {
+      "component_id": "src_11752",
+      "textbook_example_id": 11752,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11752/generate.py"
+    },
+    {
+      "component_id": "src_11753",
+      "textbook_example_id": 11753,
+      "status": "verified",
+      "problem_type_id": "express_section_point_vector",
+      "domain_operation": "express_section_point_vector",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11753/generate.py"
+    },
+    {
+      "component_id": "src_11817",
+      "textbook_example_id": 11817,
+      "status": "verified",
+      "problem_type_id": "solve_section_coefficient_pair",
+      "domain_operation": "solve_section_coefficient_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11817/generate.py"
+    },
+    {
+      "component_id": "src_11818",
+      "textbook_example_id": 11818,
+      "status": "verified",
+      "problem_type_id": "express_linear_combination_from_givens",
+      "domain_operation": "express_linear_combination_from_givens",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11818/generate.py"
+    }
+  ]
+}

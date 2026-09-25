@@ -12,13 +12,37 @@ _FIXED = "vector.plane"
 
 _MULTI_PART_OPS = frozenset(
     {
-        "compute_vector_components_and_magnitude",
-        "solve_equal_vector_coordinates",
         "compute_directed_segment_and_magnitude",
+        "compute_directed_segment_mixed_multipart",
+        "compute_dot_identity_multipart",
+        "compute_regular_polygon_edge_dot",
         "compute_triangle_chain_and_perimeter",
+        "compute_vector_components_and_magnitude",
+        "express_named_vectors_in_given_basis",
+        "plot_navigation_points_coordinates",
+        "solve_angle_from_magnitude_identity",
+        "solve_equal_vector_coordinates",
+        "solve_scalar_multiple_relation_fill",
+        "solve_section_coefficient_pair",
     }
 )
-_CHOICE_OPS = frozenset({"compute_triangle_perimeter_from_two_vectors"})
+_CHOICE_OPS = frozenset(
+    {
+        "classify_angle_quality_from_dot_mcq",
+        "classify_dot_sign_from_diagram_mcq",
+        "compute_chain_closure_vector_mcq",
+        "compute_midpoint_dot_product",
+        "compute_triangle_perimeter_from_two_vectors",
+        "construct_linear_combination_choice",
+        "identify_equal_vector_mcq",
+        "identify_resultant_path_mcq",
+        "identify_unit_vector_mcq",
+        "solve_collinear_ratio_mcq",
+        "solve_dot_product_parameter_mcq",
+        "solve_parallel_then_magnitude_mcq",
+        "solve_unknown_vector_linear_equation",
+    }
+)
 
 OPERATION_PAYLOAD_CONTRACTS = {
     operation: {

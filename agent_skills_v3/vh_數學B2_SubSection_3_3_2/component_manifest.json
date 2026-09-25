@@ -1,8 +1,41 @@
 {
   "skill_id": "vh_數學B2_SubSection_3_3_2",
   "publish_status": "production_manifest_compiled",
-  "component_count": 1,
+  "component_count": 5,
   "components": [
+    {
+      "component_id": "src_11785",
+      "textbook_example_id": 11785,
+      "status": "verified",
+      "problem_type_id": "compute_regular_polygon_edge_dot",
+      "domain_operation": "compute_regular_polygon_edge_dot",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11785/generate.py"
+    },
+    {
+      "component_id": "src_11786",
+      "textbook_example_id": 11786,
+      "status": "verified",
+      "problem_type_id": "compute_regular_polygon_edge_dot",
+      "domain_operation": "compute_regular_polygon_edge_dot",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11786/generate.py"
+    },
+    {
+      "component_id": "src_11796",
+      "textbook_example_id": 11796,
+      "status": "verified",
+      "problem_type_id": "compute_regular_polygon_edge_dot",
+      "domain_operation": "compute_regular_polygon_edge_dot",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11796/generate.py"
+    },
     {
       "component_id": "src_11797",
       "textbook_example_id": 11797,
@@ -13,6 +46,17 @@
       "answer_type": "expression",
       "source_kind": "example",
       "generate_py": "components/src_11797/generate.py"
+    },
+    {
+      "component_id": "src_11802",
+      "textbook_example_id": 11802,
+      "status": "verified",
+      "problem_type_id": "compute_dot_identity_multipart",
+      "domain_operation": "compute_dot_identity_multipart",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11802/generate.py"
     }
   ]
 }

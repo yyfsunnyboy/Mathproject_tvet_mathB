@@ -89,6 +89,10 @@ def test_matrix_validate_and_adapter(operation: str):
         "compute_dot_product_coordinates",
         "solve_parallel_vector_parameter",
         "compute_unit_vector",
+        "simplify_vector_path_expression",
+        "solve_point_from_vector_combination",
+        "identify_equal_vector_mcq",
+        "solve_parallel_then_magnitude_mcq",
     ],
 )
 def test_randomized_generation_stable(operation: str, seed: int):
@@ -136,24 +140,24 @@ def test_phase1_and_preflight_coordinate_skill():
             )
             for r in rows
         }
-        for eid in (11754, 11756, 11758, 11760, 11822):
+        for eid in (11754, 11756, 11758, 11760, 11822, 11775):
             induced = run_v3_no_llm_phase1_for_example(SKILL_COORD, by_id[eid], conn=conn)
             assert induced.get("classification_status") == "resolved"
             assert induced.get("problem_type_id")
-        blocked = run_v3_no_llm_phase1_for_example(SKILL_COORD, by_id[11775], conn=conn)
-        assert blocked.get("classification_source") == "phase1_rule_pack_blocked"
+            assert "unsupported" not in str(induced.get("problem_type_id") or "")
 
         preflight = evaluate_skill_v3_capability(conn, SKILL_COORD, probe_examples=True)
         assert preflight["domain_key"] == "vector.plane"
         assert preflight["capability_status"] == "ready"
-        assert preflight["resolvable_example_count"] == 10
+        assert preflight["resolvable_example_count"] == 11
         assert preflight["needs_capability_count"] == 0
-        assert 11775 in (preflight.get("intentional_skip_ids") or [])
+        assert preflight.get("intentional_skip_count", 0) == 0
+        assert 11775 not in (preflight.get("intentional_skip_ids") or [])
     finally:
         conn.close()
 
 
-def test_diagram_skills_are_intentional_skip_not_fake_eligible():
+def test_diagram_skills_are_now_resolvable():
     if not PROD_DB.exists():
         pytest.skip("production db unavailable")
     conn = sqlite3.connect(f"file:{PROD_DB.resolve().as_posix()}?mode=ro", uri=True)
@@ -162,8 +166,23 @@ def test_diagram_skills_are_intentional_skip_not_fake_eligible():
         preflight = evaluate_skill_v3_capability(conn, sid, probe_examples=True)
         assert preflight["domain_key"] == "vector.plane"
         assert preflight["capability_status"] == "ready"
-        assert preflight["resolvable_example_count"] == 0
-        assert preflight["intentional_skip_count"] == 3
+        assert preflight["resolvable_example_count"] == 3
+        assert preflight.get("intentional_skip_count", 0) == 0
         assert preflight["needs_capability_count"] == 0
+    finally:
+        conn.close()
+
+
+def test_skill_3_2_3_has_resolvable_coverage():
+    if not PROD_DB.exists():
+        pytest.skip("production db unavailable")
+    conn = sqlite3.connect(f"file:{PROD_DB.resolve().as_posix()}?mode=ro", uri=True)
+    try:
+        sid = "vh_數學B2_SubSection_3_2_3"
+        preflight = evaluate_skill_v3_capability(conn, sid, probe_examples=True)
+        assert preflight["domain_key"] == "vector.plane"
+        assert preflight["capability_status"] == "ready"
+        assert preflight["resolvable_example_count"] == 2
+        assert preflight.get("intentional_skip_count", 0) == 0
     finally:
         conn.close()

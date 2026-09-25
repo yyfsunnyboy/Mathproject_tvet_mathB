@@ -122,19 +122,21 @@ _B2_CH3_DOT_PROP_OPS = (
 )
 _B2_CH3_DIAGRAM_SKILLS = tuple(f"vh_數學B2_SubSection_3_1_{i}" for i in range(1, 5))
 _B2_CH3_SKILL_OPERATIONS = {
-    "vh_數學B2_SubSection_3_2_1": _B2_CH3_COORD_OPS,
-    "vh_數學B2_SubSection_3_2_2": _B2_CH3_ARITH_OPS,
-    "vh_數學B2_SubSection_3_2_3": _B2_CH3_SCALAR_OPS,
-    "vh_數學B2_SubSection_3_2_4": _B2_CH3_SCALAR_OPS,
-    "vh_數學B2_SubSection_3_2_5": _B2_CH3_PARALLEL_OPS,
-    "vh_數學B2_SubSection_3_2_6": _B2_CH3_UNIT_OPS,
-    "vh_數學B2_SubSection_3_3_1": _B2_CH3_ANGLE_OPS,
-    "vh_數學B2_SubSection_3_3_2": _B2_CH3_DOT_DEF_OPS,
-    "vh_數學B2_SubSection_3_3_3": _B2_CH3_DOT_COORD_OPS,
-    "vh_數學B2_SubSection_3_3_4": _B2_CH3_PERP_OPS,
-    "vh_數學B2_SubSection_3_3_5": _B2_CH3_DOT_PROP_OPS,
-    # 3-1 diagram skills bind to the domain but Phase1 marks all examples as intentional skip.
-    **{sid: ("compute_vector_components_and_magnitude",) for sid in _B2_CH3_DIAGRAM_SKILLS},
+    "vh_數學B2_SubSection_3_1_1": ('express_named_vectors_in_given_basis', 'identify_equal_vector_mcq'),
+    "vh_數學B2_SubSection_3_1_2": ('simplify_vector_path_expression',),
+    "vh_數學B2_SubSection_3_1_3": ('simplify_vector_path_expression',),
+    "vh_數學B2_SubSection_3_1_4": ('construct_linear_combination_choice', 'express_linear_combination_from_givens', 'express_section_point_vector', 'identify_resultant_path_mcq', 'solve_scalar_multiple_relation_fill', 'solve_section_coefficient_pair'),
+    "vh_數學B2_SubSection_3_2_1": ('compute_directed_segment_and_magnitude', 'compute_directed_segment_mixed_multipart', 'compute_triangle_perimeter_from_two_vectors', 'compute_vector_components_and_magnitude', 'solve_equal_vector_coordinates', 'solve_parallelogram_fourth_vertex'),
+    "vh_數學B2_SubSection_3_2_2": ('compute_chain_closure_vector_mcq', 'compute_point_vectors_linear_combination', 'compute_triangle_chain_and_perimeter', 'compute_vector_linear_combination', 'compute_vector_sum_difference', 'solve_parallelogram_fourth_vertex'),
+    "vh_數學B2_SubSection_3_2_3": ('solve_collinear_ratio_mcq', 'solve_point_from_vector_combination'),
+    "vh_數學B2_SubSection_3_2_4": ('compute_vector_linear_combination', 'solve_unknown_vector_linear_equation'),
+    "vh_數學B2_SubSection_3_2_5": ('solve_parallel_then_magnitude_mcq', 'solve_parallel_vector_parameter'),
+    "vh_數學B2_SubSection_3_2_6": ('compute_scaled_direction_vector', 'identify_unit_vector_mcq'),
+    "vh_數學B2_SubSection_3_3_1": ('classify_angle_quality_from_dot_mcq', 'compute_cosine_of_angle_from_dot', 'solve_navigation_heading_correction'),
+    "vh_數學B2_SubSection_3_3_2": ('compute_dot_identity_multipart', 'compute_dot_product_from_magnitudes_angle', 'compute_regular_polygon_edge_dot'),
+    "vh_數學B2_SubSection_3_3_3": ('compute_cosine_of_angle_from_dot', 'compute_dot_product_coordinates', 'compute_midpoint_dot_product', 'plot_navigation_points_coordinates', 'solve_dot_product_parameter_mcq'),
+    "vh_數學B2_SubSection_3_3_4": ('solve_perpendicular_composite_parameter', 'solve_perpendicular_vector_parameter'),
+    "vh_數學B2_SubSection_3_3_5": ('classify_dot_sign_from_diagram_mcq', 'compute_dot_product_from_magnitudes_angle', 'expand_perpendicular_dot_product', 'solve_angle_from_magnitude_identity'),
 }
 
 

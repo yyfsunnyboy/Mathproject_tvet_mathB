@@ -1,2368 +1,2514 @@
 version: 1
 skills:
-  - skill_id: vh_數學B1_CartesianCoordinateSystemEstablishment
-    skill_ch_name: 直角坐標系的建立
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-        display_name: 坐標象限與符號推理
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 來源題數少且題型相近，合併為同一主要 problem_type。
-    classification_rules:
-      - if_contains:
-          - 象限
-          - 坐標
-          - 點
-        prefer_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-    source_policy:
-      source_count_threshold_for_split: 4
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: false
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4417
-        matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-      - example_id: 4435
-        matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-      - example_id: 4509
-        matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-      - example_id: 4510
-        matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
-
-  - skill_id: vh_數學B1_LinearFunction
-    skill_ch_name: 線型函數
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: graph_intercepts_and_linear_equation
-        display_name: read intercepts and derive linear equation from graph
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: graph_based_tiered_linear_application_multi_part
-        display_name: graph-based tiered linear application
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: collinear_trisection_coordinate
-        display_name: collinear trisection coordinate
-        checker: coordinate_pair_checker
-        equivalence: coordinate_pair_equivalence
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: draw_constant_function_graph
-        display_name: draw constant function graph
-        checker: free_response_drawing_checker
-        equivalence: drawing_equivalence
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: draw_linear_function_graph
-        display_name: draw linear function graph
-        checker: free_response_drawing_checker
-        equivalence: drawing_equivalence
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: graph_based_linear_application_inverse
-        display_name: inverse evaluation from linear application graph
-        checker: numeric_checker
-        equivalence: numeric_equivalence
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: graph_based_linear_model_equation
-        display_name: derive contextual linear model from graph
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: robust_budget_feasibility_choice
-        display_name: robust budget feasibility choice
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: linear_equation_from_two_points_choice
-        display_name: choose linear equation through two points
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: linear_graph_feasibility_choice
-        display_name: choose impossible graph under intercept constraints
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: integer_numeric_evaluate_function_notation
-        display_name: 線型函數求值
-        checker: integer_checker
-        equivalence: numeric_exact
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: legacy_fallback_only
-        notes: legacy fallback retained for compatibility
-    classification_rules:
-      - if_contains:
-          - 函數圖形
-          - 截距
-        prefer_problem_type_id: integer_numeric_evaluate_function_notation
-    source_policy:
-      source_count_threshold_for_split: 4
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples: []
-
-  - skill_id: vh_數學B1_QuadraticFunctionGraph
-    skill_ch_name: 二次函數的圖形
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: text_short_compute_vertex_and_axis
-        display_name: 二次函數圖形平移與頂點特徵
-        checker: coordinate_pair_checker
-        equivalence: ordered_tuple_exact
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: single_primary_problem_type
-        notes: 強制將所有來源題收斂為單一簡答題型，避免衍生出選擇題型因缺乏選項導致冒煙測試崩潰。
-    classification_rules:
-      - if_contains:
-          - 平移
-          - 对称轴
-          - 頂點
-          - 圖形
-        prefer_problem_type_id: text_short_compute_vertex_and_axis
-    source_policy:
-      source_count_threshold_for_split: 999  # 剛性拉高分流門檻，禁止自動切分出選擇題型
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: false
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4460
-        matched_problem_type_id: text_short_compute_vertex_and_axis
-      - example_id: 4450
-        matched_problem_type_id: text_short_compute_vertex_and_axis
-      - example_id: 4466
-        matched_problem_type_id: text_short_compute_vertex_and_axis
-      - example_id: 4503
-        matched_problem_type_id: text_short_compute_vertex_and_axis  # 強制收斂至簡答家族，洗淨選擇題幽靈
-
-  - skill_id: vh_數學B1_SlopeOfALine
-    skill_ch_name: 直線的斜率
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: slope_from_two_points
-        display_name: 兩點求斜率
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-        notes: 含水平線斜率0與鉛直線斜率不存在。
-      - problem_type_id: solve_parameter_from_known_slope
-        display_name: 已知斜率求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: solve_parameter_from_known_slope_choice
-        display_name: 已知斜率求參數（選擇題）
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: collinear_three_points_parameter
-        display_name: 三點共線求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: non_triangle_collinear_parameter
-        display_name: 無法形成三角形求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: parallel_segments_parameter
-        display_name: 平行線段求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: perpendicular_segments_parameter
-        display_name: 垂直線段求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: slopes_of_named_segments
-        display_name: 多線段斜率
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: classify_and_compare_figure_slopes
-        display_name: 圖形斜率分類與比較
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: collinear_three_points_parameter_choice
-        display_name: 三點共線求參數（選擇題）
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-    classification_rules:
-      - if_contains:
-          - 填入下列各圖形
-        prefer_problem_type_id: classify_and_compare_figure_slopes
-      - if_contains:
-          - m不存在
-          - m > 0
-        prefer_problem_type_id: classify_and_compare_figure_slopes
-      - if_contains:
-          - 無法連結成一個三角形
-        prefer_problem_type_id: non_triangle_collinear_parameter
-      - if_contains:
-          - 為共線之三點
-        prefer_problem_type_id: collinear_three_points_parameter_choice
-      - if_contains:
-          - 三點共線
-        prefer_problem_type_id: collinear_three_points_parameter
-      - if_contains:
-          - 同一直線
-        prefer_problem_type_id: collinear_three_points_parameter
-      - if_contains:
-          - 平行
-          - 線段
-        prefer_problem_type_id: parallel_segments_parameter
-      - if_contains:
-          - 垂直
-          - 線段
-        prefer_problem_type_id: perpendicular_segments_parameter
-      - if_contains:
-          - 斜率為
-          - 試求
-        prefer_problem_type_id: solve_parameter_from_known_slope
-      - if_contains:
-          - 斜率為
-          - 則
-        prefer_problem_type_id: solve_parameter_from_known_slope_choice
-      - if_contains:
-          - 下列直線的斜率
-        prefer_problem_type_id: slopes_of_named_segments
-      - if_contains:
-          - 兩點
-          - 斜率
-        prefer_problem_type_id: slope_from_two_points
-      - if_contains:
-          - 過下列各組
-          - 斜率
-        prefer_problem_type_id: slope_from_two_points
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4519
-        matched_problem_type_id: slopes_of_named_segments
-      - example_id: 4520
-        matched_problem_type_id: classify_and_compare_figure_slopes
-      - example_id: 4521
-        matched_problem_type_id: slope_from_two_points
-      - example_id: 4522
-        matched_problem_type_id: solve_parameter_from_known_slope
-      - example_id: 4523
-        matched_problem_type_id: collinear_three_points_parameter
-      - example_id: 4524
-        matched_problem_type_id: non_triangle_collinear_parameter
-      - example_id: 4525
-        matched_problem_type_id: parallel_segments_parameter
-      - example_id: 4529
-        matched_problem_type_id: collinear_three_points_parameter
-      - example_id: 4533
-        matched_problem_type_id: slopes_of_named_segments
-      - example_id: 4534
-        matched_problem_type_id: non_triangle_collinear_parameter
-      - example_id: 4590
-        matched_problem_type_id: solve_parameter_from_known_slope_choice
-      - example_id: 4601
-        matched_problem_type_id: collinear_three_points_parameter_choice
-
-  - skill_id: vh_數學B1_PropertiesOfParallelLines
-    skill_ch_name: 兩平行線的性質
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: parallel_segments_parameter
-        display_name: 平行線段求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: parallel_segments_parameter_choice
-        display_name: 平行線段求參數（選擇題）
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: parallel_two_point_lines_parameter_choice
-        display_name: 兩直線平行求參數（選擇題）
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-    classification_rules:
-      - if_contains:
-          - 過兩點
-          - 平行
-        prefer_problem_type_id: parallel_two_point_lines_parameter_choice
-      - if_contains:
-          - 平行
-          - 則
-        prefer_problem_type_id: parallel_segments_parameter_choice
-      - if_contains:
-          - 平行
-        prefer_problem_type_id: parallel_segments_parameter
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4530
-        matched_problem_type_id: parallel_segments_parameter
-      - example_id: 4535
-        matched_problem_type_id: parallel_segments_parameter
-      - example_id: 4600
-        matched_problem_type_id: parallel_segments_parameter_choice
-      - example_id: 4602
-        matched_problem_type_id: parallel_two_point_lines_parameter_choice
-
-  - skill_id: vh_數學B1_PropertiesOfPerpendicularLines
-    skill_ch_name: 兩垂直線的性質
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: parallel_and_perpendicular_slopes_from_reference
-        display_name: 已知斜率求平行/垂直斜率
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: triangle_right_angle_verification
-        display_name: 直角三角形判定
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: perpendicular_segments_parameter
-        display_name: 垂直線段求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: perpendicular_two_point_lines_parameter
-        display_name: 兩直線垂直求參數
-        checker: rational_checker
-        equivalence: rational_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: perpendicular_slope_quadrant_choice
-        display_name: 垂直斜率象限（選擇題）
-        checker: choice_label_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-    classification_rules:
-      - if_contains:
-          - 直角三角形
-        prefer_problem_type_id: triangle_right_angle_verification
-      - if_contains:
-          - 象限
-        prefer_problem_type_id: perpendicular_slope_quadrant_choice
-      - if_contains:
-          - 斜率為
-          - 試求
-        prefer_problem_type_id: parallel_and_perpendicular_slopes_from_reference
-      - if_contains:
-          - 垂直
-          - 試求k
-        prefer_problem_type_id: perpendicular_two_point_lines_parameter
-      - if_contains:
-          - 垂直
-        prefer_problem_type_id: perpendicular_segments_parameter
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-    source_examples:
-      - example_id: 4526
-        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
-      - example_id: 4527
-        matched_problem_type_id: triangle_right_angle_verification
-      - example_id: 4531
-        matched_problem_type_id: perpendicular_segments_parameter
-      - example_id: 4532
-        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
-      - example_id: 4536
-        matched_problem_type_id: perpendicular_segments_parameter
-      - example_id: 4537
-        matched_problem_type_id: perpendicular_two_point_lines_parameter
-      - example_id: 4538
-        matched_problem_type_id: perpendicular_slope_quadrant_choice
-      - example_id: 4539
-        matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
-
-  - skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
-    skill_ch_name: 平面兩點距離
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
-        display_name: 兩點間的距離計算
-        checker: expression_equivalence_checker
-        equivalence: expression_equivalence
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
-        display_name: 已知距離求未知坐標
-        checker: solution_set_checker
-        equivalence: unordered_solution_set
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-    classification_rules:
-      - if_contains:
-          - 求k
-          - 求 k
-          - k值
-        prefer_problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
-      - if_contains:
-          - 距離
-        prefer_problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialBasicConcepts
-    skill_ch_name: 多項式的基本概念
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_descending_power_properties
-        display_name: 降冪排列與次數首項求值
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: polynomial_param_degree_constraint
-        display_name: 參數多項式給定次數求係數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: polynomial_descending_power_table
-        display_name: 兩式降冪排列填表
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: zero_polynomial_find_coeffs
-        display_name: 零多項式求參數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-      - problem_type_id: polynomial_degree_product_sum
-        display_name: 乘積與和的次數關係
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        merge_policy: split_by_contract_diff
-    classification_rules:
-      - if_contains:
-          - 零多項式
-        prefer_problem_type_id: zero_polynomial_find_coeffs
-      - if_contains:
-          - 完成下表
-          - 按降冪排列完成
-        prefer_problem_type_id: polynomial_descending_power_table
-      - if_contains:
-          - 四次多項式
-          - 五次多項式
-          - a次多項式
-        prefer_problem_type_id: polynomial_degree_product_sum
-      - if_contains:
-          - 首項係數
-        prefer_problem_type_id: polynomial_descending_power_properties
-      - if_contains:
-          - a、b之值
-          - a、b
-          - 若$\deg
-          - 若\deg
-        prefer_problem_type_id: polynomial_param_degree_constraint
-      - if_contains:
-          - 降冪排列
-        prefer_problem_type_id: polynomial_descending_power_properties
-    source_examples:
-      - example_id: 4609
-        matched_problem_type_id: polynomial_descending_power_properties
-      - example_id: 4610
-        matched_problem_type_id: polynomial_param_degree_constraint
-      - example_id: 4618
-        matched_problem_type_id: polynomial_descending_power_table
-      - example_id: 4619
-        matched_problem_type_id: polynomial_param_degree_constraint
-      - example_id: 4620
-        matched_problem_type_id: zero_polynomial_find_coeffs
-      - example_id: 4629
-        matched_problem_type_id: polynomial_descending_power_table
-      - example_id: 4630
-        matched_problem_type_id: polynomial_param_degree_constraint
-      - example_id: 4631
-        matched_problem_type_id: zero_polynomial_find_coeffs
-      - example_id: 4716
-        matched_problem_type_id: polynomial_degree_product_sum
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialArithmeticOperations
-    skill_ch_name: 多項式的四則運算
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_add_sub
-        display_name: 多項式加減
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_multiply
-        display_name: 多項式乘積與次數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_product_term_coefficient
-        display_name: 乘積指定項係數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_long_division
-        display_name: 多項式除法商式餘式
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_synthetic_division
-        display_name: 綜合除法
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_remainder_param_solve
-        display_name: 餘式條件求參數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-      - problem_type_id: polynomial_shifted_basis_eval
-        display_name: 平移基底展開求係數和
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 綜合除法
-        prefer_problem_type_id: polynomial_synthetic_division
-      - if_contains:
-          - a + b + c + d
-          - a+b+c+d
-          - (x-1)^{3}
-          - \left( x-1 \right)^{3}
-        prefer_problem_type_id: polynomial_shifted_basis_eval
-      - if_contains:
-          - 試求實數a
-          - 可被
-          - 整除
-        prefer_problem_type_id: polynomial_remainder_param_solve
-      - if_contains:
-          - 商式和餘式
-          - 商式及餘式
-          - \div
-          - 除以
-          - 餘式為ax
-          - a + b
-        prefer_problem_type_id: polynomial_long_division
-      - if_contains:
-          - 項係數
-          - 項的係數
-        prefer_problem_type_id: polynomial_product_term_coefficient
-      - if_contains:
-          - 乘積及其次數
-          - 的乘積
-        prefer_problem_type_id: polynomial_multiply
-      - if_contains:
-          - +g
-          - -g
-          - f\left( x \right)+g
-          - f\left( x \right)-g
-        prefer_problem_type_id: polynomial_add_sub
-    source_examples:
-      - example_id: 4612
-        matched_problem_type_id: polynomial_add_sub
-      - example_id: 4613
-        matched_problem_type_id: polynomial_product_term_coefficient
-      - example_id: 4614
-        matched_problem_type_id: polynomial_long_division
-      - example_id: 4615
-        matched_problem_type_id: polynomial_long_division
-      - example_id: 4616
-        matched_problem_type_id: polynomial_synthetic_division
-      - example_id: 4617
-        matched_problem_type_id: polynomial_shifted_basis_eval
-      - example_id: 4622
-        matched_problem_type_id: polynomial_add_sub
-      - example_id: 4623
-        matched_problem_type_id: polynomial_multiply
-      - example_id: 4624
-        matched_problem_type_id: polynomial_product_term_coefficient
-      - example_id: 4625
-        matched_problem_type_id: polynomial_long_division
-      - example_id: 4626
-        matched_problem_type_id: polynomial_synthetic_division
-      - example_id: 4627
-        matched_problem_type_id: polynomial_remainder_param_solve
-      - example_id: 4628
-        matched_problem_type_id: polynomial_remainder_param_solve
-      - example_id: 4633
-        matched_problem_type_id: polynomial_add_sub
-      - example_id: 4634
-        matched_problem_type_id: polynomial_multiply
-      - example_id: 4635
-        matched_problem_type_id: polynomial_product_term_coefficient
-      - example_id: 4636
-        matched_problem_type_id: polynomial_long_division
-      - example_id: 4637
-        matched_problem_type_id: polynomial_synthetic_division
-      - example_id: 4706
-        matched_problem_type_id: polynomial_product_term_coefficient
-      - example_id: 4718
-        matched_problem_type_id: polynomial_long_division
-      - example_id: 4719
-        matched_problem_type_id: polynomial_remainder_param_solve
-      - example_id: 4720
-        matched_problem_type_id: polynomial_long_division
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialEquality
-    skill_ch_name: 多項式的相等
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_equality_identity
-        display_name: 多項式恆等式求參數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 相等
-          - 恆等
-          - 對所有
-          - 實數
-          - a、b
-        prefer_problem_type_id: polynomial_equality_identity
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RemainderTheorem
-    skill_ch_name: 餘式定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: remainder_theorem_evaluate
-        display_name: 餘式定理求值
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 餘式
-          - 餘式定理
-          - 除以
-        prefer_problem_type_id: remainder_theorem_evaluate
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_FactorTheorem
-    skill_ch_name: 因式定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: factor_theorem_root_factor
-        display_name: 因式定理與根
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 因式
-          - 根
-          - 因式定理
-        prefer_problem_type_id: factor_theorem_root_factor
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialFactoring
-    skill_ch_name: 因式分解
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_factoring
-        display_name: 多項式因式分解
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 因式分解
-          - 分解
-        prefer_problem_type_id: polynomial_factoring
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RationalExpressionArithmeticOperations
-    skill_ch_name: 有理式的四則運算
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: rational_expression_arithmetic
-        display_name: 有理式化簡與運算
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 化簡
-          - 有理式
-        prefer_problem_type_id: rational_expression_arithmetic
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RationalEquation
-    skill_ch_name: 有理方程式
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: rational_equation_solve
-        display_name: 解有理方程式
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 解
-          - 方程式
-          - 有理
-        prefer_problem_type_id: rational_equation_solve
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialEquality
-    skill_ch_name: 多項式的相等
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_equality_identity
-        display_name: 多項式恆等式求參數
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 相等
-          - 恆等
-          - 對所有
-          - 實數
-          - a、b
-        prefer_problem_type_id: polynomial_equality_identity
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RemainderTheorem
-    skill_ch_name: 餘式定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: remainder_theorem_evaluate
-        display_name: 餘式定理求值
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 餘式
-          - 餘式定理
-          - f(
-          - 除以
-        prefer_problem_type_id: remainder_theorem_evaluate
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_FactorTheorem
-    skill_ch_name: 因式定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: factor_theorem_root_factor
-        display_name: 因式定理與根
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 因式
-          - 根
-          - 因式定理
-          - x-
-        prefer_problem_type_id: factor_theorem_root_factor
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_PolynomialFactoring
-    skill_ch_name: 因式分解
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: polynomial_factoring
-        display_name: 多項式因式分解
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 因式分解
-          - 分解
-        prefer_problem_type_id: polynomial_factoring
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RationalExpressionArithmeticOperations
-    skill_ch_name: 有理式的四則運算
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: rational_expression_arithmetic
-        display_name: 有理式化簡與運算
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 化簡
-          - 有理式
-          - 分數
-        prefer_problem_type_id: rational_expression_arithmetic
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B1_RationalEquation
-    skill_ch_name: 有理方程式
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: rational_equation_solve
-        display_name: 解有理方程式
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-    classification_rules:
-      - if_contains:
-          - 解
-          - 方程式
-          - 有理
-        prefer_problem_type_id: rational_equation_solve
-    source_policy:
-      source_count_threshold_for_split: 999
-      small_skill_merge_allowed: true
-      min_source_examples: 1
-      allow_single_problem_type: true
-      allow_skill_default_problem_type: true
-      default_problem_type_used: true
-      single_primary_problem_type: true
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B2_SubSection_2_1_1
-    skill_ch_name: 正弦定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: compute_triangle_area_sas
-        display_name: 兩邊夾角求三角形面積
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [compute_triangle_area_sas]
-      - problem_type_id: solve_side_and_circumradius_by_sines
-        display_name: 正弦定理求邊長與外接圓半徑
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_and_circumradius_by_sines]
-        answer_type: multi_part
-        presentation_mode: multiple_inputs
-      - problem_type_id: solve_angle_by_law_of_sines
-        display_name: 正弦定理求角
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_angle_by_law_of_sines]
-      - problem_type_id: compute_sin_from_side_and_circumradius
-        display_name: 由邊長與外接圓求sin
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [compute_sin_from_side_and_circumradius]
-      - problem_type_id: solve_side_ratio_by_law_of_sines
-        display_name: 正弦定理解邊長比（選擇）
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_ratio_by_law_of_sines]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: solve_side_by_law_of_sines
-        display_name: 正弦定理解邊長（選擇）
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_by_law_of_sines]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: sine_cosine_formula_fill_blank_mixed
-        display_name: 正餘弦公式填空（含餘弦，略過）
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 含餘弦定理填空，刻意 skip，避免混入餘弦題型。
-    classification_rules:
-      - if_contains:
-          - 餘弦
-          - cosA
-          - b^2+c^2
-        prefer_problem_type_id: sine_cosine_formula_fill_blank_mixed
-      - if_contains:
-          - 面積
-          - 試求△ABC的面積
-        prefer_problem_type_id: compute_triangle_area_sas
-      - if_contains:
-          - 外接圓半徑
-          - 試求a及其外接圓
-          - 試求c及其外接圓
-        prefer_problem_type_id: solve_side_and_circumradius_by_sines
-      - if_contains:
-          - 試求\sin A
-          - 外接圓面積
-          - sinA
-        prefer_problem_type_id: compute_sin_from_side_and_circumradius
-      - if_contains:
-          - 比值
-          - \overline{AB}
-          - (A)
-        prefer_problem_type_id: solve_side_ratio_by_law_of_sines
-      - if_contains:
-          - 則c=
-          - 試求c
-          - (A)
-          - (B)
-        prefer_problem_type_id: solve_side_by_law_of_sines
-      - if_contains:
-          - 試求\angle B
-          - 試求\angle C
-          - 試求∠B
-          - 試求∠C
-        prefer_problem_type_id: solve_angle_by_law_of_sines
-    source_examples:
-      - example_id: 11676
-        matched_problem_type_id: compute_triangle_area_sas
-      - example_id: 11677
-        matched_problem_type_id: compute_triangle_area_sas
-      - example_id: 11678
-        matched_problem_type_id: solve_side_and_circumradius_by_sines
-      - example_id: 11679
-        matched_problem_type_id: solve_side_and_circumradius_by_sines
-      - example_id: 11680
-        matched_problem_type_id: solve_angle_by_law_of_sines
-      - example_id: 11681
-        matched_problem_type_id: solve_angle_by_law_of_sines
-      - example_id: 11716
-        matched_problem_type_id: compute_sin_from_side_and_circumradius
-      - example_id: 11717
-        matched_problem_type_id: solve_side_ratio_by_law_of_sines
-      - example_id: 11718
-        matched_problem_type_id: solve_side_by_law_of_sines
-      - example_id: 11707
-        matched_problem_type_id: compute_triangle_area_sas
-      - example_id: 11708
-        matched_problem_type_id: solve_side_and_circumradius_by_sines
-      - example_id: 11709
-        matched_problem_type_id: solve_angle_by_law_of_sines
-      - example_id: 11710
-        matched_problem_type_id: solve_angle_by_law_of_sines
-    source_policy:
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B2_SubSection_2_1_2
-    skill_ch_name: 餘弦定理
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: solve_side_by_law_of_cosines
-        display_name: 餘弦定理求邊長
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_by_law_of_cosines]
-      - problem_type_id: solve_angle_by_law_of_cosines
-        display_name: 餘弦定理求角
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_angle_by_law_of_cosines]
-      - problem_type_id: solve_cosine_identity_angle
-        display_name: 餘弦恆等式求角
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_cosine_identity_angle]
-      - problem_type_id: solve_detour_extra_distance_by_cosines
-        display_name: 餘弦定理繞道多走路程
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_detour_extra_distance_by_cosines]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: compute_circumradius_from_three_sides
-        display_name: 三邊求外接圓半徑
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [compute_circumradius_from_three_sides]
-      - problem_type_id: triangle_area_sine_followup_skip
-        display_name: 接續上題正弦面積（略過）
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 使用½ab sinC且接續上題，屬正弦面積／跨題依賴，不納入餘弦定理。
-      - problem_type_id: mixed_sine_cosine_formula_fill_skip
-        display_name: 正餘弦公式混合填空（略過）
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 同時含正弦與餘弦公式填空，generator SKIP；教材仍歸餘弦 leaf。
-    classification_rules:
-      - if_contains:
-          - 接續上題
-          - 面積
-        prefer_problem_type_id: triangle_area_sine_followup_skip
-      - if_contains:
-          - =\frac { 1 } { 2 }casinB
-          - a / sinA
-          - 餘弦定理
-          - b ^ { 2 } +c ^ { 2 } -2bc
-        prefer_problem_type_id: mixed_sine_cosine_formula_fill_skip
-      - if_contains:
-          - 多走了多少
-          - 繞到B地
-          - 統測
-        prefer_problem_type_id: solve_detour_extra_distance_by_cosines
-      - if_contains:
-          - Wi−Fi
-          - 等距離
-          - 基地臺
-        prefer_problem_type_id: compute_circumradius_from_three_sides
-      - if_contains:
-          - a^2-(b+c)^2
-          - a^{2}-(b+c)^{2}
-          - =-bc
-        prefer_problem_type_id: solve_cosine_identity_angle
-      - if_contains:
-          - 試求\angle
-          - 試求∠
-          - 三邊長
-        prefer_problem_type_id: solve_angle_by_law_of_cosines
-      - if_contains:
-          - 試求a之長
-          - 另一邊長度
-          - \overline{BC}
-          - 直線距離
-          - 試求a
-        prefer_problem_type_id: solve_side_by_law_of_cosines
-    source_examples:
-      - example_id: 11682
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11683
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11684
-        matched_problem_type_id: solve_angle_by_law_of_cosines
-      - example_id: 11685
-        matched_problem_type_id: solve_angle_by_law_of_cosines
-      - example_id: 11686
-        matched_problem_type_id: solve_detour_extra_distance_by_cosines
-      - example_id: 11706
-        matched_problem_type_id: mixed_sine_cosine_formula_fill_skip
-        block_reason: mixed_sine_cosine_formula_fill_blank
-      - example_id: 11711
-        matched_problem_type_id: solve_angle_by_law_of_cosines
-      - example_id: 11712
-        matched_problem_type_id: solve_angle_by_law_of_cosines
-      - example_id: 11713
-        matched_problem_type_id: solve_cosine_identity_angle
-      - example_id: 11714
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11715
-        matched_problem_type_id: compute_circumradius_from_three_sides
-      - example_id: 11719
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11726
-        matched_problem_type_id: triangle_area_sine_followup_skip
-        block_reason: sine_area_followup_not_cosine_law
-      - example_id: 11727
-        matched_problem_type_id: solve_side_by_law_of_cosines
-    source_policy:
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B2_SubSection_2_2_3
-    skill_ch_name: 直角三角形的測量
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: solve_height_from_sight_line_elevation
-        display_name: 仰角與視線長求高度
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_height_from_sight_line_elevation]
-      - problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
-        display_name: 梯子與地面夾角求底端距離
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_adjacent_from_hypotenuse_ground_angle]
-      - problem_type_id: solve_opposite_from_adjacent_elevation
-        display_name: 水平距離與仰角求高度／對邊
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_opposite_from_adjacent_elevation]
-      - problem_type_id: solve_horizontal_from_height_elevation
-        display_name: 已知高度與仰角求水平距離
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_horizontal_from_height_elevation]
-      - problem_type_id: solve_horizontal_from_height_depression
-        display_name: 已知高度與俯角求水平距離
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_horizontal_from_height_depression]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: solve_two_elevation_horizontal_shift
-        display_name: 兩次仰角已知高度求水平位移
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_two_elevation_horizontal_shift]
-      - problem_type_id: solve_two_elevation_unknown_height
-        display_name: 兩次仰角與前進距離求高度
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_two_elevation_unknown_height]
-      - problem_type_id: solve_building_height_with_flagpole_elevations
-        display_name: 旗桿與建築物兩仰角求樓高
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_building_height_with_flagpole_elevations]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: solve_broken_tree_original_height
-        display_name: 吹折大樹求原高
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_broken_tree_original_height]
-      - problem_type_id: solve_height_decimal_from_sight_line_elevation
-        display_name: 非特殊角仰角小數高度
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_height_decimal_from_sight_line_elevation]
-      - problem_type_id: ladder_non_special_angle_range_skip
-        display_name: 非特殊角梯子高度範圍（略過）
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 夾角50°且答案為區間選擇，圖形／計算機依賴過重，generator SKIP。
-    classification_rules:
-      - if_contains:
-          - 介在哪個範圍
-          - 圍牆的高度介在
-        prefer_problem_type_id: ladder_non_special_angle_range_skip
-      - if_contains:
-          - 四捨五入到小數點
-          - 約為幾公尺
-        prefer_problem_type_id: solve_height_decimal_from_sight_line_elevation
-      - if_contains:
-          - 吹折
-          - 樹頂著地
-          - 原本的高度
-        prefer_problem_type_id: solve_broken_tree_original_height
-      - if_contains:
-          - 旗桿
-          - 旗桿頂端
-        prefer_problem_type_id: solve_building_height_with_flagpole_elevations
-      - if_contains:
-          - 俯角
-        prefer_problem_type_id: solve_horizontal_from_height_depression
-      - if_contains:
-          - 水平後退
-          - 試求x之值
-          - 前進x公尺
-        prefer_problem_type_id: solve_two_elevation_horizontal_shift
-      - if_contains:
-          - 試求此大樓的高度
-          - 試求此山的高度
-          - 朝此大樓水平前進
-          - 朝山的方向前進
-        prefer_problem_type_id: solve_two_elevation_unknown_height
-      - if_contains:
-          - 梯子
-          - 斜靠在牆上
-          - 底端A著地
-        prefer_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
-      - if_contains:
-          - 風箏
-          - 放出
-        prefer_problem_type_id: solve_height_from_sight_line_elevation
-      - if_contains:
-          - 河的寬度
-          - 離某塔的塔基
-        prefer_problem_type_id: solve_opposite_from_adjacent_elevation
-      - if_contains:
-          - 直線距離
-          - 與該棟大樓的直線距離
-        prefer_problem_type_id: solve_horizontal_from_height_elevation
-    source_examples:
-      - example_id: 11687
-        matched_problem_type_id: solve_height_from_sight_line_elevation
-      - example_id: 11688
-        matched_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
-      - example_id: 11689
-        matched_problem_type_id: solve_two_elevation_horizontal_shift
-      - example_id: 11690
-        matched_problem_type_id: solve_two_elevation_unknown_height
-      - example_id: 11698
-        matched_problem_type_id: solve_height_decimal_from_sight_line_elevation
-      - example_id: 11699
-        matched_problem_type_id: solve_opposite_from_adjacent_elevation
-      - example_id: 11700
-        matched_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
-      - example_id: 11701
-        matched_problem_type_id: solve_two_elevation_unknown_height
-      - example_id: 11704
-        matched_problem_type_id: solve_broken_tree_original_height
-      - example_id: 11720
-        matched_problem_type_id: solve_building_height_with_flagpole_elevations
-      - example_id: 11723
-        matched_problem_type_id: solve_horizontal_from_height_depression
-      - example_id: 11725
-        matched_problem_type_id: ladder_non_special_angle_range_skip
-        block_reason: ladder_non_special_angle_height_range
-      - example_id: 11728
-        matched_problem_type_id: solve_opposite_from_adjacent_elevation
-      - example_id: 11729
-        matched_problem_type_id: solve_horizontal_from_height_elevation
-      - example_id: 11730
-        matched_problem_type_id: solve_two_elevation_horizontal_shift
-    source_policy:
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B2_SubSection_2_2_4
-    skill_ch_name: 非直角三角形測量
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: solve_side_by_law_of_sines
-        display_name: 正弦定理求邊（測量）
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_by_law_of_sines]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-        notes: 重用 trigonometry.law_of_sines 能力，經 oblique measurement facade 委派。
-      - problem_type_id: solve_side_by_law_of_cosines
-        display_name: 餘弦定理求邊（測量）
-        checker: expression_checker
-        equivalence: algebraic_equivalent
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_side_by_law_of_cosines]
-        notes: 重用 trigonometry.law_of_cosines 能力，經 oblique measurement facade 委派。
-      - problem_type_id: elevation_oblique_multipart_skip
-        display_name: 仰角＋非直角多段題（略過）
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 同時含仰角、以h表示邊長與求高，跨直角測量與正弦定理之多段題，generator SKIP。
-    classification_rules:
-      - if_contains:
-          - 試以h表示
-          - 高樓樓高為h
-        prefer_problem_type_id: elevation_oblique_multipart_skip
-      - if_contains:
-          - 北70
-          - 北50
-          - 南75
-          - 開鑿
-          - 隧道
-          - \angle ACB
-        prefer_problem_type_id: solve_side_by_law_of_cosines
-      - if_contains:
-          - 同一岸邊
-          - 湖泊阻礙
-          - 湖邊有A、B
-          - 欲測得A、C兩點
-        prefer_problem_type_id: solve_side_by_law_of_sines
-    source_examples:
-      - example_id: 11691
-        matched_problem_type_id: solve_side_by_law_of_sines
-      - example_id: 11692
-        matched_problem_type_id: solve_side_by_law_of_sines
-      - example_id: 11693
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11694
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11702
-        matched_problem_type_id: solve_side_by_law_of_sines
-      - example_id: 11703
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11705
-        matched_problem_type_id: elevation_oblique_multipart_skip
-        block_reason: elevation_plus_oblique_multipart
-      - example_id: 11721
-        matched_problem_type_id: solve_side_by_law_of_cosines
-      - example_id: 11722
-        matched_problem_type_id: solve_side_by_law_of_sines
-    source_policy:
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-
-  - skill_id: vh_數學B2_SubSection_2_2_5
-    skill_ch_name: 簡單的立體測量
-    classifier_source: human_confirmed
-    problem_types:
-      - problem_type_id: solve_tower_two_elevation_path_and_river_width
-        display_name: 塔高兩仰角求水平距與河寬
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_tower_two_elevation_path_and_river_width]
-        answer_type: multi_part
-        presentation_mode: multiple_inputs
-        notes: 重用 horizontal-from-height elevation，再以勾股求河寬。
-      - problem_type_id: solve_height_from_two_elevation_tan_ratios
-        display_name: 兩仰角正切求高度（統測近似）
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_height_from_two_elevation_tan_ratios]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-      - problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
-        display_name: 等方位角步行與仰角求山高
-        checker: single_choice_checker
-        equivalence: choice_label
-        runtime_candidate: true
-        requires_human_action: false
-        required_domain_capabilities: [solve_height_from_isosceles_bearing_walk_elevation]
-        answer_type: single_choice
-        presentation_mode: single_choice
-        runtime_category: deterministic_choice
-        notes: 水平等腰／等邊化簡後重用 opposite-from-adjacent elevation。
-      - problem_type_id: solid_multipart_symbolic_height_skip
-        display_name: 立體多段以h表示（略過）
-        checker: multi_part_answer_checker
-        equivalence: multi_part_answer
-        runtime_candidate: false
-        requires_human_action: true
-        notes: 需以h表示多段邊長再解二次關係，符號多段且圖形依賴重，generator SKIP。
-    classification_rules:
-      - if_contains:
-          - 試以h表示
-          - 山高為h
-          - 向正南方前進
-        prefer_problem_type_id: solid_multipart_symbolic_height_skip
-      - if_contains:
-          - tan
-          - 統測
-          - 約為多少公尺
-        prefer_problem_type_id: solve_height_from_two_elevation_tan_ratios
-      - if_contains:
-          - 東邊偏北
-          - 西邊偏北
-          - 向東直行
-        prefer_problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
-      - if_contains:
-          - 塞納河
-          - 橫過
-          - 河寬
-          - 艾菲爾
-        prefer_problem_type_id: solve_tower_two_elevation_path_and_river_width
-    source_examples:
-      - example_id: 11695
-        matched_problem_type_id: solve_tower_two_elevation_path_and_river_width
-      - example_id: 11696
-        matched_problem_type_id: solid_multipart_symbolic_height_skip
-        block_reason: solid_multipart_symbolic_h
-      - example_id: 11697
-        matched_problem_type_id: solve_height_from_two_elevation_tan_ratios
-      - example_id: 11724
-        matched_problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
-    source_policy:
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-  - skill_id: vh_數學B2_SubSection_3_1_1
-    skill_ch_name: 向量定義
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: vector_diagram_construction_unsupported
-      display_name: 作圖／圖示向量（暫不自動生成）
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: diagram_vector_construction_unsupported
-      block_reason: diagram_vector_construction_unsupported
-    classification_rules:
-    - if_contains:
-      - 如圖
-      prefer_problem_type_id: vector_diagram_construction_unsupported
-    source_examples: []
-    source_policy: &id001
-      source_count_threshold_for_split: 2
-      small_skill_merge_allowed: false
-      min_source_examples: 1
-      allow_single_problem_type: false
-      allow_skill_default_problem_type: false
-      default_problem_type_used: false
-      single_primary_problem_type: false
-      split_only_when_checker_or_answer_contract_differs: true
-      do_not_create_student_subskills: true
-  - skill_id: vh_數學B2_SubSection_3_1_2
-    skill_ch_name: 向量的加法作圖
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: vector_diagram_construction_unsupported
-      display_name: 作圖／圖示向量（暫不自動生成）
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: diagram_vector_construction_unsupported
-      block_reason: diagram_vector_construction_unsupported
-    classification_rules:
-    - if_contains:
-      - 如圖
-      prefer_problem_type_id: vector_diagram_construction_unsupported
-    source_examples: []
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_1_3
-    skill_ch_name: 向量的減法作圖
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: vector_diagram_construction_unsupported
-      display_name: 作圖／圖示向量（暫不自動生成）
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: diagram_vector_construction_unsupported
-      block_reason: diagram_vector_construction_unsupported
-    classification_rules:
-    - if_contains:
-      - 如圖
-      prefer_problem_type_id: vector_diagram_construction_unsupported
-    source_examples: []
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_1_4
-    skill_ch_name: 向量的實數積作圖
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: vector_diagram_construction_unsupported
-      display_name: 作圖／圖示向量（暫不自動生成）
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: diagram_vector_construction_unsupported
-      block_reason: diagram_vector_construction_unsupported
-    classification_rules:
-    - if_contains:
-      - 如圖
-      prefer_problem_type_id: vector_diagram_construction_unsupported
-    source_examples: []
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_1
-    skill_ch_name: 向量的坐標表示法
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_vector_components_and_magnitude
-      display_name: 分量與長度
-      checker: multi_part_answer_checker
-      equivalence: multi_part_answer
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_vector_components_and_magnitude
-      answer_type: multi_part
-      presentation_mode: multiple_inputs
-    - problem_type_id: solve_equal_vector_coordinates
-      display_name: 向量相等求未知數
-      checker: multi_part_answer_checker
-      equivalence: multi_part_answer
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - solve_equal_vector_coordinates
-      answer_type: multi_part
-      presentation_mode: multiple_inputs
-    - problem_type_id: compute_directed_segment_and_magnitude
-      display_name: 有向線段與長度
-      checker: multi_part_answer_checker
-      equivalence: multi_part_answer
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_directed_segment_and_magnitude
-      answer_type: multi_part
-      presentation_mode: multiple_inputs
-    - problem_type_id: solve_parallelogram_fourth_vertex
-      display_name: 平行四邊形第四頂點
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - solve_parallelogram_fourth_vertex
-    - problem_type_id: compute_triangle_perimeter_from_two_vectors
-      display_name: 兩向量求三角形周長（選擇）
-      checker: single_choice_checker
-      equivalence: choice_label
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_triangle_perimeter_from_two_vectors
-      answer_type: single_choice
-      presentation_mode: single_choice
-      runtime_category: deterministic_choice
-    - problem_type_id: vector_mixed_unknown_endpoint_unsupported
-      display_name: 含未知終點的混合題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: mixed_unknown_endpoint_composite_unsupported
-      block_reason: mixed_unknown_endpoint_composite_unsupported
-    classification_rules:
-    - if_contains:
-      - 周長
-      prefer_problem_type_id: compute_triangle_perimeter_from_two_vectors
-    - if_contains:
-      - 平行四邊形
-      prefer_problem_type_id: solve_parallelogram_fourth_vertex
-    - if_contains:
-      - 兩點
-      prefer_problem_type_id: compute_directed_segment_and_magnitude
-    - if_contains:
-      - 試求x
-      - 試求x、y
-      prefer_problem_type_id: solve_equal_vector_coordinates
-    - if_contains:
-      - x分量
-      - y分量
-      prefer_problem_type_id: compute_vector_components_and_magnitude
-    source_examples:
-    - example_id: 11754
-      matched_problem_type_id: compute_vector_components_and_magnitude
-    - example_id: 11755
-      matched_problem_type_id: compute_vector_components_and_magnitude
-    - example_id: 11756
-      matched_problem_type_id: solve_equal_vector_coordinates
-    - example_id: 11757
-      matched_problem_type_id: solve_equal_vector_coordinates
-    - example_id: 11758
-      matched_problem_type_id: compute_directed_segment_and_magnitude
-    - example_id: 11759
-      matched_problem_type_id: compute_directed_segment_and_magnitude
-    - example_id: 11760
-      matched_problem_type_id: solve_parallelogram_fourth_vertex
-    - example_id: 11761
-      matched_problem_type_id: solve_parallelogram_fourth_vertex
-    - example_id: 11775
-      matched_problem_type_id: vector_mixed_unknown_endpoint_unsupported
-    - example_id: 11783
-      matched_problem_type_id: compute_directed_segment_and_magnitude
-    - example_id: 11822
-      matched_problem_type_id: compute_triangle_perimeter_from_two_vectors
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_2
-    skill_ch_name: 向量加減的坐標表示法
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_vector_sum_difference
-      display_name: 向量加減
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_vector_sum_difference
-    - problem_type_id: compute_point_vectors_linear_combination
-      display_name: 點向量線段組合
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_point_vectors_linear_combination
-    - problem_type_id: compute_triangle_chain_and_perimeter
-      display_name: 兩邊向量求第三邊與周長
-      checker: multi_part_answer_checker
-      equivalence: multi_part_answer
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_triangle_chain_and_perimeter
-      answer_type: multi_part
-      presentation_mode: multiple_inputs
-    - problem_type_id: solve_parallelogram_fourth_vertex
-      display_name: 平行四邊形第四頂點
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - solve_parallelogram_fourth_vertex
-    - problem_type_id: compute_vector_linear_combination
-      display_name: 向量線性組合
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_vector_linear_combination
-    - problem_type_id: vector_chain_closure_mcq_unsupported
-      display_name: 封閉折線向量選擇題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_chain_closure_mcq_unsupported
-      block_reason: vector_chain_closure_mcq_unsupported
-    classification_rules:
-    - if_contains:
-      - 平行四邊形
-      prefer_problem_type_id: solve_parallelogram_fourth_vertex
-    - if_contains:
-      - 周長
-      prefer_problem_type_id: compute_triangle_chain_and_perimeter
-    - if_contains:
-      - 四點
-      prefer_problem_type_id: compute_point_vectors_linear_combination
-    - if_contains:
-      - SP
-      prefer_problem_type_id: vector_chain_closure_mcq_unsupported
-    source_examples:
-    - example_id: 11762
-      matched_problem_type_id: compute_vector_sum_difference
-    - example_id: 11763
-      matched_problem_type_id: compute_vector_sum_difference
-    - example_id: 11764
-      matched_problem_type_id: compute_point_vectors_linear_combination
-    - example_id: 11765
-      matched_problem_type_id: compute_point_vectors_linear_combination
-    - example_id: 11766
-      matched_problem_type_id: compute_triangle_chain_and_perimeter
-    - example_id: 11767
-      matched_problem_type_id: compute_triangle_chain_and_perimeter
-    - example_id: 11776
-      matched_problem_type_id: solve_parallelogram_fourth_vertex
-    - example_id: 11777
-      matched_problem_type_id: compute_vector_sum_difference
-    - example_id: 11778
-      matched_problem_type_id: compute_point_vectors_linear_combination
-    - example_id: 11779
-      matched_problem_type_id: compute_triangle_chain_and_perimeter
-    - example_id: 11780
-      matched_problem_type_id: compute_vector_linear_combination
-    - example_id: 11807
-      matched_problem_type_id: compute_vector_sum_difference
-    - example_id: 11808
-      matched_problem_type_id: compute_vector_linear_combination
-    - example_id: 11819
-      matched_problem_type_id: compute_vector_sum_difference
-    - example_id: 11821
-      matched_problem_type_id: vector_chain_closure_mcq_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_3
-    skill_ch_name: 向量實數積的坐標表示法
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_vector_linear_combination
-      display_name: 實數積線性組合
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_vector_linear_combination
-    - problem_type_id: compute_scalar_multiple_coordinates
-      display_name: 實數積坐標
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_scalar_multiple_coordinates
-    - problem_type_id: vector_collinear_ratio_mcq_unsupported
-      display_name: 共線比例選擇題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_collinear_ratio_mcq_unsupported
-      block_reason: vector_collinear_ratio_mcq_unsupported
-    - problem_type_id: vector_solve_point_from_combo_unsupported
-      display_name: 由線性組合解未知點
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_solve_point_from_combo_unsupported
-      block_reason: vector_solve_point_from_combo_unsupported
-    classification_rules:
-    - if_contains:
-      - 共線
-      prefer_problem_type_id: vector_collinear_ratio_mcq_unsupported
-    source_examples:
-    - example_id: 11784
-      matched_problem_type_id: vector_solve_point_from_combo_unsupported
-    - example_id: 11820
-      matched_problem_type_id: vector_collinear_ratio_mcq_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_4
-    skill_ch_name: 向量實數積的基本性質
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_vector_linear_combination
-      display_name: 實數積線性組合
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_vector_linear_combination
-    - problem_type_id: vector_solve_unknown_vector_equation_unsupported
-      display_name: 向量方程求解未知向量
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_solve_unknown_vector_equation_unsupported
-      block_reason: vector_solve_unknown_vector_equation_unsupported
-    classification_rules:
-    - if_contains:
-      - 坐標表示
-      prefer_problem_type_id: compute_vector_linear_combination
-    source_examples:
-    - example_id: 11768
-      matched_problem_type_id: compute_vector_linear_combination
-    - example_id: 11769
-      matched_problem_type_id: compute_vector_linear_combination
-    - example_id: 11823
-      matched_problem_type_id: vector_solve_unknown_vector_equation_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_5
-    skill_ch_name: 向量的平行
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: solve_parallel_vector_parameter
-      display_name: 平行求參數
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - solve_parallel_vector_parameter
-    - problem_type_id: vector_parallel_then_magnitude_mcq_unsupported
-      display_name: 平行後求長度選擇題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_parallel_then_magnitude_mcq_unsupported
-      block_reason: vector_parallel_then_magnitude_mcq_unsupported
-    classification_rules:
-    - if_contains:
-      - 平行
-      prefer_problem_type_id: solve_parallel_vector_parameter
-    source_examples:
-    - example_id: 11770
-      matched_problem_type_id: solve_parallel_vector_parameter
-    - example_id: 11771
-      matched_problem_type_id: solve_parallel_vector_parameter
-    - example_id: 11781
-      matched_problem_type_id: solve_parallel_vector_parameter
-    - example_id: 11809
-      matched_problem_type_id: vector_parallel_then_magnitude_mcq_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_2_6
-    skill_ch_name: 單位向量
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_unit_vector
-      display_name: 單位向量
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_unit_vector
-    - problem_type_id: compute_scaled_direction_vector
-      display_name: 指定長度方向向量
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_scaled_direction_vector
-    - problem_type_id: vector_unit_identification_mcq_unsupported
-      display_name: 辨識單位向量選擇題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_unit_identification_mcq_unsupported
-      block_reason: vector_unit_identification_mcq_unsupported
-    classification_rules:
-    - if_contains:
-      - 不是單位向量
-      prefer_problem_type_id: vector_unit_identification_mcq_unsupported
-    - if_contains:
-      - 長度為
-      prefer_problem_type_id: compute_scaled_direction_vector
-    - if_contains:
-      - 單位向量
-      prefer_problem_type_id: compute_unit_vector
-    source_examples:
-    - example_id: 11772
-      matched_problem_type_id: compute_scaled_direction_vector
-    - example_id: 11773
-      matched_problem_type_id: compute_scaled_direction_vector
-    - example_id: 11774
-      matched_problem_type_id: vector_unit_identification_mcq_unsupported
-    - example_id: 11782
-      matched_problem_type_id: compute_scaled_direction_vector
-    - example_id: 11810
-      matched_problem_type_id: compute_scaled_direction_vector
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_3_1
-    skill_ch_name: 向量的夾角
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_cosine_of_angle_from_dot
-      display_name: 由坐標求夾角餘弦
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_cosine_of_angle_from_dot
-    - problem_type_id: vector_angle_application_narrative_unsupported
-      display_name: 航向修正應用敘事題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_angle_application_narrative_unsupported
-      block_reason: vector_angle_application_narrative_unsupported
-    - problem_type_id: vector_angle_quality_mcq_unsupported
-      display_name: 夾角銳鈍直角判斷
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_angle_quality_mcq_unsupported
-      block_reason: vector_angle_quality_mcq_unsupported
-    classification_rules:
-    - if_contains:
-      - 夾角
-      prefer_problem_type_id: compute_cosine_of_angle_from_dot
-    source_examples:
-    - example_id: 11799
-      matched_problem_type_id: compute_cosine_of_angle_from_dot
-    - example_id: 11805
-      matched_problem_type_id: vector_angle_application_narrative_unsupported
-    - example_id: 11815
-      matched_problem_type_id: vector_angle_quality_mcq_unsupported
-    - example_id: 11824
-      matched_problem_type_id: compute_cosine_of_angle_from_dot
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_3_2
-    skill_ch_name: 向量內積的定義
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_dot_product_from_magnitudes_angle
-      display_name: 由長度與夾角求內積
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_dot_product_from_magnitudes_angle
-    - problem_type_id: vector_regular_polygon_dot_unsupported
-      display_name: 正多邊形邊向量內積
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_regular_polygon_dot_unsupported
-      block_reason: vector_regular_polygon_dot_unsupported
-    - problem_type_id: vector_dot_identity_multipart_unsupported
-      display_name: 內積恆等式多小題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_identity_multipart_unsupported
-      block_reason: vector_dot_identity_multipart_unsupported
-    classification_rules:
-    - if_contains:
-      - 夾角
-      prefer_problem_type_id: compute_dot_product_from_magnitudes_angle
-    source_examples:
-    - example_id: 11785
-      matched_problem_type_id: vector_regular_polygon_dot_unsupported
-    - example_id: 11786
-      matched_problem_type_id: vector_regular_polygon_dot_unsupported
-    - example_id: 11796
-      matched_problem_type_id: vector_regular_polygon_dot_unsupported
-    - example_id: 11797
-      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
-    - example_id: 11802
-      matched_problem_type_id: vector_dot_identity_multipart_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_3_3
-    skill_ch_name: 向量內積的坐標表示法
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_dot_product_coordinates
-      display_name: 坐標內積
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_dot_product_coordinates
-    - problem_type_id: compute_cosine_of_angle_from_dot
-      display_name: 內積求夾角餘弦
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_cosine_of_angle_from_dot
-    - problem_type_id: vector_dot_diagram_plot_unsupported
-      display_name: 航標坐標標示圖題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_diagram_plot_unsupported
-      block_reason: vector_dot_diagram_plot_unsupported
-    - problem_type_id: vector_dot_parameter_equation_mcq_unsupported
-      display_name: 內積方程求參數選擇
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_parameter_equation_mcq_unsupported
-      block_reason: vector_dot_parameter_equation_mcq_unsupported
-    - problem_type_id: vector_dot_midpoint_composite_unsupported
-      display_name: 中點複合內積
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_midpoint_composite_unsupported
-      block_reason: vector_dot_midpoint_composite_unsupported
-    classification_rules:
-    - if_contains:
-      - 內積
-      prefer_problem_type_id: compute_dot_product_coordinates
-    source_examples:
-    - example_id: 11787
-      matched_problem_type_id: compute_dot_product_coordinates
-    - example_id: 11788
-      matched_problem_type_id: compute_dot_product_coordinates
-    - example_id: 11789
-      matched_problem_type_id: compute_cosine_of_angle_from_dot
-    - example_id: 11790
-      matched_problem_type_id: compute_cosine_of_angle_from_dot
-    - example_id: 11798
-      matched_problem_type_id: compute_dot_product_coordinates
-    - example_id: 11804
-      matched_problem_type_id: vector_dot_diagram_plot_unsupported
-    - example_id: 11811
-      matched_problem_type_id: compute_dot_product_coordinates
-    - example_id: 11812
-      matched_problem_type_id: vector_dot_midpoint_composite_unsupported
-    - example_id: 11813
-      matched_problem_type_id: vector_dot_parameter_equation_mcq_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_3_4
-    skill_ch_name: 兩向量的垂直
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: solve_perpendicular_vector_parameter
-      display_name: 垂直求參數
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - solve_perpendicular_vector_parameter
-    - problem_type_id: vector_perp_composite_expression_unsupported
-      display_name: 垂直複合表達式求參數
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_perp_composite_expression_unsupported
-      block_reason: vector_perp_composite_expression_unsupported
-    classification_rules:
-    - if_contains:
-      - 垂直
-      prefer_problem_type_id: solve_perpendicular_vector_parameter
-    source_examples:
-    - example_id: 11791
-      matched_problem_type_id: solve_perpendicular_vector_parameter
-    - example_id: 11792
-      matched_problem_type_id: solve_perpendicular_vector_parameter
-    - example_id: 11800
-      matched_problem_type_id: solve_perpendicular_vector_parameter
-    - example_id: 11814
-      matched_problem_type_id: vector_perp_composite_expression_unsupported
-    source_policy: *id001
-  - skill_id: vh_數學B2_SubSection_3_3_5
-    skill_ch_name: 向量內積的性質
-    classifier_source: human_confirmed
-    problem_types:
-    - problem_type_id: compute_dot_product_from_magnitudes_angle
-      display_name: 由長度夾角求內積／長度
-      checker: expression_checker
-      equivalence: algebraic_equivalent
-      runtime_candidate: true
-      requires_human_action: false
-      required_domain_capabilities:
-      - compute_dot_product_from_magnitudes_angle
-    - problem_type_id: vector_dot_exam_diagram_unsupported
-      display_name: 統測圖示內積題
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_exam_diagram_unsupported
-      block_reason: vector_dot_exam_diagram_unsupported
-    - problem_type_id: vector_dot_identity_solve_angle_unsupported
-      display_name: 由長度恆等式反求夾角
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_dot_identity_solve_angle_unsupported
-      block_reason: vector_dot_identity_solve_angle_unsupported
-    - problem_type_id: vector_perp_dot_expand_unsupported
-      display_name: 垂直向量展開求值
-      checker: manual_review_checker
-      equivalence: manual_review_or_ai_judged
-      runtime_candidate: false
-      requires_human_action: true
-      notes: vector_perp_dot_expand_unsupported
-      block_reason: vector_perp_dot_expand_unsupported
-    classification_rules:
-    - if_contains:
-      - 夾角
-      prefer_problem_type_id: compute_dot_product_from_magnitudes_angle
-    source_examples:
-    - example_id: 11793
-      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
-    - example_id: 11794
-      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
-    - example_id: 11795
-      matched_problem_type_id: vector_dot_exam_diagram_unsupported
-    - example_id: 11801
-      matched_problem_type_id: vector_perp_dot_expand_unsupported
-    - example_id: 11803
-      matched_problem_type_id: vector_dot_identity_solve_angle_unsupported
-    - example_id: 11825
-      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
-    source_policy: *id001
+- skill_id: vh_數學B1_CartesianCoordinateSystemEstablishment
+  skill_ch_name: 直角坐標系的建立
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+    display_name: 坐標象限與符號推理
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: single_primary_problem_type
+    notes: 來源題數少且題型相近，合併為同一主要 problem_type。
+  classification_rules:
+  - if_contains:
+    - 象限
+    - 坐標
+    - 點
+    prefer_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+  source_policy:
+    source_count_threshold_for_split: 4
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: false
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples:
+  - example_id: 4417
+    matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+  - example_id: 4435
+    matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+  - example_id: 4509
+    matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+  - example_id: 4510
+    matched_problem_type_id: cartesian_coordinate_quadrant_symbol_reasoning
+- skill_id: vh_數學B1_LinearFunction
+  skill_ch_name: 線型函數
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: graph_intercepts_and_linear_equation
+    display_name: read intercepts and derive linear equation from graph
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: graph_based_tiered_linear_application_multi_part
+    display_name: graph-based tiered linear application
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: collinear_trisection_coordinate
+    display_name: collinear trisection coordinate
+    checker: coordinate_pair_checker
+    equivalence: coordinate_pair_equivalence
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: draw_constant_function_graph
+    display_name: draw constant function graph
+    checker: free_response_drawing_checker
+    equivalence: drawing_equivalence
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: draw_linear_function_graph
+    display_name: draw linear function graph
+    checker: free_response_drawing_checker
+    equivalence: drawing_equivalence
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: graph_based_linear_application_inverse
+    display_name: inverse evaluation from linear application graph
+    checker: numeric_checker
+    equivalence: numeric_equivalence
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: graph_based_linear_model_equation
+    display_name: derive contextual linear model from graph
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: robust_budget_feasibility_choice
+    display_name: robust budget feasibility choice
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: linear_equation_from_two_points_choice
+    display_name: choose linear equation through two points
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: linear_graph_feasibility_choice
+    display_name: choose impossible graph under intercept constraints
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: integer_numeric_evaluate_function_notation
+    display_name: 線型函數求值
+    checker: integer_checker
+    equivalence: numeric_exact
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: legacy_fallback_only
+    notes: legacy fallback retained for compatibility
+  classification_rules:
+  - if_contains:
+    - 函數圖形
+    - 截距
+    prefer_problem_type_id: integer_numeric_evaluate_function_notation
+  source_policy:
+    source_count_threshold_for_split: 4
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples: []
+- skill_id: vh_數學B1_QuadraticFunctionGraph
+  skill_ch_name: 二次函數的圖形
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: text_short_compute_vertex_and_axis
+    display_name: 二次函數圖形平移與頂點特徵
+    checker: coordinate_pair_checker
+    equivalence: ordered_tuple_exact
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: single_primary_problem_type
+    notes: 強制將所有來源題收斂為單一簡答題型，避免衍生出選擇題型因缺乏選項導致冒煙測試崩潰。
+  classification_rules:
+  - if_contains:
+    - 平移
+    - 对称轴
+    - 頂點
+    - 圖形
+    prefer_problem_type_id: text_short_compute_vertex_and_axis
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: false
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples:
+  - example_id: 4460
+    matched_problem_type_id: text_short_compute_vertex_and_axis
+  - example_id: 4450
+    matched_problem_type_id: text_short_compute_vertex_and_axis
+  - example_id: 4466
+    matched_problem_type_id: text_short_compute_vertex_and_axis
+  - example_id: 4503
+    matched_problem_type_id: text_short_compute_vertex_and_axis
+- skill_id: vh_數學B1_SlopeOfALine
+  skill_ch_name: 直線的斜率
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: slope_from_two_points
+    display_name: 兩點求斜率
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+    notes: 含水平線斜率0與鉛直線斜率不存在。
+  - problem_type_id: solve_parameter_from_known_slope
+    display_name: 已知斜率求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: solve_parameter_from_known_slope_choice
+    display_name: 已知斜率求參數（選擇題）
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: collinear_three_points_parameter
+    display_name: 三點共線求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: non_triangle_collinear_parameter
+    display_name: 無法形成三角形求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: parallel_segments_parameter
+    display_name: 平行線段求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: perpendicular_segments_parameter
+    display_name: 垂直線段求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: slopes_of_named_segments
+    display_name: 多線段斜率
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: classify_and_compare_figure_slopes
+    display_name: 圖形斜率分類與比較
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: collinear_three_points_parameter_choice
+    display_name: 三點共線求參數（選擇題）
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  classification_rules:
+  - if_contains:
+    - 填入下列各圖形
+    prefer_problem_type_id: classify_and_compare_figure_slopes
+  - if_contains:
+    - m不存在
+    - m > 0
+    prefer_problem_type_id: classify_and_compare_figure_slopes
+  - if_contains:
+    - 無法連結成一個三角形
+    prefer_problem_type_id: non_triangle_collinear_parameter
+  - if_contains:
+    - 為共線之三點
+    prefer_problem_type_id: collinear_three_points_parameter_choice
+  - if_contains:
+    - 三點共線
+    prefer_problem_type_id: collinear_three_points_parameter
+  - if_contains:
+    - 同一直線
+    prefer_problem_type_id: collinear_three_points_parameter
+  - if_contains:
+    - 平行
+    - 線段
+    prefer_problem_type_id: parallel_segments_parameter
+  - if_contains:
+    - 垂直
+    - 線段
+    prefer_problem_type_id: perpendicular_segments_parameter
+  - if_contains:
+    - 斜率為
+    - 試求
+    prefer_problem_type_id: solve_parameter_from_known_slope
+  - if_contains:
+    - 斜率為
+    - 則
+    prefer_problem_type_id: solve_parameter_from_known_slope_choice
+  - if_contains:
+    - 下列直線的斜率
+    prefer_problem_type_id: slopes_of_named_segments
+  - if_contains:
+    - 兩點
+    - 斜率
+    prefer_problem_type_id: slope_from_two_points
+  - if_contains:
+    - 過下列各組
+    - 斜率
+    prefer_problem_type_id: slope_from_two_points
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples:
+  - example_id: 4519
+    matched_problem_type_id: slopes_of_named_segments
+  - example_id: 4520
+    matched_problem_type_id: classify_and_compare_figure_slopes
+  - example_id: 4521
+    matched_problem_type_id: slope_from_two_points
+  - example_id: 4522
+    matched_problem_type_id: solve_parameter_from_known_slope
+  - example_id: 4523
+    matched_problem_type_id: collinear_three_points_parameter
+  - example_id: 4524
+    matched_problem_type_id: non_triangle_collinear_parameter
+  - example_id: 4525
+    matched_problem_type_id: parallel_segments_parameter
+  - example_id: 4529
+    matched_problem_type_id: collinear_three_points_parameter
+  - example_id: 4533
+    matched_problem_type_id: slopes_of_named_segments
+  - example_id: 4534
+    matched_problem_type_id: non_triangle_collinear_parameter
+  - example_id: 4590
+    matched_problem_type_id: solve_parameter_from_known_slope_choice
+  - example_id: 4601
+    matched_problem_type_id: collinear_three_points_parameter_choice
+- skill_id: vh_數學B1_PropertiesOfParallelLines
+  skill_ch_name: 兩平行線的性質
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: parallel_segments_parameter
+    display_name: 平行線段求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: parallel_segments_parameter_choice
+    display_name: 平行線段求參數（選擇題）
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: parallel_two_point_lines_parameter_choice
+    display_name: 兩直線平行求參數（選擇題）
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  classification_rules:
+  - if_contains:
+    - 過兩點
+    - 平行
+    prefer_problem_type_id: parallel_two_point_lines_parameter_choice
+  - if_contains:
+    - 平行
+    - 則
+    prefer_problem_type_id: parallel_segments_parameter_choice
+  - if_contains:
+    - 平行
+    prefer_problem_type_id: parallel_segments_parameter
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples:
+  - example_id: 4530
+    matched_problem_type_id: parallel_segments_parameter
+  - example_id: 4535
+    matched_problem_type_id: parallel_segments_parameter
+  - example_id: 4600
+    matched_problem_type_id: parallel_segments_parameter_choice
+  - example_id: 4602
+    matched_problem_type_id: parallel_two_point_lines_parameter_choice
+- skill_id: vh_數學B1_PropertiesOfPerpendicularLines
+  skill_ch_name: 兩垂直線的性質
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: parallel_and_perpendicular_slopes_from_reference
+    display_name: 已知斜率求平行/垂直斜率
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: triangle_right_angle_verification
+    display_name: 直角三角形判定
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: perpendicular_segments_parameter
+    display_name: 垂直線段求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: perpendicular_two_point_lines_parameter
+    display_name: 兩直線垂直求參數
+    checker: rational_checker
+    equivalence: rational_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: perpendicular_slope_quadrant_choice
+    display_name: 垂直斜率象限（選擇題）
+    checker: choice_label_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  classification_rules:
+  - if_contains:
+    - 直角三角形
+    prefer_problem_type_id: triangle_right_angle_verification
+  - if_contains:
+    - 象限
+    prefer_problem_type_id: perpendicular_slope_quadrant_choice
+  - if_contains:
+    - 斜率為
+    - 試求
+    prefer_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+  - if_contains:
+    - 垂直
+    - 試求k
+    prefer_problem_type_id: perpendicular_two_point_lines_parameter
+  - if_contains:
+    - 垂直
+    prefer_problem_type_id: perpendicular_segments_parameter
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+  source_examples:
+  - example_id: 4526
+    matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+  - example_id: 4527
+    matched_problem_type_id: triangle_right_angle_verification
+  - example_id: 4531
+    matched_problem_type_id: perpendicular_segments_parameter
+  - example_id: 4532
+    matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+  - example_id: 4536
+    matched_problem_type_id: perpendicular_segments_parameter
+  - example_id: 4537
+    matched_problem_type_id: perpendicular_two_point_lines_parameter
+  - example_id: 4538
+    matched_problem_type_id: perpendicular_slope_quadrant_choice
+  - example_id: 4539
+    matched_problem_type_id: parallel_and_perpendicular_slopes_from_reference
+- skill_id: vh_數學B1_DistanceBetweenTwoPointsInPlane
+  skill_ch_name: 平面兩點距離
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
+    display_name: 兩點間的距離計算
+    checker: expression_equivalence_checker
+    equivalence: expression_equivalence
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
+    display_name: 已知距離求未知坐標
+    checker: solution_set_checker
+    equivalence: unordered_solution_set
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  classification_rules:
+  - if_contains:
+    - 求k
+    - 求 k
+    - k值
+    prefer_problem_type_id: short_answer_solve_unknown_coordinate_from_two_point_distance_coordinate_point_d_2
+  - if_contains:
+    - 距離
+    prefer_problem_type_id: short_answer_compute_distance_between_two_points_coordinate_point_distance_formu_2
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialBasicConcepts
+  skill_ch_name: 多項式的基本概念
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_descending_power_properties
+    display_name: 降冪排列與次數首項求值
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: polynomial_param_degree_constraint
+    display_name: 參數多項式給定次數求係數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: polynomial_descending_power_table
+    display_name: 兩式降冪排列填表
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: zero_polynomial_find_coeffs
+    display_name: 零多項式求參數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  - problem_type_id: polynomial_degree_product_sum
+    display_name: 乘積與和的次數關係
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    merge_policy: split_by_contract_diff
+  classification_rules:
+  - if_contains:
+    - 零多項式
+    prefer_problem_type_id: zero_polynomial_find_coeffs
+  - if_contains:
+    - 完成下表
+    - 按降冪排列完成
+    prefer_problem_type_id: polynomial_descending_power_table
+  - if_contains:
+    - 四次多項式
+    - 五次多項式
+    - a次多項式
+    prefer_problem_type_id: polynomial_degree_product_sum
+  - if_contains:
+    - 首項係數
+    prefer_problem_type_id: polynomial_descending_power_properties
+  - if_contains:
+    - a、b之值
+    - a、b
+    - 若$\deg
+    - 若\deg
+    prefer_problem_type_id: polynomial_param_degree_constraint
+  - if_contains:
+    - 降冪排列
+    prefer_problem_type_id: polynomial_descending_power_properties
+  source_examples:
+  - example_id: 4609
+    matched_problem_type_id: polynomial_descending_power_properties
+  - example_id: 4610
+    matched_problem_type_id: polynomial_param_degree_constraint
+  - example_id: 4618
+    matched_problem_type_id: polynomial_descending_power_table
+  - example_id: 4619
+    matched_problem_type_id: polynomial_param_degree_constraint
+  - example_id: 4620
+    matched_problem_type_id: zero_polynomial_find_coeffs
+  - example_id: 4629
+    matched_problem_type_id: polynomial_descending_power_table
+  - example_id: 4630
+    matched_problem_type_id: polynomial_param_degree_constraint
+  - example_id: 4631
+    matched_problem_type_id: zero_polynomial_find_coeffs
+  - example_id: 4716
+    matched_problem_type_id: polynomial_degree_product_sum
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialArithmeticOperations
+  skill_ch_name: 多項式的四則運算
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_add_sub
+    display_name: 多項式加減
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_multiply
+    display_name: 多項式乘積與次數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_product_term_coefficient
+    display_name: 乘積指定項係數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_long_division
+    display_name: 多項式除法商式餘式
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_synthetic_division
+    display_name: 綜合除法
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_remainder_param_solve
+    display_name: 餘式條件求參數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  - problem_type_id: polynomial_shifted_basis_eval
+    display_name: 平移基底展開求係數和
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 綜合除法
+    prefer_problem_type_id: polynomial_synthetic_division
+  - if_contains:
+    - a + b + c + d
+    - a+b+c+d
+    - (x-1)^{3}
+    - \left( x-1 \right)^{3}
+    prefer_problem_type_id: polynomial_shifted_basis_eval
+  - if_contains:
+    - 試求實數a
+    - 可被
+    - 整除
+    prefer_problem_type_id: polynomial_remainder_param_solve
+  - if_contains:
+    - 商式和餘式
+    - 商式及餘式
+    - \div
+    - 除以
+    - 餘式為ax
+    - a + b
+    prefer_problem_type_id: polynomial_long_division
+  - if_contains:
+    - 項係數
+    - 項的係數
+    prefer_problem_type_id: polynomial_product_term_coefficient
+  - if_contains:
+    - 乘積及其次數
+    - 的乘積
+    prefer_problem_type_id: polynomial_multiply
+  - if_contains:
+    - +g
+    - -g
+    - f\left( x \right)+g
+    - f\left( x \right)-g
+    prefer_problem_type_id: polynomial_add_sub
+  source_examples:
+  - example_id: 4612
+    matched_problem_type_id: polynomial_add_sub
+  - example_id: 4613
+    matched_problem_type_id: polynomial_product_term_coefficient
+  - example_id: 4614
+    matched_problem_type_id: polynomial_long_division
+  - example_id: 4615
+    matched_problem_type_id: polynomial_long_division
+  - example_id: 4616
+    matched_problem_type_id: polynomial_synthetic_division
+  - example_id: 4617
+    matched_problem_type_id: polynomial_shifted_basis_eval
+  - example_id: 4622
+    matched_problem_type_id: polynomial_add_sub
+  - example_id: 4623
+    matched_problem_type_id: polynomial_multiply
+  - example_id: 4624
+    matched_problem_type_id: polynomial_product_term_coefficient
+  - example_id: 4625
+    matched_problem_type_id: polynomial_long_division
+  - example_id: 4626
+    matched_problem_type_id: polynomial_synthetic_division
+  - example_id: 4627
+    matched_problem_type_id: polynomial_remainder_param_solve
+  - example_id: 4628
+    matched_problem_type_id: polynomial_remainder_param_solve
+  - example_id: 4633
+    matched_problem_type_id: polynomial_add_sub
+  - example_id: 4634
+    matched_problem_type_id: polynomial_multiply
+  - example_id: 4635
+    matched_problem_type_id: polynomial_product_term_coefficient
+  - example_id: 4636
+    matched_problem_type_id: polynomial_long_division
+  - example_id: 4637
+    matched_problem_type_id: polynomial_synthetic_division
+  - example_id: 4706
+    matched_problem_type_id: polynomial_product_term_coefficient
+  - example_id: 4718
+    matched_problem_type_id: polynomial_long_division
+  - example_id: 4719
+    matched_problem_type_id: polynomial_remainder_param_solve
+  - example_id: 4720
+    matched_problem_type_id: polynomial_long_division
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialEquality
+  skill_ch_name: 多項式的相等
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_equality_identity
+    display_name: 多項式恆等式求參數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 相等
+    - 恆等
+    - 對所有
+    - 實數
+    - a、b
+    prefer_problem_type_id: polynomial_equality_identity
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RemainderTheorem
+  skill_ch_name: 餘式定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: remainder_theorem_evaluate
+    display_name: 餘式定理求值
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 餘式
+    - 餘式定理
+    - 除以
+    prefer_problem_type_id: remainder_theorem_evaluate
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_FactorTheorem
+  skill_ch_name: 因式定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: factor_theorem_root_factor
+    display_name: 因式定理與根
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 因式
+    - 根
+    - 因式定理
+    prefer_problem_type_id: factor_theorem_root_factor
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialFactoring
+  skill_ch_name: 因式分解
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_factoring
+    display_name: 多項式因式分解
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 因式分解
+    - 分解
+    prefer_problem_type_id: polynomial_factoring
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RationalExpressionArithmeticOperations
+  skill_ch_name: 有理式的四則運算
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: rational_expression_arithmetic
+    display_name: 有理式化簡與運算
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 化簡
+    - 有理式
+    prefer_problem_type_id: rational_expression_arithmetic
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RationalEquation
+  skill_ch_name: 有理方程式
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: rational_equation_solve
+    display_name: 解有理方程式
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 解
+    - 方程式
+    - 有理
+    prefer_problem_type_id: rational_equation_solve
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialEquality
+  skill_ch_name: 多項式的相等
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_equality_identity
+    display_name: 多項式恆等式求參數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 相等
+    - 恆等
+    - 對所有
+    - 實數
+    - a、b
+    prefer_problem_type_id: polynomial_equality_identity
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RemainderTheorem
+  skill_ch_name: 餘式定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: remainder_theorem_evaluate
+    display_name: 餘式定理求值
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 餘式
+    - 餘式定理
+    - f(
+    - 除以
+    prefer_problem_type_id: remainder_theorem_evaluate
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_FactorTheorem
+  skill_ch_name: 因式定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: factor_theorem_root_factor
+    display_name: 因式定理與根
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 因式
+    - 根
+    - 因式定理
+    - x-
+    prefer_problem_type_id: factor_theorem_root_factor
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_PolynomialFactoring
+  skill_ch_name: 因式分解
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: polynomial_factoring
+    display_name: 多項式因式分解
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 因式分解
+    - 分解
+    prefer_problem_type_id: polynomial_factoring
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RationalExpressionArithmeticOperations
+  skill_ch_name: 有理式的四則運算
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: rational_expression_arithmetic
+    display_name: 有理式化簡與運算
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 化簡
+    - 有理式
+    - 分數
+    prefer_problem_type_id: rational_expression_arithmetic
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B1_RationalEquation
+  skill_ch_name: 有理方程式
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: rational_equation_solve
+    display_name: 解有理方程式
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+  classification_rules:
+  - if_contains:
+    - 解
+    - 方程式
+    - 有理
+    prefer_problem_type_id: rational_equation_solve
+  source_policy:
+    source_count_threshold_for_split: 999
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: true
+    default_problem_type_used: true
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_2_1_1
+  skill_ch_name: 正弦定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_triangle_area_sas
+    display_name: 兩邊夾角求三角形面積
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_triangle_area_sas
+  - problem_type_id: solve_side_and_circumradius_by_sines
+    display_name: 正弦定理求邊長與外接圓半徑
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_and_circumradius_by_sines
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: solve_angle_by_law_of_sines
+    display_name: 正弦定理求角
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_angle_by_law_of_sines
+  - problem_type_id: compute_sin_from_side_and_circumradius
+    display_name: 由邊長與外接圓求sin
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_sin_from_side_and_circumradius
+  - problem_type_id: solve_side_ratio_by_law_of_sines
+    display_name: 正弦定理解邊長比（選擇）
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_ratio_by_law_of_sines
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_side_by_law_of_sines
+    display_name: 正弦定理解邊長（選擇）
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_by_law_of_sines
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: sine_cosine_formula_fill_blank_mixed
+    display_name: 正餘弦公式填空（含餘弦，略過）
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 含餘弦定理填空，刻意 skip，避免混入餘弦題型。
+  classification_rules:
+  - if_contains:
+    - 餘弦
+    - cosA
+    - b^2+c^2
+    prefer_problem_type_id: sine_cosine_formula_fill_blank_mixed
+  - if_contains:
+    - 面積
+    - 試求△ABC的面積
+    prefer_problem_type_id: compute_triangle_area_sas
+  - if_contains:
+    - 外接圓半徑
+    - 試求a及其外接圓
+    - 試求c及其外接圓
+    prefer_problem_type_id: solve_side_and_circumradius_by_sines
+  - if_contains:
+    - 試求\sin A
+    - 外接圓面積
+    - sinA
+    prefer_problem_type_id: compute_sin_from_side_and_circumradius
+  - if_contains:
+    - 比值
+    - \overline{AB}
+    - (A)
+    prefer_problem_type_id: solve_side_ratio_by_law_of_sines
+  - if_contains:
+    - 則c=
+    - 試求c
+    - (A)
+    - (B)
+    prefer_problem_type_id: solve_side_by_law_of_sines
+  - if_contains:
+    - 試求\angle B
+    - 試求\angle C
+    - 試求∠B
+    - 試求∠C
+    prefer_problem_type_id: solve_angle_by_law_of_sines
+  source_examples:
+  - example_id: 11676
+    matched_problem_type_id: compute_triangle_area_sas
+  - example_id: 11677
+    matched_problem_type_id: compute_triangle_area_sas
+  - example_id: 11678
+    matched_problem_type_id: solve_side_and_circumradius_by_sines
+  - example_id: 11679
+    matched_problem_type_id: solve_side_and_circumradius_by_sines
+  - example_id: 11680
+    matched_problem_type_id: solve_angle_by_law_of_sines
+  - example_id: 11681
+    matched_problem_type_id: solve_angle_by_law_of_sines
+  - example_id: 11716
+    matched_problem_type_id: compute_sin_from_side_and_circumradius
+  - example_id: 11717
+    matched_problem_type_id: solve_side_ratio_by_law_of_sines
+  - example_id: 11718
+    matched_problem_type_id: solve_side_by_law_of_sines
+  - example_id: 11707
+    matched_problem_type_id: compute_triangle_area_sas
+  - example_id: 11708
+    matched_problem_type_id: solve_side_and_circumradius_by_sines
+  - example_id: 11709
+    matched_problem_type_id: solve_angle_by_law_of_sines
+  - example_id: 11710
+    matched_problem_type_id: solve_angle_by_law_of_sines
+  source_policy:
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_2_1_2
+  skill_ch_name: 餘弦定理
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_side_by_law_of_cosines
+    display_name: 餘弦定理求邊長
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_by_law_of_cosines
+  - problem_type_id: solve_angle_by_law_of_cosines
+    display_name: 餘弦定理求角
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_angle_by_law_of_cosines
+  - problem_type_id: solve_cosine_identity_angle
+    display_name: 餘弦恆等式求角
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_cosine_identity_angle
+  - problem_type_id: solve_detour_extra_distance_by_cosines
+    display_name: 餘弦定理繞道多走路程
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_detour_extra_distance_by_cosines
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: compute_circumradius_from_three_sides
+    display_name: 三邊求外接圓半徑
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_circumradius_from_three_sides
+  - problem_type_id: triangle_area_sine_followup_skip
+    display_name: 接續上題正弦面積（略過）
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 使用½ab sinC且接續上題，屬正弦面積／跨題依賴，不納入餘弦定理。
+  - problem_type_id: mixed_sine_cosine_formula_fill_skip
+    display_name: 正餘弦公式混合填空（略過）
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 同時含正弦與餘弦公式填空，generator SKIP；教材仍歸餘弦 leaf。
+  classification_rules:
+  - if_contains:
+    - 接續上題
+    - 面積
+    prefer_problem_type_id: triangle_area_sine_followup_skip
+  - if_contains:
+    - =\frac { 1 } { 2 }casinB
+    - a / sinA
+    - 餘弦定理
+    - b ^ { 2 } +c ^ { 2 } -2bc
+    prefer_problem_type_id: mixed_sine_cosine_formula_fill_skip
+  - if_contains:
+    - 多走了多少
+    - 繞到B地
+    - 統測
+    prefer_problem_type_id: solve_detour_extra_distance_by_cosines
+  - if_contains:
+    - Wi−Fi
+    - 等距離
+    - 基地臺
+    prefer_problem_type_id: compute_circumradius_from_three_sides
+  - if_contains:
+    - a^2-(b+c)^2
+    - a^{2}-(b+c)^{2}
+    - =-bc
+    prefer_problem_type_id: solve_cosine_identity_angle
+  - if_contains:
+    - 試求\angle
+    - 試求∠
+    - 三邊長
+    prefer_problem_type_id: solve_angle_by_law_of_cosines
+  - if_contains:
+    - 試求a之長
+    - 另一邊長度
+    - \overline{BC}
+    - 直線距離
+    - 試求a
+    prefer_problem_type_id: solve_side_by_law_of_cosines
+  source_examples:
+  - example_id: 11682
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11683
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11684
+    matched_problem_type_id: solve_angle_by_law_of_cosines
+  - example_id: 11685
+    matched_problem_type_id: solve_angle_by_law_of_cosines
+  - example_id: 11686
+    matched_problem_type_id: solve_detour_extra_distance_by_cosines
+  - example_id: 11706
+    matched_problem_type_id: mixed_sine_cosine_formula_fill_skip
+    block_reason: mixed_sine_cosine_formula_fill_blank
+  - example_id: 11711
+    matched_problem_type_id: solve_angle_by_law_of_cosines
+  - example_id: 11712
+    matched_problem_type_id: solve_angle_by_law_of_cosines
+  - example_id: 11713
+    matched_problem_type_id: solve_cosine_identity_angle
+  - example_id: 11714
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11715
+    matched_problem_type_id: compute_circumradius_from_three_sides
+  - example_id: 11719
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11726
+    matched_problem_type_id: triangle_area_sine_followup_skip
+    block_reason: sine_area_followup_not_cosine_law
+  - example_id: 11727
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  source_policy:
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_2_2_3
+  skill_ch_name: 直角三角形的測量
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_height_from_sight_line_elevation
+    display_name: 仰角與視線長求高度
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_height_from_sight_line_elevation
+  - problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
+    display_name: 梯子與地面夾角求底端距離
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_adjacent_from_hypotenuse_ground_angle
+  - problem_type_id: solve_opposite_from_adjacent_elevation
+    display_name: 水平距離與仰角求高度／對邊
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_opposite_from_adjacent_elevation
+  - problem_type_id: solve_horizontal_from_height_elevation
+    display_name: 已知高度與仰角求水平距離
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_horizontal_from_height_elevation
+  - problem_type_id: solve_horizontal_from_height_depression
+    display_name: 已知高度與俯角求水平距離
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_horizontal_from_height_depression
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_two_elevation_horizontal_shift
+    display_name: 兩次仰角已知高度求水平位移
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_two_elevation_horizontal_shift
+  - problem_type_id: solve_two_elevation_unknown_height
+    display_name: 兩次仰角與前進距離求高度
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_two_elevation_unknown_height
+  - problem_type_id: solve_building_height_with_flagpole_elevations
+    display_name: 旗桿與建築物兩仰角求樓高
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_building_height_with_flagpole_elevations
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_broken_tree_original_height
+    display_name: 吹折大樹求原高
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_broken_tree_original_height
+  - problem_type_id: solve_height_decimal_from_sight_line_elevation
+    display_name: 非特殊角仰角小數高度
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_height_decimal_from_sight_line_elevation
+  - problem_type_id: ladder_non_special_angle_range_skip
+    display_name: 非特殊角梯子高度範圍（略過）
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 夾角50°且答案為區間選擇，圖形／計算機依賴過重，generator SKIP。
+  classification_rules:
+  - if_contains:
+    - 介在哪個範圍
+    - 圍牆的高度介在
+    prefer_problem_type_id: ladder_non_special_angle_range_skip
+  - if_contains:
+    - 四捨五入到小數點
+    - 約為幾公尺
+    prefer_problem_type_id: solve_height_decimal_from_sight_line_elevation
+  - if_contains:
+    - 吹折
+    - 樹頂著地
+    - 原本的高度
+    prefer_problem_type_id: solve_broken_tree_original_height
+  - if_contains:
+    - 旗桿
+    - 旗桿頂端
+    prefer_problem_type_id: solve_building_height_with_flagpole_elevations
+  - if_contains:
+    - 俯角
+    prefer_problem_type_id: solve_horizontal_from_height_depression
+  - if_contains:
+    - 水平後退
+    - 試求x之值
+    - 前進x公尺
+    prefer_problem_type_id: solve_two_elevation_horizontal_shift
+  - if_contains:
+    - 試求此大樓的高度
+    - 試求此山的高度
+    - 朝此大樓水平前進
+    - 朝山的方向前進
+    prefer_problem_type_id: solve_two_elevation_unknown_height
+  - if_contains:
+    - 梯子
+    - 斜靠在牆上
+    - 底端A著地
+    prefer_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
+  - if_contains:
+    - 風箏
+    - 放出
+    prefer_problem_type_id: solve_height_from_sight_line_elevation
+  - if_contains:
+    - 河的寬度
+    - 離某塔的塔基
+    prefer_problem_type_id: solve_opposite_from_adjacent_elevation
+  - if_contains:
+    - 直線距離
+    - 與該棟大樓的直線距離
+    prefer_problem_type_id: solve_horizontal_from_height_elevation
+  source_examples:
+  - example_id: 11687
+    matched_problem_type_id: solve_height_from_sight_line_elevation
+  - example_id: 11688
+    matched_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
+  - example_id: 11689
+    matched_problem_type_id: solve_two_elevation_horizontal_shift
+  - example_id: 11690
+    matched_problem_type_id: solve_two_elevation_unknown_height
+  - example_id: 11698
+    matched_problem_type_id: solve_height_decimal_from_sight_line_elevation
+  - example_id: 11699
+    matched_problem_type_id: solve_opposite_from_adjacent_elevation
+  - example_id: 11700
+    matched_problem_type_id: solve_adjacent_from_hypotenuse_ground_angle
+  - example_id: 11701
+    matched_problem_type_id: solve_two_elevation_unknown_height
+  - example_id: 11704
+    matched_problem_type_id: solve_broken_tree_original_height
+  - example_id: 11720
+    matched_problem_type_id: solve_building_height_with_flagpole_elevations
+  - example_id: 11723
+    matched_problem_type_id: solve_horizontal_from_height_depression
+  - example_id: 11725
+    matched_problem_type_id: ladder_non_special_angle_range_skip
+    block_reason: ladder_non_special_angle_height_range
+  - example_id: 11728
+    matched_problem_type_id: solve_opposite_from_adjacent_elevation
+  - example_id: 11729
+    matched_problem_type_id: solve_horizontal_from_height_elevation
+  - example_id: 11730
+    matched_problem_type_id: solve_two_elevation_horizontal_shift
+  source_policy:
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_2_2_4
+  skill_ch_name: 非直角三角形測量
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_side_by_law_of_sines
+    display_name: 正弦定理求邊（測量）
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_by_law_of_sines
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+    notes: 重用 trigonometry.law_of_sines 能力，經 oblique measurement facade 委派。
+  - problem_type_id: solve_side_by_law_of_cosines
+    display_name: 餘弦定理求邊（測量）
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_side_by_law_of_cosines
+    notes: 重用 trigonometry.law_of_cosines 能力，經 oblique measurement facade 委派。
+  - problem_type_id: elevation_oblique_multipart_skip
+    display_name: 仰角＋非直角多段題（略過）
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 同時含仰角、以h表示邊長與求高，跨直角測量與正弦定理之多段題，generator SKIP。
+  classification_rules:
+  - if_contains:
+    - 試以h表示
+    - 高樓樓高為h
+    prefer_problem_type_id: elevation_oblique_multipart_skip
+  - if_contains:
+    - 北70
+    - 北50
+    - 南75
+    - 開鑿
+    - 隧道
+    - \angle ACB
+    prefer_problem_type_id: solve_side_by_law_of_cosines
+  - if_contains:
+    - 同一岸邊
+    - 湖泊阻礙
+    - 湖邊有A、B
+    - 欲測得A、C兩點
+    prefer_problem_type_id: solve_side_by_law_of_sines
+  source_examples:
+  - example_id: 11691
+    matched_problem_type_id: solve_side_by_law_of_sines
+  - example_id: 11692
+    matched_problem_type_id: solve_side_by_law_of_sines
+  - example_id: 11693
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11694
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11702
+    matched_problem_type_id: solve_side_by_law_of_sines
+  - example_id: 11703
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11705
+    matched_problem_type_id: elevation_oblique_multipart_skip
+    block_reason: elevation_plus_oblique_multipart
+  - example_id: 11721
+    matched_problem_type_id: solve_side_by_law_of_cosines
+  - example_id: 11722
+    matched_problem_type_id: solve_side_by_law_of_sines
+  source_policy:
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_2_2_5
+  skill_ch_name: 簡單的立體測量
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_tower_two_elevation_path_and_river_width
+    display_name: 塔高兩仰角求水平距與河寬
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_tower_two_elevation_path_and_river_width
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    notes: 重用 horizontal-from-height elevation，再以勾股求河寬。
+  - problem_type_id: solve_height_from_two_elevation_tan_ratios
+    display_name: 兩仰角正切求高度（統測近似）
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_height_from_two_elevation_tan_ratios
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
+    display_name: 等方位角步行與仰角求山高
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_height_from_isosceles_bearing_walk_elevation
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+    notes: 水平等腰／等邊化簡後重用 opposite-from-adjacent elevation。
+  - problem_type_id: solid_multipart_symbolic_height_skip
+    display_name: 立體多段以h表示（略過）
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: false
+    requires_human_action: true
+    notes: 需以h表示多段邊長再解二次關係，符號多段且圖形依賴重，generator SKIP。
+  classification_rules:
+  - if_contains:
+    - 試以h表示
+    - 山高為h
+    - 向正南方前進
+    prefer_problem_type_id: solid_multipart_symbolic_height_skip
+  - if_contains:
+    - tan
+    - 統測
+    - 約為多少公尺
+    prefer_problem_type_id: solve_height_from_two_elevation_tan_ratios
+  - if_contains:
+    - 東邊偏北
+    - 西邊偏北
+    - 向東直行
+    prefer_problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
+  - if_contains:
+    - 塞納河
+    - 橫過
+    - 河寬
+    - 艾菲爾
+    prefer_problem_type_id: solve_tower_two_elevation_path_and_river_width
+  source_examples:
+  - example_id: 11695
+    matched_problem_type_id: solve_tower_two_elevation_path_and_river_width
+  - example_id: 11696
+    matched_problem_type_id: solid_multipart_symbolic_height_skip
+    block_reason: solid_multipart_symbolic_h
+  - example_id: 11697
+    matched_problem_type_id: solve_height_from_two_elevation_tan_ratios
+  - example_id: 11724
+    matched_problem_type_id: solve_height_from_isosceles_bearing_walk_elevation
+  source_policy:
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_3_1_1
+  skill_ch_name: 向量定義
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: express_named_vectors_in_given_basis
+    display_name: 以基底表示向量
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - express_named_vectors_in_given_basis
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: identify_equal_vector_mcq
+    display_name: 相等向量辨識
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - identify_equal_vector_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  classification_rules:
+  - if_contains:
+    - express name
+    prefer_problem_type_id: express_named_vectors_in_given_basis
+  source_examples:
+  - example_id: 11731
+    matched_problem_type_id: express_named_vectors_in_given_basis
+  - example_id: 11732
+    matched_problem_type_id: express_named_vectors_in_given_basis
+  - example_id: 11806
+    matched_problem_type_id: identify_equal_vector_mcq
+  source_policy: &id001
+    source_count_threshold_for_split: 2
+    small_skill_merge_allowed: false
+    min_source_examples: 1
+    allow_single_problem_type: false
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+- skill_id: vh_數學B2_SubSection_3_1_2
+  skill_ch_name: 向量的加法作圖
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: simplify_vector_path_expression
+    display_name: 路徑向量化簡
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - simplify_vector_path_expression
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - simplify vec
+    prefer_problem_type_id: simplify_vector_path_expression
+  source_examples:
+  - example_id: 11733
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11734
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11745
+    matched_problem_type_id: simplify_vector_path_expression
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_1_3
+  skill_ch_name: 向量的減法作圖
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: simplify_vector_path_expression
+    display_name: 路徑向量化簡
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - simplify_vector_path_expression
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - simplify vec
+    prefer_problem_type_id: simplify_vector_path_expression
+  source_examples:
+  - example_id: 11735
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11736
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11737
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11738
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11746
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11747
+    matched_problem_type_id: simplify_vector_path_expression
+  - example_id: 11816
+    matched_problem_type_id: simplify_vector_path_expression
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_1_4
+  skill_ch_name: 向量的實數積作圖
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: construct_linear_combination_choice
+    display_name: 線性組合作圖／終點選擇
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - construct_linear_combination_choice
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: express_linear_combination_from_givens
+    display_name: 由已知向量式求組合
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - express_linear_combination_from_givens
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: express_section_point_vector
+    display_name: 分點向量表示
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - express_section_point_vector
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: identify_resultant_path_mcq
+    display_name: 合向量路徑辨識
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - identify_resultant_path_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_scalar_multiple_relation_fill
+    display_name: 圖上倍數關係填空
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_scalar_multiple_relation_fill
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: solve_section_coefficient_pair
+    display_name: 分點係數對
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_section_coefficient_pair
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  classification_rules:
+  - if_contains:
+    - construct li
+    prefer_problem_type_id: construct_linear_combination_choice
+  source_examples:
+  - example_id: 11739
+    matched_problem_type_id: solve_scalar_multiple_relation_fill
+  - example_id: 11740
+    matched_problem_type_id: solve_scalar_multiple_relation_fill
+  - example_id: 11741
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11742
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11743
+    matched_problem_type_id: identify_resultant_path_mcq
+  - example_id: 11744
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11748
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11749
+    matched_problem_type_id: construct_linear_combination_choice
+  - example_id: 11750
+    matched_problem_type_id: solve_scalar_multiple_relation_fill
+  - example_id: 11751
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11752
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11753
+    matched_problem_type_id: express_section_point_vector
+  - example_id: 11817
+    matched_problem_type_id: solve_section_coefficient_pair
+  - example_id: 11818
+    matched_problem_type_id: express_linear_combination_from_givens
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_1
+  skill_ch_name: 向量的坐標表示法
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_directed_segment_and_magnitude
+    display_name: 有向線段與長度
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_directed_segment_and_magnitude
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: compute_directed_segment_mixed_multipart
+    display_name: 有向線段混合多小題
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_directed_segment_mixed_multipart
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: compute_triangle_perimeter_from_two_vectors
+    display_name: 兩向量求三角形周長
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_triangle_perimeter_from_two_vectors
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: compute_vector_components_and_magnitude
+    display_name: 分量與長度
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_vector_components_and_magnitude
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: solve_equal_vector_coordinates
+    display_name: 向量相等求未知數
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_equal_vector_coordinates
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: solve_parallelogram_fourth_vertex
+    display_name: 平行四邊形第四頂點
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_parallelogram_fourth_vertex
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - compute dire
+    prefer_problem_type_id: compute_directed_segment_and_magnitude
+  source_examples:
+  - example_id: 11754
+    matched_problem_type_id: compute_vector_components_and_magnitude
+  - example_id: 11755
+    matched_problem_type_id: compute_vector_components_and_magnitude
+  - example_id: 11756
+    matched_problem_type_id: solve_equal_vector_coordinates
+  - example_id: 11757
+    matched_problem_type_id: solve_equal_vector_coordinates
+  - example_id: 11758
+    matched_problem_type_id: compute_directed_segment_and_magnitude
+  - example_id: 11759
+    matched_problem_type_id: compute_directed_segment_and_magnitude
+  - example_id: 11760
+    matched_problem_type_id: solve_parallelogram_fourth_vertex
+  - example_id: 11761
+    matched_problem_type_id: solve_parallelogram_fourth_vertex
+  - example_id: 11775
+    matched_problem_type_id: compute_directed_segment_mixed_multipart
+  - example_id: 11783
+    matched_problem_type_id: compute_directed_segment_and_magnitude
+  - example_id: 11822
+    matched_problem_type_id: compute_triangle_perimeter_from_two_vectors
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_2
+  skill_ch_name: 向量加減的坐標表示法
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_chain_closure_vector_mcq
+    display_name: 封閉折線向量
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_chain_closure_vector_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: compute_point_vectors_linear_combination
+    display_name: 點向量線段組合
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_point_vectors_linear_combination
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: compute_triangle_chain_and_perimeter
+    display_name: 兩邊向量求第三邊與周長
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_triangle_chain_and_perimeter
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: compute_vector_linear_combination
+    display_name: 向量線性組合
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_vector_linear_combination
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: compute_vector_sum_difference
+    display_name: 向量加減
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_vector_sum_difference
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: solve_parallelogram_fourth_vertex
+    display_name: 平行四邊形第四頂點
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_parallelogram_fourth_vertex
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - compute chai
+    prefer_problem_type_id: compute_chain_closure_vector_mcq
+  source_examples:
+  - example_id: 11762
+    matched_problem_type_id: compute_vector_sum_difference
+  - example_id: 11763
+    matched_problem_type_id: compute_vector_sum_difference
+  - example_id: 11764
+    matched_problem_type_id: compute_point_vectors_linear_combination
+  - example_id: 11765
+    matched_problem_type_id: compute_point_vectors_linear_combination
+  - example_id: 11766
+    matched_problem_type_id: compute_triangle_chain_and_perimeter
+  - example_id: 11767
+    matched_problem_type_id: compute_triangle_chain_and_perimeter
+  - example_id: 11776
+    matched_problem_type_id: solve_parallelogram_fourth_vertex
+  - example_id: 11777
+    matched_problem_type_id: compute_vector_sum_difference
+  - example_id: 11778
+    matched_problem_type_id: compute_point_vectors_linear_combination
+  - example_id: 11779
+    matched_problem_type_id: compute_triangle_chain_and_perimeter
+  - example_id: 11780
+    matched_problem_type_id: compute_vector_linear_combination
+  - example_id: 11807
+    matched_problem_type_id: compute_vector_sum_difference
+  - example_id: 11808
+    matched_problem_type_id: compute_vector_linear_combination
+  - example_id: 11819
+    matched_problem_type_id: compute_vector_sum_difference
+  - example_id: 11821
+    matched_problem_type_id: compute_chain_closure_vector_mcq
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_3
+  skill_ch_name: 向量實數積的坐標表示法
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_collinear_ratio_mcq
+    display_name: 共線比例選擇
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_collinear_ratio_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_point_from_vector_combination
+    display_name: 由組合求未知點
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_point_from_vector_combination
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - solve collin
+    prefer_problem_type_id: solve_collinear_ratio_mcq
+  source_examples:
+  - example_id: 11784
+    matched_problem_type_id: solve_point_from_vector_combination
+  - example_id: 11820
+    matched_problem_type_id: solve_collinear_ratio_mcq
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_4
+  skill_ch_name: 向量實數積的基本性質
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_vector_linear_combination
+    display_name: 向量線性組合
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_vector_linear_combination
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: solve_unknown_vector_linear_equation
+    display_name: 向量方程求未知向量
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_unknown_vector_linear_equation
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  classification_rules:
+  - if_contains:
+    - compute vect
+    prefer_problem_type_id: compute_vector_linear_combination
+  source_examples:
+  - example_id: 11768
+    matched_problem_type_id: compute_vector_linear_combination
+  - example_id: 11769
+    matched_problem_type_id: compute_vector_linear_combination
+  - example_id: 11823
+    matched_problem_type_id: solve_unknown_vector_linear_equation
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_5
+  skill_ch_name: 向量的平行
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_parallel_then_magnitude_mcq
+    display_name: 平行後求長度
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_parallel_then_magnitude_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: solve_parallel_vector_parameter
+    display_name: 平行求參數
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_parallel_vector_parameter
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - solve parall
+    prefer_problem_type_id: solve_parallel_then_magnitude_mcq
+  source_examples:
+  - example_id: 11770
+    matched_problem_type_id: solve_parallel_vector_parameter
+  - example_id: 11771
+    matched_problem_type_id: solve_parallel_vector_parameter
+  - example_id: 11781
+    matched_problem_type_id: solve_parallel_vector_parameter
+  - example_id: 11809
+    matched_problem_type_id: solve_parallel_then_magnitude_mcq
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_2_6
+  skill_ch_name: 單位向量
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_scaled_direction_vector
+    display_name: 指定長度方向向量
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_scaled_direction_vector
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: identify_unit_vector_mcq
+    display_name: 單位向量辨識
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - identify_unit_vector_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  classification_rules:
+  - if_contains:
+    - compute scal
+    prefer_problem_type_id: compute_scaled_direction_vector
+  source_examples:
+  - example_id: 11772
+    matched_problem_type_id: compute_scaled_direction_vector
+  - example_id: 11773
+    matched_problem_type_id: compute_scaled_direction_vector
+  - example_id: 11774
+    matched_problem_type_id: identify_unit_vector_mcq
+  - example_id: 11782
+    matched_problem_type_id: compute_scaled_direction_vector
+  - example_id: 11810
+    matched_problem_type_id: compute_scaled_direction_vector
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_3_1
+  skill_ch_name: 向量的夾角
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: classify_angle_quality_from_dot_mcq
+    display_name: 夾角銳鈍直角判斷
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - classify_angle_quality_from_dot_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: compute_cosine_of_angle_from_dot
+    display_name: 由坐標求夾角餘弦
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_cosine_of_angle_from_dot
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: solve_navigation_heading_correction
+    display_name: 航向修正應用
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_navigation_heading_correction
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - classify ang
+    prefer_problem_type_id: classify_angle_quality_from_dot_mcq
+  source_examples:
+  - example_id: 11799
+    matched_problem_type_id: compute_cosine_of_angle_from_dot
+  - example_id: 11805
+    matched_problem_type_id: solve_navigation_heading_correction
+  - example_id: 11815
+    matched_problem_type_id: classify_angle_quality_from_dot_mcq
+  - example_id: 11824
+    matched_problem_type_id: compute_cosine_of_angle_from_dot
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_3_2
+  skill_ch_name: 向量內積的定義
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_dot_identity_multipart
+    display_name: 內積恆等式多小題
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_dot_identity_multipart
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: compute_dot_product_from_magnitudes_angle
+    display_name: 由長度與夾角求內積
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_dot_product_from_magnitudes_angle
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: compute_regular_polygon_edge_dot
+    display_name: 正多邊形邊向量內積
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_regular_polygon_edge_dot
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  classification_rules:
+  - if_contains:
+    - 'compute dot '
+    prefer_problem_type_id: compute_dot_identity_multipart
+  source_examples:
+  - example_id: 11785
+    matched_problem_type_id: compute_regular_polygon_edge_dot
+  - example_id: 11786
+    matched_problem_type_id: compute_regular_polygon_edge_dot
+  - example_id: 11796
+    matched_problem_type_id: compute_regular_polygon_edge_dot
+  - example_id: 11797
+    matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+  - example_id: 11802
+    matched_problem_type_id: compute_dot_identity_multipart
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_3_3
+  skill_ch_name: 向量內積的坐標表示法
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: compute_cosine_of_angle_from_dot
+    display_name: 由坐標求夾角餘弦
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_cosine_of_angle_from_dot
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: compute_dot_product_coordinates
+    display_name: 坐標內積
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_dot_product_coordinates
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: compute_midpoint_dot_product
+    display_name: 中點複合內積
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_midpoint_dot_product
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: plot_navigation_points_coordinates
+    display_name: 航標坐標標示
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - plot_navigation_points_coordinates
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  - problem_type_id: solve_dot_product_parameter_mcq
+    display_name: 內積方程求參數
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_dot_product_parameter_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  classification_rules:
+  - if_contains:
+    - compute cosi
+    prefer_problem_type_id: compute_cosine_of_angle_from_dot
+  source_examples:
+  - example_id: 11787
+    matched_problem_type_id: compute_dot_product_coordinates
+  - example_id: 11788
+    matched_problem_type_id: compute_dot_product_coordinates
+  - example_id: 11789
+    matched_problem_type_id: compute_cosine_of_angle_from_dot
+  - example_id: 11790
+    matched_problem_type_id: compute_cosine_of_angle_from_dot
+  - example_id: 11798
+    matched_problem_type_id: compute_dot_product_coordinates
+  - example_id: 11804
+    matched_problem_type_id: plot_navigation_points_coordinates
+  - example_id: 11811
+    matched_problem_type_id: compute_dot_product_coordinates
+  - example_id: 11812
+    matched_problem_type_id: compute_midpoint_dot_product
+  - example_id: 11813
+    matched_problem_type_id: solve_dot_product_parameter_mcq
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_3_4
+  skill_ch_name: 兩向量的垂直
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: solve_perpendicular_composite_parameter
+    display_name: 垂直複合求參數
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_perpendicular_composite_parameter
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: solve_perpendicular_vector_parameter
+    display_name: 垂直求參數
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_perpendicular_vector_parameter
+    answer_type: expression
+    presentation_mode: short_answer
+  classification_rules:
+  - if_contains:
+    - solve perpen
+    prefer_problem_type_id: solve_perpendicular_composite_parameter
+  source_examples:
+  - example_id: 11791
+    matched_problem_type_id: solve_perpendicular_vector_parameter
+  - example_id: 11792
+    matched_problem_type_id: solve_perpendicular_vector_parameter
+  - example_id: 11800
+    matched_problem_type_id: solve_perpendicular_vector_parameter
+  - example_id: 11814
+    matched_problem_type_id: solve_perpendicular_composite_parameter
+  source_policy: *id001
+- skill_id: vh_數學B2_SubSection_3_3_5
+  skill_ch_name: 向量內積的性質
+  classifier_source: human_confirmed
+  problem_types:
+  - problem_type_id: classify_dot_sign_from_diagram_mcq
+    display_name: 圖示內積正負判斷
+    checker: single_choice_checker
+    equivalence: choice_label
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - classify_dot_sign_from_diagram_mcq
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+  - problem_type_id: compute_dot_product_from_magnitudes_angle
+    display_name: 由長度與夾角求內積
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - compute_dot_product_from_magnitudes_angle
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: expand_perpendicular_dot_product
+    display_name: 垂直向量展開求值
+    checker: expression_checker
+    equivalence: algebraic_equivalent
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - expand_perpendicular_dot_product
+    answer_type: expression
+    presentation_mode: short_answer
+  - problem_type_id: solve_angle_from_magnitude_identity
+    display_name: 由長度恆等式反求夾角
+    checker: multi_part_answer_checker
+    equivalence: multi_part_answer
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_angle_from_magnitude_identity
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+  classification_rules:
+  - if_contains:
+    - classify dot
+    prefer_problem_type_id: classify_dot_sign_from_diagram_mcq
+  source_examples:
+  - example_id: 11793
+    matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+  - example_id: 11794
+    matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+  - example_id: 11795
+    matched_problem_type_id: classify_dot_sign_from_diagram_mcq
+  - example_id: 11801
+    matched_problem_type_id: expand_perpendicular_dot_product
+  - example_id: 11803
+    matched_problem_type_id: solve_angle_from_magnitude_identity
+  - example_id: 11825
+    matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+  source_policy: *id001
