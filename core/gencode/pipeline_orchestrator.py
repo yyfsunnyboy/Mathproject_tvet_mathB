@@ -4723,6 +4723,21 @@ def _phase1_from_descriptive_domain_analyzer(
 ) -> dict[str, Any] | None:
     from core.domain.statistics.descriptive_statistics_analyzer import analyze_textbook_row
     from core.gencode.v3_error_codes import DOMAIN_CAPABILITY_UNRESOLVED
+    from core.registry.taxonomy_registry import (
+        SkillDomainNotRegisteredError,
+        get_fixed_domain_key,
+    )
+
+    # Descriptive-statistics analyzer is domain-scoped. Never let it hijack
+    # skills that already bind to a non-statistics fixed domain (e.g. vector
+    # linear combinations matching letter "s"). Unregistered skills keep the
+    # legacy analyzer path used by B4 descriptive bootstrap/tests.
+    try:
+        fixed_domain = get_fixed_domain_key(str(skill_id or "").strip())
+    except SkillDomainNotRegisteredError:
+        fixed_domain = ""
+    if fixed_domain and not str(fixed_domain).startswith("statistics."):
+        return None
 
     example_id = int(textbook_row.get("id") or 0)
     analysis = analyze_textbook_row(textbook_row, presentation_mode=presentation_mode)

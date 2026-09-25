@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sqlite3
 from pathlib import Path
 from unittest import mock
@@ -234,6 +235,73 @@ def test_truly_missing_domain_stops_as_needs_capability(tmp_path: Path):
     job = get_orchestrator_job(conn, skill_id)
     assert job is not None
     assert job["status"] == JOB_STATUS_NEEDS_CAPABILITY
+
+
+def test_unregistered_domain_soft_stops_as_needs_capability_not_failed_missing(tmp_path: Path):
+    """B2 Ch3-class failure: skill has examples but taxonomy registry has no binding.
+
+    Must soft-stop as needs_capability with non-zero needs_capability_count.
+    Must NOT Finalize as failed CAPABILITY_MATCH: missing with zeroed counts.
+    """
+    from core.registry.taxonomy_registry import SkillDomainNotRegisteredError
+
+    skill_id = "vh_test_unregistered_domain"
+    conn = _conn()
+    _insert_examples(conn, skill_id, [11754, 11755])
+    prod_before = tmp_path / "skills" / f"{skill_id}.py"
+    (tmp_path / "skills").mkdir(parents=True, exist_ok=True)
+    prod_before.write_text("# preserve me\n", encoding="utf-8")
+    before_hash = hashlib.sha256(prod_before.read_bytes()).hexdigest()
+
+    with mock.patch(
+        "core.gencode.services.v3_skill_capability_preflight_service.resolve_domain_for_skill",
+        side_effect=SkillDomainNotRegisteredError(
+            f"skill_domain_not_registered: {skill_id!r}"
+        ),
+    ), mock.patch(
+        "core.gencode.services.admin_gencode_action_service.run_admin_v3_dryrun_for_skill"
+    ) as dryrun_mock, mock.patch(
+        "core.gencode.services.admin_gencode_action_service.run_admin_v3_publish_for_skill"
+    ) as publish_mock:
+        result = run_v3_build_orchestrator(
+            conn,
+            skill_id,
+            project_root=str(tmp_path),
+            staging_root=str(tmp_path / "staging"),
+        )
+
+    assert result["status"] == JOB_STATUS_NEEDS_CAPABILITY
+    assert result["counts"]["example_count"] == 2
+    assert result["counts"]["needs_capability_count"] == 2
+    assert result["counts"]["published_count"] == 0
+    assert len(result["needs_capability_examples"]) == 2
+    assert all(
+        str(item.get("reason") or "") == "domain_registry_missing"
+        for item in result["needs_capability_examples"]
+    )
+    assert result["production_preserved"] is True
+    assert str(result["final_status"]).lower() == JOB_STATUS_NEEDS_CAPABILITY
+    assert not any(
+        str((err or {}).get("code") or "") == "CAPABILITY_NOT_READY"
+        for err in (result.get("errors") or [])
+    )
+    dryrun_mock.assert_not_called()
+    publish_mock.assert_not_called()
+    assert hashlib.sha256(prod_before.read_bytes()).hexdigest() == before_hash
+    stages = {str(s.get("name")): s for s in (result.get("stages") or [])}
+    assert stages.get("CAPABILITY_MATCH", {}).get("status") == "done"
+    assert stages.get("FINALIZE", {}).get("status") == "needs_capability"
+    assert stages.get("COMPONENT_BUILD", {}).get("status") == "skipped"
+    job = get_orchestrator_job(conn, skill_id)
+    assert job is not None
+    # capability detail lives in durable job payload
+    row = conn.execute(
+        "SELECT payload_json FROM gencode_v3_orchestrator_jobs WHERE skill_id = ?",
+        (skill_id,),
+    ).fetchone()
+    payload = json.loads(row[0] if not hasattr(row, "keys") else row["payload_json"])
+    assert payload["capability"]["capability_status"] == "missing"
+    assert "domain_registry_binding" in (payload["capability"].get("missing_layers") or [])
 
 
 def test_orchestrator_auto_matches_existing_capability_and_is_idempotent(tmp_path: Path):

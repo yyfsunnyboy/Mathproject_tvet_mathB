@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_2_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_11768",
+      "textbook_example_id": 11768,
+      "status": "verified",
+      "problem_type_id": "compute_vector_linear_combination",
+      "domain_operation": "compute_vector_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11768/generate.py"
+    },
+    {
+      "component_id": "src_11769",
+      "textbook_example_id": 11769,
+      "status": "verified",
+      "problem_type_id": "compute_vector_linear_combination",
+      "domain_operation": "compute_vector_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11769/generate.py"
+    }
+  ]
+}

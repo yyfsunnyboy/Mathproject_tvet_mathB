@@ -21,6 +21,8 @@ from core.gencode.services.v3_example_disposition import (
     summarize_dispositions,
 )
 from core.gencode.services.v3_skill_capability_preflight_service import (
+    CAPABILITY_INVALID,
+    CAPABILITY_MISSING,
     CAPABILITY_NEEDS_CAPABILITY,
     CAPABILITY_READY,
     evaluate_skill_v3_capability,
@@ -628,7 +630,30 @@ def run_v3_build_orchestrator(
                     disposition_from_phase1_probe(probe)
                     for probe in (capability.get("example_probes") or [])
                 ]
-                summary = summarize_dispositions(dispositions)
+                # When domain registry binding is absent/invalid, preflight skips
+                # per-example probes but still classifies every textbook row as
+                # needs_capability. Prefer that preflight summary over an empty
+                # probe-derived disposition list (which would zero the counts and
+                # incorrectly fail FINALIZE as CAPABILITY_MATCH: missing).
+                if dispositions:
+                    summary = summarize_dispositions(dispositions)
+                else:
+                    summary = {
+                        "example_count": int(
+                            capability.get("textbook_example_count") or len(example_ids)
+                        ),
+                        "eligible_count": int(
+                            capability.get("eligible_example_count") or len(example_ids)
+                        ),
+                        "skip_count": int(capability.get("intentional_skip_count") or 0),
+                        "needs_capability_count": int(
+                            capability.get("needs_capability_count") or 0
+                        ),
+                        "skip_examples": list(capability.get("skip_examples") or []),
+                        "needs_capability_examples": list(
+                            capability.get("needs_capability_examples") or []
+                        ),
+                    }
                 payload["counts"].update(
                     {
                         "example_count": int(summary.get("example_count") or len(example_ids)),
@@ -646,6 +671,8 @@ def run_v3_build_orchestrator(
                     "capability_status": capability.get("capability_status"),
                     "domain_key": capability.get("domain_key"),
                     "allow_v3_rebuild": capability.get("allow_v3_rebuild"),
+                    "missing_layers": list(capability.get("missing_layers") or []),
+                    "wiring_error": capability.get("wiring_error") or "",
                 }
                 _mark_stage(payload, "CAPABILITY_MATCH", "done")
                 _save_job(
@@ -658,9 +685,13 @@ def run_v3_build_orchestrator(
                     payload=payload,
                 )
 
-                if int(summary.get("needs_capability_count") or 0) > 0 or (
-                    capability.get("capability_status") == CAPABILITY_NEEDS_CAPABILITY
-                ):
+                cap_status = str(capability.get("capability_status") or "").strip()
+                soft_capability_block = cap_status in {
+                    CAPABILITY_NEEDS_CAPABILITY,
+                    CAPABILITY_MISSING,
+                    CAPABILITY_INVALID,
+                }
+                if int(summary.get("needs_capability_count") or 0) > 0 or soft_capability_block:
                     _mark_stage(payload, "COMPONENT_BUILD", "skipped", reason="needs_capability")
                     _mark_stage(payload, "VALIDATION", "skipped", reason="needs_capability")
                     _mark_stage(payload, "SMOKE_TEST", "skipped", reason="needs_capability")
@@ -1056,21 +1087,34 @@ def run_v3_build_orchestrator(
                         force_publish=True,
                         strict_coverage=False,
                     )
-                    payload["publish_result"] = {
-                        "published": bool(
-                            publish_result.get("published") or publish_result.get("ok")
-                        ),
-                        "reason": str(publish_result.get("reason") or ""),
-                    }
-                    if not (
+                    publish_status = str(publish_result.get("status") or "").strip()
+                    publish_ok = bool(
                         publish_result.get("published")
                         or publish_result.get("ok")
                         or publish_result.get("success")
-                    ):
+                        or publish_status
+                        in {
+                            "production_published",
+                            "partial_published",
+                            "runtime_ready_with_variation_warning",
+                        }
+                        or publish_result.get("production_smoke_status") == "passed"
+                    )
+                    payload["publish_result"] = {
+                        "published": publish_ok,
+                        "status": publish_status,
+                        "reason": str(
+                            publish_result.get("reason")
+                            or publish_status
+                            or ""
+                        ),
+                    }
+                    if not publish_ok:
                         raise ValueError(
                             str(
                                 publish_result.get("error")
                                 or publish_result.get("reason")
+                                or publish_status
                                 or "publish_failed"
                             )
                         )

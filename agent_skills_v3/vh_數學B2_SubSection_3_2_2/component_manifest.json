@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_2_2",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_11762",
+      "textbook_example_id": 11762,
+      "status": "verified",
+      "problem_type_id": "compute_vector_sum_difference",
+      "domain_operation": "compute_vector_sum_difference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11762/generate.py"
+    },
+    {
+      "component_id": "src_11763",
+      "textbook_example_id": 11763,
+      "status": "verified",
+      "problem_type_id": "compute_vector_sum_difference",
+      "domain_operation": "compute_vector_sum_difference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11763/generate.py"
+    },
+    {
+      "component_id": "src_11764",
+      "textbook_example_id": 11764,
+      "status": "verified",
+      "problem_type_id": "compute_point_vectors_linear_combination",
+      "domain_operation": "compute_point_vectors_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11764/generate.py"
+    },
+    {
+      "component_id": "src_11765",
+      "textbook_example_id": 11765,
+      "status": "verified",
+      "problem_type_id": "compute_point_vectors_linear_combination",
+      "domain_operation": "compute_point_vectors_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11765/generate.py"
+    },
+    {
+      "component_id": "src_11766",
+      "textbook_example_id": 11766,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_chain_and_perimeter",
+      "domain_operation": "compute_triangle_chain_and_perimeter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11766/generate.py"
+    },
+    {
+      "component_id": "src_11767",
+      "textbook_example_id": 11767,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_chain_and_perimeter",
+      "domain_operation": "compute_triangle_chain_and_perimeter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11767/generate.py"
+    },
+    {
+      "component_id": "src_11776",
+      "textbook_example_id": 11776,
+      "status": "verified",
+      "problem_type_id": "solve_parallelogram_fourth_vertex",
+      "domain_operation": "solve_parallelogram_fourth_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11776/generate.py"
+    },
+    {
+      "component_id": "src_11777",
+      "textbook_example_id": 11777,
+      "status": "verified",
+      "problem_type_id": "compute_vector_sum_difference",
+      "domain_operation": "compute_vector_sum_difference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11777/generate.py"
+    },
+    {
+      "component_id": "src_11778",
+      "textbook_example_id": 11778,
+      "status": "verified",
+      "problem_type_id": "compute_point_vectors_linear_combination",
+      "domain_operation": "compute_point_vectors_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11778/generate.py"
+    },
+    {
+      "component_id": "src_11779",
+      "textbook_example_id": 11779,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_chain_and_perimeter",
+      "domain_operation": "compute_triangle_chain_and_perimeter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11779/generate.py"
+    },
+    {
+      "component_id": "src_11780",
+      "textbook_example_id": 11780,
+      "status": "verified",
+      "problem_type_id": "compute_vector_linear_combination",
+      "domain_operation": "compute_vector_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11780/generate.py"
+    },
+    {
+      "component_id": "src_11807",
+      "textbook_example_id": 11807,
+      "status": "verified",
+      "problem_type_id": "compute_vector_sum_difference",
+      "domain_operation": "compute_vector_sum_difference",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11807/generate.py"
+    },
+    {
+      "component_id": "src_11808",
+      "textbook_example_id": 11808,
+      "status": "verified",
+      "problem_type_id": "compute_vector_linear_combination",
+      "domain_operation": "compute_vector_linear_combination",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11808/generate.py"
+    },
+    {
+      "component_id": "src_11819",
+      "textbook_example_id": 11819,
+      "status": "verified",
+      "problem_type_id": "compute_vector_sum_difference",
+      "domain_operation": "compute_vector_sum_difference",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11819/generate.py"
+    }
+  ]
+}

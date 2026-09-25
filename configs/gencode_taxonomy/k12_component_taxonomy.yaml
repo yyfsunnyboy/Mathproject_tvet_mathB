@@ -431,5 +431,113 @@ skills:
       - solve_detour_extra_distance_by_cosines
       - compute_circumradius_from_three_sides
 
+  vh_數學B2_SubSection_3_1_1: &b2_ch3_diagram
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compute_vector_components_and_magnitude]
 
+  vh_數學B2_SubSection_3_1_2: *b2_ch3_diagram
+  vh_數學B2_SubSection_3_1_3: *b2_ch3_diagram
+  vh_數學B2_SubSection_3_1_4: *b2_ch3_diagram
+
+  vh_數學B2_SubSection_3_2_1:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_vector_components_and_magnitude
+      - solve_equal_vector_coordinates
+      - compute_directed_segment_and_magnitude
+      - solve_parallelogram_fourth_vertex
+      - compute_triangle_perimeter_from_two_vectors
+
+  vh_數學B2_SubSection_3_2_2:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_vector_sum_difference
+      - compute_point_vectors_linear_combination
+      - compute_triangle_chain_and_perimeter
+      - solve_parallelogram_fourth_vertex
+      - compute_vector_linear_combination
+
+  vh_數學B2_SubSection_3_2_3: &b2_ch3_scalar
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_scalar_multiple_coordinates
+      - compute_vector_linear_combination
+
+  vh_數學B2_SubSection_3_2_4: *b2_ch3_scalar
+
+  vh_數學B2_SubSection_3_2_5:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [solve_parallel_vector_parameter]
+
+  vh_數學B2_SubSection_3_2_6:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_unit_vector
+      - compute_scaled_direction_vector
+
+  vh_數學B2_SubSection_3_3_1:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compute_cosine_of_angle_from_dot]
+
+  vh_數學B2_SubSection_3_3_2:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compute_dot_product_from_magnitudes_angle]
+
+  vh_數學B2_SubSection_3_3_3:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types:
+      - compute_dot_product_coordinates
+      - compute_cosine_of_angle_from_dot
+
+  vh_數學B2_SubSection_3_3_4:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [solve_perpendicular_vector_parameter]
+
+  vh_數學B2_SubSection_3_3_5:
+    fixed_domain_key: vector.plane
+    domain_module: core.domain.vector_plane_domain
+    entrypoint: build_vector_plane_matrix
+    default_curriculum_profile: vocational_high_b
+    concrete: true
+    allowed_types: [compute_dot_product_from_magnitudes_angle]
 

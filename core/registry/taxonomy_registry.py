@@ -82,6 +82,61 @@ _B2_225_SOLID_OPERATIONS = (
 )
 _B2_225_SOLID_SKILL = "vh_數學B2_SubSection_2_2_5"
 
+# B2 Chapter 3 plane-vector skills (algebraic / coordinate families).
+_B2_CH3_COORD_OPS = (
+    "compute_vector_components_and_magnitude",
+    "solve_equal_vector_coordinates",
+    "compute_directed_segment_and_magnitude",
+    "solve_parallelogram_fourth_vertex",
+    "compute_triangle_perimeter_from_two_vectors",
+)
+_B2_CH3_ARITH_OPS = (
+    "compute_vector_sum_difference",
+    "compute_point_vectors_linear_combination",
+    "compute_triangle_chain_and_perimeter",
+    "solve_parallelogram_fourth_vertex",
+    "compute_vector_linear_combination",
+)
+_B2_CH3_SCALAR_OPS = (
+    "compute_scalar_multiple_coordinates",
+    "compute_vector_linear_combination",
+)
+_B2_CH3_PARALLEL_OPS = ("solve_parallel_vector_parameter",)
+_B2_CH3_UNIT_OPS = (
+    "compute_unit_vector",
+    "compute_scaled_direction_vector",
+)
+_B2_CH3_ANGLE_OPS = (
+    "compute_cosine_of_angle_from_dot",
+)
+_B2_CH3_DOT_DEF_OPS = (
+    "compute_dot_product_from_magnitudes_angle",
+)
+_B2_CH3_DOT_COORD_OPS = (
+    "compute_dot_product_coordinates",
+    "compute_cosine_of_angle_from_dot",
+)
+_B2_CH3_PERP_OPS = ("solve_perpendicular_vector_parameter",)
+_B2_CH3_DOT_PROP_OPS = (
+    "compute_dot_product_from_magnitudes_angle",
+)
+_B2_CH3_DIAGRAM_SKILLS = tuple(f"vh_數學B2_SubSection_3_1_{i}" for i in range(1, 5))
+_B2_CH3_SKILL_OPERATIONS = {
+    "vh_數學B2_SubSection_3_2_1": _B2_CH3_COORD_OPS,
+    "vh_數學B2_SubSection_3_2_2": _B2_CH3_ARITH_OPS,
+    "vh_數學B2_SubSection_3_2_3": _B2_CH3_SCALAR_OPS,
+    "vh_數學B2_SubSection_3_2_4": _B2_CH3_SCALAR_OPS,
+    "vh_數學B2_SubSection_3_2_5": _B2_CH3_PARALLEL_OPS,
+    "vh_數學B2_SubSection_3_2_6": _B2_CH3_UNIT_OPS,
+    "vh_數學B2_SubSection_3_3_1": _B2_CH3_ANGLE_OPS,
+    "vh_數學B2_SubSection_3_3_2": _B2_CH3_DOT_DEF_OPS,
+    "vh_數學B2_SubSection_3_3_3": _B2_CH3_DOT_COORD_OPS,
+    "vh_數學B2_SubSection_3_3_4": _B2_CH3_PERP_OPS,
+    "vh_數學B2_SubSection_3_3_5": _B2_CH3_DOT_PROP_OPS,
+    # 3-1 diagram skills bind to the domain but Phase1 marks all examples as intentional skip.
+    **{sid: ("compute_vector_components_and_magnitude",) for sid in _B2_CH3_DIAGRAM_SKILLS},
+}
+
 
 class SkillDomainNotRegisteredError(KeyError):
     """Raised when skill_id has no fixed domain binding in Registry."""
@@ -493,6 +548,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "registry_revision": REGISTRY_REVISION,
         "mapping_reason": "textbook_skill_simple_solid_measurement",
     },
+    **{
+        skill_id: {
+            "fixed_domain_key": "vector.plane",
+            "domain": "vector",
+            "curriculum_profile": "vocational_high_b",
+            "registry_revision": REGISTRY_REVISION,
+            "mapping_reason": "textbook_skill_b2_ch3_plane_vector",
+        }
+        for skill_id in list(_B2_CH3_SKILL_OPERATIONS)
+    },
     "vh_數學B2_RatioAndRatioValue": {
         "fixed_domain_key": "geometry.similarity",
         "domain_module": "core.domain.geometry_similarity_domain",
@@ -614,6 +679,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "default_curriculum_profile": "vocational_high_b",
         "allowed_types": list(_B2_225_SOLID_OPERATIONS),
     },
+    **{
+        skill_id: {
+            "fixed_domain_key": "vector.plane",
+            "domain_module": "core.domain.vector_plane_domain",
+            "entrypoint": "build_vector_plane_matrix",
+            "default_curriculum_profile": "vocational_high_b",
+            "allowed_types": list(ops),
+        }
+        for skill_id, ops in _B2_CH3_SKILL_OPERATIONS.items()
+    },
 }
 
 # Try loading from YAML (extends SKILL_TO_DOMAIN; profile keys merged below).
@@ -720,6 +795,7 @@ def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
         else list(_B2_14_OPERATIONS) if key in _B2_14_SKILLS
         else list(_B2_21_SINE_OPERATIONS) if key == _B2_21_SINE_SKILL
         else list(_B2_21_COSINE_OPERATIONS) if key == _B2_21_COSINE_SKILL
+        else list(_B2_CH3_SKILL_OPERATIONS[key]) if key in _B2_CH3_SKILL_OPERATIONS
         else get_allowed_operations(fixed_domain_key, skill_id=key)
     )
     merged["registry_revision"] = get_registry_revision(key)

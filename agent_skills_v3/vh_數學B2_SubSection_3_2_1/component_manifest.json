@@ -1,0 +1,117 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_2_1",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_11754",
+      "textbook_example_id": 11754,
+      "status": "verified",
+      "problem_type_id": "compute_vector_components_and_magnitude",
+      "domain_operation": "compute_vector_components_and_magnitude",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11754/generate.py"
+    },
+    {
+      "component_id": "src_11755",
+      "textbook_example_id": 11755,
+      "status": "verified",
+      "problem_type_id": "compute_vector_components_and_magnitude",
+      "domain_operation": "compute_vector_components_and_magnitude",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11755/generate.py"
+    },
+    {
+      "component_id": "src_11756",
+      "textbook_example_id": 11756,
+      "status": "verified",
+      "problem_type_id": "solve_equal_vector_coordinates",
+      "domain_operation": "solve_equal_vector_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11756/generate.py"
+    },
+    {
+      "component_id": "src_11757",
+      "textbook_example_id": 11757,
+      "status": "verified",
+      "problem_type_id": "solve_equal_vector_coordinates",
+      "domain_operation": "solve_equal_vector_coordinates",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11757/generate.py"
+    },
+    {
+      "component_id": "src_11758",
+      "textbook_example_id": 11758,
+      "status": "verified",
+      "problem_type_id": "compute_directed_segment_and_magnitude",
+      "domain_operation": "compute_directed_segment_and_magnitude",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11758/generate.py"
+    },
+    {
+      "component_id": "src_11759",
+      "textbook_example_id": 11759,
+      "status": "verified",
+      "problem_type_id": "compute_directed_segment_and_magnitude",
+      "domain_operation": "compute_directed_segment_and_magnitude",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11759/generate.py"
+    },
+    {
+      "component_id": "src_11760",
+      "textbook_example_id": 11760,
+      "status": "verified",
+      "problem_type_id": "solve_parallelogram_fourth_vertex",
+      "domain_operation": "solve_parallelogram_fourth_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11760/generate.py"
+    },
+    {
+      "component_id": "src_11761",
+      "textbook_example_id": 11761,
+      "status": "verified",
+      "problem_type_id": "solve_parallelogram_fourth_vertex",
+      "domain_operation": "solve_parallelogram_fourth_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11761/generate.py"
+    },
+    {
+      "component_id": "src_11783",
+      "textbook_example_id": 11783,
+      "status": "verified",
+      "problem_type_id": "compute_directed_segment_and_magnitude",
+      "domain_operation": "compute_directed_segment_and_magnitude",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11783/generate.py"
+    },
+    {
+      "component_id": "src_11822",
+      "textbook_example_id": 11822,
+      "status": "verified",
+      "problem_type_id": "compute_triangle_perimeter_from_two_vectors",
+      "domain_operation": "compute_triangle_perimeter_from_two_vectors",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11822/generate.py"
+    }
+  ]
+}

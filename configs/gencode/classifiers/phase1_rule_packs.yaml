@@ -1679,4 +1679,690 @@ skills:
       single_primary_problem_type: false
       split_only_when_checker_or_answer_contract_differs: true
       do_not_create_student_subskills: true
-
+  - skill_id: vh_數學B2_SubSection_3_1_1
+    skill_ch_name: 向量定義
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: vector_diagram_construction_unsupported
+      display_name: 作圖／圖示向量（暫不自動生成）
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: diagram_vector_construction_unsupported
+      block_reason: diagram_vector_construction_unsupported
+    classification_rules:
+    - if_contains:
+      - 如圖
+      prefer_problem_type_id: vector_diagram_construction_unsupported
+    source_examples: []
+    source_policy: &id001
+      source_count_threshold_for_split: 2
+      small_skill_merge_allowed: false
+      min_source_examples: 1
+      allow_single_problem_type: false
+      allow_skill_default_problem_type: false
+      default_problem_type_used: false
+      single_primary_problem_type: false
+      split_only_when_checker_or_answer_contract_differs: true
+      do_not_create_student_subskills: true
+  - skill_id: vh_數學B2_SubSection_3_1_2
+    skill_ch_name: 向量的加法作圖
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: vector_diagram_construction_unsupported
+      display_name: 作圖／圖示向量（暫不自動生成）
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: diagram_vector_construction_unsupported
+      block_reason: diagram_vector_construction_unsupported
+    classification_rules:
+    - if_contains:
+      - 如圖
+      prefer_problem_type_id: vector_diagram_construction_unsupported
+    source_examples: []
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_1_3
+    skill_ch_name: 向量的減法作圖
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: vector_diagram_construction_unsupported
+      display_name: 作圖／圖示向量（暫不自動生成）
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: diagram_vector_construction_unsupported
+      block_reason: diagram_vector_construction_unsupported
+    classification_rules:
+    - if_contains:
+      - 如圖
+      prefer_problem_type_id: vector_diagram_construction_unsupported
+    source_examples: []
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_1_4
+    skill_ch_name: 向量的實數積作圖
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: vector_diagram_construction_unsupported
+      display_name: 作圖／圖示向量（暫不自動生成）
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: diagram_vector_construction_unsupported
+      block_reason: diagram_vector_construction_unsupported
+    classification_rules:
+    - if_contains:
+      - 如圖
+      prefer_problem_type_id: vector_diagram_construction_unsupported
+    source_examples: []
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_1
+    skill_ch_name: 向量的坐標表示法
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_vector_components_and_magnitude
+      display_name: 分量與長度
+      checker: multi_part_answer_checker
+      equivalence: multi_part_answer
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_vector_components_and_magnitude
+      answer_type: multi_part
+      presentation_mode: multiple_inputs
+    - problem_type_id: solve_equal_vector_coordinates
+      display_name: 向量相等求未知數
+      checker: multi_part_answer_checker
+      equivalence: multi_part_answer
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - solve_equal_vector_coordinates
+      answer_type: multi_part
+      presentation_mode: multiple_inputs
+    - problem_type_id: compute_directed_segment_and_magnitude
+      display_name: 有向線段與長度
+      checker: multi_part_answer_checker
+      equivalence: multi_part_answer
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_directed_segment_and_magnitude
+      answer_type: multi_part
+      presentation_mode: multiple_inputs
+    - problem_type_id: solve_parallelogram_fourth_vertex
+      display_name: 平行四邊形第四頂點
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - solve_parallelogram_fourth_vertex
+    - problem_type_id: compute_triangle_perimeter_from_two_vectors
+      display_name: 兩向量求三角形周長（選擇）
+      checker: single_choice_checker
+      equivalence: choice_label
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_triangle_perimeter_from_two_vectors
+      answer_type: single_choice
+      presentation_mode: single_choice
+      runtime_category: deterministic_choice
+    - problem_type_id: vector_mixed_unknown_endpoint_unsupported
+      display_name: 含未知終點的混合題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: mixed_unknown_endpoint_composite_unsupported
+      block_reason: mixed_unknown_endpoint_composite_unsupported
+    classification_rules:
+    - if_contains:
+      - 周長
+      prefer_problem_type_id: compute_triangle_perimeter_from_two_vectors
+    - if_contains:
+      - 平行四邊形
+      prefer_problem_type_id: solve_parallelogram_fourth_vertex
+    - if_contains:
+      - 兩點
+      prefer_problem_type_id: compute_directed_segment_and_magnitude
+    - if_contains:
+      - 試求x
+      - 試求x、y
+      prefer_problem_type_id: solve_equal_vector_coordinates
+    - if_contains:
+      - x分量
+      - y分量
+      prefer_problem_type_id: compute_vector_components_and_magnitude
+    source_examples:
+    - example_id: 11754
+      matched_problem_type_id: compute_vector_components_and_magnitude
+    - example_id: 11755
+      matched_problem_type_id: compute_vector_components_and_magnitude
+    - example_id: 11756
+      matched_problem_type_id: solve_equal_vector_coordinates
+    - example_id: 11757
+      matched_problem_type_id: solve_equal_vector_coordinates
+    - example_id: 11758
+      matched_problem_type_id: compute_directed_segment_and_magnitude
+    - example_id: 11759
+      matched_problem_type_id: compute_directed_segment_and_magnitude
+    - example_id: 11760
+      matched_problem_type_id: solve_parallelogram_fourth_vertex
+    - example_id: 11761
+      matched_problem_type_id: solve_parallelogram_fourth_vertex
+    - example_id: 11775
+      matched_problem_type_id: vector_mixed_unknown_endpoint_unsupported
+    - example_id: 11783
+      matched_problem_type_id: compute_directed_segment_and_magnitude
+    - example_id: 11822
+      matched_problem_type_id: compute_triangle_perimeter_from_two_vectors
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_2
+    skill_ch_name: 向量加減的坐標表示法
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_vector_sum_difference
+      display_name: 向量加減
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_vector_sum_difference
+    - problem_type_id: compute_point_vectors_linear_combination
+      display_name: 點向量線段組合
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_point_vectors_linear_combination
+    - problem_type_id: compute_triangle_chain_and_perimeter
+      display_name: 兩邊向量求第三邊與周長
+      checker: multi_part_answer_checker
+      equivalence: multi_part_answer
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_triangle_chain_and_perimeter
+      answer_type: multi_part
+      presentation_mode: multiple_inputs
+    - problem_type_id: solve_parallelogram_fourth_vertex
+      display_name: 平行四邊形第四頂點
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - solve_parallelogram_fourth_vertex
+    - problem_type_id: compute_vector_linear_combination
+      display_name: 向量線性組合
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_vector_linear_combination
+    - problem_type_id: vector_chain_closure_mcq_unsupported
+      display_name: 封閉折線向量選擇題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_chain_closure_mcq_unsupported
+      block_reason: vector_chain_closure_mcq_unsupported
+    classification_rules:
+    - if_contains:
+      - 平行四邊形
+      prefer_problem_type_id: solve_parallelogram_fourth_vertex
+    - if_contains:
+      - 周長
+      prefer_problem_type_id: compute_triangle_chain_and_perimeter
+    - if_contains:
+      - 四點
+      prefer_problem_type_id: compute_point_vectors_linear_combination
+    - if_contains:
+      - SP
+      prefer_problem_type_id: vector_chain_closure_mcq_unsupported
+    source_examples:
+    - example_id: 11762
+      matched_problem_type_id: compute_vector_sum_difference
+    - example_id: 11763
+      matched_problem_type_id: compute_vector_sum_difference
+    - example_id: 11764
+      matched_problem_type_id: compute_point_vectors_linear_combination
+    - example_id: 11765
+      matched_problem_type_id: compute_point_vectors_linear_combination
+    - example_id: 11766
+      matched_problem_type_id: compute_triangle_chain_and_perimeter
+    - example_id: 11767
+      matched_problem_type_id: compute_triangle_chain_and_perimeter
+    - example_id: 11776
+      matched_problem_type_id: solve_parallelogram_fourth_vertex
+    - example_id: 11777
+      matched_problem_type_id: compute_vector_sum_difference
+    - example_id: 11778
+      matched_problem_type_id: compute_point_vectors_linear_combination
+    - example_id: 11779
+      matched_problem_type_id: compute_triangle_chain_and_perimeter
+    - example_id: 11780
+      matched_problem_type_id: compute_vector_linear_combination
+    - example_id: 11807
+      matched_problem_type_id: compute_vector_sum_difference
+    - example_id: 11808
+      matched_problem_type_id: compute_vector_linear_combination
+    - example_id: 11819
+      matched_problem_type_id: compute_vector_sum_difference
+    - example_id: 11821
+      matched_problem_type_id: vector_chain_closure_mcq_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_3
+    skill_ch_name: 向量實數積的坐標表示法
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_vector_linear_combination
+      display_name: 實數積線性組合
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_vector_linear_combination
+    - problem_type_id: compute_scalar_multiple_coordinates
+      display_name: 實數積坐標
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_scalar_multiple_coordinates
+    - problem_type_id: vector_collinear_ratio_mcq_unsupported
+      display_name: 共線比例選擇題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_collinear_ratio_mcq_unsupported
+      block_reason: vector_collinear_ratio_mcq_unsupported
+    - problem_type_id: vector_solve_point_from_combo_unsupported
+      display_name: 由線性組合解未知點
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_solve_point_from_combo_unsupported
+      block_reason: vector_solve_point_from_combo_unsupported
+    classification_rules:
+    - if_contains:
+      - 共線
+      prefer_problem_type_id: vector_collinear_ratio_mcq_unsupported
+    source_examples:
+    - example_id: 11784
+      matched_problem_type_id: vector_solve_point_from_combo_unsupported
+    - example_id: 11820
+      matched_problem_type_id: vector_collinear_ratio_mcq_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_4
+    skill_ch_name: 向量實數積的基本性質
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_vector_linear_combination
+      display_name: 實數積線性組合
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_vector_linear_combination
+    - problem_type_id: vector_solve_unknown_vector_equation_unsupported
+      display_name: 向量方程求解未知向量
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_solve_unknown_vector_equation_unsupported
+      block_reason: vector_solve_unknown_vector_equation_unsupported
+    classification_rules:
+    - if_contains:
+      - 坐標表示
+      prefer_problem_type_id: compute_vector_linear_combination
+    source_examples:
+    - example_id: 11768
+      matched_problem_type_id: compute_vector_linear_combination
+    - example_id: 11769
+      matched_problem_type_id: compute_vector_linear_combination
+    - example_id: 11823
+      matched_problem_type_id: vector_solve_unknown_vector_equation_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_5
+    skill_ch_name: 向量的平行
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: solve_parallel_vector_parameter
+      display_name: 平行求參數
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - solve_parallel_vector_parameter
+    - problem_type_id: vector_parallel_then_magnitude_mcq_unsupported
+      display_name: 平行後求長度選擇題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_parallel_then_magnitude_mcq_unsupported
+      block_reason: vector_parallel_then_magnitude_mcq_unsupported
+    classification_rules:
+    - if_contains:
+      - 平行
+      prefer_problem_type_id: solve_parallel_vector_parameter
+    source_examples:
+    - example_id: 11770
+      matched_problem_type_id: solve_parallel_vector_parameter
+    - example_id: 11771
+      matched_problem_type_id: solve_parallel_vector_parameter
+    - example_id: 11781
+      matched_problem_type_id: solve_parallel_vector_parameter
+    - example_id: 11809
+      matched_problem_type_id: vector_parallel_then_magnitude_mcq_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_2_6
+    skill_ch_name: 單位向量
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_unit_vector
+      display_name: 單位向量
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_unit_vector
+    - problem_type_id: compute_scaled_direction_vector
+      display_name: 指定長度方向向量
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_scaled_direction_vector
+    - problem_type_id: vector_unit_identification_mcq_unsupported
+      display_name: 辨識單位向量選擇題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_unit_identification_mcq_unsupported
+      block_reason: vector_unit_identification_mcq_unsupported
+    classification_rules:
+    - if_contains:
+      - 不是單位向量
+      prefer_problem_type_id: vector_unit_identification_mcq_unsupported
+    - if_contains:
+      - 長度為
+      prefer_problem_type_id: compute_scaled_direction_vector
+    - if_contains:
+      - 單位向量
+      prefer_problem_type_id: compute_unit_vector
+    source_examples:
+    - example_id: 11772
+      matched_problem_type_id: compute_scaled_direction_vector
+    - example_id: 11773
+      matched_problem_type_id: compute_scaled_direction_vector
+    - example_id: 11774
+      matched_problem_type_id: vector_unit_identification_mcq_unsupported
+    - example_id: 11782
+      matched_problem_type_id: compute_scaled_direction_vector
+    - example_id: 11810
+      matched_problem_type_id: compute_scaled_direction_vector
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_3_1
+    skill_ch_name: 向量的夾角
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_cosine_of_angle_from_dot
+      display_name: 由坐標求夾角餘弦
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_cosine_of_angle_from_dot
+    - problem_type_id: vector_angle_application_narrative_unsupported
+      display_name: 航向修正應用敘事題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_angle_application_narrative_unsupported
+      block_reason: vector_angle_application_narrative_unsupported
+    - problem_type_id: vector_angle_quality_mcq_unsupported
+      display_name: 夾角銳鈍直角判斷
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_angle_quality_mcq_unsupported
+      block_reason: vector_angle_quality_mcq_unsupported
+    classification_rules:
+    - if_contains:
+      - 夾角
+      prefer_problem_type_id: compute_cosine_of_angle_from_dot
+    source_examples:
+    - example_id: 11799
+      matched_problem_type_id: compute_cosine_of_angle_from_dot
+    - example_id: 11805
+      matched_problem_type_id: vector_angle_application_narrative_unsupported
+    - example_id: 11815
+      matched_problem_type_id: vector_angle_quality_mcq_unsupported
+    - example_id: 11824
+      matched_problem_type_id: compute_cosine_of_angle_from_dot
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_3_2
+    skill_ch_name: 向量內積的定義
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_dot_product_from_magnitudes_angle
+      display_name: 由長度與夾角求內積
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_dot_product_from_magnitudes_angle
+    - problem_type_id: vector_regular_polygon_dot_unsupported
+      display_name: 正多邊形邊向量內積
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_regular_polygon_dot_unsupported
+      block_reason: vector_regular_polygon_dot_unsupported
+    - problem_type_id: vector_dot_identity_multipart_unsupported
+      display_name: 內積恆等式多小題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_identity_multipart_unsupported
+      block_reason: vector_dot_identity_multipart_unsupported
+    classification_rules:
+    - if_contains:
+      - 夾角
+      prefer_problem_type_id: compute_dot_product_from_magnitudes_angle
+    source_examples:
+    - example_id: 11785
+      matched_problem_type_id: vector_regular_polygon_dot_unsupported
+    - example_id: 11786
+      matched_problem_type_id: vector_regular_polygon_dot_unsupported
+    - example_id: 11796
+      matched_problem_type_id: vector_regular_polygon_dot_unsupported
+    - example_id: 11797
+      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+    - example_id: 11802
+      matched_problem_type_id: vector_dot_identity_multipart_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_3_3
+    skill_ch_name: 向量內積的坐標表示法
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_dot_product_coordinates
+      display_name: 坐標內積
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_dot_product_coordinates
+    - problem_type_id: compute_cosine_of_angle_from_dot
+      display_name: 內積求夾角餘弦
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_cosine_of_angle_from_dot
+    - problem_type_id: vector_dot_diagram_plot_unsupported
+      display_name: 航標坐標標示圖題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_diagram_plot_unsupported
+      block_reason: vector_dot_diagram_plot_unsupported
+    - problem_type_id: vector_dot_parameter_equation_mcq_unsupported
+      display_name: 內積方程求參數選擇
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_parameter_equation_mcq_unsupported
+      block_reason: vector_dot_parameter_equation_mcq_unsupported
+    - problem_type_id: vector_dot_midpoint_composite_unsupported
+      display_name: 中點複合內積
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_midpoint_composite_unsupported
+      block_reason: vector_dot_midpoint_composite_unsupported
+    classification_rules:
+    - if_contains:
+      - 內積
+      prefer_problem_type_id: compute_dot_product_coordinates
+    source_examples:
+    - example_id: 11787
+      matched_problem_type_id: compute_dot_product_coordinates
+    - example_id: 11788
+      matched_problem_type_id: compute_dot_product_coordinates
+    - example_id: 11789
+      matched_problem_type_id: compute_cosine_of_angle_from_dot
+    - example_id: 11790
+      matched_problem_type_id: compute_cosine_of_angle_from_dot
+    - example_id: 11798
+      matched_problem_type_id: compute_dot_product_coordinates
+    - example_id: 11804
+      matched_problem_type_id: vector_dot_diagram_plot_unsupported
+    - example_id: 11811
+      matched_problem_type_id: compute_dot_product_coordinates
+    - example_id: 11812
+      matched_problem_type_id: vector_dot_midpoint_composite_unsupported
+    - example_id: 11813
+      matched_problem_type_id: vector_dot_parameter_equation_mcq_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_3_4
+    skill_ch_name: 兩向量的垂直
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: solve_perpendicular_vector_parameter
+      display_name: 垂直求參數
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - solve_perpendicular_vector_parameter
+    - problem_type_id: vector_perp_composite_expression_unsupported
+      display_name: 垂直複合表達式求參數
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_perp_composite_expression_unsupported
+      block_reason: vector_perp_composite_expression_unsupported
+    classification_rules:
+    - if_contains:
+      - 垂直
+      prefer_problem_type_id: solve_perpendicular_vector_parameter
+    source_examples:
+    - example_id: 11791
+      matched_problem_type_id: solve_perpendicular_vector_parameter
+    - example_id: 11792
+      matched_problem_type_id: solve_perpendicular_vector_parameter
+    - example_id: 11800
+      matched_problem_type_id: solve_perpendicular_vector_parameter
+    - example_id: 11814
+      matched_problem_type_id: vector_perp_composite_expression_unsupported
+    source_policy: *id001
+  - skill_id: vh_數學B2_SubSection_3_3_5
+    skill_ch_name: 向量內積的性質
+    classifier_source: human_confirmed
+    problem_types:
+    - problem_type_id: compute_dot_product_from_magnitudes_angle
+      display_name: 由長度夾角求內積／長度
+      checker: expression_checker
+      equivalence: algebraic_equivalent
+      runtime_candidate: true
+      requires_human_action: false
+      required_domain_capabilities:
+      - compute_dot_product_from_magnitudes_angle
+    - problem_type_id: vector_dot_exam_diagram_unsupported
+      display_name: 統測圖示內積題
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_exam_diagram_unsupported
+      block_reason: vector_dot_exam_diagram_unsupported
+    - problem_type_id: vector_dot_identity_solve_angle_unsupported
+      display_name: 由長度恆等式反求夾角
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_dot_identity_solve_angle_unsupported
+      block_reason: vector_dot_identity_solve_angle_unsupported
+    - problem_type_id: vector_perp_dot_expand_unsupported
+      display_name: 垂直向量展開求值
+      checker: manual_review_checker
+      equivalence: manual_review_or_ai_judged
+      runtime_candidate: false
+      requires_human_action: true
+      notes: vector_perp_dot_expand_unsupported
+      block_reason: vector_perp_dot_expand_unsupported
+    classification_rules:
+    - if_contains:
+      - 夾角
+      prefer_problem_type_id: compute_dot_product_from_magnitudes_angle
+    source_examples:
+    - example_id: 11793
+      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+    - example_id: 11794
+      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+    - example_id: 11795
+      matched_problem_type_id: vector_dot_exam_diagram_unsupported
+    - example_id: 11801
+      matched_problem_type_id: vector_perp_dot_expand_unsupported
+    - example_id: 11803
+      matched_problem_type_id: vector_dot_identity_solve_angle_unsupported
+    - example_id: 11825
+      matched_problem_type_id: compute_dot_product_from_magnitudes_angle
+    source_policy: *id001

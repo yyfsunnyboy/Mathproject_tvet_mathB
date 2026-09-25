@@ -1690,3 +1690,145 @@ register_domain_spec(DomainCapabilitySpec(
     },
 ))
 
+
+_VECTOR_PLANE_ADAPTER = "core.gencode.vector_plane_capability_adapter.adapt_vector_plane_matrix"
+_VECTOR_PLANE_VALIDATOR = "validate_vector_plane_matrix"
+_VECTOR_PLANE_BUILDER = "build_vector_plane_matrix"
+_VECTOR_PLANE_CONTRACT = "b2_ch3_vector_plane_exact_v1"
+
+
+def _vector_op(
+    key: str,
+    *,
+    answer_types: tuple[str, ...] = ("expression", "short_answer"),
+    presentation_modes: tuple[str, ...] = ("short_answer",),
+    features: tuple[str, ...] = (),
+) -> OperationSpec:
+    return _op(
+        key,
+        _VECTOR_PLANE_BUILDER,
+        payload_adapter=_VECTOR_PLANE_ADAPTER,
+        validator=_VECTOR_PLANE_VALIDATOR,
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentation_modes,
+        required_source_features=features,
+        runtime_contract=_VECTOR_PLANE_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="vector.plane",
+    domain_module="core.domain.vector_plane_domain",
+    entrypoint="build_vector_plane_matrix",
+    capabilities=frozenset({
+        "compute_vector_components_and_magnitude",
+        "solve_equal_vector_coordinates",
+        "compute_directed_segment_and_magnitude",
+        "solve_parallelogram_fourth_vertex",
+        "compute_triangle_perimeter_from_two_vectors",
+        "compute_vector_sum_difference",
+        "compute_point_vectors_linear_combination",
+        "compute_scalar_multiple_coordinates",
+        "solve_parallel_vector_parameter",
+        "compute_unit_vector",
+        "compute_dot_product_coordinates",
+        "compute_dot_product_from_magnitudes_angle",
+        "solve_perpendicular_vector_parameter",
+        "compute_cosine_of_angle_from_dot",
+        "compute_vector_linear_combination",
+        "compute_scaled_direction_vector",
+        "compute_triangle_chain_and_perimeter",
+    }),
+    operations={
+        "compute_vector_components_and_magnitude": _vector_op(
+            "compute_vector_components_and_magnitude",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("vector_components", "magnitude"),
+        ),
+        "solve_equal_vector_coordinates": _vector_op(
+            "solve_equal_vector_coordinates",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("equal_vectors", "unknown_coordinates"),
+        ),
+        "compute_directed_segment_and_magnitude": _vector_op(
+            "compute_directed_segment_and_magnitude",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("two_points", "directed_segment"),
+        ),
+        "solve_parallelogram_fourth_vertex": _vector_op(
+            "solve_parallelogram_fourth_vertex",
+            features=("parallelogram", "three_vertices"),
+        ),
+        "compute_triangle_perimeter_from_two_vectors": _vector_op(
+            "compute_triangle_perimeter_from_two_vectors",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("two_side_vectors", "perimeter"),
+        ),
+        "compute_vector_sum_difference": _vector_op(
+            "compute_vector_sum_difference",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("vector_add_sub",),
+        ),
+        "compute_point_vectors_linear_combination": _vector_op(
+            "compute_point_vectors_linear_combination",
+            features=("named_points", "segment_sum"),
+        ),
+        "compute_scalar_multiple_coordinates": _vector_op(
+            "compute_scalar_multiple_coordinates",
+            features=("scalar_multiple",),
+        ),
+        "solve_parallel_vector_parameter": _vector_op(
+            "solve_parallel_vector_parameter",
+            features=("parallel_condition", "parameter"),
+        ),
+        "compute_unit_vector": _vector_op(
+            "compute_unit_vector",
+            features=("unit_vector",),
+        ),
+        "compute_dot_product_coordinates": _vector_op(
+            "compute_dot_product_coordinates",
+            features=("dot_product", "coordinates"),
+        ),
+        "compute_dot_product_from_magnitudes_angle": _vector_op(
+            "compute_dot_product_from_magnitudes_angle",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("magnitudes", "included_angle"),
+        ),
+        "solve_perpendicular_vector_parameter": _vector_op(
+            "solve_perpendicular_vector_parameter",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("perpendicular_condition", "parameter"),
+        ),
+        "compute_cosine_of_angle_from_dot": _vector_op(
+            "compute_cosine_of_angle_from_dot",
+            answer_types=("expression", "single_choice"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("angle_cosine", "dot_product"),
+        ),
+        "compute_vector_linear_combination": _vector_op(
+            "compute_vector_linear_combination",
+            features=("linear_combination",),
+        ),
+        "compute_scaled_direction_vector": _vector_op(
+            "compute_scaled_direction_vector",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("scaled_unit", "direction"),
+        ),
+        "compute_triangle_chain_and_perimeter": _vector_op(
+            "compute_triangle_chain_and_perimeter",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chain_sides", "perimeter"),
+        ),
+    },
+))
+
