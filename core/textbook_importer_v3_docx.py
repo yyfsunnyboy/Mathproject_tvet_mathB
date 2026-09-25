@@ -80,11 +80,15 @@ def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
     """Read numbered concept headings with inherited Word typography; never persist."""
     from docx import Document
     from docx.text.paragraph import Paragraph
-    from core.mathb_concept_heading import detect_mathb_concept_heading
+    from core.mathb_concept_heading import (
+        detect_mathb_concept_heading,
+        parse_mathb_section_heading,
+    )
 
     doc = Document(source)
     candidates, unresolved, sections = [], [], []
     seen = {}
+    expected_code = str(section_code or "").strip()
     for order, element in enumerate(doc.element.body.iter(f"{{{W_NS}}}p"), 1):
         p = Paragraph(element, doc)
         text = p.text.strip()
@@ -109,9 +113,19 @@ def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
                         style=p.style.name, font=east[0] if east else inherited("name"),
                         latin_font=inherited("name"), size=size.pt if size else None,
                         bold=inherited("bold"))
-        if re.match(r'^' + re.escape(section_code) + r'\s+\S', text):
+        section_hit = parse_mathb_section_heading(
+            text, expected_section_code=expected_code
+        )
+        if section_hit:
             if not sections:
-                sections.append(evidence)
+                sections.append(
+                    dict(
+                        evidence,
+                        section_code=section_hit["section_code"],
+                        section_title=section_hit["section_title"],
+                        normalized_identity=section_hit["normalized_identity"],
+                    )
+                )
             continue
         hit = detect_mathb_concept_heading(text, current_section_code=section_code)
         if not hit or not hit.get("concept_code"):

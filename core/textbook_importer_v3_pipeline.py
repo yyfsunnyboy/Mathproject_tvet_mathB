@@ -608,6 +608,7 @@ def _fill_chapter_section_from_outline_or_lines(
 
 def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
     """Pre-import gate: structural candidates and read-only curriculum binding."""
+    from core.mathb_concept_heading import section_identities_match
     from core.textbook_section_outline import ensure_section_outline_from_authoritative_metadata_v2
 
     audit = extract_docx_skill_headings(docx_path, section_code=curriculum_info['section_code'])
@@ -621,7 +622,14 @@ def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
     audit['curriculum_info'] = info
     info['structural_skill_candidates'] = audit['skill_candidates']
     heading = audit['section_heading']
-    same_section = heading and re.sub(r'\s+', '', heading['source_heading_text']) == re.sub(r'\s+', '', info['section'])
+    same_section = bool(
+        section_identities_match(
+            heading,
+            info.get("section"),
+            expected_section_code=str(info.get("section_code") or ""),
+        )
+    )
+    audit['same_section'] = same_section
     audit['curriculum_binding'] = 'PASS' if (
         same_section and audit['candidate_count'] > 0 and not audit['unresolved_heading_count']
         and outline['action'] in ('existing', 'would_create')) else 'FAIL'
