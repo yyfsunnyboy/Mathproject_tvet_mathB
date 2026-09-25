@@ -1708,45 +1708,161 @@ def _build_line_equation_question_text(
     raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
 
 
+def _choice_semantic_key(text: Any) -> str:
+    from core.gencode.choice_contract_validator import choice_semantic_key
+
+    return choice_semantic_key(text)
+
+
+def _synthesize_coordinate_distractors(canonical: str) -> list[str]:
+    """Build distinct coordinate-pair distractors without technical suffixes."""
+    try:
+        from core.domain.vector_plane_domain import format_pair
+        from core.gencode.choice_contract_validator import plainify_math_token
+        import sympy as sp
+
+        cleaned = str(canonical).replace("$", "")
+        cleaned = cleaned.replace(r"\left", "").replace(r"\right", "")
+        m = re.search(
+            r"[\(\[]\s*([^,]+)\s*,\s*([^)\]]+)\s*[\)\]]",
+            cleaned,
+        )
+        if not m:
+            return []
+
+        def _coord(token: str):
+            plain = plainify_math_token(token.replace("−", "-"))
+            return sp.simplify(sp.sympify(plain))
+
+        x = _coord(m.group(1))
+        y = _coord(m.group(2))
+        candidates = [
+            format_pair(-x, -y),
+            format_pair(-x, y),
+            format_pair(x, -y),
+            format_pair(y, x),
+            format_pair(x + 1, y),
+            format_pair(x, y + 1),
+            format_pair(x - 1, y),
+            format_pair(x, y - 1),
+            format_pair(x + 1, y + 1),
+            format_pair(x - 1, y - 1),
+            format_pair(1, 0),
+            format_pair(0, 1),
+            format_pair(-1, 0),
+            format_pair(0, -1),
+            format_pair(1, 1),
+            format_pair(-1, -1),
+            format_pair(2, 0),
+            format_pair(0, 2),
+        ]
+        correct = format_pair(x, y)
+        out: list[str] = []
+        seen = {_choice_semantic_key(correct)}
+        for cand in candidates:
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            out.append(cand)
+            if len(out) >= 3:
+                break
+        return out
+    except Exception:
+        return []
+
+
+def _synthesize_scalar_distractors(canonical: str) -> list[str]:
+    """Build distinct scalar/symbolic distractors without technical suffixes."""
+    try:
+        import sympy as sp
+        from core.domain.vector_plane_domain import canonical_exact
+
+        expr = sp.simplify(sp.sympify(str(canonical).replace("$", "").replace("−", "-")))
+        candidates = [
+            -expr,
+            sp.simplify(expr + 1),
+            sp.simplify(expr - 1),
+            sp.simplify(2 * expr),
+            sp.Integer(0),
+            sp.Integer(1),
+            -sp.Integer(1),
+            sp.simplify(-expr + 1),
+        ]
+        out: list[str] = []
+        seen = {_choice_semantic_key(canonical_exact(expr))}
+        for cand in candidates:
+            text = canonical_exact(cand)
+            key = _choice_semantic_key(text)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            out.append(text)
+            if len(out) >= 3:
+                break
+        return out
+    except Exception:
+        return []
+
+
 def _build_choice_options(
     canonical: str,
     distractors: list[Any],
     *,
     seed_text: str,
-    allow_technical_suffix: bool = True,
+    allow_technical_suffix: bool = False,
 ) -> tuple[list[dict[str, str]], str]:
     unique_wrong: list[str] = []
-    seen: set[str] = {str(canonical).strip()}
+    seen: set[str] = {_choice_semantic_key(canonical)}
     for item in distractors:
         text = str(item).strip()
-        if not text or text in seen:
+        key = _choice_semantic_key(text)
+        if not text or not key or key in seen:
             continue
-        seen.add(text)
+        # Never keep technical suffix artifacts in student-visible text.
+        if re.search(r"_+\d+$", text):
+            continue
+        seen.add(key)
         unique_wrong.append(text)
 
     # Ensure 3 distractors for A/B/C/D when possible.
+    if len(unique_wrong) < 3:
+        for cand in _synthesize_coordinate_distractors(canonical):
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            unique_wrong.append(cand)
+            if len(unique_wrong) >= 3:
+                break
+    if len(unique_wrong) < 3:
+        for cand in _synthesize_scalar_distractors(canonical):
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            unique_wrong.append(cand)
+            if len(unique_wrong) >= 3:
+                break
     if len(unique_wrong) < 3:
         try:
             base = int(str(canonical).strip())
             for d in (-3, -2, -1, 1, 2, 3, 4, -4, 5, -5, 6, -6):
                 cand = str(base + d)
-                if cand in seen:
+                key = _choice_semantic_key(cand)
+                if key in seen:
                     continue
-                seen.add(cand)
+                seen.add(key)
                 unique_wrong.append(cand)
                 if len(unique_wrong) >= 3:
                     break
         except (TypeError, ValueError):
             if not allow_technical_suffix:
                 raise ValueError("insufficient_semantic_distractors")
-            for i in range(1, 8):
-                cand = f"{canonical}_{i}"
-                if cand in seen:
-                    continue
-                seen.add(cand)
-                unique_wrong.append(cand)
-                if len(unique_wrong) >= 3:
-                    break
+            raise ValueError("insufficient_semantic_distractors")
+
+    if len(unique_wrong) < 3:
+        raise ValueError("insufficient_semantic_distractors")
 
     option_texts = [str(canonical).strip()] + unique_wrong[:3]
     rng = random.Random(sum(ord(ch) for ch in seed_text))
@@ -1754,10 +1870,11 @@ def _build_choice_options(
 
     choices: list[dict[str, str]] = []
     correct_label = "A"
+    correct_key = _choice_semantic_key(canonical)
     for index, text in enumerate(option_texts):
         label = chr(ord("A") + index)
         choices.append({"label": label, "text": text})
-        if text == str(canonical).strip():
+        if _choice_semantic_key(text) == correct_key:
             correct_label = label
     return choices, correct_label
 
@@ -1784,15 +1901,49 @@ def _prepare_choice_label_matrix_answer(
     answer = matrix.get("answer")
     if not isinstance(answer, dict) or answer.get("correct_label"):
         return matrix
+
+    prepared = dict(matrix)
+    prepared_answer = dict(answer)
+
+    # Domain-authored MCQ contracts already carry a shuffled label contract.
+    top_label = str(matrix.get("correct_label") or "").strip().upper()
+    if top_label in {"A", "B", "C", "D"}:
+        prepared_answer["correct_label"] = top_label
+        prepared["answer"] = prepared_answer
+        return prepared
+
+    matrix_choices = matrix.get("choices") if isinstance(matrix.get("choices"), list) else []
     display_answer = str(answer.get("canonical_form", answer.get("value", "")))
+    correct_key = _choice_semantic_key(display_answer)
+    if len(matrix_choices) >= 4 and correct_key:
+        for row in matrix_choices:
+            if not isinstance(row, dict):
+                continue
+            label = str(row.get("label") or row.get("key") or "").strip().upper()
+            value = str(row.get("value") or row.get("text") or "").strip().strip("$")
+            if label in {"A", "B", "C", "D"} and _choice_semantic_key(value) == correct_key:
+                prepared_answer["correct_label"] = label
+                prepared["answer"] = prepared_answer
+                return prepared
+
+    distractors = list(matrix.get("distractors") or [])
+    if len(distractors) < 3 and matrix_choices:
+        for row in matrix_choices:
+            if not isinstance(row, dict):
+                continue
+            value = str(row.get("value") or row.get("text") or "").strip().strip("$")
+            key = _choice_semantic_key(value)
+            if not value or not key or key == correct_key:
+                continue
+            distractors.append(value)
+
     _, correct_label = _build_choice_options(
         display_answer,
-        matrix.get("distractors", []),
+        distractors,
         seed_text=f"{op}|{display_answer}|{component_id or ''}",
     )
-    prepared = dict(matrix)
-    prepared["answer"] = dict(answer)
-    prepared["answer"]["correct_label"] = correct_label
+    prepared_answer["correct_label"] = correct_label
+    prepared["answer"] = prepared_answer
     return prepared
 
 
@@ -3550,7 +3701,7 @@ def convert_domain_matrix_to_question_payload(
                     display_answer,
                     normalized.get("distractors", []),
                     seed_text=f"{problem_type_id or op}|{display_answer}",
-                    allow_technical_suffix=not factor_like,
+                    allow_technical_suffix=False,
                 )
                 choices = [
                     {

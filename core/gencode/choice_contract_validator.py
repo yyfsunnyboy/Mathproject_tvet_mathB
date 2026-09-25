@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from core.gencode.v3_error_codes import CHOICE_CONTRACT_INCOMPLETE
@@ -12,6 +13,48 @@ MIN_SINGLE_CHOICE_COUNT = 2
 MAX_SINGLE_CHOICE_COUNT = 8
 VOCATIONAL_MC_CHOICE_COUNT = 4
 _VALID_CHOICE_CHECKERS = frozenset({"choice_label_checker"})
+_TECHNICAL_SUFFIX_RE = re.compile(r"_+\d+$")
+_LATEX_FRAC_RE = re.compile(r"(-?)\\frac\{(-?\d+)\}\{(-?\d+)\}")
+_LATEX_SQRT_RE = re.compile(r"\\sqrt\{([^}]+)\}")
+
+
+def plainify_math_token(token: str) -> str:
+    """Convert common classroom LaTeX tokens into sympy-friendly plain text."""
+    text = str(token or "").strip()
+    if not text:
+        return text
+    text = text.replace(r"\,", "").replace(r"\ ", "").replace(" ", "")
+    text = text.replace(r"\left", "").replace(r"\right", "")
+    text = _LATEX_FRAC_RE.sub(r"(\1\2)/(\3)", text)
+    text = _LATEX_SQRT_RE.sub(r"sqrt(\1)", text)
+    text = text.replace(r"\sqrt", "sqrt")
+    return text
+
+
+def choice_semantic_key(text: Any) -> str:
+    """Normalize choice text for semantic uniqueness (coordinates / plain strings)."""
+    raw = str(text or "").strip()
+    if not raw:
+        return ""
+    cleaned = _TECHNICAL_SUFFIX_RE.sub("", raw).strip().strip("$").strip()
+    cleaned = cleaned.replace(r"\left", "").replace(r"\right", "")
+    cleaned = cleaned.replace(r"\,", "").replace(r"\ ", " ")
+    try:
+        from core.domain.vector_plane_domain import format_pair
+
+        m = re.search(
+            r"[\(\[]\s*([^,]+)\s*,\s*([^)\]]+)\s*[\)\]]",
+            cleaned.replace("$", ""),
+        )
+        if m:
+            return format_pair(plainify_math_token(m.group(1)), plainify_math_token(m.group(2)))
+    except Exception:
+        pass
+    return re.sub(r"\s+", "", cleaned).casefold()
+
+
+def has_technical_choice_suffix(text: Any) -> bool:
+    return bool(_TECHNICAL_SUFFIX_RE.search(str(text or "").strip().rstrip("$")))
 
 
 def is_vocational_choice(payload: dict[str, Any], skill_id: str = "") -> bool:
@@ -43,11 +86,22 @@ def validate_vocational_multiple_choice(payload: dict[str, Any], skill_id: str =
     values = [c["value"].strip().casefold() for c in choices]
     if any(not value or value in {"?", "...", "待補"} for value in values):
         errors.append("vocational_choice_blank_or_placeholder")
+    if any(has_technical_choice_suffix(c.get("text") or c.get("value") or "") for c in choices):
+        errors.append("vocational_choice_technical_suffix")
+    semantic_keys = [choice_semantic_key(c.get("value") or c.get("text") or "") for c in choices]
+    if any(not key for key in semantic_keys) or len(set(semantic_keys)) != len(semantic_keys):
+        errors.append("vocational_choice_semantic_duplicate")
     if len(set(values)) != len(values):
         errors.append("vocational_choice_duplicate")
     answer = _resolve_answer(payload)
     if sum(_answer_matches_choice(answer, c) for c in choices) != 1:
         errors.append("vocational_answer_mapping")
+    # Exactly one choice may match the expected semantic answer.
+    expected = str(payload.get("canonical_answer") or payload.get("semantic_answer") or "")
+    if expected:
+        matches = sum(1 for c in choices if choice_semantic_key(c.get("value") or c.get("text")) == choice_semantic_key(expected))
+        if matches > 1:
+            errors.append("vocational_multi_correct")
     return errors
 
 

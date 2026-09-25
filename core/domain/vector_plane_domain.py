@@ -475,6 +475,58 @@ def compute_scaled_direction_vector(
     }
 
 
+def _scaled_direction_distractors(
+    *,
+    correct: tuple[Any, Any],
+    vector: Any,
+    length: Any,
+    direction: str,
+    rng: random.Random,
+) -> list[str]:
+    """Pedagogical distractors for same/opposite scaled-direction MCQ (display-safe)."""
+    cx, cy = correct
+    vx, vy = _as_pair(vector, name="vector")
+    L = sp.simplify(sp.sympify(length))
+    correct_text = format_pair(cx, cy)
+    wrong_dir = "opposite" if str(direction) == "same" else "same"
+    flipped = compute_scaled_direction_vector(vector=(vx, vy), length=L, direction=wrong_dir)
+    other_len = sp.Integer(int(L) + 1) if getattr(L, "is_integer", False) else sp.simplify(L + 1)
+    if other_len == 0:
+        other_len = sp.Integer(2)
+    wrong_mag = compute_scaled_direction_vector(
+        vector=(vx, vy), length=other_len, direction=direction
+    )
+    candidates = [
+        format_pair(*flipped["result"]),
+        format_pair(vx, vy),
+        format_pair(*wrong_mag["result"]),
+        format_pair(cy, cx),
+        format_pair(-cx, cy),
+        format_pair(cx, -cy),
+        format_pair(0, -L if cy != 0 or cx == 0 else L),
+        format_pair(-L if cx != 0 or cy == 0 else L, 0),
+    ]
+    unique: list[str] = []
+    seen = {correct_text}
+    for text in candidates:
+        if text in seen:
+            continue
+        seen.add(text)
+        unique.append(text)
+        if len(unique) >= 3:
+            break
+    filler_idx = 0
+    while len(unique) < 3:
+        filler_idx += 1
+        cand = format_pair(cx + filler_idx, cy - filler_idx)
+        if cand in seen:
+            continue
+        seen.add(cand)
+        unique.append(cand)
+    rng.shuffle(unique)
+    return unique[:3]
+
+
 def compute_triangle_chain_and_perimeter(*, ab: Any, bc: Any) -> dict[str, Any]:
     abx, aby = _as_pair(ab, name="AB")
     bcx, bcy = _as_pair(bc, name="BC")
@@ -714,6 +766,16 @@ def build_vector_plane_matrix(
             parts = {"vector": result["canonical"]}
             answer_value = result["canonical"]
             answer_type = "expression"
+            rx, ry = result["result"]
+            wrong_mode = "difference" if mode in {"sum", "add", "+"} else "sum"
+            flipped = compute_vector_sum_difference(a=payload["a"], b=payload["b"], mode=wrong_mode)
+            distractors = [
+                format_pair(-rx, -ry),
+                format_pair(rx, -ry),
+                format_pair(-rx, ry),
+                flipped["canonical"],
+                format_pair(ry, rx),
+            ]
         explanation = ["分量分別相加（或相減）。"]
 
     elif op == POINTS_LINEAR_COMBO_OP:
@@ -947,6 +1009,13 @@ def build_vector_plane_matrix(
             f"設 $\\vec{{a}}={latex_pair(vx, vy)}$，試求與 $\\vec{{a}}$ "
             f"{'同方向' if direction == 'same' else '反方向'}且長度為 ${L}$ 的向量。"
         )
+        distractors = _scaled_direction_distractors(
+            correct=result["result"],
+            vector=payload["vector"],
+            length=payload["length"],
+            direction=direction,
+            rng=rng,
+        )
         if payload.get("with_unit"):
             parts = {"unit": result["canonical_unit"], "vector": result["canonical"]}
             answer_value = parts
@@ -1015,6 +1084,14 @@ def build_vector_plane_matrix(
         matrix["choices"] = choice_meta["choices"]
         matrix["correct_label"] = choice_meta["correct_label"]
         matrix["semantic_answer"] = choice_meta["semantic_answer"]
+        if not matrix.get("distractors"):
+            semantic = str(choice_meta.get("semantic_answer") or "")
+            matrix["distractors"] = [
+                str(c.get("value") or c.get("text") or "").strip().strip("$")
+                for c in choice_meta.get("choices") or []
+                if isinstance(c, dict)
+                and str(c.get("value") or c.get("text") or "").strip().strip("$") != semantic
+            ]
     return matrix
 
 

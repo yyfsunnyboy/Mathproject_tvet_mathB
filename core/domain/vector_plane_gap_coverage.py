@@ -818,15 +818,14 @@ def build_gap_matrix(
     elif op == UNIT_ID_MCQ_OP:
         # which is NOT unit vector
         correct = r"(\frac{1}{3},\ \frac{2}{3})"  # mag sqrt(5)/3 != 1
-        options = [
-            correct,
+        distractors = [
             r"(-1,\ 0)",
             r"(\frac{3}{5},\ -\frac{4}{5})",
             r"(\frac{\sqrt{3}}{2},\ \frac{1}{2})",
         ]
-        result = {"canonical": "A"}  # will remap after shuffle via choice_meta on semantic
+        result = {"canonical": correct}
         # Use semantic as the non-unit pair string matching choice value
-        choice_meta = _choice_payload(correct, options[1:], rng)
+        choice_meta = _choice_payload(correct, distractors, rng)
         question = "下列哪一個向量不是單位向量？"
         answer_value = correct
         presentation = "single_choice"
@@ -1143,6 +1142,15 @@ def build_gap_matrix(
         matrix["choices"] = choice_meta["choices"]
         matrix["correct_label"] = choice_meta["correct_label"]
         matrix["semantic_answer"] = choice_meta["semantic_answer"]
+        # Keep distractors aligned with authored choices for adapter rebuild paths.
+        if not matrix.get("distractors"):
+            semantic = str(choice_meta.get("semantic_answer") or "")
+            matrix["distractors"] = [
+                str(c.get("value") or c.get("text") or "").strip().strip("$")
+                for c in choice_meta.get("choices") or []
+                if isinstance(c, dict)
+                and str(c.get("value") or c.get("text") or "").strip().strip("$") != semantic
+            ]
     # Persist sampled figure knobs for deterministic rebuild validation.
     if "figure" not in matrix["givens"] and payload.get("figure"):
         matrix["givens"]["figure"] = payload["figure"]

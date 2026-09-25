@@ -264,6 +264,34 @@ def audit_families() -> dict[str, Any]:
             len(choices) == 4
             and len({str(c.get("value") or c.get("text")) for c in choices}) == 4
         )
+        if is_mcq:
+            from core.gencode.choice_contract_validator import (
+                choice_semantic_key,
+                has_technical_choice_suffix,
+            )
+
+            texts = [str(c.get("text") or c.get("value") or "") for c in choices if isinstance(c, dict)]
+            if any(has_technical_choice_suffix(t) for t in texts):
+                choices_ok = False
+                failures_pre = ["FAIL_MCQ_CHOICES"]
+            else:
+                failures_pre = []
+            keys = [choice_semantic_key(t) for t in texts]
+            if len(keys) != 4 or len(set(keys)) != 4 or any(not k for k in keys):
+                choices_ok = False
+            expected = str(
+                (ac.get("semantic_answer") if isinstance(ac, dict) else None)
+                or payload0.get("display_answer")
+                or payload0.get("correct_answer")
+                or ""
+            )
+            # Label answers are fine; only coordinate/expression semantics can multi-match.
+            if expected and expected.upper() not in {"A", "B", "C", "D"}:
+                matches = sum(1 for t in texts if choice_semantic_key(t) == choice_semantic_key(expected))
+                if matches != 1:
+                    choices_ok = False
+        else:
+            failures_pre = []
         # Name/schema consistency: *_mcq family must be runtime MCQ with choices.
         name_says_mcq = "mcq" in str(family).lower()
         mcq_schema_ok = (not name_says_mcq) or (is_mcq and choices_ok)
@@ -271,7 +299,7 @@ def audit_families() -> dict[str, Any]:
         diversity = _classify_diversity(len(fps), len(samples), family)
         next_ok = diversity in {"PASS", "EXPECTED_LIMITED_VARIATION"} and len(fps) >= 2
 
-        failures = []
+        failures = list(failures_pre)
         if not stem_ok:
             failures.append("FAIL_STEM")
         if not math_ok:

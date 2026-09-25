@@ -94,12 +94,17 @@ def build_single_choice_contract(
         raise ValueError("correct_answer_required")
 
     unique_wrong: list[str] = []
-    seen = {canonical.casefold()}
+    from core.gencode.choice_contract_validator import choice_semantic_key
+
+    seen = {choice_semantic_key(canonical)}
     for item in list(distractor_candidates or []):
         text = _clean_choice_text(str(item))
-        if not text or text.casefold() in seen:
+        key = choice_semantic_key(text)
+        if not text or not key or key in seen:
             continue
-        seen.add(text.casefold())
+        if re.search(r"_+\d+$", text):
+            continue
+        seen.add(key)
         unique_wrong.append(text)
 
     option_texts = [canonical] + unique_wrong
