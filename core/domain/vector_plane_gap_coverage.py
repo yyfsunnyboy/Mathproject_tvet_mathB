@@ -742,9 +742,12 @@ def build_gap_matrix(
         ady = c1 * ab[1] - c2 * ac[1]
         Dx, Dy = sp.simplify(A[0] + adx), sp.simplify(A[1] + ady)
         result = {"canonical": format_pair(Dx, Dy)}
+        ad_combo_tex = latex_difference_of_scaled_symbols(
+            c1, r"\overrightarrow{AB}", c2, r"\overrightarrow{AC}"
+        )
         question = (
             f"已知 $A{latex_pair(*A)}$、$B{latex_pair(*B)}$、$C{latex_pair(*C)}$，"
-            rf"若 $\overrightarrow{{AD}}={latex_difference_of_scaled_symbols(c1, r'\overrightarrow{AB}', c2, r'\overrightarrow{AC}')}$，試求 $D$。"
+            rf"若 $\overrightarrow{{AD}}={ad_combo_tex}$，試求 $D$。"
         )
         answer_value = result["canonical"]
         parts = {"D": result["canonical"]}
