@@ -474,7 +474,9 @@ def _matrix_base(
     parts: dict[str, Any] = {}
     if isinstance(answer_json, dict) and isinstance(answer_json.get("parts"), dict):
         parts = dict(answer_json["parts"])
-        answer_value: Any = {"parts": parts}
+        # Value must be the part-map itself (not {"parts": part-map}), otherwise
+        # shared domain_matrix_adapter treats a single nested key as one field.
+        answer_value: Any = parts
     else:
         answer_value = answer_json
 

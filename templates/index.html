@@ -1109,10 +1109,12 @@
             max-width: 100%;
         }
         .multi-part-row label {
-            flex: 0 0 auto;
+            flex: 1 1 auto;
             min-width: 0;
+            max-width: calc(100% - 5.5rem);
             font-weight: 600;
-            white-space: nowrap;
+            white-space: normal;
+            line-height: 1.35;
         }
         .multi-part-row .multi-part-input {
             flex: 0 0 auto;
@@ -1505,6 +1507,9 @@
             flex: 0 0 auto;
             padding: 0 16px;
             gap: 8px;
+            /* Multipart field groups must not be clipped by viewport-fit grid. */
+            min-height: min-content;
+            overflow: visible;
         }
 
         .practice-question-block {
@@ -1799,7 +1804,9 @@
 
             .practice-area {
                 display: grid;
-                grid-template-rows: auto minmax(0, auto) auto minmax(360px, 1fr);
+                /* answer row must be min-content so multipart fields are not
+                   painted under the scratchpad canvas track. */
+                grid-template-rows: auto minmax(0, auto) min-content minmax(280px, 1fr);
                 grid-template-areas:
                     "header"
                     "question"
@@ -1831,12 +1838,14 @@
             .practice-answer-block {
                 grid-area: answer;
                 padding: 0 16px;
+                min-height: min-content;
+                overflow: visible;
             }
 
             #scratchpad-container {
                 grid-area: canvas;
                 padding: 0 16px 8px;
-                min-height: 360px;
+                min-height: 280px;
                 height: 100%;
                 display: grid;
                 grid-template-rows: auto minmax(0, 1fr);

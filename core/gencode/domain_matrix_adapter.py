@@ -310,6 +310,116 @@ def _normalize_part_labels_map(
     return {}
 
 
+def unwrap_multipart_part_map(
+    semantic_answer: Any,
+    *,
+    answer_block: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return the student-facing part map for multi_part answers.
+
+    Accepts either a flat map ``{"(1)": ..., "(2)": ...}`` or the nested
+    envelope ``{"parts": {"(1)": ..., "(2)": ...}}`` that some domain matrices
+    historically stored in ``answer.value``. Nested envelopes must not become a
+    single contract field with ``key="parts"``.
+    """
+    block = answer_block if isinstance(answer_block, dict) else {}
+    explicit = block.get("parts")
+    if isinstance(explicit, dict) and explicit:
+        if all(not isinstance(v, dict) for v in explicit.values()):
+            return {str(k): v for k, v in explicit.items()}
+
+    if isinstance(semantic_answer, dict) and semantic_answer:
+        # Nested envelope: {"parts": {..flat map..}}
+        if (
+            set(semantic_answer.keys()) == {"parts"}
+            and isinstance(semantic_answer.get("parts"), dict)
+            and semantic_answer["parts"]
+            and all(not isinstance(v, dict) for v in semantic_answer["parts"].values())
+        ):
+            return {str(k): v for k, v in semantic_answer["parts"].items()}
+        # Already a flat part map (values are scalars / expressions).
+        if all(not isinstance(v, dict) for v in semantic_answer.values()):
+            return {str(k): v for k, v in semantic_answer.items()}
+    return {}
+
+
+def enrich_multipart_parts_from_stem(
+    parts: list[dict[str, Any]],
+    stem_structure: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Attach stem item text as display labels when keys match group markers.
+
+    Never overwrite strong student-facing labels already set by the domain
+    (e.g. B2 ``圓心`` / ``半徑``). Only fill when the current label is empty,
+    equals the field key, or is a bare circled marker.
+    """
+    if not isinstance(stem_structure, dict) or not parts:
+        return parts
+    items = stem_structure.get("items") if isinstance(stem_structure.get("items"), list) else []
+    by_group: dict[str, str] = {}
+    ordered_texts: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        group = str(item.get("group_label") or "").strip()
+        text = str(item.get("text") or item.get("body") or "").strip()
+        if text:
+            ordered_texts.append(text)
+        if group and text:
+            by_group[group] = text
+            # Also index by bare digits / circled markers for ①↔(1) alignment.
+            digits = "".join(ch for ch in group if ch.isdigit())
+            if digits:
+                by_group[f"({digits})"] = text
+                by_group[digits] = text
+    if not by_group and not ordered_texts:
+        return parts
+    circled = "①②③④⑤⑥⑦⑧⑨⑩"
+    strong_labels = {"圓心", "半徑", "正值", "負值"}
+
+    def _needs_enrichment(current: str, key: str) -> bool:
+        text = str(current or "").strip()
+        if not text:
+            return True
+        if text == key:
+            return True
+        if text in circled:
+            return True
+        if text in strong_labels:
+            return False
+        # Preserve non-trivial existing labels (center/radius style already set).
+        if len(text) <= 8 and text not in by_group.values():
+            # Short pedagogical labels like 圓心/半徑/公差 should stay.
+            if any("\u4e00" <= ch <= "\u9fff" for ch in text) and "$" not in text:
+                return False
+        return False
+
+    out: list[dict[str, Any]] = []
+    for index, row in enumerate(parts):
+        updated = dict(row)
+        key = str(updated.get("key") or "")
+        group = str(updated.get("group_label") or "").strip() or key
+        current = str(
+            updated.get("display_label") or updated.get("label") or updated.get("prompt") or ""
+        )
+        if not _needs_enrichment(current, key):
+            out.append(updated)
+            continue
+        label_text = by_group.get(group) or by_group.get(key)
+        if not label_text and key in circled:
+            digit = str(circled.index(key) + 1)
+            label_text = by_group.get(f"({digit})") or by_group.get(digit)
+        if not label_text and index < len(ordered_texts):
+            if current == key or current in circled or not current:
+                label_text = ordered_texts[index]
+        if label_text:
+            updated["display_label"] = label_text
+            updated["label"] = label_text
+            updated["prompt"] = label_text
+        out.append(updated)
+    return out
+
+
 def _build_multipart_field_groups(parts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Group center/radius-style parts under shared ``(1)`` / ``(2)`` headings."""
     groups: list[dict[str, Any]] = []
@@ -3173,6 +3283,9 @@ def convert_domain_matrix_to_question_payload(
         validation_facts.setdefault("domain_operation", op)
         validation_facts.setdefault("task_type", op)
     semantic_answer = answer.get("value", answer.get("canonical_form"))
+    unwrapped_parts = unwrap_multipart_part_map(semantic_answer, answer_block=answer)
+    if unwrapped_parts:
+        semantic_answer = unwrapped_parts
     display_answer = str(answer.get("canonical_form", semantic_answer))
     mode = str(presentation_mode or "short_answer").strip()
     resolved_answer_type = str(answer_type or "integer").strip()
@@ -3883,9 +3996,13 @@ def convert_domain_matrix_to_question_payload(
     elif str(answer_contract.get("answer_type") or resolved_answer_type or "") == "multi_part" and not (
         isinstance(answer_contract.get("parts"), list) and answer_contract.get("parts")
     ):
-        part_map = semantic_answer if isinstance(semantic_answer, dict) else {}
-        if not part_map and isinstance(answer.get("parts"), dict):
-            part_map = answer.get("parts") or {}
+        part_map = unwrap_multipart_part_map(semantic_answer, answer_block=answer)
+        if not part_map and isinstance(semantic_answer, dict):
+            part_map = {
+                str(k): v
+                for k, v in semantic_answer.items()
+                if not isinstance(v, dict)
+            }
         part_labels = _normalize_part_labels_map(
             answer.get("part_labels"),
             part_map if isinstance(part_map, dict) else {},
@@ -3895,6 +4012,17 @@ def convert_domain_matrix_to_question_payload(
             part_labels=part_labels or None,
             domain_operation=str(op or problem_type_id or ""),
         )
+        from core.gencode.multipart_stem_contract import extract_stem_structure as _extract_stem
+
+        answer_contract["parts"] = enrich_multipart_parts_from_stem(
+            answer_contract["parts"],
+            _extract_stem(matrix)
+            or _extract_stem({"metadata": {"stem_structure": matrix.get("stem_structure")}}),
+        )
+        answer_contract["semantic_answer"] = part_map
+        semantic_answer = part_map
+        payload_answer = part_map
+        payload_correct = part_map
         keys = [str(row.get("key") or "") for row in answer_contract["parts"]]
         if len(keys) != len(set(keys)):
             raise ValueError("duplicate_multi_part_field_key")

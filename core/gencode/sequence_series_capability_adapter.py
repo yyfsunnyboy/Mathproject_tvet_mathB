@@ -67,7 +67,13 @@ def adapt_sequence_series_matrix(
     presentation_mode = str(
         kwargs.pop("presentation_mode", None)
         or facts.get("presentation_mode")
-        or ("single_choice" if answer_type == "single_choice" else "short_answer")
+        or (
+            "single_choice"
+            if answer_type == "single_choice"
+            else "multiple_inputs"
+            if answer_type == "multi_part"
+            else "short_answer"
+        )
     )
 
     payload = convert_domain_matrix_to_question_payload(
