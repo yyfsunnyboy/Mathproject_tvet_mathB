@@ -1,0 +1,139 @@
+{
+  "skill_id": "vh_數學B3_SubSection_1_1_2",
+  "publish_status": "package_ready_candidate",
+  "component_count": 12,
+  "components": [
+    {
+      "component_id": "src_11899",
+      "textbook_example_id": 11899,
+      "status": "verified",
+      "problem_type_id": "arithmetic_nth_from_a1_d",
+      "domain_operation": "arithmetic_nth_from_a1_d",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11899/generate.py"
+    },
+    {
+      "component_id": "src_11900",
+      "textbook_example_id": 11900,
+      "status": "verified",
+      "problem_type_id": "arithmetic_nth_from_a1_d",
+      "domain_operation": "arithmetic_nth_from_a1_d",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11900/generate.py"
+    },
+    {
+      "component_id": "src_11902",
+      "textbook_example_id": 11902,
+      "status": "verified",
+      "problem_type_id": "arithmetic_insert_terms",
+      "domain_operation": "arithmetic_insert_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11902/generate.py"
+    },
+    {
+      "component_id": "src_11903",
+      "textbook_example_id": 11903,
+      "status": "verified",
+      "problem_type_id": "arithmetic_insert_terms",
+      "domain_operation": "arithmetic_insert_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11903/generate.py"
+    },
+    {
+      "component_id": "src_11914",
+      "textbook_example_id": 11914,
+      "status": "verified",
+      "problem_type_id": "arithmetic_nth_from_a1_d",
+      "domain_operation": "arithmetic_nth_from_a1_d",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11914/generate.py"
+    },
+    {
+      "component_id": "src_11915",
+      "textbook_example_id": 11915,
+      "status": "verified",
+      "problem_type_id": "arithmetic_from_two_terms",
+      "domain_operation": "arithmetic_from_two_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11915/generate.py"
+    },
+    {
+      "component_id": "src_11916",
+      "textbook_example_id": 11916,
+      "status": "verified",
+      "problem_type_id": "arithmetic_insert_terms",
+      "domain_operation": "arithmetic_insert_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11916/generate.py"
+    },
+    {
+      "component_id": "src_11923",
+      "textbook_example_id": 11923,
+      "status": "verified",
+      "problem_type_id": "arithmetic_from_two_terms",
+      "domain_operation": "arithmetic_from_two_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11923/generate.py"
+    },
+    {
+      "component_id": "src_11951",
+      "textbook_example_id": 11951,
+      "status": "verified",
+      "problem_type_id": "arithmetic_d_from_a1_an",
+      "domain_operation": "arithmetic_d_from_a1_an",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11951/generate.py"
+    },
+    {
+      "component_id": "src_11961",
+      "textbook_example_id": 11961,
+      "status": "verified",
+      "problem_type_id": "arithmetic_nth_from_a1_d",
+      "domain_operation": "arithmetic_nth_from_a1_d",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11961/generate.py"
+    },
+    {
+      "component_id": "src_11963",
+      "textbook_example_id": 11963,
+      "status": "verified",
+      "problem_type_id": "arithmetic_first_threshold_crossing",
+      "domain_operation": "arithmetic_first_threshold_crossing",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11963/generate.py"
+    },
+    {
+      "component_id": "src_11966",
+      "textbook_example_id": 11966,
+      "status": "verified",
+      "problem_type_id": "arithmetic_insert_terms",
+      "domain_operation": "arithmetic_insert_terms",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11966/generate.py"
+    }
+  ]
+}

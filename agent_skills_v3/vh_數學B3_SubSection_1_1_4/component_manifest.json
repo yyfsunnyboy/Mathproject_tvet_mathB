@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B3_SubSection_1_1_4",
+  "publish_status": "package_ready_candidate",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_11906",
+      "textbook_example_id": 11906,
+      "status": "verified",
+      "problem_type_id": "arithmetic_recurrence_general",
+      "domain_operation": "arithmetic_recurrence_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11906/generate.py"
+    },
+    {
+      "component_id": "src_11907",
+      "textbook_example_id": 11907,
+      "status": "verified",
+      "problem_type_id": "arithmetic_recurrence_general",
+      "domain_operation": "arithmetic_recurrence_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11907/generate.py"
+    },
+    {
+      "component_id": "src_11917",
+      "textbook_example_id": 11917,
+      "status": "verified",
+      "problem_type_id": "arithmetic_recurrence_general",
+      "domain_operation": "arithmetic_recurrence_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11917/generate.py"
+    },
+    {
+      "component_id": "src_11962",
+      "textbook_example_id": 11962,
+      "status": "verified",
+      "problem_type_id": "arithmetic_recurrence_general",
+      "domain_operation": "arithmetic_recurrence_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "test",
+      "generate_py": "components/src_11962/generate.py"
+    }
+  ]
+}

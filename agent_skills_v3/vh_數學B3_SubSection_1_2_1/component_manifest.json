@@ -1,0 +1,205 @@
+{
+  "skill_id": "vh_數學B3_SubSection_1_2_1",
+  "publish_status": "package_ready_candidate",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_11924",
+      "textbook_example_id": 11924,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11924/generate.py"
+    },
+    {
+      "component_id": "src_11925",
+      "textbook_example_id": 11925,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11925/generate.py"
+    },
+    {
+      "component_id": "src_11926",
+      "textbook_example_id": 11926,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11926/generate.py"
+    },
+    {
+      "component_id": "src_11927",
+      "textbook_example_id": 11927,
+      "status": "verified",
+      "problem_type_id": "geometric_r_from_a1_an",
+      "domain_operation": "geometric_r_from_a1_an",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11927/generate.py"
+    },
+    {
+      "component_id": "src_11928",
+      "textbook_example_id": 11928,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11928/generate.py"
+    },
+    {
+      "component_id": "src_11929",
+      "textbook_example_id": 11929,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11929/generate.py"
+    },
+    {
+      "component_id": "src_11930",
+      "textbook_example_id": 11930,
+      "status": "verified",
+      "problem_type_id": "geometric_ratio_from_shifted_pair_sums",
+      "domain_operation": "geometric_ratio_from_shifted_pair_sums",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11930/generate.py"
+    },
+    {
+      "component_id": "src_11931",
+      "textbook_example_id": 11931,
+      "status": "verified",
+      "problem_type_id": "geometric_ratio_from_product_quotient",
+      "domain_operation": "geometric_ratio_from_product_quotient",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11931/generate.py"
+    },
+    {
+      "component_id": "src_11941",
+      "textbook_example_id": 11941,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11941/generate.py"
+    },
+    {
+      "component_id": "src_11942",
+      "textbook_example_id": 11942,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11942/generate.py"
+    },
+    {
+      "component_id": "src_11943",
+      "textbook_example_id": 11943,
+      "status": "verified",
+      "problem_type_id": "geometric_insert_terms",
+      "domain_operation": "geometric_insert_terms",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11943/generate.py"
+    },
+    {
+      "component_id": "src_11944",
+      "textbook_example_id": 11944,
+      "status": "verified",
+      "problem_type_id": "geometric_ratio_from_shifted_pair_sums",
+      "domain_operation": "geometric_ratio_from_shifted_pair_sums",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11944/generate.py"
+    },
+    {
+      "component_id": "src_11949",
+      "textbook_example_id": 11949,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11949/generate.py"
+    },
+    {
+      "component_id": "src_11953",
+      "textbook_example_id": 11953,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11953/generate.py"
+    },
+    {
+      "component_id": "src_11954",
+      "textbook_example_id": 11954,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11954/generate.py"
+    },
+    {
+      "component_id": "src_11955",
+      "textbook_example_id": 11955,
+      "status": "verified",
+      "problem_type_id": "geometric_from_two_terms",
+      "domain_operation": "geometric_from_two_terms",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11955/generate.py"
+    },
+    {
+      "component_id": "src_11956",
+      "textbook_example_id": 11956,
+      "status": "verified",
+      "problem_type_id": "geometric_nth_from_a1_r",
+      "domain_operation": "geometric_nth_from_a1_r",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11956/generate.py"
+    },
+    {
+      "component_id": "src_11957",
+      "textbook_example_id": 11957,
+      "status": "verified",
+      "problem_type_id": "geometric_ratio_from_shifted_pair_sums",
+      "domain_operation": "geometric_ratio_from_shifted_pair_sums",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11957/generate.py"
+    }
+  ]
+}

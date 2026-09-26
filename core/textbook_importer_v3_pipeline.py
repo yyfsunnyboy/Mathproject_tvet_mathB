@@ -106,6 +106,28 @@ class V3PipelineError(Exception):
         self.details = details
 
 
+def _resolve_failed_stage(task_id: str, fallback: str = STAGE_FILE_VALIDATION) -> str:
+    """Prefer the stage still marked running; never label an exception as COMPLETE."""
+    state = V3_IMPORT_TASKS.get(task_id) or {}
+    stages = state.get("stages") or {}
+    for stage_name, info in stages.items():
+        if stage_name == STAGE_COMPLETE:
+            continue
+        if isinstance(info, dict) and info.get("status") == "running":
+            return stage_name
+    # Fall back to the most recently updated non-COMPLETE stage when available.
+    latest_name = fallback
+    latest_ts = ""
+    for stage_name, info in stages.items():
+        if stage_name == STAGE_COMPLETE or not isinstance(info, dict):
+            continue
+        ts = str(info.get("updated_at") or "")
+        if ts >= latest_ts:
+            latest_ts = ts
+            latest_name = stage_name
+    return latest_name or fallback
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -1775,8 +1797,9 @@ def run_v3_pair_pipeline(
             db.session.rollback()
         except Exception:
             pass
+        fail_stage = _resolve_failed_stage(tid, fallback=STAGE_FILE_VALIDATION)
         return fail(
-            STAGE_COMPLETE,
+            fail_stage,
             "pipeline_exception",
             f"{type(exc).__name__}: {exc}",
             details={"traceback": traceback.format_exc()[-2000:]},
@@ -2119,16 +2142,17 @@ def enqueue_v3_batch_pipeline(
                     batch["ui_result"] = build_v3_ui_result_payload(batch)
                     state["result"] = batch
             except Exception as exc:
+                fail_stage = _resolve_failed_stage(task_id, fallback=STAGE_FILE_VALIDATION)
                 state["status"] = "failed"
                 state["error"] = {
-                    "stage": STAGE_COMPLETE,
+                    "stage": fail_stage,
                     "error_code": "worker_exception",
                     "message": str(exc),
                 }
                 q.put(
                     {
                         "type": "error",
-                        "stage": STAGE_COMPLETE,
+                        "stage": fail_stage,
                         "error_code": "worker_exception",
                         "message": str(exc),
                     }

@@ -735,7 +735,13 @@
                 '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
             };
 
+            const STORAGE_KEY = 'vocational_textbook_import_v3_preferences';
+            let restoringPreferences = false;
+
             const form = document.getElementById('importerV3Form');
+            const curriculumSelect = document.getElementById('curriculum');
+            const publisherSelect = document.getElementById('publisher');
+            const gradeInput = document.getElementById('grade');
             const volumeSelect = document.getElementById('volume');
             const volumeConfirmLabelStep2 = document.getElementById('volumeConfirmLabelStep2');
             const volumeConfirmLabelStep3 = document.getElementById('volumeConfirmLabelStep3');
@@ -758,6 +764,108 @@
             const batchProgressCounter = document.getElementById('batchProgressCounter');
             const resultPanel = document.getElementById('resultPanel');
             const hasGeminiApiKey = {% if has_gemini_api_key %}true{% else %}false{% endif %};
+
+            function readUrlPreferenceOverrides() {
+                var params = new URLSearchParams(window.location.search);
+                var overrides = {};
+                ['curriculum', 'publisher', 'grade', 'volume'].forEach(function (key) {
+                    if (!params.has(key)) return;
+                    var value = params.get(key);
+                    if (value !== null && value !== '') {
+                        overrides[key] = value;
+                    }
+                });
+                return overrides;
+            }
+
+            function loadSavedImportPreferences() {
+                try {
+                    var raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    var parsed = JSON.parse(raw);
+                    if (!parsed || typeof parsed !== 'object') return null;
+                    return parsed;
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            function saveImportPreferences() {
+                if (restoringPreferences) return;
+                try {
+                    var payload = {
+                        curriculum: curriculumSelect ? curriculumSelect.value : '',
+                        publisher: publisherSelect ? publisherSelect.value : '',
+                        grade: gradeInput ? String(gradeInput.value) : '',
+                        volume: volumeSelect ? volumeSelect.value : ''
+                    };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+                } catch (err) {
+                    // Ignore quota / private-mode failures.
+                }
+            }
+
+            function setSelectValueIfOptionExists(selectEl, value) {
+                if (!selectEl || value === null || value === undefined || value === '') {
+                    return false;
+                }
+                var target = String(value);
+                var found = Array.prototype.some.call(selectEl.options, function (opt) {
+                    return opt.value === target;
+                });
+                if (!found) return false;
+                selectEl.value = target;
+                return true;
+            }
+
+            function resolvePreferenceValue(overrides, saved, key) {
+                if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+                    return { value: overrides[key], fromUrl: true };
+                }
+                if (saved && saved[key] !== null && saved[key] !== undefined && saved[key] !== '') {
+                    return { value: saved[key], fromUrl: false };
+                }
+                return null;
+            }
+
+            async function restoreImportPreferences() {
+                restoringPreferences = true;
+                try {
+                    var overrides = readUrlPreferenceOverrides();
+                    var saved = loadSavedImportPreferences();
+
+                    // Order: curriculum → publisher → grade → volume (then sync UI).
+                    // Volume options are currently static; keep this async for future dependent loads.
+                    var curriculumPref = resolvePreferenceValue(overrides, saved, 'curriculum');
+                    if (curriculumPref) {
+                        setSelectValueIfOptionExists(curriculumSelect, curriculumPref.value);
+                    }
+
+                    var publisherPref = resolvePreferenceValue(overrides, saved, 'publisher');
+                    if (publisherPref) {
+                        setSelectValueIfOptionExists(publisherSelect, publisherPref.value);
+                    }
+
+                    var gradePref = resolvePreferenceValue(overrides, saved, 'grade');
+                    if (gradePref && gradeInput) {
+                        gradeInput.value = String(gradePref.value);
+                    }
+
+                    var volumePref = resolvePreferenceValue(overrides, saved, 'volume');
+                    if (volumePref) {
+                        setSelectValueIfOptionExists(volumeSelect, volumePref.value);
+                    }
+
+                    // Sync confirm labels + grade-from-volume mapping for known volumes.
+                    // URL grade must remain authoritative when explicitly provided.
+                    updateVolumeConfirmDisplay();
+                    if (gradePref && gradePref.fromUrl && gradeInput) {
+                        gradeInput.value = String(gradePref.value);
+                    }
+                } finally {
+                    restoringPreferences = false;
+                }
+            }
 
             function getBaseName(filename) {
                 if (!filename) return '';
@@ -1586,8 +1694,21 @@
 
             docxInput.addEventListener('change', handleSourceChange);
             pdfInput.addEventListener('change', handleSourceChange);
+            if (curriculumSelect) {
+                curriculumSelect.addEventListener('change', saveImportPreferences);
+            }
+            if (publisherSelect) {
+                publisherSelect.addEventListener('change', saveImportPreferences);
+            }
+            if (gradeInput) {
+                gradeInput.addEventListener('change', saveImportPreferences);
+                gradeInput.addEventListener('input', saveImportPreferences);
+            }
             if (volumeSelect) {
-                volumeSelect.addEventListener('change', updateVolumeConfirmDisplay);
+                volumeSelect.addEventListener('change', function () {
+                    updateVolumeConfirmDisplay();
+                    saveImportPreferences();
+                });
             }
             if (overwriteCancelBtn) {
                 overwriteCancelBtn.addEventListener('click', function () {
@@ -1611,8 +1732,12 @@
             form.addEventListener('submit', handleFormSubmit);
 
             resetProcessingPanel();
-            updateVolumeConfirmDisplay();
-            handleSourceChange();
+            restoreImportPreferences().then(function () {
+                handleSourceChange();
+            }).catch(function () {
+                updateVolumeConfirmDisplay();
+                handleSourceChange();
+            });
 
             window.textbookImporterV3 = {
                 getBaseName: getBaseName,
@@ -1630,7 +1755,9 @@
                 renderImportResult: renderImportResult,
                 showOverwriteModal: showOverwriteModal,
                 hideOverwriteModal: hideOverwriteModal,
-                submitSourceUpload: submitSourceUpload
+                submitSourceUpload: submitSourceUpload,
+                saveImportPreferences: saveImportPreferences,
+                restoreImportPreferences: restoreImportPreferences
             };
         })();
     </script>

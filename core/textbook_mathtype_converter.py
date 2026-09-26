@@ -13,6 +13,7 @@ Does NOT:
 from __future__ import annotations
 
 import io
+import logging
 import re
 import shutil
 import zipfile
@@ -33,6 +34,9 @@ from core.textbook_importer_v3_docx import (
     find_reference_docx_in_storage,
     parse_docx_structure,
 )
+from core.xml_text_compat import describe_illegal_xml_text, sanitize_xml_text
+
+logger = logging.getLogger(__name__)
 
 try:
     import olefile
@@ -171,10 +175,32 @@ def _is_embedded_ooxml_package(data: bytes) -> bool:
 
 
 def _make_latex_run(latex_text: str) -> etree._Element:
+    """Build a w:r/w:t run for LaTeX text that will be written into OOXML.
+
+    Sanitize at this lxml assignment boundary so MTEF-derived control characters
+    (illegal in XML 1.0) cannot abort DOCX rewrite, while preserving PUA glyphs.
+    """
+    safe_text = sanitize_xml_text(latex_text)
+    diagnostic = describe_illegal_xml_text(
+        latex_text if isinstance(latex_text, str) else "",
+        field="latex_text",
+        extra={"boundary": "textbook_mathtype_converter._make_latex_run"},
+    )
+    if diagnostic is not None:
+        # Log escaped diagnostics only — never re-emit raw illegal controls.
+        logger.warning(
+            "[mathtype_converter] stripped XML-illegal chars before OOXML write: %s",
+            {
+                "field": diagnostic.get("field"),
+                "boundary": diagnostic.get("boundary"),
+                "illegal_chars": diagnostic.get("illegal_chars"),
+                "text_repr": diagnostic.get("text_repr"),
+            },
+        )
     run = etree.Element(f"{{{W_NS}}}r")
     text = etree.SubElement(run, f"{{{W_NS}}}t")
     text.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-    text.text = latex_text
+    text.text = safe_text if isinstance(safe_text, str) else ""
     return run
 
 

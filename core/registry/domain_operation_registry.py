@@ -6,7 +6,7 @@ manifest and runtime all read from this module.
 
 No layer may maintain its own independent operation allowlist. Adding a new
 operation requires only one call to register_domain_spec() (or updating the
-operations dict of an existing DomainCapabilitySpec) — all downstream layers
+operations dict of an existing DomainCapabilitySpec) â all downstream layers
 are automatically aware.
 
 Verified bootstrap candidates are registered separately via
@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-# ── data model ────────────────────────────────────────────────────────────────
+# ââ data model ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 @dataclass(frozen=True)
 class OperationSpec:
@@ -54,7 +54,7 @@ class DomainCapabilitySpec:
         return list(self.operations.keys())
 
 
-# ── registry ──────────────────────────────────────────────────────────────────
+# ââ registry ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 _REGISTRY: dict[str, DomainCapabilitySpec] = {}
 
@@ -98,7 +98,7 @@ def operation_is_registered(domain_key: str, operation_key: str) -> bool:
     return get_operation_spec(domain_key, operation_key) is not None
 
 
-# ── consistency check ─────────────────────────────────────────────────────────
+# ââ consistency check âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 def check_registry_consistency() -> list[dict[str, Any]]:
     """Check registry for missing layers.
@@ -158,7 +158,7 @@ def check_registry_consistency() -> list[dict[str, Any]]:
     return issues
 
 
-# ── helper for decorator-style registration ───────────────────────────────────
+# ââ helper for decorator-style registration âââââââââââââââââââââââââââââââââââ
 
 def register_domain_operation(
     domain_key: str,
@@ -208,7 +208,7 @@ def register_domain_operation(
     spec.operations[operation_key] = op_spec
 
 
-# ── canonical registrations ───────────────────────────────────────────────────
+# ââ canonical registrations âââââââââââââââââââââââââââââââââââââââââââââââââââ
 # Each domain is registered once.  All downstream layers read from _REGISTRY.
 
 _op = OperationSpec  # convenience alias
@@ -446,7 +446,7 @@ register_domain_spec(DomainCapabilitySpec(
         "cumulative_below_interval_count",
     }),
     operations={
-        # ── generic table-chart operations ──────────────────────────────────
+        # ââ generic table-chart operations ââââââââââââââââââââââââââââââââââ
         "read_category_value": _op(
             "read_category_value",
             "build_statistical_chart_reading_matrix",
@@ -471,7 +471,7 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("choice",),
             supported_presentation_modes=("short_answer",),
         ),
-        # ── cumulative frequency polygon operations (formally registered) ───
+        # ââ cumulative frequency polygon operations (formally registered) âââ
         "cumulative_above_fail_count": _op(
             "cumulative_above_fail_count",
             "build_statistical_chart_reading_matrix",
@@ -2208,7 +2208,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("single_choice", "short_answer"),
             features=("center_radius", "expression"),
         ),
-        # ── 4-2.1 point vs circle ────────────────────────────────────────────
+        # ââ 4-2.1 point vs circle ââââââââââââââââââââââââââââââââââââââââââââ
         "classify_point_vs_circles_multipart": _circle_op(
             "classify_point_vs_circles_multipart",
             answer_types=("multi_part", "short_answer"),
@@ -2227,7 +2227,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("single_choice", "short_answer"),
             features=("point_vs_circle", "identify"),
         ),
-        # ── 4-2.2 line vs circle ─────────────────────────────────────────────
+        # ââ 4-2.2 line vs circle âââââââââââââââââââââââââââââââââââââââââââââ
         "classify_line_circle_relation": _circle_op(
             "classify_line_circle_relation",
             answer_types=("multi_part", "short_answer"),
@@ -2300,7 +2300,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("multiple_inputs", "short_answer"),
             features=("tangent", "parameter", "general_form"),
         ),
-        # ── 4-2.3 tangent lines ──────────────────────────────────────────────
+        # ââ 4-2.3 tangent lines ââââââââââââââââââââââââââââââââââââââââââââââ
         "tangent_at_point_on_circle": _circle_op(
             "tangent_at_point_on_circle",
             answer_types=("multi_part", "expression", "short_answer"),
@@ -2325,7 +2325,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("multiple_inputs", "short_answer"),
             features=("tangent_segment", "area"),
         ),
-        # ── 4-2.4 tangent segments ───────────────────────────────────────────
+        # ââ 4-2.4 tangent segments âââââââââââââââââââââââââââââââââââââââââââ
         "compute_tangent_segment_lengths": _circle_op(
             "compute_tangent_segment_lengths",
             answer_types=("multi_part", "short_answer"),
@@ -2359,3 +2359,70 @@ register_domain_spec(DomainCapabilitySpec(
     },
 ))
 
+
+# --- B3 Chapter 1: sequence / series ---
+_SEQ_SERIES_ADAPTER = "core.gencode.sequence_series_capability_adapter.adapt_sequence_series_matrix"
+_SEQ_SERIES_VALIDATOR = "validate_sequence_series_matrix"
+_SEQ_SERIES_BUILDER = "build_sequence_series_matrix"
+_SEQ_SERIES_CONTRACT = "b3_ch1_sequence_series_exact_v1"
+_SEQ_SERIES_OPS = (
+    "expand_general_term_first_n",
+    "arithmetic_nth_from_a1_d",
+    "arithmetic_d_from_a1_an",
+    "arithmetic_from_two_terms",
+    "arithmetic_insert_terms",
+    "arithmetic_mean_solve",
+    "arithmetic_recurrence_general",
+    "arithmetic_series_sum_given",
+    "arithmetic_series_recover_param",
+    "arithmetic_series_from_two_terms",
+    "arithmetic_sum_multiples_range",
+    "arithmetic_odd_count_mid_total",
+    "geometric_nth_from_a1_r",
+    "geometric_r_from_a1_an",
+    "geometric_from_two_terms",
+    "geometric_insert_terms",
+    "geometric_mean_value",
+    "geometric_mean_solve_x",
+    "geometric_recurrence_general",
+    "geometric_series_sum_given",
+    "geometric_series_recover_param",
+    "geometric_ratio_from_shifted_pair_sums",
+    "geometric_ratio_from_product_quotient",
+    "arithmetic_index_and_total_sum",
+    "arithmetic_first_threshold_crossing",
+    "geometric_first_threshold_crossing",
+    "ap_gp_mixed_mean_middle",
+)
+_SEQ_SERIES_MULTIPART = frozenset({
+    "expand_general_term_first_n",
+    "arithmetic_from_two_terms",
+    "arithmetic_recurrence_general",
+    "geometric_mean_value",
+    "geometric_recurrence_general",
+    "arithmetic_index_and_total_sum",
+})
+
+
+def _seq_op(key: str) -> OperationSpec:
+    multipart = key in _SEQ_SERIES_MULTIPART
+    return _op(
+        key,
+        _SEQ_SERIES_BUILDER,
+        payload_adapter=_SEQ_SERIES_ADAPTER,
+        validator=_SEQ_SERIES_VALIDATOR,
+        supported_answer_types=(("multi_part", "short_answer") if multipart else ("expression", "short_answer")),
+        supported_presentation_modes=(("multiple_inputs", "short_answer") if multipart else ("short_answer",)),
+        required_source_features=("sequence_or_series",),
+        runtime_contract=_SEQ_SERIES_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="sequence.series",
+    domain_module="core.domain.sequence_series_domain",
+    entrypoint="build_sequence_series_matrix",
+    capabilities=frozenset(_SEQ_SERIES_OPS),
+    operations={op: _seq_op(op) for op in _SEQ_SERIES_OPS},
+))

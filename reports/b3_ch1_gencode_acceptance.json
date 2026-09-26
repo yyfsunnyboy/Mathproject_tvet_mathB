@@ -1,0 +1,432 @@
+{
+  "skills_total": 9,
+  "skills_package_ready": 9,
+  "examples_total": 74,
+  "examples_supported": 69,
+  "examples_manual_review": 0,
+  "examples_visual_unsupported": 2,
+  "examples_bad_source": 3,
+  "families_total": 32,
+  "families_supported": 31,
+  "families_unsupported": 1,
+  "domain_ops_total": 27,
+  "domain_ops_used": 27,
+  "domain_registered": true,
+  "generator_keys": 69,
+  "sampling": {
+    "total_samples": 1350,
+    "crashes": 0,
+    "wrong_answers": 0,
+    "checker_failures": 0,
+    "contract_failures": 0
+  },
+  "runtime": {
+    "bootstrap_pass": 9,
+    "bootstrap_fail": 0
+  },
+  "regression": {
+    "B1_B2_bootstrap": "PASS"
+  },
+  "skill_summary": [
+    {
+      "skill_id": "vh_數學B3_SubSection_1_1_1",
+      "example_count": 3,
+      "family_count": 1,
+      "families": [
+        "expand_general_term_first_n"
+      ],
+      "domain_ops": [
+        "expand_general_term_first_n"
+      ],
+      "supported": 3,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 0,
+      "needs_multipart": true,
+      "needs_mcq": false,
+      "needs_visual": false,
+      "needs_word": false,
+      "generator_keys": [
+        "src_11896",
+        "src_11897",
+        "src_11913"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_1_2",
+      "example_count": 13,
+      "family_count": 6,
+      "families": [
+        "arithmetic_d_from_a1_an",
+        "arithmetic_first_threshold_crossing",
+        "arithmetic_from_two_terms",
+        "arithmetic_insert_terms",
+        "arithmetic_nth_from_a1_d",
+        "arithmetic_word_nth"
+      ],
+      "domain_ops": [
+        "arithmetic_d_from_a1_an",
+        "arithmetic_first_threshold_crossing",
+        "arithmetic_from_two_terms",
+        "arithmetic_insert_terms",
+        "arithmetic_nth_from_a1_d"
+      ],
+      "supported": 12,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 1,
+      "needs_multipart": true,
+      "needs_mcq": true,
+      "needs_visual": false,
+      "needs_word": true,
+      "generator_keys": [
+        "src_11899",
+        "src_11900",
+        "src_11902",
+        "src_11903",
+        "src_11914",
+        "src_11915",
+        "src_11916",
+        "src_11923",
+        "src_11951",
+        "src_11961",
+        "src_11963",
+        "src_11966"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_1_3",
+      "example_count": 2,
+      "family_count": 1,
+      "families": [
+        "arithmetic_mean_solve"
+      ],
+      "domain_ops": [
+        "arithmetic_mean_solve"
+      ],
+      "supported": 2,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 0,
+      "needs_multipart": false,
+      "needs_mcq": false,
+      "needs_visual": false,
+      "needs_word": false,
+      "generator_keys": [
+        "src_11904",
+        "src_11905"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_1_4",
+      "example_count": 5,
+      "family_count": 2,
+      "families": [
+        "arithmetic_recurrence_diagram",
+        "arithmetic_recurrence_general"
+      ],
+      "domain_ops": [
+        "arithmetic_recurrence_general"
+      ],
+      "supported": 4,
+      "manual_review": 0,
+      "unsupported_visual": 1,
+      "bad_source": 0,
+      "needs_multipart": true,
+      "needs_mcq": true,
+      "needs_visual": true,
+      "needs_word": false,
+      "generator_keys": [
+        "src_11906",
+        "src_11907",
+        "src_11917",
+        "src_11962"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_1_5",
+      "example_count": 14,
+      "family_count": 7,
+      "families": [
+        "arithmetic_index_and_total_sum",
+        "arithmetic_odd_count_mid_total",
+        "arithmetic_series_from_two_terms",
+        "arithmetic_series_recover_param",
+        "arithmetic_series_sum_given",
+        "arithmetic_sum_multiples_range",
+        "arithmetic_word_series"
+      ],
+      "domain_ops": [
+        "arithmetic_index_and_total_sum",
+        "arithmetic_odd_count_mid_total",
+        "arithmetic_series_from_two_terms",
+        "arithmetic_series_recover_param",
+        "arithmetic_series_sum_given",
+        "arithmetic_sum_multiples_range"
+      ],
+      "supported": 12,
+      "manual_review": 0,
+      "unsupported_visual": 1,
+      "bad_source": 1,
+      "needs_multipart": true,
+      "needs_mcq": true,
+      "needs_visual": true,
+      "needs_word": true,
+      "generator_keys": [
+        "src_11908",
+        "src_11909",
+        "src_11910",
+        "src_11911",
+        "src_11912",
+        "src_11919",
+        "src_11920",
+        "src_11921",
+        "src_11964",
+        "src_11965",
+        "src_11967",
+        "src_11968"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_2_1",
+      "example_count": 19,
+      "family_count": 7,
+      "families": [
+        "geometric_from_two_terms",
+        "geometric_insert_terms",
+        "geometric_nth_from_a1_r",
+        "geometric_r_from_a1_an",
+        "geometric_ratio_from_product_quotient",
+        "geometric_ratio_from_shifted_pair_sums",
+        "geometric_word_nth"
+      ],
+      "domain_ops": [
+        "geometric_from_two_terms",
+        "geometric_insert_terms",
+        "geometric_nth_from_a1_r",
+        "geometric_r_from_a1_an",
+        "geometric_ratio_from_product_quotient",
+        "geometric_ratio_from_shifted_pair_sums"
+      ],
+      "supported": 18,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 1,
+      "needs_multipart": false,
+      "needs_mcq": true,
+      "needs_visual": false,
+      "needs_word": true,
+      "generator_keys": [
+        "src_11924",
+        "src_11925",
+        "src_11926",
+        "src_11927",
+        "src_11928",
+        "src_11929",
+        "src_11930",
+        "src_11931",
+        "src_11941",
+        "src_11942",
+        "src_11943",
+        "src_11944",
+        "src_11949",
+        "src_11953",
+        "src_11954",
+        "src_11955",
+        "src_11956",
+        "src_11957"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_2_2",
+      "example_count": 4,
+      "family_count": 3,
+      "families": [
+        "ap_gp_mixed_mean_middle",
+        "geometric_mean_solve_x",
+        "geometric_mean_value"
+      ],
+      "domain_ops": [
+        "ap_gp_mixed_mean_middle",
+        "geometric_mean_solve_x",
+        "geometric_mean_value"
+      ],
+      "supported": 4,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 0,
+      "needs_multipart": true,
+      "needs_mcq": true,
+      "needs_visual": false,
+      "needs_word": false,
+      "generator_keys": [
+        "src_11932",
+        "src_11933",
+        "src_11945",
+        "src_11970"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_2_3",
+      "example_count": 3,
+      "family_count": 1,
+      "families": [
+        "geometric_recurrence_general"
+      ],
+      "domain_ops": [
+        "geometric_recurrence_general"
+      ],
+      "supported": 3,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 0,
+      "needs_multipart": true,
+      "needs_mcq": false,
+      "needs_visual": false,
+      "needs_word": false,
+      "generator_keys": [
+        "src_11934",
+        "src_11935",
+        "src_11946"
+      ],
+      "package_status": "PACKAGE_READY"
+    },
+    {
+      "skill_id": "vh_數學B3_SubSection_1_2_4",
+      "example_count": 11,
+      "family_count": 4,
+      "families": [
+        "geometric_first_threshold_crossing",
+        "geometric_series_recover_param",
+        "geometric_series_sum_given",
+        "geometric_word_series"
+      ],
+      "domain_ops": [
+        "geometric_first_threshold_crossing",
+        "geometric_series_recover_param",
+        "geometric_series_sum_given"
+      ],
+      "supported": 11,
+      "manual_review": 0,
+      "unsupported_visual": 0,
+      "bad_source": 0,
+      "needs_multipart": false,
+      "needs_mcq": true,
+      "needs_visual": false,
+      "needs_word": true,
+      "generator_keys": [
+        "src_11936",
+        "src_11937",
+        "src_11938",
+        "src_11939",
+        "src_11940",
+        "src_11947",
+        "src_11948",
+        "src_11958",
+        "src_11959",
+        "src_11960",
+        "src_11969"
+      ],
+      "package_status": "PACKAGE_READY"
+    }
+  ],
+  "manual_review_ids": [
+    {
+      "id": 11901,
+      "status": "BAD_SOURCE",
+      "reason": "stem_truncated"
+    },
+    {
+      "id": 11922,
+      "status": "UNSUPPORTED_VISUAL",
+      "reason": "diagram_required_tile_pattern"
+    },
+    {
+      "id": 11918,
+      "status": "UNSUPPORTED_VISUAL",
+      "reason": "diagram_required_stacking_cups"
+    },
+    {
+      "id": 11952,
+      "status": "BAD_SOURCE",
+      "reason": "stem_truncated"
+    },
+    {
+      "id": 11950,
+      "status": "BAD_SOURCE",
+      "reason": "garbage_fragment"
+    }
+  ],
+  "used_ops": [
+    "ap_gp_mixed_mean_middle",
+    "arithmetic_d_from_a1_an",
+    "arithmetic_first_threshold_crossing",
+    "arithmetic_from_two_terms",
+    "arithmetic_index_and_total_sum",
+    "arithmetic_insert_terms",
+    "arithmetic_mean_solve",
+    "arithmetic_nth_from_a1_d",
+    "arithmetic_odd_count_mid_total",
+    "arithmetic_recurrence_general",
+    "arithmetic_series_from_two_terms",
+    "arithmetic_series_recover_param",
+    "arithmetic_series_sum_given",
+    "arithmetic_sum_multiples_range",
+    "expand_general_term_first_n",
+    "geometric_first_threshold_crossing",
+    "geometric_from_two_terms",
+    "geometric_insert_terms",
+    "geometric_mean_solve_x",
+    "geometric_mean_value",
+    "geometric_nth_from_a1_r",
+    "geometric_r_from_a1_an",
+    "geometric_ratio_from_product_quotient",
+    "geometric_ratio_from_shifted_pair_sums",
+    "geometric_recurrence_general",
+    "geometric_series_recover_param",
+    "geometric_series_sum_given"
+  ],
+  "families_supported_list": [
+    "ap_gp_mixed_mean_middle",
+    "arithmetic_d_from_a1_an",
+    "arithmetic_first_threshold_crossing",
+    "arithmetic_from_two_terms",
+    "arithmetic_index_and_total_sum",
+    "arithmetic_insert_terms",
+    "arithmetic_mean_solve",
+    "arithmetic_nth_from_a1_d",
+    "arithmetic_odd_count_mid_total",
+    "arithmetic_recurrence_general",
+    "arithmetic_series_from_two_terms",
+    "arithmetic_series_recover_param",
+    "arithmetic_series_sum_given",
+    "arithmetic_sum_multiples_range",
+    "arithmetic_word_nth",
+    "arithmetic_word_series",
+    "expand_general_term_first_n",
+    "geometric_first_threshold_crossing",
+    "geometric_from_two_terms",
+    "geometric_insert_terms",
+    "geometric_mean_solve_x",
+    "geometric_mean_value",
+    "geometric_nth_from_a1_r",
+    "geometric_r_from_a1_an",
+    "geometric_ratio_from_product_quotient",
+    "geometric_ratio_from_shifted_pair_sums",
+    "geometric_recurrence_general",
+    "geometric_series_recover_param",
+    "geometric_series_sum_given",
+    "geometric_word_nth",
+    "geometric_word_series"
+  ],
+  "families_unsupported_list": [
+    "arithmetic_recurrence_diagram"
+  ]
+}

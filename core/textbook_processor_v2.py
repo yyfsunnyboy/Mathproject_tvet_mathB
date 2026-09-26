@@ -243,6 +243,44 @@ def _looks_like_exercise_question_start(n: str, body: str) -> bool:
     return True
 
 
+def _practice_body_is_heading_fragment(body: str) -> bool:
+    """True for short titled fragments that are not practice question stems.
+
+    Example false positive: ``數列的相加—級數`` claimed as 隨堂練習3 while still
+    inside a lingering practice zone.
+    """
+    b = str(body or "").strip()
+    if not b:
+        return True
+    compact = re.sub(r"\s+", "", b)
+    if len(compact) > 40:
+        return False
+    if "\\" in b or "$" in b:
+        return False
+    question_markers = (
+        "試",
+        "求",
+        "已知",
+        "若",
+        "設",
+        "下列",
+        "多少",
+        "幾",
+        "？",
+        "?",
+        "：",
+        ":",
+        "(",
+        "（",
+    )
+    if any(m in b for m in question_markers):
+        return False
+    # Title-like connectors commonly used in exposition headings.
+    return bool(re.search(r"[—–―﹣]|－－", b)) or (
+        len(compact) <= 16 and "題" not in compact and "練習" not in compact
+    )
+
+
 def _looks_like_practice_question_body(body: str) -> bool:
     b = str(body or "").strip()
     if not b:
@@ -255,6 +293,29 @@ def _looks_like_practice_question_body(body: str) -> bool:
     )
     if b.startswith(bad_prefixes):
         return False
+    if _practice_body_is_heading_fragment(b):
+        return False
+    return True
+
+
+def _problem_texts_compatible_for_missing_skip(existing_text: str, candidate_text: str) -> bool:
+    """Whether an existing DB row is plausibly the same question as the candidate.
+
+    Title-only structural matches can collide when a heading fragment previously
+    stole a 隨堂練習N label. Do not skip insert_missing_only in that case.
+    """
+    existing = str(existing_text or "").strip()
+    candidate = str(candidate_text or "").strip()
+    if not existing or not candidate:
+        return True
+    if _practice_body_is_heading_fragment(existing) and not _practice_body_is_heading_fragment(
+        candidate
+    ):
+        return False
+    # Very short existing body vs substantial candidate → treat as different.
+    if len(re.sub(r"\s+", "", existing)) <= 16 and len(re.sub(r"\s+", "", candidate)) >= 40:
+        if existing not in candidate:
+            return False
     return True
 
 
@@ -1784,10 +1845,20 @@ def _build_anchor_blocks_v2(
                 body = str(nm.group(2) or "").strip()
                 if _looks_like_practice_question_body(body):
                     anchor = f"隨堂練習{n}"
-                    if anchor in meta or anchor in blocks:
+                    existing_body = ""
+                    if anchor in blocks:
+                        existing_body = str(blocks.get(anchor) or "")
+                    elif anchor in meta:
+                        existing_body = str((meta.get(anchor) or {}).get("problem_text") or "")
+                    if existing_body and _looks_like_practice_question_body(existing_body):
+                        # Real practice already claimed this label.
                         continue
+                    # Heading-fragment false claim (or empty): allow real stem to take the label.
                     start_block(anchor, "in_class_practice", body)
                     continue
+                # Numbered exposition/heading inside a lingering zone — leave the zone.
+                if _practice_body_is_heading_fragment(body) or trigger_hit:
+                    in_practice_zone = False
             if (
                 trigger_hit
                 or _EXAM_START_RE.match(line)
@@ -5309,6 +5380,13 @@ def phase4_absolute_hydrate_and_save(
                                 source_type=source_type,
                                 title=title,
                             )
+                        if existing is not None and not _problem_texts_compatible_for_missing_skip(
+                            str(getattr(existing, "problem_text", "") or ""),
+                            str(db_problem_text or ""),
+                        ):
+                            # Title collision with incompatible body (e.g. heading fragment
+                            # stole 隨堂練習N). Allow insert_missing_only to create the real item.
+                            existing = None
 
                         if existing is not None and insert_missing_only:
                             skipped += 1
