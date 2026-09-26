@@ -1396,6 +1396,7 @@
             }));
         const points = Array.isArray(visualSpec.points) ? visualSpec.points : [];
         const lineColors = ['#1565c0', '#c2410c'];
+        const circleColors = ['#0f766e', '#7c3aed', '#b45309'];
         lines.forEach(function (line, lineIndex) {
             const color = lineColors[lineIndex % lineColors.length];
             context.strokeStyle = applyFadedColor(color, opacity);
@@ -1452,6 +1453,40 @@
             } else if (coefficientA !== 0) {
                 const xValue = -constantC / coefficientA;
                 drawLineSegment(context, mapX, mapY, xValue, yMin, xValue, yMax, clipBox);
+            }
+        });
+
+        // Circles (Ch4 circle.plane parametric visuals)
+        const circles = Array.isArray(visualSpec.circles) ? visualSpec.circles : [];
+        circles.forEach(function (circle, circleIndex) {
+            const h = parseFractionLike(circle.h ?? circle.cx ?? circle.x);
+            const k = parseFractionLike(circle.k ?? circle.cy ?? circle.y);
+            const r = parseFractionLike(circle.r ?? circle.radius);
+            if (![h, k, r].every(Number.isFinite) || r <= 0) {
+                return;
+            }
+            const color = circleColors[circleIndex % circleColors.length];
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = 2.0;
+            context.beginPath();
+            const rx = Math.abs(mapX(h + r) - mapX(h));
+            const ry = Math.abs(mapY(k + r) - mapY(k));
+            const radiusPx = Math.max(1, (rx + ry) / 2);
+            context.arc(mapX(h), mapY(k), radiusPx, 0, Math.PI * 2);
+            context.stroke();
+            if (circle.show_center !== false) {
+                context.fillStyle = applyFadedColor(color, opacity);
+                context.beginPath();
+                context.arc(mapX(h), mapY(k), width < 180 ? 2 : 2.5, 0, Math.PI * 2);
+                context.fill();
+            }
+            const clabel = String(circle.label || '');
+            if (clabel) {
+                context.fillStyle = applyFadedColor(color, opacity);
+                context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+                context.textAlign = 'left';
+                context.textBaseline = 'bottom';
+                context.fillText(formatDiagramLabel(clabel) || clabel, mapX(h + r * 0.7), mapY(k + r * 0.7));
             }
         });
 

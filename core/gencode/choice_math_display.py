@@ -10,6 +10,31 @@ _INTEGER_OR_DECIMAL = re.compile(r"^[+-]?\d+(?:\.\d+)?$")
 _COORDINATE_PAIR = re.compile(
     r"^\(\s*[+-]?\d+(?:\.\d+)?(?:/\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?(?:/\d+)?\s*\)$"
 )
+_ASCII_POWER_RE = re.compile(r"([A-Za-z0-9\)])\^(\{[^}]+\}|[A-Za-z0-9]+)")
+
+
+def _classroom_equation_latex(source: str) -> str | None:
+    """Wrap / normalize classroom equations like ``x^2+y^2=4`` for MathJax."""
+    text = str(source or "").strip()
+    if not text:
+        return None
+    if "\\" in text or "$" in text:
+        return None
+    # Do not wrap Chinese prose prompts that merely contain '=' or ascii math tokens.
+    if re.search(r"[\u4e00-\u9fff]", text):
+        return None
+    looks_equation = ("=" in text and re.search(r"[xyXY]", text)) or (
+        "^" in text and re.search(r"[A-Za-z]", text)
+    )
+    looks_area = "π" in text or bool(re.search(r"(?<![A-Za-z])pi(?![A-Za-z])", text, flags=re.I))
+    if not looks_equation and not looks_area:
+        return None
+    latex = text.replace("π", r"\pi").replace("PI", r"\pi").replace("pi", r"\pi")
+    latex = _ASCII_POWER_RE.sub(
+        lambda m: f"{m.group(1)}^{{{m.group(2).strip('{}')}}}",
+        latex,
+    )
+    return rf"\({latex}\)"
 
 
 def _arithmetic_latex(source: str) -> str:
@@ -56,11 +81,18 @@ def _arithmetic_latex(source: str) -> str:
 def format_choice_math_display(value: Any) -> str:
     """Return MathJax-ready display text without changing the canonical value."""
     canonical = str(value if value is not None else "").strip()
-    if not canonical or "\\" in canonical or "$" in canonical:
-        # Preserve the established contract for both wrapped and bare TeX.
+    if not canonical:
         return canonical
+    if "$" in canonical or r"\(" in canonical or r"\[" in canonical:
+        return canonical
+    if "\\" in canonical:
+        # Bare TeX commands still need delimiters for MathJax.
+        return rf"\({canonical}\)"
     if _INTEGER_OR_DECIMAL.fullmatch(canonical) or _COORDINATE_PAIR.fullmatch(canonical):
         return canonical
+    equation = _classroom_equation_latex(canonical)
+    if equation is not None:
+        return equation
     try:
         return rf"\({_arithmetic_latex(canonical)}\)"
     except (ValueError, SyntaxError, RecursionError):

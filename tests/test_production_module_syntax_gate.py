@@ -62,3 +62,29 @@ print("OK")
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout
     assert "OK" in proc.stdout
+
+
+def test_circle_plane_fresh_process_import_and_generate():
+    """Fresh interpreter import for circle.plane domain + adapter."""
+    script = r"""
+import importlib
+dom = importlib.import_module("core.domain.circle_plane_domain")
+adp = importlib.import_module("core.gencode.circle_plane_capability_adapter")
+matrix = dom.build_circle_plane_matrix(operation="identify_center_radius_from_standard", seed=3)
+assert dom.validate_circle_plane_matrix(matrix)
+payload = adp.adapt_circle_plane_matrix(matrix, domain_operation="identify_center_radius_from_standard")
+assert str(payload.get("question_text") or payload.get("question") or "").strip()
+from core.registry.taxonomy_registry import resolve_domain_for_skill
+routing = resolve_domain_for_skill("vh_數學B2_SubSection_4_1_1")
+assert routing["fixed_domain_key"] == "circle.plane"
+print("OK")
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+    assert "OK" in proc.stdout

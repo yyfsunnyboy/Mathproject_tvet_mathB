@@ -95,13 +95,57 @@ def _subquestions_from_multi_field_contract(
     return subquestions
 
 
-def _student_facing_part_label(key: str, *, explicit: str | None = None) -> str:
+def _student_facing_part_label(
+    key: str,
+    *,
+    explicit: str | None = None,
+    domain_operation: str | None = None,
+) -> str:
     """Map internal part keys to student-visible labels (generic, not chapter-hardcoded)."""
     if explicit is not None and str(explicit).strip():
-        return str(explicit).strip()
+        explicit_text = str(explicit).strip()
+        # Identity map for bare "(n)" keys must not block operation-aware enrichment.
+        numbered = _split_numbered_part_key(str(key or "").strip())
+        if (
+            explicit_text == str(key or "").strip()
+            and numbered is not None
+            and not numbered[1]
+        ):
+            pass  # fall through to operation enrichment
+        elif (
+            numbered is not None
+            and not numbered[1]
+            and not re.match(r"[\(（]\s*\d+", explicit_text)
+        ):
+            # Bare "(n)" key + meaning label (e.g. 圖形) → "(1) 圖形"
+            return f"{numbered[0]} {explicit_text}".strip()
+        else:
+            return explicit_text
     text = str(key or "").strip()
     if not text:
         return text
+    # Numbered classroom keys: "(1)", "(1)圓心", "（2）半徑"
+    numbered = _split_numbered_part_key(text)
+    if numbered is not None:
+        group, field = numbered
+        if field:
+            return f"{group} {field}".strip() if not field.startswith(group) else text
+        # Bare "(n)" — enrich from operation family when possible.
+        op = str(domain_operation or "").casefold()
+        n = re.sub(r"[^\d]", "", group)
+        if "classify" in op and "graph" in op:
+            return f"({n}) 圖形"
+        if "write_circle_equations" in op or "equations_from_conditions" in op:
+            return f"({n}) 方程式"
+        if "point" in op and "circle" in op:
+            return f"({n}) C{n} 關係"
+        if "line" in op and "circle" in op:
+            return f"({n}) L{n} 關係"
+        if "tangent_segment" in op:
+            return f"({n}) 切線段長"
+        if "relation_ranges" in op:
+            return text  # already descriptive like "(1)不相交"
+        return group
     greek = {
         "alpha": r"$\alpha$",
         "beta": r"$\beta$",
@@ -130,7 +174,7 @@ def _student_facing_part_label(key: str, *, explicit: str | None = None) -> str:
     if dot_match:
         left, right = dot_match.group(1).lower(), dot_match.group(2).lower()
         return rf"$\vec{{{left}}}\cdot\vec{{{right}}}$"
-    # mag_2a_3b / mag_a_plus_b → $|2\vec{a}-3\vec{b}|$ style
+    # mag_2a_3b / mag_a_plus_b → $|2\vec{a}+3\vec{b}|$ style
     mag_match = re.fullmatch(r"mag_(.+)", text, flags=re.IGNORECASE)
     if mag_match:
         body = _vector_expr_key_to_latex(mag_match.group(1))
@@ -151,10 +195,38 @@ def _student_facing_part_label(key: str, *, explicit: str | None = None) -> str:
         "unit": "單位向量",
         "angle_degrees": "夾角（度）",
         "turn_degrees": "左轉角度（度）",
+        "切線一": "切線一",
+        "切線二": "切線二",
     }
     if text in vocab:
         return vocab[text]
     return text
+
+
+def _split_numbered_part_key(key: str) -> tuple[str, str] | None:
+    """Split ``(1)圓心`` / ``（2） 半徑`` into group label and field label."""
+    text = str(key or "").strip()
+    m = re.fullmatch(r"([\(（]\s*\d+\s*[\)）])\s*(.*)", text)
+    if not m:
+        return None
+    group = re.sub(r"\s+", "", m.group(1))
+    # Normalize fullwidth parens to ASCII for stable UI grouping.
+    group = group.replace("（", "(").replace("）", ")")
+    field = str(m.group(2) or "").strip()
+    return group, field
+
+
+def _is_student_facing_part_key(key: str) -> bool:
+    """True when the part key itself is already classroom-readable."""
+    text = str(key or "").strip()
+    if not text:
+        return False
+    if _split_numbered_part_key(text) is not None:
+        return True
+    # Chinese classroom labels (切線一 / 不相交 / …)
+    if re.search(r"[\u4e00-\u9fff]", text) and "_" not in text:
+        return True
+    return False
 
 
 def _vector_expr_key_to_latex(body: str) -> str:
@@ -191,6 +263,8 @@ def _looks_like_internal_part_key(key: str, label: str) -> bool:
     label_text = str(label or "").strip()
     if not key_text or not label_text:
         return True
+    if _is_student_facing_part_key(key_text) or _is_student_facing_part_key(label_text):
+        return False
     if label_text != key_text:
         return False
     # Identical label==key is OK for plain point letters / short math vars.
@@ -211,6 +285,58 @@ def _looks_like_internal_part_key(key: str, label: str) -> bool:
     }:
         return True
     return False
+
+
+def _normalize_part_labels_map(
+    part_labels: Any,
+    semantic_answer: dict[str, Any],
+) -> dict[str, str]:
+    """Accept dict labels, or a list of keys / parallel labels."""
+    if isinstance(part_labels, dict):
+        return {str(k): str(v) for k, v in part_labels.items() if str(v).strip()}
+    if isinstance(part_labels, list) and part_labels:
+        keys = [str(k) for k in semantic_answer.keys()]
+        out: dict[str, str] = {}
+        for idx, item in enumerate(part_labels):
+            text = str(item or "").strip()
+            if not text:
+                continue
+            if text in semantic_answer:
+                # list of keys → identity (student-facing keys like "(1)圓心")
+                out[text] = text
+            elif idx < len(keys):
+                out[keys[idx]] = text
+        return out
+    return {}
+
+
+def _build_multipart_field_groups(parts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Group center/radius-style parts under shared ``(1)`` / ``(2)`` headings."""
+    groups: list[dict[str, Any]] = []
+    index_by_group: dict[str, int] = {}
+    for part in parts:
+        key = str(part.get("key") or "")
+        group_label = str(part.get("group_label") or "").strip()
+        if not group_label:
+            split = _split_numbered_part_key(key)
+            if split is not None and split[1]:
+                group_label = split[0]
+        if not group_label:
+            continue
+        if group_label not in index_by_group:
+            index_by_group[group_label] = len(groups)
+            groups.append({"group_label": group_label, "fields": []})
+        groups[index_by_group[group_label]]["fields"].append(key)
+    # Only emit grouped contract when at least one group has 2+ fields
+    # (center+radius) or multiple numbered groups exist.
+    if not groups:
+        return []
+    # Skip grouping when every group is a singleton — labels already include (n).
+    if all(len(g["fields"]) == 1 for g in groups):
+        return []
+    if len(groups) == 1 and len(groups[0]["fields"]) < 2:
+        return []
+    return groups
 
 
 def _multi_part_contract_parts(
@@ -235,17 +361,41 @@ def _multi_part_contract_parts(
         numeric = bool(text) and text.lstrip("+-").isdigit()
         checker = "integer_checker" if numeric else "expression_checker"
         key_text = str(key)
-        label = _student_facing_part_label(key_text, explicit=labels.get(key_text))
+        label = _student_facing_part_label(
+            key_text,
+            explicit=labels.get(key_text),
+            domain_operation=domain_operation,
+        )
+        group_label = ""
+        field_label = label
+        split = _split_numbered_part_key(key_text)
+        if split is not None:
+            group_label, suffix = split
+            if suffix:
+                # Prefer short field label inside a numbered group: 圓心 / 半徑
+                field_label = suffix
+                label = f"{group_label} {suffix}".strip()
+            else:
+                # Bare "(n)" — keep operation-enriched student label.
+                field_label = label
+                group_label = split[0]
         if _looks_like_internal_part_key(key_text, label):
             # Last-resort humanization for unknown snake_case keys.
             label = key_text.replace("_", " ").strip() or key_text
+            field_label = label
             if _looks_like_internal_part_key(key_text, label):
                 label = f"小题 {len(parts) + 1}"
+                field_label = label
+                group_label = ""
         part_row: dict[str, Any] = {
             "key": key_text,
-            "label": label,
-            "display_label": label,
-            "math_label": label if "$" in label or r"\(" in label else None,
+            "label": field_label if group_label else label,
+            "display_label": field_label if group_label else label,
+            "group_label": group_label or None,
+            "math_label": (field_label if group_label else label)
+            if "$" in (field_label if group_label else label)
+            or r"\(" in (field_label if group_label else label)
+            else None,
             "field_key": key_text,
             "checker": checker,
             "checker_key": checker,
@@ -1149,6 +1299,13 @@ def _text_needs_math_latex(text: str) -> bool:
     if any(token in source for token in ("sqrt(", "\\sqrt", "/", "*")):
         return True
     if re.search(r"\\[a-zA-Z]+", source):
+        return True
+    # Classroom polynomial / circle equations with caret powers.
+    if "^" in source and re.search(r"[A-Za-z]", source):
+        return True
+    if "=" in source and re.search(r"[xyXY]", source):
+        return True
+    if "π" in source or "pi" in source.casefold():
         return True
     if source.startswith("$") and source.endswith("$") and len(source) >= 3:
         return True
@@ -3729,15 +3886,34 @@ def convert_domain_matrix_to_question_payload(
         part_map = semantic_answer if isinstance(semantic_answer, dict) else {}
         if not part_map and isinstance(answer.get("parts"), dict):
             part_map = answer.get("parts") or {}
-        part_labels = answer.get("part_labels") if isinstance(answer.get("part_labels"), dict) else None
+        part_labels = _normalize_part_labels_map(
+            answer.get("part_labels"),
+            part_map if isinstance(part_map, dict) else {},
+        )
         answer_contract["parts"] = _multi_part_contract_parts(
             part_map,
-            part_labels=part_labels,
+            part_labels=part_labels or None,
             domain_operation=str(op or problem_type_id or ""),
         )
         keys = [str(row.get("key") or "") for row in answer_contract["parts"]]
         if len(keys) != len(set(keys)):
             raise ValueError("duplicate_multi_part_field_key")
+        field_groups = _build_multipart_field_groups(answer_contract["parts"])
+        if field_groups:
+            ui_contract = dict(answer_contract.get("ui_contract") or {})
+            ui_contract["field_groups"] = field_groups
+            answer_contract["ui_contract"] = ui_contract
+        else:
+            # Avoid frontend auto-grouping that would duplicate "(1)" headings.
+            for row in answer_contract["parts"]:
+                if row.get("group_label") and _split_numbered_part_key(str(row.get("key") or "")) is not None:
+                    # Restore full student label on the field itself.
+                    if row.get("display_label") and str(row["display_label"]) in {
+                        "圓心",
+                        "半徑",
+                    }:
+                        continue
+                    row["group_label"] = None
 
     answer_contract = _apply_vector_keyboard_answer_shape(
         answer_contract,
@@ -3766,7 +3942,21 @@ def convert_domain_matrix_to_question_payload(
         else display_answer
     )
 
-    return _finalize_question_payload({
+    from core.gencode.multipart_stem_contract import (
+        extract_stem_structure,
+        stem_structure_to_question_text,
+    )
+
+    stem_structure = extract_stem_structure(matrix) or extract_stem_structure(
+        {"metadata": {"stem_structure": matrix.get("stem_structure")}}
+    )
+    if stem_structure and stem_structure.get("items"):
+        # Structured multipart is source of truth; rebuild compatibility text.
+        question_text = sanitize_student_math_display_text(
+            stem_structure_to_question_text(stem_structure)
+        )
+
+    payload_out = {
         "question_text": question_text,
         "answer": payload_answer,
         "correct_answer": payload_correct,
@@ -3824,7 +4014,13 @@ def convert_domain_matrix_to_question_payload(
         "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
-    })
+    }
+    if stem_structure and stem_structure.get("items"):
+        payload_out["stem_structure"] = stem_structure
+        meta = payload_out.get("metadata")
+        if isinstance(meta, dict):
+            meta["stem_structure"] = stem_structure
+    return _finalize_question_payload(payload_out)
 
 
 def normalize_domain_payload_to_v3_matrix(payload: Any, context: dict[str, Any]) -> dict[str, Any]:

@@ -278,6 +278,25 @@ Generated content may not expose renderer-specific differences in font
 scale or baseline to students. This is a shared practice invariant for
 B2 / B3 / B4 — not a chapter exception.
 
+### 9.4 Multipart subquestion structure
+
+For multipart questions, **subquestion structure is semantic data** and must
+be preserved from generation through student rendering.
+
+- Prefer the shared `stem_structure` contract:
+  `{ "prompt": "...", "items": [ { "group_label": "(1)", "text": "..." }, ... ] }`
+- `problem_text` / `question_text` may be generated for compatibility, but
+  must **not** be the only source of truth for multipart boundaries.
+- Formatting / whitespace alone must not be the sole representation of
+  subquestion boundaries (MathJax adjacency can erase bare `(2)` / `(3)`
+  markers that live between inline math spans).
+- Each answer field must expose both:
+  - subquestion identity (`group_label`, e.g. `(1)`)
+  - answer meaning (`display_label`, e.g. `圓心` / `圖形` / `C1 關係`)
+  when needed for student comprehension.
+- Do not reconstruct item boundaries from flattened text with digit regex
+  when structured items already exist.
+
 
 ## 10. Rules for future chapter imports
 

@@ -1,0 +1,183 @@
+{
+  "skill_id": "vh_數學B2_SubSection_4_1_1",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 16,
+  "components": [
+    {
+      "component_id": "src_11826",
+      "textbook_example_id": 11826,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_standard",
+      "domain_operation": "identify_center_radius_from_standard",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11826/generate.py"
+    },
+    {
+      "component_id": "src_11827",
+      "textbook_example_id": 11827,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_standard",
+      "domain_operation": "identify_center_radius_from_standard",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11827/generate.py"
+    },
+    {
+      "component_id": "src_11828",
+      "textbook_example_id": 11828,
+      "status": "verified",
+      "problem_type_id": "interpret_circular_locus_equation",
+      "domain_operation": "interpret_circular_locus_equation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11828/generate.py"
+    },
+    {
+      "component_id": "src_11829",
+      "textbook_example_id": 11829,
+      "status": "verified",
+      "problem_type_id": "write_circle_equations_from_conditions",
+      "domain_operation": "write_circle_equations_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11829/generate.py"
+    },
+    {
+      "component_id": "src_11830",
+      "textbook_example_id": 11830,
+      "status": "verified",
+      "problem_type_id": "circle_from_diameter_endpoints",
+      "domain_operation": "circle_from_diameter_endpoints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11830/generate.py"
+    },
+    {
+      "component_id": "src_11831",
+      "textbook_example_id": 11831,
+      "status": "verified",
+      "problem_type_id": "circle_from_diameter_endpoints",
+      "domain_operation": "circle_from_diameter_endpoints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11831/generate.py"
+    },
+    {
+      "component_id": "src_11841",
+      "textbook_example_id": 11841,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_standard",
+      "domain_operation": "identify_center_radius_from_standard",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11841/generate.py"
+    },
+    {
+      "component_id": "src_11842",
+      "textbook_example_id": 11842,
+      "status": "verified",
+      "problem_type_id": "write_circle_equations_from_conditions",
+      "domain_operation": "write_circle_equations_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11842/generate.py"
+    },
+    {
+      "component_id": "src_11843",
+      "textbook_example_id": 11843,
+      "status": "verified",
+      "problem_type_id": "circle_equal_radius_at_origin",
+      "domain_operation": "circle_equal_radius_at_origin",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11843/generate.py"
+    },
+    {
+      "component_id": "src_11844",
+      "textbook_example_id": 11844,
+      "status": "verified",
+      "problem_type_id": "circle_from_diameter_endpoints",
+      "domain_operation": "circle_from_diameter_endpoints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11844/generate.py"
+    },
+    {
+      "component_id": "src_11850",
+      "textbook_example_id": 11850,
+      "status": "verified",
+      "problem_type_id": "translate_and_scale_circle",
+      "domain_operation": "translate_and_scale_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11850/generate.py"
+    },
+    {
+      "component_id": "src_11877",
+      "textbook_example_id": 11877,
+      "status": "verified",
+      "problem_type_id": "translate_and_scale_circle",
+      "domain_operation": "translate_and_scale_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11877/generate.py"
+    },
+    {
+      "component_id": "src_11886",
+      "textbook_example_id": 11886,
+      "status": "verified",
+      "problem_type_id": "circle_origin_through_lines_intersection",
+      "domain_operation": "circle_origin_through_lines_intersection",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11886/generate.py"
+    },
+    {
+      "component_id": "src_11887",
+      "textbook_example_id": 11887,
+      "status": "verified",
+      "problem_type_id": "circle_same_center_scaled_area",
+      "domain_operation": "circle_same_center_scaled_area",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_11887/generate.py"
+    },
+    {
+      "component_id": "src_11890",
+      "textbook_example_id": 11890,
+      "status": "verified",
+      "problem_type_id": "circle_center_tangent_to_line",
+      "domain_operation": "circle_center_tangent_to_line",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_11890/generate.py"
+    },
+    {
+      "component_id": "src_11891",
+      "textbook_example_id": 11891,
+      "status": "verified",
+      "problem_type_id": "circle_from_diameter_endpoints",
+      "domain_operation": "circle_from_diameter_endpoints",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11891/generate.py"
+    }
+  ]
+}

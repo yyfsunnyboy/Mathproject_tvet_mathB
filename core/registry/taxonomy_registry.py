@@ -139,6 +139,66 @@ _B2_CH3_SKILL_OPERATIONS = {
     "vh_數學B2_SubSection_3_3_5": ('classify_dot_sign_from_diagram_mcq', 'compute_dot_product_from_magnitudes_angle', 'expand_perpendicular_dot_product', 'solve_angle_from_magnitude_identity'),
 }
 
+# B2 Ch4 circle plane — 4-1.1 / 4-1.2 only (4-2 remains unbound / needs_capability).
+_B2_CH4_CIRCLE_SKILL_OPERATIONS = {
+    "vh_數學B2_SubSection_4_1_1": (
+        "identify_center_radius_from_standard",
+        "write_circle_from_center_radius",
+        "write_circle_from_center_point",
+        "write_circle_equations_from_conditions",
+        "interpret_circular_locus_equation",
+        "circle_from_diameter_endpoints",
+        "circle_equal_radius_at_origin",
+        "translate_and_scale_circle",
+        "circle_origin_through_lines_intersection",
+        "circle_same_center_scaled_area",
+        "circle_center_tangent_to_line",
+    ),
+    "vh_數學B2_SubSection_4_1_2": (
+        "identify_center_radius_from_general",
+        "solve_circle_parameter_range",
+        "circle_through_three_points",
+        "circle_center_on_axis_area",
+        "classify_general_circle_graph",
+        "translate_and_scale_circle",
+        "compute_circle_area_from_general",
+        "identify_circle_from_product_form",
+        "evaluate_center_radius_expression",
+        "solve_circle_parameter_range_mcq",
+    ),
+    "vh_數學B2_SubSection_4_2_1": (
+        "classify_point_vs_circles_multipart",
+        "solve_point_circle_parameter_range",
+        "identify_point_on_circle_mcq",
+    ),
+    "vh_數學B2_SubSection_4_2_2": (
+        "classify_line_circle_relation",
+        "classify_lines_vs_circle_multipart",
+        "solve_line_circle_parameter_range",
+        "solve_line_circle_tangent_parameter",
+        "compute_chord_length",
+        "solve_line_circle_relation_ranges_multipart",
+        "count_line_circle_intersections",
+        "compute_storm_path_length_in_circle",
+        "classify_line_circle_relation_mcq",
+        "solve_diameter_chord_parameter_mcq",
+        "compute_triangle_center_chord_area",
+        "solve_axis_tangent_parameter",
+    ),
+    "vh_數學B2_SubSection_4_2_3": (
+        "tangent_at_point_on_circle",
+        "tangents_parallel_to_line",
+        "tangents_perpendicular_to_line",
+        "compute_tangents_from_point_quad_area",
+        "tangent_at_point_on_circle_mcq",
+    ),
+    "vh_數學B2_SubSection_4_2_4": (
+        "compute_tangent_segment_lengths",
+        "count_line_vs_two_circles_intersections",
+        "compute_tangent_segment_length_mcq",
+    ),
+}
+
 
 class SkillDomainNotRegisteredError(KeyError):
     """Raised when skill_id has no fixed domain binding in Registry."""
@@ -560,6 +620,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         }
         for skill_id in list(_B2_CH3_SKILL_OPERATIONS)
     },
+    **{
+        skill_id: {
+            "fixed_domain_key": "circle.plane",
+            "domain": "circle",
+            "curriculum_profile": "vocational_high_b",
+            "registry_revision": REGISTRY_REVISION,
+            "mapping_reason": "textbook_skill_b2_ch4_circle_standard_general",
+        }
+        for skill_id in list(_B2_CH4_CIRCLE_SKILL_OPERATIONS)
+    },
     "vh_數學B2_RatioAndRatioValue": {
         "fixed_domain_key": "geometry.similarity",
         "domain_module": "core.domain.geometry_similarity_domain",
@@ -691,6 +761,16 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         }
         for skill_id, ops in _B2_CH3_SKILL_OPERATIONS.items()
     },
+    **{
+        skill_id: {
+            "fixed_domain_key": "circle.plane",
+            "domain_module": "core.domain.circle_plane_domain",
+            "entrypoint": "build_circle_plane_matrix",
+            "default_curriculum_profile": "vocational_high_b",
+            "allowed_types": list(ops),
+        }
+        for skill_id, ops in _B2_CH4_CIRCLE_SKILL_OPERATIONS.items()
+    },
 }
 
 # Try loading from YAML (extends SKILL_TO_DOMAIN; profile keys merged below).
@@ -798,6 +878,7 @@ def resolve_domain_for_skill(skill_id: str) -> dict[str, Any]:
         else list(_B2_21_SINE_OPERATIONS) if key == _B2_21_SINE_SKILL
         else list(_B2_21_COSINE_OPERATIONS) if key == _B2_21_COSINE_SKILL
         else list(_B2_CH3_SKILL_OPERATIONS[key]) if key in _B2_CH3_SKILL_OPERATIONS
+        else list(_B2_CH4_CIRCLE_SKILL_OPERATIONS[key]) if key in _B2_CH4_CIRCLE_SKILL_OPERATIONS
         else get_allowed_operations(fixed_domain_key, skill_id=key)
     )
     merged["registry_revision"] = get_registry_revision(key)

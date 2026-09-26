@@ -2021,3 +2021,341 @@ register_domain_spec(DomainCapabilitySpec(
     },
 ))
 
+
+_CIRCLE_PLANE_ADAPTER = "core.gencode.circle_plane_capability_adapter.adapt_circle_plane_matrix"
+_CIRCLE_PLANE_VALIDATOR = "validate_circle_plane_matrix"
+_CIRCLE_PLANE_BUILDER = "build_circle_plane_matrix"
+_CIRCLE_PLANE_CONTRACT = "b2_ch4_circle_plane_exact_v1"
+
+
+def _circle_op(
+    key: str,
+    *,
+    answer_types: tuple[str, ...] = ("expression", "short_answer"),
+    presentation_modes: tuple[str, ...] = ("short_answer",),
+    features: tuple[str, ...] = (),
+) -> OperationSpec:
+    return _op(
+        key,
+        _CIRCLE_PLANE_BUILDER,
+        payload_adapter=_CIRCLE_PLANE_ADAPTER,
+        validator=_CIRCLE_PLANE_VALIDATOR,
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentation_modes,
+        required_source_features=features,
+        runtime_contract=_CIRCLE_PLANE_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="circle.plane",
+    domain_module="core.domain.circle_plane_domain",
+    entrypoint="build_circle_plane_matrix",
+    capabilities=frozenset({
+        "identify_center_radius_from_standard",
+        "write_circle_from_center_radius",
+        "write_circle_from_center_point",
+        "write_circle_equations_from_conditions",
+        "interpret_circular_locus_equation",
+        "circle_from_diameter_endpoints",
+        "circle_equal_radius_at_origin",
+        "translate_and_scale_circle",
+        "circle_origin_through_lines_intersection",
+        "circle_same_center_scaled_area",
+        "circle_center_tangent_to_line",
+        "identify_center_radius_from_general",
+        "solve_circle_parameter_range",
+        "circle_through_three_points",
+        "circle_center_on_axis_area",
+        "classify_general_circle_graph",
+        "compute_circle_area_from_general",
+        "identify_circle_from_product_form",
+        "evaluate_center_radius_expression",
+        # 4-2.1 point vs circle
+        "classify_point_vs_circles_multipart",
+        "solve_point_circle_parameter_range",
+        "identify_point_on_circle_mcq",
+        # 4-2.2 line vs circle
+        "classify_line_circle_relation",
+        "classify_lines_vs_circle_multipart",
+        "solve_line_circle_parameter_range",
+        "solve_line_circle_tangent_parameter",
+        "compute_chord_length",
+        "solve_line_circle_relation_ranges_multipart",
+        "count_line_circle_intersections",
+        "compute_storm_path_length_in_circle",
+        "classify_line_circle_relation_mcq",
+        "solve_diameter_chord_parameter_mcq",
+        "compute_triangle_center_chord_area",
+        "solve_axis_tangent_parameter",
+        # 4-2.3 tangent lines
+        "tangent_at_point_on_circle",
+        "tangents_parallel_to_line",
+        "tangents_perpendicular_to_line",
+        "compute_tangents_from_point_quad_area",
+        # 4-2.4 tangent segments
+        "compute_tangent_segment_lengths",
+        "count_line_vs_two_circles_intersections",
+        "compute_tangent_segment_length_mcq",
+        "solve_circle_parameter_range_mcq",
+        "tangent_at_point_on_circle_mcq",
+    }),
+    operations={
+        "identify_center_radius_from_standard": _circle_op(
+            "identify_center_radius_from_standard",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("standard_form", "center_radius"),
+        ),
+        "write_circle_from_center_radius": _circle_op(
+            "write_circle_from_center_radius",
+            features=("center", "radius", "standard_form"),
+        ),
+        "write_circle_from_center_point": _circle_op(
+            "write_circle_from_center_point",
+            features=("center", "point_on_circle"),
+        ),
+        "write_circle_equations_from_conditions": _circle_op(
+            "write_circle_equations_from_conditions",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("multipart_conditions",),
+        ),
+        "interpret_circular_locus_equation": _circle_op(
+            "interpret_circular_locus_equation",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("locus", "center_radius"),
+        ),
+        "circle_from_diameter_endpoints": _circle_op(
+            "circle_from_diameter_endpoints",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("diameter", "midpoint"),
+        ),
+        "circle_equal_radius_at_origin": _circle_op(
+            "circle_equal_radius_at_origin",
+            features=("equal_radius", "origin_center"),
+        ),
+        "translate_and_scale_circle": _circle_op(
+            "translate_and_scale_circle",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("translate", "scale_radius"),
+        ),
+        "circle_origin_through_lines_intersection": _circle_op(
+            "circle_origin_through_lines_intersection",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("line_intersection", "origin_center"),
+        ),
+        "circle_same_center_scaled_area": _circle_op(
+            "circle_same_center_scaled_area",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("same_center", "area_scale"),
+        ),
+        "circle_center_tangent_to_line": _circle_op(
+            "circle_center_tangent_to_line",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("tangent", "point_line_distance"),
+        ),
+        "identify_center_radius_from_general": _circle_op(
+            "identify_center_radius_from_general",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("general_form", "complete_square"),
+        ),
+        "solve_circle_parameter_range": _circle_op(
+            "solve_circle_parameter_range",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("parameter", "validity"),
+        ),
+        "circle_through_three_points": _circle_op(
+            "circle_through_three_points",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("three_points", "circumcircle"),
+        ),
+        "circle_center_on_axis_area": _circle_op(
+            "circle_center_on_axis_area",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("center_constraint", "area"),
+        ),
+        "classify_general_circle_graph": _circle_op(
+            "classify_general_circle_graph",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("validity", "degenerate"),
+        ),
+        "compute_circle_area_from_general": _circle_op(
+            "compute_circle_area_from_general",
+            features=("general_form", "area"),
+        ),
+        "identify_circle_from_product_form": _circle_op(
+            "identify_circle_from_product_form",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("expand", "identify"),
+        ),
+        "evaluate_center_radius_expression": _circle_op(
+            "evaluate_center_radius_expression",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("center_radius", "expression"),
+        ),
+        # ── 4-2.1 point vs circle ────────────────────────────────────────────
+        "classify_point_vs_circles_multipart": _circle_op(
+            "classify_point_vs_circles_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("point_vs_circle", "classification"),
+        ),
+        "solve_point_circle_parameter_range": _circle_op(
+            "solve_point_circle_parameter_range",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("point_vs_circle", "parameter"),
+        ),
+        "identify_point_on_circle_mcq": _circle_op(
+            "identify_point_on_circle_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("point_vs_circle", "identify"),
+        ),
+        # ── 4-2.2 line vs circle ─────────────────────────────────────────────
+        "classify_line_circle_relation": _circle_op(
+            "classify_line_circle_relation",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "point_line_distance", "classification"),
+        ),
+        "classify_lines_vs_circle_multipart": _circle_op(
+            "classify_lines_vs_circle_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "classification"),
+        ),
+        "solve_line_circle_parameter_range": _circle_op(
+            "solve_line_circle_parameter_range",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "parameter"),
+        ),
+        "solve_line_circle_tangent_parameter": _circle_op(
+            "solve_line_circle_tangent_parameter",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parameter"),
+        ),
+        "compute_chord_length": _circle_op(
+            "compute_chord_length",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "point_line_distance"),
+        ),
+        "solve_line_circle_relation_ranges_multipart": _circle_op(
+            "solve_line_circle_relation_ranges_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "parameter", "classification"),
+        ),
+        "count_line_circle_intersections": _circle_op(
+            "count_line_circle_intersections",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "intersection_count"),
+        ),
+        "compute_storm_path_length_in_circle": _circle_op(
+            "compute_storm_path_length_in_circle",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "application"),
+        ),
+        "classify_line_circle_relation_mcq": _circle_op(
+            "classify_line_circle_relation_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("line_vs_circle", "classification"),
+        ),
+        "solve_diameter_chord_parameter_mcq": _circle_op(
+            "solve_diameter_chord_parameter_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("diameter", "parameter"),
+        ),
+        "compute_triangle_center_chord_area": _circle_op(
+            "compute_triangle_center_chord_area",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "area"),
+        ),
+        "solve_axis_tangent_parameter": _circle_op(
+            "solve_axis_tangent_parameter",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parameter", "general_form"),
+        ),
+        # ── 4-2.3 tangent lines ──────────────────────────────────────────────
+        "tangent_at_point_on_circle": _circle_op(
+            "tangent_at_point_on_circle",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "point_on_circle"),
+        ),
+        "tangents_parallel_to_line": _circle_op(
+            "tangents_parallel_to_line",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parallel"),
+        ),
+        "tangents_perpendicular_to_line": _circle_op(
+            "tangents_perpendicular_to_line",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "perpendicular"),
+        ),
+        "compute_tangents_from_point_quad_area": _circle_op(
+            "compute_tangents_from_point_quad_area",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent_segment", "area"),
+        ),
+        # ── 4-2.4 tangent segments ───────────────────────────────────────────
+        "compute_tangent_segment_lengths": _circle_op(
+            "compute_tangent_segment_lengths",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent_segment",),
+        ),
+        "count_line_vs_two_circles_intersections": _circle_op(
+            "count_line_vs_two_circles_intersections",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "intersection_count"),
+        ),
+        "compute_tangent_segment_length_mcq": _circle_op(
+            "compute_tangent_segment_length_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("tangent_segment",),
+        ),
+        "solve_circle_parameter_range_mcq": _circle_op(
+            "solve_circle_parameter_range_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage", "mcq"),
+        ),
+        "tangent_at_point_on_circle_mcq": _circle_op(
+            "tangent_at_point_on_circle_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage", "mcq"),
+        ),
+    },
+))
+

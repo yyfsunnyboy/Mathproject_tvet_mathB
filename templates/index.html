@@ -153,13 +153,14 @@
             line-height: 1.6;
             color: #2c3e50;
             margin: 6px 0;
-            white-space: normal;
+            white-space: pre-wrap;
             height: auto;
             min-height: 0;
             max-height: none;
             overflow: visible;
             word-wrap: break-word;
             word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         /* [Feature] Instant Practice Image Display */
@@ -896,6 +897,28 @@
             color: #1e293b;
             margin-bottom: 8px;
         }
+        .multipart-stem {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            white-space: normal;
+        }
+        .multipart-stem-prompt {
+            margin-bottom: 0.15rem;
+        }
+        .multipart-stem-item {
+            display: block;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .multipart-stem-marker {
+            font-weight: 600;
+            margin-right: 0.25rem;
+        }
+        .multipart-stem-body {
+            white-space: normal;
+        }
         .multi-part-row {
             display: flex;
             align-items: center;
@@ -1040,32 +1063,34 @@
         }
         .multi-part-group {
             display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 6px;
+            margin-bottom: 12px;
+            max-width: 100%;
         }
         .multi-part-group-label {
             flex: 0 0 auto;
             font-weight: 600;
             color: #333;
-            white-space: nowrap;
+            white-space: normal;
         }
         .multi-part-inline-fields {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 8px;
             align-items: center;
-            flex: 0 1 auto;
+            flex: 1 1 auto;
             min-width: 0;
+            max-width: 100%;
         }
         .multi-part-inline-field {
             display: inline-flex;
             align-items: center;
-            flex: 0 0 auto;
+            flex: 0 1 auto;
             gap: 6px;
-            white-space: nowrap;
+            white-space: normal;
         }
         .multi-part-inline-field input {
             width: 72px;
@@ -1078,9 +1103,10 @@
         .multi-part-row {
             display: flex;
             align-items: center;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 8px;
+            max-width: 100%;
         }
         .multi-part-row label {
             flex: 0 0 auto;
@@ -1499,7 +1525,7 @@
         #question-text {
             width: 100%;
             max-width: 100%;
-            white-space: normal;
+            white-space: pre-wrap;
             line-height: 1.75;
             overflow: visible;
             overflow-wrap: anywhere;
@@ -4670,26 +4696,42 @@
         }
 
         function buildMultiPartFieldGroups(payload, subqs) {
-            const ui = (payload && payload.ui_contract) || {};
+            const ui = (payload && payload.ui_contract)
+                || ((payload && payload.answer_contract && payload.answer_contract.ui_contract) || {});
+            const normalizeGroupMarker = (raw) => {
+                const text = String(raw || '').trim();
+                if (!text) return '';
+                if (/^[\(（]\s*\d+\s*[\)）]$/.test(text)) {
+                    return `(${text.replace(/[^\d]/g, '')})`;
+                }
+                if (/^\d+$/.test(text)) return `(${text})`;
+                return text;
+            };
             if (Array.isArray(ui.field_groups) && ui.field_groups.length > 0) {
                 return ui.field_groups.map((group) => {
                     const fields = (group.fields || [])
                         .map((fieldKey) => subqs.find((sq) => String(sq.field_key || sq.key || '') === String(fieldKey)))
                         .filter(Boolean);
                     return {
-                        label: String(group.group_label || group.label || ''),
+                        label: normalizeGroupMarker(group.group_label || group.label || ''),
                         fields,
                     };
                 }).filter((group) => group.fields.length > 0);
             }
             const byPart = new Map();
             subqs.forEach((sq) => {
-                const partKey = String(sq.part || sq.group_label || sq.label || '').trim();
+                const partKey = normalizeGroupMarker(String(sq.group_label || sq.part || '').trim());
+                if (!partKey) {
+                    if (!byPart.has('')) byPart.set('', []);
+                    byPart.get('').push(sq);
+                    return;
+                }
                 if (!byPart.has(partKey)) byPart.set(partKey, []);
                 byPart.get(partKey).push(sq);
             });
-            if (byPart.size > 1) {
-                return Array.from(byPart.entries()).map(([label, fields]) => ({ label, fields }));
+            const named = Array.from(byPart.entries()).filter(([label]) => label);
+            if (named.length > 1 || (named.length === 1 && named[0][1].length > 1)) {
+                return named.map(([label, fields]) => ({ label, fields }));
             }
             return [{ label: '', fields: subqs }];
         }
@@ -4808,8 +4850,10 @@
                 : null;
             const legacySubqs = Array.isArray(payload.subquestions) ? payload.subquestions : [];
             const groups = autoGroups
-                || (legacySubqs.length > 0 ? buildMultiPartFieldGroups(payload, legacySubqs) : [{ label: '', fields: parts }]);
-            const useGroupedLayout = groups.length > 1 || (groups[0] && groups[0].fields && groups[0].fields.length > 1);
+                || buildMultiPartFieldGroups(payload, parts.length ? parts : legacySubqs);
+            const useGroupedLayout = groups.length > 1
+                || (groups[0] && groups[0].label)
+                || (groups[0] && groups[0].fields && groups[0].fields.length > 1);
             if (useGroupedLayout) {
                 renderGroupedMultiPartInputs(payload, groups);
             } else {
@@ -5739,8 +5783,56 @@
             return source;
         }
 
+        function resolveStemStructure(payload) {
+            if (!payload || typeof payload !== 'object') return null;
+            const candidates = [
+                payload.stem_structure,
+                payload.question_stem,
+                payload.multipart_stem,
+                payload.metadata && payload.metadata.stem_structure,
+                payload.data && payload.data.stem_structure,
+                payload.raw && payload.raw.stem_structure,
+            ];
+            for (const raw of candidates) {
+                if (!raw || typeof raw !== 'object') continue;
+                const items = Array.isArray(raw.items) ? raw.items : [];
+                if (!items.length) continue;
+                return {
+                    prompt: String(raw.prompt || '').trim(),
+                    items: items.map((item, index) => {
+                        if (item && typeof item === 'object') {
+                            let group = String(item.group_label || item.label || item.marker || '').trim();
+                            if (!group) group = `(${index + 1})`;
+                            else if (/^\d+$/.test(group)) group = `(${group})`;
+                            else if (!/^[\(（]\s*\d+\s*[\)）]$/.test(group)) {
+                                const m = group.match(/(\d+)/);
+                                if (m && !/[\u4e00-\u9fffA-Za-z]/.test(group)) group = `(${m[1]})`;
+                            }
+                            const text = String(item.text || item.math || item.body || item.content || '').trim();
+                            return { group_label: group, text };
+                        }
+                        return { group_label: `(${index + 1})`, text: String(item || '').trim() };
+                    }).filter((item) => item.text),
+                };
+            }
+            return null;
+        }
+
         function resolveQuestionText(payload) {
             if (!payload || typeof payload !== 'object') return '';
+            const stem = resolveStemStructure(payload);
+            if (stem && stem.items && stem.items.length) {
+                const lines = [];
+                if (stem.prompt) lines.push(stem.prompt);
+                stem.items.forEach((item) => {
+                    lines.push(`${item.group_label} ${item.text}`.trim());
+                });
+                let resolved = lines.join('\n');
+                if (isChoiceQuestionPayload(payload) && getChoiceItems(payload).length > 0) {
+                    resolved = stripEmbeddedAbcdChoicesFromStem(resolved);
+                }
+                return resolved;
+            }
             const direct = String(
                 payload.question_text || payload.new_question_text || payload.question || payload.prompt || ''
             ).trim();
@@ -5787,6 +5879,49 @@
             element.textContent = safeText;
         }
 
+        function renderStructuredStem(element, payload) {
+            if (!element || !payload || typeof payload !== 'object') return false;
+            let stem = null;
+            try {
+                stem = resolveStemStructure(payload);
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] stem_structure resolve failed; using legacy question_text', err);
+                return false;
+            }
+            if (!stem || !Array.isArray(stem.items) || !stem.items.length) return false;
+            try {
+                element.textContent = '';
+                const wrap = document.createElement('div');
+                wrap.className = 'multipart-stem';
+                if (stem.prompt) {
+                    const promptEl = document.createElement('div');
+                    promptEl.className = 'multipart-stem-prompt';
+                    promptEl.textContent = stem.prompt;
+                    wrap.appendChild(promptEl);
+                }
+                stem.items.forEach((item) => {
+                    const row = document.createElement('div');
+                    row.className = 'multipart-stem-item';
+                    row.dataset.groupLabel = (item && item.group_label) || '';
+                    const marker = document.createElement('span');
+                    marker.className = 'multipart-stem-marker';
+                    marker.textContent = (item && item.group_label) || '';
+                    const body = document.createElement('span');
+                    body.className = 'multipart-stem-body';
+                    body.textContent = (item && item.text) || '';
+                    row.appendChild(marker);
+                    row.appendChild(document.createTextNode(' '));
+                    row.appendChild(body);
+                    wrap.appendChild(row);
+                });
+                element.appendChild(wrap);
+                return true;
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] structured stem render failed; using legacy question_text', err);
+                return false;
+            }
+        }
+
         function showMissingQuestionTextError(element, payload) {
             if (!element) return;
             console.error('[FRONTEND PRACTICE] question_text empty; payload keys=', payload ? Object.keys(payload) : []);
@@ -5801,7 +5936,16 @@
                 showMissingQuestionTextError(questionText, payload);
                 return '';
             }
-            setQuestionDisplayText(questionText, questionMainText);
+            let usedStructuredStem = false;
+            try {
+                usedStructuredStem = Boolean(renderStructuredStem(questionText, payload));
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] structured stem aborted; using legacy question_text', err);
+                usedStructuredStem = false;
+            }
+            if (!usedStructuredStem) {
+                setQuestionDisplayText(questionText, questionMainText);
+            }
             if (answerInput) {
                 answerInput.value = '';
             }

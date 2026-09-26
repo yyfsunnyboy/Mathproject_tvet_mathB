@@ -38,6 +38,20 @@
             return `\\(${canonical}\\)`;
         }
 
+        // Classroom equations / powers (same contract as stem MathJax).
+        const hasCJK = /[\u4e00-\u9fff]/.test(canonical);
+        const looksEquation = !hasCJK && ((/=/.test(canonical) && /[xyXY]/.test(canonical))
+            || (/\^/.test(canonical) && /[A-Za-z]/.test(canonical))
+            || /π|(?<![A-Za-z])pi(?![A-Za-z])/i.test(canonical));
+        if (looksEquation && !/(?:\\\(|\\\[|\$\$|\$)/.test(canonical)) {
+            let latex = canonical.replace(/π/g, '\\pi').replace(/\bpi\b/gi, '\\pi');
+            latex = latex.replace(/([A-Za-z0-9\)])\^(\{[^}]+\}|[A-Za-z0-9]+)/g, (_, base, exp) => {
+                const body = String(exp).replace(/^\{|\}$/g, '');
+                return `${base}^{${body}}`;
+            });
+            return `\\(${latex}\\)`;
+        }
+
         return canonical;
     }
 

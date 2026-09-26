@@ -101,9 +101,28 @@ def sanitize_trivial_vector_coefficients(text: Any) -> str:
     return source
 
 
+def ensure_multipart_item_line_breaks(text: Any) -> str:
+    """Insert newlines before ``(2)``/``(3)``… when a stem lists multipart items inline.
+
+    Legacy fallback only. Prefer structured ``stem_structure`` when available.
+    Does not treat bare coefficients as item markers.
+    """
+    source = str(text or "")
+    if not source:
+        return source
+    # If already has an item-boundary newline before (2)/(3), leave as-is.
+    if re.search(r"\n[\(（]\s*[2-9]\d*\s*[\)）]", source):
+        return source
+    if not re.search(r"[\(（]\s*1\s*[\)）]", source):
+        return source
+    # Break before subsequent numbered items: (2) (3) … / （2）（3）…
+    return re.sub(r"(?<!\n)([\(（]\s*[2-9]\d*\s*[\)）])", r"\n\1", source)
+
+
 def sanitize_student_math_display_text(text: Any) -> str:
     """Shared student-facing cleanup for numeric float noise and trivial vec coeffs."""
-    return sanitize_trivial_vector_coefficients(sanitize_float_noise_in_text(text))
+    cleaned = sanitize_trivial_vector_coefficients(sanitize_float_noise_in_text(text))
+    return ensure_multipart_item_line_breaks(cleaned)
 
 
 def latex_coeff_times_symbol(coeff: Any, symbol_latex: str) -> str:

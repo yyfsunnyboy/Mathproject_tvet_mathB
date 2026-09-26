@@ -1,0 +1,62 @@
+{
+  "skill_id": "vh_數學B2_SubSection_4_2_1",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 5,
+  "components": [
+    {
+      "component_id": "src_11851",
+      "textbook_example_id": 11851,
+      "status": "verified",
+      "problem_type_id": "classify_point_vs_circles_multipart",
+      "domain_operation": "classify_point_vs_circles_multipart",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11851/generate.py"
+    },
+    {
+      "component_id": "src_11852",
+      "textbook_example_id": 11852,
+      "status": "verified",
+      "problem_type_id": "classify_point_vs_circles_multipart",
+      "domain_operation": "classify_point_vs_circles_multipart",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11852/generate.py"
+    },
+    {
+      "component_id": "src_11866",
+      "textbook_example_id": 11866,
+      "status": "verified",
+      "problem_type_id": "classify_point_vs_circles_multipart",
+      "domain_operation": "classify_point_vs_circles_multipart",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11866/generate.py"
+    },
+    {
+      "component_id": "src_11875",
+      "textbook_example_id": 11875,
+      "status": "verified",
+      "problem_type_id": "solve_point_circle_parameter_range",
+      "domain_operation": "solve_point_circle_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11875/generate.py"
+    },
+    {
+      "component_id": "src_11884",
+      "textbook_example_id": 11884,
+      "status": "verified",
+      "problem_type_id": "identify_point_on_circle_mcq",
+      "domain_operation": "identify_point_on_circle_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_11884/generate.py"
+    }
+  ]
+}

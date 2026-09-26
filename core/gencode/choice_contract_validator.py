@@ -31,6 +31,82 @@ def plainify_math_token(token: str) -> str:
     return text
 
 
+def infer_choice_answer_shape(text: Any) -> str:
+    """Classify a choice into a coarse semantic answer shape for MCQ gating."""
+    raw = str(text or "").strip()
+    if not raw:
+        return "empty"
+    cleaned = raw.replace("$", "").replace(r"\(", "").replace(r"\)", "").strip()
+    cleaned_cf = cleaned.casefold()
+    if "π" in cleaned or r"\pi" in cleaned or re.search(r"(?<![a-z])pi(?![a-z])", cleaned_cf):
+        return "area_or_pi"
+    if "=" in cleaned and re.search(r"[xy]", cleaned_cf):
+        return "equation"
+    if re.fullmatch(r"[+-]?\d+(?:\.\d+)?", cleaned.replace(" ", "")):
+        return "number"
+    if re.search(r"[\(\[]\s*[^,]+,\s*[^)\]]+\s*[\)\]]", cleaned):
+        return "coordinate"
+    # Classification labels / intervals / short Chinese answers.
+    if re.search(r"[\u4e00-\u9fff]", cleaned) or cleaned_cf in {
+        "相離", "相切", "相交", "圓內", "圓外", "圓上",
+    }:
+        return "classification"
+    if any(tok in cleaned for tok in ("<", ">", "≤", "≥", r"\le", r"\ge", "k")):
+        return "interval_or_param"
+    return "expression"
+
+
+def validate_choice_answer_shapes(payload: dict[str, Any]) -> list[str]:
+    """Reject MCQ packs whose distractors do not share the correct answer shape."""
+    choices = normalize_canonical_choices(payload.get("choices"))
+    if len(choices) < 2:
+        return []
+    expected = str(
+        payload.get("expected_answer_shape")
+        or (_answer_contract(payload).get("answer_shape") if isinstance(_answer_contract(payload), dict) else "")
+        or payload.get("choice_answer_shape")
+        or ""
+    ).strip()
+    semantic = str(
+        payload.get("semantic_answer")
+        or payload.get("canonical_answer")
+        or payload.get("display_answer")
+        or ""
+    ).strip()
+    # Prefer explicit metadata; else infer from semantic / correct choice text.
+    if not expected:
+        if semantic and semantic.upper() not in {"A", "B", "C", "D"}:
+            expected = infer_choice_answer_shape(semantic)
+        else:
+            answer = _resolve_answer(payload)
+            for choice in choices:
+                if _answer_matches_choice(answer, choice):
+                    expected = infer_choice_answer_shape(choice.get("value") or choice.get("text"))
+                    break
+    if not expected or expected in {"empty", "expression"}:
+        # Soft: still compare pairwise consistency when correct shape is known-ish.
+        shapes = [infer_choice_answer_shape(c.get("value") or c.get("text")) for c in choices]
+        if len(set(shapes)) > 1 and {"equation", "area_or_pi"} <= set(shapes):
+            return ["vocational_choice_shape_mismatch"]
+        if len(set(shapes)) > 1 and "equation" in shapes and any(
+            s in {"number", "area_or_pi", "classification", "coordinate"} for s in shapes
+        ):
+            return ["vocational_choice_shape_mismatch"]
+        return []
+    errors: list[str] = []
+    for choice in choices:
+        shape = infer_choice_answer_shape(choice.get("value") or choice.get("text"))
+        if shape != expected and not (
+            expected == "area_or_pi" and shape in {"area_or_pi", "number"}
+        ):
+            # Allow number/area cross-fill for π-free numeric areas.
+            if expected == "number" and shape == "area_or_pi":
+                continue
+            errors.append("vocational_choice_shape_mismatch")
+            break
+    return errors
+
+
 def choice_semantic_key(text: Any) -> str:
     """Normalize choice text for semantic uniqueness (coordinates / plain strings)."""
     raw = str(text or "").strip()
@@ -39,6 +115,16 @@ def choice_semantic_key(text: Any) -> str:
     cleaned = _TECHNICAL_SUFFIX_RE.sub("", raw).strip().strip("$").strip()
     cleaned = cleaned.replace(r"\left", "").replace(r"\right", "")
     cleaned = cleaned.replace(r"\,", "").replace(r"\ ", " ")
+    # Circle equations: equivalent algebraic forms share one semantic key.
+    try:
+        if "=" in cleaned and ("x" in cleaned.casefold() or "y" in cleaned.casefold()):
+            from core.domain.circle_plane_domain import circle_semantic_key
+
+            key = circle_semantic_key(cleaned)
+            if key and key.startswith("D="):
+                return key
+    except Exception:
+        pass
     try:
         from core.domain.vector_plane_domain import format_pair
 
@@ -102,6 +188,7 @@ def validate_vocational_multiple_choice(payload: dict[str, Any], skill_id: str =
         matches = sum(1 for c in choices if choice_semantic_key(c.get("value") or c.get("text")) == choice_semantic_key(expected))
         if matches > 1:
             errors.append("vocational_multi_correct")
+    errors.extend(validate_choice_answer_shapes(payload))
     return errors
 
 

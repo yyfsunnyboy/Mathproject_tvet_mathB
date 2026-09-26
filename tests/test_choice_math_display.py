@@ -85,12 +85,16 @@ def test_numeric_expression_display(source, latex):
 
 @pytest.mark.parametrize('source', [
     r'\(\sqrt{2}\)', r'\(\frac{3}{2}\)', r'$\sqrt{2}$', r'$\frac{3}{2}$',
-    r'\sqrt{2}', '以上皆非', '已知 a = 3*sqrt(2)/2，求角度',
+    '以上皆非', '已知 a = 3*sqrt(2)/2，求角度',
     '__import__("os").system("whoami")', 'sqrt.__class__', 'sqrt(2,3)',
     'sqrt(x)', '2**100000000', '3//2', 'sqrt(', 'True', '2'*513,
 ])
 def test_existing_tex_text_and_unsupported_syntax_passthrough(source):
     assert format_choice_math_display(source) == source
+
+
+def test_bare_tex_commands_are_delimited_for_mathjax():
+    assert format_choice_math_display(r'\sqrt{2}') == r'\(\sqrt{2}\)'
 
 def test_adaptive_response_matches_practice_and_preserves_canonical_input():
     from core.routes.adaptive_api import _response_for_frontend
