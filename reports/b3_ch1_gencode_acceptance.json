@@ -2,19 +2,19 @@
   "skills_total": 9,
   "skills_package_ready": 9,
   "examples_total": 74,
-  "examples_supported": 69,
+  "examples_supported": 74,
   "examples_manual_review": 0,
-  "examples_visual_unsupported": 2,
-  "examples_bad_source": 3,
-  "families_total": 32,
-  "families_supported": 31,
-  "families_unsupported": 1,
-  "domain_ops_total": 27,
-  "domain_ops_used": 27,
+  "examples_visual_unsupported": 0,
+  "examples_bad_source": 0,
+  "families_total": 33,
+  "families_supported": 33,
+  "families_unsupported": 0,
+  "domain_ops_total": 28,
+  "domain_ops_used": 28,
   "domain_registered": true,
-  "generator_keys": 69,
+  "generator_keys": 74,
   "sampling": {
-    "total_samples": 1350,
+    "total_samples": 1400,
     "crashes": 0,
     "wrong_answers": 0,
     "checker_failures": 0,
@@ -72,10 +72,10 @@
         "arithmetic_insert_terms",
         "arithmetic_nth_from_a1_d"
       ],
-      "supported": 12,
+      "supported": 13,
       "manual_review": 0,
       "unsupported_visual": 0,
-      "bad_source": 1,
+      "bad_source": 0,
       "needs_multipart": true,
       "needs_mcq": true,
       "needs_visual": false,
@@ -83,6 +83,7 @@
       "generator_keys": [
         "src_11899",
         "src_11900",
+        "src_11901",
         "src_11902",
         "src_11903",
         "src_11914",
@@ -123,26 +124,26 @@
     {
       "skill_id": "vh_數學B3_SubSection_1_1_4",
       "example_count": 5,
-      "family_count": 2,
+      "family_count": 1,
       "families": [
-        "arithmetic_recurrence_diagram",
         "arithmetic_recurrence_general"
       ],
       "domain_ops": [
         "arithmetic_recurrence_general"
       ],
-      "supported": 4,
+      "supported": 5,
       "manual_review": 0,
-      "unsupported_visual": 1,
+      "unsupported_visual": 0,
       "bad_source": 0,
       "needs_multipart": true,
       "needs_mcq": true,
-      "needs_visual": true,
-      "needs_word": false,
+      "needs_visual": false,
+      "needs_word": true,
       "generator_keys": [
         "src_11906",
         "src_11907",
         "src_11917",
+        "src_11922",
         "src_11962"
       ],
       "package_status": "PACKAGE_READY"
@@ -150,7 +151,7 @@
     {
       "skill_id": "vh_數學B3_SubSection_1_1_5",
       "example_count": 14,
-      "family_count": 7,
+      "family_count": 8,
       "families": [
         "arithmetic_index_and_total_sum",
         "arithmetic_odd_count_mid_total",
@@ -158,6 +159,7 @@
         "arithmetic_series_recover_param",
         "arithmetic_series_sum_given",
         "arithmetic_sum_multiples_range",
+        "arithmetic_triangular_sum",
         "arithmetic_word_series"
       ],
       "domain_ops": [
@@ -168,13 +170,13 @@
         "arithmetic_series_sum_given",
         "arithmetic_sum_multiples_range"
       ],
-      "supported": 12,
+      "supported": 14,
       "manual_review": 0,
-      "unsupported_visual": 1,
-      "bad_source": 1,
+      "unsupported_visual": 0,
+      "bad_source": 0,
       "needs_multipart": true,
       "needs_mcq": true,
-      "needs_visual": true,
+      "needs_visual": false,
       "needs_word": true,
       "generator_keys": [
         "src_11908",
@@ -182,9 +184,11 @@
         "src_11910",
         "src_11911",
         "src_11912",
+        "src_11918",
         "src_11919",
         "src_11920",
         "src_11921",
+        "src_11952",
         "src_11964",
         "src_11965",
         "src_11967",
@@ -195,9 +199,10 @@
     {
       "skill_id": "vh_數學B3_SubSection_1_2_1",
       "example_count": 19,
-      "family_count": 7,
+      "family_count": 8,
       "families": [
         "geometric_from_two_terms",
+        "geometric_growth_table_cells",
         "geometric_insert_terms",
         "geometric_nth_from_a1_r",
         "geometric_r_from_a1_an",
@@ -207,17 +212,18 @@
       ],
       "domain_ops": [
         "geometric_from_two_terms",
+        "geometric_growth_table_cells",
         "geometric_insert_terms",
         "geometric_nth_from_a1_r",
         "geometric_r_from_a1_an",
         "geometric_ratio_from_product_quotient",
         "geometric_ratio_from_shifted_pair_sums"
       ],
-      "supported": 18,
+      "supported": 19,
       "manual_review": 0,
       "unsupported_visual": 0,
-      "bad_source": 1,
-      "needs_multipart": false,
+      "bad_source": 0,
+      "needs_multipart": true,
       "needs_mcq": true,
       "needs_visual": false,
       "needs_word": true,
@@ -235,6 +241,7 @@
         "src_11943",
         "src_11944",
         "src_11949",
+        "src_11950",
         "src_11953",
         "src_11954",
         "src_11955",
@@ -337,33 +344,7 @@
       "package_status": "PACKAGE_READY"
     }
   ],
-  "manual_review_ids": [
-    {
-      "id": 11901,
-      "status": "BAD_SOURCE",
-      "reason": "stem_truncated"
-    },
-    {
-      "id": 11922,
-      "status": "UNSUPPORTED_VISUAL",
-      "reason": "diagram_required_tile_pattern"
-    },
-    {
-      "id": 11918,
-      "status": "UNSUPPORTED_VISUAL",
-      "reason": "diagram_required_stacking_cups"
-    },
-    {
-      "id": 11952,
-      "status": "BAD_SOURCE",
-      "reason": "stem_truncated"
-    },
-    {
-      "id": 11950,
-      "status": "BAD_SOURCE",
-      "reason": "garbage_fragment"
-    }
-  ],
+  "manual_review_ids": [],
   "used_ops": [
     "ap_gp_mixed_mean_middle",
     "arithmetic_d_from_a1_an",
@@ -382,6 +363,7 @@
     "expand_general_term_first_n",
     "geometric_first_threshold_crossing",
     "geometric_from_two_terms",
+    "geometric_growth_table_cells",
     "geometric_insert_terms",
     "geometric_mean_solve_x",
     "geometric_mean_value",
@@ -408,11 +390,13 @@
     "arithmetic_series_recover_param",
     "arithmetic_series_sum_given",
     "arithmetic_sum_multiples_range",
+    "arithmetic_triangular_sum",
     "arithmetic_word_nth",
     "arithmetic_word_series",
     "expand_general_term_first_n",
     "geometric_first_threshold_crossing",
     "geometric_from_two_terms",
+    "geometric_growth_table_cells",
     "geometric_insert_terms",
     "geometric_mean_solve_x",
     "geometric_mean_value",
@@ -426,7 +410,5 @@
     "geometric_word_nth",
     "geometric_word_series"
   ],
-  "families_unsupported_list": [
-    "arithmetic_recurrence_diagram"
-  ]
+  "families_unsupported_list": []
 }

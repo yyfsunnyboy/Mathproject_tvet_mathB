@@ -18,6 +18,7 @@ _MULTI_PART_OPS = frozenset(
         "geometric_mean_value",
         "geometric_recurrence_general",
         "arithmetic_index_and_total_sum",
+        "geometric_growth_table_cells",
     }
 )
 

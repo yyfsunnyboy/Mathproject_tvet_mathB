@@ -51,6 +51,7 @@ ARITHMETIC_INDEX_AND_TOTAL_SUM = "arithmetic_index_and_total_sum"
 ARITHMETIC_FIRST_THRESHOLD_CROSSING = "arithmetic_first_threshold_crossing"
 GEOMETRIC_FIRST_THRESHOLD_CROSSING = "geometric_first_threshold_crossing"
 AP_GP_MIXED_MEAN_MIDDLE = "ap_gp_mixed_mean_middle"
+GEOMETRIC_GROWTH_TABLE_CELLS = "geometric_growth_table_cells"
 
 OPS = frozenset(
     {
@@ -81,6 +82,7 @@ OPS = frozenset(
         ARITHMETIC_FIRST_THRESHOLD_CROSSING,
         GEOMETRIC_FIRST_THRESHOLD_CROSSING,
         AP_GP_MIXED_MEAN_MIDDLE,
+        GEOMETRIC_GROWTH_TABLE_CELLS,
     }
 )
 
@@ -599,6 +601,52 @@ def _build_arith_d_from_a1_an(rng: random.Random, payload: dict[str, Any]) -> di
 
 
 def _build_arith_from_two(rng: random.Random, payload: dict[str, Any]) -> dict[str, Any]:
+    locked = str(payload.get("locked_stem") or "").strip()
+    if locked == "pitcher_training_days":
+        # Recovered 11901: positive increasing daily pitches; (1) d (2) a_k.
+        # Prefer clean positive integers; avoid textbook (i=5,j=13,ai=41,aj=73,k=10).
+        i = int(payload.get("i") or rng.choice([3, 4, 5, 6, 7]))
+        j = int(payload.get("j") or (i + rng.choice([5, 6, 7, 8, 9])))
+        k = int(payload.get("k") or rng.choice([8, 9, 10, 12, 15]))
+        if k == i or k == j:
+            k = j + 2
+        d = to_rational(payload["d"]) if "d" in payload else Fraction(rng.choice([3, 4, 5, 6, 8]))
+        ai = to_rational(payload["ai"]) if "ai" in payload else Fraction(rng.randint(18, 48))
+        aj = ai + (j - i) * d
+        if (i, j, int(ai), int(aj), k) == (5, 13, 41, 73, 10) and "ai" not in payload:
+            ai = ai + 3
+            aj = ai + (j - i) * d
+        ak = arithmetic_term_from_two(ai, i, aj, j, k)
+        d_out = arithmetic_diff_from_two(ai, i, aj, j)
+        parts = {"(1)": canonical_exact(d_out), "(2)": canonical_exact(ak)}
+        stem = build_stem_structure(
+            (
+                f"棒球投手桃太郎從4月1日開始自主訓練，每日投球數呈等差數列形式，且為逐漸增多。"
+                f"若4月{i}日投球數為{_fmt_math(ai)}個，4月{j}日投球數為{_fmt_math(aj)}個，請問："
+            ),
+            [
+                {"group_label": "(1)", "text": "他每天增加幾個投球數？"},
+                {"group_label": "(2)", "text": f"第{k}天他投了幾個球？"},
+            ],
+        )
+        return _matrix_base(
+            ARITHMETIC_FROM_TWO_TERMS,
+            question_text=stem_structure_to_question_text(stem),
+            answer={"parts": parts},
+            explanation=[
+                f"d=({canonical_exact(aj)}-{canonical_exact(ai)})/({j}-{i})={canonical_exact(d_out)}",
+                f"a_{k}={canonical_exact(ak)}",
+            ],
+            answer_type="multi_part",
+            stem_structure=stem,
+            params={"ai": ai, "i": i, "aj": aj, "j": j, "k": k, "d": d_out, "locked_stem": locked},
+            validation_facts={
+                "multipart_count": 2,
+                "locked_stem": locked,
+                "source_rescue": "SOURCE_RESCUED_FROM_SCREENSHOT",
+            },
+        )
+
     i = int(payload.get("i") or rng.randint(2, 5))
     j = int(payload.get("j") or (i + rng.randint(3, 6)))
     k = int(payload.get("k") or (j + rng.randint(3, 8)))
@@ -708,6 +756,70 @@ def _build_arith_mean_solve(rng: random.Random, payload: dict[str, Any]) -> dict
 
 
 def _build_arith_recurrence(rng: random.Random, payload: dict[str, Any]) -> dict[str, Any]:
+    locked = str(payload.get("locked_stem") or "").strip()
+    if locked == "bw_tile_white_count":
+        # Recovered 11922: fixed tile pattern → a_n = 5n+3 = AP(a1=8,d=5).
+        # Only target index varies; text-surrogate replaces diagram.
+        a1 = Fraction(8)
+        d = Fraction(5)
+        target_n = int(payload.get("target_n") or payload.get("k") or rng.choice([4, 6, 7, 8, 10]))
+        if target_n == 5 and "target_n" not in payload and "k" not in payload:
+            target_n = 6  # avoid exact textbook clone by default
+        if target_n < 2:
+            target_n = 4
+        an = arithmetic_nth(a1, d, target_n)
+        assert an == Fraction(5 * target_n + 3)
+        parts = {
+            "(1)": canonical_exact(a1),
+            "(2)": canonical_exact(d),
+            "(3)": canonical_exact(an),
+        }
+        stem = build_stem_structure(
+            (
+                "用黑、白兩種顏色的正方形地磚依照規律拼成圖形。"
+                "第 n 個圖由 3 列地磚組成，中間一列有 n 塊黑色地磚，"
+                "黑磚彼此間隔 1 塊白磚，左右兩端各有 1 塊白磚；"
+                "上、下兩列全為白磚，每列寬度與中間列相同。"
+                "設 \\(a_n\\) 為第 n 個圖中白色地磚總數。請完成："
+            ),
+            [
+                {"group_label": "(1)", "text": "遞迴關係中的首項 \\(a_1\\)"},
+                {
+                    "group_label": "(2)",
+                    "text": "遞迴增量：每增加一圖，白色地磚增加幾塊（即 \\(a_n=a_{n-1}+\\,?\\)）",
+                },
+                {
+                    "group_label": "(3)",
+                    "text": f"拼第{target_n}個圖需用到幾塊白色地磚",
+                },
+            ],
+        )
+        return _matrix_base(
+            ARITHMETIC_RECURRENCE_GENERAL,
+            question_text=stem_structure_to_question_text(stem),
+            answer={"parts": parts},
+            explanation=[
+                "總磚數=3(2n+1)，黑磚=n ⇒ a_n=5n+3",
+                f"故 a_1={canonical_exact(a1)}，a_n=a_{{n-1}}+{canonical_exact(d)}",
+                f"a_{target_n}={canonical_exact(an)}",
+            ],
+            answer_type="multi_part",
+            stem_structure=stem,
+            params={
+                "a1": a1,
+                "d": d,
+                "k": target_n,
+                "target_n": target_n,
+                "locked_stem": locked,
+            },
+            validation_facts={
+                "multipart_count": 3,
+                "locked_stem": locked,
+                "text_surrogate": True,
+                "source_rescue": "SOURCE_RESCUED_FROM_SCREENSHOT",
+            },
+        )
+
     a1 = to_rational(payload["a1"]) if "a1" in payload else Fraction(_sample_int(rng, -5, 5, nonzero=True))
     d = to_rational(payload["d"]) if "d" in payload else Fraction(_sample_int(rng, -4, 4, nonzero=True))
     k = int(payload.get("k") or rng.randint(5, 8))
@@ -738,6 +850,87 @@ def _build_arith_recurrence(rng: random.Random, payload: dict[str, Any]) -> dict
 
 
 def _build_arith_series_sum(rng: random.Random, payload: dict[str, Any]) -> dict[str, Any]:
+    locked = str(payload.get("locked_stem") or "").strip()
+    if locked == "installment_equal_step_ap":
+        # Recovered 11952: monthly payments step,2*step,...,n*step; price = S_n.
+        step = (
+            to_rational(payload["monthly_base_step"])
+            if "monthly_base_step" in payload
+            else (
+                to_rational(payload["a1"])
+                if "a1" in payload
+                else Fraction(rng.choice([500, 800, 1200, 1500, 2000, 2500]))
+            )
+        )
+        n = int(payload.get("total_months") or payload.get("n") or rng.choice([8, 9, 10, 12]))
+        # avoid exact textbook clone (step=1000, n=10 → 55000)
+        if (int(step), n) == (1000, 10) and "monthly_base_step" not in payload and "a1" not in payload:
+            step = Fraction(1200)
+        a1 = step
+        d = step
+        sn = arithmetic_partial_sum(a1, d, n)
+        a2 = a1 + d
+        a3 = a1 + 2 * d
+        q = (
+            f"某人到電器行購買一個電器商品，老闆讓他無息分期付款，付款方式約定為："
+            f"第一個月償還{_fmt_math(a1)}元、第二個月償還{_fmt_math(a2)}元、"
+            f"第三個月償還{_fmt_math(a3)}元⋯⋯，按此等差數列付款到第{n}個月可將款項還清，"
+            f"請問購買的商品為多少元？"
+        )
+        return _matrix_base(
+            ARITHMETIC_SERIES_SUM_GIVEN,
+            question_text=q,
+            answer=sn,
+            explanation=[
+                f"a1=d={canonical_exact(step)}，S_{n}=n(n+1)·step/2={canonical_exact(sn)}"
+            ],
+            params={
+                "a1": a1,
+                "d": d,
+                "n": n,
+                "monthly_base_step": step,
+                "total_months": n,
+                "total_price": sn,
+                "locked_stem": locked,
+            },
+            validation_facts={
+                "locked_stem": locked,
+                "source_rescue": "SOURCE_RESCUED_FROM_SCREENSHOT",
+            },
+        )
+
+    if locked == "triangular_stacking_cups":
+        # Recovered 11918: text-surrogate for triangular stack 1+2+...+n (no image).
+        n = int(payload.get("n") or payload.get("layers") or rng.choice([8, 10, 12, 14, 16, 18, 20]))
+        if n == 15 and "n" not in payload and "layers" not in payload:
+            n = 16  # avoid exact textbook layer count when sampling freely
+        a1 = Fraction(1)
+        d = Fraction(1)
+        sn = arithmetic_partial_sum(a1, d, n)
+        q = (
+            f"競技疊杯（Sport Stacking）依規律堆高成金字塔形："
+            f"第1層有1個疊杯，第2層有2個疊杯，第3層有3個疊杯，以此類推。"
+            f"若要疊成{n}層，則一共需要幾個疊杯？"
+        )
+        return _matrix_base(
+            ARITHMETIC_SERIES_SUM_GIVEN,
+            question_text=q,
+            answer=sn,
+            explanation=[f"S_n=1+2+\\cdots+{n}=n(n+1)/2={canonical_exact(sn)}"],
+            params={
+                "a1": a1,
+                "d": d,
+                "n": n,
+                "layers": n,
+                "locked_stem": locked,
+            },
+            validation_facts={
+                "locked_stem": locked,
+                "text_surrogate": True,
+                "source_rescue": "SOURCE_RESCUED_FROM_SCREENSHOT",
+            },
+        )
+
     a1 = to_rational(payload["a1"]) if "a1" in payload else Fraction(_sample_int(rng, -10, 15, nonzero=True))
     d = to_rational(payload["d"]) if "d" in payload else Fraction(_sample_int(rng, -6, 6, nonzero=True))
     n = int(payload.get("n") or rng.randint(8, 20))

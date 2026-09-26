@@ -6,7 +6,7 @@ manifest and runtime all read from this module.
 
 No layer may maintain its own independent operation allowlist. Adding a new
 operation requires only one call to register_domain_spec() (or updating the
-operations dict of an existing DomainCapabilitySpec) â all downstream layers
+operations dict of an existing DomainCapabilitySpec) Ã¢ÂÂ all downstream layers
 are automatically aware.
 
 Verified bootstrap candidates are registered separately via
@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-# ââ data model ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂ data model Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 @dataclass(frozen=True)
 class OperationSpec:
@@ -54,7 +54,7 @@ class DomainCapabilitySpec:
         return list(self.operations.keys())
 
 
-# ââ registry ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂ registry Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 _REGISTRY: dict[str, DomainCapabilitySpec] = {}
 
@@ -98,7 +98,7 @@ def operation_is_registered(domain_key: str, operation_key: str) -> bool:
     return get_operation_spec(domain_key, operation_key) is not None
 
 
-# ââ consistency check âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂ consistency check Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def check_registry_consistency() -> list[dict[str, Any]]:
     """Check registry for missing layers.
@@ -158,7 +158,7 @@ def check_registry_consistency() -> list[dict[str, Any]]:
     return issues
 
 
-# ââ helper for decorator-style registration âââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂ helper for decorator-style registration Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def register_domain_operation(
     domain_key: str,
@@ -208,7 +208,7 @@ def register_domain_operation(
     spec.operations[operation_key] = op_spec
 
 
-# ââ canonical registrations âââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂ canonical registrations Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 # Each domain is registered once.  All downstream layers read from _REGISTRY.
 
 _op = OperationSpec  # convenience alias
@@ -446,7 +446,7 @@ register_domain_spec(DomainCapabilitySpec(
         "cumulative_below_interval_count",
     }),
     operations={
-        # ââ generic table-chart operations ââââââââââââââââââââââââââââââââââ
+        # Ã¢ÂÂÃ¢ÂÂ generic table-chart operations Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "read_category_value": _op(
             "read_category_value",
             "build_statistical_chart_reading_matrix",
@@ -471,7 +471,7 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("choice",),
             supported_presentation_modes=("short_answer",),
         ),
-        # ââ cumulative frequency polygon operations (formally registered) âââ
+        # Ã¢ÂÂÃ¢ÂÂ cumulative frequency polygon operations (formally registered) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "cumulative_above_fail_count": _op(
             "cumulative_above_fail_count",
             "build_statistical_chart_reading_matrix",
@@ -2208,7 +2208,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("single_choice", "short_answer"),
             features=("center_radius", "expression"),
         ),
-        # ââ 4-2.1 point vs circle ââââââââââââââââââââââââââââââââââââââââââââ
+        # Ã¢ÂÂÃ¢ÂÂ 4-2.1 point vs circle Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "classify_point_vs_circles_multipart": _circle_op(
             "classify_point_vs_circles_multipart",
             answer_types=("multi_part", "short_answer"),
@@ -2227,7 +2227,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("single_choice", "short_answer"),
             features=("point_vs_circle", "identify"),
         ),
-        # ââ 4-2.2 line vs circle âââââââââââââââââââââââââââââââââââââââââââââ
+        # Ã¢ÂÂÃ¢ÂÂ 4-2.2 line vs circle Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "classify_line_circle_relation": _circle_op(
             "classify_line_circle_relation",
             answer_types=("multi_part", "short_answer"),
@@ -2300,7 +2300,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("multiple_inputs", "short_answer"),
             features=("tangent", "parameter", "general_form"),
         ),
-        # ââ 4-2.3 tangent lines ââââââââââââââââââââââââââââââââââââââââââââââ
+        # Ã¢ÂÂÃ¢ÂÂ 4-2.3 tangent lines Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "tangent_at_point_on_circle": _circle_op(
             "tangent_at_point_on_circle",
             answer_types=("multi_part", "expression", "short_answer"),
@@ -2325,7 +2325,7 @@ register_domain_spec(DomainCapabilitySpec(
             presentation_modes=("multiple_inputs", "short_answer"),
             features=("tangent_segment", "area"),
         ),
-        # ââ 4-2.4 tangent segments âââââââââââââââââââââââââââââââââââââââââââ
+        # Ã¢ÂÂÃ¢ÂÂ 4-2.4 tangent segments Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
         "compute_tangent_segment_lengths": _circle_op(
             "compute_tangent_segment_lengths",
             answer_types=("multi_part", "short_answer"),
@@ -2393,6 +2393,7 @@ _SEQ_SERIES_OPS = (
     "arithmetic_first_threshold_crossing",
     "geometric_first_threshold_crossing",
     "ap_gp_mixed_mean_middle",
+    "geometric_growth_table_cells",
 )
 _SEQ_SERIES_MULTIPART = frozenset({
     "expand_general_term_first_n",
@@ -2401,18 +2402,25 @@ _SEQ_SERIES_MULTIPART = frozenset({
     "geometric_mean_value",
     "geometric_recurrence_general",
     "arithmetic_index_and_total_sum",
+    "geometric_growth_table_cells",
 })
 
 
 def _seq_op(key: str) -> OperationSpec:
     multipart = key in _SEQ_SERIES_MULTIPART
+    if multipart:
+        answer_types = ("multi_part", "short_answer")
+        presentations = ("multiple_inputs", "short_answer")
+    else:
+        answer_types = ("expression", "short_answer", "single_choice")
+        presentations = ("short_answer", "single_choice")
     return _op(
         key,
         _SEQ_SERIES_BUILDER,
         payload_adapter=_SEQ_SERIES_ADAPTER,
         validator=_SEQ_SERIES_VALIDATOR,
-        supported_answer_types=(("multi_part", "short_answer") if multipart else ("expression", "short_answer")),
-        supported_presentation_modes=(("multiple_inputs", "short_answer") if multipart else ("short_answer",)),
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentations,
         required_source_features=("sequence_or_series",),
         runtime_contract=_SEQ_SERIES_CONTRACT,
         provided_capabilities=(key,),

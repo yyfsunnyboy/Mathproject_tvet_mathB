@@ -18,6 +18,7 @@ from core.domain.sequence_series_domain import (
     arithmetic_nth,
     arithmetic_partial_sum,
     canonical_exact,
+    geometric_nth,
     to_rational,
 )
 from core.gencode.multipart_stem_contract import (
@@ -33,6 +34,7 @@ ARITHMETIC_INDEX_AND_TOTAL_SUM = "arithmetic_index_and_total_sum"
 ARITHMETIC_FIRST_THRESHOLD_CROSSING = "arithmetic_first_threshold_crossing"
 GEOMETRIC_FIRST_THRESHOLD_CROSSING = "geometric_first_threshold_crossing"
 AP_GP_MIXED_MEAN_MIDDLE = "ap_gp_mixed_mean_middle"
+GEOMETRIC_GROWTH_TABLE_CELLS = "geometric_growth_table_cells"
 
 EXTENDED_OPS = frozenset(
     {
@@ -42,10 +44,11 @@ EXTENDED_OPS = frozenset(
         ARITHMETIC_FIRST_THRESHOLD_CROSSING,
         GEOMETRIC_FIRST_THRESHOLD_CROSSING,
         AP_GP_MIXED_MEAN_MIDDLE,
+        GEOMETRIC_GROWTH_TABLE_CELLS,
     }
 )
 
-EXTENDED_MULTIPART = frozenset({ARITHMETIC_INDEX_AND_TOTAL_SUM})
+EXTENDED_MULTIPART = frozenset({ARITHMETIC_INDEX_AND_TOTAL_SUM, GEOMETRIC_GROWTH_TABLE_CELLS})
 
 CompareMode = Literal["lt", "le", "gt", "ge"]
 
@@ -449,6 +452,194 @@ def _build_ap_gp_mixed(rng: random.Random, payload: dict[str, Any]) -> dict[str,
     )
 
 
+def _decimal_plain(q: Fraction) -> str:
+    """Exact terminating/repeating-safe plain decimal for growth factors."""
+    from decimal import Decimal, localcontext
+
+    with localcontext() as ctx:
+        ctx.prec = 40
+        d = Decimal(q.numerator) / Decimal(q.denominator)
+        s = format(d, "f")
+        if "." in s:
+            s = s.rstrip("0").rstrip(".")
+        return s or "0"
+
+
+def format_geometric_power_expr(principal: Any, growth_factor: Any, exponent: int) -> str:
+    """Checker-friendly exact power cell using rational growth factor."""
+    p = to_rational(principal)
+    q = to_rational(growth_factor)
+    e = int(exponent)
+    if e < 0:
+        raise ValueError("exponent_must_be_nonnegative")
+    p_s = canonical_exact(p)
+    if q.denominator == 1:
+        q_s = str(int(q.numerator))
+    else:
+        q_s = f"({int(q.numerator)}/{int(q.denominator)})"
+    if e == 0:
+        return p_s
+    if e == 1:
+        return f"{p_s}*{q_s}"
+    return f"{p_s}*{q_s}**{e}"
+
+
+def format_geometric_power_latex(principal: Any, growth_factor: Any, exponent: int) -> str:
+    p = to_rational(principal)
+    q = to_rational(growth_factor)
+    e = int(exponent)
+    p_s = canonical_exact(p)
+    q_s = _decimal_plain(q)
+    if e == 0:
+        return p_s
+    if e == 1:
+        return f"{p_s} \\times {q_s}"
+    return f"{p_s} \\times {q_s}^{{{e}}}"
+
+
+def geometric_year_start_expr(principal: Any, growth_factor: Any, year: int) -> str:
+    """year_start(k) = P * q^(k-1)."""
+    return format_geometric_power_expr(principal, growth_factor, int(year) - 1)
+
+
+def geometric_year_end_expr(principal: Any, growth_factor: Any, year: int) -> str:
+    """year_end(k) = P * q^k."""
+    return format_geometric_power_expr(principal, growth_factor, int(year))
+
+
+def _growth_cell_exponent(year: int, position: str) -> int:
+    pos = str(position).strip().lower()
+    y = int(year)
+    if y < 1:
+        raise ValueError("year_must_be_positive")
+    if pos in {"start", "year_start", "beginning"}:
+        return y - 1
+    if pos in {"end", "year_end", "ending"}:
+        return y
+    raise ValueError(f"unsupported_cell_position:{position}")
+
+
+def _build_geo_growth_table(rng: random.Random, payload: dict[str, Any]) -> dict[str, Any]:
+    """Locked-stem isomorphic compound-growth table fill via geometric powers."""
+    principals = [5000, 8000, 12000, 15000, 20000]
+    rate_choices = [
+        Fraction(1, 100),
+        Fraction(3, 200),  # 1.5%
+        Fraction(1, 50),  # 2%
+        Fraction(1, 40),  # 2.5%
+        Fraction(3, 100),  # 3%
+    ]
+    principal = (
+        to_rational(payload["principal"])
+        if "principal" in payload
+        else Fraction(rng.choice(principals))
+    )
+    rate = to_rational(payload["annual_rate"]) if "annual_rate" in payload else rng.choice(rate_choices)
+    years = int(payload.get("years") or rng.choice([4, 5, 6]))
+    if years < 4:
+        years = 4
+    # avoid exact textbook fingerprint (10000, 1.5%, 5)
+    if (
+        int(principal) == 10000
+        and rate == Fraction(3, 200)
+        and years == 5
+        and "principal" not in payload
+    ):
+        principal = Fraction(12000)
+        rate = Fraction(1, 50)
+        years = 4
+    q = 1 + rate
+    # isomorphic blank layout (from screenshot topology):
+    # ① year_end(2), ② year_start(4), ③ year_end(years)
+    cells = payload.get("cells")
+    if not isinstance(cells, list) or not cells:
+        cells = [
+            {"label": "①", "year": 2, "position": "end"},
+            {"label": "②", "year": 4, "position": "start"},
+            {"label": "③", "year": years, "position": "end"},
+        ]
+    parts: dict[str, str] = {}
+    part_meta: list[dict[str, Any]] = []
+    group_specs = []
+    for cell in cells:
+        label = str(cell.get("label") or cell.get("group_label") or "")
+        year = int(cell["year"])
+        position = str(cell["position"])
+        exp = _growth_cell_exponent(year, position)
+        expr = format_geometric_power_expr(principal, q, exp)
+        # verify against geometric_nth
+        term = geometric_nth(principal, q, exp + 1)
+        if sp.simplify(sp.sympify(expr) - term) != 0:
+            raise ValueError(f"growth_cell_mismatch:{expr}")
+        parts[label] = expr
+        part_meta.append(
+            {
+                "label": label,
+                "year": year,
+                "position": position,
+                "exponent": exp,
+                "expression": expr,
+            }
+        )
+        pos_zh = "年初本金" if position.lower().startswith("start") or position == "start" else "年底本利和"
+        group_specs.append(
+            {
+                "group_label": label,
+                "text": f"第{year}年{pos_zh}",
+            }
+        )
+
+    p_s = canonical_exact(principal)
+    q_s = _decimal_plain(q)
+    rate_pct = _decimal_plain(rate * 100)
+    # Build filled table narrative with blanks labeled.
+    lines = [
+        f"日常生活中的存款或貸款利息，一般都採用複利計息。"
+        f"例如現在存入銀行{_fmt_math(principal)}元，年利率{rate_pct}%，"
+        f"按照複利計算，{years}年內各年年初本金與年底本利和如下，試完成表格。"
+    ]
+    for y in range(1, years + 1):
+        start_expr = format_geometric_power_latex(principal, q, y - 1)
+        end_expr = format_geometric_power_latex(principal, q, y)
+        start_show = start_expr
+        end_show = end_expr
+        for meta in part_meta:
+            if int(meta["year"]) != y:
+                continue
+            if meta["position"] == "start":
+                start_show = str(meta["label"])
+            else:
+                end_show = str(meta["label"])
+        lines.append(f"第{y}年　年初：\\({start_show}\\)　年底：\\({end_show}\\)")
+
+    stem = build_stem_structure("".join(lines[:1]) + " " + "；".join(lines[1:]), group_specs)
+    return _matrix_base(
+        GEOMETRIC_GROWTH_TABLE_CELLS,
+        question_text=stem_structure_to_question_text(stem),
+        answer={"parts": parts},
+        explanation=[
+            f"成長因子 q=1+r={q_s}",
+            "年初(k)=P·q^(k-1)，年底(k)=P·q^k",
+            *[f"{m['label']}={m['expression']}" for m in part_meta],
+        ],
+        answer_type="multi_part",
+        stem_structure=stem,
+        params={
+            "principal": principal,
+            "annual_rate": rate,
+            "growth_factor": q,
+            "years": years,
+            "cells": part_meta,
+            "locked_stem": "compound_growth_table",
+        },
+        validation_facts={
+            "multipart_count": len(parts),
+            "locked_stem": "compound_growth_table",
+            "source_rescue": "SOURCE_RESCUED_FROM_SCREENSHOT",
+        },
+    )
+
+
 EXTENDED_BUILDERS = {
     GEOMETRIC_RATIO_FROM_SHIFTED_PAIR_SUMS: _build_geo_shifted_pair_sums,
     GEOMETRIC_RATIO_FROM_PRODUCT_QUOTIENT: _build_geo_product_quotient,
@@ -456,6 +647,7 @@ EXTENDED_BUILDERS = {
     ARITHMETIC_FIRST_THRESHOLD_CROSSING: _build_arith_threshold,
     GEOMETRIC_FIRST_THRESHOLD_CROSSING: _build_geo_threshold,
     AP_GP_MIXED_MEAN_MIDDLE: _build_ap_gp_mixed,
+    GEOMETRIC_GROWTH_TABLE_CELLS: _build_geo_growth_table,
 }
 
 

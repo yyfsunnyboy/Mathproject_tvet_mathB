@@ -7,7 +7,7 @@
 | vh_數學B3_SubSection_1_1_1 | 11913 | 1-1習題 基礎題1 | expand_general_term_first_n | expand_general_term_first_n | src_11913 | True | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_2 | 11899 | 例2 | arithmetic_word_nth | arithmetic_nth_from_a1_d | src_11899 | False | False | False | SUPPORTED | weight_loss_context_maps_to_nth |
 | vh_數學B3_SubSection_1_1_2 | 11900 | 隨堂練習2 | arithmetic_nth_from_a1_d | arithmetic_nth_from_a1_d | src_11900 | False | False | False | SUPPORTED |  |
-| vh_數學B3_SubSection_1_1_2 | 11901 | 例3 |  |  |  | False | False | False | BAD_SOURCE | stem_truncated |
+| vh_數學B3_SubSection_1_1_2 | 11901 | 例3 | arithmetic_from_two_terms | arithmetic_from_two_terms | src_11901 | True | False | False | SUPPORTED | SOURCE_RESCUED_FROM_SCREENSHOT;locked_stem_pitcher_training_days |
 | vh_數學B3_SubSection_1_1_2 | 11902 | 例4 | arithmetic_insert_terms | arithmetic_insert_terms | src_11902 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_2 | 11903 | 隨堂練習4 | arithmetic_insert_terms | arithmetic_insert_terms | src_11903 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_2 | 11914 | 1-1習題 基礎題2 | arithmetic_nth_from_a1_d | arithmetic_nth_from_a1_d | src_11914 | False | False | False | SUPPORTED |  |
@@ -23,18 +23,18 @@
 | vh_數學B3_SubSection_1_1_4 | 11906 | 例6 | arithmetic_recurrence_general | arithmetic_recurrence_general | src_11906 | True | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_4 | 11907 | 隨堂練習6 | arithmetic_recurrence_general | arithmetic_recurrence_general | src_11907 | True | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_4 | 11917 | 1-1習題 基礎題5 | arithmetic_recurrence_general | arithmetic_recurrence_general | src_11917 | True | False | False | SUPPORTED |  |
-| vh_數學B3_SubSection_1_1_4 | 11922 | 1-1習題 進階題10 | arithmetic_recurrence_diagram |  |  | False | False | True | UNSUPPORTED_VISUAL | diagram_required_tile_pattern |
+| vh_數學B3_SubSection_1_1_4 | 11922 | 1-1習題 進階題10 | arithmetic_recurrence_general | arithmetic_recurrence_general | src_11922 | True | False | False | SUPPORTED | SOURCE_RESCUED_FROM_SCREENSHOT;locked_stem_bw_tile_white_count_text_surrogate |
 | vh_數學B3_SubSection_1_1_4 | 11962 | CH1自我評量 題3 | arithmetic_recurrence_general | arithmetic_recurrence_general | src_11962 | True | True | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11908 | 例7 | arithmetic_word_series | arithmetic_series_sum_given | src_11908 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11909 | 隨堂練習7 | arithmetic_series_sum_given | arithmetic_series_sum_given | src_11909 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11910 | 例8 | arithmetic_series_recover_param | arithmetic_series_recover_param | src_11910 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11911 | 隨堂練習8 | arithmetic_series_recover_param | arithmetic_series_recover_param | src_11911 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11912 | 111統測B | arithmetic_odd_count_mid_total | arithmetic_odd_count_mid_total | src_11912 | False | True | False | SUPPORTED |  |
-| vh_數學B3_SubSection_1_1_5 | 11918 | 1-1習題 基礎題6 | arithmetic_word_series |  |  | False | False | True | UNSUPPORTED_VISUAL | diagram_required_stacking_cups |
+| vh_數學B3_SubSection_1_1_5 | 11918 | 1-1習題 基礎題6 | arithmetic_triangular_sum | arithmetic_series_sum_given | src_11918 | False | False | False | SUPPORTED | SOURCE_RESCUED_FROM_SCREENSHOT;locked_stem_triangular_stacking_cups_text_surrogate |
 | vh_數學B3_SubSection_1_1_5 | 11919 | 1-1習題 基礎題7 | arithmetic_series_sum_given | arithmetic_series_sum_given | src_11919 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11920 | 1-1習題 基礎題8 | arithmetic_series_from_two_terms | arithmetic_series_from_two_terms | src_11920 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11921 | 1-1習題 進階題9 | arithmetic_index_and_total_sum | arithmetic_index_and_total_sum | src_11921 | True | False | False | SUPPORTED | locked_stem_stadium_seats |
-| vh_數學B3_SubSection_1_1_5 | 11952 | CH1自我評量 題10 |  |  |  | False | False | False | BAD_SOURCE | stem_truncated |
+| vh_數學B3_SubSection_1_1_5 | 11952 | CH1自我評量 題10 | arithmetic_series_sum_given | arithmetic_series_sum_given | src_11952 | False | True | False | SUPPORTED | SOURCE_RESCUED_FROM_SCREENSHOT;locked_stem_installment_equal_step_ap |
 | vh_數學B3_SubSection_1_1_5 | 11964 | CH1自我評量 題5 | arithmetic_series_from_two_terms | arithmetic_series_from_two_terms | src_11964 | False | True | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11965 | CH1自我評量 題6 | arithmetic_word_series | arithmetic_series_sum_given | src_11965 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_1_5 | 11967 | CH1自我評量 題8 | arithmetic_series_recover_param | arithmetic_series_recover_param | src_11967 | False | False | False | SUPPORTED |  |
@@ -52,7 +52,7 @@
 | vh_數學B3_SubSection_1_2_1 | 11943 | 1-2習題 基礎題3 | geometric_insert_terms | geometric_insert_terms | src_11943 | False | False | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_2_1 | 11944 | 1-2習題 基礎題4 | geometric_ratio_from_shifted_pair_sums | geometric_ratio_from_shifted_pair_sums | src_11944 | False | False | False | SUPPORTED | locked_stem_pair_sums_shift2 |
 | vh_數學B3_SubSection_1_2_1 | 11949 | 1-2習題 進階題9 | geometric_word_nth | geometric_from_two_terms | src_11949 | False | True | False | SUPPORTED |  |
-| vh_數學B3_SubSection_1_2_1 | 11950 | 1-2習題 進階題10 |  |  |  | False | False | False | BAD_SOURCE | garbage_fragment |
+| vh_數學B3_SubSection_1_2_1 | 11950 | 1-2習題 進階題10 | geometric_growth_table_cells | geometric_growth_table_cells | src_11950 | True | False | False | SUPPORTED | SOURCE_RESCUED_FROM_SCREENSHOT;locked_stem_compound_growth_table |
 | vh_數學B3_SubSection_1_2_1 | 11953 | CH1自我評量 題11 | geometric_nth_from_a1_r | geometric_nth_from_a1_r | src_11953 | False | True | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_2_1 | 11954 | CH1自我評量 題12 | geometric_from_two_terms | geometric_from_two_terms | src_11954 | False | True | False | SUPPORTED |  |
 | vh_數學B3_SubSection_1_2_1 | 11955 | CH1自我評量 題13 | geometric_from_two_terms | geometric_from_two_terms | src_11955 | False | True | False | SUPPORTED |  |

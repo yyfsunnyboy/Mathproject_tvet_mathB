@@ -34,6 +34,7 @@ MULTIPART_OPS = frozenset(
         "geometric_mean_value",
         "geometric_recurrence_general",
         "arithmetic_index_and_total_sum",
+        "geometric_growth_table_cells",
     }
 )
 
@@ -102,6 +103,13 @@ def _recompute_from_givens(op: str, givens: dict[str, Any]) -> Any:
         )
     if op == "arithmetic_recurrence_general":
         a1, d, k = g["a1"], g["d"], int(g["k"])
+        if str(g.get("locked_stem") or "") == "bw_tile_white_count":
+            an = ssd.arithmetic_nth(a1, d, k)
+            return {
+                "(1)": ssd.canonical_exact(a1),
+                "(2)": ssd.canonical_exact(d),
+                "(3)": ssd.canonical_exact(an),
+            }
         general = sp.simplify(sp.sympify(a1) + (sp.symbols("n") - 1) * sp.sympify(d))
         ak = ssd.arithmetic_nth(a1, d, k)
         return {"(1)": sp.sstr(general, order="lex"), "(2)": ssd.canonical_exact(ak)}
@@ -204,6 +212,19 @@ def _recompute_from_givens(op: str, givens: dict[str, Any]) -> Any:
         )
     if op == "ap_gp_mixed_mean_middle":
         return ssd.canonical_exact(ext.ap_gp_mixed_mean_middle_from_x3(g["x3"])["x2"])
+    if op == "geometric_growth_table_cells":
+        from core.domain.sequence_series_extended import (
+            format_geometric_power_expr,
+            _growth_cell_exponent,
+        )
+
+        out = {}
+        for cell in g.get("cells") or []:
+            exp = int(cell.get("exponent") if "exponent" in cell else _growth_cell_exponent(cell["year"], cell["position"]))
+            out[str(cell["label"])] = format_geometric_power_expr(
+                g["principal"], g["growth_factor"], exp
+            )
+        return out
     raise AssertionError(f"no_recompute_for:{op}")
 
 
