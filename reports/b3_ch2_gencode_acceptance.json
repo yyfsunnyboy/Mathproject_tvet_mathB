@@ -1,0 +1,393 @@
+{
+  "skills_total": 6,
+  "skills_package_ready": 6,
+  "examples_total": 68,
+  "examples_supported": 68,
+  "manual_review": 0,
+  "visual": 0,
+  "bad_source": 0,
+  "families_total": 26,
+  "families_supported": 26,
+  "domain_existing_reused": [
+    "Fraction",
+    "sympy_exact",
+    "expression_checker",
+    "inequality_solution_checker",
+    "single_choice_checker",
+    "multi_part_answer_checker",
+    "multipart_answer_arity"
+  ],
+  "domain_new_added": [
+    "equation.solving"
+  ],
+  "generator_keys": 68,
+  "answer_arity_pass": 68,
+  "answer_arity_generator_rows": 68,
+  "bootstrap": {
+    "vh_數學B3_SubSection_2_1_1": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 2,
+      "error": null
+    },
+    "vh_數學B3_SubSection_2_1_2": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 2,
+      "error": null
+    },
+    "vh_數學B3_SubSection_2_2_1": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 1,
+      "error": null
+    },
+    "vh_數學B3_SubSection_2_2_2": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 2,
+      "error": null
+    },
+    "vh_數學B3_SubSection_2_2_3": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 3,
+      "error": null
+    },
+    "vh_數學B3_SubSection_2_2_4": {
+      "practice_status": 200,
+      "question_status": 200,
+      "has_question": true,
+      "route_mode": null,
+      "answer_fields": 2,
+      "error": null
+    }
+  },
+  "dynamic_runtime": {
+    "vh_數學B3_SubSection_2_1_1": {
+      "samples": [
+        {
+          "generator_key": "src_11971",
+          "family": "linear_solve_isolated",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列一元一次方程式：\n(1) \\(-6x = -24\\)\n(2) \\(1x = 0\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11972",
+          "family": "linear_solve_isolated",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列一元一次方程式：\n(1) \\(- \\frac{x}{2} = 2\\)\n(2) \\(2x = 14\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11973",
+          "family": "linear_solve_general",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列一元一次方程式：\n(1) \\(- 4 x - 6 = 18\\)\n(2) \\(\\frac{x}{3} + 4 = - \\frac{4 x}{3} - \\fr",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11974",
+          "family": "linear_solve_general",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列一元一次方程式：\n(1) \\(5 x - 4 = -19\\)\n(2) \\(4 x + 4 = \\frac{3 x}{2} + \\frac{23}{2}\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11975",
+          "family": "linear_word_unit_total",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "加油並洗車，汽油每公升120元，洗車一次150元。若共付了990元，請問加了幾公升汽油？",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "vh_數學B3_SubSection_2_1_2": {
+      "samples": [
+        {
+          "generator_key": "src_11979",
+          "family": "inequality_solve",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列不等式：\n(1) \\(2 x + 6 > 3 x - 1\\)\n(2) \\(\\frac{3 x}{2} + 6 <= 5\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11980",
+          "family": "inequality_solve",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "解下列不等式：\n(1) \\(5 x + 6 < - 3 x - 26\\)\n(2) \\(\\frac{3 x}{2} > - x - \\frac{25}{4}\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11981",
+          "family": "inequality_word_minimum",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "門票每張200元，17人以上團體票每張160元。班級人數不足17人，但買17張團體票比較便宜。班級最少有多少人？",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11982",
+          "family": "inequality_word_minimum",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "想買1700元的物品，已有存款1100元，每天再存150元。至少要存幾天才足夠？",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11986",
+          "family": "inequality_bmi_bound",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "身高3/2公尺，BMI 要不高於24才符合體位上限。必須再減4公斤才會符合。現在體重可能是幾公斤？",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "vh_數學B3_SubSection_2_2_1": {
+      "samples": [
+        {
+          "generator_key": "src_12024",
+          "family": "quadratic_factor_identity",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "設\\(2 x^{2} - 5 x + 2=(x-m)(2x-n)\\)，則\\(m-n=\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12024",
+          "family": "quadratic_factor_identity",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "設\\(2 x^{2} + 7 x + 3=(x-m)(2x-n)\\)，則\\(m-n=\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12024",
+          "family": "quadratic_factor_identity",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "設\\(2 x^{2} - x - 10=(x-m)(2x-n)\\)，則\\(m-n=\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12024",
+          "family": "quadratic_factor_identity",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "設\\(2 x^{2} - 5 x - 12=(x-m)(2x-n)\\)，則\\(m-n=\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12024",
+          "family": "quadratic_factor_identity",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "設\\(2 x^{2} + 5 x - 3=(x-m)(2x-n)\\)，則\\(m-n=\\)",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "vh_數學B3_SubSection_2_2_2": {
+      "samples": [
+        {
+          "generator_key": "src_11997",
+          "family": "quadratic_integer_roots",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "試求方程式的兩根（由小到大）：\n(1) \\(2 x^{2} - 12 x=0\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11998",
+          "family": "quadratic_integer_roots",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "試求方程式的兩根（由小到大）：\n(1) \\(x^{2} + x - 12=0\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_11999",
+          "family": "quadratic_projectile_time",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "一物於 t 秒後的高度為 h=-1\\left(t-8\\right)^2+64（公尺）。它於幾秒後落到地面？（取正的時刻）",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12000",
+          "family": "quadratic_projectile_time",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "一物於 t 秒後的高度為 h=-5\\left(t-3\\right)^2+45（公尺）。它於幾秒後落到地面？（取正的時刻）",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12001",
+          "family": "quadratic_formula_exact",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 4,
+          "fingerprint": "利用公式解，由小到大寫出各方程式的兩根：\n(1) \\(x^{2} - 4 x - 1=0\\)\n(2) \\(x^{2} - 8 x + 6=0\\)",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "vh_數學B3_SubSection_2_2_3": {
+      "samples": [
+        {
+          "generator_key": "src_12003",
+          "family": "quadratic_root_count",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 3,
+          "fingerprint": "判定下列方程式的實根個數（兩相異記 2、重根記 1、無實根記 0）：\n(1) \\(x^{2} - 5 x + 6=0\\)\n(2) \\(x^{2} + 5=0\\)",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12004",
+          "family": "quadratic_root_count",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 3,
+          "fingerprint": "判定下列方程式的實根個數（兩相異記 2、重根記 1、無實根記 0）：\n(1) \\(x^{2} + 5 x + 6=0\\)\n(2) \\(2 x^{2} - 3 x",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12005",
+          "family": "quadratic_parameter_equal_roots",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "方程式\\(k + x^{2} + 10 x=0\\)有兩相等實根，試求實數 k。",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12006",
+          "family": "quadratic_parameter_no_real",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "若方程式\\(k + x^{2} - 6 x=0\\)沒有實根，試求 k 的範圍。",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12016",
+          "family": "quadratic_root_count",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 3,
+          "fingerprint": "判定下列方程式的實根個數（兩相異記 2、重根記 1、無實根記 0）：\n(1) \\(x^{2} + x=0\\)\n(2) \\(x^{2} + 2 x + 5=0\\)",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "vh_數學B3_SubSection_2_2_4": {
+      "samples": [
+        {
+          "generator_key": "src_12007",
+          "family": "quadratic_vieta_expressions",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "設\\(\\alpha\\)、\\(\\beta\\)為\\(2 x^{2} - 8 x + 6=0\\)的兩根，試求：\n(1) \\(\\alpha^2+\\beta^2\\)\n(2",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12008",
+          "family": "quadratic_vieta_expressions",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 2,
+          "fingerprint": "設\\(\\alpha\\)、\\(\\beta\\)為\\(x^{2} + x - 12=0\\)的兩根，試求：\n(1) \\(\\alpha^2+\\beta^2\\)\n(2) \\",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12009",
+          "family": "quadratic_vieta_parameter",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "方程式\\(k + x^{2} - 6 x=0\\)的一根為另一根的兩倍，試求 k。",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12010",
+          "family": "quadratic_vieta_parameter",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "方程式\\(k + 3 x^{2} - 21 x=0\\)的兩根為相差固定的整數，試求 k。",
+          "static_fallback": false
+        },
+        {
+          "generator_key": "src_12011",
+          "family": "quadratic_vieta_parameter",
+          "route_mode": "v3",
+          "question_source": "gencode_wrapper",
+          "fields": 1,
+          "fingerprint": "方程式\\(k + 2 x^{2} - 14 x=0\\)的兩根為相差固定的整數，試求 k。",
+          "static_fallback": false
+        }
+      ],
+      "distinct_fingerprints": 5
+    },
+    "src_12013": {
+      "status": 200,
+      "fields": 1,
+      "route_mode": "v3",
+      "has_text_surrogate": true,
+      "single_answer": true,
+      "distinct_fingerprints": 4
+    }
+  },
+  "inventory": {
+    "single_answer": 23,
+    "multi_answer_2": 15,
+    "multi_answer_3": 5,
+    "multi_answer_4plus": 5,
+    "mcq": 20
+  }
+}

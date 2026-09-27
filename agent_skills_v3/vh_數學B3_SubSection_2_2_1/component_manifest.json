@@ -1,0 +1,18 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_2_1",
+  "publish_status": "package_ready_candidate",
+  "component_count": 1,
+  "components": [
+    {
+      "component_id": "src_12024",
+      "textbook_example_id": 12024,
+      "status": "verified",
+      "problem_type_id": "quadratic_factor_identity",
+      "domain_operation": "quadratic_factor_identity",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12024/generate.py"
+    }
+  ]
+}

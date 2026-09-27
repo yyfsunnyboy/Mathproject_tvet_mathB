@@ -1,0 +1,227 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_1_1",
+  "publish_status": "package_ready_candidate",
+  "component_count": 20,
+  "components": [
+    {
+      "component_id": "src_11971",
+      "textbook_example_id": 11971,
+      "status": "verified",
+      "problem_type_id": "linear_solve_isolated",
+      "domain_operation": "linear_solve_isolated",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11971/generate.py"
+    },
+    {
+      "component_id": "src_11972",
+      "textbook_example_id": 11972,
+      "status": "verified",
+      "problem_type_id": "linear_solve_isolated",
+      "domain_operation": "linear_solve_isolated",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11972/generate.py"
+    },
+    {
+      "component_id": "src_11973",
+      "textbook_example_id": 11973,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11973/generate.py"
+    },
+    {
+      "component_id": "src_11974",
+      "textbook_example_id": 11974,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11974/generate.py"
+    },
+    {
+      "component_id": "src_11975",
+      "textbook_example_id": 11975,
+      "status": "verified",
+      "problem_type_id": "linear_word_unit_total",
+      "domain_operation": "linear_word_unit_total",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11975/generate.py"
+    },
+    {
+      "component_id": "src_11976",
+      "textbook_example_id": 11976,
+      "status": "verified",
+      "problem_type_id": "linear_word_unit_total",
+      "domain_operation": "linear_word_unit_total",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11976/generate.py"
+    },
+    {
+      "component_id": "src_11977",
+      "textbook_example_id": 11977,
+      "status": "verified",
+      "problem_type_id": "linear_word_two_conditions",
+      "domain_operation": "linear_word_two_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11977/generate.py"
+    },
+    {
+      "component_id": "src_11978",
+      "textbook_example_id": 11978,
+      "status": "verified",
+      "problem_type_id": "linear_word_two_conditions",
+      "domain_operation": "linear_word_two_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11978/generate.py"
+    },
+    {
+      "component_id": "src_11987",
+      "textbook_example_id": 11987,
+      "status": "verified",
+      "problem_type_id": "linear_solve_isolated",
+      "domain_operation": "linear_solve_isolated",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11987/generate.py"
+    },
+    {
+      "component_id": "src_11988",
+      "textbook_example_id": 11988,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11988/generate.py"
+    },
+    {
+      "component_id": "src_11989",
+      "textbook_example_id": 11989,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11989/generate.py"
+    },
+    {
+      "component_id": "src_11990",
+      "textbook_example_id": 11990,
+      "status": "verified",
+      "problem_type_id": "linear_word_ratio_sum",
+      "domain_operation": "linear_word_ratio_sum",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11990/generate.py"
+    },
+    {
+      "component_id": "src_11991",
+      "textbook_example_id": 11991,
+      "status": "verified",
+      "problem_type_id": "linear_word_three_shares",
+      "domain_operation": "linear_word_three_shares",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11991/generate.py"
+    },
+    {
+      "component_id": "src_11992",
+      "textbook_example_id": 11992,
+      "status": "verified",
+      "problem_type_id": "linear_word_two_conditions",
+      "domain_operation": "linear_word_two_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11992/generate.py"
+    },
+    {
+      "component_id": "src_11995",
+      "textbook_example_id": 11995,
+      "status": "verified",
+      "problem_type_id": "linear_word_markup",
+      "domain_operation": "linear_word_markup",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11995/generate.py"
+    },
+    {
+      "component_id": "src_11996",
+      "textbook_example_id": 11996,
+      "status": "verified",
+      "problem_type_id": "linear_word_two_plans",
+      "domain_operation": "linear_word_two_plans",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11996/generate.py"
+    },
+    {
+      "component_id": "src_12022",
+      "textbook_example_id": 12022,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_12022/generate.py"
+    },
+    {
+      "component_id": "src_12032",
+      "textbook_example_id": 12032,
+      "status": "verified",
+      "problem_type_id": "linear_solve_general",
+      "domain_operation": "linear_solve_general",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12032/generate.py"
+    },
+    {
+      "component_id": "src_12033",
+      "textbook_example_id": 12033,
+      "status": "verified",
+      "problem_type_id": "linear_word_class_share",
+      "domain_operation": "linear_word_class_share",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12033/generate.py"
+    },
+    {
+      "component_id": "src_12034",
+      "textbook_example_id": 12034,
+      "status": "verified",
+      "problem_type_id": "linear_word_markup",
+      "domain_operation": "linear_word_markup",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12034/generate.py"
+    }
+  ]
+}

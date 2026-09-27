@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_2_4",
+  "publish_status": "package_ready_candidate",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_12007",
+      "textbook_example_id": 12007,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_12007/generate.py"
+    },
+    {
+      "component_id": "src_12008",
+      "textbook_example_id": 12008,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12008/generate.py"
+    },
+    {
+      "component_id": "src_12009",
+      "textbook_example_id": 12009,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12009/generate.py"
+    },
+    {
+      "component_id": "src_12010",
+      "textbook_example_id": 12010,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12010/generate.py"
+    },
+    {
+      "component_id": "src_12011",
+      "textbook_example_id": 12011,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12011/generate.py"
+    },
+    {
+      "component_id": "src_12017",
+      "textbook_example_id": 12017,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12017/generate.py"
+    },
+    {
+      "component_id": "src_12018",
+      "textbook_example_id": 12018,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12018/generate.py"
+    },
+    {
+      "component_id": "src_12019",
+      "textbook_example_id": 12019,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12019/generate.py"
+    },
+    {
+      "component_id": "src_12021",
+      "textbook_example_id": 12021,
+      "status": "verified",
+      "problem_type_id": "quadratic_build_from_symmetric",
+      "domain_operation": "quadratic_build_from_symmetric",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12021/generate.py"
+    },
+    {
+      "component_id": "src_12026",
+      "textbook_example_id": 12026,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12026/generate.py"
+    },
+    {
+      "component_id": "src_12027",
+      "textbook_example_id": 12027,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12027/generate.py"
+    },
+    {
+      "component_id": "src_12031",
+      "textbook_example_id": 12031,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12031/generate.py"
+    },
+    {
+      "component_id": "src_12040",
+      "textbook_example_id": 12040,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_expressions",
+      "domain_operation": "quadratic_vieta_expressions",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12040/generate.py"
+    },
+    {
+      "component_id": "src_12041",
+      "textbook_example_id": 12041,
+      "status": "verified",
+      "problem_type_id": "quadratic_vieta_parameter",
+      "domain_operation": "quadratic_vieta_parameter",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12041/generate.py"
+    }
+  ]
+}

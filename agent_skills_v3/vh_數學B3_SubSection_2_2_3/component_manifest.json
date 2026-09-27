@@ -1,0 +1,106 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_2_3",
+  "publish_status": "package_ready_candidate",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12003",
+      "textbook_example_id": 12003,
+      "status": "verified",
+      "problem_type_id": "quadratic_root_count",
+      "domain_operation": "quadratic_root_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_12003/generate.py"
+    },
+    {
+      "component_id": "src_12004",
+      "textbook_example_id": 12004,
+      "status": "verified",
+      "problem_type_id": "quadratic_root_count",
+      "domain_operation": "quadratic_root_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12004/generate.py"
+    },
+    {
+      "component_id": "src_12005",
+      "textbook_example_id": 12005,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_equal_roots",
+      "domain_operation": "quadratic_parameter_equal_roots",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12005/generate.py"
+    },
+    {
+      "component_id": "src_12006",
+      "textbook_example_id": 12006,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_no_real",
+      "domain_operation": "quadratic_parameter_no_real",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12006/generate.py"
+    },
+    {
+      "component_id": "src_12016",
+      "textbook_example_id": 12016,
+      "status": "verified",
+      "problem_type_id": "quadratic_root_count",
+      "domain_operation": "quadratic_root_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12016/generate.py"
+    },
+    {
+      "component_id": "src_12020",
+      "textbook_example_id": 12020,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_no_real",
+      "domain_operation": "quadratic_parameter_no_real",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12020/generate.py"
+    },
+    {
+      "component_id": "src_12028",
+      "textbook_example_id": 12028,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_equal_roots",
+      "domain_operation": "quadratic_parameter_equal_roots",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12028/generate.py"
+    },
+    {
+      "component_id": "src_12029",
+      "textbook_example_id": 12029,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_no_real",
+      "domain_operation": "quadratic_parameter_no_real",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_12029/generate.py"
+    },
+    {
+      "component_id": "src_12030",
+      "textbook_example_id": 12030,
+      "status": "verified",
+      "problem_type_id": "quadratic_parameter_two_distinct",
+      "domain_operation": "quadratic_parameter_two_distinct",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12030/generate.py"
+    }
+  ]
+}
