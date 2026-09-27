@@ -167,7 +167,9 @@ _CH_SA_CH_MARKER_RE = re.compile(
     re.IGNORECASE,
 )
 _CH_SA_ZH_CHAPTER_RE = re.compile(r"第\s*(\d+)\s*章")
-_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)\s+(.+)$")
+# Compact B3 headings may omit the space after section code ("2-1一元…").
+# Negative lookahead blocks concept headings like "2-1.1 …".
+_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)(?!\.\d)\s*(.+)$")
 _CH_SA_PAGE_ONLY_RE = re.compile(r"^\s*\d{2,3}\s*$")
 
 # Phase1 注入觸發與 Phase2 切題；Word 列表與空行

@@ -374,6 +374,55 @@ def test_ui_legacy_formula_gate_uses_whole_document_counts():
     assert ui["status"] == "needs_repair"
 
 
+def test_ui_idempotent_existing_skip_is_visible_noop():
+    ui = build_v3_ui_result_payload({
+        "task_id": "sa-noop",
+        "pairs": [{
+            "ok": True,
+            "base_name": "第二章 自我評量-課本",
+            "metrics": {
+                "question_parse": {"phase2_blocks": 20},
+                "db_write": {
+                    "inserted": 0,
+                    "updated": 0,
+                    "existing_skipped": 20,
+                    "skipped": 20,
+                },
+            },
+        }],
+    })
+    assert ui["status"] == "success"
+    assert ui["resultCode"] == "already_up_to_date"
+    assert ui["questions"]["parsed"] == 20
+    assert ui["questions"]["imported"] == 0
+    assert ui["questions"]["existingReused"] == 20
+    assert ui["database"]["questionsWritten"] == 0
+    assert ui["database"]["questionsUpdated"] == 0
+    assert ui["database"]["questionsExistingReused"] == 20
+
+
+def test_ui_zero_write_without_existing_reuse_stays_zero_reused():
+    ui = build_v3_ui_result_payload({
+        "task_id": "empty",
+        "pairs": [{
+            "ok": True,
+            "base_name": "empty",
+            "metrics": {
+                "question_parse": {"phase2_blocks": 20},
+                "db_write": {
+                    "inserted": 0,
+                    "updated": 0,
+                    "existing_skipped": 0,
+                    "skipped": 20,
+                },
+            },
+        }],
+    })
+    assert ui["resultCode"] is None
+    assert ui["questions"]["existingReused"] == 0
+    assert ui["database"]["questionsExistingReused"] == 0
+
+
 def test_ui_scoped_formula_gate_ignores_non_required_failures():
     ui = build_v3_ui_result_payload({
         "task_id": "scoped",

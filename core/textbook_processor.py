@@ -108,7 +108,7 @@ def _strip_title_brackets(s: str) -> str:
 
 _CH_SA_CH_MARKER_RE = re.compile(r"CH\s*(\d+)\s*自我評量", re.IGNORECASE)
 _CH_SA_ZH_CHAPTER_RE = re.compile(r"第\s*(\d+)\s*章")
-_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)\s+(.+)$")
+_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)(?!\.\d)\s*(.+)$")
 _CH_SA_QUESTION_LINE_RE = re.compile(r"^\s*(\d{1,2})(?:[\.、\)\t]|\s+)(.+)")
 _CH_SA_PAGE_ONLY_RE = re.compile(r"^\s*\d{2,3}\s*$")
 

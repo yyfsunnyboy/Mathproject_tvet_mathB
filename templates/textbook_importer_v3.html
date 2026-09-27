@@ -1353,7 +1353,9 @@
                 var status = result.status || 'pending';
                 var statusHtml = '';
 
-                if (status === 'success') {
+                if (status === 'success' && result.resultCode === 'already_up_to_date') {
+                    statusHtml = '<div class="alert alert-success mb-0"><i class="bi bi-check-circle-fill"></i> <strong>匯入成功（已是最新，未新增列）</strong></div>';
+                } else if (status === 'success') {
                     statusHtml = '<div class="alert alert-success mb-0"><i class="bi bi-check-circle-fill"></i> <strong>匯入成功</strong></div>';
                 } else if (status === 'source_validated') {
                     statusHtml = '<div class="alert alert-info mb-0"><i class="bi bi-shield-check"></i> <strong>來源檔案驗證完成，等待教材解析</strong></div>';
@@ -1403,6 +1405,7 @@
                 document.getElementById('resultQuestions').innerHTML =
                     renderMetricRow('Parsed questions', questions.parsed) +
                     renderMetricRow('Imported questions', questions.imported) +
+                    renderMetricRow('Existing/reused questions', questions.existingReused) +
                     renderMetricRow('Concepts found', questions.conceptsFound) +
                     renderMetricRow('Formal skills created', questions.formalSkillsCreated) +
                     renderMetricRow('Formal skills reused', questions.formalSkillsReused) +
@@ -1420,7 +1423,8 @@
                 var database = result.database || {};
                 document.getElementById('resultDatabase').innerHTML =
                     renderMetricRow('Questions written', database.questionsWritten) +
-                    renderMetricRow('Questions updated/reused', database.questionsUpdated) +
+                    renderMetricRow('Questions updated', database.questionsUpdated) +
+                    renderMetricRow('Questions existing/reused', database.questionsExistingReused) +
                     renderMetricRow('Assets written', database.assetsWritten) +
                     renderMetricRow('Relationships created', database.relationshipsCreated);
 

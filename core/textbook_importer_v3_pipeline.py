@@ -1551,9 +1551,19 @@ def run_v3_pair_pipeline(
                     db_metrics["deleted_ids"] = replace_deleted_ids
                     db_metrics["target_scope"] = dict(replace_coords or {}, grade=curriculum_info.get("grade"))
                 report["metrics"]["db_write"] = db_metrics
-                if int(phase4_stats.get("inserted", 0) or 0) + int(
-                    phase4_stats.get("updated", 0) or 0
-                ) == 0 and not (insert_missing_only and phase4_stats.get("existing_skipped", 0)):
+                inserted_n = int(phase4_stats.get("inserted", 0) or 0)
+                updated_n = int(phase4_stats.get("updated", 0) or 0)
+                existing_n = int(phase4_stats.get("existing_skipped", 0) or 0)
+                skipped_n = int(phase4_stats.get("skipped", 0) or 0)
+                non_existing_skips = skipped_n - existing_n
+                parsed_n = int(db_metrics.get("parsed_questions") or 0)
+                idempotent_noop = (
+                    insert_missing_only
+                    and existing_n > 0
+                    and non_existing_skips == 0
+                    and existing_n == parsed_n
+                )
+                if inserted_n + updated_n == 0 and not idempotent_noop:
                     return fail(
                         STAGE_DB_WRITE,
                         "phase4_zero_writes",
@@ -1824,6 +1834,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
     imported_q = 0
     inserted = 0
     updated = 0
+    existing_reused = 0
     concepts_found = 0
     skills_created = 0
     skills_reused = 0
@@ -1869,6 +1880,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         imported_q += int(dbm.get("inserted") or 0) + int(dbm.get("updated") or 0)
         inserted += int(dbm.get("inserted") or 0)
         updated += int(dbm.get("updated") or 0)
+        existing_reused += int(dbm.get("existing_skipped") or 0)
 
         concepts_found += int(cb.get("concepts_found") or 0)
         skills_created += int(cb.get("formal_skills_created") or 0)
@@ -1907,6 +1919,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         or int(((p.get("metrics") or {}).get("pdf_visual") or {}).get("errors") or 0) > 0
     ]
     status = "success"
+    result_code = None
     if failed_pairs and ok_pairs:
         status = "partial"
     elif failed_pairs and not ok_pairs:
@@ -1915,9 +1928,12 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         status = "failed"
     elif fidelity_failures:
         status = "needs_repair"
+    elif ok_pairs and inserted + updated == 0 and existing_reused > 0 and existing_reused == parsed_q:
+        result_code = "already_up_to_date"
 
     return {
         "status": status,
+        "resultCode": result_code,
         "task_id": batch_report.get("task_id"),
         "sourcePairsStats": {
             "total": len(pairs),
@@ -1944,6 +1960,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         "questions": {
             "parsed": parsed_q if ok_pairs else None,
             "imported": imported_q if ok_pairs else None,
+            "existingReused": existing_reused if ok_pairs else None,
             "conceptsFound": concepts_found if ok_pairs else None,
             "formalSkillsCreated": skills_created if ok_pairs else None,
             "formalSkillsReused": skills_reused if ok_pairs else None,
@@ -1963,6 +1980,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         "database": {
             "questionsWritten": inserted if ok_pairs else None,
             "questionsUpdated": updated if ok_pairs else None,
+            "questionsExistingReused": existing_reused if ok_pairs else None,
             "assetsWritten": pdf_mounted if ok_pairs else None,
             "relationshipsCreated": None,
         },

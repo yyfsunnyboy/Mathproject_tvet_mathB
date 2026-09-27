@@ -54,6 +54,48 @@ def test_numbered_questions_keep_source_line_provenance_and_section():
         assert authority["section_code"] == meta["section_code"]
 
 
+def test_chapter_self_assessment_accepts_compact_section_headings_without_space():
+    """B3 SA headings may be '2-1一元…' (no space); still assign section_code."""
+    lines = [
+        "自我評量",
+        "2-1一元一次方程式與一元一次不等式",
+        "1. 一階題目",
+        "2-2一元二次方程式",
+        "2. 二階題目",
+    ]
+    blocks = processor.phase2_deterministic_block_slice(
+        lines,
+        source_scope="chapter_self_assessment",
+        curriculum_info=INFO,
+        read_only=True,
+    )
+    metadata = list(processor._DOCX_BLOCK_META.values())
+    assert len(blocks) == len(metadata) == 2
+    assert [m["section_code"] for m in metadata] == ["2-1", "2-2"]
+    assert metadata[0]["section_title"].startswith("2-1")
+    assert metadata[1]["section_title"].startswith("2-2")
+
+
+def test_chapter_self_assessment_does_not_treat_concept_heading_as_section():
+    lines = [
+        "自我評量",
+        "2-1 正弦定理",
+        "2-1.1 概念標題",
+        "1. 題目內容",
+    ]
+    blocks = processor.phase2_deterministic_block_slice(
+        lines,
+        source_scope="chapter_self_assessment",
+        curriculum_info=INFO,
+        read_only=True,
+    )
+    metadata = list(processor._DOCX_BLOCK_META.values())
+    assert len(blocks) == len(metadata) == 1
+    assert metadata[0]["section_code"] == "2-1"
+    # Concept heading must not open a new section bucket.
+    assert [m.get("section_code") for m in metadata] == ["2-1"]
+
+
 def test_actual_docx_formula_and_image_ownership(converted):
     output, report = converted
     result = analyze_scoped_conversion(SOURCE, output, INFO, report, {"self_assessment"})
