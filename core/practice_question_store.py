@@ -181,12 +181,14 @@ def _slim_choices(choices: Any) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for idx, ch in enumerate(choices[:8]):
         if isinstance(ch, dict):
-            out.append(
-                {
-                    "label": str(ch.get("label", chr(ord("A") + idx))).strip(),
-                    "text": str(ch.get("text", ch.get("value", ""))).strip()[:200],
-                }
-            )
+            row = {
+                "label": str(ch.get("label", chr(ord("A") + idx))).strip(),
+                "text": str(ch.get("text", ch.get("value", ""))).strip()[:200],
+            }
+            value = ch.get("value")
+            if value is not None and str(value).strip():
+                row["value"] = str(value).strip()[:200]
+            out.append(row)
         else:
             out.append({"label": chr(ord("A") + idx), "text": str(ch)[:200]})
     return out

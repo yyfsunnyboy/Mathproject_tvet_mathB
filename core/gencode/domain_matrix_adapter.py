@@ -1377,12 +1377,29 @@ def _format_display_answer(value: Any, task_type: str = "", answer_type: str = "
     return _format_latex_display_answer(str(value), task_type)
 
 
+def _strip_math_delimiters(text: str) -> str:
+    """Remove one layer of ``$...$``, ``\\(...\\)``, or ``\\[...\\]``."""
+    normalized = str(text or "").strip()
+    if len(normalized) >= 2 and normalized.startswith("$") and normalized.endswith("$"):
+        return normalized[1:-1].strip()
+    if len(normalized) >= 4 and normalized.startswith(r"\(") and normalized.endswith(r"\)"):
+        return normalized[2:-2].strip()
+    if len(normalized) >= 4 and normalized.startswith(r"\[") and normalized.endswith(r"\]"):
+        return normalized[2:-2].strip()
+    return normalized
+
+
 def _format_latex_math_text(text: str) -> str:
     import re
 
     normalized = str(text or "").strip().replace("−", "-")
-    if normalized.startswith("$") and normalized.endswith("$"):
-        normalized = normalized[1:-1].strip()
+    # Already-delimited atoms such as ``\(-3\)`` must not be wrapped again
+    # into ``$\(-3\)$``, which shows the inner delimiters to students.
+    for _ in range(3):
+        stripped = _strip_math_delimiters(normalized)
+        if stripped == normalized:
+            break
+        normalized = stripped
 
     def repl_fraction(match: re.Match[str]) -> str:
         return canonicalize_display_answer(match.group(0), answer_type="rational")

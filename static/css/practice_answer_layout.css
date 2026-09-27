@@ -1,0 +1,96 @@
+/**
+ * Shared practice answer rows.
+ * Label and control stay on the left. Width follows the answer kind.
+ * Choice buttons are not answer rows and are not styled here.
+ */
+
+.practice-answer-block > .input-group {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.multi-part-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 100%;
+  margin: 6px 0;
+}
+
+.multi-part-row label {
+  flex: 0 0 auto;
+  max-width: 100%;
+  min-width: 0;
+  font-weight: 600;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+.multi-part-row .multi-part-input,
+.practice-answer-block > .input-group #answer-input {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 280px;
+  min-width: 140px;
+  max-width: min(360px, 100%);
+  min-height: 2.25rem;
+  box-sizing: border-box;
+}
+
+.multi-part-row .multi-part-input.control-numeric,
+.practice-answer-block > .input-group #answer-input.control-numeric {
+  width: 160px;
+  min-width: 140px;
+  max-width: 180px;
+}
+
+.multi-part-row .multi-part-input.control-fraction,
+.practice-answer-block > .input-group #answer-input.control-fraction {
+  width: 180px;
+  min-width: 160px;
+  max-width: 200px;
+}
+
+.multi-part-row .multi-part-input.control-expression,
+.practice-answer-block > .input-group #answer-input.control-expression {
+  width: 280px;
+  min-width: 240px;
+  max-width: 320px;
+}
+
+.multi-part-row .multi-part-input.control-equation,
+.practice-answer-block > .input-group #answer-input.control-equation,
+.multi-part-row .multi-part-input.control-inequality,
+.practice-answer-block > .input-group #answer-input.control-inequality {
+  width: 320px;
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.multi-part-row .multi-part-input.control-radical,
+.practice-answer-block > .input-group #answer-input.control-radical {
+  width: 260px;
+  min-width: 220px;
+  max-width: 300px;
+}
+
+@media (max-width: 640px) {
+  .multi-part-row,
+  .practice-answer-block > .input-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .multi-part-row .multi-part-input,
+  .practice-answer-block > .input-group #answer-input {
+    max-width: 100%;
+  }
+}

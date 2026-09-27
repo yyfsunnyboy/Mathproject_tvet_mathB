@@ -41,6 +41,13 @@
   text-align: center !important;
 }
 
+/* Answer-row math must stay inside the label so it cannot paint over the input. */
+.practice-math-surface .multi-part-row label mjx-container:not([display="true"]),
+.practice-math-surface .multi-part-row label mjx-container svg {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
 .practice-math-surface mjx-container svg {
   display: inline !important;
   width: auto !important;

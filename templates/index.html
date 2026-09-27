@@ -180,7 +180,7 @@
         }
 
         #answer-input {
-            flex: 1;
+            flex: 0 1 auto;
             padding: 8px 12px;
             font-size: 0.95em;
             border: 1px solid #ced4da;
@@ -930,10 +930,12 @@
             font-weight: 600;
         }
         .multi-part-input {
-            min-width: 12rem;
+            min-width: 8rem;
+            min-height: 2.25rem;
             padding: 6px 8px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #334155;
             border-radius: 6px;
+            background: #fff;
         }
         .question-media-error {
             color: #c0392b;
@@ -1109,19 +1111,25 @@
             max-width: 100%;
         }
         .multi-part-row label {
-            flex: 1 1 auto;
+            flex: 0 0 auto;
             min-width: 0;
-            max-width: calc(100% - 5.5rem);
+            max-width: 100%;
             font-weight: 600;
             white-space: normal;
             line-height: 1.35;
         }
-        .multi-part-row .multi-part-input {
+        .multi-part-row .multi-part-input,
+        .multi-part-input {
+            position: relative;
+            z-index: 2;
             flex: 0 0 auto;
-            width: 72px;
-            max-width: 12rem;
+            width: 280px;
+            min-width: 140px;
+            max-width: min(360px, 100%);
+            min-height: 2.25rem;
+            background: #fff;
             padding: 4px 8px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #334155;
             border-radius: 6px;
         }
         @media (max-width: 479px) {
@@ -2120,10 +2128,12 @@
         }
     </style>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=b3-ch2-layout-1">
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=b3-ch2-live-1"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
@@ -4664,6 +4674,9 @@
         }
 
         function resolveMultiPartFields(payload) {
+            if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.resolveFields === 'function') {
+                return window.MultipartFieldRenderer.resolveFields(payload || currentQuestion || {});
+            }
             const cq = payload || currentQuestion || {};
             const contract = cq.answer_contract || {};
             const parts = Array.isArray(contract.parts) ? contract.parts : [];
@@ -4849,6 +4862,15 @@
             }
             subquestionsContainer.style.display = 'block';
             subquestionsContainer.classList.add('multi-part-list');
+            if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.render === 'function') {
+                window.MultipartFieldRenderer.render(subquestionsContainer, payload);
+                if (answerInput) {
+                    answerInput.style.display = 'none';
+                    answerInput.disabled = true;
+                    answerInput.value = '';
+                }
+                return;
+            }
             const figParts = parts.filter((part) => /^fig\d+$/i.test(part.key));
             const cmpParts = parts.filter((part) => /^cmp\d+$/i.test(part.key));
             const autoGroups = (figParts.length && cmpParts.length)
@@ -4934,6 +4956,12 @@
                     } else {
                         answerInput.style.display = '';
                         answerInput.disabled = false;
+                        if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.applyControlKind === 'function') {
+                            window.MultipartFieldRenderer.applyControlKind(
+                                answerInput,
+                                window.MultipartFieldRenderer.controlKindFromPayload(currentPayload)
+                            );
+                        }
                     }
                 }
             }
@@ -5585,6 +5613,12 @@
                         answerInput.placeholder = '請在此輸入答案';
                         submitBtn.disabled = false;
                     }
+                    // Multipart / choice UI hides #answer-input. Re-apply after the
+                    // generic enable above so that box is not left as the only control.
+                    applyMultiPartUiContract(data);
+                    // Answer labels are inserted after the stem typeset. Typeset them
+                    // too, so \(\alpha^2+\beta^2\) does not stay as raw TeX.
+                    if (subquestionsContainer) renderMathContent(subquestionsContainer);
 
                     // 6. 重置介面（renderQuestion 已清空回饋與答案欄）
                     ctx.fillStyle = 'white';
