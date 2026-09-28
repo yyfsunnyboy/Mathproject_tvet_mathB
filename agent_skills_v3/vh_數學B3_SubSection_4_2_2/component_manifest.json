@@ -1,0 +1,183 @@
+{
+  "skill_id": "vh_數學B3_SubSection_4_2_2",
+  "publish_status": "package_ready",
+  "component_count": 16,
+  "components": [
+    {
+      "component_id": "src_12154",
+      "textbook_example_id": 12154,
+      "status": "verified",
+      "problem_type_id": "exp_equation_same_base",
+      "domain_operation": "exp_equation_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12154/generate.py"
+    },
+    {
+      "component_id": "src_12155",
+      "textbook_example_id": 12155,
+      "status": "verified",
+      "problem_type_id": "exp_equation_same_base",
+      "domain_operation": "exp_equation_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12155/generate.py"
+    },
+    {
+      "component_id": "src_12156",
+      "textbook_example_id": 12156,
+      "status": "verified",
+      "problem_type_id": "exp_equation_convert_base",
+      "domain_operation": "exp_equation_convert_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12156/generate.py"
+    },
+    {
+      "component_id": "src_12157",
+      "textbook_example_id": 12157,
+      "status": "verified",
+      "problem_type_id": "exp_equation_convert_base",
+      "domain_operation": "exp_equation_convert_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12157/generate.py"
+    },
+    {
+      "component_id": "src_12158",
+      "textbook_example_id": 12158,
+      "status": "verified",
+      "problem_type_id": "exp_equation_quadratic_sub",
+      "domain_operation": "exp_equation_quadratic_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12158/generate.py"
+    },
+    {
+      "component_id": "src_12159",
+      "textbook_example_id": 12159,
+      "status": "verified",
+      "problem_type_id": "exp_equation_quadratic_sub",
+      "domain_operation": "exp_equation_quadratic_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12159/generate.py"
+    },
+    {
+      "component_id": "src_12160",
+      "textbook_example_id": 12160,
+      "status": "verified",
+      "problem_type_id": "exp_graph_identify_choice",
+      "domain_operation": "exp_graph_identify_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exam_practice",
+      "generate_py": "components/src_12160/generate.py"
+    },
+    {
+      "component_id": "src_12164",
+      "textbook_example_id": 12164,
+      "status": "verified",
+      "problem_type_id": "exp_equation_same_base",
+      "domain_operation": "exp_equation_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12164/generate.py"
+    },
+    {
+      "component_id": "src_12165",
+      "textbook_example_id": 12165,
+      "status": "verified",
+      "problem_type_id": "exp_equation_convert_base",
+      "domain_operation": "exp_equation_convert_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12165/generate.py"
+    },
+    {
+      "component_id": "src_12166",
+      "textbook_example_id": 12166,
+      "status": "verified",
+      "problem_type_id": "exp_equation_convert_base",
+      "domain_operation": "exp_equation_convert_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12166/generate.py"
+    },
+    {
+      "component_id": "src_12167",
+      "textbook_example_id": 12167,
+      "status": "verified",
+      "problem_type_id": "exp_equation_factor_common",
+      "domain_operation": "exp_equation_factor_common",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12167/generate.py"
+    },
+    {
+      "component_id": "src_12168",
+      "textbook_example_id": 12168,
+      "status": "verified",
+      "problem_type_id": "exp_equation_quadratic_sub",
+      "domain_operation": "exp_equation_quadratic_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12168/generate.py"
+    },
+    {
+      "component_id": "src_12169",
+      "textbook_example_id": 12169,
+      "status": "verified",
+      "problem_type_id": "exp_equation_quadratic_sub",
+      "domain_operation": "exp_equation_quadratic_sub",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "advanced_exercise",
+      "generate_py": "components/src_12169/generate.py"
+    },
+    {
+      "component_id": "src_12270",
+      "textbook_example_id": 12270,
+      "status": "verified",
+      "problem_type_id": "exp_power_substitution_value",
+      "domain_operation": "exp_power_substitution_value",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12270/generate.py"
+    },
+    {
+      "component_id": "src_12271",
+      "textbook_example_id": 12271,
+      "status": "verified",
+      "problem_type_id": "exp_equation_convert_base",
+      "domain_operation": "exp_equation_convert_base",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12271/generate.py"
+    },
+    {
+      "component_id": "src_12272",
+      "textbook_example_id": 12272,
+      "status": "verified",
+      "problem_type_id": "exp_equation_quadratic_sub",
+      "domain_operation": "exp_equation_quadratic_sub",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12272/generate.py"
+    }
+  ]
+}

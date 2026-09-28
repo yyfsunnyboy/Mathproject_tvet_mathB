@@ -2498,3 +2498,35 @@ register_domain_spec(DomainCapabilitySpec(
     capabilities=frozenset(_LP_OPS),
     operations={op: _lp_op(op) for op in sorted(_LP_OPS)},
 ))
+
+
+# --- B3 Chapter 4: exponents and logarithms ---
+_EL_ADAPTER = "core.gencode.exponential_logarithmic_capability_adapter.adapt_exponential_logarithmic_matrix"
+_EL_VALIDATOR = "validate_exponential_logarithmic_matrix"
+_EL_BUILDER = "build_exponential_logarithmic_matrix"
+_EL_CONTRACT = "b3_ch4_exponential_logarithmic_exact_v1"
+
+
+def _el_op(key: str) -> OperationSpec:
+    return _op(
+        key,
+        _EL_BUILDER,
+        payload_adapter=_EL_ADAPTER,
+        validator=_EL_VALIDATOR,
+        supported_answer_types=("expression", "multi_part", "single_choice"),
+        supported_presentation_modes=("short_answer", "single_choice"),
+        required_source_features=("exponent_logarithm",),
+        runtime_contract=_EL_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+from core.domain.exponential_logarithmic_domain import OPS as _EL_OPS  # noqa: E402
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="exponential.logarithmic",
+    domain_module="core.domain.exponential_logarithmic_domain",
+    entrypoint="build_exponential_logarithmic_matrix",
+    capabilities=frozenset(_EL_OPS),
+    operations={op: _el_op(op) for op in sorted(_EL_OPS)},
+))
