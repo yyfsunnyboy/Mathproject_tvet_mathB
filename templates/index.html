@@ -5466,6 +5466,13 @@
             params.set('skill', skill);
             params.set('level', safeLevel);
             const currentParams = new URLSearchParams(window.location.search);
+            if (!window.__textbookExampleIdConsumed) {
+                const textbookExampleId = currentParams.get('textbook_example_id');
+                if (textbookExampleId) {
+                    params.set('textbook_example_id', textbookExampleId);
+                    window.__textbookExampleIdConsumed = true;
+                }
+            }
             const problemType = currentParams.get('problem_type') || window.currentProblemTypeId || '';
             if (problemType === 'tree_diagram_listing') {
                 params.set('problem_type', 'tree_diagram_listing');
