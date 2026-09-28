@@ -628,12 +628,73 @@ def _fill_chapter_section_from_outline_or_lines(
     return info
 
 
+STRUCTURAL_SKILL_NUMBERED_FOUND = "NUMBERED_FOUND"
+STRUCTURAL_SKILL_PLAIN_FOUND = "PLAIN_SOURCE_HEADINGS_FOUND"
+STRUCTURAL_SKILL_NONE = "NONE"
+STRUCTURAL_SKILL_UNRESOLVED = "UNRESOLVED"
+# Previous name kept as an alias for numbered concept headings.
+STRUCTURAL_SKILL_FOUND = STRUCTURAL_SKILL_NUMBERED_FOUND
+
+
+def resolve_v3_curriculum_binding(
+    *,
+    section_heading: dict[str, Any] | None,
+    same_section: bool,
+    candidate_count: int,
+    unresolved_heading_count: int,
+    outline_action: str,
+    chapter: str,
+    section: str,
+    section_code: str,
+    plain_source_heading_count: int = 0,
+    plain_source_sequence_ok: bool | None = None,
+) -> dict[str, Any]:
+    """Split section authority from structural skill extraction.
+
+    Numbered ``N-N.N`` headings win over plain exposition headings.  A broken
+    plain-heading sequence is unresolved.  ``NONE`` remains legal and is not
+    a binding failure by itself.
+    """
+    unresolved = int(unresolved_heading_count or 0)
+    numbered = int(candidate_count or 0)
+    plain_count = int(plain_source_heading_count or 0)
+    if unresolved > 0 or plain_source_sequence_ok is False:
+        structural_skill_status = STRUCTURAL_SKILL_UNRESOLVED
+    elif numbered > 0:
+        structural_skill_status = STRUCTURAL_SKILL_NUMBERED_FOUND
+    elif plain_count > 0:
+        structural_skill_status = STRUCTURAL_SKILL_PLAIN_FOUND
+    else:
+        structural_skill_status = STRUCTURAL_SKILL_NONE
+
+    authority_complete = bool(str(chapter or "").strip()) and bool(
+        str(section or "").strip() or str(section_code or "").strip()
+    )
+    section_binding_pass = bool(
+        section_heading
+        and same_section
+        and unresolved == 0
+        and str(outline_action or "") in ("existing", "would_create")
+        and authority_complete
+    )
+    return {
+        "curriculum_binding": "PASS" if section_binding_pass else "FAIL",
+        "structural_skill_status": structural_skill_status,
+        "section_binding_pass": section_binding_pass,
+    }
+
+
 def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
     """Pre-import gate: structural candidates and read-only curriculum binding."""
+    from flask import current_app
     from core.mathb_concept_heading import section_identities_match
     from core.textbook_section_outline import ensure_section_outline_from_authoritative_metadata_v2
 
-    audit = extract_docx_skill_headings(docx_path, section_code=curriculum_info['section_code'])
+    audit = extract_docx_skill_headings(
+        docx_path,
+        section_code=curriculum_info['section_code'],
+        volume=str(curriculum_info.get('volume') or ''),
+    )
     info = _fill_chapter_section_from_outline_or_lines(curriculum_info, lines)
     outline = ensure_section_outline_from_authoritative_metadata_v2(
         curriculum=info['curriculum'], volume=info['volume'], chapter=info['chapter'],
@@ -643,6 +704,7 @@ def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
     audit['outline_conflict'] = int(outline['action'] == 'conflict')
     audit['curriculum_info'] = info
     info['structural_skill_candidates'] = audit['skill_candidates']
+    info['plain_source_headings'] = audit.get('plain_source_headings') or []
     heading = audit['section_heading']
     same_section = bool(
         section_identities_match(
@@ -652,9 +714,27 @@ def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
         )
     )
     audit['same_section'] = same_section
-    audit['curriculum_binding'] = 'PASS' if (
-        same_section and audit['candidate_count'] > 0 and not audit['unresolved_heading_count']
-        and outline['action'] in ('existing', 'would_create')) else 'FAIL'
+    decision = resolve_v3_curriculum_binding(
+        section_heading=heading,
+        same_section=same_section,
+        candidate_count=int(audit.get("candidate_count") or 0),
+        unresolved_heading_count=int(audit.get("unresolved_heading_count") or 0),
+        outline_action=str(outline.get("action") or ""),
+        chapter=str(info.get("chapter") or ""),
+        section=str(info.get("section") or ""),
+        section_code=str(info.get("section_code") or ""),
+        plain_source_heading_count=int(audit.get("plain_source_heading_count") or 0),
+        plain_source_sequence_ok=audit.get("plain_source_sequence_ok"),
+    )
+    audit.update(decision)
+    info['structural_skill_status'] = decision['structural_skill_status']
+    current_app.logger.info(
+        "[STRUCTURAL_SKILL_EXTRACTION] "
+        f"status={decision['structural_skill_status']} "
+        f"candidate_count={audit.get('candidate_count')} "
+        f"unresolved_heading_count={audit.get('unresolved_heading_count')} "
+        f"curriculum_binding={decision['curriculum_binding']}"
+    )
     return audit
 
 
@@ -1142,6 +1222,9 @@ def run_v3_pair_pipeline(
                 if extraction['curriculum_binding'] != 'PASS':
                     return fail(STAGE_CURRICULUM_BINDING, 'skill_extraction_gate_failed',
                                 'DOCX structural extraction/binding dry-run failed', details=extraction)
+                if extraction.get('structural_skill_status') == STRUCTURAL_SKILL_UNRESOLVED:
+                    return fail(STAGE_CURRICULUM_BINDING, 'structural_skill_unresolved',
+                                'DOCX concept headings are unresolved', details=extraction)
                 curriculum_info = extraction['curriculum_info']
             curriculum_info = _fill_chapter_section_from_outline_or_lines(
                 curriculum_info, lines
@@ -1295,6 +1378,18 @@ def run_v3_pair_pipeline(
             binding_metrics = {
                 "outline_action": outline_result.get("action"),
                 "outline_skill_id": outline_result.get("skill_id"),
+                "structural_skill_status": curriculum_info.get("structural_skill_status"),
+                "plain_source_heading_count": len(curriculum_info.get("plain_source_headings") or []),
+                "plain_source_skills": [
+                    {
+                        "formal_skill_id": item.get("formal_skill_id"),
+                        "concept_name": item.get("concept_name"),
+                        "internal_coordinate": item.get("internal_coordinate"),
+                        "printed_concept_code": item.get("printed_concept_code"),
+                        "source_heading_number": item.get("source_heading_number"),
+                    }
+                    for item in (curriculum_info.get("plain_source_headings") or [])
+                ],
                 "concepts_found": len(headings),
                 "formal_skills": [
                     {
@@ -1325,23 +1420,46 @@ def run_v3_pair_pipeline(
             from core.ai_analyzer import get_model, gemini_model_name
 
             model = None
-            if not is_b2_11(curriculum_info) and not curriculum_info.get('structural_skill_candidates'):
-                model = get_model("architect")
-                tracker.wrap_model(model)
             phase3_keys = sorted(question_blocks.keys())
-            try:
-                phase3_parsed = tpv2.phase3_ai_metadata_alignment(
-                    phase3_keys, curriculum_info, task_queue
+            plain_found = (
+                curriculum_info.get("structural_skill_status") == STRUCTURAL_SKILL_PLAIN_FOUND
+            )
+            if plain_found:
+                from core.mathb_plain_source_heading import (
+                    align_plain_source_heading_metadata,
+                    attach_pdf_page_starts,
                 )
-            except Exception as exc:
-                tracker.restore()
-                db.session.rollback()
-                return fail(
-                    STAGE_AI_ALIGNMENT,
-                    "gemini_api_error",
-                    f"Phase3 Gemini failed: {exc}",
-                    details={"error_type": type(exc).__name__},
+
+                if pdf and pdf.is_file():
+                    attach_pdf_page_starts(str(pdf), curriculum_info.get("plain_source_headings") or [])
+                    for item, stored in zip(
+                        curriculum_info.get("plain_source_headings") or [],
+                        binding_metrics.get("plain_source_skills") or [],
+                    ):
+                        stored["source_page_start"] = item.get("source_page_start")
+                        stored["source_heading_text"] = item.get("source_heading_text")
+                        stored["source_style"] = item.get("source_style")
+                        stored["authority_source"] = item.get("authority_source")
+                phase3_parsed = align_plain_source_heading_metadata(
+                    phase3_keys, block_meta, curriculum_info
                 )
+            else:
+                if not is_b2_11(curriculum_info) and not curriculum_info.get('structural_skill_candidates'):
+                    model = get_model("architect")
+                    tracker.wrap_model(model)
+                try:
+                    phase3_parsed = tpv2.phase3_ai_metadata_alignment(
+                        phase3_keys, curriculum_info, task_queue
+                    )
+                except Exception as exc:
+                    tracker.restore()
+                    db.session.rollback()
+                    return fail(
+                        STAGE_AI_ALIGNMENT,
+                        "gemini_api_error",
+                        f"Phase3 Gemini failed: {exc}",
+                        details={"error_type": type(exc).__name__},
+                    )
 
             gemini_summary = tracker.summary()
             gemini_summary["model"] = gemini_model_name or getattr(model, "model_name", None)
@@ -1364,6 +1482,23 @@ def run_v3_pair_pipeline(
                 "gemini_requests": gemini_summary.get("request_count"),
                 "gemini_total_tokens": gemini_summary.get("total_token_count_total"),
             }
+            if plain_found:
+                assignments = phase3_parsed.get("plain_source_assignments") or []
+                assigned_n = sum(1 for row in assignments if row.get("assigned"))
+                ai_metrics["question_skill_coverage"] = f"{assigned_n}/{len(question_blocks)}"
+                ai_metrics["plain_source_assignments"] = assignments
+                report["metrics"]["ai_alignment"] = ai_metrics
+                if (
+                    assigned_n != len(question_blocks)
+                    or phase3_parsed.get("metadata_alignment") != "PASS"
+                    or phase3_parsed.get("unresolved_skill_bindings")
+                ):
+                    return fail(
+                        STAGE_AI_ALIGNMENT,
+                        "plain_heading_skill_coverage_incomplete",
+                        "Not every parsed question is bound to a source-authored heading",
+                        details=ai_metrics,
+                    )
             report["metrics"]["ai_alignment"] = ai_metrics
             if replace_section and (
                 phase3_q != len(question_blocks)
@@ -1488,6 +1623,35 @@ def run_v3_pair_pipeline(
                             task_queue=task_queue,
                         )
                     else:
+                        if plain_found:
+                            from core.mathb_plain_source_heading import (
+                                B3_SECTION_3_2_EXAMPLE_COUNTS,
+                                ensure_plain_source_heading_formal_skills,
+                                plain_heading_example_distribution,
+                                stamp_plain_heading_question_bindings,
+                            )
+
+                            skill_results = ensure_plain_source_heading_formal_skills(curriculum_info)
+                            stamp_plain_heading_question_bindings(
+                                block_meta,
+                                phase3_parsed.get("plain_source_assignments") or [],
+                            )
+                            binding_metrics["formal_skills"] = [
+                                {
+                                    "action": item.get("action"),
+                                    "skill_id": item.get("skill_id"),
+                                    "concept_name": item.get("concept_name"),
+                                    "internal_coordinate": item.get("internal_coordinate"),
+                                    "printed_concept_code": None,
+                                }
+                                for item in skill_results
+                            ]
+                            binding_metrics["formal_skills_created"] = sum(
+                                1 for item in skill_results if item.get("action") == "created"
+                            )
+                            binding_metrics["formal_skills_reused"] = sum(
+                                1 for item in skill_results if item.get("action") == "existing"
+                            )
                         phase4_stats = tpv2.phase4_absolute_hydrate_and_save(
                             phase3_parsed,
                             question_blocks,
@@ -1495,7 +1659,49 @@ def run_v3_pair_pipeline(
                             task_queue,
                             target_source_types=target_source_types,
                             insert_missing_only=insert_missing_only,
+                            commit=not plain_found,
                         )
+                        if plain_found:
+                            allowed = [
+                                str(item.get("formal_skill_id") or "")
+                                for item in (curriculum_info.get("plain_source_headings") or [])
+                            ]
+                            written = TextbookExample.query.filter_by(
+                                source_curriculum=str(curriculum_info.get("curriculum") or ""),
+                                source_volume=str(curriculum_info.get("volume") or volume),
+                                source_chapter=str(curriculum_info.get("chapter") or ""),
+                                source_section=str(curriculum_info.get("section") or ""),
+                            ).all()
+                            counts = plain_heading_example_distribution(written, allowed)
+                            unexpected = sorted({
+                                str(row.skill_id or "")
+                                for row in written
+                                if str(row.skill_id or "") not in set(allowed)
+                            })
+                            expected = (
+                                B3_SECTION_3_2_EXAMPLE_COUNTS
+                                if str(curriculum_info.get("section_code") or "") == "3-2"
+                                else None
+                            )
+                            if (
+                                unexpected
+                                or len(written) != len(question_blocks)
+                                or (expected is not None and counts != expected)
+                            ):
+                                db.session.rollback()
+                                return fail(
+                                    STAGE_DB_WRITE,
+                                    "plain_heading_phase4_distribution_mismatch",
+                                    "Phase4 did not keep the source-authored skill distribution",
+                                    details={
+                                        "counts": counts,
+                                        "expected": expected,
+                                        "unexpected_skill_ids": unexpected,
+                                        "written": len(written),
+                                        "parsed": len(question_blocks),
+                                    },
+                                )
+                            db.session.commit()
                 except Exception as exc:
                     db.session.rollback()
                     return fail(

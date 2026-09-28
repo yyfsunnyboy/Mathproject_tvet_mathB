@@ -76,17 +76,25 @@ def extract_question_image_provenance(source) -> list[dict[str, Any]]:
     return results
 
 
-def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
-    """Read numbered concept headings with inherited Word typography; never persist."""
+def extract_docx_skill_headings(source, *, section_code: str, volume: str = "") -> dict[str, Any]:
+    """Read concept headings with inherited Word typography; never persist.
+
+    Numbered ``N-N.N`` headings stay in ``skill_candidates``.  When a section
+    has none of those, contiguous exposition headings such as ``1. 標題`` are
+    returned separately as plain source headings.  They do not receive a
+    printed concept code.
+    """
     from docx import Document
     from docx.text.paragraph import Paragraph
     from core.mathb_concept_heading import (
         detect_mathb_concept_heading,
         parse_mathb_section_heading,
     )
+    from core.mathb_plain_source_heading import collect_plain_source_headings
 
     doc = Document(source)
     candidates, unresolved, sections = [], [], []
+    plain_paragraphs: list[dict[str, Any]] = []
     seen = {}
     expected_code = str(section_code or "").strip()
     for order, element in enumerate(doc.element.body.iter(f"{{{W_NS}}}p"), 1):
@@ -113,6 +121,16 @@ def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
                         style=p.style.name, font=east[0] if east else inherited("name"),
                         latin_font=inherited("name"), size=size.pt if size else None,
                         bold=inherited("bold"))
+        plain_paragraphs.append(
+            {
+                "text": text,
+                "style": p.style.name,
+                "source_order": order,
+                "font": evidence["font"],
+                "size": evidence["size"],
+                "bold": evidence["bold"],
+            }
+        )
         section_hit = parse_mathb_section_heading(
             text, expected_section_code=expected_code
         )
@@ -143,10 +161,28 @@ def extract_docx_skill_headings(source, *, section_code: str) -> dict[str, Any]:
             continue
         seen[code] = name
         candidates.append(dict(evidence, concept_code=code, concept_name=name,
-                               section_code=section_code, validation='PASS'))
+                               section_code=section_code, validation='PASS',
+                               authority_source='authoritative_numbered_concept_heading',
+                               printed_concept_code=code, source_concept_code=code))
+    for index, paragraph in enumerate(plain_paragraphs):
+        following = next(
+            (item["text"] for item in plain_paragraphs[index + 1 :] if str(item.get("text") or "").strip()),
+            "",
+        )
+        paragraph["next_text"] = following
+    plain = (
+        {"plain_source_headings": [], "plain_source_heading_count": 0, "plain_source_sequence_ok": None}
+        if candidates or unresolved
+        else collect_plain_source_headings(
+            plain_paragraphs, section_code=expected_code, volume=str(volume or "")
+        )
+    )
     return dict(section_heading=sections[0] if sections else None,
                 skill_candidates=candidates, candidate_count=len(candidates),
-                unresolved_headings=unresolved, unresolved_heading_count=len(unresolved))
+                unresolved_headings=unresolved, unresolved_heading_count=len(unresolved),
+                plain_source_headings=plain.get("plain_source_headings") or [],
+                plain_source_heading_count=int(plain.get("plain_source_heading_count") or 0),
+                plain_source_sequence_ok=plain.get("plain_source_sequence_ok"))
 
 REFERENCE_SOURCE_REL_DIR = Path("textbook_import") / "source" / "vocational" / "math_B2"
 REFERENCE_BASENAME_FRAGMENT = "第一章 1-1 角度的基本性質-課本"

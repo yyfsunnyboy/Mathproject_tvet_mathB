@@ -4935,6 +4935,7 @@ def _phase4_resolve_mathb_formal_binding(
         display_order=display_order_val,
         allow_ai_description=not bool(
             (curriculum_info or {}).get("structural_skill_candidates")
+            or (curriculum_info or {}).get("plain_source_headings")
         ),
     )
     final_ch = docx_concept_name or concept_name
