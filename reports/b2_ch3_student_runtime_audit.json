@@ -1,0 +1,2492 @@
+{
+  "total_families": 42,
+  "pass": 42,
+  "blocked": 0,
+  "families": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "family_id": "classify_angle_quality_from_dot_mcq",
+      "source_example_ids": [
+        11815
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $\\vec{a}=\\left( 0,\\ 1 \\right)$、$\\vec{b}=\\left( 2,\\ 3 \\right)$，則 $\\vec{a}+\\vec{b}$ 與 $\\vec{a}-\\vec{b}$ 的夾角為？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$直角$",
+          "value": "直角",
+          "display": "$直角$"
+        },
+        {
+          "label": "B",
+          "text": "$鈍角$",
+          "value": "鈍角",
+          "display": "$鈍角$"
+        },
+        {
+          "label": "C",
+          "text": "$銳角$",
+          "value": "銳角",
+          "display": "$銳角$"
+        },
+        {
+          "label": "D",
+          "text": "$平角$",
+          "value": "平角",
+          "display": "$平角$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "family_id": "classify_dot_sign_from_diagram_mcq",
+      "source_example_ids": [
+        11795
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": true,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 5,
+        "rendered_entity_count": 5,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "O",
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，$A$ 在第二象限，$D$ 在第一象限，且 $\\angle AOD>90^\\circ$，$\\overrightarrow{BC}\\perp\\overrightarrow{OD}$。下列何者正確？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}=0$",
+          "value": "\\overrightarrow{OA}\\cdot\\overrightarrow{OD}=0",
+          "display": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}=0$"
+        },
+        {
+          "label": "B",
+          "text": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}<0$",
+          "value": "\\overrightarrow{OA}\\cdot\\overrightarrow{OD}<0",
+          "display": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}<0$"
+        },
+        {
+          "label": "C",
+          "text": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}>0$",
+          "value": "\\overrightarrow{OA}\\cdot\\overrightarrow{OD}>0",
+          "display": "$\\overrightarrow{OA}\\cdot\\overrightarrow{OD}>0$"
+        },
+        {
+          "label": "D",
+          "text": "$\\overrightarrow{BC}\\cdot\\overrightarrow{OD}>0$",
+          "value": "\\overrightarrow{BC}\\cdot\\overrightarrow{OD}>0",
+          "display": "$\\overrightarrow{BC}\\cdot\\overrightarrow{OD}>0$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "family_id": "compute_chain_closure_vector_mcq",
+      "source_example_ids": [
+        11821
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\overrightarrow{PQ}=\\left( 2,\\ 2 \\right)$、$\\overrightarrow{QR}=\\left( -2,\\ -1 \\right)$、$\\overrightarrow{RS}=\\left( 2,\\ 3 \\right)$，則 $\\overrightarrow{SP}$ 為何？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$(-2, -4)$",
+          "value": "(-2, -4)",
+          "display": "$(-2, -4)$"
+        },
+        {
+          "label": "B",
+          "text": "$5$",
+          "value": "5",
+          "display": "$5$"
+        },
+        {
+          "label": "C",
+          "text": "$(2, 4)$",
+          "value": "(2, 4)",
+          "display": "$(2, 4)$"
+        },
+        {
+          "label": "D",
+          "text": "$(-2, 4)$",
+          "value": "(-2, 4)",
+          "display": "$(-2, 4)$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "family_id": "compute_cosine_of_angle_from_dot",
+      "source_example_ids": [
+        11799,
+        11824,
+        11789,
+        11790
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 18,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $\\vec{a}=\\left( 0,\\ 6 \\right)$、$\\vec{b}=\\left( 0,\\ -6 \\right)$，試求 $\\cos\\theta$，其中 $\\theta$ 為兩向量夾角。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "compute_directed_segment_and_magnitude",
+      "source_example_ids": [
+        11758,
+        11759,
+        11783
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 19,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $A\\left( 0,\\ 6 \\right)$、$B\\left( 0,\\ -6 \\right)$ 為坐標平面上兩點，試求：(1) $\\overrightarrow{AB}$ 的坐標表示；(2) $\\left|\\overrightarrow{AB}\\right|$。",
+      "representative_parts": [
+        {
+          "key": "vector",
+          "label": "向量",
+          "display_label": "向量",
+          "math_label": null,
+          "field_key": "vector",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(0, -12)"
+        },
+        {
+          "key": "magnitude",
+          "label": "大小",
+          "display_label": "大小",
+          "math_label": null,
+          "field_key": "magnitude",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "12"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "compute_directed_segment_mixed_multipart",
+      "source_example_ids": [
+        11775
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "(1) 設 $A\\left( 10,\\ 1 \\right)$、$B\\left( 0,\\ 4 \\right)$，試求 $\\overrightarrow{AB}$ 與長度。(2) 設 $A\\left( 2,\\ 2 \\right)$、$\\overrightarrow{AB}=\\left( 3,\\ 3 \\right)$，試求 $B$。",
+      "representative_parts": [
+        {
+          "key": "AB",
+          "label": "$\\overrightarrow{AB}$",
+          "display_label": "$\\overrightarrow{AB}$",
+          "math_label": "$\\overrightarrow{AB}$",
+          "field_key": "AB",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(-10, 3)"
+        },
+        {
+          "key": "magnitude",
+          "label": "大小",
+          "display_label": "大小",
+          "math_label": null,
+          "field_key": "magnitude",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "sqrt(109)"
+        },
+        {
+          "key": "B",
+          "label": "B",
+          "display_label": "B",
+          "math_label": null,
+          "field_key": "B",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(5, 5)"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "family_id": "compute_dot_identity_multipart",
+      "source_example_ids": [
+        11802
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 15,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $|\\vec{a}|=3$、$|\\vec{b}|=3$，夾角 $60^\\circ$，試求 $\\vec{a}\\cdot\\vec{a}$、$\\vec{a}\\cdot\\vec{b}$、$|2\\vec{a}-3\\vec{b}|$。",
+      "representative_parts": [
+        {
+          "key": "a_dot_a",
+          "label": "$\\vec{a}\\cdot\\vec{a}$",
+          "display_label": "$\\vec{a}\\cdot\\vec{a}$",
+          "math_label": "$\\vec{a}\\cdot\\vec{a}$",
+          "field_key": "a_dot_a",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "9"
+        },
+        {
+          "key": "a_dot_b",
+          "label": "$\\vec{a}\\cdot\\vec{b}$",
+          "display_label": "$\\vec{a}\\cdot\\vec{b}$",
+          "math_label": "$\\vec{a}\\cdot\\vec{b}$",
+          "field_key": "a_dot_b",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "9/2"
+        },
+        {
+          "key": "mag_2a_3b",
+          "label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+          "display_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+          "math_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+          "field_key": "mag_2a_3b",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "3*sqrt(7)"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "family_id": "compute_dot_product_coordinates",
+      "source_example_ids": [
+        11787,
+        11788,
+        11798,
+        11811
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 15,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "若 $\\vec{a}=\\left( 0,\\ 6 \\right)$、$\\vec{b}=\\left( 0,\\ -6 \\right)$，試求 $\\vec{a}\\cdot\\vec{b}$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "family_id": "compute_dot_product_from_magnitudes_angle",
+      "source_example_ids": [
+        11797,
+        11793,
+        11794,
+        11825
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 19,
+      "unique_parameter_count": 19,
+      "unique_answer_count": 14,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.05,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\left|\\vec{a}\\right|=5$、$\\left|\\vec{b}\\right|=5$，且兩向量夾角為 $30^\\circ$，試求 $\\vec{a}\\cdot\\vec{b}$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "family_id": "compute_midpoint_dot_product",
+      "source_example_ids": [
+        11812
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "$A\\left( 0,\\ 0 \\right)$、$B\\left( 2,\\ 3 \\right)$、$C\\left( -4,\\ 1 \\right)$，$D$ 為 $\\overline{BC}$ 中點，則 $\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=$？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$2$",
+          "value": "2",
+          "display": "$2$"
+        },
+        {
+          "label": "B",
+          "text": "$4$",
+          "value": "4",
+          "display": "$4$"
+        },
+        {
+          "label": "C",
+          "text": "$6$",
+          "value": "6",
+          "display": "$6$"
+        },
+        {
+          "label": "D",
+          "text": "$-4$",
+          "value": "-4",
+          "display": "$-4$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "family_id": "compute_point_vectors_linear_combination",
+      "source_example_ids": [
+        11764,
+        11765,
+        11778
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $A=\\left( 0,\\ 6 \\right)$、$B=\\left( 0,\\ -6 \\right)$、$C=\\left( -2,\\ 2 \\right)$、$D=\\left( 1,\\ 0 \\right)$，試求 $AC+BD$ 的坐標表示。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "family_id": "compute_regular_polygon_edge_dot",
+      "source_example_ids": [
+        11785,
+        11786,
+        11796
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 8,
+      "unique_parameter_count": 8,
+      "unique_answer_count": 5,
+      "unique_visual_count": 2,
+      "duplicate_rate": 0.6,
+      "diagram_stats": {
+        "required_entity_count": 7,
+        "rendered_entity_count": 7,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "O",
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知正六邊形邊長為 $5$，試求兩組相鄰／夾角邊向量之內積。",
+      "representative_parts": [
+        {
+          "key": "dot1",
+          "label": "相鄰邊向量內積（$60^\\circ$）",
+          "display_label": "相鄰邊向量內積（$60^\\circ$）",
+          "math_label": "相鄰邊向量內積（$60^\\circ$）",
+          "field_key": "dot1",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "25/2"
+        },
+        {
+          "key": "dot2",
+          "label": "夾角邊向量內積（$120^\\circ$）",
+          "display_label": "夾角邊向量內積（$120^\\circ$）",
+          "math_label": "夾角邊向量內積（$120^\\circ$）",
+          "field_key": "dot2",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "-25/2"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "family_id": "compute_scaled_direction_vector",
+      "source_example_ids": [
+        11772,
+        11773,
+        11782,
+        11810
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( 0,\\ 6 \\right)$，試求與 $\\vec{a}$ 同方向且長度為 $4$ 的向量。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "family_id": "compute_triangle_chain_and_perimeter",
+      "source_example_ids": [
+        11766,
+        11767,
+        11779
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "$\\triangle ABC$ 中，已知 $\\overrightarrow{AB}=\\left( 0,\\ 6 \\right)$、$\\overrightarrow{BC}=\\left( 0,\\ -6 \\right)$，試求：(1) $\\overrightarrow{AC}$；(2) $\\triangle ABC$ 之周長。",
+      "representative_parts": [
+        {
+          "key": "AC",
+          "label": "$\\overrightarrow{AC}$",
+          "display_label": "$\\overrightarrow{AC}$",
+          "math_label": "$\\overrightarrow{AC}$",
+          "field_key": "AC",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(0, 0)"
+        },
+        {
+          "key": "perimeter",
+          "label": "周長",
+          "display_label": "周長",
+          "math_label": null,
+          "field_key": "perimeter",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "12"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "compute_triangle_perimeter_from_two_vectors",
+      "source_example_ids": [
+        11822
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "在 $\\triangle ABC$ 中，向量 $\\overrightarrow{AB}=\\left( 3,\\ 4 \\right)$、$\\overrightarrow{AC}=\\left( 0,\\ 2 \\right)$，則 $\\triangle ABC$ 之周長為何？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$\\sqrt{13} + 6$",
+          "value": "sqrt(13) + 6",
+          "display": "$\\sqrt{13} + 6$"
+        },
+        {
+          "label": "B",
+          "text": "$\\sqrt{13} + 7$",
+          "value": "sqrt(13) + 7",
+          "display": "$\\sqrt{13} + 7$"
+        },
+        {
+          "label": "C",
+          "text": "$\\sqrt{13} + 8$",
+          "value": "sqrt(13) + 8",
+          "display": "$\\sqrt{13} + 8$"
+        },
+        {
+          "label": "D",
+          "text": "$7$",
+          "value": "7",
+          "display": "$7$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "compute_vector_components_and_magnitude",
+      "source_example_ids": [
+        11754,
+        11755
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "在坐標平面上，設 $\\vec{a}=\\left( 0,\\ 6 \\right)$，試求：(1) $\\vec{a}$ 的 $x$ 分量與 $y$ 分量；(2) $\\left|\\vec{a}\\right|$。",
+      "representative_parts": [
+        {
+          "key": "x_component",
+          "label": "$x$ 分量",
+          "display_label": "$x$ 分量",
+          "math_label": "$x$ 分量",
+          "field_key": "x_component",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "0"
+        },
+        {
+          "key": "y_component",
+          "label": "$y$ 分量",
+          "display_label": "$y$ 分量",
+          "math_label": "$y$ 分量",
+          "field_key": "y_component",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "6"
+        },
+        {
+          "key": "magnitude",
+          "label": "大小",
+          "display_label": "大小",
+          "math_label": null,
+          "field_key": "magnitude",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "6"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "family_id": "compute_vector_linear_combination",
+      "source_example_ids": [
+        11780,
+        11808,
+        11768,
+        11769
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "試以坐標表示向量 $3\\left( -6,\\ -2 \\right)+4\\left( 0,\\ 6 \\right)+1\\left( 1,\\ -1 \\right)$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "family_id": "compute_vector_sum_difference",
+      "source_example_ids": [
+        11762,
+        11763,
+        11777,
+        11807,
+        11819
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 19,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( 0,\\ 6 \\right)$、$\\vec{b}=\\left( 0,\\ -6 \\right)$，試求 $\\vec{a}+\\vec{b}$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "construct_linear_combination_choice",
+      "source_example_ids": [
+        11749
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": true,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "A",
+          "Pa",
+          "Pb",
+          "R"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "以 $A$ 為起點，下列哪一個終點坐標對應 $\\frac{1}{3}\\vec{a}-\\frac{2}{3}\\vec{b}$？（設 $\\vec{a}=\\left( 4,\\ 0 \\right)$、$\\vec{b}=\\left( 0,\\ 4 \\right)$）",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$(\\frac{4}{3}, -\\frac{8}{3})$",
+          "value": "(4/3, -8/3)",
+          "display": "$(\\frac{4}{3}, -\\frac{8}{3})$"
+        },
+        {
+          "label": "B",
+          "text": "$(\\frac{4}{3}, \\frac{8}{3})$",
+          "value": "(4/3, 8/3)",
+          "display": "$(\\frac{4}{3}, \\frac{8}{3})$"
+        },
+        {
+          "label": "C",
+          "text": "$(-\\frac{4}{3}, -\\frac{8}{3})$",
+          "value": "(-4/3, -8/3)",
+          "display": "$(-\\frac{4}{3}, -\\frac{8}{3})$"
+        },
+        {
+          "label": "D",
+          "text": "$(-\\frac{8}{3}, \\frac{4}{3})$",
+          "value": "(-8/3, 4/3)",
+          "display": "$(-\\frac{8}{3}, \\frac{4}{3})$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "family_id": "expand_perpendicular_dot_product",
+      "source_example_ids": [
+        11801
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 19,
+      "unique_parameter_count": 19,
+      "unique_answer_count": 17,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.05,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}\\perp\\vec{b}$，$|\\vec{a}|=5$、$|\\vec{b}|=3$，試求 $(\\vec{a}-\\vec{b})\\cdot(3\\vec{a}+2\\vec{b})$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "express_linear_combination_from_givens",
+      "source_example_ids": [
+        11818
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 13,
+      "unique_parameter_count": 13,
+      "unique_answer_count": 13,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.35,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $\\overrightarrow{DE}=3\\vec{a}$、$\\overrightarrow{DF}=3\\vec{b}-\\vec{a}$、$\\overrightarrow{FG}=-\\vec{b}+2\\vec{c}$，試求 $\\overrightarrow{GE}$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "family_id": "express_named_vectors_in_given_basis",
+      "source_example_ids": [
+        11731,
+        11732
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "EXPECTED_LIMITED_VARIATION",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 4,
+      "unique_parameter_count": 4,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.8,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，已知基底向量，試以基底表示：$\\overrightarrow{BC}$、$\\overrightarrow{CD}$。",
+      "representative_parts": [
+        {
+          "key": "BC",
+          "label": "$\\overrightarrow{BC}$",
+          "display_label": "$\\overrightarrow{BC}$",
+          "math_label": "$\\overrightarrow{BC}$",
+          "field_key": "BC",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "b",
+          "answer_shape": "vector_expression"
+        },
+        {
+          "key": "CD",
+          "label": "$\\overrightarrow{CD}$",
+          "display_label": "$\\overrightarrow{CD}$",
+          "math_label": "$\\overrightarrow{CD}$",
+          "field_key": "CD",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "-a",
+          "answer_shape": "vector_expression"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "express_section_point_vector",
+      "source_example_ids": [
+        11741,
+        11742,
+        11744,
+        11748,
+        11751,
+        11752,
+        11753
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 5,
+      "unique_parameter_count": 5,
+      "unique_answer_count": 5,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.75,
+      "diagram_stats": {
+        "required_entity_count": 6,
+        "rendered_entity_count": 6,
+        "extraneous_entity_count": 0,
+        "required": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "rendered": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ ",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "family_id": "identify_equal_vector_mcq",
+      "source_example_ids": [
+        11806
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": true,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，長方形 $ABCD$ 中，與 $\\overrightarrow{AB}$ 相等的向量為？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$\\overrightarrow{BA}$",
+          "value": "\\overrightarrow{BA}",
+          "display": "$\\overrightarrow{BA}$"
+        },
+        {
+          "label": "B",
+          "text": "$\\overrightarrow{DC}$",
+          "value": "\\overrightarrow{DC}",
+          "display": "$\\overrightarrow{DC}$"
+        },
+        {
+          "label": "C",
+          "text": "$\\overrightarrow{CD}$",
+          "value": "\\overrightarrow{CD}",
+          "display": "$\\overrightarrow{CD}$"
+        },
+        {
+          "label": "D",
+          "text": "$\\overrightarrow{CB}$",
+          "value": "\\overrightarrow{CB}",
+          "display": "$\\overrightarrow{CB}$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "identify_resultant_path_mcq",
+      "source_example_ids": [
+        11743
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": true,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 7,
+        "rendered_entity_count": 7,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "A",
+          "B",
+          "C",
+          "P",
+          "Q",
+          "R",
+          "S"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，與 $\\overrightarrow{AB}+\\overrightarrow{BC}$ 最接近（方向與大小）的向量為？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$\\overrightarrow{CB}$",
+          "value": "\\overrightarrow{CB}",
+          "display": "$\\overrightarrow{CB}$"
+        },
+        {
+          "label": "B",
+          "text": "$\\overrightarrow{AC}$",
+          "value": "\\overrightarrow{AC}",
+          "display": "$\\overrightarrow{AC}$"
+        },
+        {
+          "label": "C",
+          "text": "$\\overrightarrow{BA}$",
+          "value": "\\overrightarrow{BA}",
+          "display": "$\\overrightarrow{BA}$"
+        },
+        {
+          "label": "D",
+          "text": "$\\overrightarrow{CA}$",
+          "value": "\\overrightarrow{CA}",
+          "display": "$\\overrightarrow{CA}$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "family_id": "identify_unit_vector_mcq",
+      "source_example_ids": [
+        11774
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "下列哪一個向量不是單位向量？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$(\\frac{3}{5},\\ -\\frac{4}{5})$",
+          "value": "(\\frac{3}{5},\\ -\\frac{4}{5})",
+          "display": "$(\\frac{3}{5},\\ -\\frac{4}{5})$"
+        },
+        {
+          "label": "B",
+          "text": "$(\\frac{1}{3},\\ \\frac{2}{3})$",
+          "value": "(\\frac{1}{3},\\ \\frac{2}{3})",
+          "display": "$(\\frac{1}{3},\\ \\frac{2}{3})$"
+        },
+        {
+          "label": "C",
+          "text": "$(-1,\\ 0)$",
+          "value": "(-1,\\ 0)",
+          "display": "$(-1,\\ 0)$"
+        },
+        {
+          "label": "D",
+          "text": "$(\\frac{\\sqrt{3}}{2},\\ \\frac{1}{2})$",
+          "value": "(\\frac{\\sqrt{3}}{2},\\ \\frac{1}{2})",
+          "display": "$(\\frac{\\sqrt{3}}{2},\\ \\frac{1}{2})$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "family_id": "plot_navigation_points_coordinates",
+      "source_example_ids": [
+        11804
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 19,
+      "unique_parameter_count": 19,
+      "unique_answer_count": 19,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.05,
+      "diagram_stats": {
+        "required_entity_count": 3,
+        "rendered_entity_count": 3,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "O",
+          "A",
+          "B"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "以港口為原點 $O(0,0)$，標示 $A\\left( 15,\\ 6 \\right)$ 與航標 $B\\left( 1,\\ 3 \\right)$ 的坐標。試寫出 $A$、$B$ 坐標。",
+      "representative_parts": [
+        {
+          "key": "A",
+          "label": "A",
+          "display_label": "A",
+          "math_label": null,
+          "field_key": "A",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(15, 6)"
+        },
+        {
+          "key": "B",
+          "label": "B",
+          "display_label": "B",
+          "math_label": null,
+          "field_key": "B",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "(1, 3)"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "family_id": "simplify_vector_path_expression",
+      "source_example_ids": [
+        11733,
+        11734,
+        11745,
+        11735,
+        11736,
+        11737,
+        11738,
+        11746,
+        11747,
+        11816
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 7,
+      "unique_parameter_count": 7,
+      "unique_answer_count": 5,
+      "unique_visual_count": 4,
+      "duplicate_rate": 0.65,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BD}$-$\\overrightarrow{CD}$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "family_id": "solve_angle_from_magnitude_identity",
+      "source_example_ids": [
+        11803
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 8,
+      "unique_parameter_count": 8,
+      "unique_answer_count": 8,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.6,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $|\\vec{a}|=1$、$|\\vec{b}|=2$，且 $|3\\vec{a}-2\\vec{b}|=3$，試求 $\\vec{a}\\cdot\\vec{b}$ 與夾角。",
+      "representative_parts": [
+        {
+          "key": "dot",
+          "label": "內積",
+          "display_label": "內積",
+          "math_label": null,
+          "field_key": "dot",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "4/3"
+        },
+        {
+          "key": "angle_degrees",
+          "label": "夾角（度）",
+          "display_label": "夾角（度）",
+          "math_label": null,
+          "field_key": "angle_degrees",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "180*acos(2/3)/pi"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "family_id": "solve_collinear_ratio_mcq",
+      "source_example_ids": [
+        11820
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $A\\left( 1,\\ 2 \\right)$、$B\\left( 2,\\ -1 \\right)$、$C(a,b)$ 共線，且 $\\overrightarrow{AB}=-2\\overrightarrow{AC}$，則 $a-b=$？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$-4$",
+          "value": "-4",
+          "display": "$-4$"
+        },
+        {
+          "label": "B",
+          "text": "$-3$",
+          "value": "-3",
+          "display": "$-3$"
+        },
+        {
+          "label": "C",
+          "text": "$-2$",
+          "value": "-2",
+          "display": "$-2$"
+        },
+        {
+          "label": "D",
+          "text": "$3$",
+          "value": "3",
+          "display": "$3$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "family_id": "solve_dot_product_parameter_mcq",
+      "source_example_ids": [
+        11813
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "若 $\\vec{a}=(1,k+1)$、$\\vec{b}=(2k,3)$ 且 $\\vec{a}\\cdot\\vec{b}=23$，則 $k=$？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$1$",
+          "value": "1",
+          "display": "$1$"
+        },
+        {
+          "label": "B",
+          "text": "$4$",
+          "value": "4",
+          "display": "$4$"
+        },
+        {
+          "label": "C",
+          "text": "$-1$",
+          "value": "-1",
+          "display": "$-1$"
+        },
+        {
+          "label": "D",
+          "text": "$5$",
+          "value": "5",
+          "display": "$5$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "solve_equal_vector_coordinates",
+      "source_example_ids": [
+        11756,
+        11757
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "EXPECTED_LIMITED_VARIATION",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 2,
+      "unique_parameter_count": 2,
+      "unique_answer_count": 2,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.9,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( x-y,\\ x+y \\right)$、$\\vec{b}=\\left( 4,\\ 6 \\right)$，若 $\\vec{a}=\\vec{b}$，試求未知數之值。",
+      "representative_parts": [
+        {
+          "key": "x",
+          "label": "$x$",
+          "display_label": "$x$",
+          "math_label": "$x$",
+          "field_key": "x",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "5"
+        },
+        {
+          "key": "y",
+          "label": "$y$",
+          "display_label": "$y$",
+          "math_label": "$y$",
+          "field_key": "y",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "1"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "family_id": "solve_navigation_heading_correction",
+      "source_example_ids": [
+        11805
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 17,
+      "unique_parameter_count": 17,
+      "unique_answer_count": 16,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.15,
+      "diagram_stats": {
+        "required_entity_count": 3,
+        "rendered_entity_count": 3,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "O",
+          "A",
+          "B"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "船由 $A\\left( 12,\\ 5 \\right)$ 駛向航標 $B\\left( 1,\\ 3 \\right)$ 後再駛向港口 $O\\left( 0,\\ 0 \\right)$。到達 $B$ 後應向左轉多少度？",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "family_id": "solve_parallel_then_magnitude_mcq",
+      "source_example_ids": [
+        11809
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 18,
+      "unique_parameter_count": 18,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.1,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $\\vec{a}=\\left( 10,\\ -20 \\right)$、$\\vec{b}=(-2,y)$ 平行，則 $|\\vec{b}|$ 為何？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$20$",
+          "value": "20",
+          "display": "$20$"
+        },
+        {
+          "label": "B",
+          "text": "$6$",
+          "value": "6",
+          "display": "$6$"
+        },
+        {
+          "label": "C",
+          "text": "$2 \\sqrt{5}$",
+          "value": "2*sqrt(5)",
+          "display": "$2 \\sqrt{5}$"
+        },
+        {
+          "label": "D",
+          "text": "$5$",
+          "value": "5",
+          "display": "$5$"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "family_id": "solve_parallel_vector_parameter",
+      "source_example_ids": [
+        11770,
+        11771,
+        11781
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 13,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( 0,\\ 6 \\right)$、$\\vec{b}=\\left( k,\\ 18 \\right)$，若 $\\vec{a}$ 與 $\\vec{b}$ 平行，試求參數之值。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "family_id": "solve_parallelogram_fourth_vertex",
+      "source_example_ids": [
+        11760,
+        11761,
+        11776
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知平行四邊形 $ABCD$ 的三個頂點為 $A\\left( 0,\\ 6 \\right)$、$B\\left( 0,\\ -6 \\right)$、$C\\left( -2,\\ 2 \\right)$，試求頂點 $D$ 的坐標。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "family_id": "solve_perpendicular_composite_parameter",
+      "source_example_ids": [
+        11814
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 18,
+      "unique_parameter_count": 18,
+      "unique_answer_count": 16,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.1,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( 1,\\ 3 \\right)$、$\\vec{b}=(x,-3)$，若 $\\vec{a}\\perp(\\vec{a}-2\\vec{b})$，試求 $x$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "family_id": "solve_perpendicular_vector_parameter",
+      "source_example_ids": [
+        11791,
+        11792,
+        11800
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "設 $\\vec{a}=\\left( 2,\\ k \\right)$、$\\vec{b}=\\left( 1,\\ k-3 \\right)$，若 $\\vec{a}\\perp\\vec{b}$，試求參數之值。",
+      "representative_parts": [
+        {
+          "key": "k1",
+          "label": "$k_{1}$",
+          "display_label": "$k_{1}$",
+          "math_label": "$k_{1}$",
+          "field_key": "k1",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "1"
+        },
+        {
+          "key": "k2",
+          "label": "$k_{2}$",
+          "display_label": "$k_{2}$",
+          "math_label": "$k_{2}$",
+          "field_key": "k2",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "2"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "family_id": "solve_point_from_vector_combination",
+      "source_example_ids": [
+        11784
+      ],
+      "source_type": "mixed",
+      "answer_type": "expression",
+      "question_type": "short_answer",
+      "has_visual": false,
+      "is_mcq": false,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 20,
+      "unique_parameter_count": 20,
+      "unique_answer_count": 20,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.0,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $A\\left( 57,\\ 10 \\right)$、$B\\left( 3,\\ 0 \\right)$、$C\\left( 9,\\ 8 \\right)$，若 $\\overrightarrow{AD}=\\frac{5}{4}\\overrightarrow{AB}-\\frac{3}{4}\\overrightarrow{AC}$，試求 $D$。",
+      "representative_parts": [],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "solve_scalar_multiple_relation_fill",
+      "source_example_ids": [
+        11739,
+        11740,
+        11750
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 17,
+      "unique_parameter_count": 17,
+      "unique_answer_count": 14,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.15,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "rendered": [
+          "O",
+          "Q",
+          "P",
+          "R"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，已知 $\\vec{a}=k_\\vec{b}$，$\\vec{c}=k_2\\vec{a}$，試求實數 $k_1$、$k_2$。",
+      "representative_parts": [
+        {
+          "key": "k1",
+          "label": "$k_{1}$",
+          "display_label": "$k_{1}$",
+          "math_label": "$k_{1}$",
+          "field_key": "k1",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "2"
+        },
+        {
+          "key": "k2",
+          "label": "$k_{2}$",
+          "display_label": "$k_{2}$",
+          "math_label": "$k_{2}$",
+          "field_key": "k2",
+          "checker": "integer_checker",
+          "checker_key": "integer_checker",
+          "equivalence_type": "numeric_exact",
+          "expected_answer": "2"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "family_id": "solve_section_coefficient_pair",
+      "source_example_ids": [
+        11817
+      ],
+      "source_type": "mixed",
+      "answer_type": "multi_part",
+      "question_type": "multi_part",
+      "has_visual": true,
+      "is_mcq": false,
+      "is_multi_part": true,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": true,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 9,
+      "unique_parameter_count": 9,
+      "unique_answer_count": 9,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.55,
+      "diagram_stats": {
+        "required_entity_count": 4,
+        "rendered_entity_count": 4,
+        "extraneous_entity_count": 0,
+        "required": [
+          "A",
+          "E",
+          "F",
+          "M"
+        ],
+        "rendered": [
+          "A",
+          "E",
+          "F",
+          "M"
+        ]
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "如圖，已知點 $E$、$F$、$M$，且 $\\overrightarrow{AM}=\\alpha\\overrightarrow{AE}+\\beta\\overrightarrow{AF}$，試求實數 $\\alpha$、$\\beta$。",
+      "representative_parts": [
+        {
+          "key": "alpha",
+          "label": "$\\alpha$",
+          "display_label": "$\\alpha$",
+          "math_label": "$\\alpha$",
+          "field_key": "alpha",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "1/3"
+        },
+        {
+          "key": "beta",
+          "label": "$\\beta$",
+          "display_label": "$\\beta$",
+          "math_label": "$\\beta$",
+          "field_key": "beta",
+          "checker": "expression_checker",
+          "checker_key": "expression_checker",
+          "equivalence_type": "algebraic_equivalent",
+          "expected_answer": "2/3"
+        }
+      ],
+      "representative_choices": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_4",
+      "family_id": "solve_unknown_vector_linear_equation",
+      "source_example_ids": [
+        11823
+      ],
+      "source_type": "mixed",
+      "answer_type": "single_choice",
+      "question_type": "single_choice",
+      "has_visual": false,
+      "is_mcq": true,
+      "is_multi_part": false,
+      "stem_complete": true,
+      "math_render_ok": true,
+      "input_widget_ok": true,
+      "choices_render_ok": true,
+      "diagram_render_ok": false,
+      "diagram_semantics_ok": true,
+      "diagram_relevance_ok": true,
+      "answer_contract_ok": true,
+      "checker_ok": true,
+      "meaningful_diversity": "PASS",
+      "next_question_ok": true,
+      "sample_count": 20,
+      "unique_problem_count": 15,
+      "unique_parameter_count": 15,
+      "unique_answer_count": 4,
+      "unique_visual_count": 1,
+      "duplicate_rate": 0.25,
+      "diagram_stats": {
+        "required_entity_count": 0,
+        "rendered_entity_count": 0,
+        "extraneous_entity_count": 0
+      },
+      "final_status": "PASS",
+      "failures": [],
+      "representative_stem": "已知 $\\vec{a}=\\left( 2,\\ -5 \\right)$、$\\vec{b}=\\left( -2,\\ 6 \\right)$，且 $3(\\vec{c}+\\vec{a})=4(\\vec{c}+\\vec{b})$，則 $\\vec{c}=$？",
+      "representative_parts": [],
+      "representative_choices": [
+        {
+          "label": "A",
+          "text": "$(14, 39)$",
+          "value": "(14, 39)",
+          "display": "$(14, 39)$"
+        },
+        {
+          "label": "B",
+          "text": "$(14, -39)$",
+          "value": "(14, -39)",
+          "display": "$(14, -39)$"
+        },
+        {
+          "label": "C",
+          "text": "$(-14, -39)$",
+          "value": "(-14, -39)",
+          "display": "$(-14, -39)$"
+        },
+        {
+          "label": "D",
+          "text": "$(4, -11)$",
+          "value": "(4, -11)",
+          "display": "$(4, -11)$"
+        }
+      ]
+    }
+  ]
+}

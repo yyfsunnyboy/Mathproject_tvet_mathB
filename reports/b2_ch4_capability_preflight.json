@@ -1,0 +1,686 @@
+{
+  "repo_search": {
+    "dedicated_circle_domain": false,
+    "related_modules": [
+      "core/domain/coordinate_geometry/line_equation_domain.py",
+      "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+      "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+      "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+      "core/domain/vector_plane_domain.py"
+    ],
+    "taxonomy_ch4_bindings": [],
+    "phase1_ch4_rulepacks": [],
+    "published_v3_ch4_skills": [],
+    "notes": [
+      "Searched core/domain, core/gencode, core/registry, configs, skills/, agent_skills_v3/",
+      "Found coordinate_geometry line/distance/cartesian reusable pieces",
+      "No circle.plane / circle_equation domain module",
+      "No vh_數學B2_SubSection_4_* published wrappers"
+    ]
+  },
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "skill_name": "圓的標準式",
+      "concept_code": "4-1.1",
+      "source_count": 16,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "read_center_radius_from_standard",
+        "write_standard_circle_equation"
+      ],
+      "family_counts": {
+        "read_center_radius_from_standard": 3,
+        "write_standard_circle_equation": 13
+      },
+      "classification": "NEW_DOMAIN",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "No dedicated circle domain module; standard/general form families not covered by existing domains",
+      "has_v3_assets": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "skill_name": "圓的一般式",
+      "concept_code": "4-1.2",
+      "source_count": 19,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "determine_circle_from_conditions",
+        "general_circle_misc",
+        "read_center_radius_from_general"
+      ],
+      "family_counts": {
+        "read_center_radius_from_general": 8,
+        "general_circle_misc": 10,
+        "determine_circle_from_conditions": 1
+      },
+      "classification": "NEW_DOMAIN",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "No dedicated circle domain module; standard/general form families not covered by existing domains",
+      "has_v3_assets": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "skill_name": "點與圓的關係",
+      "concept_code": "4-2.1",
+      "source_count": 5,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "point_circle_position"
+      ],
+      "family_counts": {
+        "point_circle_position": 5
+      },
+      "classification": "COMPOSITE_EXISTING_CAPABILITIES",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "Point-line distance / line equation ops exist in coordinate_geometry, but circle equation + tangent families need a dedicated circle domain first",
+      "has_v3_assets": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "skill_name": "圓與直線的關係",
+      "concept_code": "4-2.2",
+      "source_count": 17,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "applied_circle_line_geometry",
+        "chord_length_from_center_distance",
+        "circle_line_parameter_relation",
+        "circle_line_position_relation",
+        "exam_circle_line_composite"
+      ],
+      "family_counts": {
+        "applied_circle_line_geometry": 2,
+        "circle_line_position_relation": 8,
+        "circle_line_parameter_relation": 3,
+        "chord_length_from_center_distance": 3,
+        "exam_circle_line_composite": 1
+      },
+      "classification": "COMPOSITE_EXISTING_CAPABILITIES",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "Point-line distance / line equation ops exist in coordinate_geometry, but circle equation + tangent families need a dedicated circle domain first",
+      "has_v3_assets": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "skill_name": "圓的切線方程式",
+      "concept_code": "4-2.3",
+      "source_count": 8,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "tangent_at_point_on_circle",
+        "tangent_parallel_to_line",
+        "tangent_perpendicular_to_line"
+      ],
+      "family_counts": {
+        "tangent_at_point_on_circle": 5,
+        "tangent_parallel_to_line": 2,
+        "tangent_perpendicular_to_line": 1
+      },
+      "classification": "COMPOSITE_EXISTING_CAPABILITIES",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "Point-line distance / line equation ops exist in coordinate_geometry, but circle equation + tangent families need a dedicated circle domain first",
+      "has_v3_assets": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "skill_name": "切線段長",
+      "concept_code": "4-2.4",
+      "source_count": 5,
+      "existing_domain": "none_dedicated_circle",
+      "reusable_existing_modules": [
+        "core/domain/coordinate_geometry/line_equation_domain.py",
+        "core/domain/coordinate_geometry/distance_between_two_points_domain.py",
+        "core/domain/coordinate_geometry/cartesian_coordinate_domain.py",
+        "core/domain/coordinate_geometry/parallel_lines_distance_domain.py",
+        "core/domain/vector_plane_domain.py"
+      ],
+      "existing_families": [],
+      "missing_families": [
+        "tangent_segment_length"
+      ],
+      "family_counts": {
+        "tangent_segment_length": 5
+      },
+      "classification": "NEW_DOMAIN",
+      "recommended_route": "AGENT_NEW_DOMAIN_ONBOARDING",
+      "why": "No dedicated circle domain module; standard/general form families not covered by existing domains",
+      "has_v3_assets": false
+    }
+  ],
+  "families_by_source": [
+    {
+      "id": 11826,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "例1",
+      "family": "read_center_radius_from_standard",
+      "group": "example"
+    },
+    {
+      "id": 11827,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "隨堂練習1",
+      "family": "read_center_radius_from_standard",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11828,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "例2",
+      "family": "write_standard_circle_equation",
+      "group": "example"
+    },
+    {
+      "id": 11829,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "隨堂練習2",
+      "family": "write_standard_circle_equation",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11830,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "例3",
+      "family": "write_standard_circle_equation",
+      "group": "example"
+    },
+    {
+      "id": 11831,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "隨堂練習3",
+      "family": "write_standard_circle_equation",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11841,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "4-1習題 基礎題 1",
+      "family": "read_center_radius_from_standard",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11842,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "4-1習題 基礎題 2",
+      "family": "write_standard_circle_equation",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11843,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "4-1習題 基礎題 3",
+      "family": "write_standard_circle_equation",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11844,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "4-1習題 基礎題 4",
+      "family": "write_standard_circle_equation",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11850,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "4-1習題 進階題 10",
+      "family": "write_standard_circle_equation",
+      "group": "advanced_exercise"
+    },
+    {
+      "id": 11877,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "CH4自我評量 題10",
+      "family": "write_standard_circle_equation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11886,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "CH4自我評量 題2",
+      "family": "write_standard_circle_equation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11887,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "CH4自我評量 題3",
+      "family": "write_standard_circle_equation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11890,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "CH4自我評量 題6",
+      "family": "write_standard_circle_equation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11891,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "source_description": "CH4自我評量 題7",
+      "family": "write_standard_circle_equation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11832,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "例4",
+      "family": "read_center_radius_from_general",
+      "group": "example"
+    },
+    {
+      "id": 11833,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "隨堂練習4",
+      "family": "read_center_radius_from_general",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11834,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "例5",
+      "family": "read_center_radius_from_general",
+      "group": "example"
+    },
+    {
+      "id": 11835,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "隨堂練習5",
+      "family": "read_center_radius_from_general",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11836,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "例6",
+      "family": "general_circle_misc",
+      "group": "example"
+    },
+    {
+      "id": 11837,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "隨堂練習6",
+      "family": "general_circle_misc",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11838,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "例7",
+      "family": "determine_circle_from_conditions",
+      "group": "example"
+    },
+    {
+      "id": 11839,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "隨堂練習7",
+      "family": "general_circle_misc",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11840,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "111統測B",
+      "family": "read_center_radius_from_general",
+      "group": "past_exam"
+    },
+    {
+      "id": 11845,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "4-1習題 基礎題 5",
+      "family": "read_center_radius_from_general",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11846,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "4-1習題 基礎題 6",
+      "family": "general_circle_misc",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11847,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "4-1習題 基礎題 7",
+      "family": "general_circle_misc",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11848,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "4-1習題 基礎題 8",
+      "family": "general_circle_misc",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11849,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "4-1習題 進階題 9",
+      "family": "read_center_radius_from_general",
+      "group": "advanced_exercise"
+    },
+    {
+      "id": 11876,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "CH4自我評量 題1",
+      "family": "read_center_radius_from_general",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11888,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "CH4自我評量 題4",
+      "family": "general_circle_misc",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11889,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "CH4自我評量 題5",
+      "family": "general_circle_misc",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11892,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "CH4自我評量 題8",
+      "family": "general_circle_misc",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11893,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "source_description": "CH4自我評量 題9",
+      "family": "general_circle_misc",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11851,
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "source_description": "例1",
+      "family": "point_circle_position",
+      "group": "example"
+    },
+    {
+      "id": 11852,
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "source_description": "隨堂練習1",
+      "family": "point_circle_position",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11866,
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "source_description": "4-2習題 基礎題 1",
+      "family": "point_circle_position",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11875,
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "source_description": "4-2習題 進階題 10",
+      "family": "point_circle_position",
+      "group": "advanced_exercise"
+    },
+    {
+      "id": 11884,
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "source_description": "CH4自我評量 題17",
+      "family": "point_circle_position",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11853,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "例2",
+      "family": "applied_circle_line_geometry",
+      "group": "example"
+    },
+    {
+      "id": 11854,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "隨堂練習2",
+      "family": "circle_line_position_relation",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11855,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "例3",
+      "family": "circle_line_parameter_relation",
+      "group": "example"
+    },
+    {
+      "id": 11856,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "隨堂練習3",
+      "family": "circle_line_parameter_relation",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11857,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "例4",
+      "family": "chord_length_from_center_distance",
+      "group": "example"
+    },
+    {
+      "id": 11858,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "隨堂練習4",
+      "family": "chord_length_from_center_distance",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11867,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "4-2習題 基礎題 2",
+      "family": "circle_line_position_relation",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11868,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "4-2習題 基礎題 3",
+      "family": "circle_line_parameter_relation",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11869,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "4-2習題 基礎題 4",
+      "family": "exam_circle_line_composite",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11870,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "4-2習題 基礎題 5",
+      "family": "chord_length_from_center_distance",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11874,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "4-2習題 進階題 9",
+      "family": "applied_circle_line_geometry",
+      "group": "advanced_exercise"
+    },
+    {
+      "id": 11878,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題11",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11879,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題12",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11880,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題13",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11881,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題14",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11882,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題15",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11883,
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "source_description": "CH4自我評量 題16",
+      "family": "circle_line_position_relation",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11859,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "例5",
+      "family": "tangent_at_point_on_circle",
+      "group": "example"
+    },
+    {
+      "id": 11860,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "隨堂練習5",
+      "family": "tangent_at_point_on_circle",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11861,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "例6",
+      "family": "tangent_parallel_to_line",
+      "group": "example"
+    },
+    {
+      "id": 11862,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "隨堂練習6",
+      "family": "tangent_perpendicular_to_line",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11871,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "4-2習題 基礎題 6",
+      "family": "tangent_at_point_on_circle",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11872,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "4-2習題 基礎題 7",
+      "family": "tangent_parallel_to_line",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11885,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "CH4自我評量 題18",
+      "family": "tangent_at_point_on_circle",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11895,
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "source_description": "CH4自我評量 題20",
+      "family": "tangent_at_point_on_circle",
+      "group": "self_assessment"
+    },
+    {
+      "id": 11863,
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "source_description": "例7",
+      "family": "tangent_segment_length",
+      "group": "example"
+    },
+    {
+      "id": 11864,
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "source_description": "隨堂練習7",
+      "family": "tangent_segment_length",
+      "group": "in_class_practice"
+    },
+    {
+      "id": 11865,
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "source_description": "110統測B",
+      "family": "tangent_segment_length",
+      "group": "past_exam"
+    },
+    {
+      "id": 11873,
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "source_description": "4-2習題 基礎題 8",
+      "family": "tangent_segment_length",
+      "group": "basic_exercise"
+    },
+    {
+      "id": 11894,
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "source_description": "CH4自我評量 題19",
+      "family": "tangent_segment_length",
+      "group": "self_assessment"
+    }
+  ],
+  "route_counts": {
+    "AGENT_NEW_DOMAIN_ONBOARDING": 6
+  }
+}

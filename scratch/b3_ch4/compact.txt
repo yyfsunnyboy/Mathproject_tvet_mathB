@@ -1,0 +1,438 @@
+### 12127 [4_1_1] 例1 (textbook_example)
+Q: 試求下列各式之值： ⏎ (1)\(3\times 3 ^ { 2 } \times 3 ^ { 3 }\) (2)\(\left[ \left ( { -2 } \right ) ^ { 2 } \right] ^ { 5 }\) (3)\(\left ( { \frac { 1 } { 5 } } \right ) ^ { 3 } \times { \rm{ 2 } }{ \rm{ 5 } } ^ { 3 }\)
+A: None
+### 12128 [4_1_1] 隨堂練習1 (in_class_practice)
+Q: 試求下列各式之值： ⏎ (1)\(2 ^ { 2 } \times 2 ^ { 3 } \times 2 ^ { 4 }\) (2)\(\left[ \left ( { -4 } \right ) ^ { 2 } \right] ^ { 3 }\) (3)\(\left ( { \frac { 1 } { 2 } } \right ) ^ { 4 } \times { \rm{ 6 } } ^ { 4 }\)
+A: None
+### 12129 [4_1_2] 例2 (textbook_example)
+Q: 設\(a\ne 0\)、\(b\ne 0\)，化簡下列各式： ⏎ (1)\(\left ( { \frac { 1 } { 27 } } \right ) ^ { 3 } \times 81 ^ { 2 }\) (2)\(\left[ a ^ { -1 } \times \left ( { b ^ { 3 } } \right ) ^ { 2 } \right] ^ { -2 } \times \left ( { a ^ { 2 } \times b ^ { -4 } } \right ) ^ { -3 }\)
+A: None
+### 12130 [4_1_2] 隨堂練習2 (in_class_practice)
+Q: 設\(a\ne 0\)，化簡下列各式： ⏎ (1)\(\left ( { \frac { 1 } { 16 } } \right ) ^ { 3 } \times 32 ^ { 2 }\) (2)\(\left[ \left ( { a ^ { 3 } } \right ) ^ { -2 } \times a ^ { 7 } \right] ^ { -2 }\)
+A: None
+### 12131 [4_1_3] 例3 (textbook_example)
+Q: 試求下列各式之值： ⏎ (1)\(8 ^ { -\frac { 4 } { 3 } }\) (2)\(\left ( { \frac { 81 } { 625 } } \right ) ^ { \frac { 1 } { 4 } }\) (3)\(\left ( { 0.25 } \right ) ^ { -1.5 }\)
+A: None
+### 12132 [4_1_3] 隨堂練習3 (in_class_practice)
+Q: 試求下列各式之值： ⏎ (1)\(27 ^ { -\frac { 2 } { 3 } }\) (2)\(\left ( { \frac { 16 } { 81 } } \right ) ^ { 0.25 }\) (3)\(\left ( { 0.04 } \right ) ^ { -\frac { 3 } { 2 } }\)
+A: None
+### 12133 [4_1_3] 例4 (textbook_example)
+Q: 設\(a>0\)，\(b>0\)，試化簡下列各式： ⏎ (1)\(\left ( { a ^ { 9 } b ^ { 3 } } \right ) ^ { \frac { 2 } { 3 } } \times \left ( { a ^ { -\frac { 2 } { 3 } } b ^ { \frac { 1 } { 6 } } } \right ) ^ { -6 }\) (2)\(\frac { \sqrt[3] { a ^ { 2 } } } { \sqrt[4] { a ^ { 3 } } }\)
+A: None
+### 12134 [4_1_3] 隨堂練習4 (in_class_practice)
+Q: 設\(a>0\)，\(b>0\)，試化簡下列各式： ⏎ (1)\(\left ( { a ^ { 5 } b ^ { 10 } } \right ) ^ { \frac { 2 } { 5 } } \times \left ( { a ^ { -4 } b ^ { 8 } } \right ) ^ { -\frac { 1 } { 4 } }\) (2)\(\frac { \sqrt[] { a ^ { 5 } } } { \sqrt[3] { a ^ { 4 } } }\)
+A: None
+### 12135 [4_1_3] 111統測B (exam_practice)
+Q: 某日課堂上，老師對學生勉勵：「若每天增加百分之一的功力，則一年後至少會增加三十六倍的可觀效應；反之，每天減少百分之一的功力，則一年後至少流失現今功力的九成七」，這段勉勵運用了指數函數成長及衰退的概念，其數學上的表達最貼切下列哪一個選項？ ⏎ (A)\(1.01 ^ { 365 } \ge 37\)且\(0.99 ^ { 365 } \le 0.03\) ⏎ (B)\(365 ^ { 1.01 } \le 37\)且\(365 ^ { 0.99 } \ge 0.03\) ⏎ (C)\(1.01 ^ { 365 } \ge 63\)且\(0.99 ^ { 365 } \le 0.97\) ⏎ (D)\(365 ^ { 1.01 } \le 63\)且\(365 ^ { 0.99 } \ge 0.97\) 〔111統測B〕
+A: None
+### 12136 [4_1_1] 4-1習題 基礎題 1 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1)\(\left[ \left ( { -3 } \right ) ^ { 3 } \right] ^ { 2 }\) (2)\(\left ( { \frac { 1 } { 3 } } \right ) ^ { 3 } \times { \rm{ 2 } }{ \rm{ 7 } } ^ { 3 }\)
+A: None
+### 12137 [4_1_2] 4-1習題 基礎題 2 (textbook_exercise)
+Q: 在下列等式中的□填上「整數」： ⏎ (1)\(\frac { 1 } { 5 ^ { 2 } }=5 ^ { \square }\) (2)\(1=8 ^ { \square }\) ⏎ (3)\(\frac { 1 } { 8 }=2 ^ { \square }\) (4)\(\frac { 3 } { 2 }=\left ( { \frac { 2 } { 3 } } \right ) ^ { \square }\)
+A: None
+### 12138 [4_1_2] 4-1習題 基礎題 3 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1)\(5 ^ { 0 } +\left ( { \frac { 2 } { 3 } } \right ) ^ { 0 }\) (2)\(2 ^ { -3 } +\left ( { \frac { 4 } { 3 } } \right ) ^ { -2 }\) ⏎ (3)\(\left ( { \frac { 1 } { 16 } } \right ) ^ { 2 } \times 8 ^ { 3 }\)
+A: None
+### 12139 [4_1_2] 4-1習題 基礎題 4 (textbook_exercise)
+Q: 試化簡下列各式：（\(a\ne 0\)，\(b\ne 0\)） ⏎ (1)\(\left ( { \frac { 1 } { a ^ { 3 } }\times a ^ { -4 } } \right ) ^ { -2 }\) (2)\(\left ( { a ^ { -2 } \times b ^ { 3 } } \right ) ^ { -3 } \times \left ( { a ^ { 3 } \times b ^ { -2 } } \right ) ^ { -2 }\)
+A: None
+### 12140 [4_1_3] 4-1習題 基礎題 5 (textbook_exercise)
+Q: 試求下列各式之值：  ⏎ (1)\(\left ( { 0.25 } \right ) ^ { -\frac { 5 } { 2 } }\) ⏎ (2)\(\left ( { \frac { 27 } { 8 } } \right ) ^ { \frac { 2 } { 3 } }\) ⏎ (3)\(\left ( { \frac { 9 } { 25 } } \right ) ^ { 1.5 }\)
+A: None
+### 12141 [4_1_3] 4-1習題 基礎題 6 (textbook_exercise)
+Q: 設\(a>0\)，\(b>0\)，試化簡下列各式： ⏎ (1)\(\left[ \left ( { a ^ { 2 } b ^ { 4 } } \right )\left ( { a ^ { -2 } b ^ { 3 } } \right ) ^ { 2 } \right] ^ { \frac { 1 } { 2 } }\) (2)\(\left[ \left ( { a ^ { 2 } b ^ { 4 } } \right ) ^ { 2 } \left ( { a ^ { -2 } b ^ { 4 } } \right ) \right] ^ { \frac { 1 } { 2 } }\)
+A: None
+### 12142 [4_1_3] 4-1習題 基礎題 7 (textbook_exercise)
+Q: 設\(a>0\)，\(b>0\)，\(c>0\)，試化簡\(\left ( { a ^ { -6 } b ^ { 9 } c ^ { -3 } } \right ) ^ { \frac { 1 } { 3 } } \times \left ( { a ^ { -4 } b ^ { 6 } c ^ { 2 } } \right ) ^ { -\frac { 1 } { 2 } }\)。
+A: None
+### 12143 [4_1_3] 4-1習題 基礎題 8 (textbook_exercise)
+Q: 設\(a>0\)，試化簡下列各式： ⏎ (1)\(\sqrt[] { a }\times \sqrt[3] { a }\times \sqrt[6] { a }\) ⏎ (2)\(\sqrt[6] { a ^ { 5 } }\times \sqrt[12] { a ^ { 5 } \times a ^ { 9 } }\)
+A: None
+### 12144 [4_1_3] 4-1習題 進階題 9 (advanced_exercise)
+Q: 已知\(A=\left ( { \frac { 1000 } { 729 } } \right ) ^ { -\frac { 2 } { 3 } } -\left ( { \frac { 27 } { 343 } } \right ) ^ { -\frac { 1 } { 3 } } +\left ( { 5\frac { 4 } { 9 } } \right ) ^ { \frac { 1 } { 2 } }\)，則A之值為何？
+A: None
+### 12145 [4_1_1] 4-1習題 進階題 10 (advanced_exercise)
+Q: 若x、y、z為有理數，且\(12 ^ { 2 } \times 15 ^ { 5 } \times 20 ^ { -4 } =2 ^ { x } \times 3 ^ { y } \times 5 ^ { z }\)，試求\(2x+y+z\)之值。
+A: None
+### 12146 [4_2_1] 例1 (textbook_example)
+Q: 試描繪\(y=2 ^ { x }\)的圖形。
+A: None
+### 12147 [4_2_1] 隨堂練習1 (in_class_practice)
+Q: 試描繪\(y=3 ^ { x }\)的圖形。
+A: None
+### 12148 [4_2_1] 例2 (textbook_example)
+Q: 試描繪\(y=\left ( { \frac { 1 } { 2 } } \right ) ^ { x }\)的圖形。
+A: None
+### 12149 [4_2_1] 隨堂練習2 (in_class_practice)
+Q: 試描繪\(y=\left ( { \frac { 1 } { 3 } } \right ) ^ { x }\)的圖形。
+A: None
+### 12150 [4_2_1] 例3 (textbook_example)
+Q: 試比較下列各數之大小： ⏎ (1)\(a=5 ^ { -2 }\)，\(b=5 ^ { \frac { 1 } { 3 } }\)，\(c=5 ^ { 3 }\) ⏎ (2)\(a=\left ( { 0.5 } \right ) ^ { -2 }\)，\(b=1\)，\(c=\left ( { 0.5 } \right ) ^ { \frac { 7 } { 6 } }\)
+A: None
+### 12151 [4_2_1] 隨堂練習3 (in_class_practice)
+Q: 試比較下列各數之大小： ⏎ (1)\(a=\left ( { \sqrt[] { 2 } } \right ) ^ { -\frac { 1 } { 2 } }\)，\(b=\sqrt[] { 2 }\)，\(c=\left ( { \sqrt[] { 2 } } \right ) ^ { 3 }\) ⏎ (2)\(a=\left ( { \frac { 2 } { 3 } } \right ) ^ { \frac { 3 } { 4 } }\)，\(b=\left ( { \frac { 2 } { 3 } } \right ) ^ { \frac { 3 } { 5 } }\)，\(c=\left ( { \frac { 2 } { 3 } } \right ) ^ { \frac { 1 } { 2 } }\)
+A: None
+### 12152 [4_2_1] 例4 (textbook_example)
+Q: 布袋蓮的繁殖力相當驚人，因容易阻塞重要水道且難以根除，常被視為有害植物，而遭到敵視。右圖為某池塘中布袋蓮蔓延的面積與時間的關係圖。假設其關係為指數函數，試回答下列問題： ⏎ (1)試求此指數函數\(f\left ( { x } \right )\)。 ⏎ (2)在第幾個月時，布袋蓮的面積就會超過30 m2。
+A: None
+### 12153 [4_2_1] 隨堂練習4 (in_class_practice)
+Q: 圖為某放射性物質的質量與時間的關係圖，假設其關係為指數函數，此放射性物質的半衰期為1千年，即每經過1千年時間，該物質的質量會衰退成原來的一半。試回答下列問題： ⏎ (1)試求此指數函數\(f\left ( { x } \right )\)。 ⏎ (2)在經過幾千年後，此放射性物質其質量將會只剩下原來的\(\frac { 1 } { 8 }\)。
+A: None
+### 12154 [4_2_2] 例5 (textbook_example)
+Q: 解下列指數方程式： ⏎ (1)\(2 ^ { x-1 } =32\) (2)\(3 ^ { x-2 } =\frac { 1 } { 27 }\)。
+A: None
+### 12155 [4_2_2] 隨堂練習5 (in_class_practice)
+Q: 解下列指數方程式： ⏎ (1)\(3 ^ { x } =9\) (2)\(2 ^ { 3x+1 } =\frac { 1 } { 32 }\)。
+A: None
+### 12156 [4_2_2] 例6 (textbook_example)
+Q: 解指數方程式\(\left ( { \frac { 3 } { 4 } } \right ) ^ { x-3 } =\left ( { \frac { 4 } { 3 } } \right ) ^ { 2x-1 }\)。
+A: None
+### 12157 [4_2_2] 隨堂練習6 (in_class_practice)
+Q: 解指數方程式\(\left ( { \frac { 2 } { 5 } } \right ) ^ { 2x+1 } =\left ( { \frac { 5 } { 2 } } \right ) ^ { x+1 }\)。
+A: None
+### 12158 [4_2_2] 例7 (textbook_example)
+Q: 試解方程式\(2 ^ { 2x } -6\times 2 ^ { x } -16=0\)。
+A: None
+### 12159 [4_2_2] 隨堂練習7 (in_class_practice)
+Q: 試解方程式\(2 ^ { 2x } +2 ^ { x+1 } -8=0\)。
+A: None
+### 12160 [4_2_2] 110統測B (exam_practice)
+Q: 若\(f\left ( { x } \right )=\left ( { \frac { \pi } { 4 } } \right ) ^ { { \rm{ } }x }\)，則下列何者為\(f\left ( { x } \right )\)之圖形？  ⏎ (A) (B) ⏎ (C) (D) ⏎ 〔110統測B〕
+A: None
+### 12161 [4_2_1] 4-2習題 基礎題 1 (textbook_exercise)
+Q: 試將\(y=2 ^ { x }\)與\(y=\left ( { \frac { 1 } { 2 } } \right ) ^ { x }\)的圖形畫在右邊 ⏎ 直角坐標中。
+A: None
+### 12162 [4_2_1] 4-2習題 基礎題 2 (textbook_exercise)
+Q: 關於指數函數\(y=f\left ( { x } \right )=a ^ { x }\)，\(a>0\)、\(a\ne 1\)， ⏎ 其圖形的性質： ⏎ (1) 只分布在哪兩個象限？ 、 。 ⏎ (2) 圖形必通過點 ，水平方向的漸近線為 。 ⏎ (3) 當\(a>1\)時，\(y=f\left ( { x } \right )=a ^ { x }\)為 函數。 ⏎ (4) 當\(0 < a < 1\)時，\(y=f\left ( { x } \right )=a ^ { x }\)為 函數。 ⏎ (5) 函數\(f\left ( { x } \right )\)之定義域為 ，值域為 。 ⏎ (6) \(y=a ^ { x }\)的圖形與\(y=\left ( { \frac { 1 } { a } } \right ) ^ { x }\)的圖形對稱於 。
+A: None
+### 12163 [4_2_1] 4-2習題 基礎題 3 (textbook_exercise)
+Q: 試比較下列各組數的大小關係： ⏎ (1) \(\left ( { 0.9 } \right ) ^ { 4 }\)，\(\left ( { 0.9 } \right ) ^ { -3 }\)，\(\left ( { 0.9 } \right ) ^ { \frac { 1 } { 2 } }\)，\(\left ( { 0.9 } \right ) ^ { -\frac { 1 } { 2 } }\) ⏎ (2) \(\left ( { \sqrt[] { 7 } } \right ) ^ { -3 }\)，\(\left ( { \sqrt[] { 7 } } \right ) ^ { \frac { 3 } { 2 } }\)，\(\left ( { \sqrt[] { 7 } } \right ) ^ { -\frac { 1 } { 4 } }\)，\(\left ( { \sqrt[] { 7 } } \right ) ^ { 0 }\)
+A: None
+### 12164 [4_2_2] 4-2習題 基礎題 4 (textbook_exercise)
+Q: 解下列指數方程式： ⏎ (1)\(5 ^ { x } =25 ^ { 2x-1 }\) (2)\(5 ^ { 2x-1 } =\frac { 1 } { 625 }\)。
+A: None
+### 12165 [4_2_2] 4-2習題 基礎題 5 (textbook_exercise)
+Q: 解指數方程式\(\left ( { \frac { 4 } { 7 } } \right ) ^ { 3x-4 } =\left ( { \frac { 7 } { 4 } } \right ) ^ { 4x-3 }\)。
+A: None
+### 12166 [4_2_2] 4-2習題 基礎題 6 (textbook_exercise)
+Q: 方程式\(\left ( { \frac { 1 } { 3 } } \right ) ^ { x+2 } =9 ^ { 2x-3 }\)，試求x之值。
+A: None
+### 12167 [4_2_2] 4-2習題 基礎題 7 (textbook_exercise)
+Q: 解指數方程式\(5 ^ { x+1 } +5 ^ { x } =150\)。
+A: None
+### 12168 [4_2_2] 4-2習題 基礎題 8 (textbook_exercise)
+Q: 試解方程式\(3 ^ { 2x } -4\times 3 ^ { x+1 } +27=0\)。
+A: None
+### 12169 [4_2_2] 4-2習題 進階題 9 (advanced_exercise)
+Q: 設\(2 ^ { 2x+1 } +2 ^ { 3x } =5\times 2 ^ { x+4 }\)，則\(x=\)？
+A: None
+### 12170 [4_2_1] 4-2習題 進階題 10 (advanced_exercise)
+Q: 若\(f\left ( { x } \right )=2 ^ { x }\)，則下列何者正確？ (A)\(f\left ( { -1 } \right )=-2\) (B)\(f\left ( { 0 } \right )=0\) ⏎ (C)\(f\left ( { -3 } \right )>f\left ( { -2 } \right )\) (D)\(x_{ 2 } >x_{ 1 }\)時，\(f\left ( { x_{ 2 } } \right )>f\left ( { x_{ 1 } } \right )\)。
+A: None
+### 12171 [4_3_1] 例1 (textbook_example)
+Q: 試求下列對數之值： ⏎ (1)\(log_{ 3 } 9\) (2)\(log_{ 2 } \frac { 1 } { 8 }\)
+A: None
+### 12172 [4_3_1] 隨堂練習1 (in_class_practice)
+Q: 試求下列對數之值： ⏎ (1)\(log_{ 2 } 16\) (2)\(log_{ 3 } \frac { 1 } { 3 }\)
+A: None
+### 12173 [4_3_2] 例2 (textbook_example)
+Q: 試求下列對數的值： ⏎ (1)\(log_{ 2 } 1\) (2)\(log_{ \sqrt[] { 2 } } \sqrt[] { 2 }\) (3)\(log_{ 3 } 3 ^ { \sqrt[] { 5 } }\) (4)\(10 ^ { log_{ 10 } 3 }\)
+A: None
+### 12174 [4_3_2] 隨堂練習2 (in_class_practice)
+Q: 試求下列對數的值： ⏎ (1)\(log_{ 3 } 1\) (2)\(log_{ 3 } 3\) (3)\(log_{ 5 } 5 ^ { 3 }\) (4)\(7 ^ { log_{ 7 } 2 }\)
+A: None
+### 12175 [4_3_2] 例3 (textbook_example)
+Q: 試求下列各式之値： ⏎ (1)\(log_{ 3 } 27\) (2)\(log_{ 8 } \sqrt[] { 2 }\) (3)\(log_{ \sqrt[] { 8 } } \frac { 1 } { 2 }\)
+A: None
+### 12176 [4_3_2] 隨堂練習3 (in_class_practice)
+Q: 試求下列各式之值： ⏎ (1)\(log_{ 5 } 25\) ⏎  ⏎  ⏎ (2)\(log_{ \sqrt[] { 3 } } 9\) ⏎  ⏎  ⏎ (3)\(log_{ 25 } \frac { 1 } { 5 }\)
+A: None
+### 12177 [4_3_2] 例4 (textbook_example)
+Q: 試求下列各式之值： ⏎ (1)\(log_{ 9 } 3+log_{ 9 } 27\) (2)\(log_{ 5 } 250-log_{ 5 } 2\)
+A: None
+### 12178 [4_3_2] 隨堂練習4 (in_class_practice)
+Q: 試求下列各式之值： ⏎ (1)\(log_{ 10 } 5+log_{ 10 } 20\) (2)\(log_{ 3 } 54-log_{ 3 } 2\)
+A: None
+### 12179 [4_3_2] 例5 (textbook_example)
+Q: 試求\(3log_{ 10 } 2+2log_{ 10 } 5-log_{ 10 } 20\)之值。
+A: None
+### 12180 [4_3_2] 隨堂練習5 (in_class_practice)
+Q: 試求\({ \rm{ 3 } }log_{ { \rm{ 3 } } } 1{ \rm{ 8 } }-2log_{ { \rm{ 3 } } } { \rm{ 2 } }-log_{ { \rm{ 3 } } } { \rm{ 6 } }\)之值。
+A: None
+### 12181 [4_3_2] 例6 (textbook_example)
+Q: 試求下列各式之值： ⏎ (1)\(log_{ 2 } 3\times log_{ 3 } 2\) ⏎ (2)\(log_{ 2 } 3\times log_{ 3 } 5\times log_{ 5 } 6\times log_{ 6 } 8\)
+A: None
+### 12182 [4_3_2] 隨堂練習6 (in_class_practice)
+Q: 試求下列各式之值： ⏎ (1)\(log_{ 3 } 5\times log_{ 5 } 3\) ⏎ (2)\(log_{ 5 } 10\times log_{ 10 } 15\times log_{ 15 } 20\times log_{ 20 } 25\)
+A: None
+### 12183 [4_3_2] 例7 (textbook_example)
+Q: 試求\(\left ( { log_{ 2 } 3+log_{ 4 } 9 } \right )\left ( { log_{ 3 } 4+log_{ 9 } 2 } \right )\)之值。
+A: None
+### 12184 [4_3_2] 隨堂練習7 (in_class_practice)
+Q: 試求\(\left ( { log_{ 3 } 5+log_{ 9 } 25 } \right )\left ( { log_{ 5 } 3+log_{ 25 } 81 } \right )\)之值。
+A: None
+### 12185 [4_3_2] 例8 (textbook_example)
+Q: 設\(a=log_{ 3 } 2\)，\(b=log_{ 3 } 5\)，試以a、b表示： ⏎ (1)\(log_{ 3 } 60\) (2)\(log_{ 4 } 50\)
+A: None
+### 12186 [4_3_2] 隨堂練習8 (in_class_practice)
+Q: 設\(log_{ 10 } 2=a\)，\(log_{ 10 } 3=b\)，試以a、b表示： ⏎ (1)\(log_{ 10 } 36\) (2)\(log_{ 6 } 12\)
+A: None
+### 12187 [4_3_2] 113統測B (exam_practice)
+Q: 某次考試，老師出了一張滿分為100分的試卷，但因考後成績不理想，因此進行全班成績調整，若原始成績為\(x\)分，則調整後成績為\(50\times log_{ 10 } x\)的整數部分。已知這次考試沒有人缺考且最低分數為2分，則下列敘述何者錯誤？ ⏎ （\(log_{ 10 } 2\approx 0.3010\)） ⏎ (A)考100分的同學調整前後的分數不變  ⏎ (B)考10分的同學調整後的分數不到60分  ⏎ (C)調整後全班的最低分是16分  ⏎ (D)若某同學的原始成績是16分，則其調整後的成績為60分 〔113統測B〕
+A: None
+### 12188 [4_3_1] 4-3習題 基礎題 1 (textbook_exercise)
+Q: 下列各式何者無意義？並說明原因。 ⏎ (1)\(log_{ \left ( { -3 } \right ) } 3\) (2)\(log_{ 1 } 5\) (3)\(log_{ 3 } 27\) (4)\(log_{ 2 } \left ( { -4 } \right )\) (5)\(log_{ 5 } 1\) (6)\(log_{ 10 } 0\)
+A: None
+### 12189 [4_3_2] 4-3習題 基礎題 2 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1) \(log_{ 2 } 2 ^ { \frac { 3 } { 5 } }\) ⏎ (2) \(5 ^ { log_{ 5 } 12 }\)
+A: None
+### 12190 [4_3_2] 4-3習題 基礎題 3 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1) \(log_{ 6 } 4+log_{ 6 } 9\) ⏎ (2) \(log_{ 3 } 135-log_{ 3 } 5\)
+A: None
+### 12191 [4_3_2] 4-3習題 基礎題 4 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1) \(log_{ 3 } 30+log_{ 3 } 15-log_{ 3 } 50\) ⏎ (2) \(3log_{ 10 } 5+log_{ 10 } 12-log_{ 10 } 15\)
+A: None
+### 12192 [4_3_2] 4-3習題 基礎題 5 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1) \(log_{ 5 } \left ( { 7+4\sqrt[] { 3 } } \right )+log_{ 5 } \left ( { 7-4\sqrt[] { 3 } } \right )\) ⏎ (2) \(log_{ 10 } 2+log_{ 10 } \sqrt[] { 15 }-\frac { 1 } { 2 }log_{ 10 } 0.6\)
+A: None
+### 12193 [4_3_2] 4-3習題 基礎題 6 (textbook_exercise)
+Q: 試求下列各式之值： ⏎ (1) \(log_{ 3 } 5\times log_{ 5 } 7\times log_{ 7 } 9\) ⏎ (2) \(2 ^ { \frac { log_{ 10 } 3 } { log_{ 10 } 2 } }\)
+A: None
+### 12194 [4_3_2] 4-3習題 基礎題 7 (textbook_exercise)
+Q: 試求\(\left ( { log_{ 9 } 4+log_{ 3 } 8 } \right )\left ( { log_{ 16 } 27-log_{ 4 } 3 } \right )\)之值。
+A: None
+### 12195 [4_3_2] 4-3習題 基礎題 8 (textbook_exercise)
+Q: 設\(log_{ 10 } 2=a\)，\(log_{ 10 } 3=b\)，試以a、b表示： ⏎ (1) \(log_{ 4 } 3\) ⏎ (2) \(log_{ 9 } 5\)
+A: None
+### 12196 [4_3_2] 4-3習題 進階題 9 (advanced_exercise)
+Q: 設\(log_{ 10 } 2=a\)，\(log_{ 2 } 3=b\)，試以a、b表示： ⏎ (1) \(log_{ 10 } 3\) ⏎ (2) \(log_{ 40 } 180\)
+A: None
+### 12197 [4_3_2] 4-3習題 進階題 10 (advanced_exercise)
+Q: 設\(3 ^ { x } =7 ^ { y } =2\)，則\(\frac { 1 } { x }+\frac { 1 } { y }=log_{ 2 } A\)，已知\(A>0\)，試求式子中A之值。 ⏎ （提示：利用\(a ^ { x } =b\)，則\(x=log_{ a } b\)及\(log_{ a } b=\frac { 1 } { log_{ b } a }\)）
+A: None
+### 12198 [4_4_1] 例1 (textbook_example)
+Q: 試描繪\(y=log_{ 2 } x\)的圖形。
+A: None
+### 12199 [4_4_1] 隨堂練習1 (in_class_practice)
+Q: 試描繪\(y=log_{ 3 } x\)的圖形。
+A: None
+### 12200 [4_4_1] 例2 (textbook_example)
+Q: 試描繪\(y=log_{ \frac { 1 } { 2 } } x\)的圖形。
+A: None
+### 12201 [4_4_1] 隨堂練習2 (in_class_practice)
+Q: 試描繪\(y=log_{ \frac { 1 } { 3 } } x\)的圖形。
+A: None
+### 12202 [4_4_1] 例3 (textbook_example)
+Q: 試比較下列各數之大小： ⏎ (1)\(log_{ 3 } 4\)，\(log_{ 3 } 5\)，\(log_{ 3 } 6\) ⏎ (2)\(log_{ \frac { 1 } { 3 } } 2\)，\(log_{ \frac { 1 } { 3 } } 3\)，\(log_{ \frac { 1 } { 3 } } 4\)
+A: None
+### 12203 [4_4_1] 隨堂練習3 (in_class_practice)
+Q: 試比較下列各數之大小： ⏎ (1)\(log_{ 2 } \sqrt[] { 3 }\)，\(log_{ 2 } \sqrt[] { 5 }\)，\(log_{ 2 } \sqrt[] { 7 }\) ⏎ (2)\(log_{ 0.5 } 7\)，\(log_{ 0.5 } 8\)，\(log_{ 0.5 } 9\)
+A: None
+### 12204 [4_4_1] 例4 (textbook_example)
+Q: 已知聲音分貝數公式\(d\left ( { I } \right )=10\times log_{ 10 } \frac { I } { I_{ 0 } }\)，\(I_{ 0 } =10 ^ { -12 }\)（W/m2），則：
+A: None
+### 12205 [4_4_1] 隨堂練習4 (in_class_practice)
+Q: 已知聲音分貝數公式\(d\left ( { I } \right )=10\times log_{ 10 } \frac { I } { I_{ 0 } }\)，\(I_{ 0 } =10 ^ { -12 }\)（W/m2）。選舉造勢時，若使用瓦斯汽笛測得的聲音強度\(I\)為\(10 ^ { -5 }\)（W/m2），則其產生的聲音是多少分貝？
+A: None
+### 12206 [4_4_2] 例5 (textbook_example)
+Q: 試求方程式\(log_{ 2 } \left ( { x-1 } \right )=3\)之解。
+A: None
+### 12207 [4_4_2] 隨堂練習5 (in_class_practice)
+Q: 試求方程式\(log_{ 3 } \left ( { x+2 } \right )=2\)之解。
+A: None
+### 12208 [4_4_2] 例6 (textbook_example)
+Q: 試求方程式\(log_{ 2 } x+log_{ 2 } \left ( { x-2 } \right )=3\)之解。
+A: None
+### 12209 [4_4_2] 隨堂練習6 (in_class_practice)
+Q: 試求方程式\(log_{ 8 } \left ( { x+5 } \right )+log_{ 8 } \left ( { x-2 } \right )=1\)之解。
+A: None
+### 12210 [4_4_2] 112統測B (exam_practice)
+Q: 根據研究指出，若\(x\)為犬隻年齡（單位：歲），犬隻與人類的年齡換算公式可寫成：犬隻等同的人類年齡（單位：歲）約為\(37\times log_{ 10 } \left ( { x } \right )+31\)。 ⏎ 若我們稱呼「犬瑞」乃指犬隻年齡換算為人類年齡後達70歲以上，則下列哪一個選項的犬隻年齡最接近且跨過「犬瑞」的門檻？ ⏎ （\(log_{ 10 } 2\approx 0.3010\)，\(log_{ 10 } 3\approx 0.4771\)） ⏎ (A)9歲 ⏎ (B)10歲 ⏎ (C)12歲 ⏎ (D)15歲 〔112統測B〕
+A: None
+### 12211 [4_4_1] 4-4習題 基礎題 1 (textbook_exercise)
+Q: 試將\(y=log_{ 2 } x\)與\(y=log_{ \frac { 1 } { 2 } } x\)的圖形畫在下方直角坐標中。
+A: None
+### 12212 [4_4_1] 4-4習題 基礎題 2 (textbook_exercise)
+Q: 關於對數函數\(y=f\left ( { x } \right )=log_{ a } x\)，\(a>0\)、\(a\ne 1\)、\(x>0\)，其圖形的性質： ⏎ (1) 只分布在哪兩個象限？ 、 。 ⏎ (2) 圖形必通過點 ，垂直方向的漸近線為 。 ⏎ (3) 當\(a>1\)時，\(y=f\left ( { x } \right )=log_{ a } x\)為 函數。（填入遞增或遞減） ⏎ (4) 當\(0 < a < 1\)時，\(y=f\left ( { x } \right )=log_{ a } x\)為 函數。（填入遞增或遞減） ⏎ (5) \(y=log_{ a } x\)的圖形與\(y=log_{ \frac { 1 } { a } } x\)的圖形對稱於 。 ⏎ (6) 函數\(y=log_{ a } x\)的圖形與函數\(y=a ^ { x }\)的圖形對稱於直線 。
+A: None
+### 12213 [4_4_1] 4-4習題 基礎題 3 (textbook_exercise)
+Q: 試比較下列各數之大小： ⏎ (1) \(a=log_{ 2 } 4\)，\(b=log_{ 2 } \pi\)，\(c=log_{ 2 } 3\) ⏎ (2) \(a=log_{ 0.3 } \frac { 4 } { 5 }\)，\(b=log_{ 0.3 } \frac { 5 } { 6 }\)，\(c=log_{ 0.3 } \frac { 3 } { 4 }\) ⏎ (3) \(a=log_{ \frac { 1 } { 2 } } \frac { 1 } { 2 }\)，\(b=log_{ \frac { 1 } { 2 } } \frac { 1 } { 3 }\)，\(c=log_{ \frac { 1 } { 2 } } \frac { 1 } { 4 }\)
+A: None
+### 12214 [4_4_2] 4-4習題 基礎題 4 (textbook_exercise)
+Q: 解方程式\(log_{ 2 } \left ( { x+1 } \right )=3\)。
+A: None
+### 12215 [4_4_2] 4-4習題 基礎題 5 (textbook_exercise)
+Q: 解方程式\(log_{ 2 } \left ( { x ^ { 2 } +4x } \right )=log_{ 2 } 32\)。
+A: None
+### 12216 [4_4_2] 4-4習題 基礎題 6 (textbook_exercise)
+Q: 設\(a>0\)且\(a\ne 1\)，若\(log_{ a } 5+log_{ a } 25=3\)，試求a之值。
+A: None
+### 12217 [4_4_2] 4-4習題 基礎題 7 (textbook_exercise)
+Q: 試求方程式\(log_{ 2 } \left ( { x-2 } \right )+log_{ 2 } \left ( { x-3 } \right )=1\)之解。
+A: None
+### 12218 [4_4_2] 4-4習題 基礎題 8 (textbook_exercise)
+Q: 試求方程式\(log_{ 5 } \left ( { x+3 } \right )+log_{ 5 } \left ( { x-4 } \right )=log_{ 5 } 30\)之解。
+A: None
+### 12219 [4_4_1] 4-4習題 進階題 9 (advanced_exercise)
+Q: 試比較下列各數之大小：\(a=2log_{ 2 } 3\)，\(b=3log_{ 4 } 3\)，\(c=3\)
+A: None
+### 12220 [4_4_2] 4-4習題 進階題 10 (advanced_exercise)
+Q: 若曲線\(y=log_{ a } \left ( { x-2 } \right )\)通過\(A\left ( { 5,\ 1 } \right )\)、\(B\left ( { b,\ 3 } \right )\)兩點，試求\(a+b\)之值。
+A: None
+### 12221 [4_5_1] 例1 (textbook_example)
+Q: 試利用對數表查出下列對數的近似值： ⏎ (1)\(log3.8\) (2)\(log4.87\)
+A: None
+### 12222 [4_5_1] 隨堂練習1 (in_class_practice)
+Q: 試利用對數表查出下列對數的近似值： ⏎ (1)\(log5.4\) (2)\(log6.05\)
+A: None
+### 12223 [4_5_1] 例2 (textbook_example)
+Q: 試利用對數表查出下列對數的近似值： ⏎ (1)\(log1.534\) (2)\(log7.245\)
+A: None
+### 12224 [4_5_1] 隨堂練習2 (in_class_practice)
+Q: 試利用對數表查出下列對數的近似值： ⏎ (1)\(log3.246\) (2)\(log8.378\)
+A: None
+### 12225 [4_5_3] 例3 (textbook_example)
+Q: 設\(logx\approx 3.3655\)，試求： ⏎ (1)\(logx\)之首數與尾數。 ⏎ (2) x之整數部分為幾位數？
+A: None
+### 12226 [4_5_3] 隨堂練習3 (in_class_practice)
+Q: 設\(logy=6.5999\)，試求： ⏎ (1)\(logy\)之首數與尾數。 ⏎ (2) y之整數部分為幾位數？
+A: None
+### 12227 [4_5_3] 例4 (textbook_example)
+Q: 設\(logx\approx -3.3010\)，試求： ⏎ (1)\(logx\)之首數與尾數。 ⏎ (2) x自小數點後第幾位開始出現不為0的數字？
+A: None
+### 12228 [4_5_3] 隨堂練習4 (in_class_practice)
+Q: 設\(logy\approx -2.7723\)，試求： ⏎ (1)\(logy\)之首數與尾數。 ⏎ (2) y自小數點後第幾位開始出現不為0的數字？
+A: None
+### 12229 [4_5_3] 例5 (textbook_example)
+Q: 已知\(log2.95\approx 0.4698\)， ⏎ (1)試求\(log2950\)之值。 ⏎ (2)若\(logx\approx 2.4698\)，試求x之值。
+A: None
+### 12230 [4_5_3] 隨堂練習5 (in_class_practice)
+Q: 已知\(log3.88\approx 0.5888\)， ⏎ (1)試求\(log38800\)之值。 ⏎ (2)若\(logx\approx 3.5888\)，試求x之值。
+A: None
+### 12231 [4_5_3] 例6 (textbook_example)
+Q: 已知\(log2\approx 0.3010\)，則\(2 ^ { 100 }\)為幾位數？
+A: 
+### 12232 [4_5_3] 隨堂練習6 (in_class_practice)
+Q: 已知\(log2\approx 0.3010\)，\(log3\approx 0.4771\)，則\(3 ^ { 30 }\)為幾位數？
+A: None
+### 12233 [4_5_3] 例7 (textbook_example)
+Q: 將\(\left ( { \frac { 2 } { 3 } } \right ) ^ { 100 }\)化為小數，則在小數點後面第幾位開始出現不為0的數字？
+A: None
+### 12234 [4_5_3] 隨堂練習7 (in_class_practice)
+Q: 將\(\left ( { \frac { 1 } { 3 } } \right ) ^ { 20 }\)化為小數，則在小數點後面第幾位開始出現不為0的數字？
+A: None
+### 12235 [4_5_3] 例8 (textbook_example)
+Q: 爸爸以80萬元購買一輛中古汽車，若汽車的價值以每年20%折舊，則該汽車的價值最短幾年之後會下跌到低於30萬元？（\(log0.8\approx -0.0969\)、\(log3\approx 0.4771\)、\(log8\approx 0.9031\)）
+A: None
+### 12236 [4_5_3] 隨堂練習8 (in_class_practice)
+Q: 一支智慧型手機價值2萬元，每月折舊率為5%，試問最快幾個月後，它的價值會少於1萬元？（\(log2\approx 0.3010\)，\(log0.95\approx -0.0223\)）
+A: None
+### 12237 [4_5_3] 113統測B (exam_practice)
+Q: 小倩在一家營運穩定的公司上班。若小倩的起薪為每個月4萬元，且每年會調薪2%，即一年後為\(40000\times 1.02\)元，兩年後為\(40000\times \left ( { 1.02 } \right ) ^ { 2 }\)元，以此類推。試問幾年後小倩的月薪最接近8萬元？（\(log_{ 10 } 2\approx 0.3010\)，\(log_{ 10 } 1.02\approx 0.0086\)） ⏎ (A) 29 ⏎ (B) 31 ⏎ (C) 33 ⏎ (D) 35 〔113統測B〕
+A: None
+### 12238 [4_5_1] 4-5習題 基礎題 1 (textbook_exercise)
+Q: 試利用對數表查出下列對數的近似值： ⏎ (1)\(log4.58\) (2)\(log6.023\)
+A: None
+### 12239 [4_5_3] 4-5習題 基礎題 2 (textbook_exercise)
+Q: 設\(logx\approx 2.5888\)，試求： ⏎ (1) \(logx\)之首數與尾數。 ⏎ (2) x之整數部分為幾位數？
+A: None
+### 12240 [4_5_3] 4-5習題 基礎題 3 (textbook_exercise)
+Q: 設\(logy\approx -5.3838\)，試求： ⏎ (1) \(logy\)之首數與尾數。 ⏎ (2) y自小數點後第幾位開始出現不為0的數字？
+A: None
+### 12241 [4_5_3] 4-5習題 基礎題 4 (textbook_exercise)
+Q: 在下列空格填入正確答案： ⏎ (1) 若\(x>1\)，且\(logx=n+\alpha\)，其中n為首數，\(\alpha\)為尾數，則x之整數部分為 ⏎  位數。 ⏎ (2) 若\(0 < x < 1\)，且\(logx=-n+\alpha\)，其中\(-n\)為首數，\(\alpha\)為尾數，則x自小數點後第 位開始出現不為0的數字。
+A: None
+### 12242 [4_5_3] 4-5習題 基礎題 5 (textbook_exercise)
+Q: 已知\(log2950\approx 3.4698\)， ⏎ (1) 試求\(log2.95\)之值。 ⏎ (2) 若\(logM\approx 4.4698\)，試求M之值。
+A: None
+### 12243 [4_5_3] 4-5習題 基礎題 6 (textbook_exercise)
+Q: 已知\(log2\approx 0.3010\)，\(log3\approx 0.4771\)，則\(6 ^ { 100 }\)為幾位數？
+A: None
+### 12244 [4_5_3] 4-5習題 基礎題 7 (textbook_exercise)
+Q: 已知\(log2\approx 0.3010\)，\(log3\approx 0.4771\)，則\(12 ^ { 10 }\)為幾位數？
+A: None
+### 12245 [4_5_3] 4-5習題 基礎題 8 (textbook_exercise)
+Q: 已知\(log2\approx 0.3010\)，若將\(\left ( { \frac { 1 } { 2 } } \right ) ^ { 50 }\)化為小數，則在小數點後面第幾位開始出現不為0的數字？
+A: None
+### 12246 [4_5_3] 4-5習題 進階題 9 (advanced_exercise)
+Q: 已知\(log2950\approx 3.4698\)，若\(logN=-2.5302\)，試求N之值。
+A: None
+### 12247 [4_5_3] 4-5習題 進階題 10 (advanced_exercise)
+Q: 媽媽把10萬元存入銀行，銀行的存款年利率為10%，規定一年一期複利計算，試問幾年後，媽媽在銀行存款的本利和會超過30萬元？ ⏎ （已知\(log3\approx 0.4771\)，\(log1.1\approx 0.0414\)）
+A: None
+### 12248 [4_1_1] CH4自我評量 題1 (self_assessment)
+Q: 若\(a=3 ^ { 7 } \times 5 ^ { 3 }\)，\(b=3 ^ { 4 } \times 5 ^ { 7 }\)，則\(a\times b\)的值為何？ (A)\(15 ^ { 10 }\) (B)\(3\times 15 ^ { 10 }\)
+A: None
+### 12249 [4_2_1] CH4自我評量 題10 (self_assessment)
+Q: 設\(a=\sqrt[3] { 3 ^ { 2 } }\)、\(b=3 ^ { \frac { 3 } { 4 } }\)、\(c=\sqrt[5] { 81 }\)，則a、b、c之大小關係為
+A: None
+### 12250 [4_3_1] CH4自我評量 題11 (self_assessment)
+Q: 判斷下列何者有意義？ (A)\(log_{ 0.1 } 5\) (B)\(log_{ 1 } 3\) (C)\(log_{ -2 } 8\)
+A: None
+### 12251 [4_3_2] CH4自我評量 題12 (self_assessment)
+Q: \(log_{ 10 } 5+log_{ 10 } 12+log_{ 10 } 15-log_{ 10 } 9=\) (A) 0 (B) 2 (C) 4 (D) 6。
+A: None
+### 12252 [4_3_2] CH4自我評量 題13 (self_assessment)
+Q: \(\frac { log_{ 3 } 2+log_{ 27 } 8 } { log_{ 3 } 8+log_{ 9 } 16 }=\) (A)\(\frac { 2 } { 5 }\) (B)\(\frac { 3 } { 5 }\) (C)\(\frac { 2 } { 3 }\) (D)\(\frac { 9 } { 8 }\)。
+A: None
+### 12253 [4_3_2] CH4自我評量 題14 (self_assessment)
+Q: \(log_{ \frac { 1 } { 5 } } \sqrt[] { 125 }-log_{ 9 } \sqrt[] { 27 }=\) (A)\(\frac { 9 } { 2 }\) (B)\(\frac { 3 } { 4 }\) (C)\(-\frac { 3 } { 4 }\) (D)\(-\frac { 9 } { 4 }\)。
+A: None
+### 12254 [4_3_2] CH4自我評量 題15 (self_assessment)
+Q: \(log_{ 2 } 5\times log_{ 5 } 9\times log_{ 3 } 7\times log_{ 7 } 8=\) (A) 5 (B) 6 (C) 7 (D) 8。
+A: None
+### 12255 [4_3_2] CH4自我評量 題16 (self_assessment)
+Q: 若\(log_{ 9 } a=\frac { 1 } { 2 }\)，則\(log_{ 2 } \left ( { \frac { a } { 3 } } \right )=\) (A) 3 (B) 2 (C) 1 (D) 0。
+A: None
+### 12256 [4_3_2] CH4自我評量 題17 (self_assessment)
+Q: 若\(log_{ 10 } 2=a\)，\(log_{ 10 } 3=b\)，則\(log_{ 10 } 15\)等於下列何者？ (A)\(1+a+b\)
+A: None
+### 12257 [4_4_1] CH4自我評量 題18 (self_assessment)
+Q: 下列何者不正確？ (A)\(y=log_{ \frac { 1 } { 2 } } x\)之圖形為遞增函數 (B)\(y=2 ^ { x }\)之圖形為遞增函數 (C)\(y=\left ( { \frac { 1 } { 3 } } \right ) ^ { x }\)之圖形與x軸不相交 (D)\(y=log_{ 3 } x\)之圖形與y軸不相交。
+A: None
+### 12258 [4_1_3] CH4自我評量 題2 (self_assessment)
+Q: \(\frac { 3 ^ { \frac { 4 } { 3 } } \times 3 ^ { \frac { 7 } { 3 } } } { 3 ^ { \frac { 2 } { 3 } } }=\) (A) 3 (B) 9 (C) 12 (D) 27。
+A: None
+### 12259 [4_1_3] CH4自我評量 題3 (self_assessment)
+Q: \(8 ^ { \frac { 2 } { 3 } } +\left ( { \frac { 243 } { 32 } } \right ) ^ { \frac { 1 } { 5 } } =\) (A)\(\frac { 9 } { 2 }\) (B)\(\frac { 11 } { 2 }\) (C)\(\frac { 13 } { 2 }\) (D) 5。
+A: None
+### 12260 [4_1_3] CH4自我評量 題4 (self_assessment)
+Q: 已知a、b為實數，若\(2 ^ { a } =\sqrt[] { 32 }\)且\(3 ^ { b } =\frac { 1 } { \sqrt[] { 27 } }\)，則\(a+b=\) (A) −2
+A: None
+### 12261 [4_4_1] CH4自我評量 題19 (self_assessment)
+Q: 若\(a=2\)、\(b=log_{ 4 } 81\)、\(c=log_{ 4 } 27\)，則下列何者正確？ (A)\(c < a < b\)
+A: None
+### 12262 [4_4_2] CH4自我評量 題20 (self_assessment)
+Q: 方程式\(log_{ 5 } \left ( { x+10 } \right )=2\)之解為 (A)\(x=5\) (B)\(x=10\) (C)\(x=15\)
+A: None
+### 12263 [4_4_2] CH4自我評量 題21 (self_assessment)
+Q: 對數方程式\(log_{ 2 } \left ( { x-5 } \right )+log_{ 2 } \left ( { x+2 } \right )=3\)，則\(x=\) (A) 0 (B) 2
+A: None
+### 12264 [4_5_3] CH4自我評量 題22 (self_assessment)
+Q: 若\(loga=-2.0282\)，則\(loga\)之首數為 (A) 1 (B) 0 (C) −2
+A: None
+### 12265 [4_5_1] CH4自我評量 題23 (self_assessment)
+Q: 若\(log_{ 10 } 3\approx 0.4771\)、\(log_{ 10 } 5\approx 0.6990\)，則\(log_{ 10 } 375\)之近似值為
+A: None
+### 12266 [4_5_3] CH4自我評量 題24 (self_assessment)
+Q: 已知\(log2\)約等於0.3010。若\(a=2 ^ { 60 }\)，則a為幾位數？ (A) 18
+A: None
+### 12267 [4_5_3] CH4自我評量 題25 (self_assessment)
+Q: 一輛汽車的折舊率為22%，已知它目前的價值為25萬元，則該汽車的價值最快幾年之後會低於10萬元？ (A) 3 (B) 4 (C) 5 (D) 6。
+A: None
+### 12268 [4_1_3] CH4自我評量 題5 (self_assessment)
+Q: 若\(2 ^ { a } =\sqrt[3] { 8\times \sqrt[5] { 64 } }\)，則\(a=\) (A)\(\frac { 21 } { 5 }\) (B)\(\frac { 7 } { 15 }\) (C)\(\frac { 7 } { 5 }\) (D)\(\frac { 5 } { 7 }\)。
+A: None
+### 12269 [4_2_1] CH4自我評量 題6 (self_assessment)
+Q: 設\(f\left ( { x } \right )=2 ^ { x }\)，\(g\left ( { x } \right )=\left ( { \frac { 1 } { 2 } } \right ) ^ { x }\)，如圖所示，
+A: None
+### 12270 [4_2_2] CH4自我評量 題7 (self_assessment)
+Q: 已知\(5 ^ { x } =4\)，則\(125 ^ { x }\)之值為何？ (A) 8 (B) 16 (C) 32 (D) 64。
+A: None
+### 12271 [4_2_2] CH4自我評量 題8 (self_assessment)
+Q: 已知\(\left ( { \frac { 13 } { 17 } } \right ) ^ { 3x-1 } =\left ( { \frac { 289 } { 169 } } \right ) ^ { 2-x }\)，則x之值為 (A) −3 (B)\(\frac { -1 } { 2 }\) (C) 1
+A: None
+### 12272 [4_2_2] CH4自我評量 題9 (self_assessment)
+Q: 設方程式\(25 ^ { x } +3\times 5 ^ { x } -40=0\)，則\(x=\) (A) 0 (B) 1 (C) 5 (D) 25。
+A: None

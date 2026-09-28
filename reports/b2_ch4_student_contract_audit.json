@@ -1,0 +1,1667 @@
+{
+  "total_families": 41,
+  "multipart_families": 11,
+  "pass": 41,
+  "blocked": 0,
+  "failure_counts": {},
+  "multipart_audit_counters": {
+    "MISSING_ITEM_MARKER": 0,
+    "FLATTENED_ITEM_BOUNDARY": 0,
+    "BARE_NUMERIC_GROUP_LABEL": 0,
+    "EMPTY_DISPLAY_LABEL": 0,
+    "AMBIGUOUS_DISPLAY_LABEL": 0,
+    "INTERNAL_KEY_EXPOSED": 0,
+    "HORIZONTAL_OVERFLOW": 0
+  },
+  "families": [
+    {
+      "family_id": "circle_center_on_axis_area",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11840",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "9\\pi",
+          "display": "$9\\pi$",
+          "shape": "area_or_pi"
+        },
+        {
+          "label": "B",
+          "value": "21\\pi",
+          "display": "$21\\pi$",
+          "shape": "area_or_pi"
+        },
+        {
+          "label": "C",
+          "value": "16\\pi",
+          "display": "$16\\pi$",
+          "shape": "area_or_pi"
+        },
+        {
+          "label": "D",
+          "value": "4\\pi",
+          "display": "$4\\pi$",
+          "shape": "area_or_pi"
+        }
+      ],
+      "representative_stem": "若圓 $x^{2}+y^{2}-6x+2ay-7=0$ 的圓心在 $x$ 軸上，則此圓的面積為何？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_center_tangent_to_line",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11890",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "x^2+y^2=36",
+          "display": "$x^2+y^2=36$",
+          "shape": "equation"
+        },
+        {
+          "label": "B",
+          "value": "(x+3)^2+(y+4)^2=49",
+          "display": "$(x+3)^2+(y+4)^2=49$",
+          "shape": "equation"
+        },
+        {
+          "label": "C",
+          "value": "(x+3)^2+(y+4)^2=36",
+          "display": "$(x+3)^2+(y+4)^2=36$",
+          "shape": "equation"
+        },
+        {
+          "label": "D",
+          "value": "(x+3)^2+(y+4)^2=25",
+          "display": "$(x+3)^2+(y+4)^2=25$",
+          "shape": "equation"
+        }
+      ],
+      "representative_stem": "已知直線 $3x+4y=5$，圓心為 $\\left( -3,\\ -4 \\right)$ 且與該直線相切，則圓方程式為何？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_equal_radius_at_origin",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11843",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "某圓圓心在原點，半徑與圓 $C:\\left( x-1 \\right)^{2}+\\left( y+3 \\right)^{2}=16$ 的半徑相等，試求此圓方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_from_diameter_endpoints",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11830",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "設平面上兩點 $A\\left( 0,\\ -3 \\right)$、$B\\left( 2,\\ 3 \\right)$，試求以 $\\overline{AB}$ 為直徑的圓方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_origin_through_lines_intersection",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11886",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "x^2+y^2=10",
+          "display": "$x^2+y^2=10$",
+          "shape": "equation"
+        },
+        {
+          "label": "B",
+          "value": "x^2+y^2=6",
+          "display": "$x^2+y^2=6$",
+          "shape": "equation"
+        },
+        {
+          "label": "C",
+          "value": "x^2+y^2=5",
+          "display": "$x^2+y^2=5$",
+          "shape": "equation"
+        },
+        {
+          "label": "D",
+          "value": "x^2+y^2=4",
+          "display": "$x^2+y^2=4$",
+          "shape": "equation"
+        }
+      ],
+      "representative_stem": "以原點為圓心，通過二直線 $3x+2y=4$ 與 $2x+3y=1$ 交點的圓方程式為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_same_center_scaled_area",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11887",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "(x-2)^2+(y+2)^2=16",
+          "display": "$(x-2)^2+(y+2)^2=16$",
+          "shape": "equation"
+        },
+        {
+          "label": "B",
+          "value": "(x-2)^2+(y+2)^2=8",
+          "display": "$(x-2)^2+(y+2)^2=8$",
+          "shape": "equation"
+        },
+        {
+          "label": "C",
+          "value": "(x-2)^2+(y+2)^2=4",
+          "display": "$(x-2)^2+(y+2)^2=4$",
+          "shape": "equation"
+        },
+        {
+          "label": "D",
+          "value": "x^2+y^2=8",
+          "display": "$x^2+y^2=8$",
+          "shape": "equation"
+        }
+      ],
+      "representative_stem": "與 $C_1:\\left( x-2 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "circle_through_three_points",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11838",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "設平面上三點 $A\\left( -1,\\ 2 \\right)$、$B\\left( -5,\\ -2 \\right)$、$C\\left( -1,\\ -6 \\right)$，試求通過這三點的圓方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "classify_general_circle_graph",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11846",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 3,
+      "item_texts": [
+        "$x^{2}+y^{2}-4x+3y+9=0$",
+        "$x^{2}+y^{2}-2x+8y+17=0$",
+        "$x^{2}+y^{2}+2x+4y-11=0$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)",
+        "(3)"
+      ],
+      "internal_keys": [
+        "(1)",
+        "(2)",
+        "(3)"
+      ],
+      "display_labels": [
+        "(1) 圖形",
+        "(2) 圖形",
+        "(3) 圖形"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)",
+          "display_label": "(1) 圖形",
+          "group_label": null,
+          "expected_answer": "無圖形"
+        },
+        {
+          "key": "(2)",
+          "display_label": "(2) 圖形",
+          "group_label": null,
+          "expected_answer": "一點"
+        },
+        {
+          "key": "(3)",
+          "display_label": "(3) 圖形",
+          "group_label": null,
+          "expected_answer": "圓"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試判斷下列各方程式的圖形：\n(1) $x^{2}+y^{2}-4x+3y+9=0$\n(2) $x^{2}+y^{2}-2x+8y+17=0$\n(3) $x^{2}+y^{2}+2x+4y-11=0$",
+      "stem_structure": {
+        "prompt": "試判斷下列各方程式的圖形：",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$x^{2}+y^{2}-4x+3y+9=0$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$x^{2}+y^{2}-2x+8y+17=0$"
+          },
+          {
+            "group_label": "(3)",
+            "text": "$x^{2}+y^{2}+2x+4y-11=0$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "classify_line_circle_relation",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11853",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試判斷圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 與直線 $5x+4y-9=0$ 的關係。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "classify_line_circle_relation_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11878",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "相切",
+          "display": "相切",
+          "shape": "classification"
+        },
+        {
+          "label": "B",
+          "value": "直線過圓心",
+          "display": "直線過圓心",
+          "shape": "classification"
+        },
+        {
+          "label": "C",
+          "value": "相離",
+          "display": "相離",
+          "shape": "classification"
+        },
+        {
+          "label": "D",
+          "value": "相交",
+          "display": "相交",
+          "shape": "classification"
+        }
+      ],
+      "representative_stem": "試判斷圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 與直線 $5x+4y-9=0$ 的關係。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "classify_lines_vs_circle_multipart",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11854",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 3,
+      "item_texts": [
+        "$L_1:5x+4y+3=0$",
+        "$L_2:5x+4y-22=0$",
+        "$L_3:5x+4y-35=0$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)",
+        "(3)"
+      ],
+      "internal_keys": [
+        "(1)",
+        "(2)",
+        "(3)"
+      ],
+      "display_labels": [
+        "(1) L1 關係",
+        "(2) L2 關係",
+        "(3) L3 關係"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)",
+          "display_label": "(1) L1 關係",
+          "group_label": null,
+          "expected_answer": "相交"
+        },
+        {
+          "key": "(2)",
+          "display_label": "(2) L2 關係",
+          "group_label": null,
+          "expected_answer": "相交"
+        },
+        {
+          "key": "(3)",
+          "display_label": "(3) L3 關係",
+          "group_label": null,
+          "expected_answer": "相離"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試判斷圓 $C:x^{2}+y^{2}-2x+4y-11=0$ 與下列各直線的關係：\n(1) $L_1:5x+4y+3=0$\n(2) $L_2:5x+4y-22=0$\n(3) $L_3:5x+4y-35=0$",
+      "stem_structure": {
+        "prompt": "試判斷圓 $C:x^{2}+y^{2}-2x+4y-11=0$ 與下列各直線的關係：",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$L_1:5x+4y+3=0$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$L_2:5x+4y-22=0$"
+          },
+          {
+            "group_label": "(3)",
+            "text": "$L_3:5x+4y-35=0$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "classify_point_vs_circles_multipart",
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "component_id": "src_11851",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [
+        "$C_1:x^{2}+\\left( y-2 \\right)^{2}=1$",
+        "$C_2:x^{2}+y^{2}+6x-8y+24=0$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)"
+      ],
+      "internal_keys": [
+        "(1)",
+        "(2)"
+      ],
+      "display_labels": [
+        "(1) C1 關係",
+        "(2) C2 關係"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)",
+          "display_label": "(1) C1 關係",
+          "group_label": null,
+          "expected_answer": "圓外"
+        },
+        {
+          "key": "(2)",
+          "display_label": "(2) C2 關係",
+          "group_label": null,
+          "expected_answer": "圓外"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試判斷點 $P\\left( 0,\\ -3 \\right)$ 是在下列各圓的圓上、圓外或圓內？\n(1) $C_1:x^{2}+\\left( y-2 \\right)^{2}=1$\n(2) $C_2:x^{2}+y^{2}+6x-8y+24=0$",
+      "stem_structure": {
+        "prompt": "試判斷點 $P\\left( 0,\\ -3 \\right)$ 是在下列各圓的圓上、圓外或圓內？",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$C_1:x^{2}+\\left( y-2 \\right)^{2}=1$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$C_2:x^{2}+y^{2}+6x-8y+24=0$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "compute_chord_length",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11857",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "設圓 $C:\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$，直線 $L:5x+4y-9=0$，且圓與直線交於 $A$、$B$ 兩點，試求弦 $\\overline{AB}$ 的長。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "compute_circle_area_from_general",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11888",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "假設圓 $C$ 的方程式為 $x^{2}+y^{2}-2x+4y-11=0$，則圓 $C$ 的面積為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "compute_storm_path_length_in_circle",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11874",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "颱風暴風半徑為 $200$ 公里，前進路線到燈塔的垂直距離為 $80$ 公里。設速度方向與暴風半徑不變，試求燈塔在暴風圈內期間，颱風共前進幾公里？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "compute_tangent_segment_length_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "component_id": "src_11894",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "5",
+          "display": "5",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "3",
+          "display": "3",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "2",
+          "display": "2",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "4",
+          "display": "4",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "自原點 $O$ 到圓 $x^{2}+y^{2}-6x+4y+4=0$ 作一切線，切點為 $T$，則 $\\overline{OT}=$",
+      "stem_structure": null
+    },
+    {
+      "family_id": "compute_tangent_segment_lengths",
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "component_id": "src_11863",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [
+        "$\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$",
+        "$x^{2}+y^{2}+8x+6y=0$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)"
+      ],
+      "internal_keys": [
+        "(1)",
+        "(2)"
+      ],
+      "display_labels": [
+        "(1) 切線段長",
+        "(2) 切線段長"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)",
+          "display_label": "(1) 切線段長",
+          "group_label": null,
+          "expected_answer": "sqrt(177)"
+        },
+        {
+          "key": "(2)",
+          "display_label": "(2) 切線段長",
+          "group_label": null,
+          "expected_answer": "2*sqrt(22)"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "已知點 $P\\left( -11,\\ 5 \\right)$，試求 $P$ 到下列兩圓之切線段長：\n(1) $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$\n(2) $x^{2}+y^{2}+8x+6y=0$",
+      "stem_structure": {
+        "prompt": "已知點 $P\\left( -11,\\ 5 \\right)$，試求 $P$ 到下列兩圓之切線段長：",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$x^{2}+y^{2}+8x+6y=0$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "compute_tangents_from_point_quad_area",
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "component_id": "src_11895",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "6",
+          "display": "6",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "16",
+          "display": "16",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "8",
+          "display": "8",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "4",
+          "display": "4",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "過點 $A\\left( 5,\\ 0 \\right)$ 向圓 $x^{2}+y^{2}-2x-4y-11=0$ 作二切線，切點為 $P$、$Q$，圓心為 $M$，則四邊形 $APMQ$ 面積為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "compute_triangle_center_chord_area",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11881",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "48",
+          "display": "48",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "24",
+          "display": "24",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "12",
+          "display": "12",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "6",
+          "display": "6",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "若圓 $C:x^{2}+y^{2}+2x-4y-20=0$ 與直線 $L:3x-4y-4=0$ 相交於 $A$、$B$，圓心為 $M$，則 $\\triangle MAB$ 的面積為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "count_line_circle_intersections",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11869",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試問直線 $L:5x+4y-35=0$ 與圓 $C:x^{2}+y^{2}-2x+4y-11=0$ 有幾個交點？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "count_line_vs_two_circles_intersections",
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "component_id": "src_11865",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "4",
+          "display": "4",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "1",
+          "display": "1",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "3",
+          "display": "3",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "2",
+          "display": "2",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "若圓 $C_1:x^{2}+y^{2}-2x+2y=0$、圓 $C_2:x^{2}+y^{2}-4x+4y=0$，則直線 $L:x-y-4=0$ 與兩圓共有幾個交點？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "evaluate_center_radius_expression",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11876",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "6",
+          "display": "6",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "4",
+          "display": "4",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "2",
+          "display": "2",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "0",
+          "display": "0",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "假設圓 $C$ 的方程式為 $x^{2}+y^{2}-10x+2y+10=0$，其圓心為 $\\left(h,\\ k\\right)$、半徑為 $r$，則 $h-k-r=$",
+      "stem_structure": null
+    },
+    {
+      "family_id": "identify_center_radius_from_general",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11832",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [
+        "$x^{2}+y^{2}-2x+4y-11=0$",
+        "$x^{2}+y^{2}-6x-5y-1=0$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)"
+      ],
+      "internal_keys": [
+        "(1)圓心",
+        "(1)半徑",
+        "(2)圓心",
+        "(2)半徑"
+      ],
+      "display_labels": [
+        "圓心",
+        "半徑",
+        "圓心",
+        "半徑"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)圓心",
+          "display_label": "圓心",
+          "group_label": "(1)",
+          "expected_answer": "(1, -2)"
+        },
+        {
+          "key": "(1)半徑",
+          "display_label": "半徑",
+          "group_label": "(1)",
+          "expected_answer": "4"
+        },
+        {
+          "key": "(2)圓心",
+          "display_label": "圓心",
+          "group_label": "(2)",
+          "expected_answer": "(3, 5/2)"
+        },
+        {
+          "key": "(2)半徑",
+          "display_label": "半徑",
+          "group_label": "(2)",
+          "expected_answer": "sqrt(65)/2"
+        }
+      ],
+      "field_groups": [
+        {
+          "group_label": "(1)",
+          "fields": [
+            "(1)圓心",
+            "(1)半徑"
+          ]
+        },
+        {
+          "group_label": "(2)",
+          "fields": [
+            "(2)圓心",
+            "(2)半徑"
+          ]
+        }
+      ],
+      "choice_debug": [],
+      "representative_stem": "試求下列各圓的圓心與半徑：\n(1) $x^{2}+y^{2}-2x+4y-11=0$\n(2) $x^{2}+y^{2}-6x-5y-1=0$",
+      "stem_structure": {
+        "prompt": "試求下列各圓的圓心與半徑：",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$x^{2}+y^{2}-2x+4y-11=0$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$x^{2}+y^{2}-6x-5y-1=0$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "identify_center_radius_from_standard",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11826",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 3,
+      "item_texts": [
+        "$x^{2}+y^{2}=16$",
+        "$\\left( x+2 \\right)^{2}+\\left( y-2 \\right)^{2}=36$",
+        "$4\\left( x+5 \\right)^{2}+4y^{2}=9$"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)",
+        "(3)"
+      ],
+      "internal_keys": [
+        "(1)圓心",
+        "(1)半徑",
+        "(2)圓心",
+        "(2)半徑",
+        "(3)圓心",
+        "(3)半徑"
+      ],
+      "display_labels": [
+        "圓心",
+        "半徑",
+        "圓心",
+        "半徑",
+        "圓心",
+        "半徑"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)圓心",
+          "display_label": "圓心",
+          "group_label": "(1)",
+          "expected_answer": "(0, 0)"
+        },
+        {
+          "key": "(1)半徑",
+          "display_label": "半徑",
+          "group_label": "(1)",
+          "expected_answer": "4"
+        },
+        {
+          "key": "(2)圓心",
+          "display_label": "圓心",
+          "group_label": "(2)",
+          "expected_answer": "(-2, 2)"
+        },
+        {
+          "key": "(2)半徑",
+          "display_label": "半徑",
+          "group_label": "(2)",
+          "expected_answer": "6"
+        },
+        {
+          "key": "(3)圓心",
+          "display_label": "圓心",
+          "group_label": "(3)",
+          "expected_answer": "(-5, 0)"
+        },
+        {
+          "key": "(3)半徑",
+          "display_label": "半徑",
+          "group_label": "(3)",
+          "expected_answer": "3/2"
+        }
+      ],
+      "field_groups": [
+        {
+          "group_label": "(1)",
+          "fields": [
+            "(1)圓心",
+            "(1)半徑"
+          ]
+        },
+        {
+          "group_label": "(2)",
+          "fields": [
+            "(2)圓心",
+            "(2)半徑"
+          ]
+        },
+        {
+          "group_label": "(3)",
+          "fields": [
+            "(3)圓心",
+            "(3)半徑"
+          ]
+        }
+      ],
+      "choice_debug": [],
+      "representative_stem": "根據下列各圓的方程式，試求該圓的圓心和半徑。\n(1) $x^{2}+y^{2}=16$\n(2) $\\left( x+2 \\right)^{2}+\\left( y-2 \\right)^{2}=36$\n(3) $4\\left( x+5 \\right)^{2}+4y^{2}=9$",
+      "stem_structure": {
+        "prompt": "根據下列各圓的方程式，試求該圓的圓心和半徑。",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "$x^{2}+y^{2}=16$"
+          },
+          {
+            "group_label": "(2)",
+            "text": "$\\left( x+2 \\right)^{2}+\\left( y-2 \\right)^{2}=36$"
+          },
+          {
+            "group_label": "(3)",
+            "text": "$4\\left( x+5 \\right)^{2}+4y^{2}=9$"
+          }
+        ]
+      }
+    },
+    {
+      "family_id": "identify_circle_from_product_form",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11889",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "x^2+y^2=4",
+          "display": "$x^2+y^2=4$",
+          "shape": "equation"
+        },
+        {
+          "label": "B",
+          "value": "(x-2)^2+(y-4)^2=20",
+          "display": "$(x-2)^2+(y-4)^2=20$",
+          "shape": "equation"
+        },
+        {
+          "label": "C",
+          "value": "x^2+y^2=20",
+          "display": "$x^2+y^2=20$",
+          "shape": "equation"
+        },
+        {
+          "label": "D",
+          "value": "x^2+y^2-19=0",
+          "display": "$x^2+y^2-19=0$",
+          "shape": "equation"
+        }
+      ],
+      "representative_stem": "已知圓方程式 $\\left(x+2\\right)\\left(x-2\\right)+\\left(y-4\\right)\\left(y+4\\right)=0$，則下列何者正確？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "identify_point_on_circle_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "component_id": "src_11884",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "(6, -2)",
+          "display": "(6, -2)",
+          "shape": "coordinate"
+        },
+        {
+          "label": "B",
+          "value": "(0, -3)",
+          "display": "(0, -3)",
+          "shape": "coordinate"
+        },
+        {
+          "label": "C",
+          "value": "(1, 3)",
+          "display": "(1, 3)",
+          "shape": "coordinate"
+        },
+        {
+          "label": "D",
+          "value": "(5, -2)",
+          "display": "(5, -2)",
+          "shape": "coordinate"
+        }
+      ],
+      "representative_stem": "若圓 $C$ 的半徑為 $4$，圓心在 $\\left( 1,\\ -2 \\right)$，則下列何者落在圓 $C$ 上？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "interpret_circular_locus_equation",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11828",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [
+        "圖形",
+        "方程式"
+      ],
+      "display_labels": [
+        "圖形",
+        "方程式"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": false,
+      "part_debug": [
+        {
+          "key": "圖形",
+          "display_label": "圖形",
+          "group_label": null,
+          "expected_answer": "圓"
+        },
+        {
+          "key": "方程式",
+          "display_label": "方程式",
+          "group_label": null,
+          "expected_answer": "x^2+(y+3)^2=16"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "一動點與定點 $\\left( 0,\\ -3 \\right)$ 的距離恆為 $4$。試問：(1) 此動點軌跡是什麼圖形？\n(2) 此圖形的方程式為何？",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_axis_tangent_parameter",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11883",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "在坐標平面上，若圓 $x^{2}+y^{2}-2x-8y-k=0$ 與 $y$ 軸相切，則 $k=$",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_circle_parameter_range",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11836",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "已知方程式 $x^{2}+y^{2}+kx-4y+5=0$ 的圖形為一圓，試求 $k$ 的範圍。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_circle_parameter_range_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "component_id": "src_11893",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "k>0",
+          "display": "k>0",
+          "shape": "interval_or_param"
+        },
+        {
+          "label": "B",
+          "value": "k<0",
+          "display": "k<0",
+          "shape": "interval_or_param"
+        },
+        {
+          "label": "C",
+          "value": "k<10",
+          "display": "k<10",
+          "shape": "interval_or_param"
+        },
+        {
+          "label": "D",
+          "value": "k>4",
+          "display": "k>4",
+          "shape": "interval_or_param"
+        }
+      ],
+      "representative_stem": "已知方程式 $x^{2}+y^{2}+2x-6y+k=0$ 的圖形為一圓，試求 $k$ 的範圍。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_diameter_chord_parameter_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11879",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "7",
+          "display": "7",
+          "shape": "number"
+        },
+        {
+          "label": "B",
+          "value": "4",
+          "display": "4",
+          "shape": "number"
+        },
+        {
+          "label": "C",
+          "value": "5",
+          "display": "5",
+          "shape": "number"
+        },
+        {
+          "label": "D",
+          "value": "6",
+          "display": "6",
+          "shape": "number"
+        }
+      ],
+      "representative_stem": "已知圓 $C:\\left(x-a\\right)^{2}+\\left(y+a\\right)^{2}=1$。若直線 $L:3x+4y+5=0$ 與圓相交於 $A$、$B$ 且 $\\overline{AB}$ 為直徑，則 $a$ 之值為",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_line_circle_parameter_range",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11855",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "設直線 $L:-5x-4y+k=0$ 與圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 相切，試求實數 $k$ 的範圍。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_line_circle_relation_ranges_multipart",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11868",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [
+        "(1)不相交",
+        "(2)相割"
+      ],
+      "display_labels": [
+        "不相交",
+        "相割"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": false,
+      "part_debug": [
+        {
+          "key": "(1)不相交",
+          "display_label": "不相交",
+          "group_label": null,
+          "expected_answer": "k<-3*sqrt(10)\\cupk>3*sqrt(10)"
+        },
+        {
+          "key": "(2)相割",
+          "display_label": "相割",
+          "group_label": null,
+          "expected_answer": "k\\in Interval.open(-3*sqrt(10), 3*sqrt(10))"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "(1) 若直線 $L:3x-y+k=0$ 與圓 $x^{2}+y^{2}=9$ 不相交，試求 $k$ 的範圍。\n(2) 若直線 $L:3x-y+k=0$ 與同一圓相割，試求 $k$ 的範圍。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_line_circle_tangent_parameter",
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "component_id": "src_11856",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "已知直線 $L:x-3y-4=0$ 與圓 $x^{2}+y^{2}=a$ 相切，試求實數 $a$ 之值。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "solve_point_circle_parameter_range",
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "component_id": "src_11875",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "若點 $\\left( 5,\\ -5 \\right)$ 在圓 $x^{2}+y^{2}-2x+4y+k=0$ 的圓外，試求 $k$ 值的範圍。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "tangent_at_point_on_circle",
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "component_id": "src_11859",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試求通過圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 上一點 $P\\left( 5,\\ -2 \\right)$ 的切線方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "tangent_at_point_on_circle_mcq",
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "component_id": "src_11885",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [
+        {
+          "label": "A",
+          "value": "2x-5=0",
+          "display": "$2x-5=0$",
+          "shape": "equation"
+        },
+        {
+          "label": "B",
+          "value": "x-3=0",
+          "display": "$x-3=0$",
+          "shape": "equation"
+        },
+        {
+          "label": "C",
+          "value": "x+y-5=0",
+          "display": "$x+y-5=0$",
+          "shape": "equation"
+        },
+        {
+          "label": "D",
+          "value": "x-5=0",
+          "display": "$x-5=0$",
+          "shape": "equation"
+        }
+      ],
+      "representative_stem": "試求通過圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 上一點 $P\\left( 5,\\ -2 \\right)$ 的切線方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "tangents_parallel_to_line",
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "component_id": "src_11861",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [
+        "切線一",
+        "切線二"
+      ],
+      "display_labels": [
+        "切線一",
+        "切線二"
+      ],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [
+        {
+          "key": "切線一",
+          "display_label": "切線一",
+          "group_label": null,
+          "expected_answer": "5x+4y+28=0"
+        },
+        {
+          "key": "切線二",
+          "display_label": "切線二",
+          "group_label": null,
+          "expected_answer": "5x+4y-22=0"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試求平行於$5x+4y-3=0$且與圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 相切的直線方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "tangents_perpendicular_to_line",
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "component_id": "src_11862",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [
+        "切線一",
+        "切線二"
+      ],
+      "display_labels": [
+        "切線一",
+        "切線二"
+      ],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [
+        {
+          "key": "切線一",
+          "display_label": "切線一",
+          "group_label": null,
+          "expected_answer": "4x-5y+11=0"
+        },
+        {
+          "key": "切線二",
+          "display_label": "切線二",
+          "group_label": null,
+          "expected_answer": "4x-5y-39=0"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試求垂直於$5x+4y-3=0$且與圓 $\\left( x-1 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 相切的直線方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "translate_and_scale_circle",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11850",
+      "final_status": "PASS",
+      "multipart": false,
+      "group_count": 0,
+      "item_texts": [],
+      "group_labels": [],
+      "internal_keys": [],
+      "display_labels": [],
+      "failures": [],
+      "stem_has_newlines": false,
+      "has_stem_structure": false,
+      "part_debug": [],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "圓方程式為 $\\left( x-1 \\right)^{2}+\\left( y+3 \\right)^{2}=4$。圓心平移至 $\\left( -1,\\ -5 \\right)$，半徑變為原來的 $2$ 倍，試求新圓方程式。",
+      "stem_structure": null
+    },
+    {
+      "family_id": "write_circle_equations_from_conditions",
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "component_id": "src_11829",
+      "final_status": "PASS",
+      "multipart": true,
+      "group_count": 2,
+      "item_texts": [
+        "以點 $\\left( 0,\\ -3 \\right)$ 為圓心，半徑為 $4$ 的圓。",
+        "以點 $\\left( 5,\\ -5 \\right)$ 為圓心，且過點 $\\left( 7,\\ -7 \\right)$ 的圓。"
+      ],
+      "group_labels": [
+        "(1)",
+        "(2)"
+      ],
+      "internal_keys": [
+        "(1)",
+        "(2)"
+      ],
+      "display_labels": [
+        "(1) 方程式",
+        "(2) 方程式"
+      ],
+      "failures": [],
+      "stem_has_newlines": true,
+      "has_stem_structure": true,
+      "part_debug": [
+        {
+          "key": "(1)",
+          "display_label": "(1) 方程式",
+          "group_label": null,
+          "expected_answer": "x^2+(y+3)^2=16"
+        },
+        {
+          "key": "(2)",
+          "display_label": "(2) 方程式",
+          "group_label": null,
+          "expected_answer": "(x-5)^2+(y+5)^2=8"
+        }
+      ],
+      "field_groups": null,
+      "choice_debug": [],
+      "representative_stem": "試求滿足下列條件的圓方程式：\n(1) 以點 $\\left( 0,\\ -3 \\right)$ 為圓心，半徑為 $4$ 的圓。\n(2) 以點 $\\left( 5,\\ -5 \\right)$ 為圓心，且過點 $\\left( 7,\\ -7 \\right)$ 的圓。",
+      "stem_structure": {
+        "prompt": "試求滿足下列條件的圓方程式：",
+        "items": [
+          {
+            "group_label": "(1)",
+            "text": "以點 $\\left( 0,\\ -3 \\right)$ 為圓心，半徑為 $4$ 的圓。"
+          },
+          {
+            "group_label": "(2)",
+            "text": "以點 $\\left( 5,\\ -5 \\right)$ 為圓心，且過點 $\\left( 7,\\ -7 \\right)$ 的圓。"
+          }
+        ]
+      }
+    }
+  ]
+}

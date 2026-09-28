@@ -1,0 +1,134 @@
+[
+  {
+    "skill_id": "vh_數學B2_SubSection_4_1_1",
+    "preflight_status": "ready",
+    "resolvable": 16,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "7a2821a588994f56906e223fd03320d2",
+      "final_status": "READY",
+      "generated": null,
+      "validated": null,
+      "published": 16,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 16,
+      "skip": 0,
+      "errors": []
+    }
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_1_2",
+    "preflight_status": "ready",
+    "resolvable": 19,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "cbfb6d8178d149bd92756c274fde7d0c",
+      "final_status": "FAILED",
+      "generated": null,
+      "validated": null,
+      "published": 0,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 19,
+      "skip": 0,
+      "errors": [
+        {
+          "stage": "COMPONENT_BUILD",
+          "code": "COMPONENT_BUILD_FAILED",
+          "message": "重新生成未完全完成"
+        }
+      ]
+    }
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_2_1",
+    "preflight_status": "ready",
+    "resolvable": 5,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "607c5fa57a924069bb1a78e47fe79922",
+      "final_status": "READY",
+      "generated": null,
+      "validated": null,
+      "published": 5,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 5,
+      "skip": 0,
+      "errors": []
+    }
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_2_2",
+    "preflight_status": "ready",
+    "resolvable": 17,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "013c2ea44d7f4e22aea9ae51e86b0e56",
+      "final_status": "READY",
+      "generated": null,
+      "validated": null,
+      "published": 17,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 17,
+      "skip": 0,
+      "errors": []
+    }
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_2_3",
+    "preflight_status": "ready",
+    "resolvable": 8,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "9a49a235c13442b09e27e475661c0db9",
+      "final_status": "FAILED",
+      "generated": null,
+      "validated": null,
+      "published": 0,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 8,
+      "skip": 0,
+      "errors": [
+        {
+          "stage": "COMPONENT_BUILD",
+          "code": "COMPONENT_BUILD_FAILED",
+          "message": "重新生成未完全完成"
+        }
+      ]
+    }
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_2_4",
+    "preflight_status": "ready",
+    "resolvable": 5,
+    "skip": 0,
+    "needs_capability": 0,
+    "domain_key": "circle.plane",
+    "build": {
+      "job_id": "6e7474bf2c524edcba5fdadb4647fccc",
+      "final_status": "READY",
+      "generated": null,
+      "validated": null,
+      "published": 5,
+      "needs_capability": 0,
+      "failed": null,
+      "eligible": 5,
+      "skip": 0,
+      "errors": []
+    }
+  }
+]

@@ -1,0 +1,469 @@
+{
+  "domain_key": "circle.plane",
+  "phase": "B2_Ch4_Phase1_4_1_only",
+  "totals": {
+    "4_1_1": "16/16",
+    "4_1_2": "19/19",
+    "total": "35/35",
+    "COVERED": 35,
+    "NEEDS_CAPABILITY": 0,
+    "BLOCKED": 0,
+    "intentional_skip": 0
+  },
+  "family_inventory": [
+    {
+      "4_1_1": 3,
+      "4_1_2": 0,
+      "total": 3,
+      "domain_op": "identify_center_radius_from_standard"
+    },
+    {
+      "4_1_1": 1,
+      "4_1_2": 0,
+      "total": 1,
+      "domain_op": "interpret_circular_locus_equation"
+    },
+    {
+      "4_1_1": 2,
+      "4_1_2": 0,
+      "total": 2,
+      "domain_op": "write_circle_equations_from_conditions"
+    },
+    {
+      "4_1_1": 4,
+      "4_1_2": 0,
+      "total": 4,
+      "domain_op": "circle_from_diameter_endpoints"
+    },
+    {
+      "4_1_1": 1,
+      "4_1_2": 0,
+      "total": 1,
+      "domain_op": "circle_equal_radius_at_origin"
+    },
+    {
+      "4_1_1": 2,
+      "4_1_2": 1,
+      "total": 3,
+      "domain_op": "translate_and_scale_circle"
+    },
+    {
+      "4_1_1": 1,
+      "4_1_2": 0,
+      "total": 1,
+      "domain_op": "circle_origin_through_lines_intersection"
+    },
+    {
+      "4_1_1": 1,
+      "4_1_2": 0,
+      "total": 1,
+      "domain_op": "circle_same_center_scaled_area"
+    },
+    {
+      "4_1_1": 1,
+      "4_1_2": 0,
+      "total": 1,
+      "domain_op": "circle_center_tangent_to_line"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 5,
+      "total": 5,
+      "domain_op": "identify_center_radius_from_general"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 4,
+      "total": 4,
+      "domain_op": "solve_circle_parameter_range"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 4,
+      "total": 4,
+      "domain_op": "circle_through_three_points"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 1,
+      "total": 1,
+      "domain_op": "circle_center_on_axis_area"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 1,
+      "total": 1,
+      "domain_op": "classify_general_circle_graph"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 1,
+      "total": 1,
+      "domain_op": "evaluate_center_radius_expression"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 1,
+      "total": 1,
+      "domain_op": "compute_circle_area_from_general"
+    },
+    {
+      "4_1_1": 0,
+      "4_1_2": 1,
+      "total": 1,
+      "domain_op": "identify_circle_from_product_form"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": 11826,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_example",
+      "family": "identify_center_radius_from_standard",
+      "domain_op": "identify_center_radius_from_standard",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11827,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "in_class_practice",
+      "family": "identify_center_radius_from_standard",
+      "domain_op": "identify_center_radius_from_standard",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11828,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_example",
+      "family": "interpret_circular_locus_equation",
+      "domain_op": "interpret_circular_locus_equation",
+      "answer_shape": "multi_part",
+      "visual_requirement": "optional_coordinate_circle",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11829,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "in_class_practice",
+      "family": "write_circle_equations_from_conditions",
+      "domain_op": "write_circle_equations_from_conditions",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11830,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_example",
+      "family": "circle_from_diameter_endpoints",
+      "domain_op": "circle_from_diameter_endpoints",
+      "answer_shape": "equation",
+      "visual_requirement": "optional_diameter_diagram",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11831,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "in_class_practice",
+      "family": "circle_from_diameter_endpoints",
+      "domain_op": "circle_from_diameter_endpoints",
+      "answer_shape": "equation",
+      "visual_requirement": "optional_diameter_diagram",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11841,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_exercise",
+      "family": "identify_center_radius_from_standard",
+      "domain_op": "identify_center_radius_from_standard",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11842,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_exercise",
+      "family": "write_circle_equations_from_conditions",
+      "domain_op": "write_circle_equations_from_conditions",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11843,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_exercise",
+      "family": "circle_equal_radius_at_origin",
+      "domain_op": "circle_equal_radius_at_origin",
+      "answer_shape": "equation",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11844,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "textbook_exercise",
+      "family": "circle_from_diameter_endpoints",
+      "domain_op": "circle_from_diameter_endpoints",
+      "answer_shape": "equation",
+      "visual_requirement": "optional_diameter_diagram",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11850,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "advanced_exercise",
+      "family": "translate_and_scale_circle",
+      "domain_op": "translate_and_scale_circle",
+      "answer_shape": "equation",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11877,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "self_assessment",
+      "family": "translate_and_scale_circle_mcq",
+      "domain_op": "translate_and_scale_circle",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11886,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "self_assessment",
+      "family": "circle_origin_through_lines_intersection",
+      "domain_op": "circle_origin_through_lines_intersection",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11887,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "self_assessment",
+      "family": "circle_same_center_scaled_area",
+      "domain_op": "circle_same_center_scaled_area",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11890,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "self_assessment",
+      "family": "circle_center_tangent_to_line",
+      "domain_op": "circle_center_tangent_to_line",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11891,
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "group": "self_assessment",
+      "family": "circle_from_diameter_endpoints_mcq",
+      "domain_op": "circle_from_diameter_endpoints",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11832,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_example",
+      "family": "identify_center_radius_from_general",
+      "domain_op": "identify_center_radius_from_general",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11833,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "in_class_practice",
+      "family": "identify_center_radius_from_general",
+      "domain_op": "identify_center_radius_from_general",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11834,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_example",
+      "family": "identify_center_radius_from_general",
+      "domain_op": "identify_center_radius_from_general",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11835,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "in_class_practice",
+      "family": "identify_center_radius_from_general",
+      "domain_op": "identify_center_radius_from_general",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11836,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_example",
+      "family": "solve_circle_parameter_range",
+      "domain_op": "solve_circle_parameter_range",
+      "answer_shape": "interval",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11837,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "in_class_practice",
+      "family": "solve_circle_parameter_range",
+      "domain_op": "solve_circle_parameter_range",
+      "answer_shape": "interval",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11838,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_example",
+      "family": "circle_through_three_points",
+      "domain_op": "circle_through_three_points",
+      "answer_shape": "equation",
+      "visual_requirement": "required_figure_deferred",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11839,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "in_class_practice",
+      "family": "circle_through_three_points",
+      "domain_op": "circle_through_three_points",
+      "answer_shape": "equation",
+      "visual_requirement": "optional_triangle_circumcircle",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11840,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "exam_practice",
+      "family": "circle_center_on_axis_area",
+      "domain_op": "circle_center_on_axis_area",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11845,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_exercise",
+      "family": "identify_center_radius_from_general",
+      "domain_op": "identify_center_radius_from_general",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11846,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_exercise",
+      "family": "classify_general_circle_graph",
+      "domain_op": "classify_general_circle_graph",
+      "answer_shape": "multi_part",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11847,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_exercise",
+      "family": "solve_circle_parameter_range",
+      "domain_op": "solve_circle_parameter_range",
+      "answer_shape": "interval",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11848,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "textbook_exercise",
+      "family": "circle_through_three_points",
+      "domain_op": "circle_through_three_points",
+      "answer_shape": "equation",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11849,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "advanced_exercise",
+      "family": "translate_and_scale_to_general",
+      "domain_op": "translate_and_scale_circle",
+      "answer_shape": "equation_general",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11876,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "self_assessment",
+      "family": "evaluate_center_radius_expression",
+      "domain_op": "evaluate_center_radius_expression",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11888,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "self_assessment",
+      "family": "compute_circle_area_from_general",
+      "domain_op": "compute_circle_area_from_general",
+      "answer_shape": "expression",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11889,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "self_assessment",
+      "family": "identify_circle_from_product_form",
+      "domain_op": "identify_circle_from_product_form",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11892,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "self_assessment",
+      "family": "circle_through_three_points_mcq",
+      "domain_op": "circle_through_three_points",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    },
+    {
+      "source_id": 11893,
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "group": "self_assessment",
+      "family": "solve_circle_parameter_range_mcq",
+      "domain_op": "solve_circle_parameter_range",
+      "answer_shape": "single_choice",
+      "visual_requirement": "none",
+      "status": "COVERED"
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+{
+  "skills": [
+    {
+      "skill": "vh_數學B2_SubSection_3_1_1",
+      "request_count": 10,
+      "unique_effective_questions": 8,
+      "families_observed": [
+        "express_named_vectors_in_given_basis",
+        "identify_equal_vector_mcq"
+      ],
+      "components_observed": [
+        "src_11731",
+        "src_11732",
+        "src_11806"
+      ],
+      "duplicate_count": 2,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_2",
+      "request_count": 10,
+      "unique_effective_questions": 7,
+      "families_observed": [
+        "simplify_vector_path_expression"
+      ],
+      "components_observed": [
+        "src_11733",
+        "src_11734",
+        "src_11745"
+      ],
+      "duplicate_count": 3,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_3",
+      "request_count": 10,
+      "unique_effective_questions": 9,
+      "families_observed": [
+        "simplify_vector_path_expression"
+      ],
+      "components_observed": [
+        "src_11735",
+        "src_11736",
+        "src_11737",
+        "src_11738",
+        "src_11746",
+        "src_11747",
+        "src_11816"
+      ],
+      "duplicate_count": 1,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_4",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "express_section_point_vector",
+        "identify_resultant_path_mcq",
+        "solve_scalar_multiple_relation_fill",
+        "solve_section_coefficient_pair"
+      ],
+      "components_observed": [
+        "src_11739",
+        "src_11740",
+        "src_11741",
+        "src_11742",
+        "src_11743",
+        "src_11744",
+        "src_11749",
+        "src_11750",
+        "src_11817",
+        "src_11818"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "compute_directed_segment_and_magnitude",
+        "compute_directed_segment_mixed_multipart",
+        "compute_triangle_perimeter_from_two_vectors",
+        "compute_vector_components_and_magnitude",
+        "solve_equal_vector_coordinates",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "components_observed": [
+        "src_11754",
+        "src_11755",
+        "src_11756",
+        "src_11757",
+        "src_11758",
+        "src_11759",
+        "src_11760",
+        "src_11761",
+        "src_11775",
+        "src_11822"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_2",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "compute_chain_closure_vector_mcq",
+        "compute_point_vectors_linear_combination",
+        "compute_triangle_chain_and_perimeter",
+        "compute_vector_linear_combination",
+        "compute_vector_sum_difference",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "components_observed": [
+        "src_11762",
+        "src_11763",
+        "src_11764",
+        "src_11765",
+        "src_11766",
+        "src_11767",
+        "src_11776",
+        "src_11780",
+        "src_11808",
+        "src_11821"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_3",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "solve_collinear_ratio_mcq",
+        "solve_point_from_vector_combination"
+      ],
+      "components_observed": [
+        "src_11784",
+        "src_11820"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_4",
+      "request_count": 10,
+      "unique_effective_questions": 9,
+      "families_observed": [
+        "compute_vector_linear_combination",
+        "solve_unknown_vector_linear_equation"
+      ],
+      "components_observed": [
+        "src_11768",
+        "src_11769",
+        "src_11823"
+      ],
+      "duplicate_count": 1,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_5",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "solve_parallel_then_magnitude_mcq",
+        "solve_parallel_vector_parameter"
+      ],
+      "components_observed": [
+        "src_11770",
+        "src_11771",
+        "src_11781",
+        "src_11809"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_6",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "compute_scaled_direction_vector",
+        "identify_unit_vector_mcq"
+      ],
+      "components_observed": [
+        "src_11772",
+        "src_11773",
+        "src_11774",
+        "src_11782",
+        "src_11810"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_1",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "classify_angle_quality_from_dot_mcq",
+        "compute_cosine_of_angle_from_dot",
+        "solve_navigation_heading_correction"
+      ],
+      "components_observed": [
+        "src_11799",
+        "src_11805",
+        "src_11815",
+        "src_11824"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "request_count": 10,
+      "unique_effective_questions": 9,
+      "families_observed": [
+        "compute_dot_identity_multipart",
+        "compute_dot_product_from_magnitudes_angle",
+        "compute_regular_polygon_edge_dot"
+      ],
+      "components_observed": [
+        "src_11785",
+        "src_11786",
+        "src_11796",
+        "src_11797",
+        "src_11802"
+      ],
+      "duplicate_count": 1,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_3",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "compute_cosine_of_angle_from_dot",
+        "compute_dot_product_coordinates",
+        "compute_midpoint_dot_product",
+        "plot_navigation_points_coordinates",
+        "solve_dot_product_parameter_mcq"
+      ],
+      "components_observed": [
+        "src_11787",
+        "src_11788",
+        "src_11789",
+        "src_11790",
+        "src_11798",
+        "src_11804",
+        "src_11811",
+        "src_11812",
+        "src_11813"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_4",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "solve_perpendicular_composite_parameter",
+        "solve_perpendicular_vector_parameter"
+      ],
+      "components_observed": [
+        "src_11791",
+        "src_11792",
+        "src_11800",
+        "src_11814"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": true,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_5",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "classify_dot_sign_from_diagram_mcq",
+        "compute_dot_product_from_magnitudes_angle",
+        "expand_perpendicular_dot_product",
+        "solve_angle_from_magnitude_identity"
+      ],
+      "components_observed": [
+        "src_11793",
+        "src_11794",
+        "src_11795",
+        "src_11801",
+        "src_11803",
+        "src_11825"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "mcq_render_ok": false,
+      "input_contract_ok": true,
+      "diagram_ok": true
+    }
+  ],
+  "taxonomy": {
+    "OK": 15
+  },
+  "pass": 15,
+  "blocked": 0
+}

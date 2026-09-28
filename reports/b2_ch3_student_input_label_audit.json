@@ -1,0 +1,241 @@
+{
+  "total_fields": 29,
+  "pass": 29,
+  "fail_internal_key_exposed": 0,
+  "fail_empty_label": 0,
+  "fail_ambiguous_label": 0,
+  "fields": [
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_directed_segment_and_magnitude",
+      "internal_key": "vector",
+      "display_label": "向量",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_directed_segment_and_magnitude",
+      "internal_key": "magnitude",
+      "display_label": "大小",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_directed_segment_mixed_multipart",
+      "internal_key": "AB",
+      "display_label": "$\\overrightarrow{AB}$",
+      "math_label": "$\\overrightarrow{AB}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_directed_segment_mixed_multipart",
+      "internal_key": "magnitude",
+      "display_label": "大小",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_directed_segment_mixed_multipart",
+      "internal_key": "B",
+      "display_label": "B",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "family": "compute_dot_identity_multipart",
+      "internal_key": "a_dot_a",
+      "display_label": "$\\vec{a}\\cdot\\vec{a}$",
+      "math_label": "$\\vec{a}\\cdot\\vec{a}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "family": "compute_dot_identity_multipart",
+      "internal_key": "a_dot_b",
+      "display_label": "$\\vec{a}\\cdot\\vec{b}$",
+      "math_label": "$\\vec{a}\\cdot\\vec{b}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "family": "compute_dot_identity_multipart",
+      "internal_key": "mag_2a_3b",
+      "display_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+      "math_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "family": "compute_regular_polygon_edge_dot",
+      "internal_key": "dot1",
+      "display_label": "相鄰邊向量內積（$60^\\circ$）",
+      "math_label": "相鄰邊向量內積（$60^\\circ$）",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_2",
+      "family": "compute_regular_polygon_edge_dot",
+      "internal_key": "dot2",
+      "display_label": "夾角邊向量內積（$120^\\circ$）",
+      "math_label": "夾角邊向量內積（$120^\\circ$）",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_2",
+      "family": "compute_triangle_chain_and_perimeter",
+      "internal_key": "AC",
+      "display_label": "$\\overrightarrow{AC}$",
+      "math_label": "$\\overrightarrow{AC}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_2",
+      "family": "compute_triangle_chain_and_perimeter",
+      "internal_key": "perimeter",
+      "display_label": "周長",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_vector_components_and_magnitude",
+      "internal_key": "x_component",
+      "display_label": "$x$ 分量",
+      "math_label": "$x$ 分量",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_vector_components_and_magnitude",
+      "internal_key": "y_component",
+      "display_label": "$y$ 分量",
+      "math_label": "$y$ 分量",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "compute_vector_components_and_magnitude",
+      "internal_key": "magnitude",
+      "display_label": "大小",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_1",
+      "family": "express_named_vectors_in_given_basis",
+      "internal_key": "BC",
+      "display_label": "$\\overrightarrow{BC}$",
+      "math_label": "$\\overrightarrow{BC}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_1",
+      "family": "express_named_vectors_in_given_basis",
+      "internal_key": "CD",
+      "display_label": "$\\overrightarrow{CD}$",
+      "math_label": "$\\overrightarrow{CD}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_3",
+      "family": "plot_navigation_points_coordinates",
+      "internal_key": "A",
+      "display_label": "A",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_3",
+      "family": "plot_navigation_points_coordinates",
+      "internal_key": "B",
+      "display_label": "B",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_5",
+      "family": "solve_angle_from_magnitude_identity",
+      "internal_key": "dot",
+      "display_label": "內積",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_5",
+      "family": "solve_angle_from_magnitude_identity",
+      "internal_key": "angle_degrees",
+      "display_label": "夾角（度）",
+      "math_label": null,
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "solve_equal_vector_coordinates",
+      "internal_key": "x",
+      "display_label": "$x$",
+      "math_label": "$x$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_2_1",
+      "family": "solve_equal_vector_coordinates",
+      "internal_key": "y",
+      "display_label": "$y$",
+      "math_label": "$y$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_4",
+      "family": "solve_perpendicular_vector_parameter",
+      "internal_key": "k1",
+      "display_label": "$k_{1}$",
+      "math_label": "$k_{1}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_3_4",
+      "family": "solve_perpendicular_vector_parameter",
+      "internal_key": "k2",
+      "display_label": "$k_{2}$",
+      "math_label": "$k_{2}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_4",
+      "family": "solve_scalar_multiple_relation_fill",
+      "internal_key": "k1",
+      "display_label": "$k_{1}$",
+      "math_label": "$k_{1}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_4",
+      "family": "solve_scalar_multiple_relation_fill",
+      "internal_key": "k2",
+      "display_label": "$k_{2}$",
+      "math_label": "$k_{2}$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_4",
+      "family": "solve_section_coefficient_pair",
+      "internal_key": "alpha",
+      "display_label": "$\\alpha$",
+      "math_label": "$\\alpha$",
+      "status": "PASS"
+    },
+    {
+      "skill": "vh_數學B2_SubSection_3_1_4",
+      "family": "solve_section_coefficient_pair",
+      "internal_key": "beta",
+      "display_label": "$\\beta$",
+      "math_label": "$\\beta$",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "families_scanned": 42,
+  "seeds_per_family": 8,
+  "counts": {
+    "FLOAT_NOISE": 0,
+    "NEGATIVE_ZERO": 0,
+    "TRIVIAL_VECTOR_COEFFICIENT": 0
+  },
+  "pass": true,
+  "findings": []
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": "coordinate_plane",
+    "answer_type": "multi_part",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": "coordinate_plane",
+    "answer_type": "expression",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": "coordinate_plane",
+    "answer_type": "multi_part",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_1",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "expression",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "single_choice",
+    "choices": 4
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_5",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "expression",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "expression",
+    "choices": 0
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "single_choice",
+    "choices": 4
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "fn": "generate",
+    "status": "ok",
+    "has_question": true,
+    "has_answer": true,
+    "visual_kind": null,
+    "answer_type": "expression",
+    "choices": 0
+  }
+]

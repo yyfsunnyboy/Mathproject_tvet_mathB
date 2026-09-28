@@ -1,0 +1,263 @@
+{
+  "chapter": "第4章 圓與直線",
+  "volume": "數學B2",
+  "curriculum": "vocational",
+  "sections": [
+    {
+      "section_code": "4-1",
+      "section_title": "4-1 圓方程式",
+      "concepts": [
+        {
+          "concept_code": "4-1.1",
+          "concept_name": "圓的標準式",
+          "skill_id": "vh_數學B2_SubSection_4_1_1",
+          "source_count": 16
+        },
+        {
+          "concept_code": "4-1.2",
+          "concept_name": "圓的一般式",
+          "skill_id": "vh_數學B2_SubSection_4_1_2",
+          "source_count": 19
+        }
+      ]
+    },
+    {
+      "section_code": "4-2",
+      "section_title": "4-2 圓與直線的關係",
+      "concepts": [
+        {
+          "concept_code": "4-2.1",
+          "concept_name": "點與圓的關係",
+          "skill_id": "vh_數學B2_SubSection_4_2_1",
+          "source_count": 5
+        },
+        {
+          "concept_code": "4-2.2",
+          "concept_name": "圓與直線的關係",
+          "skill_id": "vh_數學B2_SubSection_4_2_2",
+          "source_count": 17
+        },
+        {
+          "concept_code": "4-2.3",
+          "concept_name": "圓的切線方程式",
+          "skill_id": "vh_數學B2_SubSection_4_2_3",
+          "source_count": 8
+        },
+        {
+          "concept_code": "4-2.4",
+          "concept_name": "切線段長",
+          "skill_id": "vh_數學B2_SubSection_4_2_4",
+          "source_count": 5
+        }
+      ]
+    }
+  ],
+  "skills_in_curriculum_order": [
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "skill_name": "圓的標準式",
+      "section": "4-1 圓方程式",
+      "paragraph": "圓的標準式",
+      "display_order_within_section": 2,
+      "curriculum_order_key": [
+        1,
+        1
+      ],
+      "source_count": 16,
+      "group_breakdown": {
+        "example": 3,
+        "in_class_practice": 3,
+        "basic_exercise": 4,
+        "advanced_exercise": 1,
+        "self_assessment": 5
+      },
+      "visual_count_non_D": 0,
+      "recognized_families": [
+        "read_center_radius_from_standard",
+        "write_standard_circle_equation"
+      ],
+      "recognized_family_count": 2,
+      "existing_covered_count": 0,
+      "missing_family_count": 2,
+      "concept_code": "4-1.1"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "skill_name": "圓的一般式",
+      "section": "4-1 圓方程式",
+      "paragraph": "圓的一般式",
+      "display_order_within_section": 3,
+      "curriculum_order_key": [
+        1,
+        2
+      ],
+      "source_count": 19,
+      "group_breakdown": {
+        "example": 4,
+        "in_class_practice": 4,
+        "past_exam": 1,
+        "basic_exercise": 4,
+        "advanced_exercise": 1,
+        "self_assessment": 5
+      },
+      "visual_count_non_D": 1,
+      "recognized_families": [
+        "determine_circle_from_conditions",
+        "general_circle_misc",
+        "read_center_radius_from_general"
+      ],
+      "recognized_family_count": 3,
+      "existing_covered_count": 0,
+      "missing_family_count": 3,
+      "concept_code": "4-1.2"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "skill_name": "點與圓的關係",
+      "section": "4-2 圓與直線的關係",
+      "paragraph": "點與圓的關係",
+      "display_order_within_section": 1,
+      "curriculum_order_key": [
+        2,
+        1
+      ],
+      "source_count": 5,
+      "group_breakdown": {
+        "example": 1,
+        "in_class_practice": 1,
+        "basic_exercise": 1,
+        "advanced_exercise": 1,
+        "self_assessment": 1
+      },
+      "visual_count_non_D": 5,
+      "recognized_families": [
+        "point_circle_position"
+      ],
+      "recognized_family_count": 1,
+      "existing_covered_count": 0,
+      "missing_family_count": 1,
+      "concept_code": "4-2.1"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "skill_name": "圓與直線的關係",
+      "section": "4-2 圓與直線的關係",
+      "paragraph": "圓與直線的關係",
+      "display_order_within_section": 2,
+      "curriculum_order_key": [
+        2,
+        2
+      ],
+      "source_count": 17,
+      "group_breakdown": {
+        "example": 3,
+        "in_class_practice": 3,
+        "basic_exercise": 4,
+        "advanced_exercise": 1,
+        "self_assessment": 6
+      },
+      "visual_count_non_D": 14,
+      "recognized_families": [
+        "applied_circle_line_geometry",
+        "chord_length_from_center_distance",
+        "circle_line_parameter_relation",
+        "circle_line_position_relation",
+        "exam_circle_line_composite"
+      ],
+      "recognized_family_count": 5,
+      "existing_covered_count": 0,
+      "missing_family_count": 5,
+      "concept_code": "4-2.2"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "skill_name": "圓的切線方程式",
+      "section": "4-2 圓與直線的關係",
+      "paragraph": "圓的切線方程式",
+      "display_order_within_section": 3,
+      "curriculum_order_key": [
+        2,
+        3
+      ],
+      "source_count": 8,
+      "group_breakdown": {
+        "example": 2,
+        "in_class_practice": 2,
+        "basic_exercise": 2,
+        "self_assessment": 2
+      },
+      "visual_count_non_D": 8,
+      "recognized_families": [
+        "tangent_at_point_on_circle",
+        "tangent_parallel_to_line",
+        "tangent_perpendicular_to_line"
+      ],
+      "recognized_family_count": 3,
+      "existing_covered_count": 0,
+      "missing_family_count": 3,
+      "concept_code": "4-2.3"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "skill_name": "切線段長",
+      "section": "4-2 圓與直線的關係",
+      "paragraph": "切線段長",
+      "display_order_within_section": 5,
+      "curriculum_order_key": [
+        2,
+        4
+      ],
+      "source_count": 5,
+      "group_breakdown": {
+        "example": 1,
+        "in_class_practice": 1,
+        "past_exam": 1,
+        "basic_exercise": 1,
+        "self_assessment": 1
+      },
+      "visual_count_non_D": 0,
+      "recognized_families": [
+        "tangent_segment_length"
+      ],
+      "recognized_family_count": 1,
+      "existing_covered_count": 0,
+      "missing_family_count": 1,
+      "concept_code": "4-2.4"
+    }
+  ],
+  "totals": {
+    "formal_skills": 6,
+    "formal_exercises": 70,
+    "group_breakdown": {
+      "example": 14,
+      "in_class_practice": 14,
+      "basic_exercise": 16,
+      "advanced_exercise": 4,
+      "self_assessment": 20,
+      "past_exam": 2
+    },
+    "problem_type_breakdown": {
+      "textbook_example": 14,
+      "in_class_practice": 14,
+      "textbook_exercise": 16,
+      "advanced_exercise": 4,
+      "self_assessment": 20,
+      "exam_practice": 2
+    },
+    "visual_non_D_count": 28
+  },
+  "integrity": {
+    "duplicate_count": 0,
+    "duplicates": [],
+    "empty_problem_text_count": 0,
+    "empty_problem_text_ids": [],
+    "binding_issue_count": 0,
+    "cross_chapter_contamination_count": 0,
+    "contamination_ids": [],
+    "notes": [
+      "display_order in skill_curriculum is section-local; curriculum order uses skill_id 4_x_y",
+      "All 70 rows have notes.question_anchor",
+      "intentional_skip not observed in this inventory"
+    ]
+  }
+}
