@@ -7,6 +7,7 @@ from urllib.parse import quote
 import pytest
 
 from app import create_app
+from core.vocational_mock_exam_scope import resolve_scope_chapters
 from models import (
     PracticeAttempt,
     Progress,
@@ -290,3 +291,132 @@ def test_mock_exam_route_rejects_unknown_exam_id(mock_exam_app):
     _login(client, user_ids["voc_mock"])
 
     assert client.get("/vocational/mock-exam/exam_99").status_code == 404
+
+
+CURRENT_B3_CHAPTERS = [
+    "第1章 數列與級數",
+    "第2章 方程式",
+    "第3章 二元一次不等式及其應用",
+    "第4章 指數與對數",
+]
+
+
+def test_combined_publisher_chapter_stays_one_identity():
+    resolved = resolve_scope_chapters(
+        ("第2章 方程式與不等式",),
+        ["第2章 方程式與不等式", "第3章 複數"],
+    )
+
+    assert resolved == ["第2章 方程式與不等式"]
+
+
+def test_split_b3_scope_covers_equations_and_inequalities_only():
+    resolved = resolve_scope_chapters(("第2章 方程式與不等式",), CURRENT_B3_CHAPTERS)
+
+    assert resolved == ["第2章 方程式", "第3章 二元一次不等式及其應用"]
+
+
+def test_exact_chapter_identity_does_not_absorb_a_sibling_title():
+    resolved = resolve_scope_chapters(
+        ("第1章 三角函數", "第3章 向 量", "第4章 圓與直線"),
+        ["第1章 三角函數", "第2章 三角函數的應用", "第3章 向 量", "第4章 圓與直線"],
+    )
+
+    assert resolved == ["第1章 三角函數", "第3章 向 量", "第4章 圓與直線"]
+
+
+def test_current_b3_split_chapters_enter_exam_1_and_exam_2_without_widening(mock_exam_app):
+    app, user_ids = mock_exam_app
+    with app.app_context():
+        equation = SkillCurriculum.query.filter_by(skill_id="vh_數學B3_MockEquation").one()
+        equation.chapter = "第2章 方程式"
+        db.session.add(
+            SkillInfo(
+                skill_id="vh_數學B3_MockInequality",
+                skill_en_name="vh_數學B3_MockInequality",
+                skill_ch_name="不等式練習",
+                description="test",
+                gemini_prompt="test",
+                is_active=True,
+            )
+        )
+        db.session.add(
+            SkillCurriculum(
+                skill_id="vh_數學B3_MockInequality",
+                curriculum="vocational",
+                grade=11,
+                volume="數學B3",
+                chapter="第3章 二元一次不等式及其應用",
+                section="3-1",
+                display_order=9,
+            )
+        )
+        db.session.add(
+            SkillInfo(
+                skill_id="vh_數學B3_MockSequence",
+                skill_en_name="vh_數學B3_MockSequence",
+                skill_ch_name="數列練習",
+                description="test",
+                gemini_prompt="test",
+                is_active=True,
+            )
+        )
+        db.session.add(
+            SkillCurriculum(
+                skill_id="vh_數學B3_MockSequence",
+                curriculum="vocational",
+                grade=11,
+                volume="數學B3",
+                chapter="第1章 數列與級數",
+                section="1-1",
+                display_order=10,
+            )
+        )
+        db.session.add(
+            SkillInfo(
+                skill_id="vh_數學B3_MockEquationDisabled",
+                skill_en_name="vh_數學B3_MockEquationDisabled",
+                skill_ch_name="未啟用拆章方程式",
+                description="test",
+                gemini_prompt="test",
+                is_active=False,
+            )
+        )
+        db.session.add(
+            SkillCurriculum(
+                skill_id="vh_數學B3_MockEquationDisabled",
+                curriculum="vocational",
+                grade=11,
+                volume="數學B3",
+                chapter="第2章 方程式",
+                section="2-2",
+                display_order=11,
+            )
+        )
+        db.session.commit()
+
+    client = app.test_client()
+    _login(client, user_ids["voc_mock"])
+    exam_1 = client.get("/vocational/mock-exam/exam_1").get_data(as_text=True)
+    exam_2 = client.get("/vocational/mock-exam/exam_2").get_data(as_text=True)
+    exam_5 = client.get("/vocational/mock-exam/exam_5").get_data(as_text=True)
+
+    for html in (exam_1, exam_2):
+        assert "第2章 方程式" in html
+        assert "第3章 二元一次不等式及其應用" in html
+        assert f"/practice/{quote('vh_數學B3_MockEquation', safe='')}" in html
+        assert f"/practice/{quote('vh_數學B3_MockInequality', safe='')}" in html
+        assert "第1章 數列與級數" not in html
+        assert "數列練習" not in html
+        assert "未啟用拆章方程式" not in html
+        assert "vh_數學B3_MockEquationInactive" not in html
+        assert "1 排列組合" not in html
+        assert "2 機率" not in html
+        assert "3 統計" not in html
+        assert "第2章 方程式與不等式" not in html
+
+    assert "第1章 三角函數" in exam_2
+    assert "第1章 數列與級數" in exam_5
+    assert "不等式練習" in exam_5
+    assert "未啟用拆章方程式" not in exam_5
+    assert "未啟用方程式" not in exam_5

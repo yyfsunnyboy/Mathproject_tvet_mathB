@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections import OrderedDict
 from typing import Any
 
@@ -39,6 +40,67 @@ MOCK_EXAM_SCOPE: dict[str, dict[str, Any]] = {
 }
 
 
+_COMPOUND_TOPIC_SPLIT = re.compile(r"[與和及]")
+
+
+def _bare_chapter_title(chapter: str) -> str:
+    """Publisher-independent title from the shared chapter-identity normalizer."""
+    from core.textbook_processor_v2 import _chapter_identity
+
+    identity = _chapter_identity(chapter)
+    if identity is None:
+        return ""
+    return str(identity[1]).replace(" ", "")
+
+
+def _same_scope_identity(left: str, right: str) -> bool:
+    from core.textbook_processor_v2 import _same_chapter_identity
+
+    return _same_chapter_identity(left, right)
+
+
+def resolve_scope_chapters(
+    configured_chapters: tuple[str, ...] | list[str],
+    actual_chapters: list[str],
+) -> list[str]:
+    """Map a semantic exam scope onto chapter placements that exist now.
+
+    An exact chapter identity wins and does not pull sibling chapters. When
+    that identity is absent, a compound scope such as 「方程式與不等式」 resolves
+    to every actual chapter whose title carries one of its topics. That covers
+    a publisher splitting or merging chapters without pairing old and new
+    display titles.
+    """
+    resolved: list[str] = []
+    for configured in configured_chapters:
+        exact = [chapter for chapter in actual_chapters if _same_scope_identity(configured, chapter)]
+        if exact:
+            matches = exact
+        else:
+            topics = [part for part in _COMPOUND_TOPIC_SPLIT.split(_bare_chapter_title(configured)) if part]
+            matches = []
+            for chapter in actual_chapters:
+                bare = _bare_chapter_title(chapter)
+                if bare and any(topic == bare or topic in bare for topic in topics):
+                    matches.append(chapter)
+        chosen = matches or [configured]
+        for chapter in chosen:
+            if chapter not in resolved:
+                resolved.append(chapter)
+    return resolved
+
+
+def _chapters_in_volume(rows: list[tuple[Any, Any]], volume: str) -> list[str]:
+    chapters: list[str] = []
+    for curriculum_row, _skill in rows:
+        if str(curriculum_row.volume or "").strip() != volume:
+            continue
+        chapter = str(curriculum_row.chapter or "").strip()
+        if chapter and chapter not in chapters:
+            chapters.append(chapter)
+    return chapters
+
+
 def mock_exam_cards() -> list[dict[str, str]]:
     return [
         {"exam_id": exam_id, "label": str(config["label"])}
@@ -64,6 +126,14 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
         .all()
     )
 
+    resolved_chapters = {
+        volume: (
+            None
+            if configured is None
+            else resolve_scope_chapters(configured, _chapters_in_volume(rows, volume))
+        )
+        for volume, configured in volume_policy.items()
+    }
     skills_by_unit: dict[tuple[str, str], list[dict[str, str]]] = {}
     # A skill may legitimately have more than one vocational curriculum
     # placement.  De-duplicate only duplicate rows for the same chapter; a
@@ -72,7 +142,7 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
     for curriculum_row, skill in rows:
         volume = str(curriculum_row.volume or "").strip()
         chapter = str(curriculum_row.chapter or "").strip()
-        allowed_chapters = volume_policy.get(volume)
+        allowed_chapters = resolved_chapters.get(volume)
         if not chapter or (allowed_chapters is not None and chapter not in allowed_chapters):
             continue
         skill_id = str(skill.skill_id or "").strip()
@@ -101,7 +171,7 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
                 if chapter and chapter not in chapters:
                     chapters.append(chapter)
         else:
-            chapters = list(configured_chapters)
+            chapters = list(resolved_chapters.get(volume) or ())
 
         units = [
             {"unit_name": chapter, "skills": skills_by_unit.get((volume, chapter), [])}
