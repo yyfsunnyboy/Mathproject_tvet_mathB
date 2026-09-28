@@ -1,0 +1,271 @@
+{
+  "schema": "b3_visual_asset_links.v1",
+  "links": [
+    {
+      "textbook_example_id": 12088,
+      "source_description": "例2",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/textbook_example_例2_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/textbook_example_例2_vocation_fig1.png",
+          "page_index": 3,
+          "source_page": 4,
+          "bbox": [
+            194.5,
+            136.5,
+            389.5,
+            294.5
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "例2 題幹鋪色區域座標圖（含軸、實線、虛線、標示）；不含下方解答。",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_shaded_region_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_example_002_003",
+          "width": 550,
+          "height": 447,
+          "file_size": 24408,
+          "sha256": "761f86c815d9e18019ea8d026b092e4ed5d938300e280f417f4ca8cc1388bd47",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12089,
+      "source_description": "隨堂練習2",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/in_class_practice_隨堂練習2_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/in_class_practice_隨堂練習2_vocation_fig1.png",
+          "page_index": 4,
+          "source_page": 5,
+          "bbox": [
+            212.0,
+            140.5,
+            397.5,
+            300.0
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "隨堂練習2 題幹鋪色區域座標圖（含軸、實線、標示）；不含 3-3.2 內文。",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_shaded_region_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_in_class_practice_002_004",
+          "width": 523,
+          "height": 451,
+          "file_size": 24203,
+          "sha256": "be0754626ca96ff8be6e21833c26dc5388d6178dff749ce9fa2d418d0cc1fcca",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12100,
+      "source_description": "3-3習題 基礎題 4",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/textbook_exercise_3-3習題_基礎題4_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/textbook_exercise_3-3習題_基礎題4_vocation_fig1.png",
+          "page_index": 16,
+          "source_page": 17,
+          "bbox": [
+            113.0,
+            485.0,
+            302.0,
+            675.5
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "3-3習題基礎題4 題幹鋪色區域座標圖（含軸、實線、虛線、標示）；不含基礎題3。",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_shaded_region_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_exercise_004_015",
+          "width": 533,
+          "height": 537,
+          "file_size": 23623,
+          "sha256": "a6b64baa7103acfb80c38c865c194f48e82155d78a6d9b67dca872ced6b7cc1e",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12110,
+      "source_description": "CH3自我評量 題12",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題12_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題12_vocation_fig1.png",
+          "page_index": 2,
+          "source_page": 3,
+          "bbox": [
+            408.0,
+            171.0,
+            535.0,
+            300.0
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "題12 附圖四區 A/B/C/D",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_self_assessment_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_self_assessment_012_012",
+          "width": 361,
+          "height": 366,
+          "file_size": 16386,
+          "sha256": "ff711e9975f05b037cfc335e461f45c278a040f33fa35bc8c43fab3bde20e2de",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12111,
+      "source_description": "CH3自我評量 題13",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題13_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題13_vocation_fig1.png",
+          "page_index": 2,
+          "source_page": 3,
+          "bbox": [
+            384.0,
+            347.0,
+            534.0,
+            503.0
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "題13 鋪色帶狀區域",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_self_assessment_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_self_assessment_013_013",
+          "width": 424,
+          "height": 441,
+          "file_size": 23450,
+          "sha256": "b3a75b1cc9889ff77db8d03101d26c027b01cdf960897f3e6534da7580ff1242",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12112,
+      "source_description": "CH3自我評量 題14",
+      "skill_id": "vh_數學B3_SubSection_3_3_1",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題14_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題14_vocation_fig1.png",
+          "page_index": 2,
+          "source_page": 3,
+          "bbox": [
+            381.0,
+            543.0,
+            535.0,
+            676.0
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "題14 三角區域與實線虛線",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_self_assessment_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_self_assessment_014_014",
+          "width": 436,
+          "height": 378,
+          "file_size": 19424,
+          "sha256": "f0696234e1347e73a2d77cddf00925d7c09d9d7ba90d7927e40e937f2f164802",
+          "dpi": 200
+        }
+      ]
+    },
+    {
+      "textbook_example_id": 12116,
+      "source_description": "CH3自我評量 題18",
+      "skill_id": "vh_數學B3_SubSection_3_3_3",
+      "image_assets": [
+        {
+          "asset_type": "pdf_visual_crop",
+          "asset_slot": "pdf_visual_01",
+          "source": "pdf",
+          "path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題18_vocation_fig1.png",
+          "display_path": "static/question_assets/vocational/longteng/數學B3/ch03_二元一次不等式及其應用/sec_3-3_線性規劃/self_assessment_CH3自我評量_題18_vocation_fig1.png",
+          "page_index": 4,
+          "source_page": 5,
+          "bbox": [
+            389.0,
+            141.0,
+            535.0,
+            289.0
+          ],
+          "needs_crop_review": false,
+          "needs_image_conversion": false,
+          "reason": "題18 可行解區域",
+          "image_description": "required",
+          "visual_type": "diagram",
+          "visual_classification": "required",
+          "visual_status": "accepted",
+          "visual_review_reasons": [],
+          "match_method": "manual_self_assessment_ink_bbox",
+          "match_score": 1.0,
+          "question_anchor": "vocational_math_B3_3-3_self_assessment_018_018",
+          "width": 413,
+          "height": 419,
+          "file_size": 23661,
+          "sha256": "31fa759717e876f4d051e82efd9d3ccb479340eed1a4e4f92c5de45719bbf83a",
+          "dpi": 200
+        }
+      ]
+    }
+  ]
+}
