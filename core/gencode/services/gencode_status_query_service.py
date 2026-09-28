@@ -130,6 +130,16 @@ def _teacher_status_payload(status_key: str) -> dict[str, object]:
     return dict(TEACHER_V3_STATUS.get(status_key, TEACHER_V3_STATUS["not_generated"]))
 
 
+# Completed production packages use more than one manifest label. Runtime
+# publication still requires verified components, matching wrappers, and
+# generate.py. A draft or unknown label does not qualify.
+_RUNTIME_READY_PUBLISH_STATUSES = frozenset({
+    "production_manifest_compiled",
+    "package_ready",
+    "package_ready_candidate",
+})
+
+
 def resolve_teacher_facing_v3_status(
     *,
     gencode_status: str | None = None,
@@ -154,19 +164,18 @@ def resolve_teacher_facing_v3_status(
     if active_generation_job is True or status in {"generating", "running", "queued"}:
         return _teacher_status_payload("generating")
 
+    # A proven selectable production package stays online. A stale tracker hash
+    # records that an older snapshot drifted; it does not unpublish a package
+    # whose manifest, wrappers, and generate.py already agree.
+    if production_runtime_ready:
+        return _teacher_status_payload("published")
+
     if hash_evidence_stale and (
         status in {"verified", "smoke_passed"}
         or production_contains_latest
         or has_generated_artifact
     ):
         return _teacher_status_payload("deployed_pending_revalidation")
-
-    # Production runtime evidence is authoritative even when Phase 3 was
-    # packaged from an isolated verified tracker snapshot.  This flag is only
-    # true when manifest, package wrapper and runtime facade all agree that the
-    # verified component is selectable.
-    if production_runtime_ready:
-        return _teacher_status_payload("published")
 
     if deployed_without_tracker and (has_component or has_generated_artifact or production_contains_latest):
         return _teacher_status_payload("deployed_pending_revalidation")
@@ -329,7 +338,7 @@ def inspect_skill_runtime_publication(
     if (
         not isinstance(rows, list)
         or str(manifest.get("skill_id") or "") != skill_key
-        or str(manifest.get("publish_status") or "") != "production_manifest_compiled"
+        or str(manifest.get("publish_status") or "") not in _RUNTIME_READY_PUBLISH_STATUSES
         or int(manifest.get("component_count") or 0) != len(rows)
         or str(getattr(package_module, "SKILL_ID", "")) != skill_key
         or str(getattr(facade_module, "SKILL_ID", "")) != skill_key
@@ -1132,6 +1141,25 @@ def build_admin_skill_gencode_status_view(
     generated_not_packaged_count = max(0, verified_count - published_count)
     failed_count = sum(1 for row in rows if str(row.get("status")) == "failed" or row.get("error_log"))
     missing_tracker_count = len(missing_tracker_ids)
+    publication = inspect_skill_runtime_publication(
+        skill_id=skill_id,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
+    expected_example_ids = {
+        int(row["textbook_example_id"])
+        for row in coverage.get("examples", [])
+        if isinstance(row, dict) and row.get("textbook_example_id") is not None
+    }
+    selectable_ids = set(publication.get("selectable_components") or {})
+    runtime_publication_complete = bool(
+        publication.get("runtime_ready")
+        and expected_example_ids
+        and expected_example_ids <= selectable_ids
+    )
+    active_generation_job = any(
+        str(row.get("status")) in {"generating", "running", "queued"} for row in rows
+    )
     # Map 'partially_published' status payload
     partially_published_payload = {
         "status_key": "partially_published",
@@ -1143,6 +1171,11 @@ def build_admin_skill_gencode_status_view(
 
     if failed_count > 0:
         teacher_status = _teacher_status_payload("failed")
+    elif active_generation_job:
+        teacher_status = _teacher_status_payload("generating")
+    elif runtime_publication_complete and total_examples > 0:
+        teacher_status = _teacher_status_payload("published")
+        teacher_status["label"] = "已上線"
     elif missing_tracker_count > 0 or stale_count > 0:
         teacher_status = _teacher_status_payload("deployed_pending_revalidation")
         pending_n = max(missing_tracker_count, stale_count)
@@ -1410,6 +1443,7 @@ def _resolve_skill_level_teacher_status(
     missing_tracker_count: int = 0,
     stale_hash_count: int = 0,
     manifest_complete: bool = False,
+    runtime_publication_complete: bool = False,
 ) -> dict[str, object]:
     partially_published_payload = {
         "status_key": "partially_published",
@@ -1419,6 +1453,17 @@ def _resolve_skill_level_teacher_status(
         "is_clickable": True,
     }
     # Missing tracker or stale verification evidence must not be labeled fully online.
+    active_generation_job = any(
+        str(row.get("status")) in {"generating", "running", "queued"} for row in tracker_rows
+    )
+    if failed_count > 0:
+        return _teacher_status_payload("failed")
+    if active_generation_job:
+        return _teacher_status_payload("generating")
+    if runtime_publication_complete and total_examples > 0:
+        teacher_status = _teacher_status_payload("published")
+        teacher_status["label"] = "已上線"
+        return teacher_status
     if missing_tracker_count > 0 or stale_hash_count > 0:
         if manifest_complete or bool(prod_info.get("v3_package_exists")) or bool(
             file_status.get("production_generate_exists")
@@ -1525,6 +1570,17 @@ def _build_skill_list_gencode_status_view(
         verified_count = max(0, verified_count - stale_hash_count)
     generated_not_packaged_count = max(0, verified_count - published_count)
     coverage_warnings = build_coverage_warnings(coverage)
+    publication = inspect_skill_runtime_publication(
+        skill_id=skill_id,
+        production_base_dir=production_base_dir,
+        project_root=project_root,
+    )
+    selectable_ids = set(publication.get("selectable_components") or {})
+    runtime_publication_complete = bool(
+        publication.get("runtime_ready")
+        and expected_example_ids
+        and expected_example_ids <= selectable_ids
+    )
 
     if not tracker_rows:
         status = "not_created"
@@ -1585,6 +1641,7 @@ def _build_skill_list_gencode_status_view(
         missing_tracker_count=len(missing_tracker_ids),
         stale_hash_count=stale_hash_count,
         manifest_complete=manifest_complete,
+        runtime_publication_complete=runtime_publication_complete,
     )
 
     return {

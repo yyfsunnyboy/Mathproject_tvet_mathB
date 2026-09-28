@@ -780,3 +780,86 @@ def test_verified_component_without_manifest_and_runtime_wrapper_is_not_online(
     )["runtime_ready"] is False
     assert status["teacher_status"]["status_key"] != "published"
     conn.close()
+
+
+def test_production_runtime_ready_overrides_stale_tracker_status():
+    """PRODUCTION_RUNTIME_READY_OVERRIDES_STALE_TRACKER_STATUS"""
+    published = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_contains_latest=True,
+        hash_evidence_stale=True,
+        production_runtime_ready=True,
+    )
+    assert published["status_key"] == "published"
+    assert published["label"] == "已上線"
+    assert published["badge_class"] == "teacher-v3-published"
+
+    pending = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_contains_latest=True,
+        hash_evidence_stale=True,
+        deployed_without_tracker=True,
+        production_runtime_ready=False,
+    )
+    assert pending["status_key"] == "deployed_pending_revalidation"
+
+    unpackaged = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_runtime_ready=False,
+        hash_evidence_stale=False,
+    )
+    assert unpackaged["status_key"] == "generated_not_packaged"
+
+    generating = resolve_teacher_facing_v3_status(
+        gencode_status="generating",
+        active_generation_job=True,
+        production_runtime_ready=True,
+        hash_evidence_stale=True,
+    )
+    assert generating["status_key"] == "generating"
+
+    failed = resolve_teacher_facing_v3_status(
+        gencode_status="failed",
+        has_error=True,
+        production_runtime_ready=True,
+        hash_evidence_stale=True,
+    )
+    assert failed["status_key"] == "failed"
+
+
+def test_package_ready_manifest_is_runtime_selectable(tmp_path: Path):
+    skill_id = "vh_package_ready_status"
+    component_id = "src_12042"
+    spec = {"component_id": component_id, "textbook_example_id": 12042}
+    component_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    component_dir.mkdir(parents=True)
+    (component_dir / "generate.py").write_text("def generate():\n    return {}\n", encoding="utf-8")
+    _write_production_init(tmp_path, skill_id, [spec])
+    _write_runtime_facade_and_manifest(tmp_path, skill_id, [spec])
+    manifest_path = tmp_path / "agent_skills_v3" / skill_id / "component_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["publish_status"] = "package_ready"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    publication = inspect_skill_runtime_publication(skill_id=skill_id, project_root=tmp_path)
+    assert publication["runtime_ready"] is True
+    assert publication["selectable_components"][12042] == component_id
+
+    conn = sqlite3.connect(":memory:")
+    status = build_admin_examples_gencode_status_map(
+        conn,
+        [(12042, skill_id)],
+        project_root=tmp_path,
+    )[12042]
+    assert status["production_runtime_ready"] is True
+    assert status["teacher_status"]["status_key"] == "published"
+    conn.close()
