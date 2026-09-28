@@ -2466,3 +2466,35 @@ register_domain_spec(DomainCapabilitySpec(
     capabilities=frozenset(_EQ_OPS),
     operations={op: _eq_op(op) for op in sorted(_EQ_OPS)},
 ))
+
+
+# --- B3 Chapter 3: systems, half-planes, linear programming ---
+_LP_ADAPTER = "core.gencode.linear_inequality_planning_capability_adapter.adapt_linear_inequality_planning_matrix"
+_LP_VALIDATOR = "validate_linear_inequality_planning_matrix"
+_LP_BUILDER = "build_linear_inequality_planning_matrix"
+_LP_CONTRACT = "b3_ch3_linear_inequality_planning_exact_v1"
+
+
+def _lp_op(key: str) -> OperationSpec:
+    return _op(
+        key,
+        _LP_BUILDER,
+        payload_adapter=_LP_ADAPTER,
+        validator=_LP_VALIDATOR,
+        supported_answer_types=("expression", "multi_part", "single_choice", "short_answer", "ordered_pair", "inequality"),
+        supported_presentation_modes=("short_answer", "single_choice", "multiple_inputs"),
+        required_source_features=("inequality",),
+        runtime_contract=_LP_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+from core.domain.linear_inequality_planning_domain import OPS as _LP_OPS  # noqa: E402
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="linear.inequality.planning",
+    domain_module="core.domain.linear_inequality_planning_domain",
+    entrypoint="build_linear_inequality_planning_matrix",
+    capabilities=frozenset(_LP_OPS),
+    operations={op: _lp_op(op) for op in sorted(_LP_OPS)},
+))

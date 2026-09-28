@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B3_PlainHeading_3_2_3",
+  "publish_status": "package_ready",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_12066",
+      "textbook_example_id": 12066,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12066/generate.py"
+    },
+    {
+      "component_id": "src_12067",
+      "textbook_example_id": 12067,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12067/generate.py"
+    },
+    {
+      "component_id": "src_12068",
+      "textbook_example_id": 12068,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12068/generate.py"
+    },
+    {
+      "component_id": "src_12069",
+      "textbook_example_id": 12069,
+      "status": "verified",
+      "problem_type_id": "shade_to_inequality",
+      "domain_operation": "shade_to_inequality",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12069/generate.py"
+    },
+    {
+      "component_id": "src_12070",
+      "textbook_example_id": 12070,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12070/generate.py"
+    },
+    {
+      "component_id": "src_12071",
+      "textbook_example_id": 12071,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12071/generate.py"
+    },
+    {
+      "component_id": "src_12074",
+      "textbook_example_id": 12074,
+      "status": "verified",
+      "problem_type_id": "shade_to_inequality",
+      "domain_operation": "shade_to_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "advanced_exercise",
+      "generate_py": "components/src_12074/generate.py"
+    },
+    {
+      "component_id": "src_12075",
+      "textbook_example_id": 12075,
+      "status": "verified",
+      "problem_type_id": "shade_to_inequality",
+      "domain_operation": "shade_to_inequality",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12075/generate.py"
+    },
+    {
+      "component_id": "src_12076",
+      "textbook_example_id": 12076,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12076/generate.py"
+    },
+    {
+      "component_id": "src_12077",
+      "textbook_example_id": 12077,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12077/generate.py"
+    },
+    {
+      "component_id": "src_12078",
+      "textbook_example_id": 12078,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12078/generate.py"
+    },
+    {
+      "component_id": "src_12081",
+      "textbook_example_id": 12081,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12081/generate.py"
+    },
+    {
+      "component_id": "src_12082",
+      "textbook_example_id": 12082,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12082/generate.py"
+    },
+    {
+      "component_id": "src_12083",
+      "textbook_example_id": 12083,
+      "status": "verified",
+      "problem_type_id": "halfplane_region",
+      "domain_operation": "halfplane_region",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12083/generate.py"
+    }
+  ]
+}

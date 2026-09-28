@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B3_SubSection_3_1_3",
+  "publish_status": "package_ready",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_12048",
+      "textbook_example_id": 12048,
+      "status": "verified",
+      "problem_type_id": "line_slope_pair",
+      "domain_operation": "line_slope_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12048/generate.py"
+    },
+    {
+      "component_id": "src_12049",
+      "textbook_example_id": 12049,
+      "status": "verified",
+      "problem_type_id": "line_slope_pair",
+      "domain_operation": "line_slope_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12049/generate.py"
+    },
+    {
+      "component_id": "src_12050",
+      "textbook_example_id": 12050,
+      "status": "verified",
+      "problem_type_id": "line_pair_relation",
+      "domain_operation": "line_pair_relation",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12050/generate.py"
+    },
+    {
+      "component_id": "src_12051",
+      "textbook_example_id": 12051,
+      "status": "verified",
+      "problem_type_id": "line_pair_relation",
+      "domain_operation": "line_pair_relation",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12051/generate.py"
+    },
+    {
+      "component_id": "src_12052",
+      "textbook_example_id": 12052,
+      "status": "verified",
+      "problem_type_id": "system_parameter_unique",
+      "domain_operation": "system_parameter_unique",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12052/generate.py"
+    },
+    {
+      "component_id": "src_12053",
+      "textbook_example_id": 12053,
+      "status": "verified",
+      "problem_type_id": "system_parameter_unique",
+      "domain_operation": "system_parameter_unique",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12053/generate.py"
+    },
+    {
+      "component_id": "src_12054",
+      "textbook_example_id": 12054,
+      "status": "verified",
+      "problem_type_id": "system_dependent_value",
+      "domain_operation": "system_dependent_value",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exam_practice",
+      "generate_py": "components/src_12054/generate.py"
+    },
+    {
+      "component_id": "src_12059",
+      "textbook_example_id": 12059,
+      "status": "verified",
+      "problem_type_id": "line_slope_pair",
+      "domain_operation": "line_slope_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12059/generate.py"
+    },
+    {
+      "component_id": "src_12060",
+      "textbook_example_id": 12060,
+      "status": "verified",
+      "problem_type_id": "line_pair_relation",
+      "domain_operation": "line_pair_relation",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12060/generate.py"
+    },
+    {
+      "component_id": "src_12061",
+      "textbook_example_id": 12061,
+      "status": "verified",
+      "problem_type_id": "system_parameter_unique",
+      "domain_operation": "system_parameter_unique",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12061/generate.py"
+    },
+    {
+      "component_id": "src_12064",
+      "textbook_example_id": 12064,
+      "status": "verified",
+      "problem_type_id": "system_parameter_cases",
+      "domain_operation": "system_parameter_cases",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "advanced_exercise",
+      "generate_py": "components/src_12064/generate.py"
+    },
+    {
+      "component_id": "src_12122",
+      "textbook_example_id": 12122,
+      "status": "verified",
+      "problem_type_id": "system_parameter_unique",
+      "domain_operation": "system_parameter_unique",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12122/generate.py"
+    },
+    {
+      "component_id": "src_12123",
+      "textbook_example_id": 12123,
+      "status": "verified",
+      "problem_type_id": "system_parameter_unique",
+      "domain_operation": "system_parameter_unique",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12123/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "skill_id": "vh_數學B3_SubSection_3_3_4",
+  "publish_status": "package_ready",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12092",
+      "textbook_example_id": 12092,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12092/generate.py"
+    },
+    {
+      "component_id": "src_12093",
+      "textbook_example_id": 12093,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12093/generate.py"
+    },
+    {
+      "component_id": "src_12094",
+      "textbook_example_id": 12094,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12094/generate.py"
+    },
+    {
+      "component_id": "src_12095",
+      "textbook_example_id": 12095,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12095/generate.py"
+    },
+    {
+      "component_id": "src_12096",
+      "textbook_example_id": 12096,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exam_practice",
+      "generate_py": "components/src_12096/generate.py"
+    },
+    {
+      "component_id": "src_12105",
+      "textbook_example_id": 12105,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12105/generate.py"
+    },
+    {
+      "component_id": "src_12106",
+      "textbook_example_id": 12106,
+      "status": "verified",
+      "problem_type_id": "lp_application",
+      "domain_operation": "lp_application",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12106/generate.py"
+    },
+    {
+      "component_id": "src_12115",
+      "textbook_example_id": 12115,
+      "status": "verified",
+      "problem_type_id": "constraint_system_choice",
+      "domain_operation": "constraint_system_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12115/generate.py"
+    },
+    {
+      "component_id": "src_12125",
+      "textbook_example_id": 12125,
+      "status": "verified",
+      "problem_type_id": "constraint_system_choice",
+      "domain_operation": "constraint_system_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12125/generate.py"
+    }
+  ]
+}
