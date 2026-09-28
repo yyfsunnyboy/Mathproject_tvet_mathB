@@ -1,104 +1,72 @@
 from __future__ import annotations
 
-import re
-from collections import OrderedDict
 from typing import Any
 
 from models import SkillCurriculum, SkillInfo, db
 
 
 VOCATIONAL_CURRICULUM = "vocational"
+VOLUME_ORDER = ("數學B1", "數學B2", "數學B3", "數學B4")
 
-# Scope policy only. Skill links are resolved from the canonical SkillInfo and
-# SkillCurriculum rows so inactive/missing skills can never become bad links.
+# Official 108 mock-exam units. These are semantic identities, not a
+# publisher's chapter numbers. SkillCurriculum.chapter stays the publisher title.
+OFFICIAL_UNITS: dict[int, str] = {
+    1: "坐標系與函數圖形",
+    2: "直線方程式",
+    3: "式的運算",
+    4: "三角函數",
+    5: "平面向量",
+    6: "圓與直線",
+    7: "數列與級數",
+    8: "方程式",
+    9: "二元一次不等式及其應用",
+    10: "指數與對數",
+    11: "三角函數的應用",
+    12: "排列組合",
+    13: "機率與統計",
+}
+
 MOCK_EXAM_SCOPE: dict[str, dict[str, Any]] = {
-    "exam_1": {
-        "label": "第一次模擬考",
-        "volumes": OrderedDict(
-            [
-                ("數學B1", ("1 坐標系與函數圖形", "2 直線方程式", "3 式的運算")),
-                ("數學B3", ("第2章 方程式與不等式",)),
-            ]
-        ),
-    },
-    "exam_2": {
-        "label": "第二次模擬考",
-        "volumes": OrderedDict(
-            [
-                ("數學B1", ("1 坐標系與函數圖形", "2 直線方程式", "3 式的運算")),
-                ("數學B2", ("第1章 三角函數", "第3章 向 量", "第4章 圓與直線")),
-                ("數學B3", ("第2章 方程式與不等式",)),
-                ("數學B4", ("第2章 三角函數的應用",)),
-            ]
-        ),
-    },
-    "exam_5": {
-        "label": "第五次模擬考",
-        # None means every existing chapter with an enabled skill in B1-B4.
-        "volumes": OrderedDict((volume, None) for volume in ("數學B1", "數學B2", "數學B3", "數學B4")),
-    },
+    "exam_1": {"label": "第一次模擬考", "units": (1, 2, 3, 8)},
+    "exam_2": {"label": "第二次模擬考", "units": (1, 2, 3, 4, 5, 6, 8, 11)},
+    "exam_5": {"label": "第五次模擬考", "units": tuple(range(1, 14))},
 }
 
 
-_COMPOUND_TOPIC_SPLIT = re.compile(r"[與和及]")
-
-
-def _bare_chapter_title(chapter: str) -> str:
-    """Publisher-independent title from the shared chapter-identity normalizer."""
+def _compact_title(text: str) -> str:
     from core.textbook_processor_v2 import _chapter_identity
 
-    identity = _chapter_identity(chapter)
-    if identity is None:
-        return ""
-    return str(identity[1]).replace(" ", "")
+    identity = _chapter_identity(text)
+    bare = identity[1] if identity else str(text or "")
+    return "".join(str(bare).split())
 
 
-def _same_scope_identity(left: str, right: str) -> bool:
-    from core.textbook_processor_v2 import _same_chapter_identity
+def official_unit_for_chapter(chapter: str) -> int | None:
+    """Return the one official unit for a publisher chapter, or None.
 
-    return _same_chapter_identity(left, right)
-
-
-def resolve_scope_chapters(
-    configured_chapters: tuple[str, ...] | list[str],
-    actual_chapters: list[str],
-) -> list[str]:
-    """Map a semantic exam scope onto chapter placements that exist now.
-
-    An exact chapter identity wins and does not pull sibling chapters. When
-    that identity is absent, a compound scope such as 「方程式與不等式」 resolves
-    to every actual chapter whose title carries one of its topics. That covers
-    a publisher splitting or merging chapters without pairing old and new
-    display titles.
+    Exact title wins. Otherwise the longest official name that contains the
+    chapter title, or is contained in it, wins. A tie is unresolved.
     """
-    resolved: list[str] = []
-    for configured in configured_chapters:
-        exact = [chapter for chapter in actual_chapters if _same_scope_identity(configured, chapter)]
-        if exact:
-            matches = exact
-        else:
-            topics = [part for part in _COMPOUND_TOPIC_SPLIT.split(_bare_chapter_title(configured)) if part]
-            matches = []
-            for chapter in actual_chapters:
-                bare = _bare_chapter_title(chapter)
-                if bare and any(topic == bare or topic in bare for topic in topics):
-                    matches.append(chapter)
-        chosen = matches or [configured]
-        for chapter in chosen:
-            if chapter not in resolved:
-                resolved.append(chapter)
-    return resolved
-
-
-def _chapters_in_volume(rows: list[tuple[Any, Any]], volume: str) -> list[str]:
-    chapters: list[str] = []
-    for curriculum_row, _skill in rows:
-        if str(curriculum_row.volume or "").strip() != volume:
-            continue
-        chapter = str(curriculum_row.chapter or "").strip()
-        if chapter and chapter not in chapters:
-            chapters.append(chapter)
-    return chapters
+    bare = _compact_title(chapter)
+    if not bare:
+        return None
+    exact = [unit for unit, name in OFFICIAL_UNITS.items() if _compact_title(name) == bare]
+    if len(exact) == 1:
+        return exact[0]
+    if len(exact) > 1:
+        return None
+    matches: list[tuple[int, int]] = []
+    for unit, name in OFFICIAL_UNITS.items():
+        official = _compact_title(name)
+        if official and (bare in official or official in bare):
+            matches.append((unit, len(official)))
+    if not matches:
+        return None
+    best_length = max(length for _unit, length in matches)
+    best = [unit for unit, length in matches if length == best_length]
+    if len(best) == 1:
+        return best[0]
+    return None
 
 
 def mock_exam_cards() -> list[dict[str, str]]:
@@ -112,44 +80,38 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
     config = MOCK_EXAM_SCOPE.get(str(exam_id or "").strip())
     if config is None:
         return None
-
-    volume_policy: OrderedDict[str, tuple[str, ...] | None] = config["volumes"]
+    allowed_units = {int(unit) for unit in config["units"]}
     rows = (
         db.session.query(SkillCurriculum, SkillInfo)
         .join(SkillInfo, SkillInfo.skill_id == SkillCurriculum.skill_id)
         .filter(
             SkillCurriculum.curriculum == VOCATIONAL_CURRICULUM,
-            SkillCurriculum.volume.in_(tuple(volume_policy.keys())),
+            SkillCurriculum.volume.in_(VOLUME_ORDER),
             SkillInfo.is_active.is_(True),
         )
         .order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.id.asc())
         .all()
     )
 
-    resolved_chapters = {
-        volume: (
-            None
-            if configured is None
-            else resolve_scope_chapters(configured, _chapters_in_volume(rows, volume))
-        )
-        for volume, configured in volume_policy.items()
-    }
     skills_by_unit: dict[tuple[str, str], list[dict[str, str]]] = {}
+    chapter_order: dict[str, list[str]] = {volume: [] for volume in VOLUME_ORDER}
     # A skill may legitimately have more than one vocational curriculum
-    # placement.  De-duplicate only duplicate rows for the same chapter; a
-    # global skill-id set would silently remove it from later chapters/volumes.
+    # placement. De-duplicate only duplicate rows for the same chapter.
     seen_placements: set[tuple[str, str, str]] = set()
     for curriculum_row, skill in rows:
         volume = str(curriculum_row.volume or "").strip()
         chapter = str(curriculum_row.chapter or "").strip()
-        allowed_chapters = resolved_chapters.get(volume)
-        if not chapter or (allowed_chapters is not None and chapter not in allowed_chapters):
+        if volume not in chapter_order or not chapter:
+            continue
+        if official_unit_for_chapter(chapter) not in allowed_units:
             continue
         skill_id = str(skill.skill_id or "").strip()
         placement = (volume, chapter, skill_id)
         if not skill_id or placement in seen_placements:
             continue
         seen_placements.add(placement)
+        if chapter not in chapter_order[volume]:
+            chapter_order[volume].append(chapter)
         skills_by_unit.setdefault((volume, chapter), []).append(
             {
                 "skill_id": skill_id,
@@ -161,21 +123,11 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
         )
 
     volumes: list[dict[str, Any]] = []
-    for volume, configured_chapters in volume_policy.items():
-        if configured_chapters is None:
-            chapters = []
-            for curriculum_row, _skill in rows:
-                if str(curriculum_row.volume or "").strip() != volume:
-                    continue
-                chapter = str(curriculum_row.chapter or "").strip()
-                if chapter and chapter not in chapters:
-                    chapters.append(chapter)
-        else:
-            chapters = list(resolved_chapters.get(volume) or ())
-
+    for volume in VOLUME_ORDER:
         units = [
             {"unit_name": chapter, "skills": skills_by_unit.get((volume, chapter), [])}
-            for chapter in chapters
+            for chapter in chapter_order[volume]
+            if skills_by_unit.get((volume, chapter))
         ]
         if units:
             volumes.append({"volume": volume, "units": units})
