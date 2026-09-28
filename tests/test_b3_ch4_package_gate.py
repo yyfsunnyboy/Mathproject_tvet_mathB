@@ -697,6 +697,126 @@ def test_template_loads_curve_capable_visual_runtime():
     assert "visualSpec.curves" in js and "label_at" in js
 
 
+# ------------------------------- CH4_MULTIPART_PRESENTATION_NO_DUPLICATE_STEM
+
+# The checker takes only the right-hand side, so "(1) f(x)=" is an input cue.
+SEMANTIC_PREFIX_OPS = {"exp_model_from_graph"}
+MULTIPART_DOM_CASES = {
+    "exp_integer_power_eval": ("vh_數學B3_SubSection_4_1_1", 3),
+    "exp_fill_integer_exponent": ("vh_數學B3_SubSection_4_1_2", 4),
+    "exp_rational_power_eval": ("vh_數學B3_SubSection_4_1_3", 3),
+    "graph_sketch_table": ("vh_數學B3_SubSection_4_2_1", 4),
+    "log_basic_property_eval": (None, 4),
+    "common_log_table_lookup": (None, 2),
+    "log_characteristic_mantissa": (None, None),
+}
+
+
+def _visible_label(part: dict) -> str:
+    return str(part.get("display_label") or part.get("label") or part.get("prompt") or part.get("key") or "")
+
+
+def _multipart_label_violations(payload: dict) -> list[str]:
+    items = [str(i.get("text") or "").strip() for i in (payload.get("stem_structure") or {}).get("items") or []]
+    errors = []
+    for part in (payload.get("answer_contract") or {}).get("parts") or []:
+        label = _visible_label(part).strip()
+        if "□" in label or r"\square" in label:
+            errors.append(f"box_in_label:{label}")
+        if r"\(" in label or "$" in label:
+            errors.append(f"math_in_label:{label}")
+        if len(label) > 10:
+            errors.append(f"long_label:{label}")
+        if any(label == item or (len(label) > 4 and label in item) for item in items):
+            errors.append(f"stem_repeated:{label}")
+    return errors
+
+
+def test_multipart_labels_do_not_repeat_stem():
+    """CH4_MULTIPART_PRESENTATION_NO_DUPLICATE_STEM over every multipart source."""
+    failures = []
+    multipart_ops = set()
+    for example_id, spec in sorted(SOURCE_SPECS.items()):
+        for seed in range(6):
+            matrix = _matrix(example_id, seed)
+            if matrix["answer_type"] != "multi_part":
+                continue
+            multipart_ops.add(spec["op"])
+            payload = _payload(example_id, matrix)
+            parts = payload["answer_contract"]["parts"]
+            for err in _multipart_label_violations(payload):
+                failures.append((example_id, seed, err))
+            keys = [str(part["key"]) for part in parts]
+            if keys != list(matrix["answer"]["value"]) or keys != list(payload["correct_answer"]):
+                failures.append((example_id, seed, "answer_order_changed", keys))
+            if len(parts) != matrix["validation_facts"]["multipart_count"]:
+                failures.append((example_id, seed, "arity"))
+            if spec["op"] in SEMANTIC_PREFIX_OPS:
+                continue
+            by_group: dict[str, set[int]] = defaultdict(set)
+            for part in parts:
+                by_group[str(part.get("group_label") or "")].add(len(_visible_label(part)))
+            if any(len(lengths) > 1 for lengths in by_group.values()):
+                failures.append((example_id, seed, "uneven_label_width", [_visible_label(p) for p in parts]))
+    assert len(multipart_ops) == 26
+    assert failures == [], failures[:10]
+
+
+_DOM_SHIM = r"""
+function El(tag){this.tagName=tag.toUpperCase();this.children=[];this.dataset={};this.attrs={};
+  this.textContent='';const self=this;this.classList={add(c){self.className=((self.className||'')+' '+c).trim();},
+  remove(c){self.className=(self.className||'').split(' ').filter(x=>x!==c).join(' ');}};}
+El.prototype.appendChild=function(c){this.children.push(c);return c;};
+El.prototype.setAttribute=function(k,v){this.attrs[k]=String(v);};
+El.prototype.getAttribute=function(k){return k==='type'?(this.type||null):(this.attrs[k]??null);};
+Object.defineProperty(El.prototype,'innerHTML',{set(){this.children=[];},get(){return '';}});
+global.document={createElement:(t)=>new El(t)};
+const R=require(process.argv[1]);
+const out=[];
+for(const payload of JSON.parse(process.argv[2])){
+  const root=new El('div');R.render(root,payload);
+  const rows=[];const walk=(n,group)=>{for(const c of n.children){
+    if(c.className==='multi-part-group-label'){group=c.textContent;}
+    if(c.className==='multi-part-row'){const label=c.children.find(x=>x.tagName==='LABEL');
+      const ctl=c.children.find(x=>x.tagName==='INPUT'||x.tagName==='SELECT');
+      rows.push({group,label:label?label.textContent:'',tag:ctl?ctl.tagName:'',key:ctl?ctl.dataset.fieldKey:''});}
+    walk(c,group);}};
+  walk(root,'');out.push(rows);}
+process.stdout.write(JSON.stringify(out));
+"""
+
+
+def test_multipart_dom_controls_match_arity_and_labels():
+    grouped = _ids_by_op()
+    payloads, expectations = [], []
+    for op, (skill, arity) in MULTIPART_DOM_CASES.items():
+        for example_id in grouped[op][:2]:
+            if skill:
+                assert SOURCE_SPECS[example_id]["skill_id"] == skill
+            payload = _payload(example_id, _matrix(example_id, 17))
+            keys = list(payload["correct_answer"])
+            if arity:
+                assert len(keys) == arity, (example_id, keys)
+            payloads.append({k: payload[k] for k in ("answer_contract", "stem_structure", "ui_contract") if k in payload})
+            expectations.append((example_id, payload, keys))
+    completed = subprocess.run(
+        [_node(), "-e", _DOM_SHIM, str(ROOT / "static" / "js" / "multipart_field_renderer.js"), json.dumps(payloads)],
+        check=True, capture_output=True, text=True, encoding="utf-8",
+    )
+    rendered = json.loads(completed.stdout)
+    for (example_id, payload, keys), rows in zip(expectations, rendered):
+        items = [str(i["text"]) for i in payload["stem_structure"]["items"]]
+        assert [row["key"] for row in rows] == keys, example_id
+        assert all(row["tag"] == "INPUT" for row in rows), example_id
+        for row in rows:
+            assert "□" not in row["label"] and r"\square" not in row["label"], (example_id, row)
+            assert r"\(" not in row["label"], (example_id, row)
+            assert not any(row["label"] and row["label"] in item and len(row["label"]) > 4 for item in items), (example_id, row)
+        assert len({len(row["label"]) for row in rows if not row["group"]}) <= 1, (example_id, rows)
+        answer = {row["key"]: part["expected_answer"] for row, part in zip(rows, payload["answer_contract"]["parts"])}
+        assert check_answer(answer, payload["correct_answer"], payload=payload), example_id
+
+
 # ---------------------------------------------------------------- production corpus (read-only)
 
 def _prod_conn():
@@ -898,6 +1018,7 @@ def test_runtime_get_next_and_check(auth_client, example_id):
     assert _stem_violations(stem) == []
     for text in _payload_display_texts(question):
         assert _delimiters_wellformed(text), text
+    assert _multipart_label_violations(question) == []
     assert not question.get("reuse_textbook_image")
     assert not question.get("image_assets")
     answer = _student_answer(question)

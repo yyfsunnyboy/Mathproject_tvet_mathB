@@ -13,6 +13,7 @@ from core.domain.exponential_logarithmic_domain import (
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 _FIXED = "exponential.logarithmic"
+_BARE_PART_KEY = re.compile(r"\(\d+\)")
 _CHECKERS = {
     "expression": ("expression_checker", "algebraic_equivalent"),
     "multi_part": ("multi_part_answer_checker", "multi_part_answer"),
@@ -70,6 +71,46 @@ def _restore_mixed_choice_text(payload: dict[str, Any], matrix: dict[str, Any]) 
         payload["options"] = [str(row.get("text") or "") for row in choices]
 
 
+def _repeats_stem(label: str, items: list[str]) -> bool:
+    text = label.strip()
+    if not text:
+        return True
+    if "□" in text or r"\square" in text:
+        return True
+    return any(text == item or (len(text) > 8 and text in item) for item in items)
+
+
+def _concise_part_labels(payload: dict[str, Any], matrix: dict[str, Any]) -> None:
+    # The shared stem enrichment copies each full sub-question into the answer
+    # label; the stem already shows it, so the answer row keeps only a marker.
+    contract = payload.get("answer_contract")
+    parts = contract.get("parts") if isinstance(contract, dict) else None
+    if not isinstance(parts, list):
+        return
+    stem_items = (matrix.get("stem_structure") or {}).get("items") or []
+    items = [str(item.get("text") or "").strip() for item in stem_items]
+    by_group = {str(item.get("group_label") or ""): str(item.get("text") or "").strip() for item in stem_items}
+    explicit = (matrix.get("answer") or {}).get("part_labels")
+    explicit = explicit if isinstance(explicit, dict) else {}
+    for index, row in enumerate(parts):
+        if not isinstance(row, dict):
+            continue
+        key = str(row.get("key") or "")
+        current = str(row.get("display_label") or row.get("label") or row.get("prompt") or "")
+        if not _repeats_stem(current, items):
+            continue
+        label = str(explicit.get(key) or "")
+        if _repeats_stem(label, items):
+            label = key if _BARE_PART_KEY.fullmatch(key) else f"({index + 1})"
+        row["label"] = label
+        row["display_label"] = label
+        row["prompt"] = label
+        row["math_label"] = None
+        full = by_group.get(key) or (items[index] if index < len(items) else "")
+        if full:
+            row["aria_label"] = full
+
+
 def adapt_exponential_logarithmic_matrix(
     matrix: dict[str, Any],
     *,
@@ -107,6 +148,7 @@ def adapt_exponential_logarithmic_matrix(
     contract = dict(payload.get("answer_contract") or {})
     if answer_type == "multi_part":
         _apply_part_checkers(contract, dict(matrix.get("part_checkers") or {}))
+        _concise_part_labels({"answer_contract": contract}, matrix)
     contract["checker"] = checker
     contract["checker_key"] = checker
     contract["equivalence"] = equivalence
