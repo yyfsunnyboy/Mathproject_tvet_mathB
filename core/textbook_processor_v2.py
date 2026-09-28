@@ -38,6 +38,7 @@ from core.textbook_filename_parser import (
     parse_textbook_filename_metadata,
     resolve_upload_filenames,
 )
+from core.mathb_chapter4_calculator_skip import chapter4_calculator_skip
 from core.mathb_concept_heading import (
     detect_mathb_concept_heading,
     is_persistable_concept_code,
@@ -214,6 +215,21 @@ def _normalize_docx_line_text(text: str) -> str:
     t = _DOCX_SPECIAL_SPACE_RE.sub(" ", t)
     t = t.replace("\t", " ")
     return re.sub(r" +", " ", t).strip()
+
+
+def _cut_solution_residue(problem_text: str, solution_text: str) -> tuple[str, str]:
+    """Drop solution text that was accumulated into the student stem."""
+    from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+    split = split_student_stem_at_solution_marker(problem_text)
+    if split is None:
+        return problem_text, solution_text
+    stem, trailing = split
+    if trailing:
+        solution_text = _normalize_docx_line_text(
+            "\n".join(part for part in (trailing, solution_text) if part)
+        ).strip()
+    return stem, solution_text
 
 
 def _to_half_width_digits(s: str) -> str:
@@ -1516,7 +1532,30 @@ def _build_anchor_blocks_v2(
     current_concept_name = ""
     current_concept_en_id = ""
     current_formal_skill_id = ""
+    current_heading_provenance: dict[str, str] = {}
+    accepted_heading_subs: list[int] = []
     recent_context_lines: list[str] = []
+
+    def remember_heading(code: str, detection: dict) -> None:
+        nonlocal current_heading_provenance
+        from core.mathb_concept_heading import (
+            AUTHORITY_SOURCE_HEADING_RECOVERED,
+            concept_subindex,
+            section_code_from_concept_code,
+        )
+
+        sub = concept_subindex(code)
+        if sub is not None and section_code_from_concept_code(code) == active_section_code:
+            accepted_heading_subs.append(sub)
+        if str(detection.get("authority_source") or "") == AUTHORITY_SOURCE_HEADING_RECOVERED:
+            current_heading_provenance = {
+                "source_heading_raw": str(detection.get("source_heading_raw") or ""),
+                "recovered_heading": str(detection.get("recovered_heading") or ""),
+                "recovery_reason": str(detection.get("recovery_reason") or ""),
+                "authority_source": AUTHORITY_SOURCE_HEADING_RECOVERED,
+            }
+        else:
+            current_heading_provenance = {}
     heading_idx = 0
     current_concept_display_order = 0
 
@@ -1526,6 +1565,7 @@ def _build_anchor_blocks_v2(
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
         stxt = _normalize_docx_line_text("\n".join(solution_lines)).strip()
+        ptxt, stxt = _cut_solution_residue(ptxt, stxt)
         if ptxt:
             blocks[cur_key] = ptxt
             sec_code = active_section_code
@@ -1558,6 +1598,8 @@ def _build_anchor_blocks_v2(
                 formal_skill_id=formal_sid,
                 display_order=display_order,
             )
+            if current_heading_provenance and concept_code:
+                meta[cur_key]["heading_provenance"] = dict(current_heading_provenance)
             if read_only:
                 meta[cur_key]["source_line_indices"] = sorted(source_line_indices)
         cur_key = ""
@@ -1569,10 +1611,32 @@ def _build_anchor_blocks_v2(
         source_line_indices = set()
 
     def append_problem(value: str) -> None:
-        problem_lines.append(value)
-        source_line_indices.add(idx)
+        nonlocal in_solution
+        from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+        if in_solution:
+            append_solution(value)
+            return
+        split = split_student_stem_at_solution_marker(value) if str(value or "").strip() else None
+        if split is None:
+            problem_lines.append(value)
+            source_line_indices.add(idx)
+            return
+        prefix, rest = split
+        if prefix:
+            problem_lines.append(prefix)
+            source_line_indices.add(idx)
+        in_solution = True
+        if rest:
+            append_solution(rest)
 
     def append_solution(value: str) -> None:
+        from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+        split = split_student_stem_at_solution_marker(value) if str(value or "").strip() else None
+        if split is not None:
+            prefix, rest = split
+            value = "\n".join(part for part in (prefix, rest) if part)
         solution_lines.append(value)
         source_line_indices.add(idx)
 
@@ -1643,6 +1707,21 @@ def _build_anchor_blocks_v2(
             current_concept_name=current_concept_name,
         )
         if not parsed_concept:
+            from core.mathb_concept_heading import reconcile_inline_formula_heading
+
+            inline_heading = reconcile_inline_formula_heading(
+                line,
+                current_section_code=active_section_code,
+                candidates=(curriculum_info or {}).get("structural_skill_candidates"),
+            )
+            if inline_heading:
+                parsed_concept = (
+                    str(inline_heading.get("concept_code") or ""),
+                    str(inline_heading.get("concept_name") or ""),
+                    True,
+                    inline_heading,
+                )
+        if not parsed_concept:
             sec_heading = _DOCX_SECTION_HEADING_RE.match(line)
             if sec_heading and not re.match(
                 r"^\s*\d+[-－–—]\d+\.\d+", unicodedata.normalize("NFKC", line)
@@ -1665,6 +1744,20 @@ def _build_anchor_blocks_v2(
             in_key_mode = False
             in_exercise_mode = False
             concept_code, docx_concept_name, switch_current, _det_meta = parsed_concept
+            if str(_det_meta.get("section_code") or "") != active_section_code:
+                from core.mathb_concept_heading import recover_section_local_numbered_heading
+
+                recovered_heading = recover_section_local_numbered_heading(
+                    _det_meta,
+                    current_section_code=active_section_code,
+                    accepted_subindexes=accepted_heading_subs,
+                    source_heading_raw=line,
+                )
+                if recovered_heading:
+                    concept_code = str(recovered_heading.get("concept_code") or "")
+                    docx_concept_name = str(recovered_heading.get("concept_name") or "")
+                    switch_current = True
+                    _det_meta = recovered_heading
             
             # Universal counter for concept headings
             heading_idx += 1
@@ -1701,6 +1794,7 @@ def _build_anchor_blocks_v2(
                     concept_en_id=current_concept_en_id,
                     formal_skill_id=existing_sid,
                 )
+                remember_heading(concept_code, _det_meta)
                 continue
             if is_b2_11(curriculum_info):
                 raise ValueError(f"B2 1-1 requires existing heading skill: {docx_concept_name}")
@@ -1761,6 +1855,7 @@ def _build_anchor_blocks_v2(
                 current_concept_name = concept_name
                 current_concept_en_id = concept_en_id
                 current_formal_skill_id = formal_skill_id
+                remember_heading(concept_code, _det_meta)
             continue
 
         if len(recent_context_lines) >= 12:
@@ -2003,13 +2098,14 @@ def phase2_mathb_chapter_self_assessment_slice(
         if not cur_key:
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
+        ptxt, solution_text = _cut_solution_residue(ptxt, "")
         if ptxt:
             blocks[cur_key] = ptxt
             meta[cur_key] = _mathb_block_meta_base(
                 anchor=cur_anchor or cur_key,
                 source_type="self_assessment",
                 problem_text=ptxt,
-                detailed_solution="",
+                detailed_solution=solution_text,
                 section_code=current_section_code,
                 section_title=current_section_title,
                 formal_skill_id="",
@@ -5057,6 +5153,7 @@ def phase4_absolute_hydrate_and_save(
     loose_match_skipped_count = 0
     self_assessment_imported = 0
     self_assessment_skipped = 0
+    calculator_required_skip_audit: list[dict[str, str]] = []
     needs_review = 0
     unresolved_skill_bindings: list[dict[str, str]] = []
     anchor_compact_map = {_compact_title_key(k): k for k in _DOCX_BLOCK_META.keys()}
@@ -5184,6 +5281,18 @@ def phase4_absolute_hydrate_and_save(
                             )
                             skipped_fragment_count += 1
                             skipped += 1
+                            continue
+                        calculator_skip = chapter4_calculator_skip(
+                            curriculum_info,
+                            db_problem_text,
+                            str(block_meta.get("anchor") or matched_key or title or ""),
+                        )
+                        if calculator_skip:
+                            calculator_required_skip_audit.append(calculator_skip)
+                            _log_info(
+                                "[antigravity] calculator_required "
+                                f"source_label={calculator_skip['source_label']!r}"
+                            )
                             continue
                         db_answer_raw = item.get("correct_answer")
                         if db_answer_raw is None or str(db_answer_raw).strip() == "":
@@ -5482,6 +5591,7 @@ def phase4_absolute_hydrate_and_save(
             f"loose_match_skipped_count={loose_match_skipped_count} "
             f"self_assessment={self_assessment_imported} "
             f"self_assessment_skipped={self_assessment_skipped} "
+            f"calculator_required_skipped={len(calculator_required_skip_audit)} "
             f"needs_review={needs_review} "
             f"unresolved_skill_bindings={len(unresolved_skill_bindings)}"
         )
@@ -5510,6 +5620,8 @@ def phase4_absolute_hydrate_and_save(
         "self_assessment_imported": self_assessment_imported,
         "self_assessments_imported": self_assessment_imported,
         "self_assessment_skipped": self_assessment_skipped,
+        "calculator_required_skipped": len(calculator_required_skip_audit),
+        "calculator_required_skip_audit": calculator_required_skip_audit,
         "needs_review": needs_review,
         "unresolved_skill_bindings": unresolved_skill_bindings,
     }

@@ -103,6 +103,74 @@ def section_code_from_concept_code(concept_code: str) -> str:
     return m.group(1) if m else ""
 
 
+AUTHORITY_SOURCE_HEADING_RECOVERED = "source_heading_recovered"
+
+
+def concept_subindex(concept_code: str) -> int | None:
+    match = _CANONICAL_CODE_RE.fullmatch(_normalize_line(concept_code).replace(" ", ""))
+    if not match:
+        return None
+    return int(match.group(3))
+
+
+def canonical_section_code(section_code: str) -> str:
+    text = _normalize_line(section_code).replace(" ", "")
+    match = re.fullmatch(r"(\d+)-(\d+)", text)
+    if not match:
+        return text
+    return f"{int(match.group(1))}-{int(match.group(2))}"
+
+
+def recover_section_local_numbered_heading(
+    hit: dict[str, Any],
+    *,
+    current_section_code: str,
+    accepted_subindexes: list[int],
+    source_heading_raw: str,
+) -> dict[str, Any] | None:
+    """Recover one printed concept code whose section prefix is a local typo.
+
+    The printed line stays in ``source_heading_raw``. Recovery applies only when
+    the printed sub-index is the next heading already established in the current
+    section. The recovered code is not described as the printed source text.
+    """
+    current = canonical_section_code(current_section_code)
+    printed_section = canonical_section_code(str(hit.get("section_code") or ""))
+    if not current or not printed_section or printed_section == current:
+        return None
+    printed_code = _normalize_line(str(hit.get("concept_code") or "")).replace(" ", "")
+    sub = concept_subindex(printed_code)
+    if sub is None:
+        return None
+    expected = (max(accepted_subindexes) + 1) if accepted_subindexes else 1
+    if sub != expected:
+        return None
+    name = str(hit.get("concept_name") or "").strip()
+    if not name:
+        return None
+    parts = re.fullmatch(r"(\d+)-(\d+)", current)
+    if not parts:
+        return None
+    recovered_code = canonical_concept_code_from_parts(*parts.groups(), str(sub))
+    recovered = dict(hit)
+    recovered.update(
+        {
+            "concept_code": recovered_code,
+            "section_code": current,
+            "source_heading_raw": str(source_heading_raw or "").strip(),
+            "recovered_heading": f"{recovered_code}{name}",
+            "recovery_reason": (
+                "section-local numbered heading typo; "
+                f"content and placement belong to {current}"
+            ),
+            "authority_source": AUTHORITY_SOURCE_HEADING_RECOVERED,
+            "printed_concept_code": printed_code,
+            "source_concept_code": printed_code,
+        }
+    )
+    return recovered
+
+
 def pseudo_concept_code(section_code: str, concept_name: str) -> str:
     sec = _normalize_line(section_code)
     name = str(concept_name or "").strip()
@@ -316,3 +384,51 @@ def detect_mathb_concept_heading(
         "section_code": section_code,
         "heading_kind": kind,
     }
+
+
+_INLINE_LATEX_RE = re.compile(r"\\\(.+?\\\)|\\\[[^\]]+\\\]", re.DOTALL)
+
+
+def normalize_identity_heading(value: str) -> str:
+    return re.sub(r"\s+", "", _normalize_line(value))
+
+
+def reconcile_inline_formula_heading(
+    line: str,
+    *,
+    current_section_code: str,
+    candidates: list[dict[str, Any]] | None,
+) -> dict[str, Any] | None:
+    """Match one audited numbered heading whose LaTeX title hides an inline formula.
+
+    The concept name stays the original DOCX heading name. A line is accepted
+    only when removing inline LaTeX reproduces that audited name and code.
+    """
+    raw = _normalize_line(line)
+    if not raw or ("\\(" not in raw and "\\[" not in raw):
+        return None
+    stripped = re.sub(r"\s+", "", _INLINE_LATEX_RE.sub("", raw))
+    if not stripped or stripped == re.sub(r"\s+", "", raw):
+        return None
+    hit = detect_mathb_concept_heading(
+        stripped,
+        current_section_code=current_section_code,
+        current_source_scope=SCOPE_SECTION_TEXTBOOK,
+    )
+    if not hit or not hit.get("is_concept_heading") or hit.get("duplicate_merge"):
+        return None
+    if canonical_section_code(str(hit.get("section_code") or "")) != canonical_section_code(
+        current_section_code
+    ):
+        return None
+    code = str(hit.get("concept_code") or "")
+    name = normalize_identity_heading(str(hit.get("concept_name") or ""))
+    matches = [
+        item
+        for item in (candidates or [])
+        if str(item.get("concept_code") or "") == code
+        and normalize_identity_heading(str(item.get("concept_name") or "")) == name
+    ]
+    if len(matches) != 1:
+        return None
+    return hit

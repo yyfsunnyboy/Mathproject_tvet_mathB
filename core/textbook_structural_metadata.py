@@ -62,6 +62,80 @@ def resolve_heading_identity(info, code, name):
                 source='existing_registry' if matches else 'deterministic_docx_heading')
 
 
+def unique_logarithm_exercise_heading(problem_text, headings):
+    """Bind one exercise only when the two logarithm headings give a single cue.
+
+    Returns the heading plus ``binding_reason``, or None when the stem does not
+    uniquely match one of those headings. Other sections are left untouched.
+    """
+    rows = list(headings or [])
+    by_name = {}
+    for heading in rows:
+        by_name.setdefault(normalize_identity(heading.get("concept_name")), heading)
+    meaning = by_name.get("對數的意義")
+    properties = by_name.get("對數的性質")
+    if meaning is None or properties is None or len(rows) != 2:
+        return None
+    text = normalize_identity(problem_text)
+    asks_value = any(cue in text for cue in ("試求", "表示", "之值", "之値"))
+    if "無意義" in text and not asks_value:
+        return dict(
+            meaning,
+            binding_reason="題幹要求判斷對數何時無意義，考點是底數與真數的定義限制",
+        )
+    if "無意義" in text:
+        return None
+    if "log" in text.lower() and asks_value:
+        return dict(
+            properties,
+            binding_reason="題幹要求求值或改寫對數式，考點是對數運算性質",
+        )
+    return None
+
+
+def unique_common_log_exercise_heading(problem_text, headings):
+    """Bind a 4-5 exercise only when one of the three audited headings is unique."""
+    rows = list(headings or [])
+    by_name = {}
+    for heading in rows:
+        by_name.setdefault(normalize_identity(heading.get("concept_name")), heading)
+    table = by_name.get("常用對數表的使用")
+    calculator = by_name.get("使用計算機鍵")
+    characteristic = by_name.get("首數、尾數及其應用")
+    if table is None or calculator is None or characteristic is None or len(rows) != 3:
+        return None
+    text = normalize_identity(problem_text)
+    table_cue = "對數表" in text
+    calculator_cue = "計算機" in text
+    characteristic_cue = any(
+        cue in text for cue in ("首數", "尾數", "幾位數", "小數點", "幾年", "幾個月")
+    )
+    inverse_cue = (
+        "試求" in text
+        and "log" in text.lower()
+        and not table_cue
+        and not calculator_cue
+    )
+    chosen = []
+    if table_cue and not characteristic_cue and not calculator_cue:
+        chosen.append(table)
+    if calculator_cue and not table_cue:
+        chosen.append(calculator)
+    if characteristic_cue or inverse_cue:
+        chosen.append(characteristic)
+    codes = {str(item.get("concept_code") or "") for item in chosen}
+    if len(codes) != 1:
+        return None
+    heading = chosen[0]
+    if heading is table:
+        reason = "題幹要求查常用對數表"
+    elif heading is calculator:
+        reason = "題幹要求使用計算機的對數鍵"
+    else:
+        reason = "題幹要求首數、尾數或由此估算位數與時間"
+    return dict(heading, binding_reason=reason)
+
+
 def align_structural_metadata(keys, block_meta, info):
     """Preserve blocks and defer ambiguous section exercises to bounded resolution.
 
@@ -141,6 +215,31 @@ def align_structural_metadata(keys, block_meta, info):
                 unresolved.append(title)
             else:
                 classified = classify_by_content(block)
+                if not classified:
+                    heading = unique_logarithm_exercise_heading(
+                        block.get("problem_text", ""),
+                        info.get("structural_skill_candidates") or [],
+                    )
+                    if heading is None:
+                        heading = unique_common_log_exercise_heading(
+                            block.get("problem_text", ""),
+                            info.get("structural_skill_candidates") or [],
+                        )
+                    if heading:
+                        bound = formal_by_code.get(heading["concept_code"])
+                        if bound:
+                            name, sid = bound
+                        else:
+                            sid, _en_id = canonical_heading_identity(
+                                info, heading["concept_code"], heading["concept_name"]
+                            )
+                            name = heading["concept_name"]
+                        classified = (name, sid)
+                        code = heading["concept_code"]
+                        block["exercise_binding_reason"] = heading.get("binding_reason")
+                        block["concept_code"] = code
+                        block["concept_name"] = name
+                        block["formal_skill_id"] = sid
                 if classified:
                     name, sid = classified
                 elif len(section_candidates) == 1:
@@ -173,6 +272,27 @@ def align_structural_metadata(keys, block_meta, info):
                 for candidate in section_candidates
             ],
         }
+        provenance = block.get('heading_provenance') if isinstance(block.get('heading_provenance'), dict) else None
+        if provenance is None and code:
+            matched = next(
+                (
+                    heading for heading in info['structural_skill_candidates']
+                    if heading.get('concept_code') == code
+                    and heading.get('authority_source') == 'source_heading_recovered'
+                ),
+                None,
+            )
+            if matched:
+                provenance = {
+                    'source_heading_raw': matched.get('source_heading_raw'),
+                    'recovered_heading': matched.get('recovered_heading'),
+                    'recovery_reason': matched.get('recovery_reason'),
+                    'authority_source': matched.get('authority_source'),
+                }
+        if provenance:
+            resolution.update(provenance)
+        if block.get("exercise_binding_reason"):
+            resolution["binding_reason"] = block.get("exercise_binding_reason")
         item = dict(title=title, source_description=title, source_order=order,
                     source_type=block['source_type'], skill_id=sid,
                     correct_answer='', detailed_solution=block.get('detailed_solution', ''),

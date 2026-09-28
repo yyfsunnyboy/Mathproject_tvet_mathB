@@ -23,6 +23,11 @@ from flask import has_app_context
 
 from core.globals import TASK_QUEUES, V3_IMPORT_TASKS
 from core.textbook_b2_11 import is_b2_11, existing_outline, existing_skill
+from core.mathb_chapter4_calculator_skip import (
+    chapter4_corpus_acceptance,
+    is_b3_chapter4,
+    replacement_counts_match,
+)
 from core.mathb_concept_heading import is_persistable_concept_code
 from core.textbook_importer_v3_docx import parse_docx_summary, extract_docx_skill_headings
 from core.textbook_importer_v3_orchestrate import build_curriculum_info_for_v3_import
@@ -333,7 +338,12 @@ def _replace_section_transaction(
             phase3_parsed, question_blocks, curriculum_info, task_queue,
             target_source_types=target_source_types, commit=False,
         )
-        if stats.get("inserted") != len(question_blocks) or stats.get("updated"):
+        if not replacement_counts_match(
+            inserted=int(stats.get("inserted") or 0),
+            updated=int(stats.get("updated") or 0),
+            parsed=len(question_blocks),
+            calculator_required_skipped=int(stats.get("calculator_required_skipped") or 0),
+        ):
             raise V3PipelineError(
                 STAGE_DB_WRITE, "replace_insert_incomplete",
                 "Replacement insert count differs from scoped parser question count",
@@ -1748,6 +1758,12 @@ def run_v3_pair_pipeline(
                         "unresolved_skill_bindings", []
                     ),
                     "needs_review_count": int(phase4_stats.get("needs_review", 0) or 0),
+                    "calculator_required_skipped": int(
+                        phase4_stats.get("calculator_required_skipped") or 0
+                    ),
+                    "calculator_required_skip_audit": list(
+                        phase4_stats.get("calculator_required_skip_audit") or []
+                    ),
                 }
                 if insert_missing_only:
                     db_metrics["existing_skipped"] = phase4_stats.get("existing_skipped", 0)
@@ -1763,13 +1779,37 @@ def run_v3_pair_pipeline(
                 skipped_n = int(phase4_stats.get("skipped", 0) or 0)
                 non_existing_skips = skipped_n - existing_n
                 parsed_n = int(db_metrics.get("parsed_questions") or 0)
+                calc_skipped = int(phase4_stats.get("calculator_required_skipped") or 0)
+                imported_n = inserted_n + updated_n + existing_n
+                corpus = chapter4_corpus_acceptance(
+                    parsed_source_questions=parsed_n,
+                    imported_questions=imported_n,
+                    legitimate_calculator_required_skips=calc_skipped,
+                )
+                report["calculator_required_skipped"] = calc_skipped
+                if is_b3_chapter4(curriculum_info):
+                    db_metrics["parsed_source_questions"] = corpus["parsed_source_questions"]
+                    db_metrics["imported_questions"] = corpus["imported_questions"]
+                    db_metrics["legitimate_calculator_required_skips"] = corpus[
+                        "legitimate_calculator_required_skips"
+                    ]
+                    db_metrics["calculator_required_skipped"] = corpus["calculator_required_skipped"]
+                    if not corpus["balanced"]:
+                        return fail(
+                            STAGE_DB_WRITE,
+                            "chapter4_corpus_unbalanced",
+                            "Chapter 4 parsed_source_questions must equal imported_questions plus calculator_required skips",
+                            details=db_metrics,
+                        )
                 idempotent_noop = (
                     insert_missing_only
                     and existing_n > 0
                     and non_existing_skips == 0
-                    and existing_n == parsed_n
+                    and existing_n + calc_skipped == parsed_n
                 )
-                if inserted_n + updated_n == 0 and not idempotent_noop:
+                if inserted_n + updated_n == 0 and not idempotent_noop and not (
+                    is_b3_chapter4(curriculum_info) and corpus["balanced"] and calc_skipped == parsed_n
+                ):
                     return fail(
                         STAGE_DB_WRITE,
                         "phase4_zero_writes",

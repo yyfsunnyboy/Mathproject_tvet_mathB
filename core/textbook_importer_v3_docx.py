@@ -87,8 +87,11 @@ def extract_docx_skill_headings(source, *, section_code: str, volume: str = "") 
     from docx import Document
     from docx.text.paragraph import Paragraph
     from core.mathb_concept_heading import (
+        AUTHORITY_SOURCE_HEADING_RECOVERED,
+        concept_subindex,
         detect_mathb_concept_heading,
         parse_mathb_section_heading,
+        recover_section_local_numbered_heading,
     )
     from core.mathb_plain_source_heading import collect_plain_source_headings
 
@@ -96,6 +99,7 @@ def extract_docx_skill_headings(source, *, section_code: str, volume: str = "") 
     candidates, unresolved, sections = [], [], []
     plain_paragraphs: list[dict[str, Any]] = []
     seen = {}
+    accepted_subindexes: list[int] = []
     expected_code = str(section_code or "").strip()
     for order, element in enumerate(doc.element.body.iter(f"{{{W_NS}}}p"), 1):
         p = Paragraph(element, doc)
@@ -149,21 +153,47 @@ def extract_docx_skill_headings(source, *, section_code: str, volume: str = "") 
         if not hit or not hit.get("concept_code"):
             continue
         # Numbering alone is insufficient: require a paragraph style or emphasis.
-        if hit['section_code'] != section_code or not (
-            p.style.name != 'Normal' or evidence['bold'] or (size and size.pt >= 15)
-        ):
-            unresolved.append(evidence)
-            continue
-        code, name = hit['concept_code'], hit['concept_name']
+        style_ok = p.style.name != "Normal" or evidence["bold"] or (size and size.pt >= 15)
+        if hit["section_code"] != section_code or not style_ok:
+            recovered = None
+            if hit["section_code"] != section_code and style_ok:
+                recovered = recover_section_local_numbered_heading(
+                    hit,
+                    current_section_code=section_code,
+                    accepted_subindexes=accepted_subindexes,
+                    source_heading_raw=text,
+                )
+            if recovered is None:
+                unresolved.append(evidence)
+                continue
+            hit = recovered
+        code, name = hit["concept_code"], hit["concept_name"]
         if code in seen:
             if seen[code] != name:
                 unresolved.append(evidence)
             continue
         seen[code] = name
-        candidates.append(dict(evidence, concept_code=code, concept_name=name,
-                               section_code=section_code, validation='PASS',
-                               authority_source='authoritative_numbered_concept_heading',
-                               printed_concept_code=code, source_concept_code=code))
+        sub = concept_subindex(code)
+        if sub is not None:
+            accepted_subindexes.append(sub)
+        row = dict(
+            evidence,
+            concept_code=code,
+            concept_name=name,
+            section_code=section_code,
+            validation="PASS",
+            authority_source=hit.get("authority_source")
+            or "authoritative_numbered_concept_heading",
+            printed_concept_code=hit.get("printed_concept_code", code),
+            source_concept_code=hit.get("source_concept_code", code),
+        )
+        if row["authority_source"] == AUTHORITY_SOURCE_HEADING_RECOVERED:
+            row.update(
+                source_heading_raw=hit.get("source_heading_raw"),
+                recovered_heading=hit.get("recovered_heading"),
+                recovery_reason=hit.get("recovery_reason"),
+            )
+        candidates.append(row)
     for index, paragraph in enumerate(plain_paragraphs):
         following = next(
             (item["text"] for item in plain_paragraphs[index + 1 :] if str(item.get("text") or "").strip()),
