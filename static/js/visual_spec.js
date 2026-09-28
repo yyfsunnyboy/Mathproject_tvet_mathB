@@ -803,11 +803,25 @@
                     })
                     : []
             );
+        if (curvesAreDrawable(normalized.curves)) {
+            return true;
+        }
         if (!lines.length) {
             return false;
         }
         return lines.some(function (line) {
             return lineIsDrawable(line, points);
+        });
+    }
+
+    function curvesAreDrawable(curves) {
+        return Array.isArray(curves) && curves.some(function (curve) {
+            const samples = curve && Array.isArray(curve.points) ? curve.points : [];
+            return samples.filter(function (p) {
+                const x = Number(Array.isArray(p) ? p[0] : p && p.x);
+                const y = Number(Array.isArray(p) ? p[1] : p && p.y);
+                return Number.isFinite(x) && Number.isFinite(y);
+            }).length >= 2;
         });
     }
 
@@ -1658,6 +1672,68 @@
                 context.textBaseline = 'bottom';
                 context.fillText(formatDiagramLabel(clabel) || clabel, mapX(h + r * 0.7), mapY(k + r * 0.7));
             }
+        });
+
+        // Curves: function graphs sampled server-side as [x, y] polylines. Samples
+        // outside the y-range are omitted, so a jump in x starts a new segment.
+        const curves = Array.isArray(visualSpec.curves) ? visualSpec.curves : [];
+        const curveColors = ['#1565c0', '#c2410c', '#15803d', '#7c3aed'];
+        curves.forEach(function (curve, curveIndex) {
+            const samples = (curve && Array.isArray(curve.points) ? curve.points : []).map(function (p) {
+                return Array.isArray(p) ? { x: Number(p[0]), y: Number(p[1]) } : { x: Number(p && p.x), y: Number(p && p.y) };
+            }).filter(function (p) {
+                return Number.isFinite(p.x) && Number.isFinite(p.y);
+            });
+            if (samples.length < 2) {
+                return;
+            }
+            let step = Infinity;
+            for (let i = 1; i < samples.length; i += 1) {
+                const dx = Math.abs(samples[i].x - samples[i - 1].x);
+                if (dx > 0) {
+                    step = Math.min(step, dx);
+                }
+            }
+            const color = curve.color || curveColors[curveIndex % curveColors.length];
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = 2.2;
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash(String(curve.style || '').toLowerCase() === 'dashed' ? [7, 5] : []);
+            }
+            context.beginPath();
+            samples.forEach(function (p, i) {
+                const gap = i > 0 && Math.abs(p.x - samples[i - 1].x) > step * 1.5 + 1e-9;
+                if (i === 0 || gap) {
+                    context.moveTo(mapX(p.x), mapY(p.y));
+                } else {
+                    context.lineTo(mapX(p.x), mapY(p.y));
+                }
+            });
+            context.stroke();
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash([]);
+            }
+            const curveLabel = String(curve.label || '');
+            if (!curveLabel) {
+                return;
+            }
+            const anchor = Array.isArray(curve.label_at) && curve.label_at.length >= 2
+                ? { x: Number(curve.label_at[0]), y: Number(curve.label_at[1]) }
+                : samples[samples.length - 1];
+            if (!Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
+                return;
+            }
+            const display = formatDiagramLabel(curveLabel) || curveLabel;
+            context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+            const textWidth = typeof context.measureText === 'function'
+                ? Number(context.measureText(display).width) || 0
+                : display.length * 7;
+            const px = Math.min(Math.max(mapX(anchor.x) + 4, clipBox.minX + 2), clipBox.maxX - textWidth - 2);
+            const py = Math.min(Math.max(mapY(anchor.y) - 4, clipBox.minY + 14), clipBox.maxY - 2);
+            context.fillStyle = applyFadedColor(color, opacity);
+            context.textAlign = 'left';
+            context.textBaseline = 'bottom';
+            context.fillText(display, px, py);
         });
 
         drawArrows(context, mapX, mapY, visualSpec, points, clipBox, opacity);
