@@ -1299,6 +1299,168 @@
         });
     }
 
+    function lineCoefficients(line) {
+        const equation = (line && (line.equation || line)) || {};
+        const a = parseFractionLike(equation.A ?? equation.a);
+        const b = parseFractionLike(equation.B ?? equation.b);
+        const c = parseFractionLike(equation.C ?? equation.c ?? 0);
+        if (![a, b, c].every(Number.isFinite) || (a === 0 && b === 0)) {
+            return null;
+        }
+        return { a: a, b: b, c: c };
+    }
+
+    function parseShadeInequality(text) {
+        const raw = String(text || '').replace(/\s+/g, '');
+        const matched = raw.match(/^([+-]?(?:\d+(?:\/\d+)?))x([+-](?:\d+(?:\/\d+)?))y([+-](?:\d+(?:\/\d+)?))(≤|≥|<=|>=|<|>)0$/);
+        if (!matched) {
+            return null;
+        }
+        const a = parseFractionLike(matched[1]);
+        const b = parseFractionLike(matched[2]);
+        const c = parseFractionLike(matched[3]);
+        if (![a, b, c].every(Number.isFinite)) {
+            return null;
+        }
+        return { a: a, b: b, c: c, op: matched[4] };
+    }
+
+    function inequalityHolds(parsed, x, y) {
+        const value = parsed.a * x + parsed.b * y + parsed.c;
+        if (parsed.op === '≤' || parsed.op === '<=') {
+            return value <= 1e-8;
+        }
+        if (parsed.op === '≥' || parsed.op === '>=') {
+            return value >= -1e-8;
+        }
+        if (parsed.op === '<') {
+            return value < -1e-8;
+        }
+        if (parsed.op === '>') {
+            return value > 1e-8;
+        }
+        return false;
+    }
+
+    function resolveShadeTestPoint(visualSpec, lines, xMin, xMax, yMin, yMax) {
+        const shade = visualSpec && visualSpec.shade;
+        if (!shade || typeof shade !== 'object') {
+            return null;
+        }
+        if (Array.isArray(shade.test_point) && shade.test_point.length >= 2) {
+            const x = Number(shade.test_point[0]);
+            const y = Number(shade.test_point[1]);
+            if (Number.isFinite(x) && Number.isFinite(y)) {
+                return { x: x, y: y };
+            }
+        }
+        const parsed = parseShadeInequality(shade.inequality);
+        if (!parsed) {
+            return null;
+        }
+        for (let i = 1; i < 13; i += 1) {
+            for (let j = 1; j < 13; j += 1) {
+                const x = xMin + (xMax - xMin) * i / 13;
+                const y = yMin + (yMax - yMin) * j / 13;
+                const onBoundary = lines.some(function (line) {
+                    const coeff = lineCoefficients(line);
+                    return coeff && Math.abs(coeff.a * x + coeff.b * y + coeff.c) < 1e-6;
+                });
+                if (!onBoundary && inequalityHolds(parsed, x, y)) {
+                    return { x: x, y: y };
+                }
+            }
+        }
+        return null;
+    }
+
+    function clipPolygonHalfPlane(polygon, a, b, c, keepPositive) {
+        function valueAt(point) {
+            return a * point.x + b * point.y + c;
+        }
+        function isInside(point) {
+            const value = valueAt(point);
+            if (Math.abs(value) <= 1e-8) {
+                return true;
+            }
+            return keepPositive ? value > 0 : value < 0;
+        }
+        function intersection(p, q) {
+            const vp = valueAt(p);
+            const vq = valueAt(q);
+            const denom = vp - vq;
+            const t = Math.abs(denom) < 1e-12 ? 0 : vp / denom;
+            return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t };
+        }
+        if (!polygon.length) {
+            return [];
+        }
+        const output = [];
+        for (let index = 0; index < polygon.length; index += 1) {
+            const current = polygon[index];
+            const previous = polygon[(index + polygon.length - 1) % polygon.length];
+            const currentIn = isInside(current);
+            const previousIn = isInside(previous);
+            if (currentIn) {
+                if (!previousIn) {
+                    output.push(intersection(previous, current));
+                }
+                output.push(current);
+            } else if (previousIn) {
+                output.push(intersection(previous, current));
+            }
+        }
+        return output;
+    }
+
+    function drawInequalityShade(context, mapX, mapY, visualSpec, xMin, xMax, yMin, yMax, opacity) {
+        const lines = []
+            .concat(Array.isArray(visualSpec.lines) ? visualSpec.lines : [])
+            .concat((Array.isArray(visualSpec.drawable_primitives) ? visualSpec.drawable_primitives : []).filter(function (item) {
+                return item && item.type === 'line';
+            }));
+        const probe = resolveShadeTestPoint(visualSpec, lines, xMin, xMax, yMin, yMax);
+        if (!probe || !lines.length || typeof context.fill !== 'function') {
+            return;
+        }
+        let polygon = [
+            { x: xMin, y: yMin },
+            { x: xMax, y: yMin },
+            { x: xMax, y: yMax },
+            { x: xMin, y: yMax }
+        ];
+        lines.forEach(function (line) {
+            const coeff = lineCoefficients(line);
+            if (!coeff) {
+                return;
+            }
+            const probeValue = coeff.a * probe.x + coeff.b * probe.y + coeff.c;
+            if (Math.abs(probeValue) <= 1e-8) {
+                return;
+            }
+            polygon = clipPolygonHalfPlane(polygon, coeff.a, coeff.b, coeff.c, probeValue > 0);
+        });
+        if (polygon.length < 3) {
+            return;
+        }
+        context.save();
+        context.beginPath();
+        polygon.forEach(function (point, index) {
+            const px = mapX(point.x);
+            const py = mapY(point.y);
+            if (index === 0) {
+                context.moveTo(px, py);
+            } else {
+                context.lineTo(px, py);
+            }
+        });
+        context.closePath();
+        context.globalAlpha = Math.max(0.12, Math.min(0.28, opacity));
+        context.fillStyle = '#2563eb';
+        context.fill();
+        context.restore();
+    }
+
     function renderCoordinatePlaneInRect(context, visualSpec, destRect, options) {
         const opts = normalizeOptions(options);
         const axis = visualSpec.axis_range || {};
@@ -1381,6 +1543,8 @@
             context.stroke();
         }
 
+        drawInequalityShade(context, mapX, mapY, visualSpec, xMin, xMax, yMin, yMax, opacity);
+
         const marks = Array.isArray(visualSpec.right_angle_marks) ? visualSpec.right_angle_marks : [];
         marks.forEach(function (mark) {
             drawRightAngleMark(context, mapX, mapY, mark, opacity);
@@ -1401,6 +1565,9 @@
             const color = lineColors[lineIndex % lineColors.length];
             context.strokeStyle = applyFadedColor(color, opacity);
             context.lineWidth = 2.2;
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash(String(line.style || '').toLowerCase() === 'dashed' ? [7, 5] : []);
+            }
             if (hasNumericThroughPoints(line, points)) {
                 const p1 = resolvePointReference(line.through_points[0], points);
                 const p2 = resolvePointReference(line.through_points[1], points);
@@ -1455,6 +1622,9 @@
                 drawLineSegment(context, mapX, mapY, xValue, yMin, xValue, yMax, clipBox);
             }
         });
+        if (typeof context.setLineDash === 'function') {
+            context.setLineDash([]);
+        }
 
         // Circles (Ch4 circle.plane parametric visuals)
         const circles = Array.isArray(visualSpec.circles) ? visualSpec.circles : [];

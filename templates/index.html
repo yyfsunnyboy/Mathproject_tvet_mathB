@@ -1814,7 +1814,7 @@
                 display: grid;
                 /* answer row must be min-content so multipart fields are not
                    painted under the scratchpad canvas track. */
-                grid-template-rows: auto minmax(0, auto) min-content minmax(280px, 1fr);
+                grid-template-rows: min-content minmax(min-content, auto) min-content minmax(280px, 1fr);
                 grid-template-areas:
                     "header"
                     "question"
@@ -1832,15 +1832,16 @@
             .practice-header-block {
                 grid-area: header;
                 padding: 10px 16px 0;
+                min-height: min-content;
+                overflow: visible;
             }
 
             .practice-question-block {
                 grid-area: question;
                 padding: 0 16px;
-                min-height: 0;
-                max-height: var(--question-scroll-max);
-                overflow-x: hidden;
-                overflow-y: auto;
+                min-height: min-content;
+                max-height: none;
+                overflow: visible;
             }
 
             .practice-answer-block {
@@ -2129,7 +2130,7 @@
     </style>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=b3-ch2-layout-1">
-    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=ineq-shade-1"></script>
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
