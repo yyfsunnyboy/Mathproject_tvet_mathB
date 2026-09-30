@@ -12,6 +12,7 @@ from flask_login import current_user
 from core.vocational_math_b4.adaptive.b4_chapter2_phase6c1_allowlist import (
     is_b4_chapter2_phase6c1_deterministic_skill,
 )
+from core.backup.excel_sanitizer import repair_known_latex_escape_corruption
 from models import ClassStudent, PracticeAttempt, db
 
 SOURCE_GENERAL_PRACTICE = "general_practice"
@@ -26,6 +27,10 @@ def _normalize_answer_text(value: Any) -> str | None:
         except (TypeError, ValueError):
             return str(value)
     text = str(value).strip()
+    # A client that serializes a non-raw LaTeX literal can turn ``\frac`` into
+    # form-feed + ``rac``.  Repair only the evidence-backed signature; valid
+    # tabs/newlines/carriage returns remain untouched.
+    text, _ = repair_known_latex_escape_corruption(text)
     return text if text else None
 
 

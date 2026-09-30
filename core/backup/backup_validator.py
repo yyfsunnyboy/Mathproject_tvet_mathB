@@ -19,6 +19,7 @@ from core.backup.backup_registry import (
     get_core_table_names,
     get_table_spec,
 )
+from core.backup.excel_sanitizer import sanitize_export_frames
 
 BACKUP_FORMAT_VERSION = 2
 SUPPORTED_BACKUP_FORMAT_VERSION = 2
@@ -467,13 +468,19 @@ def validate_legacy_workbook_structure(
 def write_workbook_bytes(
     frames: dict[str, pd.DataFrame],
     manifest_df: pd.DataFrame,
+    *,
+    sanitize: bool = True,
 ) -> bytes:
+    # This is the final writer boundary.  Keep it safe even when called
+    # directly rather than through build_and_validate_export.
+    export_frames = sanitize_export_frames(frames)[0] if sanitize else frames
+    export_manifest = sanitize_export_frames({MANIFEST_SHEET: manifest_df})[0][MANIFEST_SHEET] if sanitize else manifest_df
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-        for table_name, df in frames.items():
+        for table_name, df in export_frames.items():
             sheet = safe_sheet_name(table_name)
             df.to_excel(writer, sheet_name=sheet, index=False)
-        manifest_df.to_excel(writer, sheet_name=MANIFEST_SHEET, index=False)
+        export_manifest.to_excel(writer, sheet_name=MANIFEST_SHEET, index=False)
     buffer.seek(0)
     return buffer.getvalue()
 
@@ -493,16 +500,17 @@ def build_and_validate_export(
         if logger:
             logger.warning(note)
 
+    sanitized_frames, sanitization_report = sanitize_export_frames(frames)
     manifest_df = build_manifest_dataframe(
         export_mode=mode,
         expected_tables=expected_tables,
         source_counts=source_counts,
-        exported_frames=frames,
+        exported_frames=sanitized_frames,
         source_database_name=source_database_name,
         integrity_check=integrity_check,
         foreign_key_check_rows=fk_rows,
     )
-    payload = write_workbook_bytes(frames, manifest_df)
+    payload = write_workbook_bytes(sanitized_frames, manifest_df, sanitize=False)
     report = validate_export_workbook(
         payload,
         expected_tables=expected_tables,
@@ -538,6 +546,7 @@ def build_and_validate_export(
         "integrity_check": integrity_check,
         "foreign_key_check_rows": fk_rows,
         "warnings": report.warnings,
+        "sanitization": sanitization_report.to_dict(),
     }
     if logger:
         logger.info(

@@ -2206,9 +2206,6 @@ def db_maintenance():
                         if bool(secret_rows.any()):
                             df = pd.DataFrame(redact_system_settings_records(df.to_dict("records")), columns=df.columns)
                             current_app.logger.info("INFO: redacted environment-managed secret settings from export")
-                    for col in df.columns:
-                        if str(df[col].dtype) == "object":
-                            df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x) if isinstance(x, str) else x)
                     frames[table] = df
                     current_app.logger.info(f"INFO: exporting {mode} table {table} ({len(df)} rows)")
                 except Exception:
@@ -2238,13 +2235,26 @@ def db_maintenance():
                 return redirect(url_for('core.db_maintenance'))
 
             session["last_db_maintenance_op"] = "export"
-            flash(
+            sanitization = export_summary.get("sanitization", {})
+            if sanitization.get("sanitized_cells"):
+                current_app.logger.warning(
+                    "INFO: export sanitization cells=%s latex_repairs=%s escaped_chars=%s details=%s",
+                    sanitization.get("sanitized_cells"),
+                    sanitization.get("repaired_latex_cells"),
+                    sanitization.get("removed_or_escaped_chars"),
+                    sanitization.get("cells"),
+                )
+            completion_message = (
                 "備份完成："
                 f"{export_summary.get('table_count', len(export_tables))} 張資料表，"
                 f"共 {int(export_summary.get('total_rows', 0)):,} 筆資料，"
-                "完整性驗證通過 ✓",
-                "success",
+                + (
+                    f"已清理 {int(sanitization.get('sanitized_cells', 0))} 個文字儲存格，"
+                    if sanitization.get("sanitized_cells") else ""
+                )
+                + "完整性驗證通過 ✓"
             )
+            flash(completion_message, "success")
             output = io.BytesIO(payload)
             return send_file(
                 output,

@@ -1,0 +1,8 @@
+{
+  "mode": "dry-run",
+  "database": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "finding_count": 0,
+  "repairable_finding_count": 0,
+  "native_backup": null,
+  "findings": []
+}

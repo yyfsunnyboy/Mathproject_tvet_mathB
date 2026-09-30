@@ -1,0 +1,279 @@
+{
+  "mode": "dry-run",
+  "database": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "finding_count": 18,
+  "repairable_finding_count": 18,
+  "native_backup": null,
+  "findings": [
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1049
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1049
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1084
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} \\text{ 或 } x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} \\text{ 或 } x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} \\text{ 或 } x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1084
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} \\text{ 或 } x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} \\text{ 或 } x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} \\text{ 或 } x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1085
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\le \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1085
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\le \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1092
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} 或 x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1092
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} 或 x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1093
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\le \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1093
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\le \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\le \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1097
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1097
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9}'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1106
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} 或 x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1106
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "before_repr": "'x \\\\ge \\x0crac{25}{8} 或 x \\\\le \\x0crac{5}{8}'",
+      "after_repr": "'x \\\\ge \\\\frac{25}{8} 或 x \\\\le \\\\frac{5}{8}'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1108
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, '",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9} (\\\\frac{17}{9}, \\\\frac{11}{9})'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1108
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9} (\\\\frac{17}{9}, \\\\frac{11}{9})'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1108
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9} (\\\\frac{17}{9}, \\\\frac{11}{9})'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    },
+    {
+      "table": "practice_attempts",
+      "primary_key": {
+        "id": 1108
+      },
+      "column": "user_answer",
+      "char_code": "U+000C",
+      "context": "'}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "before_repr": "'x \\\\ge \\x0crac{17}{9}, x \\\\ge \\x0crac{11}{9} (\\x0crac{17}{9}, \\x0crac{11}{9})'",
+      "after_repr": "'x \\\\ge \\\\frac{17}{9}, x \\\\ge \\\\frac{11}{9} (\\\\frac{17}{9}, \\\\frac{11}{9})'",
+      "semantic_repairs": [
+        "form_feed_frac"
+      ],
+      "repairable": true
+    }
+  ]
+}
