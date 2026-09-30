@@ -86,6 +86,57 @@ def test_compound_radicals_and_explicit_stem_math():
         r'\(\frac{3\sqrt{2}}{2}\)', r'已知 \(a = \frac{3\sqrt{2}}{2}\)，求角度']
 
 
+def _slash(values: list[str]) -> list[str]:
+    script = (
+        "const n=require(process.argv[1]);"
+        "process.stdout.write(JSON.stringify(JSON.parse(process.argv[2]).map(v=>n.slashFractionsToLatex(v))));"
+    )
+    completed = subprocess.run(
+        ["node", "-e", script, str(NORMALIZER), json.dumps(values, ensure_ascii=False)],
+        cwd=ROOT, check=True, capture_output=True, text=True, encoding="utf-8",
+    )
+    return json.loads(completed.stdout)
+
+
+def test_math_slash_fractions_become_stacked_latex():
+    assert _slash(["a^2/b", "3/4", "(a+b)/(c-d)", r"\sqrt{3}/2", "-2/25x+80",
+                   "f(x)/2", "a/b/c", "u^2/v"]) == [
+        r"\frac{a^2}{b}", r"\frac{3}{4}", r"\frac{a+b}{c-d}", r"\frac{\sqrt{3}}{2}",
+        r"-\frac{2}{25}x+80", r"\frac{f(x)}{2}", r"\frac{\frac{a}{b}}{c}", r"\frac{u^2}{v}",
+    ]
+
+
+def test_ambiguous_or_textual_slashes_are_left_alone():
+    values = [r"\text{km/h}", r"\left(a+b\right)/2", "http://x", "2/-3"]
+    assert _slash(values) == values
+
+
+def test_plain_text_slashes_outside_math_are_unchanged():
+    values = ["比例 A/B 組", "日期 2024/1/1", "請用 x/y 表示", "cos(270°+θ)/sin(360°−θ)"]
+    assert _normalize(values) == values
+
+
+def test_slash_fractions_inside_explicit_math_spans():
+    assert _normalize([r"已知點 $C(u^2/v, -v)$ 在第三象限", r"\(a_n=(-1/2)a_{n-1}\)"]) == [
+        r"已知點 $C(\frac{u^2}{v}, -v)$ 在第三象限", r"\(a_n=(-\frac{1}{2})a_{n-1}\)",
+    ]
+
+
+def test_choice_display_renders_slash_fractions_stacked():
+    script = r'''
+      globalThis.MathDisplayNormalizer = require('./static/js/math_display_normalizer.js');
+      const c = require('./static/js/choice_math.js');
+      process.stdout.write(JSON.stringify([
+        c.choiceDisplay({text:'y=-2/25x+80'}),
+        c.choiceDisplay({text:'a^2/b'}),
+        c.choiceDisplay({text:'向上'}),
+      ]));
+    '''
+    result = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True,
+                            check=True, encoding='utf-8')
+    assert json.loads(result.stdout) == [r'\(y=-\frac{2}{25}x+80\)', r'\(\frac{a^{2}}{b}\)', '向上']
+
+
 def test_choice_fallback_with_present_but_noop_normalizer():
     script = r'''
       globalThis.MathDisplayNormalizer = { normalizeMathText: x => x };

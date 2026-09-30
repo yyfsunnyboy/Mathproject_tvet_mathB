@@ -717,7 +717,21 @@ def build_gap_matrix(
         sx = -(pq[0] + qr[0] + rs[0])
         sy = -(pq[1] + qr[1] + rs[1])
         correct = format_pair(sx, sy)
-        distractors = [format_pair(-sx, -sy), format_pair(sx, -sy), format_pair(pq[0] + qr[0] + rs[0], pq[1] + qr[1] + rs[1])]
+        distractors: list[str] = []
+        for dx, dy in (
+            (-sx, -sy),
+            (sx + rs[0], sy + rs[1]),
+            (sx, -sy),
+            (-sx, sy),
+            (sy, sx),
+            (sx + 1, sy),
+            (sx, sy + 1),
+            (sx - 1, sy - 1),
+        ):
+            pair = format_pair(dx, dy)
+            if pair != correct and pair not in distractors:
+                distractors.append(pair)
+        distractors = distractors[:3]
         result = {"canonical": correct}
         choice_meta = _choice_payload(correct, distractors, rng)
         question = (
@@ -1027,9 +1041,10 @@ def build_gap_matrix(
         # Abstracted from exam: BC ⊥ OD => BC·OD=0; ask which statement about OA·OD
         # Given angle AOD > 90 => OA·OD < 0
         correct = r"\overrightarrow{OA}\cdot\overrightarrow{OD}<0"
+        # Every option must share the inequality answer shape required by the MCQ gate.
         distractors = [
             r"\overrightarrow{OA}\cdot\overrightarrow{OD}>0",
-            r"\overrightarrow{OA}\cdot\overrightarrow{OD}=0",
+            r"\overrightarrow{BC}\cdot\overrightarrow{OD}<0",
             r"\overrightarrow{BC}\cdot\overrightarrow{OD}>0",
         ]
         result = {"canonical": correct}

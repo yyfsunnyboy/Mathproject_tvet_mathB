@@ -13,7 +13,12 @@
     const REGION_WIDTH_RATIO = 0.7;
     const REGION_HEIGHT_RATIO = 0.68;
     const IMAGE_OPACITY = 0.86;
+    // Wide canvases (desktop / tablet) draw a single question figure at about 2/3
+    // of the reference region so more of the canvas stays free for writing.
+    const WIDE_FIGURE_SCALE = 0.67;
+    const WIDE_FIGURE_MIN_CANVAS_WIDTH = 560;
 
+    let compactQuestionFigure = true;
     let storedVisualSpec = null;
     let storedQuestionImage = null;
     let storedImageSource = null;
@@ -40,6 +45,27 @@
             canvasWidth: cw,
             canvasHeight: ch
         };
+    }
+
+    // Drawing answers use the figure as their answer surface and keep full size.
+    function setCompactQuestionFigure(enabled) {
+        compactQuestionFigure = enabled !== false;
+    }
+
+    function computeQuestionFigureRegion(canvasWidth, canvasHeight, edgePadding) {
+        const region = computeQuestionBackgroundRegion(canvasWidth, canvasHeight, edgePadding);
+        if (!compactQuestionFigure || region.canvasWidth < WIDE_FIGURE_MIN_CANVAS_WIDTH) {
+            return region;
+        }
+        const quadrantWidth = region.quadrantWidth * WIDE_FIGURE_SCALE;
+        const quadrantHeight = region.quadrantHeight * WIDE_FIGURE_SCALE;
+        return Object.assign({}, region, {
+            width: Math.max(1, quadrantWidth - region.edgePadding),
+            height: Math.max(1, quadrantHeight - region.edgePadding),
+            quadrantWidth: quadrantWidth,
+            quadrantHeight: quadrantHeight,
+            figureScale: WIDE_FIGURE_SCALE
+        });
     }
 
     function computeFullCanvasRegion(canvasWidth, canvasHeight, edgePadding) {
@@ -225,7 +251,7 @@
         const isMulti = images.length > 1;
         const region = isMulti
             ? computeFullCanvasRegion(cssWidth, cssHeight)
-            : computeQuestionBackgroundRegion(cssWidth, cssHeight);
+            : computeQuestionFigureRegion(cssWidth, cssHeight);
         const grid = isMulti ? computeImageGrid(images.length, cssWidth, cssHeight) : null;
         const rects = images.map(function (image, index) {
             if (storedReferenceDiagram && !isMulti) {
@@ -283,7 +309,7 @@
         const isMulti = runtime.isMultiFigureSpec && runtime.isMultiFigureSpec(storedVisualSpec);
         const region = isMulti
             ? computeFullCanvasRegion(cssWidth, cssHeight)
-            : computeQuestionBackgroundRegion(cssWidth, cssHeight);
+            : computeQuestionFigureRegion(cssWidth, cssHeight);
         const ok = runtime.renderToCanvas(ctx.canvas, storedVisualSpec, {
             width: cssWidth,
             height: cssHeight,
@@ -526,7 +552,11 @@
         REGION_WIDTH_RATIO: REGION_WIDTH_RATIO,
         REGION_HEIGHT_RATIO: REGION_HEIGHT_RATIO,
         IMAGE_OPACITY: IMAGE_OPACITY,
+        WIDE_FIGURE_SCALE: WIDE_FIGURE_SCALE,
+        WIDE_FIGURE_MIN_CANVAS_WIDTH: WIDE_FIGURE_MIN_CANVAS_WIDTH,
         computeQuestionBackgroundRegion: computeQuestionBackgroundRegion,
+        computeQuestionFigureRegion: computeQuestionFigureRegion,
+        setCompactQuestionFigure: setCompactQuestionFigure,
         computeFullCanvasRegion: computeFullCanvasRegion,
         computeImageGrid: computeImageGrid,
         computeContainRect: computeContainRect,

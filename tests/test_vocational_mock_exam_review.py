@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote
@@ -7,7 +8,11 @@ from urllib.parse import quote
 import pytest
 
 from app import create_app
-from core.vocational_mock_exam_scope import OFFICIAL_UNITS, official_unit_for_chapter
+from core.vocational_mock_exam_scope import (
+    OFFICIAL_UNITS,
+    build_mock_exam_scope,
+    official_unit_for_chapter,
+)
 from models import (
     PracticeAttempt,
     Progress,
@@ -39,6 +44,7 @@ def mock_exam_app(tmp_path: Path):
             db.session.add_all(users)
             skills = [
                 ("vh_數學B1_MockCoordinate", "坐標練習", True, "數學B1", "1 坐標系與函數圖形", "1-2", 1),
+                ("vh_數學B1_MockCoordinateSecond", "坐標延伸練習", True, "數學B1", "1 坐標系與函數圖形", "1-2", 2),
                 ("vh_數學B1_MockLine", "直線練習", True, "數學B1", "2 直線方程式", "2-1", 2),
                 ("vh_數學B1_MockExpression", "運算練習", True, "數學B1", "3 式的運算", "3-1", 3),
                 ("vh_數學B2_MockTrig", "三角函數練習", True, "數學B2", "第1章 三角函數", "1-1", 4),
@@ -213,9 +219,9 @@ def test_exam_5_uses_all_enabled_vocational_b1_to_b4_curriculum_rows(mock_exam_a
     for volume in ("數學B1", "數學B2", "數學B3", "數學B4"):
         assert volume in html
     for chapter in (
-        "1 坐標系與函數圖形",
-        "2 直線方程式",
-        "3 式的運算",
+        "第1章 坐標系與函數圖形",
+        "第2章 直線方程式",
+        "第3章 式的運算",
         "第1章 三角函數",
         "第2章 三角函數的應用",
         "第3章 向 量",
@@ -224,9 +230,9 @@ def test_exam_5_uses_all_enabled_vocational_b1_to_b4_curriculum_rows(mock_exam_a
         "第2章 方程式",
         "第3章 二元一次不等式及其應用",
         "第4章 指數與對數",
-        "1 排列組合",
-        "2 機率",
-        "3 統計",
+        "第1章 排列組合",
+        "第2章 機率",
+        "第3章 統計",
     ):
         assert chapter in html
     assert "未啟用方程式" not in html
@@ -254,7 +260,8 @@ def test_exam_5_keeps_shared_skill_in_each_existing_curriculum_chapter(mock_exam
     html = client.get("/vocational/mock-exam/exam_5").get_data(as_text=True)
 
     assert "第5章 複數" not in html
-    assert html.count("vh_%E6%95%B8%E5%AD%B8B1_MockCoordinate") == 2
+    coordinate_href = f'/practice/{quote("vh_數學B1_MockCoordinate", safe="")}"'
+    assert html.count(coordinate_href) == 2
 
 
 def test_exam_1_and_exam_2_keep_their_official_units(mock_exam_app):
@@ -311,6 +318,95 @@ def test_exam_1_and_exam_2_keep_their_official_units(mock_exam_app):
         assert label in exam_2
     for label in exam_2_absent:
         assert label not in exam_2
+
+
+@pytest.mark.parametrize(
+    ("exam_id", "expected_skill_ids"),
+    [
+        (
+            "exam_1",
+            [
+                "vh_數學B1_MockCoordinate",
+                "vh_數學B1_MockCoordinateSecond",
+                "vh_數學B1_MockLine",
+                "vh_數學B1_MockExpression",
+                "vh_數學B3_MockEquation",
+            ],
+        ),
+        (
+            "exam_2",
+            [
+                "vh_數學B1_MockCoordinate",
+                "vh_數學B1_MockCoordinateSecond",
+                "vh_數學B1_MockLine",
+                "vh_數學B1_MockExpression",
+                "vh_數學B2_MockTrig",
+                "vh_數學B2_MockTrigApply",
+                "vh_數學B2_MockVector",
+                "vh_數學B2_MockCircle",
+                "vh_數學B3_MockEquation",
+            ],
+        ),
+        (
+            "exam_5",
+            [
+                "vh_數學B1_MockCoordinate",
+                "vh_數學B1_MockCoordinateSecond",
+                "vh_數學B1_MockLine",
+                "vh_數學B1_MockExpression",
+                "vh_數學B2_MockTrig",
+                "vh_數學B2_MockTrigApply",
+                "vh_數學B2_MockVector",
+                "vh_數學B2_MockCircle",
+                "vh_數學B3_MockSequence",
+                "vh_數學B3_MockEquation",
+                "vh_數學B3_MockInequality",
+                "vh_數學B3_MockLog",
+                "vh_數學B4_MockCombination",
+                "vh_數學B4_MockProbability",
+                "vh_數學B4_MockStatistics",
+            ],
+        ),
+    ],
+)
+def test_mock_exam_routes_render_each_scope_in_textbook_order_despite_global_display_order(
+    mock_exam_app, exam_id: str, expected_skill_ids: list[str]
+):
+    app, user_ids = mock_exam_app
+    with app.app_context():
+        # Deliberately invert the global values.  Scope membership remains the
+        # same; only the presentation order should be recovered from the formal
+        # volume/chapter/section coordinates plus in-section sequence.
+        rows = SkillCurriculum.query.filter_by(curriculum="vocational").all()
+        for index, row in enumerate(rows):
+            row.display_order = 10_000 - index
+        same_section_rows = {
+            row.skill_id: row
+            for row in rows
+            if row.skill_id in {
+                "vh_數學B1_MockCoordinate",
+                "vh_數學B1_MockCoordinateSecond",
+            }
+        }
+        same_section_rows["vh_數學B1_MockCoordinate"].display_order = 20
+        same_section_rows["vh_數學B1_MockCoordinateSecond"].display_order = 30
+        db.session.commit()
+
+        scope = build_mock_exam_scope(exam_id)
+        assert scope is not None
+        actual_skill_ids = [
+            skill["skill_id"]
+            for volume in scope["volumes"]
+            for unit in volume["units"]
+            for skill in unit["skills"]
+        ]
+        assert actual_skill_ids == expected_skill_ids
+
+    client = app.test_client()
+    _login(client, user_ids["voc_mock"])
+    html = client.get(f"/vocational/mock-exam/{exam_id}").get_data(as_text=True)
+    positions = [html.index(quote(skill_id, safe="")) for skill_id in expected_skill_ids]
+    assert positions == sorted(positions)
 
 
 def test_publisher_chapters_map_to_one_official_unit():
@@ -384,3 +480,94 @@ def test_mock_exam_route_rejects_unknown_exam_id(mock_exam_app):
     assert client.get("/vocational/mock-exam/exam_99").status_code == 404
     assert client.get("/vocational/mock-exam/exam_3").status_code == 404
     assert client.get("/vocational/mock-exam/exam_4").status_code == 404
+
+
+def _dashboard_chapter_card_titles(client, volume: str) -> list[str]:
+    html = client.get(
+        f"/dashboard?view=curriculum&curriculum=vocational&volume={quote(volume)}"
+    ).get_data(as_text=True)
+    return re.findall(r'<div class="level-card chapter-card"[^>]*>\s*<h3>(.*?)</h3>', html)
+
+
+def _mock_exam_chapter_titles_by_volume(html: str) -> dict[str, list[str]]:
+    titles: dict[str, list[str]] = {}
+    for section in re.split(r"<h2>", html)[1:]:
+        volume, _, body = section.partition("</h2>")
+        titles[volume.strip()] = re.findall(r"<summary>(.*?)</summary>", body)
+    return titles
+
+
+EXPECTED_DASHBOARD_CHAPTER_TITLES = {
+    "數學B1": ["第1章 坐標系與函數圖形", "第2章 直線方程式", "第3章 式的運算"],
+    "數學B2": ["第1章 三角函數", "第2章 三角函數的應用", "第3章 向 量", "第4章 圓與直線"],
+    "數學B3": ["第1章 數列與級數", "第2章 方程式", "第3章 二元一次不等式及其應用", "第4章 指數與對數"],
+    "數學B4": ["第1章 排列組合", "第2章 機率", "第3章 統計"],
+}
+
+
+def test_dashboard_chapter_cards_keep_their_existing_titles(mock_exam_app):
+    app, user_ids = mock_exam_app
+    client = app.test_client()
+    _login(client, user_ids["voc_mock"])
+
+    for volume, expected in EXPECTED_DASHBOARD_CHAPTER_TITLES.items():
+        titles = _dashboard_chapter_card_titles(client, volume)
+        assert sorted(title for title in titles if title in expected) == sorted(expected)
+
+
+@pytest.mark.parametrize(
+    ("exam_id", "expected_titles"),
+    [
+        (
+            "exam_1",
+            {
+                "數學B1": ["第1章 坐標系與函數圖形", "第2章 直線方程式", "第3章 式的運算"],
+                "數學B3": ["第2章 方程式"],
+            },
+        ),
+        (
+            "exam_2",
+            {
+                "數學B1": ["第1章 坐標系與函數圖形", "第2章 直線方程式", "第3章 式的運算"],
+                "數學B2": ["第1章 三角函數", "第2章 三角函數的應用", "第3章 向 量", "第4章 圓與直線"],
+                "數學B3": ["第2章 方程式"],
+            },
+        ),
+        ("exam_5", EXPECTED_DASHBOARD_CHAPTER_TITLES),
+    ],
+)
+def test_mock_exam_chapter_titles_match_dashboard_chapter_cards(
+    mock_exam_app, exam_id: str, expected_titles: dict[str, list[str]]
+):
+    app, user_ids = mock_exam_app
+    client = app.test_client()
+    _login(client, user_ids["voc_mock"])
+
+    response = client.get(f"/vocational/mock-exam/{exam_id}")
+    assert response.status_code == 200
+    exam_titles = _mock_exam_chapter_titles_by_volume(response.get_data(as_text=True))
+
+    assert exam_titles == expected_titles
+    for volume, titles in exam_titles.items():
+        dashboard_titles = _dashboard_chapter_card_titles(client, volume)
+        for title in titles:
+            assert title in dashboard_titles
+    for raw_chapter in ("1 坐標系與函數圖形", "2 直線方程式", "3 式的運算", "1 排列組合", "2 機率", "3 統計"):
+        assert all(raw_chapter != title for titles in exam_titles.values() for title in titles)
+
+
+@pytest.mark.parametrize("exam_id", ["exam_1", "exam_2", "exam_5"])
+def test_mock_exam_chapter_titles_do_not_change_scope_grouping(mock_exam_app, exam_id: str):
+    app, _ = mock_exam_app
+    with app.app_context():
+        scope = build_mock_exam_scope(exam_id)
+        assert scope is not None
+        for volume in scope["volumes"]:
+            raw_chapters = [unit["chapter"] for unit in volume["units"]]
+            assert len(raw_chapters) == len(set(raw_chapters))
+            for unit in volume["units"]:
+                rows = SkillCurriculum.query.filter_by(
+                    curriculum="vocational", volume=volume["volume"], chapter=unit["chapter"]
+                ).all()
+                assert {row.skill_id for row in rows} >= {skill["skill_id"] for skill in unit["skills"]}
+                assert unit["unit_name"].endswith(unit["chapter"].split(" ", 1)[-1])

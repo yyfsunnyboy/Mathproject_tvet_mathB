@@ -117,6 +117,35 @@
     "healer_applied": false
   },
   {
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "family_id": "I9",
+    "script_path": "skills/adaptive/jh_數學1上_FourArithmeticOperationsOfIntegers__I9__int_power_sign_parentheses.py",
+    "version": 1,
+    "subskill_nodes": [
+      "power_notation_basics",
+      "signed_power_interpretation",
+      "parenthesized_negative_base",
+      "minus_outside_power"
+    ],
+    "generated_at": "2026-09-30T00:00:00",
+    "model_name": "catalog-backed-micro-generator",
+    "healer_applied": false
+  },
+  {
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "family_id": "I10",
+    "script_path": "skills/adaptive/jh_數學1上_FourArithmeticOperationsOfIntegers__I10__int_power_mixed_evaluation.py",
+    "version": 1,
+    "subskill_nodes": [
+      "power_precedence_in_mixed_ops",
+      "signed_power_evaluation",
+      "mixed_power_arithmetic"
+    ],
+    "generated_at": "2026-09-30T00:00:00",
+    "model_name": "catalog-backed-micro-generator",
+    "healer_applied": false
+  },
+  {
     "skill_id": "jh_數學1上_FourArithmeticOperationsOfNumbers",
     "family_id": "F1",
     "script_path": "skills/adaptive/jh_數學1上_FourArithmeticOperationsOfNumbers__F1__Fraction_Simplification.py",

@@ -9,6 +9,13 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict';
 
+    function slashFractions(latex) {
+        const normalizer = typeof globalThis !== 'undefined' ? globalThis.MathDisplayNormalizer : null;
+        return normalizer && typeof normalizer.slashFractionsToLatex === 'function'
+            ? normalizer.slashFractionsToLatex(latex)
+            : latex;
+    }
+
     function formatChoiceMathDisplay(value) {
         const canonical = String(value || '').trim();
         if (!canonical) return canonical;
@@ -35,7 +42,7 @@
 
         // Bare TeX atoms (e.g. \overrightarrow{AB}, \vec{a}) must be delimited.
         if (/\\[a-zA-Z]+/.test(canonical) && !/(?:\\\(|\\\[|\$\$|\$)/.test(canonical)) {
-            return `\\(${canonical}\\)`;
+            return `\\(${slashFractions(canonical)}\\)`;
         }
 
         // Classroom equations / powers (same contract as stem MathJax).
@@ -49,7 +56,7 @@
                 const body = String(exp).replace(/^\{|\}$/g, '');
                 return `${base}^{${body}}`;
             });
-            return `\\(${latex}\\)`;
+            return `\\(${slashFractions(latex)}\\)`;
         }
 
         return canonical;

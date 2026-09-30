@@ -2,15 +2,51 @@
  * Shared practice answer rows.
  * Label and control stay on the left. Width follows the answer kind.
  * Choice buttons are not answer rows and are not styled here.
+ *
+ * The answer block is one left-aligned strip: fields, then the submit button,
+ * wrapping only when the practice column is too narrow.  Feedback starts a new
+ * line.  Every vertical pixel saved here goes to the scratchpad canvas.
  */
+
+.practice-answer-block {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.practice-answer-block > :not(.subquestions-container):not(.input-group) {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.practice-answer-block > #result-display {
+  margin-top: 0 !important;
+}
+
+.practice-answer-block > #result-display:empty {
+  display: none;
+}
 
 .practice-answer-block > .input-group {
   display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   flex-wrap: wrap;
   max-width: 100%;
+  margin-top: 0 !important;
+}
+
+.practice-answer-block > .input-group > #submit-button {
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  white-space: nowrap;
 }
 
 .multi-part-row {
@@ -24,7 +60,7 @@
 }
 
 .multi-part-row label {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   max-width: 100%;
   min-width: 0;
   font-weight: 600;
@@ -46,47 +82,186 @@
 
 .multi-part-row .multi-part-input.control-numeric,
 .practice-answer-block > .input-group #answer-input.control-numeric {
-  width: 160px;
-  min-width: 140px;
-  max-width: 180px;
+  width: 88px;
+  min-width: 72px;
+  max-width: 120px;
+}
+
+.multi-part-row .multi-part-input.control-coordinate,
+.practice-answer-block > .input-group #answer-input.control-coordinate {
+  width: 120px;
+  min-width: 100px;
+  max-width: 140px;
 }
 
 .multi-part-row .multi-part-input.control-fraction,
 .practice-answer-block > .input-group #answer-input.control-fraction {
-  width: 180px;
-  min-width: 160px;
-  max-width: 200px;
+  width: 110px;
+  min-width: 96px;
+  max-width: 140px;
 }
 
 .multi-part-row .multi-part-input.control-expression,
 .practice-answer-block > .input-group #answer-input.control-expression {
-  width: 280px;
-  min-width: 240px;
-  max-width: 320px;
+  width: 180px;
+  min-width: 150px;
+  max-width: 240px;
 }
 
 .multi-part-row .multi-part-input.control-equation,
 .practice-answer-block > .input-group #answer-input.control-equation,
 .multi-part-row .multi-part-input.control-inequality,
 .practice-answer-block > .input-group #answer-input.control-inequality {
-  width: 320px;
-  min-width: 280px;
-  max-width: 360px;
+  width: 180px;
+  min-width: 150px;
+  max-width: 240px;
 }
 
 .multi-part-row .multi-part-input.control-radical,
 .practice-answer-block > .input-group #answer-input.control-radical {
-  width: 260px;
-  min-width: 220px;
-  max-width: 300px;
+  width: 180px;
+  min-width: 150px;
+  max-width: 240px;
+}
+
+.multi-part-row .multi-part-input.control-text,
+.practice-answer-block > .input-group #answer-input.control-text {
+  width: 200px;
+  min-width: 160px;
+  max-width: 280px;
+}
+
+/* Semantic multipart answers only: the class is toggled by the practice
+ * renderer and never set for table-fill.  The field list and unlabeled groups
+ * are flattened into the strip so the submit button follows the last field;
+ * numbered groups stay together as one wrapping unit. */
+.practice-answer-block.has-multi-part-fields > .subquestions-container.multi-part-list {
+  display: contents !important;
+}
+
+.practice-answer-block.has-multi-part-fields .multi-part-group {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.practice-answer-block.has-multi-part-fields .multi-part-group:not(:has(> .multi-part-group-label)) {
+  display: contents;
+}
+
+.practice-answer-block.has-multi-part-fields .multi-part-group-label {
+  margin: 0;
+}
+
+.practice-answer-block.has-multi-part-fields .multi-part-row {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+
+/* Set by MultipartFieldRenderer.fitAnswerStrip only when the submit button
+ * would otherwise wrap alone: narrower but still typeable widths. */
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-numeric {
+  width: 64px;
+  min-width: 56px;
+}
+
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-coordinate,
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-fraction {
+  width: 96px;
+  min-width: 88px;
+}
+
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-expression,
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-equation,
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-inequality,
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-radical {
+  width: 140px;
+  min-width: 128px;
+}
+
+.practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-text {
+  width: 160px;
+  min-width: 140px;
+}
+
+/* Short single-field question: the page sets .question-answer-inline only after
+ * measuring that the rendered stem stays on one line and the answer strip fits
+ * beside it.  Feedback needs the full width, so the row splits again once the
+ * result is shown. */
+@media (min-width: 900px) {
+  .practice-area.question-answer-inline:not(:has(#result-display:not(:empty))) {
+    grid-template-columns: minmax(0, var(--question-inline-width, max-content)) minmax(0, 1fr);
+    grid-template-rows: min-content min-content minmax(280px, 1fr);
+    grid-template-areas:
+      "header header"
+      "question answer"
+      "canvas canvas";
+    align-items: center;
+  }
+
+  .practice-area.question-answer-inline:not(:has(#result-display:not(:empty))) > .practice-question-block {
+    padding-right: 0;
+  }
+
+  .practice-area.question-answer-inline:not(:has(#result-display:not(:empty))) > .practice-header-block,
+  .practice-area.question-answer-inline:not(:has(#result-display:not(:empty))) > #scratchpad-container {
+    align-self: stretch;
+  }
+}
+
+/* Measured compact stem (fitCompactStem): only applied when a short multipart stem
+ * misses a single line by a small margin on the desktop grid. */
+@media (min-width: 900px) {
+  .practice-question-block > #question-container.question-stem-compact {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  #question-container.question-stem-compact .multipart-gap {
+    font-size: 0.5em;
+  }
+  #question-container.question-stem-compact #question-text {
+    font-size: calc(1em * var(--stem-compact-scale, 1)) !important;
+  }
+}
+
+/* Compact stage: question card, answer strip and scratchpad sit close together
+ * so the handwriting canvas takes the remaining viewport height. */
+.practice-question-block > #question-container {
+  padding: 12px 16px !important;
+  margin-bottom: 0 !important;
+}
+
+#scratchpad-container.practice-bottom {
+  padding-top: 8px !important;
+}
+
+/* Tablet portrait uses the single-column page flow, where the canvas would sit
+ * at its 200px minimum.  Give it about half the screen; the rest stays
+ * scrollable because touches on the canvas draw instead of scrolling. */
+@media (min-width: 600px) and (max-width: 899px) {
+  #scratchpad-container .canvas-wrap {
+    min-height: max(200px, 50vh);
+    min-height: max(200px, 50dvh);
+  }
+
+  #scratchpad-container.scratchpad-has-figures .canvas-wrap {
+    min-height: max(500px, 50vh);
+    min-height: max(500px, 50dvh);
+  }
 }
 
 @media (max-width: 640px) {
-  .multi-part-row,
-  .practice-answer-block > .input-group {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+  .practice-answer-block.has-multi-part-fields .multi-part-row {
+    flex-wrap: wrap;
   }
 
   .multi-part-row .multi-part-input,

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+import unicodedata
 from typing import Any
 
 from models import SkillCurriculum, SkillInfo, db
@@ -31,6 +33,39 @@ MOCK_EXAM_SCOPE: dict[str, dict[str, Any]] = {
     "exam_2": {"label": "第二次模擬考", "units": (1, 2, 3, 4, 5, 6, 8, 11)},
     "exam_5": {"label": "第五次模擬考", "units": tuple(range(1, 14))},
 }
+
+
+def _curriculum_number_path(value: str) -> tuple[int, ...] | None:
+    """Extract the authoritative numeric position from a chapter/section label."""
+    normalized = unicodedata.normalize("NFKC", str(value or "")).strip()
+    numbers = re.findall(r"\d+", normalized)
+    return tuple(int(number) for number in numbers) if numbers else None
+
+
+def _mock_exam_curriculum_sort_key(row: SkillCurriculum) -> tuple[Any, ...]:
+    """Order one placement as it appears in the formal textbook.
+
+    ``display_order`` is authoritative only *within the same section*.  It is
+    intentionally last so a newly imported section with a low global display
+    order cannot move ahead of an earlier volume, chapter, or section.
+    """
+    volume = str(row.volume or "").strip()
+    chapter = str(row.chapter or "").strip()
+    section = str(row.section or "").strip()
+    chapter_path = _curriculum_number_path(chapter)
+    section_path = _curriculum_number_path(section)
+    return (
+        VOLUME_ORDER.index(volume),
+        0 if chapter_path is not None else 1,
+        chapter_path or (),
+        official_unit_for_chapter(chapter) or 9999,
+        _compact_title(chapter),
+        0 if section_path is not None else 1,
+        section_path or (),
+        _compact_title(section),
+        int(row.display_order or 0),
+        int(row.id or 0),
+    )
 
 
 def _compact_title(text: str) -> str:
@@ -69,6 +104,18 @@ def official_unit_for_chapter(chapter: str) -> int | None:
     return None
 
 
+def _dashboard_chapter_label(volume: str, chapter: str) -> str:
+    """Chapter title exactly as the student dashboard chapter cards render it."""
+    from core.utils import format_vocational_b_section_display
+
+    representative = (
+        SkillCurriculum.query.filter_by(curriculum=VOCATIONAL_CURRICULUM, volume=volume, chapter=chapter)
+        .order_by(SkillCurriculum.display_order)
+        .first()
+    )
+    return format_vocational_b_section_display(chapter, representative.section if representative else "")
+
+
 def mock_exam_cards() -> list[dict[str, str]]:
     return [
         {"exam_id": exam_id, "label": str(config["label"])}
@@ -89,9 +136,11 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
             SkillCurriculum.volume.in_(VOLUME_ORDER),
             SkillInfo.is_active.is_(True),
         )
-        .order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.id.asc())
         .all()
     )
+    # The database order is not a textbook order: display_order represents the
+    # curriculum sequence inside a section, not a global cross-volume key.
+    rows.sort(key=lambda pair: _mock_exam_curriculum_sort_key(pair[0]))
 
     skills_by_unit: dict[tuple[str, str], list[dict[str, str]]] = {}
     chapter_order: dict[str, list[str]] = {volume: [] for volume in VOLUME_ORDER}
@@ -125,7 +174,11 @@ def build_mock_exam_scope(exam_id: str) -> dict[str, Any] | None:
     volumes: list[dict[str, Any]] = []
     for volume in VOLUME_ORDER:
         units = [
-            {"unit_name": chapter, "skills": skills_by_unit.get((volume, chapter), [])}
+            {
+                "unit_name": _dashboard_chapter_label(volume, chapter),
+                "chapter": chapter,
+                "skills": skills_by_unit.get((volume, chapter), []),
+            }
             for chapter in chapter_order[volume]
             if skills_by_unit.get((volume, chapter))
         ]

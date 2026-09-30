@@ -14,7 +14,9 @@ _POINT_LABEL_RE = re.compile(r"^[A-Za-z]\s*\((.*)\)$")
 
 
 def _normalize_text(value: Any) -> str:
-    text = str(value or "").strip()
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    text = latex_to_plain(value)
     replacements = {
         "（": "(",
         "）": ")",
@@ -49,7 +51,9 @@ def _parse_scalar(value: Any) -> Fraction | None:
         return None
     text = text.replace(" ", "")
     if not re.fullmatch(_NUM_TOKEN, text):
-        return None
+        from core.checkers.math_input_normalization import parse_exact_number
+
+        return parse_exact_number(text)
     try:
         return Fraction(text)
     except (ValueError, ZeroDivisionError):

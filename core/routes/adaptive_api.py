@@ -41,6 +41,7 @@ _MAX_TEXT_LEN = 240
 _MAX_ANSWER_LEN = 80
 _MAX_SUBSKILLS = 6
 _MAX_RECENT_RESULTS = 4
+_MAX_ROUTING_TIMELINE = 12
 _ROUTING_STATE_ALLOWLIST = {
     "mode",
     "current_skill",
@@ -66,6 +67,8 @@ _ROUTING_STATE_ALLOWLIST = {
     "unit_completed",
     "local_remediation_completed",
     "assessment_completed",
+    "routing_summary",
+    "routing_timeline",
 }
 
 
@@ -464,6 +467,19 @@ def _slim_routing_state(raw: object) -> dict:
             slim[key] = _to_bool_list(value, max_len=_MAX_RECENT_RESULTS)
         elif key == "remediation_mastery":
             slim[key] = _to_float(value, 0.0)
+        elif key == "routing_summary" and isinstance(value, dict):
+            slim[key] = {
+                "total_routing_decisions": _to_int(value.get("total_routing_decisions"), 0),
+                "ppo_routing_decisions": _to_int(value.get("ppo_routing_decisions"), 0),
+                "fallback_routing_decisions": _to_int(value.get("fallback_routing_decisions"), 0),
+                "remediation_entries": _to_int(value.get("remediation_entries"), 0),
+                "successful_returns": _to_int(value.get("successful_returns"), 0),
+                "bridge_completions": _to_int(value.get("bridge_completions"), 0),
+            }
+        elif key == "routing_timeline" and isinstance(value, list):
+            # The browser session is intentionally bounded, but decision history
+            # must survive the next request so aggregate routing remains truthful.
+            slim[key] = [item for item in value if isinstance(item, dict)][-_MAX_ROUTING_TIMELINE:]
     return slim
 
 
@@ -504,7 +520,13 @@ def _adaptive_runtime_store() -> dict:
     return store
 
 
-def _response_for_frontend(response: dict) -> dict:
+def _response_for_frontend(response: dict, *, submitted_is_correct: object = None) -> dict:
+    """Expose one stable, browser-safe adaptive API contract.
+
+    Engine branches may finish early (completion, assessment breakpoint) or
+    continue with a question.  This adapter lifts shared state consistently
+    without inventing learning outcomes.
+    """
     sanitized = dict(response)
     q = dict(sanitized.get("new_question_data", {}) or {})
     if isinstance(q.get("choices"), list):
@@ -512,6 +534,32 @@ def _response_for_frontend(response: dict) -> dict:
     q.pop("answer", None)
     q.pop("correct_answer", None)
     sanitized["new_question_data"] = q
+    routing_state = sanitized.get("routing_state") if isinstance(sanitized.get("routing_state"), dict) else {}
+    completion_stats = sanitized.get("completion_stats") if isinstance(sanitized.get("completion_stats"), dict) else {}
+    sanitized.setdefault("is_correct", submitted_is_correct if isinstance(submitted_is_correct, bool) else None)
+    sanitized.setdefault("learning_mode", "remediation" if routing_state.get("in_remediation") else "main")
+    sanitized.setdefault("in_remediation", bool(routing_state.get("in_remediation", False)))
+    sanitized.setdefault("return_ready", bool(sanitized.get("return_rule_ready", False)))
+    sanitized.setdefault("return_to_mainline", bool(routing_state.get("return_to_mainline", False)))
+    sanitized.setdefault("route_action", sanitized.get("ppo_route_action"))
+    sanitized.setdefault("ppo_route_action", sanitized.get("route_action"))
+    sanitized.setdefault("routing_summary", routing_state.get("routing_summary", {}))
+    sanitized.setdefault("routing_timeline", routing_state.get("routing_timeline", []))
+    sanitized.setdefault("remediation_review_ready", False)
+    sanitized.setdefault("local_remediation_completed", bool(routing_state.get("local_remediation_completed", False)))
+    sanitized.setdefault("unit_completed", bool(completion_stats.get("unit_completed", sanitized.get("completed", False))))
+    sanitized.setdefault("assessment_completed", bool(completion_stats.get("assessment_completed", False)))
+    sanitized.setdefault("diagnostic_report", None)
+    sanitized.setdefault("stable_breakpoint_detected", str(sanitized.get("assessment_stop_reason") or "") == "stable_breakpoint_detected")
+    for key in (
+        "required_core_families",
+        "covered_core_families",
+        "passed_core_families",
+        "completed_core_families",
+        "used_apr_for_completion",
+    ):
+        if key in completion_stats:
+            sanitized.setdefault(key, completion_stats[key])
     return sanitized
 
 
@@ -885,7 +933,7 @@ def adaptive_submit_and_get_next():
     response["demo_route_msg"] = _build_demo_route_msg(response, payload)
     if not str(response.get("demo_route_msg") or "").strip():
         response["demo_route_msg"] = "系統已更新目前學習狀態。"
-    return jsonify(_response_for_frontend(response))
+    return jsonify(_response_for_frontend(response, submitted_is_correct=payload.get("is_correct")))
 
 
 @practice_bp.route("/api/adaptive/rag_settings", methods=["GET"])
@@ -944,7 +992,19 @@ def adaptive_rag_hint():
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except Exception as exc:
-        return jsonify({"error": f"rag hint failure: {exc}"}), 500
+        current_app.logger.warning("[adaptive_rag_hint] fallback after hint failure: %s", exc)
+        labels = [str(node).strip() for node in nodes if str(node).strip()]
+        return jsonify({
+            "source": "deterministic_fallback",
+            "fallback_used": True,
+            "fallback_reason": type(exc).__name__,
+            "subskill_labels": labels,
+            "hint_summary": "先確認題目的條件、運算順序與每一步的正負號。",
+            "hint_html": (
+                "<div class='hint-card'><div class='hint-section-title'>解題提示</div>"
+                "<p>先確認題目的條件、運算順序與每一步的正負號，再逐步計算。</p></div>"
+            ),
+        })
     return jsonify(response)
 
 

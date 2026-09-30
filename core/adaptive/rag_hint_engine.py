@@ -459,4 +459,6 @@ def build_rag_hint(
         "matched_skill_id": matched_entry.skill_id if matched_entry else skill_id,
         "matched_family_id": matched_entry.family_id if matched_entry else family_id,
         "source": "bridge_rag",
+        "sources": ["skill_family_bridge", "skill_md", "question_context"],
+        "fallback_used": False,
     }

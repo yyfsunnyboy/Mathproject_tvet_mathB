@@ -3,6 +3,7 @@
 import os
 import sys
 import uuid
+from urllib.parse import urlencode
 
 _PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _PROJECT_ROOT not in sys.path:
@@ -10,6 +11,7 @@ if _PROJECT_ROOT not in sys.path:
 
 from app import create_app
 from core.adaptive.agent_skill_schema import SYSTEM_SKILL_TO_AGENT_SKILL
+from core.adaptive.judge import judge_answer_with_feedback
 from core.adaptive.textbook_progression import load_textbook_progression
 from models import AdaptiveLearningLog, User, db
 
@@ -146,6 +148,44 @@ def test_submit_bootstrap_returns_first_question():
         assert payload["step_number"] == 1
         assert payload["new_question_data"]["family_id"]
         assert payload["new_question_data"]["skill_id"] == TARGET_SKILL_ID
+
+
+def test_adaptive_entry_url_roundtrips_canonical_unicode_skill_id():
+    app = create_app()
+    with app.app_context():
+        user = _ensure_test_user()
+        client = app.test_client()
+        _login(client, user.id)
+
+        entry = client.get("/adaptive_learning_entry")
+        assert entry.status_code == 200
+        assert TARGET_SKILL_ID in entry.get_data(as_text=True)
+
+        query = urlencode({"skill_id": TARGET_SKILL_ID, "unit_name": "忽略的 query 顯示名稱", "mode": "teaching"})
+        page = client.get(f"/adaptive_summative?{query}")
+        html = page.get_data(as_text=True)
+        assert page.status_code == 200
+        assert TARGET_SKILL_ID in html
+        assert "整數四則運算｜" in html
+        assert "??????" not in html
+
+
+def test_rag_hint_failure_returns_non_blocking_deterministic_fallback(monkeypatch):
+    from core.routes import adaptive_api
+
+    app = create_app()
+    with app.app_context():
+        user = _ensure_test_user()
+        client = app.test_client()
+        _login(client, user.id)
+        monkeypatch.setattr(adaptive_api, "get_rag_hint", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("offline")))
+
+        response = client.get("/api/adaptive/rag_hint?skill_id=" + TARGET_SKILL_ID + "&subskill_nodes=sign_handling")
+        payload = response.get_json()
+        assert response.status_code == 200
+        assert payload["source"] == "deterministic_fallback"
+        assert payload["fallback_used"] is True
+        assert payload["hint_html"]
 
 
 def test_assessment_completion_requires_all_polynomial_core_families():
@@ -366,7 +406,7 @@ def test_submit_second_step_autojudges_and_writes_log():
         assert row.is_correct is True
 
 
-def test_submit_completed_branch_also_contains_debug_fields():
+def test_submit_incomplete_configured_unit_also_contains_debug_fields():
     app = create_app()
     with app.app_context():
         user = _ensure_test_user()
@@ -386,8 +426,93 @@ def test_submit_completed_branch_also_contains_debug_fields():
         )
         assert response.status_code == 200
         payload = response.get_json()
-        assert payload["completed"] is True
+        # The Integer unit now has a formal coverage gate.  A lone I1 result at
+        # an arbitrary step cannot masquerade as a completed unit.
+        assert payload["completed"] is False
+        assert payload["unit_completed"] is False
         _assert_debug_fields(payload)
+
+
+def test_teaching_can_reach_unit_completion(monkeypatch):
+    """Configured Integer coverage, not APR alone, closes the teaching unit."""
+    import core.adaptive.session_engine as engine
+
+    monkeypatch.setattr(
+        engine,
+        "_generate_question_payload",
+        lambda entry, selected_subskill=None: {
+            "skill_id": entry.skill_id,
+            "family_id": entry.family_id,
+            "question": f"{entry.family_id} question",
+            "correct_answer": "1",
+            "choices": ["1", "2"],
+            "answer_type": "choice",
+            "checker_type": "choice_checker",
+        },
+    )
+
+    app = create_app()
+    with app.app_context():
+        user = _ensure_test_user()
+        client = app.test_client()
+        _login(client, user.id)
+        payload = client.post(
+            "/api/adaptive/submit_and_get_next",
+            json={"step_number": 0, "skill_id": TARGET_SKILL_ID},
+        ).get_json()
+        sid = payload["session_id"]
+        seen = [payload["target_family_id"]]
+
+        for step in range(1, 10):
+            response = client.post(
+                "/api/adaptive/submit_and_get_next",
+                json={
+                    "session_id": sid,
+                    "step_number": step,
+                    "skill_id": TARGET_SKILL_ID,
+                    "user_answer": "1",
+                },
+            )
+            assert response.status_code == 200
+            payload = response.get_json()
+            if payload.get("completed"):
+                break
+            seen.append(payload["target_family_id"])
+
+        assert seen == ["I1", "I2", "I3", "I4", "I5", "I7", "I9", "I10"]
+        assert payload["completed"] is True
+        assert payload["unit_completed"] is True
+        assert payload["used_apr_for_completion"] is False
+        assert payload["completed_core_families"] == seen
+
+
+def test_integer_progression_family_ssot_and_generator_smoke():
+    from core.adaptive.catalog_loader import load_catalog
+    from core.adaptive.manifest_registry import load_manifest
+    from core.adaptive.micro_generators import generate_micro_question
+
+    progression = load_textbook_progression(TARGET_SKILL_ID)
+    family_ids = progression["mainline_sequence"]
+    catalog = {
+        entry.family_id: entry
+        for entry in load_catalog()
+        if entry.skill_id == TARGET_SKILL_ID
+    }
+    manifest = {
+        entry.family_id: entry
+        for entry in load_manifest()
+        if entry.skill_id == TARGET_SKILL_ID
+    }
+    assert family_ids == ["I1", "I2", "I3", "I4", "I5", "I7", "I9", "I10"]
+    for family_id in family_ids:
+        entry = catalog[family_id]
+        assert manifest[family_id].subskill_nodes == entry.subskill_nodes
+        payload = generate_micro_question(entry)
+        assert isinstance(payload, dict)
+        answer = payload.get("correct_answer") or payload.get("answer")
+        assert str(payload.get("question_text") or payload.get("question") or "").strip()
+        assert str(answer or "").strip()
+        assert judge_answer_with_feedback(answer, answer)["is_correct"] is True
 
 
 def test_submit_review_branch_contains_debug_fields():
@@ -428,6 +553,58 @@ def test_submit_review_branch_contains_debug_fields():
         payload = response.get_json()
         _assert_debug_fields(payload)
         assert payload["ppo_strategy"] == 3
+
+
+def test_review_ready_forces_generic_remediation_when_ppo_stays(monkeypatch):
+    """A stable review signal must not be stranded by a PPO stay fallback."""
+    import core.adaptive.session_engine as engine
+
+    monkeypatch.setattr(
+        engine,
+        "select_route_action_with_ppo",
+        lambda route_state, action_mask, model=None: ("stay", [1.0, 0.0, -1.0], 0, "ppo"),
+    )
+
+    app = create_app()
+    with app.app_context():
+        user = _ensure_test_user()
+        client = app.test_client()
+        _login(client, user.id)
+
+        session_id = f"review_ready_{uuid.uuid4().hex[:8]}"
+        db.session.add(
+            AdaptiveLearningLog(
+                student_id=user.id,
+                session_id=session_id,
+                step_number=1,
+                target_family_id="I1",
+                target_subskills='["sign_handling"]',
+                is_correct=False,
+                current_apr=0.42,
+                ppo_strategy=1,
+                frustration_index=2,
+                execution_latency=1,
+            )
+        )
+        db.session.commit()
+
+        response = client.post(
+            "/api/adaptive/submit_and_get_next",
+            json={
+                "session_id": session_id,
+                "step_number": 1,
+                "is_correct": False,
+                "skill_id": TARGET_SKILL_ID,
+                "last_family_id": "I1",
+                "last_subskills": ["sign_handling"],
+            },
+        )
+        assert response.status_code == 200
+        payload = response.get_json()
+        assert payload["remediation_review_ready"] is True
+        assert payload["route_action"] == "remediate"
+        assert payload["routing_state"]["in_remediation"] is True
+        assert payload["selection_debug"]["final_route_action"] == "remediate"
 
 
 def test_submit_policy_log_with_none_values_does_not_crash(monkeypatch):
@@ -472,6 +649,9 @@ def test_rag_hint_returns_html():
         payload = response.get_json()
         assert "hint_html" in payload
         assert "divide_terms" in payload["hint_html"]
+        assert payload["source"] == "bridge_rag"
+        assert payload["fallback_used"] is False
+        assert "skill_family_bridge" in payload["sources"]
 
 
 def test_e2e_cross_skill_remediation_return_bridge_then_normal(monkeypatch):
@@ -811,7 +991,7 @@ def test_bridge_state_clears_after_completion(monkeypatch):
         assert p6["selected_agent_skill"] == "polynomial_arithmetic"
 
 
-def test_routing_summary_available_in_ongoing_and_completed_response():
+def test_routing_summary_available_in_ongoing_response():
     app = create_app()
     with app.app_context():
         user = _ensure_test_user()
@@ -855,7 +1035,7 @@ def test_routing_summary_available_in_ongoing_and_completed_response():
         )
         assert done.status_code == 200
         p_done = done.get_json()
-        assert p_done["completed"] is True
+        assert p_done["completed"] is False
         _assert_routing_summary_fields(p_done["routing_summary"])
         assert p_done["selection_debug"].get("routing_summary") == p_done["routing_summary"]
 

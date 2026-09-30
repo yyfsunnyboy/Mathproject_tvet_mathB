@@ -7,7 +7,9 @@ from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_POLY_PATH = PROJECT_ROOT / "configs" / "adaptive" / "textbook_progression_polynomial.yaml"
+DEFAULT_INTEGER_PATH = PROJECT_ROOT / "configs" / "adaptive" / "textbook_progression_integers.yaml"
 POLY_SKILL_ID = "jh_\u6578\u5b782\u4e0a_FourArithmeticOperationsOfPolynomial"
+INTEGER_SKILL_ID = "jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers"
 _CACHE: dict[str, dict[str, Any]] = {}
 
 DEFAULT_POLY_PROGRESSION: dict[str, Any] = {
@@ -193,6 +195,11 @@ def _is_polynomial_skill_id(skill_id: str) -> bool:
     return key == POLY_SKILL_ID or key.endswith("FourArithmeticOperationsOfPolynomial")
 
 
+def _is_integer_skill_id(skill_id: str) -> bool:
+    key = str(skill_id or "").strip()
+    return key == INTEGER_SKILL_ID or key.endswith("FourArithmeticOperationsOfIntegers")
+
+
 def _families(cfg: dict[str, Any]) -> dict[str, dict[str, Any]]:
     raw = cfg.get("families", {})
     if not isinstance(raw, dict):
@@ -210,14 +217,15 @@ def load_textbook_progression(skill_id: str) -> dict[str, Any]:
         return {}
     if key in _CACHE:
         return dict(_CACHE[key])
-    if not _is_polynomial_skill_id(key):
+    if not (_is_polynomial_skill_id(key) or _is_integer_skill_id(key)):
         _CACHE[key] = {}
         return {}
-    payload = _load_yaml(DEFAULT_POLY_PATH)
+    source_path = DEFAULT_POLY_PATH if _is_polynomial_skill_id(key) else DEFAULT_INTEGER_PATH
+    payload = _load_yaml(source_path)
     if not payload:
-        payload = dict(DEFAULT_POLY_PROGRESSION)
+        payload = dict(DEFAULT_POLY_PROGRESSION) if _is_polynomial_skill_id(key) else {}
     unit_skill_id = str(payload.get("unit_skill_id", "")).strip()
-    if unit_skill_id and not _is_polynomial_skill_id(unit_skill_id):
+    if unit_skill_id and unit_skill_id != key:
         _CACHE[key] = {}
         return {}
     if "mainline_sequence" not in payload and "demo_mainline_sequence" in payload:

@@ -30,6 +30,25 @@
       : text;
   }
 
+  function itemLabel(item, index) {
+    const raw = item.label || item.key || "";
+    const renderer = global.MultipartFieldRenderer;
+    return renderer && typeof renderer.studentLabel === "function" ? renderer.studentLabel(raw, index) : raw;
+  }
+
+  // Only rewrites the grader's per-part summary when it matches the structured
+  // per_part_results exactly; any other message is shown verbatim.
+  function studentGradingMessage(data, message) {
+    const rows = data?.per_part_results;
+    if (!Array.isArray(rows) || !rows.length || typeof message !== "string") return message;
+    const header = "部分小題答錯。";
+    const lineFor = (row, label) => `${label}：${row && row.correct ? "正確" : "錯誤"}`;
+    const rawLabel = (row) => String((row && (row.label || row.key)) || "").trim();
+    const original = [header, ...rows.map((row) => lineFor(row, rawLabel(row)))].join("\n");
+    if (message !== original) return message;
+    return [header, ...rows.map((row, index) => lineFor(row, itemLabel({ label: rawLabel(row) }, index)))].join("\n");
+  }
+
   function appendDisplay(root, display) {
     if (!display || typeof display !== "object") return false;
     appendText(root, "div", "正確答案：", "correct-answer-title");
@@ -38,8 +57,8 @@
     } else if (Array.isArray(display.items)) {
       const list = document.createElement("dl");
       list.className = "correct-answer-items";
-      display.items.forEach((item) => {
-        appendText(list, "dt", item.label || item.key || "", "correct-answer-item-label");
+      display.items.forEach((item, index) => {
+        appendText(list, "dt", itemLabel(item, index), "correct-answer-item-label");
         appendText(list, "dd", mathText(item.value), "correct-answer-item-value");
       });
       root.appendChild(list);
@@ -66,7 +85,8 @@
   async function render(target, data, message) {
     if (!target) return;
     target.textContent = "";
-    appendText(target, "div", message || data?.message || data?.result || (data?.correct ? "正確！" : "錯誤"), "grading-message");
+    const shown = message || data?.message || data?.result || (data?.correct ? "正確！" : "錯誤");
+    appendText(target, "div", studentGradingMessage(data, shown), "grading-message");
     if (data?.required_form_feedback) {
       appendText(target, "div", data.required_form_feedback, "required-form-feedback");
       if (data.required_form_hint) appendText(target, "div", `格式要求：${data.required_form_hint}`, "required-form-hint");
@@ -76,5 +96,5 @@
     await typeset(target);
   }
 
-  global.CorrectAnswerFeedback = { render, appendDisplay, typeset };
+  global.CorrectAnswerFeedback = { render, appendDisplay, typeset, studentGradingMessage };
 })(window);

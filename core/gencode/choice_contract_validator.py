@@ -31,6 +31,14 @@ def plainify_math_token(token: str) -> str:
     return text
 
 
+# Vocabulary returned by infer_choice_answer_shape. Declared shapes outside it (for example
+# presentation labels such as "single_choice") can never equal an inferred shape.
+CHOICE_SEMANTIC_SHAPES = frozenset({
+    "empty", "area_or_pi", "equation", "number", "coordinate",
+    "classification", "interval_or_param", "expression",
+})
+
+
 def infer_choice_answer_shape(text: Any) -> str:
     """Classify a choice into a coarse semantic answer shape for MCQ gating."""
     raw = str(text or "").strip()
@@ -61,12 +69,16 @@ def validate_choice_answer_shapes(payload: dict[str, Any]) -> list[str]:
     choices = normalize_canonical_choices(payload.get("choices"))
     if len(choices) < 2:
         return []
-    expected = str(
-        payload.get("expected_answer_shape")
-        or (_answer_contract(payload).get("answer_shape") if isinstance(_answer_contract(payload), dict) else "")
-        or payload.get("choice_answer_shape")
-        or ""
-    ).strip()
+    contract = _answer_contract(payload)
+    declared = (
+        payload.get("expected_answer_shape"),
+        contract.get("answer_shape") if isinstance(contract, dict) else "",
+        payload.get("choice_answer_shape"),
+    )
+    expected = next(
+        (str(s).strip() for s in declared if str(s or "").strip() in CHOICE_SEMANTIC_SHAPES),
+        "",
+    )
     semantic = str(
         payload.get("semantic_answer")
         or payload.get("canonical_answer")

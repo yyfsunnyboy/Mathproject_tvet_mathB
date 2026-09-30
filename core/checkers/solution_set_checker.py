@@ -38,7 +38,9 @@ def parse_solution_set_answer(text: object) -> set[int]:
     if not raw.strip():
         return set()
 
-    normalized = raw
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    normalized = latex_to_plain(raw)
     normalized = normalized.replace("，", ",").replace("；", ";").replace("、", ",")
     normalized = re.sub(r"\bor\b", ",", normalized, flags=re.IGNORECASE)
     normalized = normalized.replace("或是", ",").replace("或", ",")

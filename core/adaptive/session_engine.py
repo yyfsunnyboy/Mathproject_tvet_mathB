@@ -1325,6 +1325,8 @@ def _evaluate_unit_completion(
             "required_core_families": [],
             "covered_core_families": [],
             "passed_core_families": [],
+            "completed_core_families": [],
+            "used_apr_for_completion": bool(legacy_completed and legacy_reason == "legacy_default"),
             "minimum_covered_core_families": 0,
             "minimum_passed_core_families": 0,
             "require_integrative_family_pass": False,
@@ -1385,7 +1387,7 @@ def _evaluate_unit_completion(
     integrative_ok = (not require_integrative) or integrative_passed
     unit_completed = bool(coverage_ok and mastery_ok and integrative_ok)
     if unit_completed:
-        completion_reason = "unit_completion_gate_passed"
+        completion_reason = "completed_all_core_families"
     elif not coverage_ok:
         completion_reason = "unit_completion_waiting_core_coverage"
     elif not mastery_ok:
@@ -1409,6 +1411,10 @@ def _evaluate_unit_completion(
         "required_core_families": required_core,
         "covered_core_families": covered_core,
         "passed_core_families": passed_core,
+        # A completed family means it has at least one correct canonical attempt;
+        # preserve the older passed name for internal callers during migration.
+        "completed_core_families": passed_core,
+        "used_apr_for_completion": False,
         "minimum_covered_core_families": min_covered,
         "minimum_passed_core_families": min_passed,
         "require_integrative_family_pass": require_integrative,
@@ -2273,7 +2279,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
     if textbook_cfg:
         routing_session["return_mastery_threshold"] = return_mastery_threshold
         routing_session["return_mastery_with_recent_correct_threshold"] = return_mastery_with_recent_correct_threshold
-    if system_skill_id == "jh_?詨飛1銝FourArithmeticOperationsOfIntegers":
+    if system_skill_id == "jh_數學1上_FourArithmeticOperationsOfIntegers":
         allowed_agent_skills = ["integer_arithmetic"]
     if not allowed_agent_skills:
         print(
@@ -2717,12 +2723,18 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
                 remediation_mastery >= return_mastery_with_recent_correct_threshold
                 and recent_correct
             )
-            return_rule_ready = bool(ready_by_mastery or ready_by_recent)
+            # Keep the configured mastery rule, while preserving the routing
+            # layer's explicit safety exit (notably lock_max_steps).
+            return_rule_ready = bool(ready_by_mastery or ready_by_recent or return_ready)
             return_ready = return_rule_ready
             if ready_by_mastery:
                 return_reason = "ready_by_mastery_threshold"
             elif ready_by_recent:
                 return_reason = "ready_by_mastery_recent_correct_threshold"
+            elif return_ready:
+                # ``should_return_from_remediation`` owns forced exits so this
+                # path remains observable and testable independently of PPO.
+                return_reason = return_reason
             else:
                 return_reason = "not_ready_by_return_guardrails"
         else:
@@ -2736,7 +2748,12 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             in_remediation=in_remediation,
             remediation_step_count=rem_steps,
             lock_min_steps=lock_min_steps,
-            cross_skill_trigger=cross_skill_trigger,
+            # A stable review signal can require a bridge within the same
+            # runtime skill.  ``cross_skill_trigger`` deliberately excludes
+            # that case, so it cannot be the only gate for remediation.
+            cross_skill_trigger=bool(cross_skill_trigger or (
+                remediation_review_ready and not in_remediation
+            )),
             return_ready=return_ready,
         )
         allowed_actions = [k for k, v in action_mask.items() if v]
@@ -2761,7 +2778,7 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
                     cross_skill_trigger=cross_skill_trigger,
                 )
                 allowed_actions = [k for k, v in action_mask.items() if v]
-        if in_remediation and return_ready:
+        if in_remediation and return_ready and rem_steps >= lock_min_steps:
             action_mask["return"] = True
             allowed_actions = [k for k, v in action_mask.items() if v]
 
@@ -2982,7 +2999,18 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
             and bool(action_mask.get("remediate", False))
             and route_action == "stay"
         ):
-            why_remediate_masked = "ppo_chose_stay"
+            # A trained policy may legitimately prefer stay in ordinary
+            # exploration.  Once the diagnostic layer has established a
+            # stable review need, however, staying would strand the learner
+            # on the same mainline question indefinitely.  Keep this as a
+            # skill-agnostic production safety fallback rather than altering
+            # PPO logits or mastery calculations.
+            if remediation_review_ready:
+                route_action = "remediate"
+                route_decision_source = "review_ready_safety_fallback"
+                why_remediate_masked = "review_ready_safety_fallback"
+            else:
+                why_remediate_masked = "ppo_chose_stay"
 
         if (
             b4_chapter_bridge_active
@@ -3510,7 +3538,10 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         mapping_candidates = [f"{entry.skill_id}:{entry.family_id}" for entry in phase1_entries]
         decision_trace["mapping_candidates"] = mapping_candidates
         next_entry = None
-        if textbook_cfg and selected_agent_skill == "polynomial_arithmetic":
+        # Progression is catalog/config driven.  Any configured unit follows its
+        # mainline while it remains on the unit's own agent skill; cross-skill
+        # remediation continues to use the routing pool below.
+        if textbook_cfg and selected_agent_skill == current_skill:
             target_family = None
             if not current_family_for_progression:
                 target_family = str(mainline_sequence[0]) if mainline_sequence else "F1"

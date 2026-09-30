@@ -491,6 +491,10 @@ def start_remediation_session(
 
 def should_return_from_remediation(routing_session: dict[str, Any] | None) -> tuple[bool, str]:
     s = routing_session or {}
+    steps_taken = int(s.get("steps_taken", 0) or 0)
+    lock_max_steps = int(s.get("lock_max_steps", 4) or 4)
+    if lock_max_steps > 0 and steps_taken >= lock_max_steps:
+        return True, "forced_by_lock_max_steps"
     mastery = _norm01(s.get("remediation_mastery", 0.0))
     recent_results = list(s.get("recent_results") or [])
     recent_correct = bool(recent_results[-1]) if recent_results else bool(s.get("last_result", False))

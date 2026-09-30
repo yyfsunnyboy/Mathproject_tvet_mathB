@@ -1,45 +1,34 @@
 from __future__ import annotations
 
 import re
-from fractions import Fraction
 from typing import Any
 
-from sympy import EmptySet, Interval, Intersection, Rational, S, Union, oo
+from sympy import Interval, Intersection, Rational, S, Union, oo
 from sympy.sets.sets import Set
+
+from core.checkers.math_input_normalization import latex_to_plain, parse_exact_number
 
 _REL_OPS = ("<=", ">=", "<", ">")
 _VAR_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_NUM_RE = re.compile(
-    r"^[+-]?(?:(?:\d+\.\d+|\d+/\d+|\d+)(?:e[+-]?\d+)?|inf|infinity|oo|infty)$",
-    re.I,
-)
+
+
+_SET_BUILDER_RE = re.compile(r"^\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:[|:]|∈\s*ℝ\s*[|:])\s*(.+)\}$")
 
 
 def _normalize_solution_text(text: object) -> str:
-    s = str(text or "").strip()
+    s = latex_to_plain(text)
     if not s:
         return ""
-    s = s.replace("\u2212", "-").replace("–", "-").replace("—", "-")
-    s = s.replace("（", "(").replace("）", ")").replace("【", "[").replace("】", "]")
-    s = s.replace("，", ",").replace("。", "")
-    s = s.replace("＜", "<").replace("＞", ">")
-    s = s.replace("≤", "<=").replace("≦", "<=").replace("≥", ">=").replace("≧", ">=")
+    s = s.replace("。", "")
+    s = s.replace("≤", "<=").replace("≥", ">=")
     s = s.replace("=>", ">=").replace("=<", "<=")
-    s = s.replace("$", "")
-    s = re.sub(r"\\left", "", s)
-    s = re.sub(r"\\right", "", s)
-    s = re.sub(r"\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}", r"(\1)/(\2)", s)
-    s = s.replace(r"\leq", "<=").replace(r"\le", "<=")
-    s = s.replace(r"\geq", ">=").replace(r"\ge", ">=")
-    s = s.replace(r"\lt", "<").replace(r"\gt", ">")
-    s = s.replace(r"\in", "∈").replace(r"\cup", "∪").replace(r"\cap", "∩")
-    s = s.replace(r"\infty", "∞").replace(r"\emptyset", "∅")
-    s = s.replace(r"\varnothing", "∅")
-    s = s.replace(r"\mathbb{R}", "ℝ").replace(r"\mathbf{R}", "ℝ")
-    s = s.replace(r"\ ", "").replace("~", "")
+    s = s.replace("~", "")
     s = s.replace("∞", "inf")
     s = re.sub(r"belongs\s+to", "∈", s, flags=re.I)
     s = re.sub(r"\s+", " ", s).strip()
+    builder = _SET_BUILDER_RE.match(s)
+    if builder:
+        s = builder.group(2).strip()
     s = re.sub(
         r"^[A-Za-z_][A-Za-z0-9_]*\s*(?:∈|in)\s*",
         "",
@@ -83,37 +72,78 @@ def _is_empty_phrase(s: str) -> bool:
     }
 
 
-def _parse_num(token: str) -> Any:
-    t = token.strip().replace(" ", "")
-    t = t.replace("(+", "(")
-    while len(t) >= 2 and t[0] == "(" and t[-1] == ")" and t.count("(") == t.count(")"):
-        inner = t[1:-1]
-        if inner.count("(") == inner.count(")"):
-            t = inner
-        else:
-            break
-    low = t.lower()
-    if low in {"inf", "+inf", "infinity", "+infinity", "oo", "+oo", "infty", "+infty"}:
-        return oo
-    if low in {"-inf", "-infinity", "-oo", "-infty"}:
-        return -oo
+_POS_INF_TOKENS = frozenset({"inf", "+inf", "infinity", "+infinity", "oo", "+oo", "infty", "+infty"})
+_NEG_INF_TOKENS = frozenset({"-inf", "-infinity", "-oo", "-infty"})
+_RADICAL_ENDPOINT_RE = re.compile(r"^[0-9.+\-*/^()]*$")
+
+
+def _parse_radical_endpoint(t: str) -> Any:
+    if "sqrt" not in t or len(t) > 60 or not _RADICAL_ENDPOINT_RE.match(t.replace("sqrt", "")):
+        return None
+    from sympy import sqrt
+    from sympy.parsing.sympy_parser import (
+        convert_xor,
+        implicit_multiplication_application,
+        parse_expr,
+        standard_transformations,
+    )
+
+    try:
+        value = parse_expr(
+            t,
+            local_dict={"sqrt": sqrt},
+            transformations=standard_transformations + (convert_xor, implicit_multiplication_application),
+            evaluate=True,
+        )
+    except Exception:
+        return None
+    if getattr(value, "free_symbols", None) or not getattr(value, "is_real", False):
+        return None
+    if not getattr(value, "is_finite", False):
+        return None
+    return value
+
+
+def parse_numeric_endpoint(token: object) -> Any:
+    """Parse one interval / inequality endpoint to an exact SymPy value, or None.
+
+    Layers: infinity tokens -> exact rational (int / decimal / fraction / LaTeX
+    fraction) -> real radical expression.  Never returns a value containing a
+    free symbol, so variables are never mistaken for endpoints.
+    """
+    t = latex_to_plain(token).replace(" ", "").replace("∞", "inf")
     if not t:
-        raise ValueError("empty numeric token")
-    frac = Fraction(t)
-    if frac.denominator == 1:
-        return Rational(frac.numerator, 1)
-    return Rational(frac.numerator, frac.denominator)
+        return None
+    low = t.lower()
+    wrapped = re.fullmatch(r"\(([+-]?(?:infinity|infty|inf|oo))\)", low)
+    if wrapped:
+        low = wrapped.group(1)
+    if low in _POS_INF_TOKENS:
+        return oo
+    if low in _NEG_INF_TOKENS:
+        return -oo
+    frac = parse_exact_number(t)
+    if frac is not None:
+        return Rational(frac.numerator, frac.denominator)
+    return _parse_radical_endpoint(t)
+
+
+def _parse_num(token: str) -> Any:
+    value = parse_numeric_endpoint(token)
+    if value is None:
+        raise ValueError(f"unsupported numeric token: {token!r}")
+    return value
 
 
 def _is_var(token: str) -> bool:
-    return bool(_VAR_RE.match(token.strip()))
+    t = token.strip()
+    return bool(_VAR_RE.match(t)) and t.lower() not in _POS_INF_TOKENS
 
 
 def _is_num_token(token: str) -> bool:
-    t = token.strip().replace(" ", "")
-    if t.startswith("(") and t.endswith(")") and "/" in t:
-        t = t[1:-1]
-    return bool(_NUM_RE.match(t)) or t.lower() in {"+inf", "-inf", "+oo", "-oo"}
+    if _is_var(token):
+        return False
+    return parse_numeric_endpoint(token) is not None
 
 
 def _split_top_level(text: str, separators: tuple[str, ...]) -> list[str] | None:
@@ -236,13 +266,22 @@ def _find_rel_ops(expr: str) -> list[tuple[int, str]]:
 
 
 def _parse_bracket_interval(part: str) -> Set | None:
-    m = re.match(
-        r"^([\[\(])\s*([^,]+)\s*,\s*([^\]\)]+)\s*([\]\)])$",
-        part.strip(),
-    )
-    if not m:
+    text = part.strip()
+    if len(text) < 5 or text[0] not in "[(" or text[-1] not in "])":
         return None
-    lbr, lo_s, hi_s, rbr = m.groups()
+    depth = 0
+    for pos, ch in enumerate(text):
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+            if depth == 0 and pos != len(text) - 1:
+                return None
+    endpoints = _split_top_level(text[1:-1], (",",))
+    if not endpoints or len(endpoints) != 2:
+        return None
+    lbr, rbr = text[0], text[-1]
+    lo_s, hi_s = endpoints
     try:
         lo = _parse_num(lo_s)
         hi = _parse_num(hi_s)
@@ -322,10 +361,62 @@ def _parse_atom(part: str) -> Set | None:
     return None
 
 
+def _sets_disjoint(a: Set, b: Set) -> bool:
+    try:
+        return Intersection(a, b) == S.EmptySet
+    except Exception:
+        return False
+
+
+def _parse_comma_list(part: str) -> Set | None:
+    """Interpret a top-level comma / 、 / ; list of solution pieces.
+
+    Conservative: pairwise-disjoint pieces are alternatives (union), e.g.
+    `x<=-4, x>=4` or `(-inf,-4], [4,inf)`.  Exactly two relational half-lines
+    whose overlap is a proper bounded part of both are simultaneous
+    constraints (intersection), e.g. `x>-1, x<=5`.  Anything else is ambiguous
+    and returns None so no verdict is guessed.
+    """
+    pieces = _split_top_level(part, (",", "、", ";"))
+    if not pieces:
+        return None
+    sets: list[Set] = []
+    relational_only = True
+    for piece in pieces:
+        parsed = _parse_atom(piece)
+        if parsed is None:
+            return None
+        if _parse_relational(piece) is None:
+            relational_only = False
+        sets.append(parsed)
+    if all(_sets_disjoint(a, b) for i, a in enumerate(sets) for b in sets[i + 1 :]):
+        acc: Set = sets[0]
+        for item in sets[1:]:
+            acc = Union(acc, item)
+        return acc
+    if len(sets) == 2 and relational_only:
+        a, b = sets
+        both = Intersection(a, b)
+        try:
+            proper = both != S.EmptySet and not a.is_subset(b) and not b.is_subset(a)
+        except Exception:
+            proper = False
+        if proper:
+            return both
+    return None
+
+
+def _parse_piece(part: str) -> Set | None:
+    parsed = _parse_atom(part)
+    if parsed is not None:
+        return parsed
+    return _parse_comma_list(part)
+
+
 def _combine_and(parts: list[str]) -> Set | None:
     sets: list[Set] = []
     for part in parts:
-        parsed = _parse_atom(part)
+        parsed = _parse_piece(part)
         if parsed is None:
             return None
         sets.append(parsed)

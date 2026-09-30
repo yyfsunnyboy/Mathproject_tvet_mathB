@@ -119,6 +119,21 @@ def generate_b2_12_component_payload(
         })
         payload["answer_contract"] = contract
         semantic = contract.get("semantic_canonical_answer") or contract.get("semantic_answer")
+        # The semantic correct_answer is graded against choice text, so choices keep the source semantic text.
+        from core.gencode.domain_matrix_adapter import _format_latex_display_answer
+
+        givens = (payload.get("metadata") or {}).get("givens") or {}
+        semantic_by_display = {
+            _format_latex_display_answer(str(row.get("value") or row.get("text") or "")): str(row.get("value") or row.get("text"))
+            for row in (givens.get("source_choices") or [])
+            if isinstance(row, dict) and (row.get("value") or row.get("text"))
+        }
+        payload["choices"] = [
+            {**choice, "text": semantic_by_display.get(str(choice.get("text") or ""), choice.get("text"))}
+            if isinstance(choice, dict) else choice
+            for choice in (payload.get("choices") or [])
+        ]
+        payload["options"] = [str(c.get("text")) for c in payload["choices"] if isinstance(c, dict)]
         payload.update({
             "answer": semantic,
             "correct_answer": semantic,

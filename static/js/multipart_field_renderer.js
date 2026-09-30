@@ -56,11 +56,8 @@
         const normalizeGroupMarker = (raw) => {
             const text = String(raw || "").trim();
             if (!text) return "";
-            if (/^[\(（]\s*\d+\s*[\)）]$/.test(text)) {
-                return `(${text.replace(/[^\d]/g, "")})`;
-            }
-            if (/^\d+$/.test(text)) return `(${text})`;
-            return text;
+            const generic = text.match(GENERIC_PART_LABEL);
+            return generic ? `(${Number(generic[1])})` : text;
         };
         if (Array.isArray(ui.field_groups) && ui.field_groups.length > 0) {
             return ui.field_groups.map((group) => {
@@ -91,6 +88,21 @@
         return [{ label: "", fields: subqs }];
     }
 
+    // Positional names such as part_1 / Part 1 / 欄位 1 / 第（1）小題 carry no
+    // meaning for students; they are shown as (1).  Semantic labels pass through.
+    const GENERIC_PART_LABEL = /^(?:part|欄位|第)?[\s_\-]*[\(（]?\s*(\d{1,2})\s*[\)）]?[\s_\-]*(?:小題|題)?$/i;
+    const SIGNED_PART_LABEL = /^part[\s_\-]*(\d{1,2})[\s_\-]+(pos|neg)$/i;
+
+    function studentLabel(text, fallbackIndex) {
+        const raw = String(text == null ? "" : text).trim();
+        if (!raw) return `(${fallbackIndex + 1})`;
+        const generic = raw.match(GENERIC_PART_LABEL);
+        if (generic) return `(${Number(generic[1])})`;
+        const signed = raw.match(SIGNED_PART_LABEL);
+        if (signed) return `(${Number(signed[1])}) ${signed[2].toLowerCase() === "pos" ? "正" : "負"}`;
+        return raw;
+    }
+
     function figureSlotDisplayLabel(part, fallbackIndex) {
         const key = String((part && (part.key || part.field_key)) || "");
         const fig = key.match(/^fig(\d+)$/i);
@@ -105,7 +117,7 @@
             const index = Number(cmp[1]);
             return `圖${marks[index - 1] || index}`;
         }
-        return String((part && (part.label || part.prompt)) || key || `欄位 ${fallbackIndex + 1}`);
+        return studentLabel((part && (part.label || part.prompt)) || key, fallbackIndex);
     }
 
     function controlKind(part) {
@@ -115,7 +127,9 @@
         if (expected.includes("=") && /[xyk]/i.test(expected)) return "equation";
         if (/sqrt|\\sqrt|√/.test(expected)) return "radical";
         if (expected.includes("/")) return "fraction";
+        if (/^\s*\(?\s*[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?\s*\)?\s*$/.test(expected)) return "coordinate";
         if (checker.includes("integer") || /^[+-]?\d+$/.test(expected.replace(/\s/g, ""))) return "numeric";
+        if (/[\u4e00-\u9fff]/.test(expected)) return "text";
         return "expression";
     }
 
@@ -136,7 +150,7 @@
 
     function applyControlKind(node, kind) {
         if (!node || !node.classList) return;
-        ["numeric", "fraction", "expression", "equation", "inequality", "radical"].forEach((name) => {
+        ["numeric", "coordinate", "fraction", "expression", "equation", "inequality", "radical", "text"].forEach((name) => {
             node.classList.remove("control-" + name);
         });
         node.classList.add("control-" + (kind || "expression"));
@@ -179,16 +193,21 @@
         return input;
     }
 
-    function appendField(container, part, index) {
+    function appendField(container, part, index, groupLabel) {
         const row = document.createElement("div");
         row.className = "multi-part-row";
-        const label = document.createElement("label");
         const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
         const prompt = figureSlotDisplayLabel(part, index);
-        label.textContent = prompt;
-        label.setAttribute("for", `multi-part-input-${fieldKey}`);
-        row.appendChild(label);
-        row.appendChild(createControl(part, index));
+        const control = createControl(part, index);
+        if (groupLabel && prompt === groupLabel) {
+            control.setAttribute("aria-label", prompt);
+        } else {
+            const label = document.createElement("label");
+            label.textContent = prompt;
+            label.setAttribute("for", `multi-part-input-${fieldKey}`);
+            row.appendChild(label);
+        }
+        row.appendChild(control);
         container.appendChild(row);
     }
 
@@ -225,7 +244,7 @@
                     groupWrap.appendChild(groupLabel);
                 }
                 group.fields.forEach((sq) => {
-                    appendField(groupWrap, sq, globalIndex);
+                    appendField(groupWrap, sq, globalIndex, group.label);
                     globalIndex += 1;
                 });
                 container.appendChild(groupWrap);
@@ -234,6 +253,40 @@
             parts.forEach((part, index) => appendField(container, part, index));
         }
         return { fields: parts, groups };
+    }
+
+    // The answer strip wraps naturally, but a submit button that lands alone on
+    // the next line wastes a full row.  When that happens the strip retries with
+    // the narrower (still typeable) compact widths and keeps them only if the
+    // button then follows the last field or the strip needs fewer lines.
+    function lineCount(nodes) {
+        const centers = nodes
+            .map((node) => { const r = node.getBoundingClientRect(); return r.top + r.height / 2; })
+            .sort((a, b) => a - b);
+        let lines = 0;
+        let last = -Infinity;
+        centers.forEach((center) => {
+            if (center - last > 6) lines += 1;
+            last = center;
+        });
+        return lines;
+    }
+
+    function fitAnswerStrip(block) {
+        if (!block || !block.classList) return false;
+        block.classList.remove("answer-strip-compact");
+        const submit = block.querySelector("#submit-button");
+        const controls = Array.from(block.querySelectorAll(".multi-part-input"))
+            .filter((node) => node.offsetParent !== null);
+        if (!submit || submit.offsetParent === null || controls.length < 2) return false;
+        const lastControl = controls[controls.length - 1];
+        const submitFollowsLast = () => lineCount([lastControl, submit]) === 1;
+        if (submitFollowsLast()) return false;
+        const before = lineCount(controls.concat(submit));
+        block.classList.add("answer-strip-compact");
+        if (submitFollowsLast() || lineCount(controls.concat(submit)) < before) return true;
+        block.classList.remove("answer-strip-compact");
+        return false;
     }
 
     function isInteractiveControl(node) {
@@ -282,5 +335,8 @@
         controlKind,
         controlKindFromPayload,
         applyControlKind,
+        studentLabel,
+        figureSlotDisplayLabel,
+        fitAnswerStrip,
     };
 }));

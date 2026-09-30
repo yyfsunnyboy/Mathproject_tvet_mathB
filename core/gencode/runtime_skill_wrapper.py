@@ -700,6 +700,11 @@ def check_answer(
                 answer_contract=ac,
                 payload=base,
             )
+        from core.checkers.translation_description_checker import check_translation_description_answer
+
+        translation_verdict = check_translation_description_answer(user_answer, correct_answer)
+        if translation_verdict is not None:
+            return translation_verdict
         return _normalized_text_equivalent(user_answer, correct_answer)
 
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)

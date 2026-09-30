@@ -8,6 +8,7 @@ from core.gencode.answer_format_hint import (
     VERTEX_FORM_HINT_EXAMPLE,
     answer_format_example_for_contract,
     build_answer_format_suffix,
+    stem_states_answer_format,
 )
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
 
@@ -52,8 +53,13 @@ def test_completing_the_square_runtime_suffix_is_vertex_form() -> None:
         qt = str(q.get("question_text") or "")
         assert "頂點式" in qt or "配方" in qt or "a(x" in qt
         assert FACTOR_EXAMPLE not in qt
-        assert VERTEX_FORM_HINT_EXAMPLE in qt or "2(x-2)^2+3" in qt
-        assert "（答案範例：" in qt
+        stem = qt.split("（答案範例：", 1)[0]
+        if stem_states_answer_format(stem, VERTEX_FORM_HINT_EXAMPLE):
+            # The stem already shows the vertex-form template; no second example.
+            assert "（答案範例：" not in qt
+            assert (q.get("metadata") or {}).get("answer_format_suffix_suppressed") == "stem_states_answer_format"
+        else:
+            assert f"（答案範例：{VERTEX_FORM_HINT_EXAMPLE}）" in qt
         # Checker accepts the canonical vertex-form answer.
         ans = q.get("correct_answer") or q.get("answer")
         assert bool(mod.check(ans, ans, question_payload=q)) is True

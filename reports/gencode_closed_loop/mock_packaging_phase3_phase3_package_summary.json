@@ -32,19 +32,45 @@
     "SOP v0.2 Verification: Ensure Gencode runtime audit uses `generated_only` to prevent source_bank_pool masking generator distribution.",
     "SOP v0.2 Wrapper: Ensure wrapper state does not reload / reset state upon importlib.reload."
   ],
-  "skill_file_path": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3.py",
+  "skill_file_path": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3.py",
   "package_status": "blocked_no_usable_generators",
   "py_compile_status": "not_run_no_usable_generators",
   "runtime_smoke_status": "failed",
   "runtime_smoke_raw": {
     "status": "failed",
     "blockers": [
-      "draft_skill_file_missing"
+      "runtime_smoke_failed_at_seed_0",
+      "semantic_drifting_fatal"
     ],
-    "payload_preview": {},
-    "interface_check": {},
-    "py_compile_status": "not_run",
-    "samples_tested": 0
+    "payload_preview": {
+      "problem_type_id": "absolute_value_distance_between_two_points",
+      "answer_type": "integer",
+      "answer_contract_answer_type": null,
+      "checker": null,
+      "equivalence": null,
+      "question_text_len": 38,
+      "answer": 5,
+      "correct_answer": 5,
+      "choices_count": 0,
+      "metadata_keys": [
+        "scenario_family",
+        "scenario_id",
+        "parameter_signature",
+        "question_pattern_id",
+        "diagnosis_tags",
+        "prerequisite_subskills"
+      ]
+    },
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": true,
+      "check_callable": true
+    },
+    "py_compile_status": "passed",
+    "samples_tested": 0,
+    "negative_semantic_smoke": "passed",
+    "validation_diagnostics": {}
   },
   "publish_check": {
     "draft_check_passed": false,
@@ -61,20 +87,52 @@
       "draft_passed_but_runtime_ready_not_confirmed"
     ],
     "blockers": [
-      "draft_skill_file_missing"
+      "runtime_smoke_failed_at_seed_0",
+      "semantic_drifting_fatal"
     ],
-    "py_compile_status": "not_run",
-    "interface_check": {},
+    "py_compile_status": "passed",
+    "interface_check": {
+      "generate_exists": true,
+      "check_exists": true,
+      "generate_returns_dict": true,
+      "check_callable": true
+    },
     "runtime_smoke_status": "failed",
     "runtime_smoke_raw": {
       "status": "failed",
       "blockers": [
-        "draft_skill_file_missing"
+        "runtime_smoke_failed_at_seed_0",
+        "semantic_drifting_fatal"
       ],
-      "payload_preview": {},
-      "interface_check": {},
-      "py_compile_status": "not_run",
-      "samples_tested": 0
+      "payload_preview": {
+        "problem_type_id": "absolute_value_distance_between_two_points",
+        "answer_type": "integer",
+        "answer_contract_answer_type": null,
+        "checker": null,
+        "equivalence": null,
+        "question_text_len": 38,
+        "answer": 5,
+        "correct_answer": 5,
+        "choices_count": 0,
+        "metadata_keys": [
+          "scenario_family",
+          "scenario_id",
+          "parameter_signature",
+          "question_pattern_id",
+          "diagnosis_tags",
+          "prerequisite_subskills"
+        ]
+      },
+      "interface_check": {
+        "generate_exists": true,
+        "check_exists": true,
+        "generate_returns_dict": true,
+        "check_callable": true
+      },
+      "py_compile_status": "passed",
+      "samples_tested": 0,
+      "negative_semantic_smoke": "passed",
+      "validation_diagnostics": {}
     },
     "summary_message": "Draft is not ready for publish yet. Please resolve blockers first."
   },
@@ -87,9 +145,9 @@
     "included": [],
     "excluded": [],
     "phase2_summary_exists": true,
-    "generator_draft_spec_exists": true,
-    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase2_generator_summary.json",
-    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3_generator_draft_spec.json",
+    "generator_draft_spec_exists": false,
+    "phase2_generator_summary_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase2_generator_summary.json",
+    "generator_draft_spec_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3_generator_draft_spec.json",
     "runtime_spec_alignment": {
       "status": "skipped_no_aligned_draft_specs",
       "synced_spec_count": 0,
@@ -102,18 +160,18 @@
     }
   },
   "reports": {
-    "phase3_package_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
-    "phase3_package_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
-    "phase3_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
-    "phase3_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
-    "final_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
-    "final_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
-    "draft_skill_file": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3.py"
+    "phase3_package_summary_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
+    "phase3_package_summary_md": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
+    "phase3_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
+    "phase3_md": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
+    "final_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.json",
+    "final_md": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_packaging_phase3_phase3_package_summary.md",
+    "draft_skill_file": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_packaging_phase3.py"
   },
   "next_action": "review_phase2_blockers_before_phase3",
   "error": "",
   "dry_run": true,
-  "timestamp": "2026-06-25T05:44:39.042020+00:00",
+  "timestamp": "2026-09-29T15:09:07.770793+00:00",
   "generated_with_warning": false,
   "warnings": [],
   "publish_gate_layers": {

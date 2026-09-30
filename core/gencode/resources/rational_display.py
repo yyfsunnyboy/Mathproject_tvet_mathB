@@ -119,10 +119,14 @@ def ensure_multipart_item_line_breaks(text: Any) -> str:
     return re.sub(r"(?<!\n)([\(（]\s*[2-9]\d*\s*[\)）])", r"\n\1", source)
 
 
-def sanitize_student_math_display_text(text: Any) -> str:
-    """Shared student-facing cleanup for numeric float noise and trivial vec coeffs."""
+def sanitize_student_math_display_text(text: Any, *, break_multipart_items: bool = True) -> str:
+    """Shared student-facing cleanup for numeric float noise and trivial vec coeffs.
+
+    Problem stems pass ``break_multipart_items=False``: their layout is left to the
+    browser, and the marker regex cannot tell ``(2)`` items from ``f(2)`` inside math.
+    """
     cleaned = sanitize_trivial_vector_coefficients(sanitize_float_noise_in_text(text))
-    return ensure_multipart_item_line_breaks(cleaned)
+    return ensure_multipart_item_line_breaks(cleaned) if break_multipart_items else cleaned
 
 
 def latex_coeff_times_symbol(coeff: Any, symbol_latex: str) -> str:

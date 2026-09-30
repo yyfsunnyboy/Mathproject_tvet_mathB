@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 import re
 from typing import Any, Callable
+
+_LOGGER = logging.getLogger(__name__)
 
 LOW_CONFIDENCE_THRESHOLD = 0.70
 
@@ -323,15 +326,18 @@ def deterministic_final_answer_check(
     if checker is None:
         from core.gencode.runtime_skill_wrapper import check_answer as checker
 
-    return bool(
-        checker(
+    try:
+        verdict = checker(
             recognized_answer,
             expected,
             payload=_checker_payload(ctx),
             answer_contract=ctx.answer_contract if isinstance(ctx.answer_contract, dict) else None,
             skill_id=ctx.skill_id,
         )
-    )
+    except Exception:
+        _LOGGER.exception("handwriting deterministic check failed for skill %s", ctx.skill_id)
+        return None
+    return bool(verdict)
 
 
 def build_handwriting_check_response(

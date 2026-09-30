@@ -53,14 +53,14 @@
   "phase2_status": "PASS",
   "repair_plan": [],
   "reports": {
-    "phase2_generator_summary_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.json",
-    "phase2_generator_summary_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.md",
-    "phase2_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.json",
-    "phase2_md": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.md",
-    "generator_draft_spec_json": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_phase2_persist_reinforced_payload_generator_draft_spec.json"
+    "phase2_generator_summary_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.json",
+    "phase2_generator_summary_md": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.md",
+    "phase2_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.json",
+    "phase2_md": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\mock_phase2_persist_reinforced_payload_phase2_generator_summary.md",
+    "generator_draft_spec_json": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_closed_loop\\drafts\\mock_phase2_persist_reinforced_payload_generator_draft_spec.json"
   },
   "next_action": "phase3_package_draft",
-  "timestamp": "2026-06-25T05:44:45.191843+00:00",
+  "timestamp": "2026-09-29T15:10:55.480295+00:00",
   "dry_run": true
 }
 ```

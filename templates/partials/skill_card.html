@@ -1,6 +1,6 @@
 <div class="skill-card status-{{ skill_card.card_status }}" data-skill-id="{{ skill_card.skill_id }}" style="height: 100%;">
     <h3>{{ skill_card.skill_ch_name or skill_card.skill_name }}</h3>
-    {% if skill_card.description %}<p>{{ skill_card.description }}</p>{% endif %}
+    {% if skill_card.description %}<p class="skill-card-description">{{ skill_card.description }}</p>{% endif %}
     <div class="progress-info">
         <div class="skill-status-row">
             <span data-mastery-field="status">{{ skill_card.card_status_label }}</span>

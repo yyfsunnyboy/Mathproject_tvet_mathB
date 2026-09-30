@@ -63831,27 +63831,19 @@
         "diversity_healthy": true,
         "sample_count": 30,
         "unique_signature_count": 30,
-        "unique_question_text_count": 25,
+        "unique_question_text_count": 30,
         "template_variant_distribution": {
-          "given_point_and_slope_find_slope_intercept_form": 11,
-          "given_point_and_slope_find_point_slope_form": 11,
-          "given_point_and_slope_find_general_form": 8
+          "given_point_and_slope_find_general_form": 10,
+          "given_point_and_slope_find_point_slope_form": 10,
+          "given_point_and_slope_find_slope_intercept_form": 10
         },
         "answer_shape_distribution": {
-          "linear_equation_unparseable": 30
+          "linear_equation": 30
         },
         "variable_coverage_report": {
-          "ratio_forms": [
-            "AP:PB=m:n",
-            "AP=mPB",
-            "mAP=nPB"
-          ],
+          "ratio_forms": [],
           "coordinate_patterns": [
-            "++",
-            "+-",
-            "-+",
-            "--",
-            "mixed"
+            ""
           ],
           "answer_type_modes": [
             ""
@@ -63859,34 +63851,20 @@
         },
         "repetition_warnings": [],
         "diversity_blockers": [],
-        "max_consecutive_same_template": 1,
-        "generation_errors": [
-          "'list' object has no attribute 'get'",
-          "'list' object has no attribute 'get'",
-          "'list' object has no attribute 'get'",
-          "'list' object has no attribute 'get'",
-          "'list' object has no attribute 'get'"
-        ],
-        "sampling_mode": "contract_simulation"
+        "max_consecutive_same_template": 3,
+        "generation_errors": [],
+        "sampling_mode": "live"
       },
       "unique_signature_count": 30,
       "template_variant_distribution": {
-        "given_point_and_slope_find_slope_intercept_form": 11,
-        "given_point_and_slope_find_point_slope_form": 11,
-        "given_point_and_slope_find_general_form": 8
+        "given_point_and_slope_find_general_form": 10,
+        "given_point_and_slope_find_point_slope_form": 10,
+        "given_point_and_slope_find_slope_intercept_form": 10
       },
       "variable_coverage_report": {
-        "ratio_forms": [
-          "AP:PB=m:n",
-          "AP=mPB",
-          "mAP=nPB"
-        ],
+        "ratio_forms": [],
         "coordinate_patterns": [
-          "++",
-          "+-",
-          "-+",
-          "--",
-          "mixed"
+          ""
         ],
         "answer_type_modes": [
           ""
@@ -63995,6 +63973,6 @@
   "failed_generators": [
     "vh_數學B1_PointSlopeForm:equation_write_line_equation_from_point_slope_single_choice:draft_v1"
   ],
-  "timestamp": "2026-06-24T16:38:35.908468+00:00",
+  "timestamp": "2026-09-29T15:07:18.492086+00:00",
   "dry_run": true
 }

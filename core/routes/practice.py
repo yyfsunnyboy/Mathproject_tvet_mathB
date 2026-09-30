@@ -216,6 +216,80 @@ def _normalize_gencode_runtime_payload(data: dict, *, skill_id: str = "") -> dic
     return refresh_runtime_question_session(data, skill_id=skill_id)
 
 
+QUESTION_DELIVERY_FAILED_MESSAGE = "題目載入失敗，請通知教師檢查此技能。"
+_RETRY_SEED_STRIDE = 7919
+
+
+def _canonicalize_route_payload(data: Any) -> Any:
+    """Fold supported legacy stem/answer aliases into canonical fields."""
+    if not isinstance(data, dict):
+        return data
+    from core.gencode.question_delivery_contract import canonicalize_question_text
+
+    out = canonicalize_question_text(data)
+    if "answer" in out and "correct_answer" not in out:
+        out["correct_answer"] = out["answer"]
+    return out
+
+
+def _prepare_runtime_session_payload(data: dict, skill_id: str, prereq_skills: list) -> dict:
+    data["context_string"] = data.get("context_string", data.get("inequality_string", ""))
+    data["prereq_skills"] = prereq_skills
+    return _normalize_gencode_runtime_payload(data.copy(), skill_id=skill_id)
+
+
+def _question_delivery_errors(payload: Any) -> list[str]:
+    from core.gencode.question_delivery_contract import question_delivery_errors
+
+    return question_delivery_errors(payload)
+
+
+def _log_rejected_question(
+    skill_id: str,
+    payload: Any,
+    reason: str,
+    *,
+    attempt: int,
+    max_attempts: int,
+    context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload = payload if isinstance(payload, dict) else {}
+    meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    ctx = context or {}
+    entry = {
+        "attempt": attempt,
+        "component_id": payload.get("component_id") or meta.get("component_id") or ctx.get("component_id"),
+        "problem_type_id": payload.get("problem_type_id") or meta.get("problem_type_id") or ctx.get("problem_type_id"),
+        "question_uid": payload.get("question_uid") or "",
+        "seed": ctx.get("seed"),
+        "reason": str(reason)[:300],
+    }
+    current_app.logger.warning(
+        "[QUESTION DELIVERY REJECTED] skill_id=%s attempt=%s/%s component_id=%s problem_type_id=%s "
+        "question_uid=%s seed=%s reason=%s",
+        skill_id,
+        attempt,
+        max_attempts,
+        entry["component_id"],
+        entry["problem_type_id"],
+        entry["question_uid"],
+        entry["seed"],
+        entry["reason"],
+    )
+    return entry
+
+
+def _question_delivery_failure_response(skill_id: str, rejected_count: int):
+    return jsonify({
+        "success": False,
+        "error_code": "QUESTION_DELIVERY_FAILED",
+        "skill_id": skill_id,
+        "error": QUESTION_DELIVERY_FAILED_MESSAGE,
+        "message": QUESTION_DELIVERY_FAILED_MESSAGE,
+        "rejected_attempts": rejected_count,
+    }), 503
+
+
 def _extract_canonical_question_stem(data: dict[str, Any]) -> str:
     """Return the canonical question stem for API / frontend display."""
     if not isinstance(data, dict):
@@ -578,6 +652,232 @@ def _is_incorrect_resubmit(stale: dict[str, Any] | None) -> bool:
     )
 
 
+def _practice_type_rotation_pool(skill_id: str, mod: Any = None) -> dict[str, Any] | None:
+    from core.practice_type_rotation import load_section_pool
+
+    module = mod if mod is not None else get_skill(skill_id)
+    if module is None:
+        return None
+    try:
+        return load_section_pool(skill_id, module=module)
+    except Exception:
+        current_app.logger.exception("[PRACTICE type_rotation] pool build failed skill_id=%s", skill_id)
+        return None
+
+
+def _practice_type_rotation_next(skill_id: str, mod: Any) -> dict[str, Any] | None:
+    """Pick the next (type, component) for the section.
+
+    ``None`` when any component lacks reliable type metadata; the caller then keeps
+    the per-component curriculum_sequence instead of guessing type identity.
+    """
+    from core import practice_type_rotation as ptr
+
+    pool = _practice_type_rotation_pool(skill_id, mod)
+    if not pool or not pool["types"] or not pool["reliable"]:
+        return None
+    types = pool["types"]
+    state = ptr.ensure_state(session.get(ptr.SESSION_KEY), skill_id, types)
+    pick = ptr.next_pick(state, types)
+    if pick is None:
+        state = ptr.new_state(skill_id, types)
+        pick = ptr.next_pick(state, types)
+    session[ptr.SESSION_KEY] = state
+    session.modified = True
+    pick["candidate_count"] = len(types[pick["type_key"]])
+    pick.update(ptr.summarize(state, types))
+    current_app.logger.info(
+        "[PRACTICE type_rotation] skill_id=%s round=%s type_key=%s component_id=%s total_types=%s",
+        skill_id,
+        pick["round"],
+        pick["type_key"],
+        pick["component_id"],
+        pick["total_types"],
+    )
+    return pick
+
+
+def _practice_type_rotation_register(skill_id: str, mod: Any, question_uid: str, type_key: str) -> None:
+    from core import practice_type_rotation as ptr
+
+    state = session.get(ptr.SESSION_KEY)
+    pool = _practice_type_rotation_pool(skill_id, mod)
+    if not question_uid or not pool or not ptr.matches(state, skill_id, pool["types"]):
+        return
+    ptr.register_served_question(state, pool["types"], question_uid, type_key)
+    session[ptr.SESSION_KEY] = state
+    session.modified = True
+
+
+def _practice_chapter_scope(skill_id: str) -> tuple[Any, list[Any]]:
+    """``(anchor_row, rows_of_the_same_chapter)``; ``(None, [])`` without curriculum rows."""
+    try:
+        anchors = db.session.query(SkillCurriculum).filter_by(skill_id=skill_id).all()
+        if not anchors:
+            return None, []
+        preferred = session.get("current_curriculum")
+        anchor = next((a for a in anchors if a.curriculum == preferred), anchors[0])
+        rows = db.session.query(SkillCurriculum).filter_by(
+            curriculum=anchor.curriculum, volume=anchor.volume, chapter=anchor.chapter
+        ).all()
+        return anchor, rows
+    except Exception:
+        current_app.logger.exception("[PRACTICE type_rotation] chapter scope lookup failed skill_id=%s", skill_id)
+        return None, []
+
+
+def _practice_type_rotation_section_available(skill_id: str) -> bool:
+    pool = _practice_type_rotation_pool(skill_id)
+    return bool(pool and pool["types"] and pool["reliable"])
+
+
+CHAPTER_REVIEW_NAME = "本章總複習"
+
+
+def _chapter_review_label(chapter: str) -> str:
+    """``第N章 章名`` from a curriculum chapter value such as ``1 坐標系與函數圖形`` or ``第1章 三角函數``."""
+    text = str(chapter or "").strip()
+    match = re.match(r"^第\s*(\d+)\s*章\s*(.*)$", text) or re.match(r"^(\d+)[\s.、]+(.+)$", text)
+    if not match:
+        return text
+    return f"第{int(match.group(1))}章 {match.group(2).strip()}".strip()
+
+
+def _chapter_review_ordered_sections(rows: list[Any]) -> list[str]:
+    """Section skill ids of one chapter in textbook order (same order as resolve_next_section)."""
+    def _numbers(text: Any) -> tuple[int, ...]:
+        return tuple(int(n) for n in re.findall(r"\d+", str(text or ""))[:3])
+
+    ordered: list[str] = []
+    for row in sorted(rows, key=lambda r: (_numbers(r.section), int(r.display_order or 0), str(r.skill_id))):
+        if row.skill_id not in ordered:
+            ordered.append(row.skill_id)
+    return ordered
+
+
+def _chapter_review_entry(chapter: str, curriculum: str = "", volume: str = "") -> dict[str, Any] | None:
+    """Resolve a chapter entry to its canonical label and first rotation-ready section."""
+    chapter = str(chapter or "").strip()
+    if not chapter or "," in chapter:
+        return None
+    query = db.session.query(SkillCurriculum).filter(SkillCurriculum.chapter == chapter)
+    if curriculum:
+        query = query.filter(SkillCurriculum.curriculum == curriculum)
+    if volume:
+        query = query.filter(SkillCurriculum.volume == volume)
+    rows = query.all()
+    groups = {(r.curriculum, r.volume) for r in rows}
+    if len(groups) > 1:
+        preferred = session.get("current_curriculum")
+        rows = [r for r in rows if r.curriculum == preferred]
+        groups = {(r.curriculum, r.volume) for r in rows}
+    if len(groups) != 1:
+        return None
+    active = {
+        s.skill_id for s in db.session.query(SkillInfo.skill_id).filter(
+            SkillInfo.skill_id.in_([r.skill_id for r in rows]), SkillInfo.is_active.is_(True)
+        ).all()
+    }
+    first = next(
+        (sid for sid in _chapter_review_ordered_sections(rows)
+         if sid in active and _practice_type_rotation_section_available(sid)),
+        "",
+    )
+    return {"label": _chapter_review_label(chapter), "first_section": first}
+
+
+def _chapter_review_context(skill_id: str, skill_ch_name: str) -> dict[str, Any]:
+    """Server-side state for the chapter review header and progress panel."""
+    from core import practice_type_rotation as ptr
+
+    anchor, chapter_rows = _practice_chapter_scope(skill_id)
+    pool = _practice_type_rotation_pool(skill_id)
+    types = pool["types"] if pool and pool["reliable"] else {}
+    state = session.get(ptr.SESSION_KEY)
+    if types and ptr.matches(state, skill_id, types):
+        section = ptr.summarize(state, types)
+    else:
+        section = {"total_types": len(types), "status_counts": {ptr.STATUS_PASSED: 0}, "weak_types": []}
+    chapter = None
+    if anchor is not None:
+        progress = session.get(ptr.CHAPTER_SESSION_KEY)
+        key = ptr.chapter_key(anchor.curriculum, anchor.volume, anchor.chapter)
+        if isinstance(progress, dict) and progress.get("ch") == key and not progress.get("done"):
+            chapter = ptr.chapter_summary(progress)
+    next_section = _practice_type_rotation_next_section(skill_id, chapter_rows) if chapter_rows else ""
+    next_info = db.session.get(SkillInfo, next_section) if next_section else None
+    label = _chapter_review_label(anchor.chapter) if anchor is not None else ""
+    return {
+        "name": CHAPTER_REVIEW_NAME,
+        "title": f"{label}｜{CHAPTER_REVIEW_NAME}" if label else CHAPTER_REVIEW_NAME,
+        "chapter_label": label,
+        "section_name": skill_ch_name,
+        "section_types_total": int(section.get("total_types") or 0),
+        "section_types_passed": int((section.get("status_counts") or {}).get(ptr.STATUS_PASSED, 0)),
+        "weak_types": len(section.get("weak_types") or []),
+        "next_section_skill_id": next_section,
+        "next_section_name": (next_info.skill_ch_name if next_info else next_section) if next_section else "",
+        "chapter_summary": chapter,
+    }
+
+
+def _practice_type_rotation_next_section(skill_id: str, chapter_rows: list[Any]) -> str:
+    from core.practice_type_rotation import resolve_next_section
+
+    return resolve_next_section(skill_id, chapter_rows, is_available=_practice_type_rotation_section_available)
+
+
+def _practice_chapter_completed_summary(skill_id: str) -> dict[str, Any] | None:
+    """Summary when this section finished its chapter run; no further questions are served."""
+    from core import practice_type_rotation as ptr
+
+    progress = session.get(ptr.CHAPTER_SESSION_KEY)
+    if isinstance(progress, dict) and progress.get("done") and progress.get("last") == ptr.section_token(skill_id):
+        return ptr.chapter_summary(progress)
+    return None
+
+
+def _practice_type_rotation_apply_verdict(uid: str, skill_id: str, out: dict[str, Any]) -> None:
+    from core import practice_type_rotation as ptr
+
+    state = session.get(ptr.SESSION_KEY)
+    if not uid or not isinstance(state, dict):
+        return
+    pool = _practice_type_rotation_pool(skill_id)
+    if not pool or not ptr.matches(state, skill_id, pool["types"]):
+        return
+    types = pool["types"]
+    is_correct = bool(out.get("correct", False))
+    type_key = ptr.record_result(state, types, uid, is_correct)
+    if type_key is None:
+        return
+    session[ptr.SESSION_KEY] = state
+    summary = ptr.summarize(state, types)
+    summary["type_key"] = type_key
+    summary["type_status"] = ptr.type_status(state, types)[type_key]
+
+    anchor, chapter_rows = _practice_chapter_scope(skill_id)
+    key = (
+        ptr.chapter_key(anchor.curriculum, anchor.volume, anchor.chapter)
+        if anchor is not None
+        else ptr.chapter_key("", "", skill_id)
+    )
+    progress = ptr.ensure_chapter_progress(session.get(ptr.CHAPTER_SESSION_KEY), key)
+    ptr.record_chapter_verdict(progress, is_correct, section_completed=summary["section_completed"])
+    next_section = ""
+    if summary["section_completed"]:
+        next_section = _practice_type_rotation_next_section(skill_id, chapter_rows) if chapter_rows else ""
+        if not next_section:
+            ptr.mark_chapter_completed(progress, skill_id)
+    session[ptr.CHAPTER_SESSION_KEY] = progress
+    session.modified = True
+
+    summary["next_section_skill_id"] = next_section
+    summary["chapter_completed"] = bool(progress.get("done"))
+    summary["chapter_summary"] = ptr.chapter_summary(progress)
+    out["practice_type_rotation"] = summary
+
+
 def _emit_check_result(
     question_uid: str,
     skill_id: str,
@@ -595,12 +895,18 @@ def _emit_check_result(
         from core.gencode.answer_grading import attach_correct_answer_feedback
 
         out = attach_correct_answer_feedback(out, current_question)
+    if uid:
+        out["question_uid"] = uid
+    _verdict_status = str(out.get("status", "")).strip()
+    if record_progress and out.get("correct") is not None and (
+        _verdict_status in ("correct", "incorrect")
+        or (_verdict_status == "" and not out.get("system_error") and not out.get("invalid_input"))
+    ):
+        _practice_type_rotation_apply_verdict(uid, skill_id, out)
     # Guest Demo is interactive but read-only.  The checker has already run by
     # the time this helper is called, so return the normal grading payload
     # before touching question history, streak/mastery state, or any DB-backed
     # persistence that requires a real student id.
-    if uid:
-        out["question_uid"] = uid
     if is_guest_demo():
         return jsonify(out)
     # Only mark the question as answered in the store when the result carries a
@@ -811,18 +1117,22 @@ def _log_runtime_check_session(
     )
 
 
+_ADAPTIVE_UNIT_METADATA = {
+    "jh_數學1上_FourArithmeticOperationsOfIntegers": "整數四則運算",
+    "jh_數學1上_FourArithmeticOperationsOfNumbers": "數的四則運算",
+    "jh_數學2上_FourOperationsOfRadicals": "根式的四則運算",
+    "jh_數學1上_OperationsOnLinearExpressions": "一元一次式的運算",
+    "jh_數學2上_FourArithmeticOperationsOfPolynomial": "多項式的四則運算",
+}
+
+
 def _resolve_adaptive_unit_name(skill_id, requested_unit_name=""):
+    """Resolve display metadata from the canonical skill identity, not query text."""
+    canonical_name = _ADAPTIVE_UNIT_METADATA.get(str(skill_id or "").strip())
+    if canonical_name:
+        return canonical_name
     requested = str(requested_unit_name or "").strip()
-    if requested and requested != "?砍??拇?摮貊?嚗蜇蝯扯那?瘀?":
-        return requested
-    skill_map = {
-        "jh_?詨飛1銝FourArithmeticOperationsOfIntegers": "?湔????",
-        "jh_?詨飛1銝FourArithmeticOperationsOfNumbers": "?????",
-        "jh_?詨飛2銝FourOperationsOfRadicals": "?孵?????",
-        "jh_?詨飛1銝OperationsOnLinearExpressions": "銝??甈∪?",
-        "jh_?詨飛2銝FourArithmeticOperationsOfPolynomial": "憭?撘???蝞?",
-    }
-    return skill_map.get(str(skill_id or "").strip(), requested or "?芣?摰??")
+    return requested or "未指定單元"
 
 
 def _resolve_b4_chapter_adaptive_entry(
@@ -1217,11 +1527,18 @@ def adaptive_practice_page():
             learning_mode = "teaching"
         if not practice_kind:
             practice_kind = "unit_practice"
+
+    chapter_review = None
+    if mode == 'single' and not chapter_bridge_hit:
+        chapter_review = _chapter_review_entry(skill_ids, curriculum, volume)
+        if chapter_review and chapter_review["first_section"]:
+            return redirect(url_for(
+                'practice.practice', skill_id=chapter_review["first_section"], chapter_review='start'
+            ))
     
     unit_name = "?芷?毀蝧?"
     if mode == 'single':
-        # ?典銝璅∪?銝?skill_ids 撠望蝡??迂
-        unit_name = f"?桀?蝺渡?嚗{skill_ids}"
+        unit_name = chapter_review["label"] if chapter_review else "單元練習"
     elif mode == 'chapter':
         unit_name = str(chapter_bridge.get("unit_name") or "蝡??芷?毀蝧?")
     elif mode == 'multiple':
@@ -1270,14 +1587,16 @@ def adaptive_summative_page():
         mode = 'teaching'
     unit_name = _resolve_adaptive_unit_name(
         skill_id,
-        request.args.get('unit_name', '?砍??拇?摮貊?嚗蜇蝯扯那?瘀?').strip(),
+        request.args.get('unit_name', '').strip(),
     )
+    adaptive_error = "" if skill_id in _ADAPTIVE_UNIT_METADATA else "找不到指定的自適應單元，請回到單元選擇頁重新選擇。"
     return render_template(
         'adaptive_practice_v2.html',
         unit_name=unit_name,
         skill_id=skill_id,
         mode=mode,
         student_id=current_user.id,
+        adaptive_error=adaptive_error,
     )
 
 
@@ -1286,11 +1605,8 @@ def adaptive_summative_page():
 def adaptive_learning_entry_page():
     """Adaptive learning entry page."""
     units = [
-        {"label": "?湔????", "skill_id": "jh_?詨飛1銝FourArithmeticOperationsOfIntegers"},
-        {"label": "?????", "skill_id": "jh_?詨飛1銝FourArithmeticOperationsOfNumbers"},
-        {"label": "?孵?????", "skill_id": "jh_?詨飛2銝FourOperationsOfRadicals"},
-        {"label": "銝??甈∪?", "skill_id": "jh_?詨飛1銝OperationsOnLinearExpressions"},
-        {"label": "憭?撘???蝞?", "skill_id": "jh_?詨飛2銝FourArithmeticOperationsOfPolynomial"},
+        {"label": label, "skill_id": skill_id}
+        for skill_id, label in _ADAPTIVE_UNIT_METADATA.items()
     ]
     return render_template('adaptive_learning_entry.html', units=units)
 
@@ -1346,7 +1662,14 @@ def practice(skill_id):
     consecutive_correct = int(progress.consecutive_correct if progress else 0)
     pass_target = get_pass_target(skill_id)
 
+    chapter_review_arg = (request.args.get("chapter_review") or "").strip()
+    chapter_review = None
+    if chapter_review_arg in {"start", "1"} and not manual_review_info:
+        chapter_review = _chapter_review_context(skill_id, skill_ch_name)
+        chapter_review["await_start"] = chapter_review_arg == "start"
+
     return render_template('index.html', 
+                           chapter_review=chapter_review,
                            skill_id=skill_id,
                            skill_ch_name=skill_ch_name,
                            prereq_skills=prereq_skills,
@@ -1967,6 +2290,20 @@ def next_question():
 
         resolved_mode = route_mode
         resolved_route_source = route_reason
+        type_rotation_pick = None
+        if (
+            request.args.get("mode", "").strip() == "type_rotation"
+            and not requested_component_id
+            and not str(problem_type or "").strip()
+        ):
+            chapter_done = _practice_chapter_completed_summary(skill_id)
+            if chapter_done is not None:
+                return jsonify({
+                    "success": True,
+                    "skill_id": skill_id,
+                    "chapter_completed": True,
+                    "chapter_summary": chapter_done,
+                })
 
         # Handle legacy route separately (strictly no retry loop, single call, only pass level)
         if resolved_mode == "legacy":
@@ -1991,12 +2328,29 @@ def next_question():
                 level=difficulty_level,
             )
             route_source = "legacy_skill"
+            data = _canonicalize_route_payload(data)
+            session_data = _prepare_runtime_session_payload(data, skill_id, prereq_info_for_ai)
+            delivery_errors = _question_delivery_errors(session_data)
+            if delivery_errors:
+                _log_rejected_question(
+                    skill_id, session_data, ",".join(delivery_errors), attempt=1, max_attempts=1
+                )
+                return _question_delivery_failure_response(skill_id, 1)
         else:
-            # Modern generator path (includes retry loops)
+            # Modern generator path: every attempt must pass session normalization and the
+            # delivery gate; malformed payloads are skipped within a bounded number of attempts.
             max_retries = 5
             data = None
-            
+            session_data = None
+            rejected_attempts: list[dict[str, Any]] = []
+
             for attempt in range(max_retries):
+                data = None
+                attempt_context: dict[str, Any] = {
+                    "seed": None,
+                    "component_id": requested_component_id,
+                    "problem_type_id": problem_type or None,
+                }
                 try:
                     if _is_b4_tree_diagram_request(skill_id, problem_type):
                         data = _build_b4_tree_diagram_runtime_payload(variant, tree_diagram_index)
@@ -2138,13 +2492,30 @@ def next_question():
                         gen_seed = request.args.get("gen_seed", type=int)
                         if gen_seed is None:
                             gen_seed = random.randint(0, 10_000_000)
+                        elif attempt:
+                            gen_seed += attempt * _RETRY_SEED_STRIDE
+                        attempt_context["seed"] = gen_seed
 
-                        # Determine selection mode: default to curriculum_sequence
+                        # mode=type_rotation (student practice page) serves one question per
+                        # practice type; it falls back to curriculum_sequence (the default)
+                        # when the section has no reliable type metadata.
                         p_mode = request.args.get("mode", "").strip()
+                        picked_component_id = None
+                        if (
+                            p_mode == "type_rotation"
+                            and wrapper_loaded
+                            and not requested_component_id
+                            and not str(problem_type or "").strip()
+                        ):
+                            if attempt == 0:
+                                type_rotation_pick = _practice_type_rotation_next(skill_id, mod)
+                            if type_rotation_pick:
+                                picked_component_id = type_rotation_pick["component_id"]
+                            else:
+                                p_mode = ""
                         if not p_mode:
                             p_mode = "curriculum_sequence"
 
-                        picked_component_id = None
                         if wrapper_loaded and hasattr(mod, "GENERATOR_KEYS") and p_mode == "curriculum_sequence":
                             from core.gencode.services.v3_curriculum_ordering_service import get_sorted_component_ids_for_skill
                             raw_conn = db.engine.raw_connection()
@@ -2198,6 +2569,7 @@ def next_question():
                         try:
                             from core.legacy_generator_adapter import invoke_skill_generate, normalize_runtime_value
                             effective_component_id = requested_component_id or picked_component_id
+                            attempt_context["component_id"] = effective_component_id
                             data = invoke_skill_generate(
                                 mod,
                                 level=difficulty_level,
@@ -2230,24 +2602,25 @@ def next_question():
 
                         route_source = "gencode_wrapper" if wrapper_loaded else "legacy"
 
-                    # Normalize question fields if needed
-                    if "question" in data and "question_text" not in data:
-                        data["question_text"] = data["question"]
-                    if "answer" in data and "correct_answer" not in data:
-                        data["correct_answer"] = data["answer"]
-
-                    if data and "question_text" in data and "correct_answer" in data:
+                    data = _canonicalize_route_payload(data)
+                    candidate = _prepare_runtime_session_payload(data, skill_id, prereq_info_for_ai)
+                    delivery_errors = _question_delivery_errors(candidate)
+                    if not delivery_errors:
+                        session_data = candidate
                         break
+                    rejected_attempts.append(_log_rejected_question(
+                        skill_id, candidate, ",".join(delivery_errors),
+                        attempt=attempt + 1, max_attempts=max_retries, context=attempt_context,
+                    ))
                 except Exception as e:
-                    current_app.logger.warning(f"憿???岫 ({attempt+1}/{max_retries}): {e}")
-                    if attempt == max_retries - 1: raise e
-        
-        # 皞? Session 鞈?
-        data['context_string'] = data.get('context_string', data.get('inequality_string', ''))
-        data['prereq_skills'] = prereq_info_for_ai
-        
-        # [?詨??脩戌] 皜? Session嚗Ⅱ靽????亙摰寧???JSON 摨???
-        session_data = _normalize_gencode_runtime_payload(data.copy(), skill_id=skill_id)
+                    rejected_attempts.append(_log_rejected_question(
+                        skill_id, data, f"{type(e).__name__}: {e}",
+                        attempt=attempt + 1, max_attempts=max_retries, context=attempt_context,
+                    ))
+
+            if session_data is None:
+                return _question_delivery_failure_response(skill_id, len(rejected_attempts))
+
         # ??? 'image' ??'Figure' ?賊??萄?
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
@@ -2258,6 +2631,10 @@ def next_question():
         session_data["question_text_hash"] = stored_current.get("question_text_hash", "")
         session_data["skill_id"] = skill_id
         _log_runtime_generate_payload(skill_id, session_data, module_file=module_file if wrapper_loaded else "")
+        if type_rotation_pick:
+            _practice_type_rotation_register(
+                skill_id, mod, session_data["question_uid"], type_rotation_pick["type_key"]
+            )
 
         response_payload = _finalize_practice_question_api_fields({
             "skill_id": skill_id,
@@ -2326,6 +2703,7 @@ def next_question():
             "expected_row": data.get("expected_row", []),
             "expected_terms": data.get("expected_terms", []),
             "expected_expansion": data.get("expected_expansion", ""),
+            "practice_type_rotation": type_rotation_pick,
         }, skill_id=skill_id)
         _log_get_next_question_response(response_payload)
         current_app.logger.info(
@@ -2341,7 +2719,8 @@ def next_question():
             "success": False,
             "error_code": "GENERATE_EXECUTION_FAILED",
             "skill_id": skill_id,
-            "message": "題目載入失敗，請通知教師檢查此技能。"
+            "error": QUESTION_DELIVERY_FAILED_MESSAGE,
+            "message": QUESTION_DELIVERY_FAILED_MESSAGE,
         }), 500
 
 @practice_bp.route('/check_answer', methods=['POST'])

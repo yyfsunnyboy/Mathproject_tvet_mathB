@@ -12,7 +12,7 @@
 - `display_name`: 整數四則運算
 - `family`: `integer`
 - 支援模式：`BENCHMARK`、`LIVESHOW`
-- 核心能力：整數加減乘除、負數括號、中括號、絕對值、整除型運算、複合結構同構
+- 核心能力：整數加減乘除、負數括號、中括號、絕對值、整除型運算、複合結構同構，以及乘方與正負號判讀
 
 ════════════════════════════════════════════════════════════════
 【Output Contract】
@@ -174,6 +174,24 @@ Quality gate:
 - 必須完整保留所有結構節點
 - 不可將複合題降級為單一 family
 
+### I9 `int_power_sign_parentheses`
+Definition:
+- 乘方、負號與括號的語意判讀
+- 區分 $(-a)^n$ 與 $-a^n$
+
+Quality gate:
+- 題面必須保留負號與括號位置
+- 不可把乘方判讀降級為一般四則運算
+
+### I10 `int_power_mixed_evaluation`
+Definition:
+- 含乘方優先順序的整數混合運算
+- 需先完成乘方，再依四則運算順序收斂
+
+Quality gate:
+- 必須保留乘方、乘除與加減的運算順序
+- 最終答案為可由整數 checker 判定的值
+
 ════════════════════════════════════════════════════════════════
 【Sub-skill Graph / 子技能節點】
 ════════════════════════════════════════════════════════════════
@@ -197,6 +215,8 @@ Family 到節點的對應：
 - `I6` → `sign_handling`, `absolute_value`
 - `I7` → `sign_handling`, `mul_div`, `bracket_scope`, `absolute_value`, `exact_divisibility`
 - `I8` → 全部節點
+- `I9` → `power_notation_basics`, `signed_power_interpretation`, `parenthesized_negative_base`, `minus_outside_power`
+- `I10` → `power_precedence_in_mixed_ops`, `signed_power_evaluation`, `mixed_power_arithmetic`
 
 ════════════════════════════════════════════════════════════════
 【Structural Schema / vars 參考】
@@ -219,6 +239,10 @@ Family 到節點的對應：
   - `{"numerator_parts": [...], "denominator_parts": [...], "structure_flags": {"abs": bool, "bracket": bool}}`
 - `I8 int_composite_structure`
   - `{"segments": [...], "structure_flags": {"abs": bool, "bracket": bool, "parenthesized_negative": bool}}`
+- `I9 int_power_sign_parentheses`
+  - `{"base": int, "exponent": int, "negative_base_parenthesized": bool}`
+- `I10 int_power_mixed_evaluation`
+  - `{"values": [int, ...], "exponents": [int, ...], "ops": ["+", "-", "*", "/"]}`
 
 ════════════════════════════════════════════════════════════════
 【Generator Priority】

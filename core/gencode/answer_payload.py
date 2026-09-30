@@ -5,6 +5,7 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from core.checkers.math_input_normalization import parse_exact_number
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
 
 SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_set"})
@@ -209,7 +210,9 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
     """Normalize practice session payload: contract resolution + coordinate_pair string answers."""
     if not isinstance(payload, dict):
         return payload
-    out = dict(payload)
+    from core.gencode.question_delivery_contract import canonicalize_question_text
+
+    out = canonicalize_question_text(dict(payload))
     sid = str(skill_id or out.get("skill_id", out.get("skill", ""))).strip()
     from core.gencode.table_question_contract import normalize_table_question_payload
 
@@ -450,6 +453,8 @@ def parse_single_numeric(
     if "/" in text:
         frac = parse_rational_literal(text)
         if frac is None:
+            frac = parse_exact_number(text)
+        if frac is None:
             return None, "invalid"
         if require_integer and frac.denominator != 1:
             return None, "invalid"
@@ -462,6 +467,12 @@ def parse_single_numeric(
             return float(text), None
         except ValueError:
             return None, "invalid"
+
+    frac = parse_exact_number(text)
+    if frac is not None:
+        if require_integer and (frac.denominator != 1 or "." in text):
+            return None, "invalid"
+        return float(frac), None
 
     return None, "invalid"
 
@@ -480,7 +491,7 @@ def _to_exact_rational(value: Any) -> Fraction | None:
             return Fraction(text)
     except (ValueError, ZeroDivisionError):
         return None
-    return None
+    return parse_exact_number(text)
 
 
 def check_decimal_tolerance_answer(
@@ -523,7 +534,7 @@ def grade_numeric_contract_answer(
     require_integer = answer_type == "integer"
     canonical = ac.get("canonical_answer", correct_answer)
 
-    undef = {"無", "不存在", "斜率不存在", "m不存在"}
+    undef = {"無", "不存在", "斜率不存在", "m不存在", "undefined", "Undefined", "UNDEFINED"}
     user_token = str(user_answer or "").strip().replace(" ", "")
     canon_token = str(canonical or "").strip().replace(" ", "")
     if user_token in undef or canon_token in undef:

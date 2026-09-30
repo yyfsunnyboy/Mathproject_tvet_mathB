@@ -57,6 +57,36 @@ _HALF_OPEN_RE = re.compile(r"[\[\(]\s*[^,]+,\s*[^\]\)]+\s*[\]\)]")
 _CLOSED_INTERVAL_RE = re.compile(r"\[\s*[^,]+,\s*[^]]+\s*\]")
 
 
+_EXPLICIT_NON_SET_CHECKERS = frozenset(
+    {
+        "expression_checker",
+        "expression_equivalence_checker",
+        "equation_checker",
+        "linear_equation_equivalent_checker",
+    }
+)
+
+
+def _has_strong_set_evidence(text: object) -> bool:
+    """Relational / infinity / half-open evidence beyond a bare closed `[a, b]`.
+
+    A closed bracket alone is also how value lists like `[-9, 3]` are written,
+    so it must not override an explicit expression / equation checker.
+    """
+    s = str(text or "").strip()
+    if not s:
+        return False
+    if _REL_HINT_RE.search(s):
+        return True
+    low = s.lower()
+    if "inf" in low or "∞" in s:
+        return True
+    if re.search(r"\[[^\[\]()]*,[^\[\]()]*\)|\([^\[\]()]*,[^\[\]()]*\]", s):
+        return True
+    compact = re.sub(r"\s+", "", low)
+    return compact in {"r", "ℝ", "∅", "empty", "emptyset", "無解", "空集合", "任意實數", "所有實數"}
+
+
 def _blob(payload: dict[str, Any], ac: dict[str, Any]) -> str:
     meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
     math_objects = meta.get("math_objects") or payload.get("math_objects") or ac.get("math_objects") or []
@@ -189,6 +219,8 @@ def is_inequality_solution_context(
 
     if looks_like_relational_solution_text(correct_answer):
         if checker in {"integer_checker", "numeric_checker", "coordinate_pair_checker"}:
+            return False
+        if checker in _EXPLICIT_NON_SET_CHECKERS and not _has_strong_set_evidence(correct_answer):
             return False
         if family in {"numeric", "coordinate_pair", "choice"}:
             return False

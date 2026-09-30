@@ -24,7 +24,9 @@ _IMPLICIT_AFTER_PAREN = re.compile(r"\)\s*sqrt", re.IGNORECASE)
 
 def normalize_math_expression(text: object) -> str:
     """Normalize LaTeX / ascii / unicode radical forms to sympy-friendly text."""
-    s = unicodedata.normalize("NFKC", str(text or "").strip())
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = unicodedata.normalize("NFKC", latex_to_plain(text))
     if not s:
         return ""
     s = (
@@ -55,6 +57,7 @@ def normalize_math_expression(text: object) -> str:
         s = _SQRT_UNICODE.sub(r"sqrt(\1)", s)
         s = _SQRT_UNICODE_DIGIT.sub(r"sqrt(\1)", s)
         s = _SQRT_ASCII_BRACE.sub(r"sqrt(\1)", s)
+    s = s.replace("{", "(").replace("}", ")")
     s = s.replace("\\", "")
     s = _IMPLICIT_COEF.sub(r"\1*sqrt", s)
     s = _IMPLICIT_AFTER_PAREN.sub(r")*sqrt", s)
@@ -165,13 +168,87 @@ def contract_requires_factorized_form(
     return "factoring" in problem_type or "factorization" in problem_type
 
 
+_ASSIGNMENT_JOINERS = re.compile(r"\s*(?:且|、|;|；|\band\b)\s*", re.IGNORECASE)
+_VALUE_LIST_SEPARATORS = ("或", ",", "、", ";")
+_SAME_VAR_PREFIX = re.compile(r"^([A-Za-z])\s*=\s*(.+)$")
+
+
+def _split_value_list(text: object) -> tuple[list[str], set[str]] | None:
+    """Split a multi-valued answer (`1 或 21`, `[-9, 3]`, `x=±13`) into value strings.
+
+    Returns None for single values and for lists naming different variables
+    (those are assignment lists, handled separately).
+    """
+    from core.checkers.inequality_solution_checker import _split_top_level
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = latex_to_plain(text)
+    s = re.sub(r"(?i)\s+or\s+", " 或 ", s).strip()
+    if len(s) >= 2 and s[0] == "[" and s[-1] == "]":
+        s = s[1:-1].strip()
+    parts = _split_top_level(s, _VALUE_LIST_SEPARATORS) or ([s] if s else [])
+    values: list[str] = []
+    names: set[str] = set()
+    for part in parts:
+        part = part.strip()
+        m = _SAME_VAR_PREFIX.match(part)
+        if m:
+            names.add(m.group(1).lower())
+            part = m.group(2).strip()
+        if "=" in part or not part:
+            return None
+        if part.count("±") == 1:
+            head, tail = part.split("±")
+            head, tail = head.strip(), tail.strip()
+            if not tail:
+                return None
+            values.extend([f"{head}+({tail})", f"{head}-({tail})"] if head else [tail, f"-({tail})"])
+        else:
+            values.append(part)
+    if len(values) < 2 or len(names) > 1:
+        return None
+    return values, names
+
+
+def _value_list_equivalent(user_answer: object, correct_answer: object) -> bool | None:
+    """Unordered multiset comparison for multi-valued answers; None if not a value list."""
+    correct = _split_value_list(correct_answer)
+    if correct is None:
+        return None
+    user = _split_value_list(user_answer)
+    if user is None:
+        return False
+    user_vals, user_names = user
+    correct_vals, correct_names = correct
+    if user_names and correct_names and user_names != correct_names:
+        return False
+    if len(user_vals) != len(correct_vals):
+        return False
+    from sympy import simplify
+
+    try:
+        user_exprs = [_parse_sympy(v) for v in user_vals]
+        remaining = [_parse_sympy(v) for v in correct_vals]
+    except Exception:
+        return None
+    for expr in user_exprs:
+        for idx, target in enumerate(remaining):
+            if simplify(expr - target) == 0 or _numeric_equal(expr, target):
+                remaining.pop(idx)
+                break
+        else:
+            return False
+    return True
+
+
 def _assignment_lists_equivalent(user_answer: object, correct_answer: object) -> bool | None:
     """Compare comma-separated assignments like a=-1,b=-3 without string identity.
 
     Returns True/False when both sides look like assignment lists; None otherwise.
     """
     def _parse_map(text: str) -> dict[str, Any] | None:
-        norm = normalize_math_expression(text)
+        joined = _ASSIGNMENT_JOINERS.sub(",", str(text or ""))
+        norm = normalize_math_expression(joined)
         if "," not in norm or "=" not in norm:
             return None
         mapping: dict[str, Any] = {}
@@ -179,7 +256,7 @@ def _assignment_lists_equivalent(user_answer: object, correct_answer: object) ->
             if "=" not in chunk:
                 return None
             key, raw_val = chunk.split("=", 1)
-            if not re.fullmatch(r"[a-z]+", key) or not raw_val:
+            if not re.fullmatch(r"[a-z]+", key) or not raw_val or key in mapping:
                 return None
             mapping[key] = _parse_sympy(raw_val)
         return mapping or None
@@ -314,6 +391,12 @@ def check_expression_equivalence_debug(
     if assign_eq is False:
         out["correct"] = False
         out["simplify_result"] = "assignment_list_mismatch"
+        return out
+
+    list_eq = _value_list_equivalent(ua_raw, ca_raw)
+    if list_eq is not None:
+        out["correct"] = list_eq
+        out["simplify_result"] = "value_list_equivalent" if list_eq else "value_list_mismatch"
         return out
 
     try:

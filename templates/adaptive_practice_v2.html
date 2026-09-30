@@ -515,6 +515,9 @@
 <body>
   {% include '_student_navbar.html' %}
   <div class="shell">
+    {% if adaptive_error %}
+    <div class="demo-route-msg" role="alert">{{ adaptive_error }}</div>
+    {% endif %}
     <div class="hero">
       <div>
         <h1>

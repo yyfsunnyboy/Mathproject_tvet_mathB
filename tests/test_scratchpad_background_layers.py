@@ -69,6 +69,28 @@ def test_compute_question_background_region_uses_top_left_quarter() -> None:
     assert region["height"] <= region["quadrantHeight"]
 
 
+def test_question_figure_region_is_two_thirds_on_wide_canvas_only() -> None:
+    script = (
+        "const L=require(process.argv[1]);"
+        "const wide=L.computeQuestionFigureRegion(646,484);"
+        "const base=L.computeQuestionBackgroundRegion(646,484);"
+        "const phone=L.computeQuestionFigureRegion(341,279);"
+        "const phoneBase=L.computeQuestionBackgroundRegion(341,279);"
+        "L.setCompactQuestionFigure(false);"
+        "const drawing=L.computeQuestionFigureRegion(646,484);"
+        "L.setCompactQuestionFigure(true);"
+        "process.stdout.write(JSON.stringify({wide,base,phone,phoneBase,drawing,scale:L.WIDE_FIGURE_SCALE}));"
+    )
+    out = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    wide, base = out["wide"], out["base"]
+    assert 0.6 <= out["scale"] <= 0.7
+    assert abs(wide["quadrantWidth"] - base["quadrantWidth"] * out["scale"]) < 0.01
+    assert abs(wide["quadrantHeight"] - base["quadrantHeight"] * out["scale"]) < 0.01
+    assert (wide["x"], wide["y"]) == (base["x"], base["y"])
+    assert out["phone"] == out["phoneBase"]
+    assert out["drawing"] == base
+
+
 def test_visual_spec_equal_unit_scale_keeps_square_grid_cells() -> None:
     script = (
         "const runtime=require(process.argv[1]);"

@@ -568,3 +568,73 @@ def build_answer_format_suffix(answer_contract: dict[str, Any] | None) -> str:
     if not example:
         return ""
     return f"（答案範例：{example}）"
+
+
+# Explicit answer-format templates stated in the stem itself:
+#   請用「向左 2、向上 3」的格式作答 / 以「x=h」的形式表示
+#   改寫為 $a(x+m)^2+n$ / 化成頂點式 $a(x-h)^2+k$
+_QUOTED_FORMAT_RE = re.compile(r"[「『]([^」』]{1,40})[」』]\s*的?\s*(?:格式|形式)")
+_MATH_FORMAT_RE = re.compile(
+    r"(?:改寫為|改寫成|寫成|化為|化成|表示為|表示成)[^\s$，。、；]{0,4}\s*\$([^$]{1,40})\$"
+)
+_TEMPLATE_PARAM_RE = re.compile(r"(?<![A-Za-z\\])[a-wA-Z](?![A-Za-z])")
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _format_shape(text: str) -> str:
+    """Structural shape of a format template / example: numbers and template
+    parameters become '#', signs collapse, spacing and TeX grouping vanish."""
+    s = str(text or "").replace("$", "")
+    s = s.replace("{", "").replace("}", "").replace("\\left", "").replace("\\right", "")
+    s = re.sub(r"\s+", "", s)
+    s = re.sub(r"^(?:y|f\(x\))=", "", s)
+    s = s.replace("，", ",").replace("−", "-").replace("-", "+")
+    s = re.sub(r"\d+(?:\.\d+)?", "#", s)
+    s = _TEMPLATE_PARAM_RE.sub("#", s)
+    return s
+
+
+def stem_states_answer_format(question_text: str, example: str) -> bool:
+    """True only when the stem already states an explicit answer format that
+    structurally covers ``example``; anything uncertain returns False."""
+    stem = str(question_text or "")
+    ex = str(example or "").strip()
+    if not stem or not ex:
+        return False
+    ex_shape = _format_shape(ex)
+    if not ex_shape:
+        return False
+    templates = [m.group(1) for m in _QUOTED_FORMAT_RE.finditer(stem)]
+    templates += [m.group(1) for m in _MATH_FORMAT_RE.finditer(stem)]
+    for template in templates:
+        tpl_shape = _format_shape(template)
+        if not tpl_shape:
+            continue
+        if tpl_shape == ex_shape:
+            return True
+        # A word-like example (e.g. 向上) that is a fragment of a fuller stated
+        # format (e.g. 向左 2、向上 3) adds nothing; bare numbers never qualify.
+        if _CJK_RE.search(ex_shape) and len(ex_shape) >= 2 and ex_shape in tpl_shape:
+            return True
+    return False
+
+
+def build_answer_format_suffix_for_stem(
+    answer_contract: dict[str, Any] | None,
+    question_text: str,
+) -> tuple[str, str]:
+    """Return ``(suffix, suppressed_reason)``.
+
+    The contract-shaped example is omitted only when the stem already states
+    a format that covers it; otherwise the suffix from
+    ``build_answer_format_suffix`` is returned unchanged.
+    """
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if _is_linear_equation_contract(ac):
+        return _build_linear_equation_format_suffix(ac), ""
+    example = answer_format_example_for_contract(ac)
+    if not example:
+        return "", ""
+    if stem_states_answer_format(question_text, example):
+        return "", "stem_states_answer_format"
+    return f"（答案範例：{example}）", ""

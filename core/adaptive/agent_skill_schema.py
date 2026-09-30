@@ -73,10 +73,10 @@ AGENT_SKILL_SUBSKILLS: Final[dict[str, list[str]]] = {
 }
 
 SYSTEM_SKILL_TO_AGENT_SKILL: Final[dict[str, str]] = {
-    "jh_??1?_FourArithmeticOperationsOfIntegers": AGENT_SKILL_INTEGER_ARITHMETIC,
-    "jh_??1?_FourArithmeticOperationsOfNumbers": AGENT_SKILL_FRACTION_ARITHMETIC,
-    "jh_??2?_FourOperationsOfRadicals": AGENT_SKILL_RADICAL_ARITHMETIC,
-    "jh_??2?_FourArithmeticOperationsOfPolynomial": AGENT_SKILL_POLYNOMIAL_ARITHMETIC,
+    "jh_數學1上_FourArithmeticOperationsOfIntegers": AGENT_SKILL_INTEGER_ARITHMETIC,
+    "jh_數學1上_FourArithmeticOperationsOfNumbers": AGENT_SKILL_FRACTION_ARITHMETIC,
+    "jh_數學2上_FourOperationsOfRadicals": AGENT_SKILL_RADICAL_ARITHMETIC,
+    "jh_數學2上_FourArithmeticOperationsOfPolynomial": AGENT_SKILL_POLYNOMIAL_ARITHMETIC,
 }
 
 

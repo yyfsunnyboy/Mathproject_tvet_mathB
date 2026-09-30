@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自適應性教學系統練習網站</title>
+    <title>{% if chapter_review %}{{ chapter_review.title }}{% else %}自適應性教學系統練習網站{% endif %}</title>
     <!-- 新增：載入 MathJax 函式庫 -->
     <script>
         {% raw %}
@@ -898,23 +898,25 @@
             margin-bottom: 8px;
         }
         .multipart-stem {
-            display: flex;
-            flex-direction: column;
-            gap: 0.55rem;
+            display: block;
             white-space: normal;
         }
-        .multipart-stem-prompt {
-            margin-bottom: 0.15rem;
-        }
+        .multipart-stem-prompt,
         .multipart-stem-item {
-            display: block;
+            display: inline;
             white-space: normal;
             overflow-wrap: anywhere;
             word-break: break-word;
         }
+        .multipart-stem-items,
+        .question-multipart-items {
+            display: inline-block;
+            max-width: 100%;
+        }
         .multipart-stem-marker {
             font-weight: 600;
             margin-right: 0.25rem;
+            white-space: nowrap;
         }
         .multipart-stem-body {
             white-space: normal;
@@ -1509,6 +1511,59 @@
         .practice-header-block {
             flex: 0 0 auto;
             padding: 12px 16px 0;
+        }
+
+        .chapter-review-banner {
+            margin: 0 0 10px;
+            padding: 12px 16px;
+            border: 1px solid #cfe3d8;
+            border-radius: 10px;
+            background: #f4faf6;
+        }
+        .chapter-review-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .chapter-review-heading h2 {
+            margin: 0;
+            font-size: 1.25em;
+            color: #1e5b3a;
+        }
+        .chapter-review-pill {
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: #28a745;
+            color: #fff;
+            font-size: 0.85em;
+        }
+        .chapter-review-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .chapter-review-panel {
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #e3eee7;
+        }
+        .chapter-review-panel h3 {
+            margin: 0 0 6px;
+            font-size: 0.95em;
+            color: #2c3e50;
+        }
+        .chapter-review-big {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #1e5b3a;
+        }
+        .chapter-review-row {
+            line-height: 1.7;
+            font-size: 0.92em;
         }
 
         .practice-answer-block {
@@ -2129,14 +2184,14 @@
         }
     </style>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=b3-ch2-layout-1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=answer-strip-5">
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1"></script>
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1"></script>
-    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
-    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=b3-ch2-live-1"></script>
-    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
-    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=slash-frac-1"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2"></script>
+    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1"></script>
+    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 </head>
 
@@ -2154,6 +2209,30 @@
             </div>
             {% endif %}
             <div class="practice-header-block">
+            {% if chapter_review %}
+            {% set cr_summary = chapter_review.chapter_summary %}
+            <div id="chapter-review-banner" class="chapter-review-banner">
+                <div class="chapter-review-heading">
+                    <h2 id="chapter-review-title">{{ chapter_review.title }}</h2>
+                    <span class="chapter-review-pill">{{ chapter_review.name }}｜{{ chapter_review.chapter_label }}</span>
+                </div>
+                <div class="chapter-review-panels">
+                    <section class="chapter-review-panel">
+                        <h3>本章正確率</h3>
+                        <div class="chapter-review-big" id="chapter-review-accuracy">{% if cr_summary and cr_summary.total_answered %}{{ cr_summary.accuracy }}%{% else %}--{% endif %}</div>
+                        <div class="chapter-review-row">已作答 <strong id="chapter-review-answered">{{ cr_summary.total_answered if cr_summary else 0 }}</strong> 題</div>
+                        <div class="chapter-review-row">答對 <strong id="chapter-review-correct">{{ cr_summary.correct if cr_summary else 0 }}</strong> 題</div>
+                        <div class="chapter-review-row">待補題型 <strong id="chapter-review-weak">{{ chapter_review.weak_types }}</strong> 個</div>
+                    </section>
+                    <section class="chapter-review-panel">
+                        <h3>本章複習進度</h3>
+                        <div class="chapter-review-row">目前小節 <strong id="chapter-review-section">{{ chapter_review.section_name }}</strong></div>
+                        <div class="chapter-review-row">本節題型完成數 <strong id="chapter-review-types">{{ chapter_review.section_types_passed }} / {{ chapter_review.section_types_total }}</strong></div>
+                        <div class="chapter-review-row">下一小節 <strong id="chapter-review-next">{{ chapter_review.next_section_name or '本章最後一個小節' }}</strong></div>
+                    </section>
+                </div>
+            </div>
+            {% endif %}
                 <h1 id="skill-title"> {{
                     skill_ch_name
                     }}
@@ -2338,7 +2417,7 @@
             <h3 id="tutor-model-label" style="margin-bottom: 0; padding-bottom: 2px;">AI 助教（載入中...）</h3>
             <div id="chat-history" style="padding-top: 5px;">
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% else %}你好！有問題問我～{% endif %}</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% elif chapter_review %}遇到卡住的題目，可以請助教提示解題方向。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             </div>
             <!-- 1. 固定建議提示區 (來自資料庫) -->
@@ -2848,6 +2927,9 @@
                 return Promise.resolve(false);
             }
             const size = resolveScratchpadCssSize();
+            if (typeof layer.setCompactQuestionFigure === 'function') {
+                layer.setCompactQuestionFigure(!(isDrawingQuestion(payload) || isVectorDrawingCheckQuestion(payload)));
+            }
             const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
             if (bgInfo.kind === 'none') {
                 layer.resetQuestionBackground();
@@ -2983,6 +3065,7 @@
         const PRACTICE_PASS_TARGET = {{ (pass_target or 0) | int }};
         const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
+        const CHAPTER_REVIEW = {{ (chapter_review or none) | tojson | safe }};
         const SIMILAR_DEFAULT_MODEL = 'qwen3-vl-8b';
         const similarPracticeState = {
             imageData: '',
@@ -3042,6 +3125,9 @@
                 if (streakCounter) streakCounter.style.display = 'none';
                 if (answerInput) answerInput.disabled = true;
                 if (submitBtn) submitBtn.disabled = true;
+            } else if (CHAPTER_REVIEW && CHAPTER_REVIEW.await_start) {
+                handlePracticeSkillEntry();
+                renderChapterReviewStart();
             } else {
                 handlePracticeSkillEntry();
                 loadQuestion();
@@ -4037,7 +4123,7 @@
             if (!chatContainer) return;
             chatContainer.innerHTML = `
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% else %}你好！有問題問我～{% endif %}</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% elif chapter_review %}遇到卡住的題目，可以請助教提示解題方向。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             `;
         }
@@ -4198,6 +4284,8 @@
             if (answerInput) {
                 answerInput.value = '';
                 answerInput.disabled = false;
+                answerInput.readOnly = false;
+                answerInput.classList.remove('answer-input--drawing');
                 answerInput.placeholder = '請在此輸入答案';
             }
             if (submitBtn) submitBtn.disabled = false;
@@ -4295,6 +4383,10 @@
                 answer_contract: payload.answer_contract && typeof payload.answer_contract === 'object'
                     ? { ...payload.answer_contract }
                     : {},
+                ui_contract: payload.ui_contract && typeof payload.ui_contract === 'object'
+                    ? { ...payload.ui_contract }
+                    : {},
+                expected_drawing_spec: payload.expected_drawing_spec || null,
                 checker: payload.checker || payload.checker_type || '',
                 equivalence: payload.equivalence || '',
                 choices: Array.isArray(choices) ? choices.slice() : [],
@@ -4773,7 +4865,9 @@
                 const index = Number(cmp[1]);
                 return `圖${marks[index - 1] || index}`;
             }
-            return String((part && (part.label || part.prompt)) || key || `欄位 ${fallbackIndex + 1}`);
+            const raw = String((part && (part.label || part.prompt)) || key || '').trim();
+            const generic = raw.match(/^(?:part|欄位|第)?[\s_\-]*[\(（]?\s*(\d{1,2})\s*[\)）]?[\s_\-]*(?:小題|題)?$/i);
+            return !raw ? `(${fallbackIndex + 1})` : (generic ? `(${Number(generic[1])})` : raw);
         }
 
         function createMultiPartControl(part, index) {
@@ -4925,10 +5019,167 @@
             return layer.setVisualSpecBackground(visualSpec, backgroundCtx, cw, ch, runtime);
         }
 
+        let answerStripFitRaf = null;
+        let answerStripLabelObserver = null;
+        let answerStripResizeBound = false;
+
+        function scheduleAnswerStripFit() {
+            const renderer = window.MultipartFieldRenderer;
+            const block = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (!block || !renderer || typeof renderer.fitAnswerStrip !== 'function') return;
+            if (!answerStripResizeBound) {
+                window.addEventListener('resize', scheduleAnswerStripFit);
+                answerStripResizeBound = true;
+            }
+            if (answerStripFitRaf) cancelAnimationFrame(answerStripFitRaf);
+            answerStripFitRaf = requestAnimationFrame(() => {
+                answerStripFitRaf = null;
+                renderer.fitAnswerStrip(block);
+            });
+        }
+
+        let questionAnswerRowRaf = null;
+        let questionAnswerRowResizeBound = false;
+
+        // A short single-field stem shares one row with its answer strip only when
+        // the rendered stem stays on one line and the strip still fits beside it.
+        function fitQuestionAnswerRow() {
+            const area = document.querySelector('.practice-area');
+            const questionBlock = area && area.querySelector(':scope > .practice-question-block');
+            const answerBlock = area && area.querySelector(':scope > .practice-answer-block');
+            if (!area || !questionBlock || !answerBlock || !questionText) return;
+            area.classList.remove('question-answer-inline');
+            area.style.removeProperty('--question-inline-width');
+            if (getComputedStyle(area).display !== 'grid') return;
+            const visible = (node) => Boolean(node && node.offsetParent !== null);
+            const media = document.getElementById('question-media-container');
+            const eligible = visible(answerInput) && visible(submitBtn)
+                && !answerBlock.classList.contains('has-multi-part-fields')
+                && !visible(subquestionsContainer)
+                && !(visible(questionChoices) && questionChoices.children.length)
+                && !visible(media)
+                && !questionText.querySelector('img, table, canvas, .multipart-stem, .manual-review-unavailable')
+                && !questionBlock.querySelector('.similar-toolbar')
+                && !area.querySelector(':scope > [data-guest-demo-warning]')
+                && !(resultDisplay && resultDisplay.textContent.trim());
+            if (!eligible) return;
+            const lineHeight = parseFloat(getComputedStyle(questionText).lineHeight) || 32;
+            const stackedHeight = questionText.getBoundingClientRect().height;
+            if (!stackedHeight || stackedHeight >= lineHeight * 1.9) return;
+            // #question-container is a size container, so its intrinsic width is 0;
+            // size the stem column from the rendered text instead.
+            const range = document.createRange();
+            range.selectNodeContents(questionText);
+            const textWidth = range.getBoundingClientRect().width;
+            const container = document.getElementById('question-container') || questionText;
+            const px = (style, key) => parseFloat(style[key]) || 0;
+            const cs = getComputedStyle(container);
+            const chrome = px(cs, 'paddingLeft') + px(cs, 'paddingRight') + px(cs, 'borderLeftWidth')
+                + px(cs, 'borderRightWidth') + px(getComputedStyle(questionBlock), 'paddingLeft');
+            area.style.setProperty('--question-inline-width', `${Math.ceil(textWidth + chrome + 2)}px`);
+            area.classList.add('question-answer-inline');
+            const q = questionBlock.getBoundingClientRect();
+            const a = answerBlock.getBoundingClientRect();
+            const input = answerInput.getBoundingClientRect();
+            const submit = submitBtn.getBoundingClientRect();
+            const areaRight = area.getBoundingClientRect().right;
+            const sameRow = a.top < q.bottom && a.bottom > q.top && a.left >= q.right - 1;
+            const stemUnwrapped = questionText.getBoundingClientRect().height <= stackedHeight + 1;
+            const stripOneRow = Math.abs((input.top + input.height / 2) - (submit.top + submit.height / 2)) < 6
+                && submit.left >= input.right - 1 && submit.right <= areaRight + 1;
+            if (!(sameRow && stemUnwrapped && stripOneRow)) {
+                area.classList.remove('question-answer-inline');
+                area.style.removeProperty('--question-inline-width');
+            }
+        }
+
+        const STEM_COMPACT_MAX_DEFICIT = 0.1;
+        const STEM_COMPACT_MIN_SCALE = 0.94;
+        const STEM_COMPACT_MAX_GAPS = 2;
+
+        function measureStemLayout(items) {
+            const lineHeight = parseFloat(getComputedStyle(questionText).lineHeight) || 28;
+            const range = document.createRange();
+            range.setStart(questionText, 0);
+            range.setEndBefore(items);
+            const prompt = range.getBoundingClientRect();
+            const run = items.getBoundingClientRect();
+            const avail = questionText.clientWidth;
+            const needed = prompt.width + run.width;
+            return {
+                oneLine: Math.abs(run.top - prompt.top) < lineHeight * 0.5 && run.height < lineHeight * 1.9,
+                promptAndRunLines: prompt.height < lineHeight * 1.9 && run.height < lineHeight * 1.9,
+                avail,
+                needed,
+                deficit: needed - avail,
+            };
+        }
+
+        // Short prompt + 2–3 short items that miss one line by a small margin: tighten
+        // padding, item gaps and (slightly) the font until the measured stem fits.
+        function fitCompactStem() {
+            const container = document.getElementById('question-container');
+            const area = document.querySelector('.practice-area');
+            if (!container || !questionText) return;
+            const reset = () => {
+                container.classList.remove('question-stem-compact');
+                container.style.removeProperty('--stem-compact-scale');
+            };
+            reset();
+            if (!area || getComputedStyle(area).display !== 'grid') return;
+            const items = questionText.querySelector('.question-multipart-items, .multipart-stem-items');
+            if (!items || items.querySelectorAll('.multipart-gap').length > STEM_COMPACT_MAX_GAPS) return;
+            const before = measureStemLayout(items);
+            if (before.oneLine || !before.promptAndRunLines || !before.avail) return;
+            if (before.deficit > before.avail * STEM_COMPACT_MAX_DEFICIT) return;
+            container.classList.add('question-stem-compact');
+            let after = measureStemLayout(items);
+            if (!after.oneLine) {
+                const scale = Math.max(STEM_COMPACT_MIN_SCALE, Math.floor((after.avail / after.needed) * 200) / 200);
+                container.style.setProperty('--stem-compact-scale', String(scale));
+                after = measureStemLayout(items);
+            }
+            if (!after.oneLine) reset();
+        }
+
+        function scheduleQuestionAnswerRowFit() {
+            if (!questionAnswerRowResizeBound) {
+                window.addEventListener('resize', scheduleQuestionAnswerRowFit);
+                questionAnswerRowResizeBound = true;
+            }
+            fitCompactStem();
+            fitQuestionAnswerRow();
+            if (questionAnswerRowRaf) cancelAnimationFrame(questionAnswerRowRaf);
+            questionAnswerRowRaf = requestAnimationFrame(() => {
+                questionAnswerRowRaf = null;
+                fitCompactStem();
+                fitQuestionAnswerRow();
+            });
+        }
+
+        // Labels change width once MathJax typesets them; refit the strip then.
+        function watchAnswerStripLabels() {
+            const block = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (block && window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.fitAnswerStrip === 'function') {
+                window.MultipartFieldRenderer.fitAnswerStrip(block);
+            }
+            scheduleAnswerStripFit();
+            scheduleQuestionAnswerRowFit();
+            if (!subquestionsContainer || typeof ResizeObserver === 'undefined') return;
+            if (!answerStripLabelObserver) answerStripLabelObserver = new ResizeObserver(scheduleAnswerStripFit);
+            answerStripLabelObserver.disconnect();
+            subquestionsContainer.querySelectorAll('.multi-part-row label, .multi-part-group-label')
+                .forEach((node) => answerStripLabelObserver.observe(node));
+        }
+
         function applyMultiPartUiContract(payload) {
             clearTableQuestionState();
             const tableFill = isTableFillQuestion(payload || currentQuestion);
             const multi = isMultiPartQuestion(payload || currentQuestion);
+            const answerBlock = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (answerBlock) {
+                answerBlock.classList.toggle('has-multi-part-fields', multi && !tableFill);
+            }
             if (tableFill) {
                 const qmc = document.getElementById('question-media-container');
                 renderTableQuestion(qmc, payload || currentQuestion);
@@ -4954,9 +5205,13 @@
                         answerInput.style.display = 'none';
                         answerInput.disabled = true;
                         answerInput.value = '';
+                    } else if (isDrawingQuestion(currentPayload)) {
+                        applyDrawingUiContract();
                     } else {
                         answerInput.style.display = '';
                         answerInput.disabled = false;
+                        answerInput.readOnly = false;
+                        answerInput.classList.remove('answer-input--drawing');
                         if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.applyControlKind === 'function') {
                             window.MultipartFieldRenderer.applyControlKind(
                                 answerInput,
@@ -5022,15 +5277,24 @@
             return exportCanvas.toDataURL('image/png');
         }
 
+        // Mirrors core/checkers/free_response_drawing_checker.is_drawing_answer_contract.
         function isDrawingQuestion(questionInput) {
+            const DRAWING_ANSWER_TYPES = ['drawing', 'chart_drawing', 'graph_drawing', 'canvas_drawing'];
+            const DRAWING_PRESENTATION_MODES = ['canvas', 'drawing', 'drawing_answer', 'canvas_drawing'];
             const cq = questionInput || currentQuestion || {};
             const contract = cq.answer_contract || {};
             const ui = getMergedUiContract(cq);
+            const answerType = String(contract.answer_type || cq.answer_type || '');
+            const presentationMode = String(contract.presentation_mode || cq.presentation_mode || '');
+            const equivalence = String(contract.answer_equivalence || contract.equivalence_type || '');
             return (
                 contract.checker_key === 'free_response_drawing_checker' ||
                 contract.checker === 'free_response_drawing_checker' ||
                 contract.answer_shape === 'drawing' ||
                 contract.answer_type === 'drawing' ||
+                equivalence === 'drawing_equivalence' ||
+                DRAWING_ANSWER_TYPES.includes(answerType) ||
+                DRAWING_PRESENTATION_MODES.includes(presentationMode) ||
                 ui.response_mode === 'drawing' ||
                 Boolean(cq.expected_drawing_spec)
             );
@@ -5117,6 +5381,7 @@
                     applyDrawingUiContract();
                     return;
                 }
+                notePracticeTypeRotation(data);
                 const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
                 if (isCorrectVal === true) {
                     resultDisplay.textContent = data.result || data.message || '作圖正確。';
@@ -5208,13 +5473,24 @@
             const cq = currentQuestion || {};
             const uiContract = resolveDrawingUiContract(cq);
             const drawing = uiContract.responseMode === "drawing";
+            const drawingSurface = (drawing || isDrawingQuestion(cq)) && !uiContract.textInputEnabled;
 
             answerInput.disabled = !uiContract.textInputEnabled;
-            if (!uiContract.textInputEnabled) {
+            answerInput.readOnly = !uiContract.textInputEnabled;
+            answerInput.classList.toggle("answer-input--drawing", drawingSurface);
+            if (drawingSurface) {
                 answerInput.setAttribute("aria-disabled", "true");
+                answerInput.value = "";
+                answerInput.style.display = "";
+                answerInput.placeholder = "請在下方作圖區作答";
+                answerInput.title = "請在下方作圖區作答，並按 AI 檢查送出。";
+            } else if (!uiContract.textInputEnabled) {
+                answerInput.setAttribute("aria-disabled", "true");
+                answerInput.removeAttribute("title");
                 answerInput.placeholder = "此題請在畫布作答，並按 AI 檢查送出。";
             } else {
                 answerInput.removeAttribute("aria-disabled");
+                answerInput.removeAttribute("title");
                 answerInput.placeholder = "輸入答案...";
             }
 
@@ -5309,6 +5585,7 @@
                     return;
                 }
 
+                notePracticeTypeRotation(data);
                 const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
 
                 if (isCorrectVal === true) {
@@ -5346,6 +5623,7 @@
                 isProcessing = false;
                 resultDisplay.textContent = '批改失敗，請稍後再試。';
                 resultDisplay.className = 'incorrect';
+                applyDrawingUiContract();
             });
         }
 
@@ -5391,6 +5669,108 @@
                 return true;
             }
             return false;
+        }
+
+        function renderChapterReviewStart() {
+            isInitialQuestionLoaded = true;
+            if (!questionText) return;
+            questionText.style.opacity = '1';
+            questionText.innerHTML = '<div id="chapter-review-start">'
+                + '<p style="margin:0 0 12px;">依序完成本章各小節的題型，答錯的題型會再出現一次，全部通過即完成本章總複習。</p>'
+                + '<button type="button" id="chapter-review-start-btn" class="level-button" '
+                + 'style="background-color:#28a745;color:#fff;">開始複習</button></div>';
+            document.getElementById('chapter-review-start-btn').addEventListener('click', () => {
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('chapter_review', '1');
+                    window.history.replaceState(null, '', url.toString());
+                } catch (e) { /* ignore */ }
+                loadQuestion();
+            });
+        }
+
+        function updateChapterReviewPanel(rotation) {
+            if (!CHAPTER_REVIEW || !rotation || typeof rotation !== 'object') return;
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = String(value);
+            };
+            const total = Number(rotation.total_types || 0);
+            const passed = Number((rotation.status_counts || {}).passed || 0);
+            if (total) setText('chapter-review-types', `${passed} / ${total}`);
+            if (Array.isArray(rotation.weak_types)) setText('chapter-review-weak', rotation.weak_types.length);
+            const chapter = rotation.chapter_summary;
+            if (chapter && typeof chapter === 'object') {
+                const answered = Number(chapter.total_answered || 0);
+                setText('chapter-review-answered', answered);
+                setText('chapter-review-correct', Number(chapter.correct || 0));
+                setText('chapter-review-accuracy', answered ? `${Number(chapter.accuracy || 0)}%` : '--');
+            }
+        }
+
+        function notePracticeTypeRotation(data) {
+            const rotation = data && data.practice_type_rotation;
+            if (!rotation || typeof rotation !== 'object') return;
+            console.log('[FRONTEND PRACTICE] type_rotation', rotation);
+            updateChapterReviewPanel(rotation);
+            if (rotation.section_completed) {
+                window.__practiceTypeRotationNextSection = String(rotation.next_section_skill_id || '');
+                window.__practiceTypeRotationSectionCompleted = true;
+            }
+        }
+
+        function consumePracticeTypeRotationTransition() {
+            if (!window.__practiceTypeRotationSectionCompleted) return false;
+            const nextSection = window.__practiceTypeRotationNextSection || '';
+            window.__practiceTypeRotationSectionCompleted = false;
+            window.__practiceTypeRotationNextSection = '';
+            if (!nextSection) return false;
+            if (questionText) {
+                questionText.textContent = '本小節所有題型都已通過，前往下一小節…';
+                questionText.style.opacity = '1';
+            }
+            window.location.href = `/practice/${encodeURIComponent(nextSection)}`
+                + (CHAPTER_REVIEW ? '?chapter_review=1' : '');
+            return true;
+        }
+
+        function renderChapterCompletionSummary(summary) {
+            currentQuestion = null;
+            const n = (v) => Number(v || 0);
+            const rows = [
+                ['總作答題數', n(summary.total_answered)],
+                ['答對題數', n(summary.correct)],
+                ['答錯題數', n(summary.wrong)],
+                ['正確率', `${n(summary.accuracy)}%`],
+                ['完成題型數', n(summary.types_completed)],
+                ['完成小節數', n(summary.sections_completed)],
+            ];
+            if (questionText) {
+                questionText.style.opacity = '1';
+                questionText.innerHTML = '<div id="chapter-completion-summary">'
+                    + `<h3 style="margin:0 0 8px;">${CHAPTER_REVIEW ? '本章總複習完成' : '本章練習完成'}</h3>`
+                    + '<ul style="margin:0;padding-left:20px;line-height:1.8;">'
+                    + rows.map(([label, value]) => `<li>${label}：<strong>${value}</strong></li>`).join('')
+                    + '</ul></div>';
+            }
+            if (questionChoices) {
+                questionChoices.innerHTML = '';
+                questionChoices.style.display = 'none';
+            }
+            const qmc = document.getElementById('question-media-container');
+            if (qmc) { qmc.innerHTML = ''; qmc.style.display = 'none'; }
+            const subq = document.getElementById('subquestions-container');
+            if (subq) subq.innerHTML = '';
+            document.querySelectorAll('.practice-answer-block').forEach((el) => { el.style.display = 'none'; });
+            if (answerInput) { answerInput.value = ''; answerInput.disabled = true; }
+            if (submitBtn) submitBtn.disabled = true;
+            if (analyzeBtn) analyzeBtn.disabled = true;
+            const nextBtn = document.getElementById('next-question-btn');
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (resultDisplay) {
+                resultDisplay.textContent = '本章所有小節題型都已通過。';
+                resultDisplay.className = 'correct';
+            }
         }
 
         function applyCurrentQuestion(payload) {
@@ -5441,6 +5821,7 @@
 
         function loadQuestion() {
             const skill = getSkillId();
+            if (consumePracticeTypeRotationTransition()) return;
 
             practiceQuestionEpoch += 1;
             const loadEpoch = practiceQuestionEpoch;
@@ -5466,6 +5847,7 @@
             const params = new URLSearchParams();
             params.set('skill', skill);
             params.set('level', safeLevel);
+            params.set('mode', 'type_rotation');
             const currentParams = new URLSearchParams(window.location.search);
             if (!window.__textbookExampleIdConsumed) {
                 const textbookExampleId = currentParams.get('textbook_example_id');
@@ -5496,8 +5878,14 @@
                     }
                     if (questionText) questionText.style.opacity = '1';
 
-                    if (data.error) {
-                        questionText.textContent = `錯誤：${data.error}`;
+                    if (data.error || data.success === false) {
+                        questionText.textContent = `錯誤：${data.error || data.message || '題目載入失敗，請通知教師檢查此技能。'}`;
+                        isProcessing = false;
+                        return;
+                    }
+
+                    if (data.chapter_completed) {
+                        renderChapterCompletionSummary(data.chapter_summary || {});
                         isProcessing = false;
                         return;
                     }
@@ -5515,6 +5903,7 @@
 
                     data = normalizeLatestQuestionResponse(data);
                     applyCurrentQuestion(data);
+                    updateChapterReviewPanel(data.practice_type_rotation);
                     if (!currentQuestion) {
                         questionText.textContent = '題目載入失敗（技能不一致），請重新整理。';
                         isProcessing = false;
@@ -5593,6 +5982,7 @@
                         } else {
                             questionText.style.fontSize = "1.25rem"; // 預設字體
                         }
+                        scheduleQuestionAnswerRowFit();
                     });
 
                     // 4. 更新連續答對數
@@ -5616,17 +6006,19 @@
                         answerInput.disabled = true;
                         answerInput.placeholder = '請在計算紙區域作答';
                         submitBtn.disabled = true;
-                    } else {
+                    } else if (!isDrawingQuestion(data)) {
                         answerInput.disabled = false;
+                        answerInput.readOnly = false;
                         answerInput.placeholder = '請在此輸入答案';
                         submitBtn.disabled = false;
                     }
-                    // Multipart / choice UI hides #answer-input. Re-apply after the
-                    // generic enable above so that box is not left as the only control.
+                    // Multipart / choice UI hides #answer-input; drawing UI disables it.
+                    // Re-apply after the generic enable above so the formal contract wins.
                     applyMultiPartUiContract(data);
                     // Answer labels are inserted after the stem typeset. Typeset them
                     // too, so \(\alpha^2+\beta^2\) does not stay as raw TeX.
                     if (subquestionsContainer) renderMathContent(subquestionsContainer);
+                    watchAnswerStripLabels();
 
                     // 6. 重置介面（renderQuestion 已清空回饋與答案欄）
                     ctx.fillStyle = 'white';
@@ -5924,10 +6316,75 @@
             return String(text || '').replace(/\s+/g, ' ').slice(0, 80);
         }
 
+        const MULTIPART_MARKER = /([ \t]*\r?\n\s*|[ \t]+)?([\(（]\s*(\d{1,2})\s*[\)）])/g;
+        const MULTIPART_JOIN_AFTER = /[：:，,；;、？。！]$/;
+
+        function insideInlineMath(prefix) {
+            const dollars = (prefix.replace(/\\\$/g, '').match(/\$/g) || []).length;
+            return dollars % 2 === 1 || prefix.lastIndexOf('\\(') > prefix.lastIndexOf('\\)');
+        }
+
+        // Subquestion markers flow inline; the browser wraps them only when the row is full.
+        function joinMultipartMarkerLines(text) {
+            let seenFirstMarker = false;
+            return String(text || '').replace(MULTIPART_MARKER, (match, gap, marker, number, offset, source) => {
+                const prefix = source.slice(0, offset);
+                const lineBreak = Boolean(gap && gap.includes('\n'));
+                if (insideInlineMath(prefix)) return lineBreak ? ` ${marker}` : match;
+                const before = prefix.trimEnd();
+                const first = Number(number) === 1;
+                if (first) seenFirstMarker = true;
+                // A later marker glued to a letter/digit is a function call such as f(2).
+                const isItem = first
+                    ? lineBreak
+                    : seenFirstMarker && (Boolean(gap) || !/[A-Za-z0-9]$/.test(before));
+                if (!isItem && !lineBreak) return match;
+                return (!before || MULTIPART_JOIN_AFTER.test(before) ? '' : '\u3000') + marker;
+            });
+        }
+
+        function findMultipartItemsStart(text) {
+            const pattern = /[\(（]\s*(\d{1,2})\s*[\)）]/g;
+            let start = -1;
+            let match;
+            while ((match = pattern.exec(text))) {
+                const prefix = text.slice(0, match.index);
+                if (/[A-Za-z0-9]$/.test(prefix) || insideInlineMath(prefix)) continue;
+                if (match[1] === '1' && start < 0) start = match.index;
+                else if (start >= 0 && Number(match[1]) >= 2) return start;
+            }
+            return -1;
+        }
+
         function setQuestionDisplayText(element, text) {
             if (!element) return;
-            const safeText = String(text || '');
-            element.textContent = safeText;
+            const safeText = joinMultipartMarkerLines(text);
+            const itemsStart = findMultipartItemsStart(safeText);
+            if (itemsStart < 0) {
+                element.textContent = safeText;
+                return;
+            }
+            // The item run stays on one line when it fits, otherwise drops below the prompt as a unit.
+            const items = document.createElement('span');
+            items.className = 'question-multipart-items';
+            const itemsText = safeText.slice(itemsStart);
+            let last = 0;
+            for (let at = itemsText.indexOf('\u3000'); at >= 0; at = itemsText.indexOf('\u3000', at + 1)) {
+                if (insideInlineMath(itemsText.slice(0, at))) continue;
+                items.appendChild(document.createTextNode(itemsText.slice(last, at)));
+                items.appendChild(createMultipartGap());
+                last = at + 1;
+            }
+            items.appendChild(document.createTextNode(itemsText.slice(last)));
+            element.textContent = safeText.slice(0, itemsStart);
+            element.appendChild(items);
+        }
+
+        function createMultipartGap() {
+            const gap = document.createElement('span');
+            gap.className = 'multipart-gap';
+            gap.textContent = '\u3000';
+            return gap;
         }
 
         function renderStructuredStem(element, payload) {
@@ -5945,13 +6402,20 @@
                 const wrap = document.createElement('div');
                 wrap.className = 'multipart-stem';
                 if (stem.prompt) {
-                    const promptEl = document.createElement('div');
+                    const promptEl = document.createElement('span');
                     promptEl.className = 'multipart-stem-prompt';
                     promptEl.textContent = stem.prompt;
                     wrap.appendChild(promptEl);
                 }
-                stem.items.forEach((item) => {
-                    const row = document.createElement('div');
+                if (stem.prompt && !MULTIPART_JOIN_AFTER.test(stem.prompt)) {
+                    wrap.appendChild(document.createTextNode(' '));
+                }
+                const itemsWrap = document.createElement('span');
+                itemsWrap.className = 'multipart-stem-items';
+                wrap.appendChild(itemsWrap);
+                stem.items.forEach((item, index) => {
+                    if (index > 0) itemsWrap.appendChild(createMultipartGap());
+                    const row = document.createElement('span');
                     row.className = 'multipart-stem-item';
                     row.dataset.groupLabel = (item && item.group_label) || '';
                     const marker = document.createElement('span');
@@ -5963,7 +6427,7 @@
                     row.appendChild(marker);
                     row.appendChild(document.createTextNode(' '));
                     row.appendChild(body);
-                    wrap.appendChild(row);
+                    itemsWrap.appendChild(row);
                 });
                 element.appendChild(wrap);
                 return true;
@@ -6012,6 +6476,7 @@
             renderChoices(payload);
             applyMultiPartUiContract(payload);
             if (subquestionsContainer) renderMathContent(subquestionsContainer);
+            watchAnswerStripLabels();
             resetQuestionScroll();
             console.log('[FRONTEND PRACTICE] rendered question_uid', payload && payload.question_uid);
             console.log('[FRONTEND PRACTICE] rendered question_text_preview=', previewQuestionText(questionMainText));
@@ -6166,6 +6631,7 @@
                             );
                             return;
                         }
+                        notePracticeTypeRotation(data);
 
                         if (data.duplicate_submission) {
                             resultDisplay.textContent = data.message || data.result || '此題已批改過。';
@@ -6364,6 +6830,7 @@
             });
             const grade = await gradeResponse.json();
             if (!gradeResponse.ok) throw new Error(grade.result || '手寫答案批改失敗。');
+            notePracticeTypeRotation(grade);
             submission.checkerResult = grade.checker_result || (grade.correct ? 'correct' : 'incorrect');
             console.log('[HANDWRITING SUBMISSION] checker', {
                 submissionId: submission.submissionId,
@@ -7461,6 +7928,11 @@ mjx-container { margin: 0 2px !important; }
   box-shadow: 0 0 0 3px var(--green-ring) !important;
 }
 #answer-input:disabled { opacity: 0.50 !important; cursor: not-allowed !important; }
+#answer-input.answer-input--drawing {
+  background: #eceff1 !important;
+  color: #6b7280 !important;
+  filter: grayscale(1) !important;
+}
 
 #submit-button {
   background: var(--green) !important;

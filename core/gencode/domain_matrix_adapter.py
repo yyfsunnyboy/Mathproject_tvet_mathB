@@ -3718,7 +3718,8 @@ def convert_domain_matrix_to_question_payload(
                 )
 
     if problem_type_id == "frequency_distribution_chart_construction":
-        pass
+        if not str(question_text or "").strip():
+            question_text = "已知次數分配表如下，試畫出其對應的直方圖與次數分配折線圖。"
     elif problem_type_id == "histogram_distribution_update":
         question_text = "下圖為某幼兒園班上25位小朋友身高分布之直方圖。今班上轉出一位身高117公分的小朋友，轉入一位身高112公分的小朋友，則此時班上小朋友身高分布之直方圖為何？（請說明哪兩組次數改變以及各改變多少）"
     else:
@@ -4080,7 +4081,7 @@ def convert_domain_matrix_to_question_payload(
             drawing_check["expected_to"] = ends[1]
         answer_contract["drawing_check"] = drawing_check
 
-    question_text = sanitize_student_math_display_text(question_text)
+    question_text = sanitize_student_math_display_text(question_text, break_multipart_items=False)
     display_answer = (
         sanitize_student_math_display_text(display_answer)
         if isinstance(display_answer, str)
@@ -4098,7 +4099,7 @@ def convert_domain_matrix_to_question_payload(
     if stem_structure and stem_structure.get("items"):
         # Structured multipart is source of truth; rebuild compatibility text.
         question_text = sanitize_student_math_display_text(
-            stem_structure_to_question_text(stem_structure)
+            stem_structure_to_question_text(stem_structure), break_multipart_items=False
         )
 
     payload_out = {

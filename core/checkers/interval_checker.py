@@ -7,7 +7,9 @@ Interval = Tuple[float, float, bool, bool]  # low, high, low_closed, high_closed
 
 
 def _normalize(text: object) -> str:
-    s = str(text or "").strip()
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = latex_to_plain(text)
     repl = {
         "，": ",",
         "＜": "<",
@@ -29,16 +31,12 @@ def _normalize(text: object) -> str:
 
 
 def _parse_num(token: str) -> float:
-    from fractions import Fraction
-    t = token.strip().lower()
-    if t in {"inf", "+inf", "+infinity", "infinity"}:
-        return float("inf")
-    if t in {"-inf", "-infinity"}:
-        return float("-inf")
-    try:
-        return float(Fraction(t))
-    except Exception:
-        return float(t)
+    from core.checkers.inequality_solution_checker import parse_numeric_endpoint
+
+    value = parse_numeric_endpoint(token)
+    if value is None:
+        raise ValueError(f"unsupported interval endpoint: {token!r}")
+    return float(value)
 
 
 def _split_union(s: str) -> List[str]:
@@ -86,13 +84,17 @@ def _parse_inequality(part: str) -> List[Interval]:
 
 
 def parse_interval_answer(text: object) -> List[Interval]:
+    """Legacy float-interval parse; returns [] for anything it cannot read."""
     s = _normalize(text).lower()
     parts = _split_union(s)
     intervals: List[Interval] = []
     for part in parts:
-        got = _parse_bracket_interval(part)
-        if not got:
-            got = _parse_inequality(part)
+        try:
+            got = _parse_bracket_interval(part)
+            if not got:
+                got = _parse_inequality(part)
+        except (ValueError, TypeError, ZeroDivisionError):
+            return []
         if not got:
             return []
         intervals.extend(got)

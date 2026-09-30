@@ -27,7 +27,7 @@ SUPPORTED_PART_CHECKERS = frozenset(
     }
 )
 
-_UNDEFINED_SLOPE_TOKENS = frozenset({"無", "不存在", "斜率不存在", "m不存在"})
+_UNDEFINED_SLOPE_TOKENS = frozenset({"無", "不存在", "斜率不存在", "m不存在", "undefined", "Undefined", "UNDEFINED"})
 _CLASS_SLOPE_TOKENS = frozenset({"m>0", "m<0", "m=0", "m不存在", "m1>m2", "m1<m2"})
 
 
@@ -58,13 +58,22 @@ def _normalize_scalar(value: Any) -> str:
     return str(value).strip()
 
 
-def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
+def _exact_part_number(value: Any) -> Fraction | None:
+    from core.checkers.math_input_normalization import latex_to_plain, parse_exact_number
+
+    # A handwritten degree answer commonly includes the semantic unit mark
+    # even when the generated numeric contract stores only the coefficient.
+    text = latex_to_plain(value).replace("°", "")
     try:
-        # A handwritten degree answer commonly includes the semantic unit mark
-        # even when the generated numeric contract stores only the coefficient.
-        student_frac = Fraction(str(student).strip().replace("°", ""))
-        expected_frac = Fraction(str(expected).strip().replace("°", ""))
-    except Exception:
+        return Fraction(text.strip())
+    except (ValueError, ZeroDivisionError):
+        return parse_exact_number(text)
+
+
+def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
+    student_frac = _exact_part_number(student)
+    expected_frac = _exact_part_number(expected)
+    if student_frac is None or expected_frac is None:
         return False
     return student_frac == expected_frac
 
@@ -129,6 +138,11 @@ def _check_part(
 
         return check_solution_set_answer(student_answer, expected_answer)
     if checker_key in {"text_short_checker", "text_checker"}:
+        from core.checkers.translation_description_checker import check_translation_description_answer
+
+        translation_verdict = check_translation_description_answer(student_answer, expected_answer)
+        if translation_verdict is not None:
+            return translation_verdict
         return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
     if checker_key == "ordered_inequality_checker" or equiv == "ordered_inequality":
         from core.checkers.ordered_inequality_checker import check_ordered_inequality_answer
