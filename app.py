@@ -252,14 +252,6 @@ def create_app(*, production: bool | None = None):
     from core.routes.demo import demo_bp
     app.register_blueprint(demo_bp)
     
-    # [自適應複習 API] 導入並註冊自適應複習模式 blueprint
-    try:
-        from adaptive_review_api import adaptive_review_bp
-        app.register_blueprint(adaptive_review_bp)
-        logger.info("✅ 自適應複習 API 已註冊：/api/adaptive-review")
-    except ImportError as e:
-        logger.warning(f"⚠️ 自適應複習模式未啟用: {e}")
-
     # [模擬學生 API] 註冊模擬學生 blueprint（本地開發用）
     try:
         from Simulated_student.sim_api import sim_bp
@@ -350,12 +342,6 @@ def create_app(*, production: bool | None = None):
         logout_user()
         flash('已登出', 'info')
         return redirect(url_for('login'))
-
-    @app.route('/adaptive-review')
-    @login_required
-    def adaptive_review():
-        """自適應複習模式入口頁面（簡潔版本）"""
-        return render_template('adaptive_review_simple.html')
 
     @app.route('/teacher_dashboard')
     @login_required

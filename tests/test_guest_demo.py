@@ -307,7 +307,6 @@ def test_existing_guest_fails_closed_if_admin_role_changes(client, monkeypatch):
     "/chat_ai", "/api/rag_chat", "/api/adaptive/adv_rag_chat",
     "/api/rag_search", "/api/adaptive/adv_rag_search",
     "/api/practice/ai-check-handwriting", "/analyze_handwriting",
-    "/api/adaptive-review/chat", "/api/adaptive-review/check-handwriting",
 ])
 def test_guest_ai_and_rag_are_denied_before_handler(client, monkeypatch, path):
     endpoint = next((rule.endpoint for rule in app.url_map.iter_rules() if rule.rule == path), None)

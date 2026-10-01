@@ -21,10 +21,10 @@ This repository is organized so that production runtime code, content-generation
 
 ## Adaptive learning and ML
 
-- `adaptive_review_*.py`, `akt_*.py` — adaptive-review and knowledge-tracing logic.
+- `core/adaptive/` — production progression, PPO routing, deterministic fallback, and remediation logic.
 - `models/` — model artifacts required by adaptive-learning workflows.
 - `runtime/` — runtime services and publish/runtime state used by the application.
-- `知識圖譜/`, `自適應複習/` — knowledge-graph and adaptive-review modules/assets.
+- `知識圖譜/`, `自適應複習/` — retained knowledge-graph and historical adaptive-learning assets.
 
 ## Data and curriculum assets
 
