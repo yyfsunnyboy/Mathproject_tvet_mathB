@@ -55,6 +55,23 @@ tmp/
 .test-tmp*/
 .test_tmp*/
 
+# 前端依賴與根目錄一次性診斷輸出（勿提交）
+/node_modules/
+/git_diff*.txt
+/git_log*.txt
+/git_status*.txt
+/pytest_out*.txt
+/pytest_output*.txt
+/probe_out*.json
+/probe_err*.txt
+/payload_check*.txt
+/output.txt
+/remote.txt
+/commit_files.txt
+/_pairs.txt
+/old_ai*.html
+/models.zip.*
+
 # 忽略轉檔產生的暫存圖片資料夾
 media/
 
