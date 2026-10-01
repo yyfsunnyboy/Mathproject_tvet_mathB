@@ -1,5 +1,10 @@
 # AI自適應學習平台(技術型高中版)
 
+> ## ▶️ [評審／教授請點此進入公開 Demo](https://mathb.math-adaptive.org/review-demo)
+>
+> **https://mathb.math-adaptive.org/review-demo**  
+> 無需正式帳號即可進入唯讀展示模式；展示環境不提供正式資料寫入。
+
 > 以技術型高中數學 B 系列為核心，整合教材數位化、GenCode 題庫生成、學生練習、自適應診斷、補救路由與教師學習分析。
 
 本專案是一套面向**技術型高中數學學習情境**的自適應學習平台。目前主要開發與驗證範圍為技高數學 **B1–B4**。
@@ -37,9 +42,9 @@ AI 主要用於教材解析、題目生成、OCR／視覺理解、提示與診�
 | 教材圖形資產 | 已建立 gate | PDF crop / image asset 需經 accepted / needs_review / rejected 狀態後才可進學生端。 |
 | 教師首頁 | 可使用 | `/teacher_dashboard` 顯示教師班級與學生入口。 |
 | 教師分析 | 可使用 | `/teacher/analysis` 可依班級、學生、冊別、章節、技能與時間範圍查看資料。 |
-| 自適應複習 API | 可使用 | AKT knowledge tracing + PPO routing；模型不可用時保留 deterministic fallback。 |
+| 自適應學習閉環 | 可使用 | 以 progression、PPO routing、deterministic fallback 與 RAG remediation 組成下一步學習決策。 |
 | RAG 補救 | 已整合 | 用於前置知識診斷與補救 bridge，不與 PPO routing 混成單一決策層。 |
-| 公開唯讀 Demo | 可使用 | `/demo`、`/demo/practice`、`/demo/teacher-overview`，使用固定展示資料且不提供正式寫入。 |
+| 公開唯讀 Demo | 可使用 | [`https://mathb.math-adaptive.org/review-demo`](https://mathb.math-adaptive.org/review-demo)，供評審快速瀏覽系統且不提供正式資料寫入。 |
 | GenCode / healer / validator | 持續強化 | 教材題型可透過 generator、validator、AST / regex healer 與 publish gate 逐步進入正式題庫。 |
 
 > **進度說明**：本專案不以「檔案存在」等同「章節完成」。教材 coverage、generator 能否穩定變形、checker 正確性、圖形語意與瀏覽器 human acceptance 會分開驗證，因此不同章節的成熟度可能不同。
@@ -82,7 +87,7 @@ Practice Runtime
 Learning Evidence
         │
         ├── mastery / chapter review
-        ├── AKT knowledge state
+        ├── progression state
         ├── PPO routing
         └── RAG remediation
         │
@@ -114,17 +119,15 @@ Learning Evidence
 
 ### 1. Progression — 教材進度
 
-負責學生目前在教材中的主要學習位置、題型 progression 與章節順序。
+負責學生目前在教材中的主要學習位置、題型 progression 與章節順序，並結合作答紀錄與章節複習狀態形成可持續的學習 evidence。
 
-### 2. Routing — PPO
+### 2. Routing — PPO / deterministic policy
 
-負責在已定義的技能／子技能空間中決定下一步 route action。現有自適應複習流程可載入 PPO 模型；模型不可用時保留 deterministic fallback，避免整個練習流程失效。
+負責在已定義的技能／子技能空間中決定下一步 route action。PPO policy 可用時可參與 routing；模型不可用時保留 deterministic fallback，避免整個練習流程失效。
 
 ### 3. Remediation — RAG
 
-當學生出現弱點時，RAG 用於檢索前置知識、bridge family 與補救內容。RAG 的角色是**診斷與補救內容選擇**，不是取代 progression 或 PPO。
-
-另外，AKT（Attentive Knowledge Tracing）用於估計學生的 knowledge state / mastery，提供 routing 與分析使用。
+當學生出現弱點時，RAG 用於檢索前置知識、bridge family 與補救內容。RAG 的角色是**診斷與補救內容選擇**，不是取代 progression 或 routing。
 
 這三層的工程規範記錄於 [`AGENTS.md`](AGENTS.md)。
 
@@ -178,19 +181,19 @@ Learning Evidence
 
 ### 教授／評審快速查看
 
-若只想理解系統結構，建議依序閱讀：
+**最快方式：直接開啟公開唯讀展示站：**
+
+### ▶️ [https://mathb.math-adaptive.org/review-demo](https://mathb.math-adaptive.org/review-demo)
+
+Demo 入口會進入評審用唯讀展示模式，可快速瀏覽教師與學生相關功能；展示模式不提供正式資料寫入。
+
+若要進一步理解工程結構，建議依序閱讀：
 
 1. 本 `README.md`
 2. [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)
 3. [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)
 4. `reports/` 中保留的 architecture / acceptance evidence
 5. `tests/` 中的 regression 與 contract tests
-
-若應用已啟動，也可從以下唯讀展示頁開始：
-
-- `/demo`
-- `/demo/practice`
-- `/demo/teacher-overview`
 
 ---
 
@@ -285,8 +288,7 @@ GET /healthz
 | Math rendering | MathJax 3 SVG |
 | AI / multimodal | Google Gemini integration、OCR fallback |
 | RAG | ChromaDB, sentence-transformers, BM25 |
-| Knowledge tracing | PyTorch AKT |
-| Adaptive routing | Stable-Baselines3 PPO |
+| Adaptive routing | Stable-Baselines3 PPO + deterministic fallback |
 | Document processing | PyMuPDF, python-docx, pypdf, pypandoc |
 | Data / reporting | pandas, NumPy, openpyxl, Matplotlib |
 | Testing | pytest + browser / contract / integration regression suites |
@@ -344,7 +346,7 @@ source coverage
 - B1–B4 不同章節的教材 source coverage 與 human acceptance 成熟度不同。
 - AI 生成題目仍必須經 deterministic validator / checker / publish gate；不能假設模型輸出天然可靠。
 - 圖形題、教材 crop 與 multipart 題需要額外的語意驗收，單純「能顯示」不等於正確。
-- AKT / PPO 屬於自適應研究模組，與 production progression / remediation 分層管理，仍持續以實際學生資料與模擬實驗驗證。
+- PPO / RAG 屬於自適應決策與補救模組，仍需持續以實際學生資料、模擬實驗與使用紀錄驗證效果。
 - 完整班級資料與正式 SQLite database 不應進 Git；部署端需使用既有 backup / restore 或資料初始化流程。
 
 ---
