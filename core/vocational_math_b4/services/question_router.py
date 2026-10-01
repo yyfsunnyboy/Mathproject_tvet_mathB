@@ -629,6 +629,18 @@ _CHAP2_PHASE6C1_REGISTRY: dict[str, list[dict[str, object]]] = {
 }
 
 
+def chap2_problem_type_specs(skill_id: str) -> list[dict[str, str]]:
+    """Registered practice types of a Chap2 deterministic skill, shaped like generator specs."""
+    return [
+        {
+            "component_id": str(entry["generator_key"]),
+            "generator_key": str(entry["generator_key"]),
+            "problem_type_id": str(entry["problem_type_id"]),
+        }
+        for entry in _CHAP2_PHASE6C1_REGISTRY.get(str(skill_id or "").strip(), [])
+    ]
+
+
 def generate_for_chap2_skill(
     *,
     skill_id: str,

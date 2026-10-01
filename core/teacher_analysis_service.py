@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from sqlalchemy import and_, case, func, or_, text
+from sqlalchemy import String, and_, case, cast, func, or_, select, text
+from sqlalchemy.orm import aliased
 
 from models import (
     AdaptiveLearningLog,
@@ -212,6 +213,23 @@ def _practice_attempt_time_filters(time_range: TimeRange) -> list:
     return filters
 
 
+def _practice_attempt_first_verdict_filter(student_ids: list[int]):
+    """Keep only the first attempt row per (student, question_uid).
+
+    Handwriting re-submissions and retries of one question add rows to
+    practice_attempts; question counts and accuracy use the first verdict only.
+    Rows without a question_uid each count as their own question.
+    """
+    first = aliased(PracticeAttempt)
+    question_key = func.coalesce(func.nullif(first.question_uid, ""), cast(first.id, String))
+    first_ids = (
+        select(func.min(first.id))
+        .where(first.student_id.in_(student_ids))
+        .group_by(first.student_id, question_key)
+    )
+    return PracticeAttempt.id.in_(first_ids)
+
+
 def get_accessible_classes(user: Any) -> list[Class]:
     if getattr(user, "is_admin", False):
         return db.session.query(Class).order_by(Class.name.asc()).all()
@@ -369,22 +387,25 @@ def _aggregate_adaptive_by_student(student_ids: list[int], time_range: TimeRange
 def _aggregate_practice_by_student(student_ids: list[int], time_range: TimeRange) -> dict[int, PracticeStats]:
     if not student_ids:
         return {}
+    scope = [PracticeAttempt.student_id.in_(student_ids), *_practice_attempt_time_filters(time_range)]
     q = (
         db.session.query(
             PracticeAttempt.student_id,
             func.count(PracticeAttempt.id),
             func.sum(case((PracticeAttempt.is_correct == True, 1), else_=0)),  # noqa: E712
-            func.max(PracticeAttempt.created_at),
         )
-        .filter(
-            PracticeAttempt.student_id.in_(student_ids),
-            *_practice_attempt_time_filters(time_range),
-        )
+        .filter(*scope, _practice_attempt_first_verdict_filter(student_ids))
         .group_by(PracticeAttempt.student_id)
     )
+    last_activity = dict(
+        db.session.query(PracticeAttempt.student_id, func.max(PracticeAttempt.created_at))
+        .filter(*scope)
+        .group_by(PracticeAttempt.student_id)
+        .all()
+    )
     out: dict[int, PracticeStats] = {}
-    for sid, total, correct, last_at in q.all():
-        out[int(sid)] = _stats_from_row(total, correct, last_at)
+    for sid, total, correct in q.all():
+        out[int(sid)] = _stats_from_row(total, correct, last_activity.get(sid))
     return out
 
 
@@ -558,20 +579,23 @@ def _aggregate_b4_by_skill(student_id: int, time_range: TimeRange) -> dict[str, 
 
 
 def _aggregate_practice_by_skill(student_id: int, time_range: TimeRange) -> dict[str, PracticeStats]:
+    scope = [PracticeAttempt.student_id == student_id, *_practice_attempt_time_filters(time_range)]
     q = (
         db.session.query(
             PracticeAttempt.skill_id,
             func.count(PracticeAttempt.id),
             func.sum(case((PracticeAttempt.is_correct == True, 1), else_=0)),  # noqa: E712
-            func.max(PracticeAttempt.created_at),
         )
-        .filter(
-            PracticeAttempt.student_id == student_id,
-            *_practice_attempt_time_filters(time_range),
-        )
+        .filter(*scope, _practice_attempt_first_verdict_filter([student_id]))
         .group_by(PracticeAttempt.skill_id)
     )
-    return {sid: _stats_from_row(t, c, la) for sid, t, c, la in q.all()}
+    last_activity = dict(
+        db.session.query(PracticeAttempt.skill_id, func.max(PracticeAttempt.created_at))
+        .filter(*scope)
+        .group_by(PracticeAttempt.skill_id)
+        .all()
+    )
+    return {sid: _stats_from_row(t, c, last_activity.get(sid)) for sid, t, c in q.all()}
 
 
 def _aggregate_adaptive_mapped_by_skill(
@@ -815,6 +839,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
             PracticeAttempt.student_id == student_id,
             PracticeAttempt.skill_id.in_(list(skill_ids)),
             *_practice_attempt_time_filters(time_range),
+            _practice_attempt_first_verdict_filter([student_id]),
         )
         .group_by(day_expr_p)
     )

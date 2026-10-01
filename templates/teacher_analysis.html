@@ -73,10 +73,18 @@
         }
         .attention-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 0; border-bottom: 1px solid #f0e0e0;
+            gap: 24px; padding: 8px 0; border-bottom: 1px solid #f0e0e0;
         }
         .attention-item:last-child { border-bottom: none; }
         .attention-item a { color: #3d5a80; text-decoration: none; font-weight: 600; }
+        .attention-name {
+            flex: 1 1 auto; min-width: 0;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .attention-stat {
+            flex: 0 0 auto; min-width: 11em; margin-left: auto;
+            text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums;
+        }
         .search-bar { margin-bottom: 14px; }
         .search-bar input {
             padding: 8px 12px; border: 1px solid #dde3ea; border-radius: 6px;
@@ -253,8 +261,8 @@
             {% else %}
                 {% for row in attention_students %}
                 <div class="attention-item">
-                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name|review_student_name }}</a>
-                    <span>{{ row.status.reason }}</span>
+                    <a class="attention-name" href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name|review_student_name }}</a>
+                    <span class="attention-stat">{{ row.status.reason }}</span>
                 </div>
                 {% endfor %}
             {% endif %}

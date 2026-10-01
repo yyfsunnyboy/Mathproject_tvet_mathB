@@ -1514,56 +1514,62 @@
         }
 
         .chapter-review-banner {
-            margin: 0 0 10px;
-            padding: 12px 16px;
-            border: 1px solid #cfe3d8;
-            border-radius: 10px;
-            background: #f4faf6;
-        }
-        .chapter-review-heading {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .chapter-review-heading h2 {
+            gap: 8px;
+            min-width: 0;
             margin: 0;
-            font-size: 1.25em;
-            color: #1e5b3a;
-        }
-        .chapter-review-pill {
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: #28a745;
-            color: #fff;
-            font-size: 0.85em;
-        }
-        .chapter-review-panels {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-        }
-        .chapter-review-panel {
-            padding: 10px 12px;
+            padding: 6px 10px;
+            border: 1px solid #cfe3d8;
             border-radius: 8px;
-            background: #fff;
-            border: 1px solid #e3eee7;
+            background: #f4faf6;
+            color: #385147;
+            font-size: 0.86rem;
+            line-height: 1.35;
+            white-space: nowrap;
+            overflow-x: auto;
         }
-        .chapter-review-panel h3 {
-            margin: 0 0 6px;
-            font-size: 0.95em;
+        .chapter-review-title {
+            color: #1e5b3a;
+            font-weight: 700;
+        }
+        .chapter-review-metric {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .chapter-review-separator {
+            color: #a8b9af;
+        }
+        .chapter-review-metric-current {
+            flex: 1 1 auto;
+            min-width: 4em;
+        }
+        .chapter-review-metric-current strong {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chapter-review-status-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            min-height: 32px;
             color: #2c3e50;
         }
-        .chapter-review-big {
-            font-size: 1.6em;
-            font-weight: 700;
-            color: #1e5b3a;
+        .chapter-review-skill {
+            min-width: 0;
+            overflow: hidden;
+            color: #263b32;
+            font-size: 0.95rem;
+            font-weight: 650;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .chapter-review-row {
-            line-height: 1.7;
-            font-size: 0.92em;
+        .chapter-review-status-line #next-question-btn {
+            margin-left: auto;
+            white-space: nowrap;
         }
 
         .practice-answer-block {
@@ -2195,7 +2201,7 @@
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 </head>
 
-<body>
+<body{% if chapter_review %} class="chapter-review-page"{% endif %}>
     {% set is_similar_practice = practice_mode == 'similar_practice' %}
     {% include '_student_navbar.html' %}
     <!-- 主容器 -->
@@ -2210,29 +2216,32 @@
             {% endif %}
             <div class="practice-header-block">
             {% if chapter_review %}
-            {% set cr_summary = chapter_review.chapter_summary %}
-            <div id="chapter-review-banner" class="chapter-review-banner">
-                <div class="chapter-review-heading">
-                    <h2 id="chapter-review-title">{{ chapter_review.title }}</h2>
-                    <span class="chapter-review-pill">{{ chapter_review.name }}｜{{ chapter_review.chapter_label }}</span>
-                </div>
-                <div class="chapter-review-panels">
-                    <section class="chapter-review-panel">
-                        <h3>本章正確率</h3>
-                        <div class="chapter-review-big" id="chapter-review-accuracy">{% if cr_summary and cr_summary.total_answered %}{{ cr_summary.accuracy }}%{% else %}--{% endif %}</div>
-                        <div class="chapter-review-row">已作答 <strong id="chapter-review-answered">{{ cr_summary.total_answered if cr_summary else 0 }}</strong> 題</div>
-                        <div class="chapter-review-row">答對 <strong id="chapter-review-correct">{{ cr_summary.correct if cr_summary else 0 }}</strong> 題</div>
-                        <div class="chapter-review-row">待補題型 <strong id="chapter-review-weak">{{ chapter_review.weak_types }}</strong> 個</div>
-                    </section>
-                    <section class="chapter-review-panel">
-                        <h3>本章複習進度</h3>
-                        <div class="chapter-review-row">目前小節 <strong id="chapter-review-section">{{ chapter_review.section_name }}</strong></div>
-                        <div class="chapter-review-row">本節題型完成數 <strong id="chapter-review-types">{{ chapter_review.section_types_passed }} / {{ chapter_review.section_types_total }}</strong></div>
-                        <div class="chapter-review-row">下一小節 <strong id="chapter-review-next">{{ chapter_review.next_section_name or '本章最後一個小節' }}</strong></div>
-                    </section>
-                </div>
+            <div id="chapter-review-banner" class="chapter-review-banner" role="status"
+                aria-label="{{ chapter_review.name }}｜{{ chapter_review.chapter_label }}；本章正確率；已作答；答對；待補題型；本章複習進度；目前小節；本節題型完成數；下一小節">
+                <strong id="chapter-review-title" class="chapter-review-title">{{ chapter_review.title }}</strong>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% set cr_passed = chapter_review.progress_passed | default(chapter_review.section_types_passed) %}
+                {% set cr_total = chapter_review.progress_total | default(chapter_review.section_types_total) %}
+                {% set cr_summary = chapter_review.chapter_summary %}
+                <span class="chapter-review-metric">進度 <strong id="chapter-review-types" aria-label="{{ cr_passed }} / {{ cr_total }}">{{ cr_passed }}/{{ cr_total }}</strong></span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                <span class="chapter-review-metric">正確率 <strong id="chapter-review-accuracy">{% if cr_summary and cr_summary.total_answered %}{{ (cr_summary.correct * 100 / cr_summary.total_answered) | round | int }}%（{{ cr_summary.correct }}/{{ cr_summary.total_answered }}）{% else %}--{% endif %}</strong></span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% if chapter_review.saved %}
+                <span class="chapter-review-metric">🔥連續答對 <strong id="chapter-review-streak">{{ chapter_review.streak or 0 }}</strong> 題</span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% endif %}
+                <span class="chapter-review-metric chapter-review-metric-current" title="{{ chapter_review.section_name }}">目前：<strong id="chapter-review-section">{{ chapter_review.section_name }}</strong></span>
             </div>
             {% endif %}
+            {% if chapter_review %}
+                <div class="chapter-review-status-line">
+                    <span id="skill-title" class="chapter-review-skill">{{ skill_ch_name }}</span>
+                    <span id="level-indicator" hidden>等級：1</span>
+                    <span id="streak-counter">{% if (pass_target or 0) | int > 0 %}🔥 進階答對 {{ (consecutive_correct or 0) | int }}/{{ (pass_target or 0) | int }} 題{% else %}🔥 進階答對：暫無門檻{% endif %}</span>
+                    <button id="next-question-btn" class="level-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
+                </div>
+            {% else %}
                 <h1 id="skill-title"> {{
                     skill_ch_name
                     }}
@@ -2287,6 +2296,7 @@
                     {% endif %}
 
                 </div>
+            {% endif %}
             </div>
             <div class="practice-question-block">
                 <div class="question-content" id="question-container">
@@ -4022,9 +4032,13 @@
             const normalizedStreak = Number.isFinite(Number(streak)) ? Number(streak) : 0;
             const normalizedTarget = Number.isFinite(Number(passTarget)) ? Number(passTarget) : 0;
             currentStreak = normalizedStreak;
-            streakCounter.textContent = normalizedTarget > 0
-                ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
-                : '🔥 連續答對：暫無門檻';
+            streakCounter.textContent = CHAPTER_REVIEW
+                ? (normalizedTarget > 0
+                    ? `🔥 進階答對 ${normalizedStreak}/${normalizedTarget} 題`
+                    : '🔥 進階答對：暫無門檻')
+                : (normalizedTarget > 0
+                    ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
+                    : '🔥 連續答對：暫無門檻');
             streakCounter.style.display = 'inline-block';
         }
 
@@ -5675,8 +5689,41 @@
             isInitialQuestionLoaded = true;
             if (!questionText) return;
             questionText.style.opacity = '1';
-            questionText.innerHTML = '<div id="chapter-review-start">'
-                + '<p style="margin:0 0 12px;">依序完成本章各小節的題型，答錯的題型會再出現一次，全部通過即完成本章總複習。</p>'
+            const resume = CHAPTER_REVIEW.resume;
+            if (resume && CHAPTER_REVIEW.resume_url && CHAPTER_REVIEW.restart_url) {
+                const n = (v) => Number(v || 0);
+                const accuracy = n(resume.answered)
+                    ? `${n(resume.accuracy)}%（${n(resume.correct)}/${n(resume.answered)}）`
+                    : '--';
+                const p = document.createElement('p');
+                p.textContent = `上次進度 ${n(resume.types_passed)}/${n(resume.types_total)}｜正確率 ${accuracy}`
+                    + `｜🔥連續答對 ${n(resume.streak)} 題`
+                    + (resume.current_section_name ? `｜下一步：${resume.current_section_name}` : '');
+                const actions = document.createElement('span');
+                actions.className = 'chapter-review-start-actions';
+                [
+                    ['chapter-review-resume-btn', '繼續複習', CHAPTER_REVIEW.resume_url, '#28a745'],
+                    ['chapter-review-restart-btn', '重新開始', CHAPTER_REVIEW.restart_url, '#6c757d'],
+                ].forEach(([id, label, href, color]) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.id = id;
+                    btn.className = 'level-button';
+                    btn.style.backgroundColor = color;
+                    btn.style.color = '#fff';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => { window.location.href = href; });
+                    actions.appendChild(btn);
+                });
+                const strip = document.createElement('div');
+                strip.id = 'chapter-review-start';
+                strip.className = 'chapter-review-start-strip';
+                strip.append(p, actions);
+                questionText.replaceChildren(strip);
+                return;
+            }
+            questionText.innerHTML = '<div id="chapter-review-start" class="chapter-review-start-strip">'
+                + '<p>依序完成各小節題型；答錯題型會再出現，全部通過即完成本章總複習。</p>'
                 + '<button type="button" id="chapter-review-start-btn" class="level-button" '
                 + 'style="background-color:#28a745;color:#fff;">開始複習</button></div>';
             document.getElementById('chapter-review-start-btn').addEventListener('click', () => {
@@ -5695,9 +5742,20 @@
                 const el = document.getElementById(id);
                 if (el) el.textContent = String(value);
             };
+            const saved = rotation.chapter_review;
+            if (saved && typeof saved === 'object') {
+                const answered = Number(saved.answered || 0);
+                const total = Number(saved.types_total || 0);
+                if (total) setText('chapter-review-types', `${Number(saved.types_passed || 0)}/${total}`);
+                setText('chapter-review-accuracy', answered
+                    ? `${Number(saved.accuracy || 0)}%（${Number(saved.correct || 0)}/${answered}）`
+                    : '--');
+                setText('chapter-review-streak', Number(saved.streak || 0));
+                return;
+            }
             const total = Number(rotation.total_types || 0);
             const passed = Number((rotation.status_counts || {}).passed || 0);
-            if (total) setText('chapter-review-types', `${passed} / ${total}`);
+            if (total) setText('chapter-review-types', `${passed}/${total}`);
             if (Array.isArray(rotation.weak_types)) setText('chapter-review-weak', rotation.weak_types.length);
             const chapter = rotation.chapter_summary;
             if (chapter && typeof chapter === 'object') {
@@ -5848,6 +5906,7 @@
             params.set('skill', skill);
             params.set('level', safeLevel);
             params.set('mode', 'type_rotation');
+            if (CHAPTER_REVIEW) params.set('chapter_review', '1');
             const currentParams = new URLSearchParams(window.location.search);
             if (!window.__textbookExampleIdConsumed) {
                 const textbookExampleId = currentParams.get('textbook_example_id');
@@ -5885,8 +5944,19 @@
                     }
 
                     if (data.chapter_completed) {
+                        updateChapterReviewPanel(data.practice_type_rotation);
                         renderChapterCompletionSummary(data.chapter_summary || {});
                         isProcessing = false;
+                        return;
+                    }
+                    if (data.chapter_review_next_section !== undefined) {
+                        updateChapterReviewPanel(data.practice_type_rotation);
+                        window.__practiceTypeRotationSectionCompleted = true;
+                        window.__practiceTypeRotationNextSection = String(data.chapter_review_next_section || '');
+                        isProcessing = false;
+                        if (!consumePracticeTypeRotationTransition() && questionText) {
+                            questionText.textContent = '本小節所有題型都已通過。';
+                        }
                         return;
                     }
 
@@ -7419,8 +7489,11 @@
                 });
         }
 
-        // Bind to the file input change event
-        document.getElementById('question-image-uploader').addEventListener('change', handleInstantUpload);
+        // Bind to the file input change event. Chapter review omits this control.
+        const instantQuestionUploader = document.getElementById('question-image-uploader');
+        if (instantQuestionUploader) {
+            instantQuestionUploader.addEventListener('change', handleInstantUpload);
+        }
         // === 新增：題目上傳功能 ===
         function setupQuestionUpload() {
             const uploadBtn = document.getElementById('upload-question-btn');
@@ -8446,6 +8519,77 @@ span[style*="粗細"],
 /* 計算紙頂部工具列「粗細」文字 */
 #scratchpad-controls > div > span:first-child {
   color: var(--text-muted) !important;
+}
+
+/* Chapter review keeps the shared practice runtime but removes repeated header rows. */
+.chapter-review-page .practice-header-block {
+  gap: 4px !important;
+  padding-top: 6px !important;
+}
+
+.chapter-review-page .chapter-review-banner {
+  box-shadow: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #streak-counter {
+  display: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #next-question-btn {
+  padding: 5px 12px !important;
+  box-shadow: none !important;
+}
+
+.chapter-review-page #question-container {
+  margin-bottom: 0 !important;
+  padding: 14px 16px !important;
+}
+
+.chapter-review-page .practice-answer-block {
+  gap: 4px;
+}
+
+.chapter-review-page .practice-answer-block > .input-group {
+  margin-top: 0 !important;
+}
+
+.chapter-review-start-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chapter-review-start-strip p {
+  margin: 0 !important;
+  line-height: 1.45;
+}
+
+.chapter-review-start-strip .level-button {
+  flex: 0 0 auto;
+  padding: 6px 14px !important;
+}
+
+.chapter-review-start-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .chapter-review-page .practice-header-block {
+    padding-top: 4px !important;
+  }
+
+  .chapter-review-page #question-container {
+    padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .chapter-review-page .chapter-review-banner {
+    border-radius: 6px;
+  }
 }
 
 </style>

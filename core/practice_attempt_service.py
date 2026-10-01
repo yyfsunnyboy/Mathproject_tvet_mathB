@@ -16,6 +16,7 @@ from core.backup.excel_sanitizer import repair_known_latex_escape_corruption
 from models import ClassStudent, PracticeAttempt, db
 
 SOURCE_GENERAL_PRACTICE = "general_practice"
+SOURCE_CHAPTER_REVIEW = "chapter_review"
 
 
 def _normalize_answer_text(value: Any) -> str | None:
@@ -107,13 +108,20 @@ def persist_practice_attempt(
     current_question: dict[str, Any] | None = None,
     question_uid: str | None = None,
     source: str = SOURCE_GENERAL_PRACTICE,
+    session_id: str | None = None,
+    problem_type_id: str | None = None,
     commit: bool = True,
 ) -> PracticeAttempt | None:
-    """Write one canonical attempt row. Never raises to caller."""
+    """Write one canonical attempt row. Never raises to caller.
+
+    Chapter review rows are the run's save data, so they are written even for
+    skills whose general practice answers are only kept in a visibility audit log.
+    """
     sid = str(skill_id or "").strip()
     if not sid:
         return None
-    if is_b4_chapter2_phase6c1_deterministic_skill(sid):
+    source = str(source or SOURCE_GENERAL_PRACTICE)
+    if source != SOURCE_CHAPTER_REVIEW and is_b4_chapter2_phase6c1_deterministic_skill(sid):
         return None
     if not getattr(current_user, "is_authenticated", False):
         return None
@@ -127,14 +135,15 @@ def persist_practice_attempt(
             student_id=student_id,
             class_id=_resolve_class_snapshot(student_id),
             skill_id=sid,
-            problem_type_id=_extract_problem_type_id(current_question),
+            problem_type_id=(str(problem_type_id).strip() if problem_type_id else None)
+            or _extract_problem_type_id(current_question),
             question_uid=str(question_uid).strip() if question_uid else None,
             question_text=_extract_question_text(current_question),
             user_answer=_normalize_answer_text(user_answer),
             expected_answer=_extract_expected_answer(current_question),
             is_correct=bool(is_correct),
-            source=str(source or SOURCE_GENERAL_PRACTICE),
-            session_id=_practice_session_id(),
+            source=source,
+            session_id=(str(session_id).strip() if session_id else None) or _practice_session_id(),
             difficulty=_extract_difficulty(current_question),
         )
         db.session.add(row)

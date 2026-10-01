@@ -78,12 +78,16 @@ from core.vocational_math_b4.adaptive.b4_chapter3_phase7b_allowlist import (
     is_b4_chapter3_skill_not_enabled,
     validate_b4_chap3_phase7b_generator_payload,
 )
-from core.vocational_math_b4.services.question_router import generate_for_chap2_skill, generate_for_chap3_skill
+from core.vocational_math_b4.services.question_router import (
+    chap2_problem_type_specs,
+    generate_for_chap2_skill,
+    generate_for_chap3_skill,
+)
 from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
     persist_b4_chap2_deterministic_answer_event,
     persist_b4_chap2_gated_event,
 )
-from core.practice_attempt_service import persist_practice_attempt
+from core.practice_attempt_service import SOURCE_CHAPTER_REVIEW, persist_practice_attempt
 from core.database_runtime import release_db_session_before_external_call
 from core.guest_demo import is_guest_demo
 # Phase 6N: Chap2 chapter mode integration
@@ -637,6 +641,9 @@ def _build_attempt_context(
         "user_answer": user_answer,
         "current_question": current_question if isinstance(current_question, dict) else None,
     }
+    if isinstance(current_question, dict):
+        context["chapter_review_run_id"] = str(current_question.get("chapter_review_run_id") or "")
+        context["chapter_review_type_key"] = str(current_question.get("chapter_review_type_key") or "")
     if isinstance(submission_meta, dict):
         context["handwriting_submission_id"] = str(submission_meta.get("handwriting_submission_id") or "")
         context["handwriting_image_sha256"] = str(submission_meta.get("handwriting_image_sha256") or "")
@@ -652,9 +659,13 @@ def _is_incorrect_resubmit(stale: dict[str, Any] | None) -> bool:
     )
 
 
-def _practice_type_rotation_pool(skill_id: str, mod: Any = None) -> dict[str, Any] | None:
+def _practice_type_rotation_pool(
+    skill_id: str, mod: Any = None, *, chapter_review: bool = False
+) -> dict[str, Any] | None:
     from core.practice_type_rotation import load_section_pool
 
+    if chapter_review and is_b4_chapter2_phase6c1_deterministic_skill(skill_id):
+        return load_section_pool(skill_id, specs=chap2_problem_type_specs(skill_id))
     module = mod if mod is not None else get_skill(skill_id)
     if module is None:
         return None
@@ -665,27 +676,51 @@ def _practice_type_rotation_pool(skill_id: str, mod: Any = None) -> dict[str, An
         return None
 
 
-def _practice_type_rotation_next(skill_id: str, mod: Any) -> dict[str, Any] | None:
+def _practice_type_rotation_next(
+    skill_id: str, mod: Any, run: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
     """Pick the next (type, component) for the section.
 
     ``None`` when any component lacks reliable type metadata; the caller then keeps
     the per-component curriculum_sequence instead of guessing type identity.
+    With a chapter review ``run`` the type statuses come from the run's persisted
+    attempts; the cookie state only keeps the current round order.
     """
     from core import practice_type_rotation as ptr
 
-    pool = _practice_type_rotation_pool(skill_id, mod)
+    pool = _practice_type_rotation_pool(skill_id, mod, chapter_review=run is not None)
     if not pool or not pool["types"] or not pool["reliable"]:
         return None
     types = pool["types"]
-    state = ptr.ensure_state(session.get(ptr.SESSION_KEY), skill_id, types)
-    pick = ptr.next_pick(state, types)
-    if pick is None:
-        state = ptr.new_state(skill_id, types)
+    if run is not None:
+        from core.chapter_review_run import section_statuses
+
+        statuses = section_statuses(run["statuses"], skill_id, types)
+        state = session.get(ptr.SESSION_KEY)
+        if (
+            ptr.matches(state, skill_id, types)
+            and state.get("run") == run["run_id"]
+            and len(str(state.get("st", ""))) == len(types)
+        ):
+            ptr.apply_statuses(state, types, statuses)
+        else:
+            state = ptr.restore_state(skill_id, types, statuses, seed=f"{run['run_id']}:{skill_id}")
+            state["run"] = run["run_id"]
         pick = ptr.next_pick(state, types)
+        if pick is None:
+            return None
+    else:
+        state = ptr.ensure_state(session.get(ptr.SESSION_KEY), skill_id, types)
+        pick = ptr.next_pick(state, types)
+        if pick is None:
+            state = ptr.new_state(skill_id, types)
+            pick = ptr.next_pick(state, types)
     session[ptr.SESSION_KEY] = state
     session.modified = True
     pick["candidate_count"] = len(types[pick["type_key"]])
     pick.update(ptr.summarize(state, types))
+    if run is not None:
+        pick["chapter_review"] = _chapter_review_snapshot(run)
     current_app.logger.info(
         "[PRACTICE type_rotation] skill_id=%s round=%s type_key=%s component_id=%s total_types=%s",
         skill_id,
@@ -697,11 +732,13 @@ def _practice_type_rotation_next(skill_id: str, mod: Any) -> dict[str, Any] | No
     return pick
 
 
-def _practice_type_rotation_register(skill_id: str, mod: Any, question_uid: str, type_key: str) -> None:
+def _practice_type_rotation_register(
+    skill_id: str, mod: Any, question_uid: str, type_key: str, *, chapter_review: bool = False
+) -> None:
     from core import practice_type_rotation as ptr
 
     state = session.get(ptr.SESSION_KEY)
-    pool = _practice_type_rotation_pool(skill_id, mod)
+    pool = _practice_type_rotation_pool(skill_id, mod, chapter_review=chapter_review)
     if not question_uid or not pool or not ptr.matches(state, skill_id, pool["types"]):
         return
     ptr.register_served_question(state, pool["types"], question_uid, type_key)
@@ -726,8 +763,8 @@ def _practice_chapter_scope(skill_id: str) -> tuple[Any, list[Any]]:
         return None, []
 
 
-def _practice_type_rotation_section_available(skill_id: str) -> bool:
-    pool = _practice_type_rotation_pool(skill_id)
+def _practice_type_rotation_section_available(skill_id: str, *, chapter_review: bool = False) -> bool:
+    pool = _practice_type_rotation_pool(skill_id, chapter_review=chapter_review)
     return bool(pool and pool["types"] and pool["reliable"])
 
 
@@ -780,17 +817,44 @@ def _chapter_review_entry(chapter: str, curriculum: str = "", volume: str = "") 
     }
     first = next(
         (sid for sid in _chapter_review_ordered_sections(rows)
-         if sid in active and _practice_type_rotation_section_available(sid)),
+         if sid in active and _practice_type_rotation_section_available(sid, chapter_review=True)),
         "",
     )
     return {"label": _chapter_review_label(chapter), "first_section": first}
 
 
-def _chapter_review_context(skill_id: str, skill_ch_name: str) -> dict[str, Any]:
-    """Server-side state for the chapter review header and progress panel."""
+def _chapter_review_context(
+    skill_id: str, skill_ch_name: str, run: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Server-side state for the chapter review header and progress panel.
+
+    With a saved ``run`` every metric comes from the run's attempts; without one
+    (Guest Demo) the cookie counters are shown as before.
+    """
     from core import practice_type_rotation as ptr
 
     anchor, chapter_rows = _practice_chapter_scope(skill_id)
+    label = _chapter_review_label(anchor.chapter) if anchor is not None else ""
+    if run is not None:
+        rotation = _chapter_review_rotation_summary(run, skill_id)
+        snap = rotation["chapter_review"]
+        next_section = rotation["next_section_skill_id"]
+        return {
+            "name": CHAPTER_REVIEW_NAME,
+            "title": f"{label}｜{CHAPTER_REVIEW_NAME}" if label else CHAPTER_REVIEW_NAME,
+            "chapter_label": label,
+            "section_name": skill_ch_name,
+            "section_types_total": rotation["total_types"],
+            "section_types_passed": rotation["status_counts"][ptr.STATUS_PASSED],
+            "weak_types": len(rotation["weak_types"]),
+            "next_section_skill_id": next_section,
+            "next_section_name": _chapter_review_section_name(next_section),
+            "chapter_summary": rotation["chapter_summary"],
+            "progress_passed": snap["types_passed"],
+            "progress_total": snap["types_total"],
+            "streak": snap["streak"],
+            "saved": True,
+        }
     pool = _practice_type_rotation_pool(skill_id)
     types = pool["types"] if pool and pool["reliable"] else {}
     state = session.get(ptr.SESSION_KEY)
@@ -806,7 +870,6 @@ def _chapter_review_context(skill_id: str, skill_ch_name: str) -> dict[str, Any]
             chapter = ptr.chapter_summary(progress)
     next_section = _practice_type_rotation_next_section(skill_id, chapter_rows) if chapter_rows else ""
     next_info = db.session.get(SkillInfo, next_section) if next_section else None
-    label = _chapter_review_label(anchor.chapter) if anchor is not None else ""
     return {
         "name": CHAPTER_REVIEW_NAME,
         "title": f"{label}｜{CHAPTER_REVIEW_NAME}" if label else CHAPTER_REVIEW_NAME,
@@ -878,6 +941,189 @@ def _practice_type_rotation_apply_verdict(uid: str, skill_id: str, out: dict[str
     out["practice_type_rotation"] = summary
 
 
+def _chapter_review_student_id() -> int | None:
+    """Chapter review runs are saved only for signed-in students (Guest Demo stays read-only)."""
+    if is_guest_demo() or not getattr(current_user, "is_authenticated", False):
+        return None
+    return int(current_user.id)
+
+
+def _chapter_review_sections(skill_id: str) -> tuple[str, list[tuple[str, list[str]]]]:
+    """``(chapter_key, [(section_skill_id, type_keys), ...])`` in textbook order."""
+    from core import practice_type_rotation as ptr
+
+    anchor, rows = _practice_chapter_scope(skill_id)
+    if anchor is None:
+        key, ordered = ptr.chapter_key("", "", skill_id), [skill_id]
+    else:
+        key = ptr.chapter_key(anchor.curriculum, anchor.volume, anchor.chapter)
+        ordered = _chapter_review_ordered_sections(rows) or [skill_id]
+    sections: list[tuple[str, list[str]]] = []
+    for sid in ordered:
+        pool = _practice_type_rotation_pool(sid, chapter_review=True)
+        if pool and pool["types"] and pool["reliable"]:
+            sections.append((sid, sorted(pool["types"])))
+    return key, sections
+
+
+def _chapter_review_load(
+    skill_id: str,
+    run_id: str,
+    student_id: int,
+    scope: tuple[str, list[tuple[str, list[str]]]] | None = None,
+) -> dict[str, Any] | None:
+    """Rebuild a run from its persisted attempts; ``None`` when the skill is not a review section."""
+    from core import chapter_review_run as crr
+
+    chapter, sections = scope or _chapter_review_sections(skill_id)
+    if not any(sid == skill_id for sid, _ in sections):
+        return None
+    verdicts = crr.load_first_verdicts(student_id, run_id)
+    return {
+        "run_id": run_id,
+        "chapter": chapter,
+        "sections": sections,
+        "statuses": crr.type_statuses(verdicts),
+        "snapshot": crr.summarize_run(verdicts, sections),
+    }
+
+
+def _chapter_review_run(skill_id: str, mode: str = "") -> dict[str, Any] | None:
+    """Active run for this chapter.
+
+    ``mode=""`` reuses the session pointer, else the latest run in the DB, else a new
+    run.  ``"resume"`` uses the latest DB run.  ``"restart"`` always opens a new run;
+    earlier runs keep their attempts untouched.
+    """
+    from core import chapter_review_run as crr
+
+    student_id = _chapter_review_student_id()
+    if student_id is None:
+        return None
+    chapter, sections = _chapter_review_sections(skill_id)
+    if not any(sid == skill_id for sid, _ in sections):
+        return None
+    run_id = ""
+    if mode == "":
+        pointer = session.get(crr.SESSION_POINTER_KEY)
+        if isinstance(pointer, dict) and pointer.get("ch") == chapter:
+            run_id = str(pointer.get("id") or "")
+    if not run_id and mode != "restart":
+        run_id = crr.latest_run_id(student_id, [sid for sid, _ in sections])
+    if not run_id:
+        run_id = crr.new_run_id()
+    session[crr.SESSION_POINTER_KEY] = {"id": run_id, "ch": chapter}
+    session.modified = True
+    return _chapter_review_load(skill_id, run_id, student_id, (chapter, sections))
+
+
+def _chapter_review_start(skill_id: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """``(run, resume_offer)`` for the start screen.
+
+    An unfinished run with answers is offered for resume (the student chooses
+    continue or restart); otherwise a fresh run becomes the session's active run.
+    """
+    from core import chapter_review_run as crr
+
+    student_id = _chapter_review_student_id()
+    if student_id is None:
+        return None, None
+    scope = _chapter_review_sections(skill_id)
+    chapter, sections = scope
+    if not any(sid == skill_id for sid, _ in sections):
+        return None, None
+    latest = crr.latest_run_id(student_id, [sid for sid, _ in sections])
+    if latest:
+        previous = _chapter_review_load(skill_id, latest, student_id, scope)
+        snap = previous["snapshot"] if previous else {}
+        if previous and snap["answered"] and not snap["completed"]:
+            return previous, _chapter_review_snapshot(previous)
+    run_id = crr.new_run_id()
+    session[crr.SESSION_POINTER_KEY] = {"id": run_id, "ch": chapter}
+    session.modified = True
+    return _chapter_review_load(skill_id, run_id, student_id, scope), None
+
+
+def _chapter_review_section_name(skill_id: str) -> str:
+    if not skill_id:
+        return ""
+    info = db.session.get(SkillInfo, skill_id)
+    return info.skill_ch_name if info else skill_id
+
+
+def _chapter_review_snapshot(run: dict[str, Any]) -> dict[str, Any]:
+    """Header metrics of a run: progress, first-attempt accuracy, run streak, current section."""
+    snap = dict(run["snapshot"])
+    snap["run_id"] = run["run_id"]
+    snap["current_section_name"] = _chapter_review_section_name(snap.get("current_section", ""))
+    return snap
+
+
+def _chapter_review_summary(run: dict[str, Any]) -> dict[str, Any]:
+    """Completion summary in the same shape as the cookie ``chapter_summary``."""
+    snap = run["snapshot"]
+    answered = int(snap["answered"])
+    return {
+        "total_answered": answered,
+        "correct": int(snap["correct"]),
+        "wrong": int(snap["wrong"]),
+        "accuracy": round(snap["correct"] * 100.0 / answered, 1) if answered else 0.0,
+        "types_completed": int(snap["types_passed"]),
+        "sections_completed": int(snap["sections_completed"]),
+        "chapter_completed": bool(snap["completed"]),
+    }
+
+
+def _chapter_review_rotation_summary(run: dict[str, Any], skill_id: str) -> dict[str, Any]:
+    """Section + chapter state for the review header, derived only from the run's attempts."""
+    from core import practice_type_rotation as ptr
+    from core.chapter_review_run import section_statuses
+
+    keys = next((k for sid, k in run["sections"] if sid == skill_id), [])
+    statuses = section_statuses(run["statuses"], skill_id, keys)
+    state = session.get(ptr.SESSION_KEY)
+    counts = {
+        s: sum(1 for v in statuses.values() if v == s)
+        for s in (ptr.STATUS_UNSEEN, ptr.STATUS_PASSED, ptr.STATUS_WEAK)
+    }
+    section_completed = bool(keys) and counts[ptr.STATUS_PASSED] == len(keys)
+    snap = run["snapshot"]
+    next_section = snap["current_section"] if section_completed and not snap["completed"] else ""
+    return {
+        "round": int(state.get("r", 1)) if isinstance(state, dict) and state.get("run") == run["run_id"] else 1,
+        "total_types": len(keys),
+        "status_counts": counts,
+        "weak_types": sorted(k for k, v in statuses.items() if v == ptr.STATUS_WEAK),
+        "section_completed": section_completed,
+        "next_section_skill_id": next_section,
+        "chapter_completed": bool(snap["completed"]),
+        "chapter_summary": _chapter_review_summary(run),
+        "chapter_review": _chapter_review_snapshot(run),
+    }
+
+
+def _chapter_review_apply_verdict(skill_id: str, run_id: str, type_key: str, out: dict[str, Any]) -> None:
+    """Refresh review state after the attempt row is committed (the attempt is the checkpoint)."""
+    from core import practice_type_rotation as ptr
+    from core.chapter_review_run import section_statuses
+
+    student_id = _chapter_review_student_id()
+    run = _chapter_review_load(skill_id, run_id, student_id) if student_id is not None else None
+    if run is None:
+        return
+    pool = _practice_type_rotation_pool(skill_id, chapter_review=True)
+    state = session.get(ptr.SESSION_KEY)
+    if pool and ptr.matches(state, skill_id, pool["types"]) and state.get("run") == run_id:
+        ptr.apply_statuses(state, pool["types"], section_statuses(run["statuses"], skill_id, pool["types"]))
+        session[ptr.SESSION_KEY] = state
+        session.modified = True
+    summary = _chapter_review_rotation_summary(run, skill_id)
+    if type_key:
+        summary["type_key"] = type_key
+        summary["type_status"] = run["statuses"].get((skill_id, type_key), ptr.STATUS_UNSEEN)
+    out["practice_type_rotation"] = summary
+
+
 def _emit_check_result(
     question_uid: str,
     skill_id: str,
@@ -890,6 +1136,8 @@ def _emit_check_result(
     uid = str(question_uid or session.get("current_question_uid", "")).strip()
     out = dict(result)
     ctx = attempt_context if isinstance(attempt_context, dict) else {}
+    cr_run_id = "" if is_guest_demo() else str(ctx.get("chapter_review_run_id") or "")
+    cr_type_key = str(ctx.get("chapter_review_type_key") or "")
     current_question = ctx.get("current_question")
     if isinstance(current_question, dict):
         from core.gencode.answer_grading import attach_correct_answer_feedback
@@ -901,7 +1149,7 @@ def _emit_check_result(
     if record_progress and out.get("correct") is not None and (
         _verdict_status in ("correct", "incorrect")
         or (_verdict_status == "" and not out.get("system_error") and not out.get("invalid_input"))
-    ):
+    ) and not cr_run_id:
         _practice_type_rotation_apply_verdict(uid, skill_id, out)
     # Guest Demo is interactive but read-only.  The checker has already run by
     # the time this helper is called, so return the normal grading payload
@@ -966,9 +1214,14 @@ def _emit_check_result(
         record_progress
         and _is_gradable
         and not is_guest_demo()
-        and not skip_practice_attempt
+        and (cr_run_id or not skip_practice_attempt)
         and out.get("correct") is not None
     ):
+        chapter_review_fields = (
+            {"source": SOURCE_CHAPTER_REVIEW, "session_id": cr_run_id, "problem_type_id": cr_type_key or None}
+            if cr_run_id
+            else {}
+        )
         row = persist_practice_attempt(
             skill_id=skill_id,
             is_correct=bool(out.get("correct", False)),
@@ -976,6 +1229,7 @@ def _emit_check_result(
             current_question=ctx.get("current_question"),
             question_uid=uid or None,
             commit=False,
+            **chapter_review_fields,
         )
         pending_write = pending_write or row is not None
     if pending_write:
@@ -988,6 +1242,8 @@ def _emit_check_result(
                 getattr(current_user, "id", None),
                 skill_id,
             )
+    if cr_run_id and record_progress and _is_gradable:
+        _chapter_review_apply_verdict(skill_id, cr_run_id, cr_type_key, out)
     if record_progress and _is_gradable and not is_guest_demo():
         progress = db.session.query(Progress).filter_by(
             user_id=current_user.id,
@@ -1664,9 +1920,25 @@ def practice(skill_id):
 
     chapter_review_arg = (request.args.get("chapter_review") or "").strip()
     chapter_review = None
-    if chapter_review_arg in {"start", "1"} and not manual_review_info:
-        chapter_review = _chapter_review_context(skill_id, skill_ch_name)
+    if chapter_review_arg in {"start", "1", "resume", "restart"} and not manual_review_info:
+        run = None
+        resume_offer = None
+        if chapter_review_arg in {"resume", "restart"}:
+            run = _chapter_review_run(skill_id, chapter_review_arg)
+            if run is not None:
+                target = run["snapshot"]["current_section"] or run["sections"][0][0]
+                return redirect(url_for("practice.practice", skill_id=target, chapter_review="1"))
+            chapter_review_arg = "start"
+        elif chapter_review_arg == "start":
+            run, resume_offer = _chapter_review_start(skill_id)
+        else:
+            run = _chapter_review_run(skill_id)
+        chapter_review = _chapter_review_context(skill_id, skill_ch_name, run)
         chapter_review["await_start"] = chapter_review_arg == "start"
+        if resume_offer is not None:
+            chapter_review["resume"] = resume_offer
+            chapter_review["resume_url"] = url_for("practice.practice", skill_id=skill_id, chapter_review="resume")
+            chapter_review["restart_url"] = url_for("practice.practice", skill_id=skill_id, chapter_review="restart")
 
     return render_template('index.html', 
                            chapter_review=chapter_review,
@@ -2291,7 +2563,32 @@ def next_question():
         resolved_mode = route_mode
         resolved_route_source = route_reason
         type_rotation_pick = None
+        chapter_review_run = None
         if (
+            request.args.get("mode", "").strip() == "type_rotation"
+            and request.args.get("chapter_review", "").strip() == "1"
+            and not requested_component_id
+            and not str(problem_type or "").strip()
+        ):
+            chapter_review_run = _chapter_review_run(skill_id)
+        if chapter_review_run is not None:
+            rotation_state = _chapter_review_rotation_summary(chapter_review_run, skill_id)
+            if rotation_state["chapter_completed"]:
+                return jsonify({
+                    "success": True,
+                    "skill_id": skill_id,
+                    "chapter_completed": True,
+                    "chapter_summary": rotation_state["chapter_summary"],
+                    "practice_type_rotation": rotation_state,
+                })
+            if rotation_state["section_completed"]:
+                return jsonify({
+                    "success": True,
+                    "skill_id": skill_id,
+                    "chapter_review_next_section": rotation_state["next_section_skill_id"],
+                    "practice_type_rotation": rotation_state,
+                })
+        elif (
             request.args.get("mode", "").strip() == "type_rotation"
             and not requested_component_id
             and not str(problem_type or "").strip()
@@ -2369,11 +2666,17 @@ def next_question():
                                 {"error": B4_CHAP2_RESERVED_PROBLEM_TYPE_PUBLIC_ERROR}
                             ), 422
                         gen_seed = request.args.get("gen_seed", type=int)
+                        if chapter_review_run is not None and attempt == 0:
+                            type_rotation_pick = _practice_type_rotation_next(
+                                skill_id, None, run=chapter_review_run
+                            )
                         chap2_payload = generate_for_chap2_skill(
                             skill_id=skill_id,
                             level=difficulty_level,
                             seed=gen_seed,
-                            problem_type_id=problem_type or None,
+                            problem_type_id=(
+                                type_rotation_pick["type_key"] if type_rotation_pick else problem_type or None
+                            ),
                         )
                         ok_p, deny_r = validate_b4_chap2_phase6c1_generator_payload(skill_id, chap2_payload)
                         if not ok_p:
@@ -2508,7 +2811,9 @@ def next_question():
                             and not str(problem_type or "").strip()
                         ):
                             if attempt == 0:
-                                type_rotation_pick = _practice_type_rotation_next(skill_id, mod)
+                                type_rotation_pick = _practice_type_rotation_next(
+                                    skill_id, mod, run=chapter_review_run
+                                )
                             if type_rotation_pick:
                                 picked_component_id = type_rotation_pick["component_id"]
                             else:
@@ -2624,7 +2929,12 @@ def next_question():
         # ??? 'image' ??'Figure' ?賊??萄?
         for k in ['image', 'fig', 'figure', 'image_base64', 'visuals']:
             if k in session_data: del session_data[k]
-        
+        if chapter_review_run is not None:
+            session_data["chapter_review_run_id"] = chapter_review_run["run_id"]
+            session_data["chapter_review_type_key"] = (
+                type_rotation_pick["type_key"] if type_rotation_pick else ""
+            )
+
         set_current(skill_id, session_data)
         stored_current = get_current()
         session_data["question_uid"] = stored_current.get("question_uid", "")
@@ -2633,7 +2943,8 @@ def next_question():
         _log_runtime_generate_payload(skill_id, session_data, module_file=module_file if wrapper_loaded else "")
         if type_rotation_pick:
             _practice_type_rotation_register(
-                skill_id, mod, session_data["question_uid"], type_rotation_pick["type_key"]
+                skill_id, mod, session_data["question_uid"], type_rotation_pick["type_key"],
+                chapter_review=chapter_review_run is not None,
             )
 
         response_payload = _finalize_practice_question_api_fields({
@@ -2783,7 +3094,12 @@ def check_answer():
     for _image_key in ("composite_image_data_url", "student_strokes_image_data_url", "image_data_url", "image_base64", "canvas_image", "drawing_image", "handwriting_image"):
         if body.get(_image_key):
             current[_image_key] = body.get(_image_key)
+    chapter_review_ref = {
+        k: current[k] for k in ("chapter_review_run_id", "chapter_review_type_key") if current.get(k)
+    }
     current = _normalize_gencode_runtime_payload(current, skill_id=skill_id)
+    if isinstance(current, dict):
+        current.update(chapter_review_ref)
     if isinstance(user_ans, dict):
         from core.gencode.table_question_contract import normalize_table_student_answer
 
@@ -3090,7 +3406,9 @@ def check_answer():
             is_correct_chap2 = False
             chap2_checker_name = "checker_exception"
 
-        if not is_guest_demo():
+        # Chapter review answers are saved as practice_attempts rows instead, so the
+        # visibility audit log does not count the same answer a second time.
+        if not is_guest_demo() and not current.get("chapter_review_run_id"):
             try:
                 persist_b4_chap2_deterministic_answer_event(
                     skill_id=skill_id,

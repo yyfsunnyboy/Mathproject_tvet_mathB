@@ -239,6 +239,8 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         "stored_at": time.time(),
         "status": str(data.get("status", STATUS_GENERATED)).strip() or STATUS_GENERATED,
         "grade_result": None,
+        "chapter_review_run_id": str(data.get("chapter_review_run_id") or "").strip(),
+        "chapter_review_type_key": str(data.get("chapter_review_type_key") or "").strip(),
     }
 
 

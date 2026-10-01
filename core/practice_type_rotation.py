@@ -258,6 +258,38 @@ def record_result(
     return keys[idx]
 
 
+def apply_statuses(state: dict[str, Any], types: dict[str, list[dict[str, Any]]], statuses: dict[str, str]) -> None:
+    """Overwrite type statuses from an authoritative source (e.g. persisted attempts)."""
+    keys = _type_keys(types)
+    state["st"] = "".join(_STATUS_CODE[statuses.get(k, STATUS_UNSEEN)] for k in keys)
+    passed = _STATUS_CODE[STATUS_PASSED]
+    state["q"] = [int(i) for i in state.get("q", []) if 0 <= int(i) < len(keys) and state["st"][int(i)] != passed]
+    state["c"] = 1 if keys and set(state["st"]) == {passed} else 0
+    if state["c"]:
+        state["q"] = []
+
+
+def restore_state(
+    section: str,
+    types: dict[str, list[dict[str, Any]]],
+    statuses: dict[str, str],
+    seed: str,
+) -> dict[str, Any]:
+    """Rebuild a section state from persisted type statuses: unseen types first, then weak ones."""
+    rng = random.Random(seed)
+    state = new_state(section, types, rng)
+    keys = _type_keys(types)
+    unseen = [i for i, k in enumerate(keys) if statuses.get(k, STATUS_UNSEEN) == STATUS_UNSEEN]
+    weak = [i for i, k in enumerate(keys) if statuses.get(k) == STATUS_WEAK]
+    rng.shuffle(unseen)
+    rng.shuffle(weak)
+    state["q"] = unseen + weak
+    apply_statuses(state, types, statuses)
+    if weak and not unseen:
+        state["r"] = 2
+    return state
+
+
 def summarize(state: dict[str, Any], types: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     status = type_status(state, types)
     counts = {s: sum(1 for v in status.values() if v == s) for s in (STATUS_UNSEEN, STATUS_PASSED, STATUS_WEAK)}
