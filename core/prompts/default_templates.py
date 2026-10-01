@@ -6,9 +6,9 @@ DEFAULT_PROMPT_TEMPLATES = {
         "title": "基礎角色設定 (Base Prompt)",
         "category": "system",
         "description": "全局基礎指令，設定 AI 助教的 Persona、語氣風格，以及禁止 AI 做出危險行為。",
-        "usage_context": "作為所有 RAG 與對話模型調用的最底層 Prompt，用來奠定基礎對話行為。",
-        "used_in": "core/advanced_rag_engine.py -> _build_adv_rag_prompt()",
-        "example_trigger": "任何透過 Advanced RAG 觸發的對話，或直接呼叫 LLM 進行解題時均會預設插入此段。",
+        "usage_context": "作為一般 AI 對話模型調用的最底層 Prompt，用來奠定基礎對話行為。",
+        "used_in": "一般 AI 對話與教學回饋流程",
+        "example_trigger": "直接呼叫 LLM 進行解題或教學回饋時。",
         "content": (
             "你是台灣高職數學 B 版的數學學習助教。\n"
             "請用繁體中文（台灣用語）逐步解說，語氣清晰、適合高職學生閱讀。\n\n"
@@ -27,7 +27,7 @@ DEFAULT_PROMPT_TEMPLATES = {
         "category": "tutor",
         "description": "鷹架式的引導提示，要求 AI 在不直接給出答案的情況下給予下一步提示。",
         "usage_context": "當學生於對話框詢問「這題怎麼解？」或是提交錯誤答案後請求協助時使用。",
-        "used_in": "core/advanced_rag_engine.py -> _build_adv_rag_prompt() (作為引導層附加)",
+        "used_in": "一般 AI 對話與教學回饋流程",
         "example_trigger": "學生在練習頁點擊「請問助教」或向前端發送聊天訊息時觸發。",
         "content": (
             "Given the student question: {question}, provide one concise hint first "
@@ -113,26 +113,6 @@ DEFAULT_PROMPT_TEMPLATES = {
             "4. 回覆請控制在精簡的長度，給出一個概念與一個小問題即可。"
         ),
         "required_variables": "",
-        "is_active": True,
-    },
-    "rag_tutor_prompt": {
-        "title": "知識庫引導助教 (RAG Tutor)",
-        "category": "tutor",
-        "description": "結合教科書知識點與動態檢索內容的專用教學提示。",
-        "usage_context": "當遇到錯誤需要精確的單元重點回放時，引用擷取到的 subskills 及規則。",
-        "used_in": "core/rag_engine.py -> rag_chat()",
-        "example_trigger": "學生點擊錯題的 RAG 補救或提示按鈕",
-        "content": (
-            "你是一位台灣國中數學助教。\n"
-            "請用繁體中文回答，語氣簡短，讓國中生看得懂。\n"
-            "只能提示，不要直接給完整答案。\n\n"
-            "學生問題：\n{query}\n\n"
-            "[目前檢索路徑：{route_label}]\n"
-            "目前對應技能：\n{ch_name} {family_name_block}\n\n"
-            "重點子技能：\n{subskill_text}\n\n"
-            "請輸出：\n1. 先提醒一個最重要的觀念\n2. 再給一個小提示\n3. 最後給一個下一步方向"
-        ),
-        "required_variables": "query,ch_name,family_name_block,subskill_text,route_label",
         "is_active": True,
     },
     "handwriting_feedback_prompt": {

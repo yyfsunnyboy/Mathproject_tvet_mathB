@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import importlib
@@ -22,7 +22,6 @@ from core.vocational_math_b4.adaptive import b4_chapter1_deterministic_allowlist
 from .agent_skill_schema import resolve_agent_skill
 from .akt_adapter import bootstrap_local_apr, update_local_apr
 from .catalog_loader import load_catalog
-from .rag_hint_engine import build_rag_hint
 from .micro_generators import generate_micro_question, has_micro_generator
 from .script_dispatch import call_adaptive_script
 from .policy_findings_mapping import build_policy_findings_hints
@@ -4200,23 +4199,3 @@ def submit_and_get_next(payload: dict[str, Any]) -> dict[str, Any]:
         "missed_remediation_penalty": routing_reward["missed_remediation_penalty"],
         **observability,
     }
-
-
-def get_rag_hint(
-    subskill_nodes: list[str] | str | None,
-    *,
-    skill_id: str = "",
-    family_id: str = "",
-    question_context: str = "",
-    question_text: str = "",
-    unit_skill_ids: list[str] | None = None,
-) -> dict[str, Any]:
-    return build_rag_hint(
-        subskill_nodes=subskill_nodes,
-        skill_id=skill_id,
-        family_id=family_id,
-        question_context=question_context,
-        question_text=question_text,
-        unit_skill_ids=unit_skill_ids,
-    )
-

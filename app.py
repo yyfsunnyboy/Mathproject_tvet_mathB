@@ -68,8 +68,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, sanitize_secret_text
-from core.rag_engine import init_rag
-from core.advanced_rag_engine import init_adv_rag
 from core.prompts.bootstrap_templates import bootstrap_prompt_templates
 from core.session_safety import (
     estimate_session_cookie_size,
@@ -157,19 +155,6 @@ def create_app(*, production: bool | None = None):
         DEBUG=False if production else app.config.get("DEBUG", False),
         MATHPROJECT_ENV="production" if production else "development",
     )
-
-    try:
-        import json
-        rag_path = os.path.join(basedir, 'configs', 'rag_settings.json')
-        if os.path.exists(rag_path):
-            with open(rag_path, 'r', encoding='utf-8') as f:
-                rag_data = json.load(f)
-                if 'threshold' in rag_data:
-                    app.config['ADVANCED_RAG_NAIVE_THRESHOLD'] = float(rag_data['threshold'])
-                if 'enable_ai_chat' in rag_data:
-                    app.config['ADVANCED_RAG_ENABLE_AI_CHAT'] = bool(rag_data['enable_ai_chat'])
-    except Exception as e:
-        app.logger.warning(f"Error loading rag_settings.json: {e}")
 
     # 只有在真的要用 Gemini 時才檢查
     if app.config.get('AI_PROVIDER') == 'gemini' and not app.config.get('GEMINI_API_KEY'):
@@ -892,16 +877,6 @@ def create_app(*, production: bool | None = None):
                 api_key=app.config['GEMINI_API_KEY'],
                 model_name=app.config['GEMINI_MODEL_NAME']
             )
-            try:
-                init_rag(app)
-            except Exception as e:
-                app.logger.error(f"RAG initialization failed: {e}")
-                
-            try:
-                init_adv_rag(app)
-            except Exception as e:
-                app.logger.error(f"Advanced RAG initialization failed: {e}")
-
         if production:
             app.logger.info(
                 "MathProject production application initialized debug=%s database=sqlite",

@@ -170,24 +170,6 @@ def test_adaptive_entry_url_roundtrips_canonical_unicode_skill_id():
         assert "??????" not in html
 
 
-def test_rag_hint_failure_returns_non_blocking_deterministic_fallback(monkeypatch):
-    from core.routes import adaptive_api
-
-    app = create_app()
-    with app.app_context():
-        user = _ensure_test_user()
-        client = app.test_client()
-        _login(client, user.id)
-        monkeypatch.setattr(adaptive_api, "get_rag_hint", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("offline")))
-
-        response = client.get("/api/adaptive/rag_hint?skill_id=" + TARGET_SKILL_ID + "&subskill_nodes=sign_handling")
-        payload = response.get_json()
-        assert response.status_code == 200
-        assert payload["source"] == "deterministic_fallback"
-        assert payload["fallback_used"] is True
-        assert payload["hint_html"]
-
-
 def test_assessment_completion_requires_all_polynomial_core_families():
     import core.adaptive.session_engine as engine
 
@@ -633,25 +615,6 @@ def test_submit_policy_log_with_none_values_does_not_crash(monkeypatch):
         assert response.status_code == 200
         payload = response.get_json()
         _assert_debug_fields(payload)
-
-
-def test_rag_hint_returns_html():
-    app = create_app()
-    with app.app_context():
-        user = _ensure_test_user()
-        client = app.test_client()
-        _login(client, user.id)
-
-        response = client.get(
-            "/api/adaptive/rag_hint?subskill_nodes=divide_terms&subskill_nodes=conjugate_rationalize"
-        )
-        assert response.status_code == 200
-        payload = response.get_json()
-        assert "hint_html" in payload
-        assert "divide_terms" in payload["hint_html"]
-        assert payload["source"] == "bridge_rag"
-        assert payload["fallback_used"] is False
-        assert "skill_family_bridge" in payload["sources"]
 
 
 def test_e2e_cross_skill_remediation_return_bridge_then_normal(monkeypatch):

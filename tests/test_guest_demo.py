@@ -304,8 +304,7 @@ def test_existing_guest_fails_closed_if_admin_role_changes(client, monkeypatch):
 
 
 @pytest.mark.parametrize("path", [
-    "/chat_ai", "/api/rag_chat", "/api/adaptive/adv_rag_chat",
-    "/api/rag_search", "/api/adaptive/adv_rag_search",
+    "/chat_ai",
     "/api/practice/ai-check-handwriting", "/analyze_handwriting",
 ])
 def test_guest_ai_and_rag_are_denied_before_handler(client, monkeypatch, path):
@@ -356,7 +355,7 @@ def test_sql_backstop_rejects_writes_without_executing_them(client, sql):
     "/debug/session_key_status", "/admin/ai_prompt_settings/check_api_key",
     "/admin/ai_prompt_settings/check_api_key_masked",
     "/admin/ai_prompt_settings/list", "/admin/check_api_key",
-    "/api/runtime_ai_status", "/api/adaptive/rag_settings",
+    "/api/runtime_ai_status",
 ])
 def test_guest_cannot_read_key_or_provider_status(client, path):
     _enter(client)

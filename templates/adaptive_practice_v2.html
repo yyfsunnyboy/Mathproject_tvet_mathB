@@ -730,17 +730,6 @@
                 <input id="assistantInput" type="text" placeholder="只問本題相關問題，例如：我第一步該先做什麼？">
                 <button class="success" id="assistantSendBtn" type="button">詢問助教</button>
               </div>
-              <div style="margin-top: 5px; font-size: 0.85em; display: flex; align-items: center;">
-                <label style="cursor: pointer;"><input type="checkbox" id="useRagToggle" checked style="margin-right: 4px;"> 使用 RAG 模式加強回答</label>
-              </div>
-              <div id="adv-rag-loading" style="display: none; text-align: center; padding: 8px; color: #1565c0; font-size: 13px;">
-                正在檢索相關單元...
-              </div>
-              <div id="adv-rag-results" style="display: none; margin-top: 10px; margin-bottom: 10px; padding: 10px; background: #f0f7ff; border: 1px solid #cce1ff; border-radius: 8px;">
-                <div id="adv-rag-routing-badge" style="font-size: 0.75em; padding: 3px 6px; border-radius: 6px; background:#e6f4ff; color:#0958d9; margin-bottom: 8px; display:none; font-weight:bold;"></div>
-                <div style="font-size: 0.8em; color: #1565c0; font-weight: 700; margin-bottom: 6px;">最相關 5 個知識點：</div>
-                <div id="adv-rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-              </div>
               <div class="hint-box" id="hintBox">這裡會顯示這一題的補救提示。若系統切到 Review，我會用簡單中文提醒你先看哪個觀念。</div>
             </div>
           </section>
@@ -1201,7 +1190,7 @@
       card.classList.toggle("review", resolvedType === "remediation");
       card.classList.toggle("idle", resolvedType !== "remediation");
     }
-    function updateRagScopeBadge(mode = "idle") {
+    function updateHintScope(mode = "idle") {
       return;
     }
     const SUBSKILL_UI_MAP = {
@@ -2034,11 +2023,11 @@
         setStatus(String(data.answer_feedback));
       }
       if (data.ppo_strategy === 3) {
-        updateRagScopeBadge("review");
+        updateHintScope("review");
         await fetchHint();
         addMessage("bot", "我已經依照你目前卡住的微技能，整理出補救提示。先看右側說明，再試下一題。");
       } else {
-        updateRagScopeBadge("active");
+        updateHintScope("active");
       }
     }
     function resetHintBox() {
@@ -2396,34 +2385,18 @@
     }
 
       async function fetchHint() {
-        const query = new URLSearchParams();
-        state.currentSubskills.forEach((item) => query.append("subskill_nodes", item));
-        if (skillId) query.set("skill_id", skillId);
-        if (state.currentFamilyId) query.set("family_id", state.currentFamilyId);
-        if (state.currentQuestionText) query.set("question_text", state.currentQuestionText);
-        if (state.currentContext) query.set("question_context", state.currentContext);
-        const response = await fetch(`/api/adaptive/rag_hint?${query.toString()}`);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "rag hint failed");
         const hintBox = document.getElementById("hintBox");
         const focusSubskill = safeSubskillLabel(state.detectedSubskillLabel) || safeSubskillLabel(state.detectedSubskill) || (state.currentSubskills[0] ? safeSubskillLabel(state.currentSubskills[0]) : "");
         const focusPrefix = state.isRemediationActive ? "目前補救重點" : "系統偵測斷點";
         const focusHtml = focusSubskill ? `<div class="hint-focus">${focusPrefix}：${escapeHtml(focusSubskill)}</div>` : "";
-        hintBox.innerHTML = buildStudentRemediationHtml(data, focusHtml);
+        const hintSummary = focusSubskill
+          ? `先釐清「${focusSubskill}」的條件與運算順序，再逐步寫出每一步。`
+          : "先確認題目的條件、運算順序與每一步的正負號。";
+        hintBox.innerHTML = `${focusHtml}<div class="hint-card"><div class="hint-section-title">解題提示</div><p>${escapeHtml(hintSummary)}</p></div>`;
         await typesetMath(hintBox);
-        const safeSummary = sanitizeRemediationText(data.hint_summary);
-        if (safeSummary) {
-          addMessage("bot", `這題先看：${safeSummary}。`);
-        } else if (Array.isArray(data.subskill_labels) && data.subskill_labels.length) {
-          const cleanLabels = normalizeSubskillLabels(data.subskill_labels);
-          if (cleanLabels.length) {
-            addMessage("bot", `這題先看這些重點：${cleanLabels.join("、")}。`);
-          } else {
-            addMessage("bot", "這題先看：先確認正負號、括號範圍與同類項整理。");
-          }
-        }
+        addMessage("bot", `這題先看：${hintSummary}`);
         scrollChatToBottom();
-        return data;
+        return { source: "deterministic", hint_summary: hintSummary };
       }
 
     async function askTutor(question, sourceLabel = "user") {
@@ -3395,7 +3368,7 @@
           "completed",
         );
       }
-      updateRagScopeBadge("done");
+      updateHintScope("done");
     }
 
     bootstrapBtn.addEventListener("click", async () => {
@@ -3441,7 +3414,7 @@
         updateAdaptiveStatePanel();
         resetChatHistory();
         resetHintBox();
-        updateRagScopeBadge("idle");
+        updateHintScope("idle");
         const bootstrapPayload = {
           ...basePayload,
           step_number: 0,
@@ -3507,9 +3480,9 @@
     });
 
     answerInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); submitBtn.click(); } });
-    if (hintBtn) hintBtn.addEventListener("click", async () => { try { updateRagScopeBadge("review"); await fetchHint(); setAssistantBanner("你已手動請求補救提示。助教會優先針對本題相關的 subskill 給出提示。", true); setStatus("已載入補救提示。"); } catch (err) { setStatus(`提示載入失敗：${err.message}`); } });
-    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await performAdvRagSearch(btn.dataset.guide); }));
-    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await performAdvRagSearch(question); });
+    if (hintBtn) hintBtn.addEventListener("click", async () => { try { updateHintScope("review"); await fetchHint(); setAssistantBanner("你已手動請求補救提示。助教會優先針對本題相關的 subskill 給出提示。", true); setStatus("已載入補救提示。"); } catch (err) { setStatus(`提示載入失敗：${err.message}`); } });
+    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await askAssistant(btn.dataset.guide); }));
+    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await askAssistant(question); });
     assistantInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); assistantSendBtn.click(); } });
     analyzeCanvasBtn.addEventListener("click", analyzeHandwriting);
 
@@ -3542,195 +3515,10 @@
     assistantInput.disabled = true;
     assistantInput.disabled = true;
     analyzeCanvasBtn.disabled = true;
-
-    // === RAG-backed assistant chat ===
-
-    async function performAdvRagSearch(queryOverride = "") {
-        const query = (queryOverride || '').trim();
-        if (!query) return;
-
-        const loading = document.getElementById('adv-rag-loading');
-        const resultsDiv = document.getElementById('adv-rag-results');
-        const buttonsDiv = document.getElementById('adv-rag-results-buttons');
-        const routingBadge = document.getElementById('adv-rag-routing-badge');
-
-        const useRag = document.getElementById('useRagToggle') ? document.getElementById('useRagToggle').checked : true;
-
-        if (loading) loading.style.display = 'block';
-        if (resultsDiv) resultsDiv.style.display = 'none';
-        if (routingBadge) routingBadge.style.display = 'none';
-
-        await addMessage("user", query);
-        const thinking = await addMessage("bot", useRag ? "我先用 RAG 找相關單元，再整理成這一題的提示..." : "我正在直接回答你的問題...");
-
-        try {
-            if (!useRag) { // Direct chat mode
-                if (buttonsDiv) buttonsDiv.innerHTML = '';
-                const chatResp = await fetch('/api/adaptive/adv_rag_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        query: query,
-                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
-                        family_id: state.currentFamilyId || '',
-                        retrieved_skills: [],
-                        use_rag: false
-                    })
-                });
-                const chatParams = await chatResp.json();
-                if (chatParams.error) throw new Error(chatParams.error);
-                if (chatParams.reply) {
-                    setMessageContent(thinking, chatParams.reply);
-                    if (window.MathJax) {
-                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
-                    }
-                } else {
-                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
-                }
-                return;
-            }
-
-            // 1. Search Advanced RAG
-            const searchResp = await fetch('/api/adaptive/adv_rag_search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: query })
-            });
-
-            const searchParams = await searchResp.json();
-            console.log("[AI TUTOR META]", searchParams);
-            
-            if (searchParams.error) throw new Error(searchParams.error);
-
-            function formatRetrievalChannel(params) {
-                let rawChannel = params.retrieval_channel || params.retrieval_mode || params.rag_mode || params.search_mode || params.pipeline || params.source || params.used_pipeline;
-                if (!rawChannel && params.results && params.results.length > 0) {
-                    rawChannel = params.results[0].routing || params.results[0].source || params.results[0].pipeline || params.results[0].retrieval_channel;
-                }
-
-                const isFallback = (params.fallback_reason || params.advanced_rag_ready === false || params.used_pipeline === 'naive' || String(params.fallback_reason).length > 0);
-
-                if (!rawChannel) {
-                    if (isFallback) return "Naive RAG（Fallback）";
-                    return "未回報";
-                }
-
-                const lower = String(rawChannel).toLowerCase();
-                if (lower === "fallback_naive" || lower === "fallback_to_naive" || lower.includes("fallback")) {
-                    return "Naive RAG（Fallback）";
-                }
-                
-                if (lower === "advanced") return "Advanced RAG";
-                if (lower === "naive") {
-                    return isFallback ? "Naive RAG（Fallback）" : "Naive RAG";
-                }
-                if (lower === "hybrid") return "Hybrid RAG";
-
-                // 若都是未知，但被戳上 fallback 就標記
-                if (isFallback && lower === "unknown") return "Naive RAG（Fallback）";
-                
-                return lower === "unknown" ? "未回報" : rawChannel;
-            }
-
-            const results = searchParams.results || [];
-            if (buttonsDiv) buttonsDiv.innerHTML = '';
-
-            let channelDisplay = formatRetrievalChannel(searchParams);
-            let retrievedSkillsForChat = [];
-
-            if (results.length > 0) {
-                results.forEach((item, index) => {
-                    const btn = document.createElement('button');
-                    const chineseName = item.chinese_name || item.skill_id;
-                    const dispFamily = (typeof FAMILY_NAME_UI_MAP !== 'undefined' && FAMILY_NAME_UI_MAP[item.family_name]) ? FAMILY_NAME_UI_MAP[item.family_name] : item.family_name;
-                    const familyName = dispFamily ? ` (${dispFamily})` : '';
-                    btn.innerText = `${index + 1}. ${chineseName}${familyName}`;
-                    btn.title = item.skill_id;
-                    btn.style.cssText = `
-                        background: #f0f7ff;
-                        color: #1565c0;
-                        border: 1px solid #1565c0;
-                        border-radius: 6px;
-                        padding: 4px 8px;
-                        font-size: 0.85em;
-                        cursor: pointer;
-                        display: inline-block;
-                        text-align: left;
-                    `;
-                    btn.type = 'button';
-                    btn.onclick = () => {
-                        const targetSkillId = String(item.skill_id || "").trim();
-                        const targetFamilyId = String(item.family_id || "").trim();
-                        const currentSkillId = String(skillId || "").trim();
-
-                        if (targetSkillId && currentSkillId && targetSkillId !== currentSkillId) {
-                            window.location.assign(`/practice/${encodeURIComponent(targetSkillId)}`);
-                            return;
-                        }
-
-                        const query = new URLSearchParams({
-                            skill_id: targetSkillId || currentSkillId,
-                            mode: 'teaching',
-                        });
-                        if (targetFamilyId) query.set('family_id', targetFamilyId);
-                        window.location.assign(`/adaptive_summative?${query.toString()}`);
-                    };
-                    if (buttonsDiv) buttonsDiv.appendChild(btn);
-
-                    retrievedSkillsForChat.push({
-                        skill_id: item.skill_id,
-                        chinese_name: item.chinese_name,
-                        family_name: item.family_name,
-                        subskill_nodes: item.subskill_nodes
-                    });
-                });
-                if (resultsDiv) resultsDiv.style.display = 'block';
-                
-                if (channelDisplay !== "未回報") {
-                    if (routingBadge) {
-                        routingBadge.innerText = `檢索通道：${channelDisplay}`;
-                        routingBadge.style.display = 'inline-block';
-                    }
-                }
-
-                // 2. Query Chat AI
-                const chatResp = await fetch('/api/adaptive/adv_rag_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        query: query,
-                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
-                        family_id: state.currentFamilyId || '',
-                        retrieved_skills: retrievedSkillsForChat
-                    })
-                });
-
-                const chatParams = await chatResp.json();
-                if (chatParams.error) throw new Error(chatParams.error);
-                if (chatParams.reply) {
-                    const routingNote = channelDisplay !== "未回報" ? `檢索通道：${channelDisplay}\n\n` : "";
-                    setMessageContent(thinking, `${routingNote}${chatParams.reply}`);
-                    if (window.MathJax) {
-                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
-                    }
-                } else {
-                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
-                }
-
-            } else {
-                if (buttonsDiv) buttonsDiv.innerHTML = '<span style="font-size:0.85em; color:#999;">找不到相關文章</span>';
-                if (resultsDiv) resultsDiv.style.display = 'block';
-                setMessageContent(thinking, "我目前找不到足夠相關的單元，請把題目或卡住的步驟說得更具體一點。");
-            }
-
-        } catch (err) {
-            console.error('RAG Search Failed:', err);
-            setMessageContent(thinking, `RAG 回答暫時失敗：${err.message}`);
-        } finally {
-            if (loading) loading.style.display = 'none';
-            scrollChatToBottom();
-        }
+    async function askAssistant(question) {
+      await askTutor(question, "user");
     }
+
 
 
     // AI 助教標題動態更新邏輯
@@ -4356,22 +4144,6 @@ input[type="range"] { accent-color: var(--accent) !important; }
   border: 1px solid #3a6448 !important;
 }
 #assistantSendBtn:hover { background: #3a6448 !important; }
-
-/* RAG checkbox label */
-#useRagToggle { accent-color: var(--accent) !important; }
-
-/* RAG results area */
-#adv-rag-results {
-  background: var(--green-pale) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-md) !important;
-}
-#adv-rag-routing-badge {
-  background: var(--green-pale) !important;
-  color: var(--accent-dark) !important;
-  border-radius: 6px !important;
-}
-#adv-rag-loading { color: var(--accent) !important; }
 
 /* ── 14. Hint Box ────────────────────────────────────────────────── */
 .hint-box {

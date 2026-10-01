@@ -51,7 +51,6 @@ from core.adaptive.judge import (
 )
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 from core.diagnosis_analyzer import perform_weakness_analysis
-from core.rag_engine import rag_search, rag_chat
 from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
 
 
@@ -855,7 +854,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
     qt = (question_text or "").strip()
     skill_focus = _handwriting_skill_focus(family_id)
     family_label_zh, family_description_zh = _handwriting_family_meta(family_id)
-    
+
     final_expr = _handwriting_pick_final_expression(recognized_expression)
     base = {
         "recognized_expression": recognized_expression,
@@ -873,12 +872,12 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         "step_focus": "",
         "analysis_source": "generic_handwriting_analysis",
     }
-    
+
     if not recognized_expression or str(recognized_expression).strip() == "":
         base["main_issue"] = "系統未能辨識出您的手寫內容，請檢查筆跡是否清晰，或重新書寫一次。"
         base["status"] = "ocr_failed"
         return base
-        
+
     if not exp:
         base["main_issue"] = "目前缺少可對照的標準答案，無法完成穩定批改。"
         base["skill_focus"] = skill_focus or "依題目重點進行化簡與整理"
@@ -1169,14 +1168,14 @@ def _handwriting_feedback_second_prompt(
     error_mechanism = (analysis_result or {}).get("error_mechanism") or ""
     import logging
     logger = logging.getLogger(__name__)
-    
+
     json_format_str = (
         "只輸出 JSON（不要 markdown、不要多餘文字），格式固定為："
         "{\"reply\":\"...您的教學回饋放入這裡...\",\"is_process_correct\":true/false,\"correct\":true/false,"
         "\"next_question\":\"\",\"follow_up_prompts\":[],"
         "\"error_type\":\"handwriting_ok|handwriting_partial|handwriting_wrong|handwriting_unknown\"}。"
     )
-    
+
     try:
         from core.prompts.composer import compose_prompt
         extra_blocks = [json_format_str]
@@ -1194,13 +1193,13 @@ def _handwriting_feedback_second_prompt(
             error_mechanism=error_mechanism,
             main_issue=main_issue
         )
-        
+
         logger.info(f"[handwriting second stage] prompt_key=handwriting_feedback_prompt source={source} has_expected_answer={bool(expected_answer)} fallback_to_hardcoded=False")
         return full_prompt
     except Exception as e:
         logger.warning(f"[handwriting second stage] render failed, fallback to hardcoded: {e}")
         logger.info(f"[handwriting second stage] prompt_key=handwriting_feedback_prompt source=fallback has_expected_answer={bool(expected_answer)} fallback_to_hardcoded=True")
-        
+
         return (
             "你是國中數學評量系統的批改回饋模組，不是直接把整題算完的答案機。\n\n"
             "你只根據以下資訊撰寫 JSON 內的 reply 欄位（其餘欄位依語意填寫）：\n\n"
@@ -1669,7 +1668,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1726,7 +1725,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1890,7 +1889,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1934,7 +1933,7 @@ def chat_ai():
 
     # Tutor compliance gate: bounded language layer only.
     structured_analysis = _tutor_extract_structured_analysis(data)
-    
+
     if not isinstance(result, dict) or not result:
         current_app.logger.info("[chat_ai] tutor output non-compliant; fallback to deterministic guidance")
         guidance = _tutor_deterministic_fallback(structured_analysis)
@@ -1945,11 +1944,11 @@ def chat_ai():
             "micro_step": str(result.get("micro_step") or "").strip(),
             "forbidden": result.get("forbidden") if "forbidden" in result else False
         }
-        
+
         has_focus = bool(guidance["hint_focus"])
         has_question = bool(guidance["guided_question"])
         has_step = bool(guidance["micro_step"])
-        
+
         if not has_focus and not has_question and not has_step:
             current_app.logger.info("[chat_ai] tutor output non-compliant; fallback to deterministic guidance")
             guidance = _tutor_deterministic_fallback(structured_analysis)
@@ -2486,7 +2485,7 @@ def analyze_handwriting():
 
 
 
-    
+
 
 
 
@@ -2540,13 +2539,13 @@ def analyze_handwriting():
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as f:
             f.write(img_data)
             temp_path = f.name
-            
+
         problem_type = (data.get('problem_type') or state.get('problem_type') or "").strip()
         if problem_type == "tree_diagram_listing":
             expected_paths = data.get('expected_paths') or state.get('expected_paths') or []
             expected_count = data.get('expected_count') or state.get('expected_count') or len(expected_paths)
             variant = data.get('variant') or state.get('variant') or ""
-            
+
             prompt = (
                 "You are an AI teacher grading a student's tree diagram or listing answer. "
                 "The student has drawn or written their answer on the provided whiteboard image.\n"
@@ -2563,7 +2562,7 @@ def analyze_handwriting():
                 "  \"status\": \"correct\" | \"partial\" | \"incorrect\" | \"needs_review\",\n"
                 "  \"feedback\": \"Your short explanation to the student\"\n"
             )
-            
+
             if ai_provider == 'google':
                 vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
                 tree_response = call_google_model(
@@ -2586,17 +2585,17 @@ def analyze_handwriting():
             raw_text = (getattr(tree_response, 'text', '') or '').strip()
             cleaned = re.sub(r'^```json\s*|\s*```$', '', raw_text, flags=re.MULTILINE)
             parsed = clean_and_parse_json(cleaned)
-            
+
             st = parsed.get("status", "needs_review") if isinstance(parsed, dict) else "needs_review"
             feedback = parsed.get("feedback", "無法判讀答案。") if isinstance(parsed, dict) else "無法判讀答案。"
-            
+
             _hw_err = {
                 "correct": "handwriting_ok",
                 "partial": "handwriting_partial",
                 "incorrect": "handwriting_wrong",
                 "needs_review": "handwriting_unknown",
             }
-            
+
             result = {
                 "reply": enforce_strict_mode(feedback),
                 "is_process_correct": st in ("correct", "partial"),
@@ -2609,7 +2608,7 @@ def analyze_handwriting():
                 "handwriting_analysis": {"status": st, "feedback": feedback},
                 "handwriting_status": st,
             }
-            
+
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
             return jsonify(result)
@@ -2731,7 +2730,7 @@ def analyze_handwriting():
             return _handwriting_not_recognized_response()
 
         expected_answer = _handwriting_expected_answer(data, state, question_text, question_context)
-        
+
         current_app.logger.info(
             f"[Handwriting Grade Debug] \n"
             f" - current_question: {question_text}\n"
@@ -2739,7 +2738,7 @@ def analyze_handwriting():
             f" - recognized_expression: {expr}\n"
             f" - final grading input: (expr='{expr}', expected_answer='{expected_answer}', question_text='{question_text}', family_id='{family_id}')"
         )
-        
+
         analysis_result = _handwriting_structured_analysis(
             expr, expected_answer, question_text, family_id
         )
@@ -2970,7 +2969,7 @@ def analyze_handwriting():
 
 
 
-            
+
 
 
 
@@ -3034,7 +3033,7 @@ def analyze_handwriting():
 
 
 
-            
+
 
 
 
@@ -3122,7 +3121,7 @@ def analyze_handwriting():
 
 
 
-                
+
 
 
 
@@ -3194,7 +3193,7 @@ def analyze_handwriting():
 
 
 
-    
+
 
 
 
@@ -3210,7 +3209,7 @@ def analyze_handwriting():
 
 
 
-    
+
 
 
 
@@ -3806,7 +3805,7 @@ def upload_mistake_image():
 
 
 
-        
+
 
 
 
@@ -3846,7 +3845,7 @@ def upload_mistake_image():
 
 
 
-        
+
 
 
 
@@ -3975,268 +3974,3 @@ def student_diagnosis():
 
 
 # ==========================================
-
-
-
-
-
-
-
-# Naive RAG（簡易檢索 + LLM 彙整）
-
-
-
-
-
-
-
-# ==========================================
-
-
-
-
-
-
-
-# RAG 查詢與進階 RAG
-
-
-
-
-
-
-
-# ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@practice_bp.route('/api/rag_search', methods=['POST'])
-
-
-
-
-
-
-
-def api_rag_search():
-
-
-
-
-
-
-
-    """RAG search API."""
-
-
-
-
-
-
-
-    data = request.get_json(silent=True) or {}
-
-
-
-
-
-
-
-    query = (data.get('query') or '').strip()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if not query:
-
-
-
-
-
-
-
-        return jsonify({"results": [], "error": "查詢字串不可為空"}), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    results = rag_search(query, top_k=5)
-
-
-
-
-
-
-
-    return jsonify({"results": results})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@practice_bp.route('/api/rag_chat', methods=['POST'])
-
-
-
-
-
-
-
-def api_rag_chat():
-
-
-
-
-
-
-
-    """RAG + LLM chat API."""
-
-
-
-
-
-
-
-    data = request.get_json(silent=True) or {}
-
-
-
-
-
-
-
-    query = (data.get('query') or '').strip()
-
-
-
-
-
-
-
-    top_skill_id = (data.get('top_skill_id') or '').strip()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if not query or not top_skill_id:
-
-
-
-
-
-
-
-        return jsonify({"reply": "查詢或技能 ID 不可為空"}), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    try:
-        from core.advanced_rag_engine import HAS_ADV_LIBS
-        import logging
-        logger = logging.getLogger(__name__)
-        
-        if HAS_ADV_LIBS:
-            logger.info("[API RAG CHAT] Routing to Advanced RAG Engine.")
-            from core.advanced_rag_engine import adv_rag_search, adv_rag_chat
-            from core.ai_settings import get_effective_model_config
-            
-            cfg = get_effective_model_config(role="tutor")
-            provider = cfg.get("provider", "local")
-            
-            skills = adv_rag_search(query, top_k=3)
-            result = adv_rag_chat(query, retrieved_skills=skills, provider=provider, family_id=top_skill_id)
-            return jsonify(result)
-        else:
-            logger.info("[API RAG CHAT] HAS_ADV_LIBS is False. Routing to Naive RAG.")
-    except Exception as e:
-        import traceback
-        import logging
-        logging.getLogger(__name__).warning(f"Error checking advanced RAG, fallback directly to naive: {e}\n{traceback.format_exc()}")
-
-    result = rag_chat(query, top_skill_id)
-    return jsonify(result)
-
-
-
-
-
-
-
-
-

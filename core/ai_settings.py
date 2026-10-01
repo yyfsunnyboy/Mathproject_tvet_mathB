@@ -15,7 +15,6 @@ AI_ROLE_KEYS = ("architect", "coder", "tutor", "vision_analyzer", "classifier", 
 SETTING_AI_GLOBAL_STRATEGY = "ai_global_strategy"
 SETTING_AI_DEFAULT_PROVIDER = "ai_default_provider"
 SETTING_AI_MODEL_ROLES = "ai_model_roles"
-SETTING_AI_RAG_NAIVE_THRESHOLD = "ai_rag_naive_threshold"
 SETTING_AI_ENABLE_TUTOR_RESPONSE = "ai_enable_tutor_response"
 SETTING_AI_ENABLE_HIGH_PRECISION_VISION = "ai_enable_high_precision_vision"
 SETTING_AI_CLOUD_MODEL = "ai_cloud_model"
@@ -23,7 +22,6 @@ SETTING_GEMINI_API_KEY = "ai_gemini_api_key"
 
 DEFAULT_AI_GLOBAL_STRATEGY = "hybrid_balanced"
 DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") or "local").lower()
-DEFAULT_AI_RAG_NAIVE_THRESHOLD = float(getattr(Config, "ADVANCED_RAG_NAIVE_THRESHOLD", 0.35))
 DEFAULT_AI_ENABLE_TUTOR_RESPONSE = True
 DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION = False
 DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.5-flash") or "gemini-3.5-flash")
@@ -265,10 +263,6 @@ def get_ai_settings_snapshot() -> dict[str, Any]:
 
     strategy = _normalize_strategy(_get_system_setting_value(SETTING_AI_GLOBAL_STRATEGY))
     default_provider = _normalize_provider(_get_system_setting_value(SETTING_AI_DEFAULT_PROVIDER))
-    rag_threshold = _parse_float(
-        _get_system_setting_value(SETTING_AI_RAG_NAIVE_THRESHOLD),
-        DEFAULT_AI_RAG_NAIVE_THRESHOLD,
-    )
     enable_tutor = _parse_bool(
         _get_system_setting_value(SETTING_AI_ENABLE_TUTOR_RESPONSE),
         DEFAULT_AI_ENABLE_TUTOR_RESPONSE,
@@ -283,7 +277,6 @@ def get_ai_settings_snapshot() -> dict[str, Any]:
         "ai_global_strategy": strategy,
         "ai_default_provider": default_provider,
         "ai_model_roles": sanitized_roles,
-        "ai_rag_naive_threshold": rag_threshold,
         "ai_enable_tutor_response": enable_tutor,
         "ai_enable_high_precision_vision": enable_vision,
         "ai_cloud_model": cloud_model,
@@ -400,7 +393,6 @@ def apply_ai_runtime_settings() -> None:
         return
 
     snapshot = get_ai_settings_snapshot()
-    current_app.config["ADVANCED_RAG_NAIVE_THRESHOLD"] = snapshot["ai_rag_naive_threshold"]
     current_app.config["AI_GLOBAL_STRATEGY"] = snapshot["ai_global_strategy"]
     current_app.config["AI_DEFAULT_PROVIDER"] = snapshot["ai_default_provider"]
     current_app.config["AI_ENABLE_TUTOR_RESPONSE"] = snapshot["ai_enable_tutor_response"]

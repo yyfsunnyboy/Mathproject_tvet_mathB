@@ -289,7 +289,6 @@ from core.ai_settings import (
     SETTING_GEMINI_API_KEY,
     SETTING_AI_GLOBAL_STRATEGY,
     SETTING_AI_MODEL_ROLES,
-    SETTING_AI_RAG_NAIVE_THRESHOLD,
     apply_ai_runtime_settings,
     get_ai_settings_snapshot,
     get_available_model_presets,
@@ -1159,30 +1158,6 @@ def _vocational_math_b_remaining_check():
 # ==========================================
 # Background Tasks (??魂????)
 # ==========================================
-
-@core_bp.route('/admin/rag_settings/update', methods=['POST'])
-@login_required
-def admin_update_rag_settings():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json()
-        threshold = float(data.get('threshold', 0.40))
-        target_type = data.get('target_type', 'practice')
-        enable_ai_chat = bool(data.get('enable_ai_chat', True))
-        
-        rag_path = os.path.join(current_app.root_path, '..', 'configs', 'rag_settings.json')
-        os.makedirs(os.path.dirname(rag_path), exist_ok=True)
-        with open(rag_path, 'w', encoding='utf-8') as f:
-            json.dump({'threshold': threshold, 'target_type': target_type, 'enable_ai_chat': enable_ai_chat}, f, ensure_ascii=False)
-            
-        # Update memory
-        current_app.config['ADVANCED_RAG_NAIVE_THRESHOLD'] = threshold
-        current_app.config['ADVANCED_RAG_ENABLE_AI_CHAT'] = enable_ai_chat
-        
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
 
 def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen, **kwargs):
     """Background textbook processing worker."""

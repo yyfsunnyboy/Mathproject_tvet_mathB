@@ -39,7 +39,7 @@ def get_all_prerequisites(initial_skill_ids: list) -> set:
 def select_review_skill(pool: list, stats: dict, last_skill: str) -> str:
     """
     [Phase 8] 在 Review 總複習模式中，根據 weakness score 挑選最需要補救的技能。
-    若最弱技能與上一題相同，則進行同章節、先備技能等 RAG routing rule 關聯導航。
+    若最弱技能與上一題相同，則進行同章節、先備技能等關聯導航。
     """
     if not pool:
         return None

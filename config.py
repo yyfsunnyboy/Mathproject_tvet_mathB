@@ -2,7 +2,7 @@
 """
 =============================================================================
 模組名稱 (Module Name): config.py
-功能說明 (Description): 全域系統設定檔，集中管理資料庫、上傳路徑、模型角色、RAG 閾值與實驗參數。
+功能說明 (Description): 全域系統設定檔，集中管理資料庫、上傳路徑、模型角色與實驗參數。
 執行語法 (Usage): 由系統自動載入
 版本資訊 (Version): V2.0
 更新日期 (Date): 2026-01-13
@@ -18,7 +18,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     """
     全域設定類別（Global Configuration）
-    包含資料庫、上傳、角色模型映射、RAG 與實驗控制參數。
+    包含資料庫、上傳、角色模型映射與實驗控制參數。
     """
     ENABLE_VISION_OCR_FALLBACK = True
     
@@ -81,16 +81,6 @@ class Config:
     # value again so production startup can fail closed.
     SECRET_KEY = os.environ.get('SECRET_KEY') or DEV_SECRET_KEY
 
-    # ==========================================
-    # 3.5. RAG 配置
-    # ==========================================
-    # 控制混合 RAG 中，Naive RAG (快速通道) 與 Advanced RAG (救援通道) 的分流閾值
-    # 若 Naive RAG 的首筆距離分數小於或等於此閾值，將直接採用快速通道。
-    # 數值越小，越嚴格（越常走 Advanced RAG 救援）；數值越大，越寬鬆（常走 Naive）。
-    # 管理者可以根據實驗調整此分流比例
-    ADVANCED_RAG_NAIVE_THRESHOLD = 0.35
-
-    # ==========================================
     # 4. 各種 AI 模型群配置 (本地與雲端端點) 各群組
     # ==========================================
     
@@ -106,7 +96,6 @@ class Config:
             "recommended_for": [
                 "default_cloud",
                 "hybrid_preview",
-                "rag_tutor",
                 "structured_output",
                 "complex_reasoning",
             ],
@@ -133,7 +122,6 @@ class Config:
             "recommended_for": [
                 "complex_math_layout",
                 "textbook_import",
-                "rag_tutor",
                 "structured_output",
                 "complex_reasoning",
             ],
@@ -158,7 +146,6 @@ class Config:
     DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = "gemini-3.5-flash"
     DEFAULT_OCR_JSON_MODEL = "gemini-3.5-flash"
     DEFAULT_TEXTBOOK_IMPORT_MODEL = "gemini-3-flash-preview"
-    DEFAULT_RAG_TUTOR_MODEL = "gemini-3-flash-preview"
     DEFAULT_STABLE_FALLBACK_MODEL = "gemini-2.5-flash"
     SUPPORTED_CLOUD_MODELS = [
         "gemini-3.5-flash",

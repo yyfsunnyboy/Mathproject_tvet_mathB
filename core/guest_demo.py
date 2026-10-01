@@ -26,7 +26,7 @@ _NEVER_GUEST_GET_ENDPOINTS = frozenset({
 })
 _SENSITIVE_GET_PREFIXES = (
     "/admin/check_api_key",
-    "/api/runtime_ai_status", "/api/adaptive/rag_settings", "/api/adaptive/rag_hint",
+    "/api/runtime_ai_status",
 )
 
 

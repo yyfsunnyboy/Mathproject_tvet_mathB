@@ -50,7 +50,7 @@ def _read_bridge_catalog_rows() -> list[dict[str, str]]:
                     if str(row.get("skill_id", "") or "").strip() == LINEAR_SKILL_ID
                 ]
                 print(
-                    "[RAG SOURCE] "
+                    "[BRIDGE SOURCE] "
                     f"catalog={BRIDGE_CATALOG_PATH.name} total_rows={len(rows)} "
                     f"skill_count={len(skill_ids)} contains_linear_skill={bool(linear_rows)} "
                     f"linear_rows={len(linear_rows)}"
@@ -63,7 +63,7 @@ def _read_bridge_catalog_rows() -> list[dict[str, str]]:
                         }
                         for row in linear_rows[:5]
                     ]
-                    print(f"[RAG SOURCE] linear_preview={preview}")
+                    print(f"[BRIDGE SOURCE] linear_preview={preview}")
                 return rows
         except Exception as exc:  # pragma: no cover
             last_error = exc
@@ -113,7 +113,7 @@ def _sync_skill_family_bridge(conn, *, force: bool = False):
     except Exception:
         skill_count = 0
     if not force and skill_count == 0:
-        print("[RAG SOURCE] skip bridge auto-seed: skills_info is empty (force=False)")
+        print("[BRIDGE SOURCE] skip bridge auto-seed: skills_info is empty (force=False)")
         conn.commit()
         return
 

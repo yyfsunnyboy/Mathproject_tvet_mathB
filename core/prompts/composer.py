@@ -11,7 +11,7 @@ def compose_prompt(base_key=None, task_key=None, extra_blocks=None, **kwargs):
     統一組裝 prompt 的模組。
     
     :param base_key: 基礎設定/核心角色 (例如: chat_guardrail_prompt)
-    :param task_key: 任務相關設定 (例如: chat_tutor_prompt, rag_tutor_prompt)
+    :param task_key: 任務相關設定 (例如: chat_tutor_prompt)
     :param extra_blocks: 附加的字串陣列 (例如: 動態注入的本輪提問、JSON schema 硬性要求)
     :param kwargs: 傳遞給 `format()` 的變數
     :return: (最終組裝的 prompt 字串, 使用到的來源紀錄字串)
@@ -40,9 +40,6 @@ def compose_prompt(base_key=None, task_key=None, extra_blocks=None, **kwargs):
             # 這裡我們允許特例或透過來源回傳。為了乾淨，直接以 task_key 為主
             fallback_key = "chat_ai_prompt" if task_key == "chat_tutor_prompt" else None
             content, source = get_prompt_with_source(task_key, fallback_key)
-            
-            if task_key == "rag_tutor_prompt":
-                kwargs.setdefault("route_label", "Unknown")
             
             try:
                 formatted_content = content.format(**kwargs)
