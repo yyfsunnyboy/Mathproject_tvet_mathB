@@ -3685,12 +3685,16 @@ def build_graph_intercepts_and_linear_equation_matrix(
         equation = f"f(x)={expression}"
         graph_kind = "horizontal" if slope == 0 else "oblique"
 
-    canonical_answer = {
+    all_answers = {
         "x_intercept": _plain(x_intercept) if x_intercept is not None else None,
         "y_intercept": _plain(y_intercept) if y_intercept is not None else None,
         "function_equation": equation if graph_kind != "vertical" else None,
         "line_equation": equation,
     }
+    requested = ["x_intercept", "y_intercept", "function_equation"]
+    if graph_kind == "vertical":
+        requested = ["x_intercept", "y_intercept", "line_equation"]
+    canonical_answer = {key: all_answers[key] for key in requested}
     points: list[list[str]] = []
     if x_intercept is not None:
         points.append([_plain(x_intercept), "0"])
@@ -3720,9 +3724,6 @@ def build_graph_intercepts_and_linear_equation_matrix(
         },
         "points": points,
     }
-    requested = ["x_intercept", "y_intercept", "function_equation"]
-    if graph_kind == "vertical":
-        requested = ["x_intercept", "y_intercept", "line_equation"]
 
     return {
         "givens": {

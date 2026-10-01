@@ -48,7 +48,7 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
     ]},
     11560: {"skill_id": SPECIAL, "operation": PROJECTION, "answer_type": "multi_part", "question": "登山列車行進 500 公尺且軌道仰角為 30°，求上升高度與水平前進距離。", "calls": [_call(PROJECTION, {"hypotenuse": 500, "angle": 30, "requested": ["vertical_projection", "horizontal_projection"], "length_unit": "m"}, [_out("vertical_projection", "rise", "上升高度"), _out("horizontal_projection", "horizontal", "水平距離")])]},
     11561: {"skill_id": CALCULATOR, "operation": DECIMAL, "answer_type": "multi_part", "question": "使用計算機求：(1) sin40°；(2) cos38°49′。", "calls": [_call(DECIMAL, {"requests": [{"function": "sin", "degrees": 40, "precision": 9}, {"function": "cos", "degrees": 38, "minutes": 49, "precision": 8}]})]},
-    11562: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用三角函數基本關係填空：(1) sin20°/cos20°；(2) tan25°·cos25°。", "calls": [_call(SIMPLIFY, {"expressions": {"part_1": "sin_theta/cos_theta", "part_2": "tan_theta*cos_theta"}})]},
+    11562: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用三角函數基本關係填空：(1) sin20°/cos20°；(2) tan25°·cos25°。", "calls": [_call(SIMPLIFY, {"expressions": {"part_1": "sin(20*pi/180)/cos(20*pi/180)", "part_2": "tan(25*pi/180)*cos(25*pi/180)"}})]},
     11563: {"skill_id": IDENTITY, "operation": COFUNCTION, "answer_type": "multi_part", "question": "利用餘函數關係完成 sin15° 與 cos80° 的等式。", "calls": [
         _call(COFUNCTION, {"function": "sin", "angle": 15}, [_out("given:angle", "given_angle_1", "(1) 原角"), _out("complement_degrees", "complement_1", "(1) 互餘角")]),
         _call(COFUNCTION, {"function": "cos", "angle": 80}, [_out("given:angle", "given_angle_2", "(2) 原角"), _out("complement_degrees", "complement_2", "(2) 互餘角")]),
@@ -67,7 +67,7 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
     ]},
     11570: {"skill_id": SPECIAL, "operation": PROJECTION, "answer_type": "multi_part", "question": "斜邊長 100 且仰角為 60°，求垂直高度與水平距離。", "calls": [_call(PROJECTION, {"hypotenuse": 100, "angle": 60, "requested": ["vertical_projection", "horizontal_projection"], "length_unit": "m"})]},
     11571: {"skill_id": CALCULATOR, "operation": DECIMAL, "answer_type": "multi_part", "question": "使用計算機求：(1) tan55°；(2) cos80°30′。", "calls": [_call(DECIMAL, {"requests": [{"function": "tan", "degrees": 55, "precision": 8}, {"function": "cos", "degrees": 80, "minutes": 30, "precision": 8}]})]},
-    11572: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用基本關係填空：(1) sin66°/cos66°；(2) tan55°·cos55°。", "calls": [_call(SIMPLIFY, {"expressions": {"part_1": "sin_theta/cos_theta", "part_2": "tan_theta*cos_theta"}})]},
+    11572: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用基本關係填空：(1) sin66°/cos66°；(2) tan55°·cos55°。", "calls": [_call(SIMPLIFY, {"expressions": {"part_1": "sin(66*pi/180)/cos(66*pi/180)", "part_2": "tan(55*pi/180)*cos(55*pi/180)"}})]},
     11573: {"skill_id": IDENTITY, "operation": COFUNCTION, "answer_type": "multi_part", "question": "利用餘函數關係完成 sin65° 與 cos77° 的等式。", "calls": [
         _call(COFUNCTION, {"function": "sin", "angle": 65}, [_out("given:angle", "given_angle_1", "(1) 原角"), _out("complement_degrees", "complement_1", "(1) 互餘角")]),
         _call(COFUNCTION, {"function": "cos", "angle": 77}, [_out("given:angle", "given_angle_2", "(2) 原角"), _out("complement_degrees", "complement_2", "(2) 互餘角")]),
@@ -85,7 +85,7 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
     ]},
     11579: {"skill_id": ACUTE, "operation": CONSTRAINT, "answer_type": "multi_part", "question": "θ 為銳角且 sinθ=√3cosθ，求 tanθ 與 sinθ+cosθ。", "calls": [_call(CONSTRAINT, {"relations": ["sin_theta=sqrt(3)*cos_theta"], "targets": {"tan": "tan_theta", "sum": "sin_theta+cos_theta"}})]},
     11580: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用基本關係填空：(1) sin88°/cos88°；(2) tan35°·cos35°；(3) sin²35°+cos²35°；(4) sin30°=cos(90°−＿)=cos＿；(5) cos45°=sin(90°−＿)=sin＿。", "calls": [
-        _call(SIMPLIFY, {"expressions": {"part_1": "sin_theta/cos_theta", "part_2": "tan_theta*cos_theta", "part_3": "sin_theta**2+cos_theta**2"}}),
+        _call(SIMPLIFY, {"expressions": {"part_1": "sin(88*pi/180)/cos(88*pi/180)", "part_2": "tan(35*pi/180)*cos(35*pi/180)", "part_3": "sin(35*pi/180)**2+cos(35*pi/180)**2"}}),
         _call(COFUNCTION, {"function": "sin", "angle": 30}, [_out("given:angle", "part_4a", "(4) 原角"), _out("complement_degrees", "part_4b", "(4) 互餘角")]),
         _call(COFUNCTION, {"function": "cos", "angle": 45}, [_out("given:angle", "part_5a", "(5) 原角"), _out("complement_degrees", "part_5b", "(5) 互餘角")]),
     ]},

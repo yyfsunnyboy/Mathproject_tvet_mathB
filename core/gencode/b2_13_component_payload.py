@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from core.checkers.quadrant_checker import angle_location_label
 from core.domain.trigonometry_arbitrary_domain import build_trigonometry_arbitrary_matrix, canonical_exact, complete_reference_angle_conversion
 from core.gencode.b2_12_capability_adapter import adapt_b2_12_batch1_matrix
 from core.gencode.b2_13_capability_adapter import adapt_b2_13_arbitrary_matrix
@@ -40,11 +41,12 @@ def _selected_parts(call: dict[str, Any], payload: dict[str, Any]) -> list[dict[
         part = dict(available[source]) if source in available else _scalar(payload)
         key = str(output.get("key") or source or f"part_{index+1}")
         part.update({"key": key, "field_key": key, "label": str(output.get("label") or key)})
-        if call.get("operation") == "classify_standard_position_angle":
+        if call.get("operation") in {"classify_standard_position_angle", "classify_trig_derived_point_quadrant"}:
             part.update({
-                "checker": "text_checker",
-                "checker_key": "text_checker",
-                "equivalence_type": "exact_text",
+                "expected_answer": angle_location_label(part.get("expected_answer")),
+                "checker": "quadrant_checker",
+                "checker_key": "quadrant_checker",
+                "equivalence_type": "normalized_label",
             })
         selected.append(part)
     return selected
@@ -85,7 +87,9 @@ def generate_b2_13_component_payload(*, spec: dict[str, Any], textbook_example_i
             if len(parts) != 1:
                 raise ValueError("short_answer_requires_one_domain_output")
             canonical, mode = parts[0]["expected_answer"], "short_answer"
-            contract = {"presentation_mode":mode,"answer_type":answer_type,"answer_shape":"scalar","checker":"expression_checker","checker_key":"expression_checker","answer_equivalence":"algebraic_equivalent","equivalence_type":"algebraic_equivalent","canonical_answer":canonical,"fixed_domain_key":"trigonometry.arbitrary_angle"}
+            scalar_checker = "quadrant_checker" if parts[0].get("checker") == "quadrant_checker" else "expression_checker"
+            scalar_equiv = "normalized_label" if scalar_checker == "quadrant_checker" else "algebraic_equivalent"
+            contract = {"presentation_mode":mode,"answer_type":"classification" if scalar_checker == "quadrant_checker" else answer_type,"answer_shape":"scalar","checker":scalar_checker,"checker_key":scalar_checker,"answer_equivalence":scalar_equiv,"equivalence_type":scalar_equiv,"canonical_answer":canonical,"fixed_domain_key":"trigonometry.arbitrary_angle"}
         else:
             canonical, mode = {str(part["key"]):part["expected_answer"] for part in parts}, "multiple_inputs"
             contract = {"presentation_mode":mode,"answer_type":"multi_part","answer_shape":"multi_part","checker":"multi_part_answer_checker","checker_key":"multi_part_answer_checker","answer_equivalence":"multi_part_answer","equivalence_type":"multi_part_answer","parts":parts,"fixed_domain_key":"trigonometry.arbitrary_angle"}

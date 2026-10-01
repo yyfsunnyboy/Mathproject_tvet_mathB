@@ -208,20 +208,9 @@ def compute_circumradius_from_three_sides(*, side_a: Any, side_b: Any, side_c: A
 
 
 def _choice_payload(canonical: str, distractors: list[str], rng: random.Random) -> dict[str, Any]:
-    extras = [d for d in distractors if d != canonical]
-    rng.shuffle(extras)
-    options = [canonical] + extras[:3]
-    filler = 2
-    while len(options) < 4:
-        candidate = canonical_exact(sp.Integer(filler))
-        filler += 1
-        if candidate not in options:
-            options.append(candidate)
-    rng.shuffle(options)
-    labels = ["A", "B", "C", "D"]
-    choices = [{"label": labels[i], "text": options[i], "value": options[i]} for i in range(4)]
-    correct = next(c["label"] for c in choices if c["value"] == canonical)
-    return {"choices": choices, "correct_label": correct, "semantic_answer": canonical}
+    from core.domain.exact_choice_pack import build_exact_choice_payload
+
+    return build_exact_choice_payload(canonical, distractors, rng, format_value=canonical_exact)
 
 
 def _has_nested_radical(value: Any) -> bool:

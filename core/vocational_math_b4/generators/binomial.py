@@ -737,7 +737,7 @@ def binomial_middle_term_coefficient(
     poly = _format_binomial(a, b)
     term_number = n - middle_power + 1
     question_text = (
-        f"展開 ${poly}^{{{n}}}$ 後，求中間項係數（$n$ 為偶數時唯一的中間項，對應 $x^{{{middle_power}}}$）。"
+        f"展開 ${poly}^{{{n}}}$ 後，求中間項係數（次數 ${n}$ 為偶數，中間項唯一，對應 $x^{{{middle_power}}}$）。"
     )
     explanation = (
         f"$n={n}$ 為偶數，展開式恰有一個中間項：對應 $x^{{{middle_power}}}$，"

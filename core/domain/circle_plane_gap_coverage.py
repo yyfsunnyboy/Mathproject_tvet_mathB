@@ -712,14 +712,14 @@ def build_gap_matrix(
             else:
                 sol = sp.solve_univariate_inequality(sp.StrictGreaterThan(expr, 0), p, relational=False)
             answer_value = _format_interval(sol, param)
-        a_disp = canonical_exact(a)
-        b_disp = canonical_exact(b)
-        b_term = "" if b == 0 else (f"+{b_disp}y" if b > 0 else f"{b_disp}y")
+        a_disp = {"1": "", "-1": "-"}.get(canonical_exact(a), canonical_exact(a))
+        b_abs = {"1": ""}.get(canonical_exact(abs(b)), canonical_exact(abs(b)))
+        b_term = "" if b == 0 else (f"+{b_abs}y" if b > 0 else f"-{b_abs}y")
         question = (
             f"設直線 $L:{a_disp}x{b_term}+{param}=0$ 與圓 "
             f"${latex_standard_equation(circle['h'], circle['k'], circle['r2'])}$ "
             + ("相交於兩點" if mode == "secant" else "不相交" if mode == "disjoint" else "相切")
-            + f"，試求實數 ${param}$ 的範圍。"
+            + (f"，試求實數 ${param}$ 的值。" if mode == "tangent" else f"，試求實數 ${param}$ 的範圍。")
         )
         result = {"solution": answer_value, "mode": mode}
         explanation = ["由圓心到直線距離與半徑的不等／等式解參數。"]

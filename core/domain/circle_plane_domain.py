@@ -571,18 +571,26 @@ def solve_circle_parameter_range(
 def _format_interval(sol: Any, param: str) -> str:
     from core.gencode.resources.rational_display import sanitize_float_noise_in_text
 
+    if sol == sp.S.EmptySet:
+        return "無解"
+    if sol == sp.S.Reals:
+        return "全體實數"
     if isinstance(sol, sp.Interval):
         left, right = sol.start, sol.end
         left_open, right_open = sol.left_open, sol.right_open
         if left == -sp.oo and right != sp.oo:
-            op = "<" if right_open else r"\le "
-            return f"{param}{op}{canonical_exact(right)}"
+            op = "<" if right_open else "<="
+            return f"{param} {op} {canonical_exact(right)}"
         if right == sp.oo and left != -sp.oo:
-            op = ">" if left_open else r"\ge "
-            return f"{param}{op}{canonical_exact(left)}"
+            op = ">" if left_open else ">="
+            return f"{param} {op} {canonical_exact(left)}"
+        if left != -sp.oo and right != sp.oo:
+            left_op = "<" if left_open else "<="
+            right_op = "<" if right_open else "<="
+            return f"{canonical_exact(left)} {left_op} {param} {right_op} {canonical_exact(right)}"
         return sanitize_float_noise_in_text(f"{param}\\in {sp.sstr(sol)}")
     if isinstance(sol, sp.Union):
-        return r"\cup".join(_format_interval(arg, param) for arg in sol.args)
+        return " 或 ".join(_format_interval(arg, param) for arg in sol.args)
     text = sp.sstr(sol)
     # SymPy set string fallbacks for open rays
     m = re.search(r"Interval\.open\(([^,]+),\s*oo\)", text)
