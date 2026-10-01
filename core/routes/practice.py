@@ -3339,8 +3339,13 @@ def check_answer():
                 attempt_context=_build_attempt_context(drawing_user_answer, current),
             )
 
-    # Phase 7B: Chap3 deterministic checker logic
-    if is_b4_chapter3_phase7b_deterministic_skill(skill_id):
+    # Phase 7B: Chap3 deterministic checker logic.  It only understands integer /
+    # fraction strings, so payloads that carry their own answer-contract checker
+    # (decimal tolerance, multi-part, ...) must reach contract-aware grading.
+    _phase7b_contract = current.get("answer_contract") if isinstance(current.get("answer_contract"), dict) else {}
+    if is_b4_chapter3_phase7b_deterministic_skill(skill_id) and not str(
+        _phase7b_contract.get("checker") or _phase7b_contract.get("checker_key") or ""
+    ).strip():
         correct_ans = str(current.get("correct_answer", current.get("answer", ""))).strip()
         is_correct_chap3 = False
         try:

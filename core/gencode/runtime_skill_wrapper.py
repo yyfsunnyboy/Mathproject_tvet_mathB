@@ -700,8 +700,12 @@ def check_answer(
                 answer_contract=ac,
                 payload=base,
             )
+        from core.checkers.expression_equivalence_checker import _assignment_lists_equivalent
         from core.checkers.translation_description_checker import check_translation_description_answer
 
+        assignment_verdict = _assignment_lists_equivalent(user_answer, correct_answer)
+        if assignment_verdict is not None:
+            return assignment_verdict
         translation_verdict = check_translation_description_answer(user_answer, correct_answer)
         if translation_verdict is not None:
             return translation_verdict

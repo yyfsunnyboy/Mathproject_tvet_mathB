@@ -114,9 +114,24 @@ def validate_choice_answer_shapes(payload: dict[str, Any]) -> list[str]:
             # Allow number/area cross-fill for π-free numeric areas.
             if expected == "number" and shape == "area_or_pi":
                 continue
+            # Exact constants (radicals, fractions) are numbers too, e.g. 1 vs √3.
+            if {expected, shape} == {"number", "expression"} and _is_numeric_constant(
+                choice.get("value") or choice.get("text")
+            ):
+                continue
             errors.append("vocational_choice_shape_mismatch")
             break
     return errors
+
+
+_NUMERIC_CONSTANT_RE = re.compile(r"^[0-9+\-*/().\s]*$")
+
+
+def _is_numeric_constant(text: Any) -> bool:
+    plain = plainify_math_token(str(text or "").replace("$", "").replace(r"\(", "").replace(r"\)", ""))
+    plain = re.sub(r"\\d?frac", "", plain).replace("\\", "")
+    plain = plain.replace("{", "(").replace("}", ")").replace("√", "sqrt")
+    return bool(plain) and bool(_NUMERIC_CONSTANT_RE.match(plain.replace("sqrt", "")))
 
 
 def choice_semantic_key(text: Any) -> str:

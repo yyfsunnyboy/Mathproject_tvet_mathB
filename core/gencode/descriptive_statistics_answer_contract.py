@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import re
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from fractions import Fraction
 from typing import Any
 
@@ -97,6 +98,28 @@ def _requires_tolerance(rounding_policy: dict[str, Any] | None, answer: Any) -> 
     if _DECIMAL_PATTERN.match(text):
         return int(decimals) >= 0
     return False
+
+
+def _rounded_by_policy(answer: Any, rounding_policy: dict[str, Any] | None) -> tuple[int, str] | None:
+    """Return ``(places, rounded_text)`` when the policy forces visible rounding of ``answer``."""
+    policy = rounding_policy if isinstance(rounding_policy, dict) else {}
+    decimals = policy.get("decimal_places")
+    if decimals is None or isinstance(answer, bool):
+        return None
+    try:
+        places = int(decimals)
+        exact = Decimal(_answer_text(answer))
+    except (TypeError, ValueError, InvalidOperation):
+        return None
+    if places < 0 or not exact.is_finite():
+        return None
+    rounded = exact.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+    if rounded == exact:
+        return None
+    text = f"{rounded:.{places}f}"
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    return places, (text if text not in {"", "-0"} else "0")
 
 
 def _checker_module(checker_key: str) -> str:
@@ -217,6 +240,8 @@ def normalize_answer_contract(
             }
             if part_contract.get("tolerance") is not None:
                 part_dict["tolerance"] = part_contract.get("tolerance")
+            if part_contract.get("rounding_applied_places") is not None:
+                part_dict["rounding_applied_places"] = part_contract["rounding_applied_places"]
             parts.append(part_dict)
         ordered = [part["expected_answer"] for part in parts]
         enriched_specs: list[dict[str, Any]] = []
@@ -283,6 +308,27 @@ def normalize_answer_contract(
             "canonical_answer": text,
             "tolerance": None,
             "rounding_policy": policy,
+            "field_specs": [],
+            "presentation_mode": "short_answer",
+        }
+        return contract
+
+    rounded = _rounded_by_policy(answer, policy)
+    if rounded is not None:
+        # The student only sees the rounded value (display / explanation), so the
+        # authoritative answer is that value and any input rounding to it is accepted.
+        places, rounded_text = rounded
+        contract = {
+            "answer_shape": shape,
+            "answer_type": "decimal",
+            "checker_key": "decimal_tolerance_checker",
+            "checker": "decimal_tolerance_checker",
+            "equivalence_type": "decimal_tolerance",
+            "answer_equivalence": "decimal_tolerance",
+            "canonical_answer": rounded_text,
+            "tolerance": 0.5 * (10 ** (-places)) + 1e-9,
+            "rounding_policy": policy,
+            "rounding_applied_places": places,
             "field_specs": [],
             "presentation_mode": "short_answer",
         }

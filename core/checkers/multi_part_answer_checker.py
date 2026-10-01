@@ -24,6 +24,8 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "ordered_inequality_checker",
         "inequality_solution_checker",
         "interval_checker",
+        "quadrant_checker",
+        "classification_checker",
     }
 )
 
@@ -115,7 +117,17 @@ def _check_part(
         "required_factorized_form",
     }:
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+        from core.gencode.inequality_solution_routing import (
+            _has_strong_set_evidence,
+            looks_like_relational_solution_text,
+        )
 
+        if looks_like_relational_solution_text(expected_answer) and _has_strong_set_evidence(expected_answer):
+            from core.checkers.inequality_solution_checker import check_inequality_solution_answer
+
+            verdict = check_inequality_solution_answer(student_answer, expected_answer)
+            if verdict is not None:
+                return bool(verdict)
         return check_expression_equivalence_answer(
             student_answer,
             expected_answer,
@@ -137,6 +149,13 @@ def _check_part(
         from core.checkers.solution_set_checker import check_solution_set_answer
 
         return check_solution_set_answer(student_answer, expected_answer)
+    if checker_key in {"quadrant_checker", "classification_checker"}:
+        from core.checkers.quadrant_checker import check_quadrant_answer
+
+        quadrant_verdict = check_quadrant_answer(student_answer, expected_answer)
+        if quadrant_verdict is not None:
+            return quadrant_verdict
+        return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
     if checker_key in {"text_short_checker", "text_checker"}:
         from core.checkers.translation_description_checker import check_translation_description_answer
 

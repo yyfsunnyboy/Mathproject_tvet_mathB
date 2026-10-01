@@ -236,6 +236,12 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
             out["equivalence"] = str(ac.get("answer_equivalence"))
     if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(out):
         out = apply_coordinate_pair_runtime_fields(out, ac or {"answer_shape": "coordinate_pair"})
+    from core.gencode.question_quality_gate import display_answer_errors, natural_inequality_display
+
+    if display_answer_errors(out):
+        natural = natural_inequality_display(out)
+        if natural:
+            out["display_answer"] = natural
     return out
 
 

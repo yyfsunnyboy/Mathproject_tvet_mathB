@@ -20,6 +20,13 @@ _SQRT_UNICODE_DIGIT = re.compile(r"√([0-9]+(?:\.[0-9]+)?)")
 _SQRT_ASCII_BRACE = re.compile(r"sqrt\s*\{([^{}]+)\}", re.IGNORECASE)
 _IMPLICIT_COEF = re.compile(r"(\d)\s*sqrt", re.IGNORECASE)
 _IMPLICIT_AFTER_PAREN = re.compile(r"\)\s*sqrt", re.IGNORECASE)
+_DEGREE_MARK = r"(?:°|∘|\^\s*\{?\s*\\circ\s*\}?)"
+_TRIG_DEGREE_PAREN = re.compile(
+    r"(sin|cos|tan|cot|sec|csc)\s*\(\s*(-?\d+(?:\.\d+)?)\s*" + _DEGREE_MARK + r"\s*\)", re.IGNORECASE
+)
+_TRIG_DEGREE_BARE = re.compile(
+    r"(sin|cos|tan|cot|sec|csc)\s*(-?\d+(?:\.\d+)?)\s*" + _DEGREE_MARK, re.IGNORECASE
+)
 
 
 def normalize_math_expression(text: object) -> str:
@@ -29,6 +36,10 @@ def normalize_math_expression(text: object) -> str:
     s = unicodedata.normalize("NFKC", latex_to_plain(text))
     if not s:
         return ""
+    # Degree marks are dropped below (degree-valued answers); trig arguments in
+    # degrees must become radians first or `tan20°` would mean tan(20 rad).
+    s = _TRIG_DEGREE_PAREN.sub(r"\1((\2)*pi/180)", s)
+    s = _TRIG_DEGREE_BARE.sub(r"\1((\2)*pi/180)", s)
     s = (
         s.replace("$", "")
         .replace("−", "-")

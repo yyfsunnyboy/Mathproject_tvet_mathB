@@ -2687,6 +2687,15 @@ def _convert_descriptive_statistics_payload(
         raise DescriptiveStatisticsContractError(
             f"answer_contract_not_dispatchable:{','.join(dispatch_blockers)}"
         )
+    rounding_places = [
+        int(item["rounding_applied_places"])
+        for item in [answer_contract, *list(answer_contract.get("parts") or [])]
+        if isinstance(item, dict) and item.get("rounding_applied_places") is not None
+    ]
+    if rounding_places and "四捨五入" not in question_text:
+        places = max(rounding_places)
+        target = "整數" if places == 0 else f"小數點後第 {places} 位"
+        question_text = f"{question_text}（答案四捨五入至{target}）"
 
     mode = str(
         presentation_mode

@@ -20,6 +20,8 @@ def _normalize_solution_text(text: object) -> str:
     if not s:
         return ""
     s = s.replace("。", "")
+    s = re.sub(r"√\s*\(", "sqrt(", s)
+    s = re.sub(r"√\s*(\d+(?:\.\d+)?)", r"sqrt(\1)", s)
     s = s.replace("≤", "<=").replace("≥", ">=")
     s = s.replace("=>", ">=").replace("=<", "<=")
     s = s.replace("~", "")
