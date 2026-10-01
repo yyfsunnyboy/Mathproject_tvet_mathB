@@ -2347,7 +2347,7 @@
             <div class="practice-bottom" id="scratchpad-container">
                 <div id="scratchpad-controls">
                     <div class="scratchpad-tools-primary">
-                    <button class="tool-btn active" onclick="setTool('pen', 'black')" title="黑筆" style="color: black;">
+                    <button class="tool-btn pen-btn active" onclick="setTool('pen', 'black')" title="黑筆" style="color: black;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2356,7 +2356,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#e74c3c')" title="紅筆" style="color: #e74c3c;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#e74c3c')" title="紅筆" style="color: #e74c3c;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2365,7 +2365,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#0066cc')" title="藍筆" style="color: #0066cc;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#0066cc')" title="藍筆" style="color: #0066cc;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2374,7 +2374,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#009933')" title="綠筆" style="color: #009933;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#009933')" title="綠筆" style="color: #009933;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -3653,6 +3653,7 @@
             saveState();
             updateUndoRedoButtons();
             applyDrawingUiContract();
+            syncPenInkColor();
         }
 
         // === [HiDPI Fix] DPR-aware resizeCanvas ===
@@ -3760,6 +3761,12 @@
             ctx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
         }
 
+        function syncPenInkColor() {
+            const controls = document.getElementById('scratchpad-controls');
+            if (controls) controls.style.setProperty('--pen-ink', currentColor);
+        }
+        syncPenInkColor();
+
         // === 工具 ===
         // === 工具 ===
         function setTool(toolName, color) {
@@ -3808,6 +3815,7 @@
                     else currentColor = color;
 
                 }
+                syncPenInkColor();
                 setPenStyle();
             }
         }
@@ -8129,6 +8137,8 @@ mjx-container { margin: 0 2px !important; }
   border-color: var(--green) !important;
   box-shadow: none !important;
 }
+.tool-btn.pen-btn.active { color: var(--pen-ink, var(--green-dark)) !important; }
+.tool-btn.pen-btn.active svg { stroke-width: 2.4; }
 .tool-btn.eraser-btn:hover,
 .tool-btn.eraser-btn.active {
   background: var(--err-bg) !important;

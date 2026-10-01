@@ -2372,7 +2372,8 @@
     function stopDraw() { if (!isDrawing) return; isDrawing = false; ctx.closePath(); saveState(); }
     function setActiveToolButton(buttonId) { ["penToolBtn", "eraserToolBtn"].forEach((id) => document.getElementById(id).classList.toggle("active", id === buttonId)); }
     function setActiveColorButton(buttonId) { ["blackInkBtn", "blueInkBtn", "redInkBtn", "greenInkBtn"].forEach((id) => document.getElementById(id).classList.toggle("active", id === buttonId)); }
-    function activatePen(color, buttonId) { isErasing = false; currentColor = color; canvas.style.cursor = "crosshair"; setActiveToolButton("penToolBtn"); setActiveColorButton(buttonId); }
+    function syncPenInkColor() { document.getElementById("penToolBtn").style.setProperty("--pen-ink", currentColor); }
+    function activatePen(color, buttonId) { isErasing = false; currentColor = color; syncPenInkColor(); canvas.style.cursor = "crosshair"; setActiveToolButton("penToolBtn"); setActiveColorButton(buttonId); }
     function activateEraser() { isErasing = true; canvas.style.cursor = "cell"; setActiveToolButton("eraserToolBtn"); }
     function undo() { if (undoStack.length <= 1) return; redoStack.push(undoStack.pop()); restoreFromDataUrl(undoStack[undoStack.length - 1]); updateUndoRedoButtons(); }
     function redo() { if (redoStack.length === 0) return; const next = redoStack.pop(); undoStack.push(next); restoreFromDataUrl(next); updateUndoRedoButtons(); }
@@ -3508,6 +3509,7 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
     saveState();
+    syncPenInkColor();
     updateUndoRedoButtons();
     updateEntryModeBadge();
     updateAdaptiveStatePanel();
@@ -3960,6 +3962,8 @@ button.warning:hover:not(:disabled),
   border-color: var(--accent) !important;
   color: var(--accent-dark) !important;
 }
+#penToolBtn.active { color: var(--pen-ink, var(--accent-dark)) !important; }
+#penToolBtn.active svg { stroke-width: 2.3; }
 .tool-sep { background: var(--line) !important; }
 
 .pen-width-wrap {
