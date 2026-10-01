@@ -77,6 +77,16 @@
         }
         .attention-item:last-child { border-bottom: none; }
         .attention-item a { color: #3d5a80; text-decoration: none; font-weight: 600; }
+        .attention-list {
+            position: relative; display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px;
+        }
+        .attention-list::before {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+            width: 1px; margin-left: -0.5px; background: #ecd5d5; pointer-events: none;
+        }
+        .attention-list.is-single::before { display: none; }
+        .attention-list > .attention-item:nth-child(odd):nth-last-child(2) { border-bottom: none; }
         .attention-name {
             flex: 1 1 auto; min-width: 0;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -96,6 +106,9 @@
         .apr-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
         @media (max-width: 768px) {
             table { display: block; overflow-x: auto; }
+            .attention-list { grid-template-columns: minmax(0, 1fr); }
+            .attention-list::before { display: none; }
+            .attention-list > .attention-item:nth-child(odd):nth-last-child(2) { border-bottom: 1px solid #f0e0e0; }
         }
     </style>
 </head>
@@ -259,12 +272,14 @@
             {% if attention_students|length == 0 %}
                 <p class="empty-state" style="padding:12px;">目前沒有符合「建議介入」條件的學生。</p>
             {% else %}
+                <div class="attention-list{% if attention_students|length == 1 %} is-single{% endif %}">
                 {% for row in attention_students %}
                 <div class="attention-item">
                     <a class="attention-name" href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name|review_student_name }}</a>
                     <span class="attention-stat">{{ row.status.reason }}</span>
                 </div>
                 {% endfor %}
+                </div>
             {% endif %}
         </div>
 
