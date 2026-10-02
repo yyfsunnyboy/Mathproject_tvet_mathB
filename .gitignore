@@ -54,6 +54,16 @@ tmp/
 .tmp_pytest_*/
 .test-tmp*/
 .test_tmp*/
+tmp_test_*/
+
+# Generated pytest workspaces below reports and runtime
+**/pytest_tmp*/
+**/pytest_run*/
+**/pytest_deterministic*/
+**/pytest_auth*/
+**/pytest_handwriting_feedback_fix*/
+**/pytest_practice_streak_ui_fix*/
+**/pytest_v3_status_*/
 
 # 前端依賴與根目錄一次性診斷輸出（勿提交）
 /node_modules/
