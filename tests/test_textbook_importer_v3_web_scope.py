@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from flask import Flask
 from werkzeug.datastructures import MultiDict
 
@@ -48,6 +49,115 @@ def test_web_default_scope_and_formal_mode():
     assert set(modes) == {"update_existing", "insert_missing_only", "replace_section"}
     assert "checked" in modes["insert_missing_only"]
     assert all(field.get("type") == "radio" for field in modes.values())
+
+
+def test_web_curriculum_options_keep_existing_general_identities():
+    template = (ROOT / "templates/textbook_importer_v3.html").read_text(encoding="utf-8")
+
+    assert 'const GENERAL_HIGH_OPTIONS' in template
+    assert "general: GENERAL_HIGH_OPTIONS" in template
+    assert "longteng: [" in template
+    for volume, grade in (
+        ("數學1", 10), ("數學2", 10), ("數學3A", 11),
+        ("數學4A", 11), ("選修數學甲(上)", 12), ("選修數學甲(下)", 12),
+    ):
+        assert f"{{ volume: '{volume}', grade: {grade} }}" in template
+    assert "gradeInput.readOnly = isGeneral" in template
+    assert "applyCurriculumConfiguration();" in template
+
+
+def test_route_forwards_vocational_ui_payload(monkeypatch):
+    captured_upload = []
+    captured_enqueue = []
+    monkeypatch.setattr(admin, "current_user", SimpleNamespace(is_admin=True, role="teacher"))
+    monkeypatch.setattr(admin, "resolve_gemini_api_key", lambda: ("test-key", "test"))
+    monkeypatch.setattr(
+        admin,
+        "upload_textbook_source_batch",
+        lambda **kwargs: captured_upload.append(kwargs) or (
+            {"ok": True, "pairs": [{}], "batch": {"curriculum": "vocational", "volume": "數學B2", "grade": 10}},
+            200,
+        ),
+    )
+    monkeypatch.setattr(
+        admin,
+        "enqueue_v3_batch_pipeline",
+        lambda **kwargs: captured_enqueue.append(kwargs) or "general-test-task",
+    )
+    monkeypatch.setattr(admin, "url_for", lambda endpoint, **kwargs: "/test")
+    app = Flask(__name__)
+    app.secret_key = "test"
+    data = MultiDict([
+        ("curriculum", "vocational"), ("publisher", "longteng"),
+        ("grade", "10"), ("volume", "數學B2"),
+    ])
+
+    with app.test_request_context("/textbook_importer_v3", method="POST", data=data):
+        response, status = admin.admin_textbook_importer_v3.__wrapped__()
+
+    assert status == 200 and response.get_json()["ok"]
+    assert "pipeline" not in response.get_json()
+    assert {
+        key: captured_upload[0][key]
+        for key in ("curriculum", "publisher", "grade", "volume")
+    } == {
+        "curriculum": "vocational", "publisher": "longteng", "grade": "10", "volume": "數學B2"
+    }
+    assert {
+        key: captured_enqueue[0][key]
+        for key in ("curriculum", "publisher", "grade", "volume")
+    } == {
+        "curriculum": "vocational", "publisher": "longteng", "grade": 10, "volume": "數學B2"
+    }
+
+
+def test_v3_general_reuses_v1_dispatch_without_v3_pipeline(monkeypatch):
+    captured = []
+    monkeypatch.setattr(admin, "current_user", SimpleNamespace(is_admin=True, role="teacher"))
+    monkeypatch.setattr(admin, "resolve_gemini_api_key", lambda: ("test-key", "test"))
+    monkeypatch.setattr(
+        admin,
+        "enqueue_v1_textbook_upload_batch",
+        lambda upload_files, curriculum_info, **kwargs: captured.append(
+            (upload_files, curriculum_info, kwargs)
+        ) or "v1-general-task",
+    )
+    monkeypatch.setattr(
+        admin,
+        "upload_textbook_source_batch",
+        lambda **kwargs: pytest.fail("general must not enter V3 storage"),
+    )
+    monkeypatch.setattr(
+        admin,
+        "enqueue_v3_batch_pipeline",
+        lambda **kwargs: pytest.fail("general must not enqueue V3"),
+    )
+    monkeypatch.setattr(admin, "url_for", lambda endpoint, **kwargs: "/test")
+    app = Flask(__name__)
+    app.secret_key = "test"
+    data = MultiDict([
+        ("curriculum", "general"), ("publisher", "longteng"),
+        ("grade", "10"), ("volume", "數學1"),
+        ("textbook_docx[]", (BytesIO(b"docx"), "1-1.docx")),
+        ("textbook_pdf[]", (BytesIO(b"pdf"), "1-1.pdf")),
+    ])
+
+    with app.test_request_context("/textbook_importer_v3", method="POST", data=data):
+        response, status = admin.admin_textbook_importer_v3.__wrapped__()
+
+    assert status == 200
+    payload = response.get_json()
+    assert payload["import_path"] == "v1_general"
+    assert payload["task_id"] == "v1-general-task"
+    assert payload["pipeline"] == "general_v1"
+    assert payload["status_url"] == "/test"
+    upload_files, curriculum_info, policy = captured[0]
+    assert policy["track_general_status"] is True
+    assert [file.filename for file in upload_files] == ["1-1.docx", "1-1.pdf"]
+    assert curriculum_info == {
+        "curriculum": "general", "publisher": "longteng", "grade": "10", "volume": "數學1"
+    }
+    assert policy["import_policy"]["docx_primary"] is True
 
 
 def test_route_accepts_exercise_and_preserves_legacy_none(monkeypatch):

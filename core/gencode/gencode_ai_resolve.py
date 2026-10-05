@@ -24,7 +24,6 @@ def _cloud_preset_from_snapshot(snapshot: dict[str, Any]) -> tuple[str, dict[str
     for fallback in (
         str(getattr(Config, "DEFAULT_CLOUD_MODEL", "") or ""),
         str(getattr(Config, "DEFAULT_GOOGLE_MODEL", "") or ""),
-        "gemini-3.1-flash-lite-preview",
     ):
         key = fallback.strip()
         if key and key in Config.CODER_PRESETS:

@@ -1,0 +1,183 @@
+{
+  "skill_id": "gh_MultiplicationFormulas",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 16,
+  "components": [
+    {
+      "component_id": "src_12286",
+      "textbook_example_id": 12286,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12286/generate.py"
+    },
+    {
+      "component_id": "src_12287",
+      "textbook_example_id": 12287,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12287/generate.py"
+    },
+    {
+      "component_id": "src_12288",
+      "textbook_example_id": 12288,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12288/generate.py"
+    },
+    {
+      "component_id": "src_12289",
+      "textbook_example_id": 12289,
+      "status": "verified",
+      "problem_type_id": "factor_by_cube_formulas",
+      "domain_operation": "factor_by_cube_formulas",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12289/generate.py"
+    },
+    {
+      "component_id": "src_12290",
+      "textbook_example_id": 12290,
+      "status": "verified",
+      "problem_type_id": "evaluate_reciprocal_power_expressions",
+      "domain_operation": "evaluate_reciprocal_power_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12290/generate.py"
+    },
+    {
+      "component_id": "src_12291",
+      "textbook_example_id": 12291,
+      "status": "verified",
+      "problem_type_id": "simplify_radical_expressions",
+      "domain_operation": "simplify_radical_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12291/generate.py"
+    },
+    {
+      "component_id": "src_12292",
+      "textbook_example_id": 12292,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12292/generate.py"
+    },
+    {
+      "component_id": "src_12293",
+      "textbook_example_id": 12293,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12293/generate.py"
+    },
+    {
+      "component_id": "src_12294",
+      "textbook_example_id": 12294,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12294/generate.py"
+    },
+    {
+      "component_id": "src_12295",
+      "textbook_example_id": 12295,
+      "status": "verified",
+      "problem_type_id": "factor_by_cube_formulas",
+      "domain_operation": "factor_by_cube_formulas",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12295/generate.py"
+    },
+    {
+      "component_id": "src_12296",
+      "textbook_example_id": 12296,
+      "status": "verified",
+      "problem_type_id": "evaluate_reciprocal_power_expressions",
+      "domain_operation": "evaluate_reciprocal_power_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12296/generate.py"
+    },
+    {
+      "component_id": "src_12297",
+      "textbook_example_id": 12297,
+      "status": "verified",
+      "problem_type_id": "solve_rational_unknowns_from_squared_radical_identity",
+      "domain_operation": "solve_rational_unknowns_from_squared_radical_identity",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12297/generate.py"
+    },
+    {
+      "component_id": "src_12298",
+      "textbook_example_id": 12298,
+      "status": "verified",
+      "problem_type_id": "expand_polynomial_expressions",
+      "domain_operation": "expand_polynomial_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12298/generate.py"
+    },
+    {
+      "component_id": "src_12299",
+      "textbook_example_id": 12299,
+      "status": "verified",
+      "problem_type_id": "factor_by_cube_formulas",
+      "domain_operation": "factor_by_cube_formulas",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12299/generate.py"
+    },
+    {
+      "component_id": "src_12300",
+      "textbook_example_id": 12300,
+      "status": "verified",
+      "problem_type_id": "evaluate_reciprocal_power_expressions",
+      "domain_operation": "evaluate_reciprocal_power_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12300/generate.py"
+    },
+    {
+      "component_id": "src_12301",
+      "textbook_example_id": 12301,
+      "status": "verified",
+      "problem_type_id": "evaluate_product_under_power_relation",
+      "domain_operation": "evaluate_product_under_power_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12301/generate.py"
+    }
+  ]
+}

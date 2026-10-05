@@ -1,0 +1,141 @@
+<div id="bug-report-modal" class="bug-report-modal" hidden>
+    <div class="bug-report-panel" role="dialog" aria-modal="true" aria-labelledby="bug-report-title" tabindex="-1">
+        <button id="bug-report-close" class="bug-report-close" type="button" aria-label="關閉">×</button>
+        <h2 id="bug-report-title">🐞 Bug 回報</h2>
+        <p class="bug-report-instruction">請加入發生問題時的畫面截圖。</p>
+        <p class="bug-report-reminder">⚠️ 截圖請包含瀏覽器網址列，方便我們確認是哪一頁、哪個單元發生問題。</p>
+        <div class="bug-report-shortcut" aria-label="按下 Ctrl 加 V 貼上截圖">
+            <strong>電腦：Ctrl + V / ⌘ + V</strong>
+            <span>直接貼上截圖</span>
+        </div>
+        <p class="bug-report-picker-hint">iPad：點下方按鈕，從照片中選擇剛剛的截圖</p>
+        <input id="bug-report-photo-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        <button id="bug-report-photo-picker" class="bug-report-photo-picker" type="button">📷 從照片選擇</button>
+        <div id="bug-report-paste-state" class="bug-report-paste-state">尚未加入截圖</div>
+        <div id="bug-report-preview-container" class="bug-report-preview-container" hidden></div>
+        <p id="bug-report-status" class="bug-report-status" role="status"></p>
+        <button id="bug-report-submit" class="bug-report-submit" type="button" disabled>送出</button>
+    </div>
+</div>
+
+<style>
+.bug-report-open { display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto; border:1px solid #78917c; border-radius:8px; padding:8px 12px; background:#f7faf6; color:#3f6345; font:600 14px/1.2 inherit; cursor:pointer; }
+.bug-report-open:hover { border-color:#58725d; background:#edf4eb; color:#315538; }
+.bug-report-modal { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background:rgba(20,32,22,.42); }
+.bug-report-modal[hidden] { display:none; }
+.bug-report-panel { position:relative; width:min(440px, 100%); max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px); overflow:auto; box-sizing:border-box; padding:24px; border-radius:14px; background:#fffdf9; color:#243126; box-shadow:0 18px 48px rgba(0,0,0,.22); }
+.bug-report-panel h2 { margin:0 0 12px; font-size:20px; }
+.bug-report-panel p { line-height:1.55; }
+.bug-report-instruction { margin-bottom:10px; text-align:center; }
+.bug-report-shortcut { display:flex; flex-direction:column; align-items:center; gap:5px; padding:12px; border:2px dashed #88a58b; border-radius:10px; background:#f4f8f2; color:#315d39; }
+.bug-report-shortcut strong { font-size:24px; letter-spacing:.03em; }
+.bug-report-shortcut span { font-size:13px; }
+.bug-report-reminder { padding:10px 12px; border-radius:8px; background:#fff3cd; color:#765a08; font-weight:700; }
+.bug-report-picker-hint { margin:12px 0 8px; text-align:center; color:#526154; font-size:14px; }
+.bug-report-close { position:absolute; top:9px; right:12px; border:0; background:transparent; font-size:26px; line-height:1; cursor:pointer; }
+.bug-report-photo-picker { width:100%; border:1px solid #78917c; border-radius:8px; padding:10px 14px; background:#f7faf6; color:#3f6345; font:600 15px/1.2 inherit; cursor:pointer; }
+.bug-report-photo-picker:hover { border-color:#58725d; background:#edf4eb; }
+.bug-report-submit { width:100%; margin-top:10px; border:0; border-radius:8px; padding:11px 14px; font:600 15px/1.2 inherit; cursor:pointer; }
+.bug-report-submit { background:#3f6b46; color:#fff; }
+.bug-report-submit:disabled { opacity:.55; cursor:not-allowed; }
+.bug-report-paste-state { margin-top:12px; padding:12px; border:1px solid #d9e2d5; border-radius:8px; color:#667269; text-align:center; }
+.bug-report-paste-state.has-image { border-color:#9bc3a1; background:#edf7ee; color:#246533; font-weight:700; }
+.bug-report-preview-container img { display:block; width:100%; max-height:180px; margin-top:12px; object-fit:contain; border:1px solid #d9e2d5; border-radius:8px; }
+.bug-report-status { min-height:1.55em; margin:10px 0 0; }
+.bug-report-status.is-error { color:#a13028; }.bug-report-status.is-success { color:#246533; }
+@media (max-width:600px) { .bug-report-open { padding:7px 10px; font-size:13px; }.bug-report-modal { padding:max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }.bug-report-panel { max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); padding:20px; } }
+</style>
+
+<script>
+(() => {
+    const openButton = document.getElementById('bug-report-open');
+    const modal = document.getElementById('bug-report-modal');
+    const panel = modal.querySelector('.bug-report-panel');
+    const closeButton = document.getElementById('bug-report-close');
+    const photoInput = document.getElementById('bug-report-photo-input');
+    const photoPickerButton = document.getElementById('bug-report-photo-picker');
+    const pasteState = document.getElementById('bug-report-paste-state');
+    const previewContainer = document.getElementById('bug-report-preview-container');
+    const submitButton = document.getElementById('bug-report-submit');
+    const status = document.getElementById('bug-report-status');
+    const acceptedImageTypes = new Set(['image/png', 'image/jpeg', 'image/webp']);
+    const maxImageBytes = 10 * 1024 * 1024;
+    let selectedFile = null;
+    let previewUrl = null;
+
+    function setStatus(message, kind = '') { status.textContent = message; status.className = `bug-report-status${kind ? ` is-${kind}` : ''}`; }
+    function setScreenshot(file) {
+        if (!file || !acceptedImageTypes.has(file.type)) {
+            setStatus('截圖格式僅支援 PNG、JPG 或 WebP。', 'error');
+            return false;
+        }
+        if (file.size > maxImageBytes) {
+            setStatus('截圖大小不可超過 10 MB。', 'error');
+            return false;
+        }
+        selectedFile = file;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = URL.createObjectURL(file);
+        const preview = document.createElement('img');
+        preview.className = 'bug-report-preview';
+        preview.alt = '截圖預覽';
+        preview.src = previewUrl;
+        previewContainer.replaceChildren(preview);
+        previewContainer.hidden = false;
+        pasteState.textContent = '✓ 截圖已加入';
+        pasteState.classList.add('has-image');
+        submitButton.disabled = false;
+        setStatus('');
+        return true;
+    }
+    function reset() {
+        selectedFile = null;
+        photoInput.value = '';
+        previewContainer.replaceChildren();
+        previewContainer.hidden = true;
+        pasteState.textContent = '尚未加入截圖';
+        pasteState.classList.remove('has-image');
+        submitButton.disabled = true;
+        if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+        setStatus('');
+    }
+    function close() { modal.hidden = true; reset(); }
+    openButton.addEventListener('click', () => {
+        modal.hidden = false;
+        window.requestAnimationFrame(() => panel.focus());
+    });
+    closeButton.addEventListener('click', close);
+    modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
+    photoPickerButton.addEventListener('click', () => photoInput.click());
+    photoInput.addEventListener('change', () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (file) setScreenshot(file);
+    });
+    document.addEventListener('paste', (event) => {
+        if (modal.hidden) return;
+        event.preventDefault();
+        const item = [...(event.clipboardData?.items || [])].find((entry) => acceptedImageTypes.has(entry.type));
+        const file = item?.getAsFile() || [...(event.clipboardData?.files || [])].find((entry) => acceptedImageTypes.has(entry.type));
+        if (!file) {
+            setStatus('剪貼簿中沒有截圖，請先截圖後再按 Ctrl + V。', 'error');
+            return;
+        }
+        setScreenshot(file);
+    });
+    submitButton.addEventListener('click', async () => {
+        if (!selectedFile) { setStatus('請先加入截圖。', 'error'); return; }
+        submitButton.disabled = true; submitButton.textContent = '送出中...'; setStatus('');
+        try {
+            const body = new FormData();
+            body.append('screenshot', selectedFile, selectedFile.name || 'screenshot.png');
+            body.append('page_url', window.location.href);
+            const response = await fetch('/api/bug-report', { method:'POST', body });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok || !payload.success) throw new Error(payload.message || '送出失敗，請稍後再試。');
+            reset(); setStatus('已收到，謝謝你的回報。', 'success');
+            window.setTimeout(close, 1200);
+        } catch (error) { setStatus(error.message || '送出失敗，請稍後再試。', 'error'); }
+        finally { submitButton.disabled = !selectedFile; submitButton.textContent = '送出'; }
+    });
+})();
+</script>

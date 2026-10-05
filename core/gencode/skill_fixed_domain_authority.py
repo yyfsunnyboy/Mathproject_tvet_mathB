@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import sqlite3
@@ -524,8 +525,12 @@ def resolve_domain_authority(
     if not required_capabilities and induced_spec:
         required_capabilities = normalize_capability_list(induced_spec.get("required_capabilities"))
 
-    explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
-    if explicit_key:
+    explicit_key = str(extra_data.get("fixed_domain_key") or extra_data.get("domain_key") or "").strip()
+    confirmed = get_confirmed_skill_binding(key)
+    confirmed_key = str((confirmed or {}).get("fixed_domain_key") or "").strip()
+    # Restating the confirmed domain is not an override: the confirmed binding
+    # stays authoritative so evidence carries its revision and capability filter.
+    if explicit_key and explicit_key != confirmed_key:
         override_ctx = resolve_dynamic_fixed_domain_context(
             key,
             original_exc=ValueError("component_override_active"),
@@ -556,7 +561,6 @@ def resolve_domain_authority(
             curriculum_profile=override_ctx.curriculum_profile,
         )
 
-    confirmed = get_confirmed_skill_binding(key)
     if confirmed:
         fixed_domain_key = get_fixed_domain_key(key)
         allowed = tuple(get_allowed_operations(fixed_domain_key, skill_id=key))
@@ -680,6 +684,9 @@ def normalize_induced_spec_to_resolver_constraints(
             pass
     if answer_contract.get("answer_type"):
         normalized["answer_type"] = str(answer_contract.get("answer_type") or "").strip()
+    generation_constraints = induced_spec.get("generation_constraints")
+    if isinstance(generation_constraints, dict) and generation_constraints:
+        normalized["generation_constraints"] = copy.deepcopy(generation_constraints)
     return normalized
 
 

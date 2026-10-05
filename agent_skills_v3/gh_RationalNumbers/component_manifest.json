@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_RationalNumbers",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12273",
+      "textbook_example_id": 12273,
+      "status": "verified",
+      "problem_type_id": "fraction_to_decimal_expansion",
+      "domain_operation": "fraction_to_decimal_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12273/generate.py"
+    },
+    {
+      "component_id": "src_12274",
+      "textbook_example_id": 12274,
+      "status": "verified",
+      "problem_type_id": "decimal_to_simplest_fraction",
+      "domain_operation": "decimal_to_simplest_fraction",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12274/generate.py"
+    },
+    {
+      "component_id": "src_12275",
+      "textbook_example_id": 12275,
+      "status": "verified",
+      "problem_type_id": "fraction_to_decimal_expansion",
+      "domain_operation": "fraction_to_decimal_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12275/generate.py"
+    },
+    {
+      "component_id": "src_12276",
+      "textbook_example_id": 12276,
+      "status": "verified",
+      "problem_type_id": "decimal_to_simplest_fraction",
+      "domain_operation": "decimal_to_simplest_fraction",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12276/generate.py"
+    },
+    {
+      "component_id": "src_12278",
+      "textbook_example_id": 12278,
+      "status": "verified",
+      "problem_type_id": "construct_rational_between_bounds",
+      "domain_operation": "construct_rational_between_bounds",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12278/generate.py"
+    },
+    {
+      "component_id": "src_12279",
+      "textbook_example_id": 12279,
+      "status": "verified",
+      "problem_type_id": "evaluate_rationality_statements",
+      "domain_operation": "evaluate_rationality_statements",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12279/generate.py"
+    },
+    {
+      "component_id": "src_12280",
+      "textbook_example_id": 12280,
+      "status": "verified",
+      "problem_type_id": "identify_rational_numbers",
+      "domain_operation": "identify_rational_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12280/generate.py"
+    },
+    {
+      "component_id": "src_12281",
+      "textbook_example_id": 12281,
+      "status": "verified",
+      "problem_type_id": "fraction_to_decimal_expansion",
+      "domain_operation": "fraction_to_decimal_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12281/generate.py"
+    },
+    {
+      "component_id": "src_12282",
+      "textbook_example_id": 12282,
+      "status": "verified",
+      "problem_type_id": "decimal_to_simplest_fraction",
+      "domain_operation": "decimal_to_simplest_fraction",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12282/generate.py"
+    }
+  ]
+}

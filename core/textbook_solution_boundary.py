@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import re
 
-# Word EQ overlay that draws a circle on 解: eq \o\ac(○,解)
+# Word EQ overlay that draws a shape on 解: eq \o\ac(○,解) / eq \o\ac(■,解)
 # The converter keeps this instruction as text, often wrapped as \( ... \).
 _EQ_SOLUTION_RE = re.compile(
-    r"(?:\\\()?\s*(?:eq\s*)?\\o\s*\\ac\s*\(\s*○\s*,\s*解\s*\)\s*(?:\\\))?",
+    r"(?:\\\()?\s*(?:eq\s*)?\\o\s*\\ac\s*\(\s*[○〇●■□]\s*,\s*解\s*\)\s*(?:\\\))?",
     re.IGNORECASE,
 )
 _CIRCLE_SOLUTION_RE = re.compile(r"○\s*解")

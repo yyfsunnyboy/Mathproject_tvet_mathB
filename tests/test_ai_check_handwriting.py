@@ -417,7 +417,8 @@ def test_handwriting_prompts_do_not_turn_format_or_missing_steps_into_failure():
     assert "未使用集合" in recognition
     assert "沒有完整步驟而判定不完整" in recognition
     assert "本身都不是錯誤理由" in feedback
-    assert "蘇格拉底式引導問題" in feedback
+    assert "修正後的那一行" in feedback
+    assert "下一步" in feedback
 
 
 def test_blank_does_not_call_checker_or_record_attempt():

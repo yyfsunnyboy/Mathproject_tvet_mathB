@@ -781,17 +781,9 @@ def get_ai_client(role='default'):
                 role=role,
             )
         except ValueError as e:
-            ai_mode = "unknown"
-            try:
-                ai_mode = str(get_ai_settings_snapshot().get("ai_global_strategy", "unknown"))
-            except Exception:
-                pass
-            if ai_mode == "cloud_first":
-                raise RuntimeError(str(e))
-            logger.warning(f"Google AI Client init failed ({e}). fallback=local mode={ai_mode}")
-            fb_config = Config.MODEL_ROLES.get('default', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}))
-            fb_model = fb_config.get('model', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b'))
-            return LocalAIClient(fb_model, temperature, max_tokens=max_tokens, extra_body=extra_body)
+            # A Gemini request must fail as Gemini; never silently change
+            # providers or models during initialization.
+            raise RuntimeError(str(e)) from e
     elif provider == 'local':
         return LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
     else:

@@ -788,6 +788,15 @@ try:
 except Exception:
     pass
 
+# Human-reviewed promoted capabilities; never override static or YAML bindings.
+from core.registry.promoted_capability_store import promoted_skill_bindings  # noqa: E402
+
+_PROMOTED_ROUTING, _PROMOTED_PROFILES = promoted_skill_bindings(
+    existing_skills=frozenset(SKILL_TO_DOMAIN) | frozenset(SKILL_DOMAIN_PROFILE)
+)
+SKILL_TO_DOMAIN.update(_PROMOTED_ROUTING)
+SKILL_DOMAIN_PROFILE.update(_PROMOTED_PROFILES)
+
 
 def _skill_registered(skill_id: str) -> bool:
     return str(skill_id or "").strip() in SKILL_TO_DOMAIN

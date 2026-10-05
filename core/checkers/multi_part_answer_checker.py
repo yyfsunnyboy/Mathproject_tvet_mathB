@@ -18,6 +18,9 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "linear_equation_equivalent_checker",
         "choice_label_checker",
         "decimal_tolerance_checker",
+        "repeating_decimal_checker",
+        "simplest_fraction_checker",
+        "rational_between_bounds_checker",
         "solution_set_checker",
         "text_short_checker",
         "text_checker",
@@ -106,6 +109,27 @@ def _check_part(
         if res.get("system_error"):
             raise RuntimeError(str(res.get("result") or "grading system error"))
         return bool(res.get("correct"))
+    if checker_key == "repeating_decimal_checker" or equiv == "decimal_expansion_exact":
+        from core.checkers.repeating_decimal_checker import check_decimal_expansion_answer
+
+        res = check_decimal_expansion_answer(student_answer, expected_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key == "simplest_fraction_checker" or equiv == "simplest_fraction_exact":
+        from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
+
+        res = check_simplest_fraction_answer(student_answer, expected_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key == "rational_between_bounds_checker" or equiv == "strict_between_bounds":
+        from core.checkers.rational_between_bounds_checker import check_rational_between_bounds_answer
+
+        res = check_rational_between_bounds_answer(student_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
     if checker_key in {"numeric_checker", "integer_checker"} or equiv in {"numeric_exact", "numeric_equivalence", "numeric_equal"}:
         return _check_numeric_equivalent(student_answer, expected_answer)
     if checker_key in {"rational_checker", "fraction_checker"} or equiv in {"rational_equivalent", "fraction_equal"}:
@@ -148,7 +172,7 @@ def _check_part(
     if checker_key == "solution_set_checker" or equiv == "unordered_solution_set":
         from core.checkers.solution_set_checker import check_solution_set_answer
 
-        return check_solution_set_answer(student_answer, expected_answer)
+        return check_solution_set_answer(student_answer, expected_answer, answer_contract=part)
     if checker_key in {"quadrant_checker", "classification_checker"}:
         from core.checkers.quadrant_checker import check_quadrant_answer
 
@@ -247,6 +271,9 @@ def check_multi_part_answer(
             "linear_equation_equivalent",
             "choice_label",
             "decimal_tolerance",
+            "decimal_expansion_exact",
+            "simplest_fraction_exact",
+            "strict_between_bounds",
             "unordered_solution_set",
             "ordered_inequality",
             "interval_equivalence",

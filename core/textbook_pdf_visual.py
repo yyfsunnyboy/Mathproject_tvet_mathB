@@ -88,6 +88,33 @@ def pdf_text_layer_usable(
     return (usable / max(1, len(pages))) >= min_ratio
 
 
+def _blended_drawing_seqnos(page) -> set[int]:
+    """Seqnos of paths inside a blended / translucent group (page textures, not figure ink)."""
+    try:
+        ext = page.get_drawings(extended=True) or []
+    except Exception:
+        return set()
+    out: set[int] = set()
+    group_stack: list[tuple[int, bool]] = []
+    for d in ext:
+        level = int(d.get("level") or 0)
+        while group_stack and level <= group_stack[-1][0]:
+            group_stack.pop()
+        kind = d.get("type")
+        if kind == "group":
+            opacity = d.get("opacity")
+            blended = str(d.get("blendmode") or "Normal") != "Normal" or (
+                opacity is not None and float(opacity) < 1.0
+            )
+            group_stack.append((level, blended))
+            continue
+        if kind == "clip" or d.get("seqno") is None:
+            continue
+        if any(b for _lvl, b in group_stack):
+            out.add(int(d["seqno"]))
+    return out
+
+
 def build_page_index(doc) -> list[dict[str, Any]]:
     pages: list[dict[str, Any]] = []
     for i, page in enumerate(doc):
@@ -109,19 +136,23 @@ def build_page_index(doc) -> list[dict[str, Any]]:
                     }
                 )
         drawings: list[dict[str, Any]] = []
+        small_drawings: list[dict[str, Any]] = []
         try:
             raw_draws = page.get_drawings() or []
         except Exception:
             raw_draws = []
+        blended_seqnos = _blended_drawing_seqnos(page)
         for d in raw_draws:
             r = d.get("rect")
             if r is None:
                 continue
             x0, y0, x1, y1 = float(r.x0), float(r.y0), float(r.x1), float(r.y1)
             area = abs((x1 - x0) * (y1 - y0))
+            entry = {"bbox": [x0, y0, x1, y1], "area": area, "blended": d.get("seqno") in blended_seqnos}
             if area < 80:
+                small_drawings.append(entry)
                 continue
-            drawings.append({"bbox": [x0, y0, x1, y1], "area": area})
+            drawings.append(entry)
         pages.append(
             {
                 "page": i + 1,
@@ -132,6 +163,7 @@ def build_page_index(doc) -> list[dict[str, Any]]:
                 "words": words,
                 "images": images,
                 "drawings": drawings,
+                "small_drawings": small_drawings,
                 "char_count": len(text),
             }
         )
@@ -570,11 +602,129 @@ def _next_question_boundary_y(matches: list[dict[str, Any]], index: int) -> floa
     return None
 
 
+_GROUP_GAP_PT = 3.0
+_GROUP_LABEL_GAP_PT = 6.0
+_GROUP_LABEL_MAX_CHARS = 6
+_GROUP_GLYPH_MAX_PT = 20.0
+_GROUP_PROSE_MIN_CHARS = 9
+_GROUP_MAX_PAGE_FRACTION = 0.35
+_GROUP_MAX_REGION_WIDTH_FRACTION = 0.70
+
+
+def _bbox_gap(a: list[float], b: list[float]) -> float:
+    dx = max(0.0, max(a[0], b[0]) - min(a[2], b[2]))
+    dy = max(0.0, max(a[1], b[1]) - min(a[3], b[3]))
+    return max(dx, dy)
+
+
+def _bbox_inside(outer: list[float], inner: list[float], tol: float = 0.5) -> bool:
+    return (
+        inner[0] >= outer[0] - tol
+        and inner[1] >= outer[1] - tol
+        and inner[2] <= outer[2] + tol
+        and inner[3] <= outer[3] + tol
+    )
+
+
+def _box_area(b: list[float]) -> float:
+    return max(0.0, (b[2] - b[0]) * (b[3] - b[1]))
+
+
+def assemble_visual_group_bbox(
+    seed: list[float] | None,
+    page: dict[str, Any],
+    *,
+    limit_bbox: list[float] | None,
+) -> list[float] | None:
+    """Grow a seed drawing into the whole figure it belongs to.
+
+    One printed figure is often many vector paths (faces, fills, outlines) plus
+    short labels.  Inside ``limit_bbox`` the seed absorbs drawings / embedded
+    images that touch or nearly touch it, then glyph-sized paths and short text
+    labels right next to the grown group.  Page textures (blended groups), paths
+    under prose lines and enclosing panels are never absorbed; an implausibly
+    large result falls back to the seed.
+    """
+    if not seed or not limit_bbox:
+        return seed
+    page_area = float(page["width"] * page["height"])
+    words = [w for w in (page.get("words") or []) if len(w) >= 5]
+    prose = [
+        [float(v) for v in w[:4]]
+        for w in words
+        if len(str(w[4]).strip()) >= _GROUP_PROSE_MIN_CHARS
+    ]
+
+    def _usable(obj: dict[str, Any]) -> list[float] | None:
+        bb = [float(v) for v in obj["bbox"]]
+        if obj.get("blended") or not _bbox_inside(limit_bbox, bb):
+            return None
+        if any(intersect_area(bb, p) > 0.3 * max(_box_area(p), 1.0) for p in prose):
+            return None
+        return bb
+
+    parts: list[list[float]] = []
+    for obj in list(page.get("drawings") or []) + list(page.get("images") or []):
+        if float(obj.get("area") or 0.0) > _GROUP_MAX_PAGE_FRACTION * page_area:
+            continue
+        bb = _usable(obj)
+        if bb is not None:
+            parts.append(bb)
+
+    group = [float(v) for v in seed]
+    changed = True
+    while changed:
+        changed = False
+        for bb in list(parts):
+            if _bbox_gap(group, bb) > _GROUP_GAP_PT:
+                continue
+            parts.remove(bb)
+            if _bbox_inside(bb, group) and _box_area(bb) > 2.0 * max(_box_area(group), 1.0):
+                continue
+            group = union_bbox([group, bb])
+            changed = True
+
+    # Outlined glyphs (vertex names, units) are tiny paths hugging the figure.
+    glyph_boxes = []
+    for obj in page.get("small_drawings") or []:
+        bb = _usable(obj)
+        if bb is None or (bb[2] - bb[0]) > _GROUP_GLYPH_MAX_PT or (bb[3] - bb[1]) > _GROUP_GLYPH_MAX_PT:
+            continue
+        if _bbox_gap(group, bb) <= _GROUP_LABEL_GAP_PT:
+            glyph_boxes.append(bb)
+    if glyph_boxes:
+        group = union_bbox([group] + glyph_boxes)
+
+    lines: dict[tuple[Any, Any], list[str]] = {}
+    for w in words:
+        if len(w) >= 7:
+            lines.setdefault((w[5], w[6]), []).append(str(w[4]).strip())
+    for w in words:
+        text = str(w[4]).strip()
+        if not text or len(text) > _GROUP_LABEL_MAX_CHARS:
+            continue
+        if len(w) >= 7 and any(len(t) > _GROUP_LABEL_MAX_CHARS for t in lines.get((w[5], w[6]), [])):
+            continue
+        wb = [float(v) for v in w[:4]]
+        if not _bbox_inside(limit_bbox, wb):
+            continue
+        if _bbox_gap(group, wb) <= _GROUP_LABEL_GAP_PT:
+            group = union_bbox([group, wb])
+
+    region_w = max(1.0, float(limit_bbox[2] - limit_bbox[0]))
+    if _box_area(group) > _GROUP_MAX_PAGE_FRACTION * page_area:
+        return list(seed)
+    if (group[2] - group[0]) > _GROUP_MAX_REGION_WIDTH_FRACTION * region_w and (group[2] - group[0]) > (seed[2] - seed[0]) + 1.0:
+        return list(seed)
+    return group
+
+
 def _pick_compact_diagram_bbox(
     draws: list[dict[str, Any]],
     page: dict[str, Any],
     *,
     prefer_y: float | None = None,
+    limit_bbox: list[float] | None = None,
 ) -> list[float] | None:
     """Prefer one compact right-side diagram near the stem over distant/large unions."""
     if not draws:
@@ -596,14 +746,22 @@ def _pick_compact_diagram_bbox(
 
     ranked = sorted(draws, key=_diagram_score, reverse=True)
     best = ranked[0] if ranked and _diagram_score(ranked[0]) > 0 else None
-    return list(best["bbox"]) if best is not None else None
+    if best is None:
+        return None
+    return assemble_visual_group_bbox(list(best["bbox"]), page, limit_bbox=limit_bbox)
 
 
 def classify_and_detect_visuals(
     matches: list[dict[str, Any]],
     pages: list[dict[str, Any]],
+    *,
+    assemble_visual_groups: bool = False,
 ) -> list[dict[str, Any]]:
-    """Detect visuals and classify: required|helpful|decorative|skipped_low_confidence|none."""
+    """Detect visuals and classify: required|helpful|decorative|skipped_low_confidence|none.
+
+    ``assemble_visual_groups`` grows each picked diagram into its whole figure
+    (see ``assemble_visual_group_bbox``); off by default.
+    """
     for idx, row in enumerate(matches):
         score = float(row.get("match_score") or 0.0)
         regions = row.get("regions") or []
@@ -720,6 +878,16 @@ def classify_and_detect_visuals(
                     )
 
         preferred_draws = significant_draws or (soft_draws if (strong_cue or text_flag or significant_imgs) else [])
+        group_limit = None
+        if assemble_visual_groups and regions:
+            gpage = pages[regions[0]["page"] - 1]
+            gqb = regions[0]["bbox"]
+            group_limit = [
+                gqb[0],
+                gqb[1],
+                gqb[2],
+                search_band_bottom(gqb, page_height=float(gpage["height"]), next_question_y=next_q_y),
+            ]
         stem_y = None
         pm = row.get("pdf_match") or {}
         if pm.get("question_start_y") is not None:
@@ -794,7 +962,7 @@ def classify_and_detect_visuals(
             if not graph_draws and strong_cue and (preferred_draws or soft_draws):
                 graph_draws = list(preferred_draws or soft_draws)
             if graph_draws:
-                visual_bbox = _pick_compact_diagram_bbox(graph_draws, page, prefer_y=stem_y)
+                visual_bbox = _pick_compact_diagram_bbox(graph_draws, page, prefer_y=stem_y, limit_bbox=group_limit)
                 visual_type = "diagram" if visual_bbox else None
                 if visual_bbox is None and strong_cue:
                     right_x = float(page["width"]) * 0.42
@@ -830,7 +998,7 @@ def classify_and_detect_visuals(
             page = pages[regions[0]["page"] - 1]
             if preferred_draws or soft_draws:
                 visual_bbox = _pick_compact_diagram_bbox(
-                    preferred_draws or soft_draws, page, prefer_y=stem_y
+                    preferred_draws or soft_draws, page, prefer_y=stem_y, limit_bbox=group_limit
                 )
                 if visual_bbox is None:
                     # Conservative fallback: largest single draw, never union top-N.
@@ -846,7 +1014,7 @@ def classify_and_detect_visuals(
         elif photo_and_diagram:
             page = pages[regions[0]["page"] - 1]
             draws = significant_draws or soft_draws
-            pick = _pick_compact_diagram_bbox(draws, page, prefer_y=stem_y)
+            pick = _pick_compact_diagram_bbox(draws, page, prefer_y=stem_y, limit_bbox=group_limit)
             boxes = ([pick] if pick else [max(draws, key=lambda d: d["area"])["bbox"]]) + [
                 i["bbox"] for i in significant_imgs
             ]
@@ -870,7 +1038,7 @@ def classify_and_detect_visuals(
                 if d["area"] < 0.35 * page["width"] * page["height"]
             ]
             if compact and (strong_cue or text_flag):
-                visual_bbox = _pick_compact_diagram_bbox(compact, page, prefer_y=stem_y)
+                visual_bbox = _pick_compact_diagram_bbox(compact, page, prefer_y=stem_y, limit_bbox=group_limit)
                 if visual_bbox is None:
                     visual_bbox = list(max(compact, key=lambda d: d["area"])["bbox"])
                 visual_type = "diagram"
@@ -1176,6 +1344,7 @@ def enrich_textbook_examples_with_pdf_visuals(
     write_notes: bool = True,
     publish_assets: bool | None = None,
     dpi: int = DEFAULT_DPI,
+    assemble_visual_groups: bool = False,
 ) -> dict[str, Any]:
     """Match/detect/crop/link PDF visuals for TextbookExample rows. Non-fatal per question."""
     import fitz
@@ -1236,7 +1405,7 @@ def enrich_textbook_examples_with_pdf_visuals(
 
     matched = match_questions_to_pdf(items, pages)
     matched = assign_question_regions(matched, pages)
-    matched = classify_and_detect_visuals(matched, pages)
+    matched = classify_and_detect_visuals(matched, pages, assemble_visual_groups=assemble_visual_groups)
     from core.textbook_b2_11 import correct_pdf_regions
     matched = correct_pdf_regions(matched, pages, pdf, curriculum_info)
     from core.textbook_b2_12 import correct_pdf_visual_regions

@@ -90,7 +90,7 @@
                             <label for="cloud-model-select" style="font-size:0.85em; font-weight:600; color:#475569; margin:0;">Cloud 模型</label>
                             <select id="cloud-model-select" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:4px; outline:none;">
                                 {% for model in google_model_options %}
-                                <option value="{{ model.value }}" title="{{ (model.recommended_for or [])|join(' / ') }}" {% if model.value == cloud_model %}selected{% endif %}>{{ model.label }}</option>
+                                <option value="{{ model.value }}" title="{{ (model.recommended_for or [])|join(' / ') }}" {% if model.value == cloud_model %}selected{% endif %}>{{ model.label }}{% if model.value == 'gemini-3.5-flash-lite' %}｜日常使用｜低成本｜支援圖片{% elif model.value == 'gemini-3.8-flash' %}｜進階使用｜較高能力{% endif %}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -206,7 +206,7 @@
     </div>
     <script>
         let currentMode = "cloud";
-        let currentCloudModel = "gemini-3.5-flash";
+        let currentCloudModel = "gemini-3.5-flash-lite";
         let modelMappingCache = {};
         let promptTemplatesCache = [];
         let googleModelOptions = {{ google_model_options|tojson }};
@@ -226,15 +226,15 @@
         });
 
         function ensureCloudModelOption() {
-            const modelId = "gemini-3.5-flash";
+            const modelId = "gemini-3.5-flash-lite";
             const cloudModelSelect = document.getElementById("cloud-model-select");
             if (!cloudModelSelect) return;
             if ([...cloudModelSelect.options].some(option => option.value === modelId)) return;
 
             const option = document.createElement("option");
             option.value = modelId;
-            option.textContent = "Gemini 3.5 Flash";
-            option.title = "default_cloud / hybrid_preview / structured_output / complex_reasoning";
+            option.textContent = "Gemini 3.5 Flash-Lite｜日常使用｜低成本｜支援圖片";
+            option.title = "日常使用｜低成本｜支援圖片";
             cloudModelSelect.insertBefore(option, cloudModelSelect.firstChild);
         }
 
@@ -416,7 +416,7 @@
                     throw new Error(saveData.message || "模式儲存失敗");
                 }
                 
-                showAlert(`已驗證環境設定，且模式成功切換為 ${getModeDisplayName(currentMode)}`, true);
+                showAlert(`Gemini API 連線成功，設定已儲存（${cloudModel}）。`, true);
                 if (selectedBadge) {
                     selectedBadge.className = "badge badge-success";
                     selectedBadge.innerHTML = `<i class="bi bi-check-circle-fill"></i> 已套用：${getModeDisplayName(currentMode)}`;
@@ -473,7 +473,7 @@
 
         function generateLocalPreview(mode, availableModels) {
             const roles = {};
-            const selectedCloud = document.getElementById("cloud-model-select")?.value || currentCloudModel || "gemini-3.5-flash";
+            const selectedCloud = document.getElementById("cloud-model-select")?.value || currentCloudModel || "gemini-3.5-flash-lite";
             const g = availableModels.find(m => (m.key || "") === selectedCloud)?.key || selectedCloud;
             const qVl = availableModels.find(m => (m.key || "").includes("qwen3-vl-8b"))?.key || "qwen3-vl-8b";
             const q8b = availableModels.find(m => (m.key || "").includes("qwen3-8b") && !(m.key || "").includes("vl"))?.key || "qwen3-8b";
@@ -507,6 +507,8 @@
                 c.appendChild(item);
             });
 
+        }
+
         function loadSettings() {
             fetch("/admin/ai_prompt_settings/get")
                 .then(r => r.json())
@@ -514,7 +516,7 @@
                     if (!data.success) return showAlert("設定讀取失敗", false);
                     window._availModels = data.available_models || [];
                     googleModelOptions = data.google_model_options || googleModelOptions || [];
-                    const cloudModel = data.cloud_model || "gemini-3.5-flash";
+                    const cloudModel = data.cloud_model || "gemini-3.5-flash-lite";
                     currentCloudModel = cloudModel;
                     const cloudModelSelect = document.getElementById("cloud-model-select");
                     ensureCloudModelOption();

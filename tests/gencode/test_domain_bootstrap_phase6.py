@@ -29,6 +29,7 @@ from core.gencode.domain_bootstrap.planner import estimate_bootstrap_cost
 from core.gencode.domain_bootstrap.promotion_service import PromotionError, promote_candidate_to_verified
 from core.gencode.domain_bootstrap.retry_service import retry_affected_components
 from core.gencode.domain_bootstrap.scaffold_builder import ABSTRACT_FIXTURE_CAPABILITY
+from core.gencode.domain_bootstrap.validation_runner import validate_candidate_domain
 from core.gencode.skill_fixed_domain_authority import (
     SkillFixedDomainError,
     get_domain_providers_for_resolution,
@@ -320,6 +321,279 @@ def test_promotion_failure_rolls_back_registry(
         )
     load_verified_candidates_from_disk(store_path=registry_store)
     assert not list_verified_bootstrap_providers()
+
+
+def _write_multi_operation_manifest(store: CandidateStore, gap_id: str, operations: list[str]) -> None:
+    path = store.candidate_dir(gap_id) / "domain_manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    manifest["operations"] = operations
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+
+
+def test_multi_operation_promotion_registers_full_capability_and_is_idempotent(
+    isolated_store: CandidateStore,
+    registry_store: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    isolated_verified_memory: None,
+) -> None:
+    verified_root = isolated_store.bootstrap_root / "verified_domains"
+    monkeypatch.setattr("core.gencode.domain_bootstrap.promotion_service.VERIFIED_DOMAIN_ROOT", verified_root)
+    capabilities = ["fixture_capability_a", "fixture_capability_b", "fixture_capability_c"]
+    exc = _gap_exc(DOMAIN_CAPABILITY_UNRESOLVED, capabilities=capabilities)
+    gap = detect_or_reuse_domain_gap(
+        store=isolated_store, error_code=exc.code, error_details=exc.details,
+        skill_id="fixture_skill_alpha", textbook_example_id=99001, component_id="src_99001",
+    )
+    from core.gencode.domain_bootstrap.scaffold_builder import build_candidate_scaffold
+
+    scaffold = build_candidate_scaffold(store=isolated_store, gap_report=gap)
+    operations = ["fixture_operation_a", "fixture_operation_b", "fixture_operation_c"]
+    _write_multi_operation_manifest(isolated_store, gap.gap_id, operations)
+    validation = validate_candidate_domain(store=isolated_store, gap_report=gap)
+    assert validation["passed"] is True
+    assert {row["operation"] for row in validation["seed_results"]} == set(operations)
+
+    first = promote_candidate_to_verified(
+        store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+        teacher_approved=True, registry_store_path=registry_store,
+    )
+    second = promote_candidate_to_verified(
+        store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+        teacher_approved=True, registry_store_path=registry_store,
+    )
+    assert first["allowed_operations"] == operations
+    assert second["allowed_operations"] == operations
+    stored = json.loads(registry_store.read_text(encoding="utf-8"))
+    assert list(stored) == [first["domain_key"]]
+    assert stored[first["domain_key"]]["allowed_operations"] == operations
+    memory = list_verified_bootstrap_providers()
+    assert list(memory) == [first["domain_key"]]
+    assert memory[first["domain_key"]]["allowed_operations"] == operations
+    assert sorted(p.name for p in verified_root.iterdir()) == [gap.gap_id]
+
+
+def test_nth_operation_validation_failure_leaves_verified_state_unchanged(
+    isolated_store: CandidateStore,
+    registry_store: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    isolated_verified_memory: None,
+) -> None:
+    verified_root = isolated_store.bootstrap_root / "verified_domains"
+    monkeypatch.setattr("core.gencode.domain_bootstrap.promotion_service.VERIFIED_DOMAIN_ROOT", verified_root)
+    capabilities = ["fixture_capability_a", "fixture_capability_b", "fixture_capability_c"]
+    exc = _gap_exc(DOMAIN_CAPABILITY_UNRESOLVED, capabilities=capabilities)
+    gap = detect_or_reuse_domain_gap(
+        store=isolated_store, error_code=exc.code, error_details=exc.details,
+        skill_id="fixture_skill_alpha", textbook_example_id=99001, component_id="src_99001",
+    )
+    from core.gencode.domain_bootstrap.scaffold_builder import build_candidate_scaffold
+
+    scaffold = build_candidate_scaffold(store=isolated_store, gap_report=gap)
+    operations = ["fixture_operation_a", "fixture_operation_b", "fixture_operation_c"]
+    _write_multi_operation_manifest(isolated_store, gap.gap_id, operations)
+    domain_path = isolated_store.candidate_dir(gap.gap_id) / "domain_module.py"
+    domain_path.write_text(domain_path.read_text(encoding="utf-8").replace(
+        "constraints = dict(constraints or {})",
+        "constraints = dict(constraints or {})\n    if domain_operation == 'fixture_operation_c':\n        raise RuntimeError('forced_nth_operation_failure')",
+    ), encoding="utf-8")
+    before = _production_state(registry_store, verified_root)
+    validation = validate_candidate_domain(store=isolated_store, gap_report=gap)
+    assert validation["passed"] is False
+    assert any("fixture_operation_c" in blocker for blocker in validation["blockers"])
+    with pytest.raises(PromotionError, match="candidate gate not passed"):
+        promote_candidate_to_verified(
+            store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+            teacher_approved=True, registry_store_path=registry_store,
+        )
+    assert _production_state(registry_store, verified_root) == before
+    assert not (verified_root / gap.gap_id).exists()
+
+
+def _tree_digest(root: Path) -> dict[str, bytes]:
+    if not root.exists():
+        return {}
+    return {
+        path.relative_to(root).as_posix(): path.read_bytes()
+        for path in sorted(root.rglob("*"))
+        if path.is_file() and "__pycache__" not in path.parts
+    }
+
+
+def _production_state(registry_store: Path, verified_root: Path) -> dict[str, object]:
+    return {
+        "registry": registry_store.read_bytes() if registry_store.exists() else None,
+        "memory": list_verified_bootstrap_providers(),
+        "verified": _tree_digest(verified_root),
+    }
+
+
+@pytest.fixture
+def isolated_verified_memory(monkeypatch: pytest.MonkeyPatch) -> None:
+    from core.gencode.domain_bootstrap import candidate_registry
+
+    monkeypatch.setattr(candidate_registry, "_verified_providers", {})
+
+
+def _prepare_operation_candidate(
+    store: CandidateStore, operations: list[str] | None
+) -> tuple[object, dict]:
+    from core.gencode.domain_bootstrap.scaffold_builder import build_candidate_scaffold
+
+    capabilities = ["fixture_capability_a", "fixture_capability_b", "fixture_capability_c"]
+    exc = _gap_exc(DOMAIN_CAPABILITY_UNRESOLVED, capabilities=capabilities)
+    gap = detect_or_reuse_domain_gap(
+        store=store, error_code=exc.code, error_details=exc.details,
+        skill_id="fixture_skill_alpha", textbook_example_id=99001, component_id="src_99001",
+    )
+    scaffold = build_candidate_scaffold(store=store, gap_report=gap)
+    if operations is not None:
+        _write_multi_operation_manifest(store, gap.gap_id, operations)
+    return gap, scaffold
+
+
+def _seed_unrelated_verified_provider(registry_store: Path) -> None:
+    from core.gencode.domain_bootstrap.candidate_registry import (
+        VerifiedCandidateProvider,
+        register_verified_candidate,
+    )
+
+    register_verified_candidate(
+        VerifiedCandidateProvider(
+            domain_key="candidate.fixture_unrelated",
+            domain_module="agent_domains_verified.fixture_unrelated.domain_module",
+            entrypoint="build_fixture_matrix",
+            capabilities=frozenset({"fixture_unrelated_capability"}),
+            allowed_operations=("fixture_unrelated_operation",),
+            gap_id="fixture_unrelated",
+            artifact_hash="fixture-unrelated-hash",
+            registry_revision="bootstrap-fixture",
+        ),
+        store_path=registry_store,
+    )
+
+
+@pytest.mark.parametrize("failure_mode", ["registry_written_then_fail", "registry_truncated", "artifact_copy"])
+def test_promotion_time_failure_rolls_back_all_multi_operation_state(
+    isolated_store: CandidateStore,
+    registry_store: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    isolated_verified_memory: None,
+    failure_mode: str,
+) -> None:
+    from core.gencode.domain_bootstrap import candidate_registry, promotion_service
+
+    verified_root = isolated_store.bootstrap_root / "verified_domains"
+    monkeypatch.setattr(promotion_service, "VERIFIED_DOMAIN_ROOT", verified_root)
+    operations = ["fixture_operation_a", "fixture_operation_b", "fixture_operation_c"]
+    gap, scaffold = _prepare_operation_candidate(isolated_store, operations)
+    _seed_unrelated_verified_provider(registry_store)
+    before = _production_state(registry_store, verified_root)
+
+    if failure_mode == "artifact_copy":
+        real_copytree = shutil.copytree
+        candidate_dir = isolated_store.candidate_dir(gap.gap_id)
+
+        def _failing_copytree(src, dst, *args, **kwargs):
+            result = real_copytree(src, dst, *args, **kwargs)
+            if Path(src) == candidate_dir:
+                raise OSError("forced_artifact_copy_failure")
+            return result
+
+        monkeypatch.setattr(promotion_service.shutil, "copytree", _failing_copytree)
+    else:
+        real_save = candidate_registry._save_store
+
+        def _failing_save(path, payload):
+            if failure_mode == "registry_truncated":
+                Path(path).write_text('{"partial": ', encoding="utf-8")
+            else:
+                real_save(path, payload)
+            raise OSError("forced_registry_write_failure")
+
+        monkeypatch.setattr(candidate_registry, "_save_store", _failing_save)
+
+    with pytest.raises(PromotionError) as raised:
+        promote_candidate_to_verified(
+            store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+            teacher_approved=True, registry_store_path=registry_store,
+        )
+    assert raised.value.code == "promotion_failed"
+    assert _production_state(registry_store, verified_root) == before
+    assert not (verified_root / gap.gap_id).exists()
+    assert not (verified_root / f"{gap.gap_id}.rollback").exists()
+
+
+def test_repromotion_failure_restores_previous_verified_capability(
+    isolated_store: CandidateStore,
+    registry_store: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    isolated_verified_memory: None,
+) -> None:
+    from core.gencode.domain_bootstrap import candidate_registry, promotion_service
+
+    verified_root = isolated_store.bootstrap_root / "verified_domains"
+    monkeypatch.setattr(promotion_service, "VERIFIED_DOMAIN_ROOT", verified_root)
+    old_operations = ["fixture_operation_a", "fixture_operation_b"]
+    gap, scaffold = _prepare_operation_candidate(isolated_store, old_operations)
+    promote_candidate_to_verified(
+        store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+        teacher_approved=True, registry_store_path=registry_store,
+    )
+    before = _production_state(registry_store, verified_root)
+
+    _write_multi_operation_manifest(
+        isolated_store, gap.gap_id, ["fixture_operation_a", "fixture_operation_b", "fixture_operation_c"]
+    )
+
+    def _failing_save(path, payload):
+        raise OSError("forced_registry_write_failure")
+
+    monkeypatch.setattr(candidate_registry, "_save_store", _failing_save)
+    with pytest.raises(PromotionError, match="forced_registry_write_failure"):
+        promote_candidate_to_verified(
+            store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+            teacher_approved=True, registry_store_path=registry_store,
+        )
+    after = _production_state(registry_store, verified_root)
+    assert after == before
+    (domain_key,) = after["memory"].keys()
+    assert after["memory"][domain_key]["allowed_operations"] == old_operations
+    assert not (verified_root / f"{gap.gap_id}.rollback").exists()
+
+
+def test_single_operation_promotion_backward_compatible(
+    isolated_store: CandidateStore,
+    registry_store: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    isolated_verified_memory: None,
+) -> None:
+    verified_root = isolated_store.bootstrap_root / "verified_domains"
+    monkeypatch.setattr("core.gencode.domain_bootstrap.promotion_service.VERIFIED_DOMAIN_ROOT", verified_root)
+    gap, scaffold = _prepare_operation_candidate(isolated_store, None)
+    manifest = json.loads(isolated_store.read_candidate_file(gap.gap_id, "domain_manifest.json"))
+    assert len(manifest["operations"]) == 1
+    (operation,) = manifest["operations"]
+
+    validation = validate_candidate_domain(store=isolated_store, gap_report=gap)
+    assert validation["passed"] is True
+    assert {row["operation"] for row in validation["seed_results"]} == {operation}
+
+    first = promote_candidate_to_verified(
+        store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+        teacher_approved=True, registry_store_path=registry_store,
+    )
+    state_after_first = _production_state(registry_store, verified_root)
+    second = promote_candidate_to_verified(
+        store=isolated_store, gap_report=gap, artifact_hash=scaffold["artifact_hash"],
+        teacher_approved=True, registry_store_path=registry_store,
+    )
+    assert first["allowed_operations"] == second["allowed_operations"] == [operation]
+    memory = list_verified_bootstrap_providers()
+    assert list(memory) == [first["domain_key"]]
+    assert memory[first["domain_key"]]["allowed_operations"] == [operation]
+    assert _production_state(registry_store, verified_root)["verified"] == state_after_first["verified"]
+    stored = json.loads(registry_store.read_text(encoding="utf-8"))
+    assert list(stored) == [first["domain_key"]]
 
 
 def test_verified_promotion_retries_only_affected_components() -> None:

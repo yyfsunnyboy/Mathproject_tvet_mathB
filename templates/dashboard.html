@@ -529,7 +529,12 @@
             background: #fffdf9 !important;
             border: 1px solid #dde5d8 !important;
             border-radius: 14px !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 0 !important;
+            text-align: center;
             box-shadow: 0 2px 8px rgba(60,80,60,0.04) !important;
             transition:
                 background 0.18s ease,
@@ -550,9 +555,15 @@
         }
         .level-card.chapter-card h3 {
             font-size: 13px !important;
+            font-weight: 700 !important;
             color: var(--ink) !important;
-            margin: 0 !important;
+            margin: 0 0 12px !important;
             transition: font-weight 0.18s ease, color 0.18s ease;
+        }
+        .chapter-card__enter {
+            margin: 0;
+            font-size: 12px;
+            color: #5e7a61;
         }
 
         /* ── Categories grid ── */
@@ -782,7 +793,7 @@
         {% endif %}
         {% elif level == 'chapters' %}
         <!-- 顯示章節 -->
-        <p>{{ volume }} - 請選擇章節：</p>
+        <p>{{ volume }}｜選擇章節</p>
         <div class="level-grid chapters-grid">
             {% for ch in chapter_cards %}
             <div class="chapter-container" style="display: flex; flex-direction: column; gap: 5px;">
@@ -790,12 +801,13 @@
                     style="text-decoration: none; flex-grow: 1; display: flex;">
                     <div class="level-card chapter-card" style="width: 100%;">
                         <h3>{{ ch.display }}</h3>
+                        <p class="chapter-card__enter">進入章節</p>
                     </div>
                 </a>
                 <a href="{{ url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='1', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('1') else url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='2', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('2') else url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw, curriculum=curriculum, volume=volume) }}"
                     class="btn-practice"
                     style="background-color: #28a745; text-decoration: none; padding: 8px; font-size: 0.9em;">
-                    單元練習
+                    本章總複習
                 </a>
             </div>
             {% endfor %}

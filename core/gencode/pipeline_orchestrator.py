@@ -4863,7 +4863,11 @@ def _extract_phase1_induced_spec_from_payload(payload: dict[str, Any] | None) ->
         return {}
     nested = payload.get("phase1_classification")
     if isinstance(nested, dict):
-        return dict(nested)
+        spec = dict(nested)
+        generation_constraints = payload.get("generation_constraints")
+        if "generation_constraints" not in spec and isinstance(generation_constraints, dict) and generation_constraints:
+            spec["generation_constraints"] = copy.deepcopy(generation_constraints)
+        return spec
     if str(payload.get("classification_status") or "").strip() == "resolved":
         return dict(payload)
     return {}
@@ -6049,6 +6053,26 @@ def _v3_invoke_domain_entrypoint(
     return entrypoint_fn(**kwargs)
 
 
+def _v3_materialize_generation_variant(
+    constraints: dict[str, object], seed: int | None
+) -> dict[str, object]:
+    """Select the variant the generated component replays for ``seed`` (same rule as its
+    ``_materialize_generation_constraints``); constraints without variants pass through."""
+    generation = constraints.get("generation_constraints")
+    variants = generation.get("variants") if isinstance(generation, dict) else None
+    if not isinstance(variants, list) or not variants:
+        return constraints
+    selected = variants[(0 if seed is None else int(seed)) % len(variants)]
+    if not isinstance(selected, dict):
+        return constraints
+    selected = selected.get("constraints", selected)
+    if not isinstance(selected, dict):
+        return constraints
+    materialized = {k: v for k, v in constraints.items() if k != "generation_constraints"}
+    materialized.update(copy.deepcopy(selected))
+    return materialized
+
+
 def build_v3_component_draft_from_skill(
     skill_id: str,
     textbook_example_id: int,
@@ -6156,17 +6180,35 @@ def build_v3_component_draft_from_skill(
         "registry_revision": domain_ctx.registry_revision,
         "domain": "coordinate_geometry",
     }
+    from core.registry.domain_operation_registry import get_operation_spec
+    from core.registry.taxonomy_registry import get_confirmed_skill_binding
+
+    operation_spec = get_operation_spec(domain_ctx.fixed_domain_key, line_type)
+    confirmed_binding = get_confirmed_skill_binding(skill_id) or {}
+    if (
+        bool(confirmed_binding.get("promoted_capability"))
+        and operation_spec is not None
+        and not operation_spec.payload_adapter
+    ):
+        raise ValueError(
+            f"registered_payload_adapter_missing:{domain_ctx.fixed_domain_key}:{line_type}"
+        )
+    registry["registered_payload_adapter"] = bool(
+        operation_spec is not None and operation_spec.payload_adapter
+    )
     domain_module = str(registry["domain_module"])
     entrypoint = str(registry["entrypoint"])
     curriculum_profile = str(registry["default_curriculum_profile"])
     component_id = derive_component_id(textbook_example_id)
 
-    module = importlib.import_module(domain_module)
-    entrypoint_fn = getattr(module, entrypoint, None)
-    if not callable(entrypoint_fn):
-        raise AttributeError(
-            f"Domain entrypoint not callable: {domain_module}.{entrypoint}"
-        )
+    entrypoint_fn = None
+    if not registry["registered_payload_adapter"]:
+        module = importlib.import_module(domain_module)
+        entrypoint_fn = getattr(module, entrypoint, None)
+        if not callable(entrypoint_fn):
+            raise AttributeError(
+                f"Domain entrypoint not callable: {domain_module}.{entrypoint}"
+            )
 
     canonical_source_kind = resolve_source_kind_from_textbook_row(row)
     if str(source_kind or "").strip().lower().startswith(("ex_", "src_")):
@@ -6243,6 +6285,106 @@ def build_v3_component_draft_from_skill(
     if presentation_mode == "single_choice" or answer_type == "single_choice" or answer_type == "choice":
         answer_schema_key = "choice_label"
     presentation_evidence = build_presentation_evidence_payload(inferred)
+
+    if registry["registered_payload_adapter"]:
+        from core.gencode.registered_operation_dispatch import dispatch_registered_operation
+
+        _matrix, registered_payload = dispatch_registered_operation(
+            domain_ctx.fixed_domain_key,
+            line_type,
+            seed=seed,
+            constraints=_v3_materialize_generation_variant(extra, seed) or None,
+        )
+        registered_contract = registered_payload.get("answer_contract")
+        if not isinstance(registered_contract, dict):
+            raise ValueError(
+                f"registered_payload_missing_answer_contract:"
+                f"{domain_ctx.fixed_domain_key}:{line_type}"
+            )
+        presentation_mode = str(
+            registered_payload.get("presentation_mode")
+            or registered_contract.get("presentation_mode")
+            or presentation_mode
+        )
+        answer_type = str(
+            registered_payload.get("answer_type")
+            or registered_contract.get("answer_type")
+            or answer_type
+        )
+        problem_type_id = str(registered_payload.get("problem_type_id") or problem_type_id)
+        checker_key = str(registered_contract.get("checker_key") or "").strip()
+        equivalence_type = str(
+            registered_contract.get("equivalence_type")
+            or registered_contract.get("answer_equivalence")
+            or ""
+        ).strip()
+        if not checker_key or not equivalence_type:
+            raise ValueError(
+                f"registered_payload_missing_checker_contract:"
+                f"{domain_ctx.fixed_domain_key}:{line_type}"
+            )
+        checker_module_by_key = {
+            "choice_label_checker": "core.checkers.choice_label_checker",
+            "solution_set_checker": "core.checkers.solution_set_checker",
+            "interval_checker": "core.checkers.interval_checker",
+            "multi_part_answer_checker": "core.checkers.multi_part_answer_checker",
+            "rational_between_bounds_checker": "core.checkers.rational_between_bounds_checker",
+            "simplest_fraction_checker": "core.checkers.simplest_fraction_checker",
+        }
+        checker_module = checker_module_by_key.get(
+            checker_key, "core.checkers.structured_text_checker"
+        )
+        payload_meta = {
+            "line_type": line_type,
+            "domain_operation": line_type,
+            "answer_schema_key": answer_schema_key,
+            "target_task": problem_type_id,
+            "template_slot": template_slot,
+            "template_domain_key": domain_ctx.fixed_domain_key,
+            "template_operation_key": line_type,
+            "presentation_mode": presentation_mode,
+            "answer_type": answer_type,
+            "problem_type_id": problem_type_id,
+            "textbook_example_id": textbook_example_id,
+            "constraints": extra,
+            "curriculum_profile": curriculum_profile,
+            "checker_key": checker_key,
+            "equivalence_type": equivalence_type,
+            "checker_module": checker_module,
+            "presentation_evidence": presentation_evidence,
+            "source_topology": source_topology,
+        }
+        files = build_component_files_from_domain_payload(
+            skill_id=skill_id,
+            component_id=component_id,
+            source_kind=source_kind,
+            domain_meta=registry,
+            payload_meta=payload_meta,
+            textbook_example_id=textbook_example_id,
+            textbook_row=row,
+        )
+        return {
+            "status": "draft_built",
+            "skill_id": skill_id,
+            "textbook_example_id": textbook_example_id,
+            "source_kind": source_kind,
+            "line_type": line_type,
+            "domain_operation": line_type,
+            "domain_module": domain_module,
+            "entrypoint": entrypoint,
+            "fixed_domain_key": domain_ctx.fixed_domain_key,
+            "registry_revision": domain_ctx.registry_revision,
+            "presentation_mode": presentation_mode,
+            "answer_type": answer_type,
+            "problem_type_id": problem_type_id,
+            "target_task": problem_type_id,
+            "answer_schema_key": answer_schema_key,
+            "checker_key": checker_key,
+            "constraints": extra,
+            "domain_resolution": dict(extra.get("domain_resolution") or {}),
+            "presentation_evidence": presentation_evidence,
+            "files": files,
+        }
 
     matrix = _v3_invoke_domain_entrypoint(
         entrypoint_fn,
@@ -7056,6 +7198,11 @@ def run_gencode_phase2_v3_shadow_bridge(
         induced_spec_payload,
         textbook_row=source_row,
     )
+    # Topology enrichment rewrites domain_params/constraints; keep the
+    # component-level variants so admin regeneration can replay them.
+    generation_constraints = extra.get("generation_constraints")
+    if isinstance(generation_constraints, dict) and generation_constraints:
+        induced_spec_payload["generation_constraints"] = copy.deepcopy(generation_constraints)
     draft = _sync_v3_draft_metadata_operation(
         draft,
         domain_operation=str(induced_spec_payload.get("domain_operation") or ""),

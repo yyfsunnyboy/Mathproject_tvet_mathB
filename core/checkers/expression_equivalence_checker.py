@@ -131,10 +131,16 @@ def _numeric_equal(lhs: Any, rhs: Any, *, tol: float = 1e-9) -> bool:
         return False
 
 
-_FACTORIZED_FORMS = frozenset({"factorized", "factored", "factorization", "factored_expression", "factorized_expression"})
+_FULLY_FACTORIZED_FORMS = frozenset({"fully_factorized", "completely_factorized"})
+_FACTORIZED_FORMS = frozenset(
+    {"factorized", "factored", "factorization", "factored_expression", "factorized_expression"}
+    | _FULLY_FACTORIZED_FORMS
+)
 _FACTORIZED_EQUIVS = frozenset({"factorized_form", "required_factorized_form"})
 _PI_FORMS = frozenset({"pi_expression", "radian_pi", "contains_pi", "pi_form"})
 _SIMPLIFIED_TRIG_FORMS = frozenset({"simplified_trig", "fundamental_trig_simplified"})
+_EXPANDED_FORMS = frozenset({"expanded", "expanded_polynomial"})
+_SIMPLEST_RADICAL_FORMS = frozenset({"simplest_radical", "simplified_radical"})
 
 
 def contract_requires_pi_form(
@@ -328,6 +334,95 @@ def _is_factorized_expression(expr: Any) -> bool:
         return False
 
 
+def _is_fully_factorized_expression(expr: Any) -> bool:
+    """Factorized and every non-constant factor is irreducible over the rationals."""
+    if not _is_factorized_expression(expr):
+        return False
+    try:
+        from sympy import Mul, factor_list
+
+        for factor in Mul.make_args(expr):
+            base = factor.base if factor.is_Pow else factor
+            if not base.free_symbols:
+                continue
+            _, factors = factor_list(base)
+            if len(factors) != 1 or factors[0][1] != 1:
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def _is_expanded_answer(user_raw: str, evaluated: Any) -> bool:
+    """Written form has no product or power of a sum and its like terms are combined."""
+    try:
+        from sympy import Add, expand, preorder_traversal
+
+        tree = _parse_sympy_unevaluated(user_raw)
+        if any(
+            (node.is_Mul or node.is_Pow) and any(arg.is_Add for arg in node.args)
+            for node in preorder_traversal(tree)
+        ):
+            return False
+        return len(Add.make_args(tree)) == len(Add.make_args(expand(evaluated)))
+    except Exception:
+        return False
+
+
+def _parse_sympy_unevaluated(text: str) -> Any:
+    """Parse without automatic simplification, so the written form is preserved."""
+    from sympy import sqrt, sympify
+    from sympy.core.parameters import evaluate
+    from sympy.parsing.sympy_parser import (
+        convert_xor,
+        implicit_multiplication_application,
+        parse_expr,
+        standard_transformations,
+    )
+
+    norm = normalize_math_expression(text)
+    if not norm or not _looks_safe(norm):
+        raise ValueError("unsafe_or_empty_expression")
+    transformations = standard_transformations + (convert_xor, implicit_multiplication_application)
+    with evaluate(False):
+        return parse_expr(
+            norm,
+            local_dict={"sqrt": sqrt, "pi": sympify("pi")},
+            transformations=transformations,
+            evaluate=False,
+        )
+
+
+def _is_simplest_radical_answer(user_raw: str, evaluated: Any) -> bool:
+    """Written form has squarefree integer radicands, no radical denominators,
+    no unexpanded products of sums, and like terms already combined."""
+    try:
+        from sympy import Add, Rational, factorint, preorder_traversal
+
+        tree = _parse_sympy_unevaluated(user_raw)
+        if len(Add.make_args(tree)) != len(Add.make_args(evaluated)):
+            return False
+        for node in preorder_traversal(tree):
+            if not (node.is_Mul or node.is_Pow):
+                continue
+            if any(arg.is_Add for arg in node.args):
+                return False
+            if not node.is_Pow:
+                continue
+            base, exponent = node.args
+            if isinstance(exponent, Rational) and exponent.q == 2:
+                if not (base.is_Integer and base > 1 and all(e == 1 for e in factorint(int(base)).values())):
+                    return False
+            elif exponent.is_negative and any(
+                sub.is_Pow and isinstance(sub.args[1], Rational) and sub.args[1].q == 2
+                for sub in preorder_traversal(base)
+            ):
+                return False
+        return True
+    except Exception:
+        return False
+
+
 def _is_simplified_trig_expression(expr: Any) -> bool:
     """AST/structural check that a trig expression is already simplified."""
     try:
@@ -432,6 +527,15 @@ def check_expression_equivalence_debug(
             out["simplify_result"] = "required_form_failed"
             return out
         if need_simplified_trig and not _is_simplified_trig_expression(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        if (
+            (required_form in _FULLY_FACTORIZED_FORMS and not _is_fully_factorized_expression(user_expr))
+            or (required_form in _EXPANDED_FORMS and not _is_expanded_answer(ua_raw, user_expr))
+            or (required_form in _SIMPLEST_RADICAL_FORMS and not _is_simplest_radical_answer(ua_raw, user_expr))
+        ):
             out["correct"] = False
             out["required_form_failed"] = True
             out["simplify_result"] = "required_form_failed"

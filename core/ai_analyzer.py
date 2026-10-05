@@ -675,11 +675,10 @@ def get_model(role="tutor"):
 
     # Keep runtime behavior aligned with /admin/ai_prompt_settings
     try:
-        from core.ai_settings import apply_ai_runtime_settings, get_effective_model_config
+        from core.ai_settings import apply_ai_runtime_settings, get_active_ai_model
 
         apply_ai_runtime_settings()
-        model_cfg = get_effective_model_config(role)
-        runtime_model = str(model_cfg.get("model") or "").strip()
+        runtime_model = get_active_ai_model()
     except Exception:
         runtime_model = ""
 
@@ -687,7 +686,7 @@ def get_model(role="tutor"):
         runtime_model = (
             str(current_app.config.get("AI_CLOUD_MODEL") or "").strip()
             or str(current_app.config.get("GEMINI_MODEL_NAME") or "").strip()
-            or "gemini-3.1-flash-lite-preview"
+            or "gemini-3.5-flash-lite"
         )
 
     from core.ai_wrapper import resolve_gemini_api_key

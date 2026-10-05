@@ -2530,3 +2530,9 @@ register_domain_spec(DomainCapabilitySpec(
     capabilities=frozenset(_EL_OPS),
     operations={op: _el_op(op) for op in sorted(_EL_OPS)},
 ))
+
+
+# --- Human-reviewed promoted capabilities (data-driven; must stay last so static domains win) ---
+from core.registry.promoted_capability_store import register_promoted_domain_specs  # noqa: E402
+
+register_promoted_domain_specs()

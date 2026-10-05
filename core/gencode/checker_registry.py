@@ -98,7 +98,7 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
     },
     "solution_set_checker": {
         "runtime_available": True,
-        "answer_types": ["set", "solution_set", "integer_set", "number_set"],
+        "answer_types": ["set", "solution_set", "integer_set", "number_set", "short_answer"],
         "equivalence_types": ["unordered_solution_set", "set_equal"],
         "module": "core.checkers.solution_set_checker",
     },
@@ -219,6 +219,24 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "answer_types": ["solution_set", "unordered_set", "set", "integer_set", "number_set"],
         "equivalence_types": ["unordered_solution_set", "set_equal"],
         "module": "core.checkers.solution_set_checker",
+    },
+    "repeating_decimal_checker": {
+        "runtime_available": True,
+        "answer_types": ["decimal_expansion", "repeating_decimal"],
+        "equivalence_types": ["decimal_expansion_exact"],
+        "module": "core.checkers.repeating_decimal_checker",
+    },
+    "simplest_fraction_checker": {
+        "runtime_available": True,
+        "answer_types": ["fraction", "simplest_fraction"],
+        "equivalence_types": ["simplest_fraction_exact"],
+        "module": "core.checkers.simplest_fraction_checker",
+    },
+    "rational_between_bounds_checker": {
+        "runtime_available": True,
+        "answer_types": ["short_answer", "rational", "rational_between_bounds"],
+        "equivalence_types": ["strict_between_bounds"],
+        "module": "core.checkers.rational_between_bounds_checker",
     },
     "multi_blank_checker": {
         "runtime_available": True,

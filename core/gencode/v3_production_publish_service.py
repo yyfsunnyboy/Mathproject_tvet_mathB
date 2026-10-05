@@ -137,7 +137,15 @@ def _sync_staging_v3_component_sources(
         for entry in sorted(src_root.iterdir()):
             if not entry.is_dir() or entry.name.startswith("__"):
                 continue
-            shutil.copytree(entry, dest_components / entry.name, dirs_exist_ok=True)
+            # The first source root providing a component is authoritative for
+            # this publish attempt; later roots (production) are fallback only.
+            # Empty or partial directories do not count as providing it.
+            if entry.name in copied or not (entry / "generate.py").is_file():
+                continue
+            destination = dest_components / entry.name
+            if destination.exists():
+                shutil.rmtree(destination)
+            shutil.copytree(entry, destination)
             copied.add(entry.name)
 
     if project_path is not None:

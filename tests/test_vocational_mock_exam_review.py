@@ -515,6 +515,27 @@ def test_dashboard_chapter_cards_keep_their_existing_titles(mock_exam_app):
         assert sorted(title for title in titles if title in expected) == sorted(expected)
 
 
+def test_vocational_chapter_entry_copy_and_card_structure_are_consistent(mock_exam_app):
+    app, user_ids = mock_exam_app
+    client = app.test_client()
+    _login(client, user_ids["voc_mock"])
+
+    for volume, expected_titles in EXPECTED_DASHBOARD_CHAPTER_TITLES.items():
+        response = client.get(
+            f"/dashboard?view=curriculum&curriculum=vocational&volume={quote(volume)}"
+        )
+        html = response.get_data(as_text=True)
+        assert response.status_code == 200
+        assert f"{volume}｜選擇章節" in html
+        assert "單元練習" not in html
+        for title in expected_titles:
+            assert re.search(
+                rf'<h3>{re.escape(title)}</h3>\s*<p class="chapter-card__enter">進入章節</p>',
+                html,
+            )
+        assert re.findall(r'class="btn-practice"[^>]*>\s*本章總複習\s*</a>', html)
+
+
 @pytest.mark.parametrize(
     ("exam_id", "expected_titles"),
     [

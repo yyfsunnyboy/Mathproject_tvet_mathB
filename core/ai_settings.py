@@ -24,7 +24,7 @@ DEFAULT_AI_GLOBAL_STRATEGY = "hybrid_balanced"
 DEFAULT_AI_DEFAULT_PROVIDER = str(getattr(Config, "DEFAULT_PROVIDER", "local") or "local").lower()
 DEFAULT_AI_ENABLE_TUTOR_RESPONSE = True
 DEFAULT_AI_ENABLE_HIGH_PRECISION_VISION = False
-DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.5-flash") or "gemini-3.5-flash")
+DEFAULT_AI_CLOUD_MODEL = str(getattr(Config, "DEFAULT_CLOUD_MODEL", "gemini-3.5-flash-lite") or "gemini-3.5-flash-lite")
 SUPPORTED_CLOUD_MODELS = tuple(getattr(Config, "SUPPORTED_CLOUD_MODELS", [DEFAULT_AI_CLOUD_MODEL]))
 
 
@@ -81,40 +81,14 @@ def normalize_google_model_id(model: Any, *, allow_fallback: bool = False) -> st
     raw = str(model or "").strip()
     key = raw.lower()
     aliases = {
-        "gemini 3.5 flash": "gemini-3.5-flash",
-        "gemini-3.5-flash": "gemini-3.5-flash",
-        "gemini 3.5 flash stable": "gemini-3.5-flash",
-        "gemini 3.1 flash": "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-flash": "gemini-3.1-flash-lite-preview",
-        "gemini 3.1 flash-lite": "gemini-3.1-flash-lite-preview",
-        "gemini 3.1 flash lite": "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-flash-lite-preview": "gemini-3.1-flash-lite-preview",
-        "gemini 3 flash": "gemini-3-flash-preview",
-        "gemini 3 flash preview": "gemini-3-flash-preview",
-        "gemini 3.0 flash": "gemini-3-flash-preview",
-        "gemini 3.0 flash preview": "gemini-3-flash-preview",
-        "gemini-3-flash": "gemini-3-flash-preview",
-        "gemini-3-flash-preview": "gemini-3-flash-preview",
-        "gemini 3.1 flash stable": "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-flash-001": "gemini-3.1-flash-lite-preview",
-        "gemini 3.1 pro": "gemini-3.1-flash-lite-preview",
-        "gemini-3.1-pro": "gemini-3.1-flash-lite-preview",
-        "gemini 2.5 flash": "gemini-2.5-flash",
-        "gemini-2.5-flash": "gemini-2.5-flash",
+        "gemini 3.5 flash-lite": "gemini-3.5-flash-lite",
+        "gemini 3.5 flash lite": "gemini-3.5-flash-lite",
+        "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+        "gemini 3.8 flash": "gemini-3.8-flash",
+        "gemini-3.8-flash": "gemini-3.8-flash",
     }
     normalized = aliases.get(key)
     if normalized and normalized in SUPPORTED_CLOUD_MODELS:
-        if key in {
-            "gemini-3.1-flash",
-            "gemini 3.1 flash",
-            "gemini-3.1-flash-lite",
-            "gemini-3.1-flash-001",
-            "gemini-3.1-pro",
-        }:
-            _log_warning(
-                f"[AI CONFIG] Deprecated/unsupported model {raw} normalized to {normalized}"
-            )
         return normalized
 
     message = f"Unknown or unsupported Gemini model id: {raw or '<empty>'}"
@@ -157,6 +131,11 @@ def get_google_model_label(model: Any) -> str:
 def _normalize_cloud_model(model_name: Any) -> str:
     model = str(model_name or "").strip()
     return normalize_google_model_id(model, allow_fallback=True)
+
+
+def get_active_ai_model() -> str:
+    """Return the only Gemini model permitted for production requests."""
+    return _normalize_cloud_model(_get_system_setting_value(SETTING_AI_CLOUD_MODEL))
 
 
 def _get_system_setting_value(key: str) -> str | None:
@@ -223,7 +202,7 @@ def _fallback_preset_for_provider(role: str, provider: str) -> str | None:
         "classifier": "qwen2.5-3b",
         "default": "qwen2.5-3b",
     }
-    cloud_model = _normalize_cloud_model(_get_system_setting_value(SETTING_AI_CLOUD_MODEL))
+    cloud_model = get_active_ai_model()
     selected_cloud_key = cloud_model
     if selected_cloud_key not in Config.CODER_PRESETS:
         selected_cloud_key = DEFAULT_AI_CLOUD_MODEL
@@ -311,11 +290,17 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
     preset_key = None
     source = "unknown"
 
-    # Step 1: role-specific DB override
+    # Step 1: local role overrides remain supported, but Gemini always comes
+    # from the administrator's single active cloud-model setting.
     override = role_overrides.get(normalized_role)
     if override in Config.CODER_PRESETS:
-        preset_key = override
-        source = "db_role_override"
+        override_cfg = Config.CODER_PRESETS[override]
+        if str(override_cfg.get("provider", "")).lower() in ("google", "gemini"):
+            preset_key = selected_cloud_model
+            source = "db_global_selected_model"
+        else:
+            preset_key = override
+            source = "db_role_override"
 
     # Step 2: global DB selected cloud model (for all cloud-oriented roles)
     if not preset_key:
@@ -345,7 +330,7 @@ def get_effective_model_config(role: str) -> dict[str, Any]:
 
     # Step 5: hard fallback
     if not preset_key:
-        stable_fallback = _normalize_cloud_model(getattr(Config, "DEFAULT_STABLE_FALLBACK_MODEL", "gemini-2.5-flash"))
+        stable_fallback = _normalize_cloud_model(getattr(Config, "DEFAULT_STABLE_FALLBACK_MODEL", DEFAULT_AI_CLOUD_MODEL))
         if stable_fallback in Config.CODER_PRESETS:
             preset_key = stable_fallback
             source = "hard_fallback"

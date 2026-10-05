@@ -449,15 +449,14 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label" for="curriculum">課綱 (Curriculum)</label>
-                            <select class="form-select bg-light text-muted" id="curriculum" name="curriculum" readonly
-                                style="pointer-events: none;">
+                            <select class="form-select" id="curriculum" name="curriculum">
                                 <option value="vocational" selected>技高 (Vocational)</option>
+                                <option value="general">普高 (General)</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="publisher">出版社 (Publisher)</label>
-                            <select class="form-select bg-light text-muted" id="publisher" name="publisher" readonly
-                                style="pointer-events: none;">
+                            <select class="form-select" id="publisher" name="publisher">
                                 <option value="longteng" selected>龍騰 (Longteng)</option>
                             </select>
                         </div>
@@ -735,6 +734,34 @@
                 '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
             };
 
+            // Keep display labels and submitted values together.  The values here
+            // are the existing importer/DB identities, not new UI aliases.
+            const VOCATIONAL_OPTIONS = {
+                longteng: [
+                    { volume: '數學B1', grade: 10 },
+                    { volume: '數學B2', grade: 10 },
+                    { volume: '數學B3', grade: 11 },
+                    { volume: '數學B4', grade: 11 }
+                ]
+            };
+            const GENERAL_HIGH_OPTIONS = {
+                longteng: [
+                    { volume: '數學1', grade: 10 },
+                    { volume: '數學2', grade: 10 },
+                    { volume: '數學3A', grade: 11 },
+                    { volume: '數學4A', grade: 11 },
+                    { volume: '選修數學甲(上)', grade: 12 },
+                    { volume: '選修數學甲(下)', grade: 12 }
+                ]
+            };
+            const CURRICULUM_IMPORT_OPTIONS = {
+                vocational: VOCATIONAL_OPTIONS,
+                general: GENERAL_HIGH_OPTIONS
+            };
+            const PUBLISHER_LABELS = {
+                longteng: '龍騰 (Longteng)'
+            };
+
             const STORAGE_KEY = 'vocational_textbook_import_v3_preferences';
             let restoringPreferences = false;
 
@@ -828,38 +855,77 @@
                 return null;
             }
 
+            function getPublisherOptions(curriculum) {
+                return CURRICULUM_IMPORT_OPTIONS[curriculum] || {};
+            }
+
+            function replaceSelectOptions(selectEl, options, selectedValue) {
+                if (!selectEl) return '';
+                selectEl.innerHTML = '';
+                options.forEach(function (option) {
+                    var element = document.createElement('option');
+                    element.value = option.value;
+                    element.textContent = option.label;
+                    selectEl.appendChild(element);
+                });
+                var selected = options.some(function (option) {
+                    return option.value === String(selectedValue || '');
+                }) ? String(selectedValue) : (options[0] ? options[0].value : '');
+                selectEl.value = selected;
+                return selected;
+            }
+
+            function applyCurriculumConfiguration(preferredPublisher, preferredVolume) {
+                var curriculum = curriculumSelect ? curriculumSelect.value : 'vocational';
+                var publishers = getPublisherOptions(curriculum);
+                var publisherKeys = Object.keys(publishers);
+                var publisher = replaceSelectOptions(
+                    publisherSelect,
+                    publisherKeys.map(function (key) {
+                        return { value: key, label: PUBLISHER_LABELS[key] || key };
+                    }),
+                    preferredPublisher
+                );
+                var volumes = publishers[publisher] || [];
+                replaceSelectOptions(
+                    volumeSelect,
+                    volumes.map(function (item) {
+                        return { value: item.volume, label: item.volume };
+                    }),
+                    preferredVolume || (curriculum === 'vocational' ? '數學B2' : '')
+                );
+                syncGradeFromVolume();
+                var isGeneral = curriculum === 'general';
+                gradeInput.readOnly = isGeneral;
+                gradeInput.classList.toggle('bg-light', isGeneral);
+                gradeInput.classList.toggle('text-muted', isGeneral);
+                updateVolumeConfirmDisplay();
+            }
+
             async function restoreImportPreferences() {
                 restoringPreferences = true;
                 try {
                     var overrides = readUrlPreferenceOverrides();
                     var saved = loadSavedImportPreferences();
 
-                    // Order: curriculum → publisher → grade → volume (then sync UI).
-                    // Volume options are currently static; keep this async for future dependent loads.
+                    // Rebuild dependent options before applying saved/URL choices so a
+                    // previous curriculum cannot leave an invalid publisher or volume.
                     var curriculumPref = resolvePreferenceValue(overrides, saved, 'curriculum');
                     if (curriculumPref) {
                         setSelectValueIfOptionExists(curriculumSelect, curriculumPref.value);
                     }
 
                     var publisherPref = resolvePreferenceValue(overrides, saved, 'publisher');
-                    if (publisherPref) {
-                        setSelectValueIfOptionExists(publisherSelect, publisherPref.value);
-                    }
-
-                    var gradePref = resolvePreferenceValue(overrides, saved, 'grade');
-                    if (gradePref && gradeInput) {
-                        gradeInput.value = String(gradePref.value);
-                    }
-
                     var volumePref = resolvePreferenceValue(overrides, saved, 'volume');
-                    if (volumePref) {
-                        setSelectValueIfOptionExists(volumeSelect, volumePref.value);
-                    }
+                    applyCurriculumConfiguration(
+                        publisherPref ? publisherPref.value : '',
+                        volumePref ? volumePref.value : ''
+                    );
 
-                    // Sync confirm labels + grade-from-volume mapping for known volumes.
-                    // URL grade must remain authoritative when explicitly provided.
-                    updateVolumeConfirmDisplay();
-                    if (gradePref && gradePref.fromUrl && gradeInput) {
+                    // Preserve the existing vocational URL override behavior.  General
+                    // grade is volume-authoritative and must never become contradictory.
+                    var gradePref = resolvePreferenceValue(overrides, saved, 'grade');
+                    if (curriculumSelect.value === 'vocational' && gradePref && gradePref.fromUrl && gradeInput) {
                         gradeInput.value = String(gradePref.value);
                     }
                 } finally {
@@ -872,6 +938,24 @@
                 var lastDot = filename.lastIndexOf('.');
                 if (lastDot <= 0) return filename;
                 return filename.slice(0, lastDot);
+            }
+
+            // Must equal GENERAL_SOURCE_PAIR_SUFFIX_PATTERN in core/routes/admin.py (V1 backend pairing).
+            var GENERAL_SOURCE_PAIR_SUFFIX_RE = new RegExp(
+                {{ (general_source_pair_suffix_pattern or '')|tojson }} ||
+                    String.raw`[\s_\-.]*(?:word\s*檔|pdf\s*檔|word|pdf)$`,
+                'i'
+            );
+
+            function canonicalizeGeneralPairStem(filename) {
+                var stem = getBaseName(filename).toLowerCase();
+                return stem.replace(GENERAL_SOURCE_PAIR_SUFFIX_RE, '') || stem;
+            }
+            window.canonicalizeGeneralPairStem = canonicalizeGeneralPairStem;
+
+            function getSourcePairKey(filename) {
+                if (!curriculumSelect || curriculumSelect.value !== 'general') return getBaseName(filename);
+                return canonicalizeGeneralPairStem(filename);
             }
 
             function parseChineseChapterNumber(chineseNum) {
@@ -962,7 +1046,7 @@
                 var map = new Map();
                 if (!fileList) return map;
                 Array.prototype.forEach.call(fileList, function (file) {
-                    var base = getBaseName(file.name);
+                    var base = getSourcePairKey(file.name);
                     if (base) map.set(base, file);
                 });
                 return map;
@@ -1122,17 +1206,16 @@
             }
 
             function syncGradeFromVolume() {
-                var GRADE_BY_VOLUME = {
-                    '數學B1': 10,
-                    '數學B2': 10,
-                    '數學B3': 11,
-                    '數學B4': 11
-                };
-                var gradeInput = document.getElementById('grade');
+                var curriculum = curriculumSelect ? curriculumSelect.value : 'vocational';
+                var publisher = publisherSelect ? publisherSelect.value : '';
+                var configuredVolumes = (getPublisherOptions(curriculum)[publisher] || []);
                 var selectedVolume = volumeSelect ? volumeSelect.value : '';
                 if (!gradeInput || !selectedVolume) return;
-                if (Object.prototype.hasOwnProperty.call(GRADE_BY_VOLUME, selectedVolume)) {
-                    gradeInput.value = String(GRADE_BY_VOLUME[selectedVolume]);
+                var selected = configuredVolumes.find(function (item) {
+                    return item.volume === selectedVolume;
+                });
+                if (selected) {
+                    gradeInput.value = String(selected.grade);
                 }
             }
 
@@ -1307,6 +1390,151 @@
                 return function cancel() {
                     if (timer) clearTimeout(timer);
                 };
+            }
+
+            // ---- 普高 (curriculum=general) V1 task status: separate from the V3 polling above ----
+            var GENERAL_V1_PIPELINE = 'general_v1';
+            var GENERAL_TASK_STORAGE_KEY = 'textbookImporterV3.generalTaskStatusUrl';
+            var GENERAL_POLL_INTERVAL_MS = 2000;
+
+            function generalPollDecision(data) {
+                if (!data || !data.ok) return 'error';
+                if (data.state === 'completed') return 'completed';
+                if (data.state === 'failed') return 'failed';
+                return 'continue';
+            }
+
+            function buildGeneralImportResult(data) {
+                var r = data.result || {};
+                var pairs = r.pairs || [];
+                return {
+                    status: data.state === 'completed' ? 'success' : 'failed',
+                    sourcePairsStats: {
+                        total: r.source_pairs,
+                        successful: r.successful_pairs,
+                        failed: r.failed_pairs,
+                        needsReview: r.needs_review
+                    },
+                    sourceFiles: { docx: r.docx_files, pdf: r.pdf_files },
+                    contentParsing: {
+                        mathTypeFound: r.mathtype_found,
+                        mathTypeConverted: r.mathtype_converted,
+                        eqFields: r.eq_fields,
+                        formulaFailures: r.formula_failures
+                    },
+                    questions: {
+                        parsed: r.parsed_questions,
+                        imported: r.imported_questions,
+                        existingReused: r.existing_reused_questions,
+                        formalSkillsCreated: r.formal_skills_created,
+                        formalSkillsReused: r.formal_skills_reused,
+                        geminiRequests: r.gemini_requests
+                    },
+                    images: {
+                        pdfVisualAssets: r.visual_attached,
+                        linked: r.visual_attached,
+                        needsReview: r.visual_needs_review
+                    },
+                    database: {
+                        questionsWritten: r.imported_questions,
+                        questionsExistingReused: r.existing_reused_questions,
+                        assetsWritten: r.visual_attached
+                    },
+                    pairDetails: pairs.map(function (p) {
+                        return { baseName: p.base_name, status: p.status, message: p.message };
+                    })
+                };
+            }
+
+            function renderGeneralStatusBanner(data) {
+                var banner = document.getElementById('resultStatusBanner');
+                if (!banner) return;
+                if (data.state === 'completed') {
+                    var failedPairs = (data.result && data.result.failed_pairs) || 0;
+                    banner.innerHTML = failedPairs > 0
+                        ? '<div class="alert alert-warning mb-0"><i class="bi bi-exclamation-triangle-fill"></i> <strong>教材匯入完成（' + failedPairs + ' 組失敗）</strong></div>'
+                        : '<div class="alert alert-success mb-0"><strong>✅ 教材匯入完成</strong></div>';
+                    return;
+                }
+                var err = data.error || {};
+                var stageEl = document.querySelector('.processing-step[data-step="' + (err.stage || '') + '"] span:last-child');
+                banner.innerHTML =
+                    '<div class="alert alert-danger mb-0"><i class="bi bi-x-octagon-fill"></i> <strong>教材匯入失敗</strong>' +
+                    '<div class="small mt-2">失敗階段：' + escapeHtml(stageEl ? stageEl.textContent : (err.stage || EMPTY_DISPLAY)) + '</div>' +
+                    '<div class="small">' + escapeHtml(err.message || '') + '</div></div>';
+            }
+
+            function applyGeneralStatus(data) {
+                var stages = data.stages || {};
+                Object.keys(stages).forEach(function (stageId) {
+                    setProcessingStep(stageId, stages[stageId]);
+                });
+                if (data.current_pair) {
+                    setBatchProgress(data.current_pair, data.pair_index || 1, data.pair_total || 1);
+                }
+            }
+
+            function finishGeneralTask(data) {
+                try { sessionStorage.removeItem(GENERAL_TASK_STORAGE_KEY); } catch (e) { /* ignore */ }
+                renderImportResult(buildGeneralImportResult(data));
+                renderGeneralStatusBanner(data);
+                setImportButtonState();
+            }
+
+            function pollGeneralV1Task(statusUrl) {
+                var timer = null;
+                try { sessionStorage.setItem(GENERAL_TASK_STORAGE_KEY, statusUrl); } catch (e) { /* ignore */ }
+
+                function stopWithError(message) {
+                    try { sessionStorage.removeItem(GENERAL_TASK_STORAGE_KEY); } catch (e) { /* ignore */ }
+                    hideProcessingPanel();
+                    setImportButtonState();
+                    alert(message);
+                }
+
+                function tick() {
+                    fetch(statusUrl, {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    })
+                        .then(function (response) {
+                            return response.json().catch(function () {
+                                throw new Error('伺服器回傳非 JSON（' + response.status + '）');
+                            });
+                        })
+                        .then(function (data) {
+                            var decision = generalPollDecision(data);
+                            if (decision === 'error') {
+                                stopWithError('讀取匯入進度失敗：' + ((data && data.message) || '未知錯誤'));
+                                return;
+                            }
+                            applyGeneralStatus(data);
+                            if (decision === 'continue') {
+                                timer = setTimeout(tick, GENERAL_POLL_INTERVAL_MS);
+                                return;
+                            }
+                            finishGeneralTask(data);
+                        })
+                        .catch(function (err) {
+                            stopWithError('讀取匯入進度失敗：' + (err && err.message ? err.message : String(err)));
+                        });
+                }
+
+                tick();
+                return function cancel() {
+                    if (timer) clearTimeout(timer);
+                };
+            }
+
+            function resumeGeneralTaskIfAny() {
+                var statusUrl = null;
+                try { statusUrl = sessionStorage.getItem(GENERAL_TASK_STORAGE_KEY); } catch (e) { statusUrl = null; }
+                if (!statusUrl) return;
+                resetProcessingPanel();
+                showProcessingPanel();
+                submitBtn.disabled = true;
+                pollGeneralV1Task(statusUrl);
             }
 
             function setBatchProgress(currentName, currentIndex, totalCount) {
@@ -1670,6 +1898,10 @@
                         }
 
                         setProcessingStep('file_validation', 'done');
+                        if (result.data.pipeline === GENERAL_V1_PIPELINE && result.data.task_id && result.data.status_url) {
+                            pollGeneralV1Task(result.data.status_url);
+                            return;
+                        }
                         if (result.data.task_id && result.data.status_url) {
                             setBatchProgress(
                                 (result.data.pairs && result.data.pairs[0] && result.data.pairs[0].base_name) || '教材',
@@ -1699,10 +1931,17 @@
             docxInput.addEventListener('change', handleSourceChange);
             pdfInput.addEventListener('change', handleSourceChange);
             if (curriculumSelect) {
-                curriculumSelect.addEventListener('change', saveImportPreferences);
+                curriculumSelect.addEventListener('change', function () {
+                    applyCurriculumConfiguration();
+                    saveImportPreferences();
+                    handleSourceChange();
+                });
             }
             if (publisherSelect) {
-                publisherSelect.addEventListener('change', saveImportPreferences);
+                publisherSelect.addEventListener('change', function () {
+                    applyCurriculumConfiguration(publisherSelect.value);
+                    saveImportPreferences();
+                });
             }
             if (gradeInput) {
                 gradeInput.addEventListener('change', saveImportPreferences);
@@ -1738,6 +1977,7 @@
             resetProcessingPanel();
             restoreImportPreferences().then(function () {
                 handleSourceChange();
+                resumeGeneralTaskIfAny();
             }).catch(function () {
                 updateVolumeConfirmDisplay();
                 handleSourceChange();
@@ -1761,7 +2001,10 @@
                 hideOverwriteModal: hideOverwriteModal,
                 submitSourceUpload: submitSourceUpload,
                 saveImportPreferences: saveImportPreferences,
-                restoreImportPreferences: restoreImportPreferences
+                restoreImportPreferences: restoreImportPreferences,
+                generalPollDecision: generalPollDecision,
+                buildGeneralImportResult: buildGeneralImportResult,
+                pollGeneralV1Task: pollGeneralV1Task
             };
         })();
     </script>

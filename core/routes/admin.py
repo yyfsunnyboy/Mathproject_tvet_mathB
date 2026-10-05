@@ -251,6 +251,11 @@ def _run_admin_v3_integrity_gate_for_example(
 
 from . import core_bp
 from core.globals import TASK_QUEUES
+from core.general_v1_import_status import (
+    PIPELINE as GENERAL_V1_PIPELINE,
+    get_general_v1_task_snapshot,
+    register_general_v1_task,
+)
 from core import textbook_processor
 from core.textbook_filename_parser import (
     parse_textbook_filename_metadata,
@@ -1155,6 +1160,16 @@ def _vocational_math_b_remaining_check():
         )
     return checks
 
+
+# General-only: trailing file-type label (e.g. 「-課本word檔」→「-課本」); also used by the V3 preview JS.
+GENERAL_SOURCE_PAIR_SUFFIX_PATTERN = r"[\s_\-.]*(?:word\s*檔|pdf\s*檔|word|pdf)$"
+_GENERAL_SOURCE_PAIR_SUFFIX_RE = re.compile(GENERAL_SOURCE_PAIR_SUFFIX_PATTERN, re.IGNORECASE)
+
+
+def general_source_pair_stem(filename) -> str:
+    stem = os.path.splitext(os.path.basename(str(filename or "")))[0].lower()
+    return _GENERAL_SOURCE_PAIR_SUFFIX_RE.sub("", stem) or stem
+
 # ==========================================
 # Background Tasks (??魂????)
 # ==========================================
@@ -1239,8 +1254,12 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
     def _group_docx_with_optional_pdf(paths):
         grouped = []
         by_stem = defaultdict(list)
+        is_general = str((curriculum_info or {}).get("curriculum") or "").strip() == "general"
         for p in paths:
-            stem = os.path.splitext(os.path.basename(str(p or "")))[0].lower()
+            if is_general:
+                stem = general_source_pair_stem(p)
+            else:
+                stem = os.path.splitext(os.path.basename(str(p or "")))[0].lower()
             by_stem[stem].append(p)
         consumed = set()
         for stem, items in by_stem.items():
@@ -1266,9 +1285,12 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
     docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     enable_formula_detailed_report = bool(import_policy.get("enable_formula_detailed_report", False))
     confidence_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
+    general_status = getattr(task_queue, "general_status", None)
     with app_context:
         try:
             grouped_files = _group_docx_with_optional_pdf(file_paths)
+            if general_status is not None:
+                general_status.start(grouped_files)
             total_files = len(grouped_files)
             task_queue.put(f"INFO: ????隞餃?嚗 {total_files} ??亙雿?..")
 
@@ -1276,14 +1298,23 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                 filename = os.path.basename(file_path)
                 if filename.startswith('~$') or filename.startswith('.'):
                     continue
+                if (
+                    curriculum_info.get('curriculum') == 'general'
+                    and not kwargs.get('outline_only')
+                    and str(file_path).lower().endswith('.pdf')
+                ):
+                    task_queue.put(f"WARN: [{idx}/{total_files}] unpaired PDF skipped (visual source only): {filename}")
+                    continue
 
                 task_queue.put(f"INFO: [{idx}/{total_files}] 甇???: {filename} ...")
                 if optional_pdf_path:
                     task_queue.put(
                         f"INFO: [{idx}/{total_files}] Optional enrich PDF detected and will be used."
                     )
+                if general_status is not None:
+                    general_status.begin_pair(filename, idx)
                 try:
-                    textbook_processor.process_textbook_file(
+                    process_result = textbook_processor.process_textbook_file(
                         file_path, 
                         curriculum_info=curriculum_info, 
                         queue=task_queue, 
@@ -1292,6 +1323,8 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         optional_enrich_pdf_path=optional_pdf_path,
                         **kwargs
                     )
+                    if general_status is not None:
+                        general_status.finish_pair(filename, process_result)
                     if docx_formula_source_mode == "converted_docx_latex":
                         task_queue.put("INFO: docx_formula_source_mode=converted_docx_latex, skipping formula asset OCR/pix2tex postprocess.")
                     elif enable_formula_postprocess:
@@ -1366,14 +1399,20 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         except Exception as post_err:
                             task_queue.put(f"WARN: ?砍?敺????仃?? {post_err}")
                 except Exception as e:
+                    if general_status is not None:
+                        general_status.finish_pair(filename, exc=e)
                     task_queue.put(f"ERROR: 瑼? {filename} ??憭望?: {e}")
                 
                 if 'uploads' in file_path and os.path.exists(file_path):
                     try: os.remove(file_path)
                     except: pass
 
+            if general_status is not None:
+                general_status.finish()
             task_queue.put("SUCCESS: ???璆剖???")
         except Exception as e:
+            if general_status is not None:
+                general_status.fail(e)
             task_queue.put(f"ERROR: 隞餃????潛??芷??隤? {str(e)}")
         finally:
             task_queue.put("END_OF_STREAM")
@@ -1429,6 +1468,46 @@ def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, fil
     return True
 
 
+def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code_gen=False,
+                                     outline_only=False, toc_pages=5, import_policy=None,
+                                     track_general_status=False):
+    """Save a V1 upload batch and start the existing V1 background worker."""
+    target_files = []
+    upload_dir = os.path.join(current_app.root_path, 'uploads')
+    os.makedirs(upload_dir, exist_ok=True)
+
+    for upload in upload_files:
+        if not upload or not upload.filename:
+            continue
+        filename = os.path.basename(upload.filename)
+        if not filename.lower().endswith(('.pdf', '.docx', '.doc')):
+            continue
+        path = os.path.join(upload_dir, secure_filename(filename))
+        upload.save(path)
+        target_files.append(path)
+
+    if not target_files:
+        return None
+
+    task_id = str(uuid.uuid4())
+    if track_general_status and str((curriculum_info or {}).get("curriculum") or "") == "general":
+        q = register_general_v1_task(task_id)
+    else:
+        q = queue.Queue()
+    TASK_QUEUES[task_id] = q
+    app = current_app._get_current_object()
+    threading.Thread(
+        target=background_processing,
+        args=(target_files, q, app.app_context(), curriculum_info, skip_code_gen),
+        kwargs={
+            'outline_only': outline_only,
+            'toc_pages': toc_pages,
+            'import_policy': import_policy or {},
+        }
+    ).start()
+    return task_id
+
+
 @core_bp.route('/textbook_importer', methods=['GET', 'POST'])
 @login_required
 def admin_textbook_importer():
@@ -1445,29 +1524,10 @@ def admin_textbook_importer():
             flash("Please configure Gemini API Key before importing.", "danger")
             return redirect(url_for('core.admin_textbook_importer'))
 
-        target_files = []
-        upload_dir = os.path.join(current_app.root_path, 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-
         single_file = request.files.get('textbook_pdf')
         batch_files = request.files.getlist('textbook_folder')
-        
-        if single_file and single_file.filename != '':
-            path = os.path.join(upload_dir, secure_filename(single_file.filename))
-            single_file.save(path)
-            target_files.append(path)
-        elif batch_files and len(batch_files) > 0 and batch_files[0].filename != '':
-            for f in batch_files:
-                if f.filename != '' and (f.filename.endswith('.pdf') or f.filename.endswith('.docx')):
-                    path = os.path.join(upload_dir, secure_filename(os.path.basename(f.filename)))
-                    f.save(path)
-                    target_files.append(path)
-
-        if target_files:
-            task_id = str(uuid.uuid4())
-            q = queue.Queue()
-            TASK_QUEUES[task_id] = q
-
+        upload_files = [single_file] if single_file and single_file.filename else batch_files
+        if upload_files:
             curriculum_info = {
                 'curriculum': normalize_curriculum(request.form.get('curriculum')),
                 'publisher': request.form.get('publisher'),
@@ -1513,24 +1573,20 @@ def admin_textbook_importer():
             apply_mathb_import_policy(
                 curriculum_info,
                 import_policy,
-                filenames=[os.path.basename(p) for p in target_files],
+                filenames=[os.path.basename(f.filename) for f in upload_files if f and f.filename],
                 logger=current_app.logger,
             )
-
-            app = current_app._get_current_object()
-            threading.Thread(
-                target=background_processing,
-                args=(target_files, q, app.app_context(), curriculum_info, skip_code),
-                kwargs={
-                    'outline_only': outline_only,
-                    'toc_pages': toc_pages,
-                    'import_policy': import_policy,
-                }
-            ).start()
-
-            return redirect(url_for('core.importer_status', task_id=task_id))
-        else:
-            flash('Only PDF or DOCX files are allowed.', 'warning')
+            task_id = enqueue_v1_textbook_upload_batch(
+                upload_files,
+                curriculum_info,
+                skip_code_gen=skip_code,
+                outline_only=outline_only,
+                toc_pages=toc_pages,
+                import_policy=import_policy,
+            )
+            if task_id:
+                return redirect(url_for('core.importer_status', task_id=task_id))
+        flash('Only PDF or DOCX files are allowed.', 'warning')
 
     return render_template(
         'textbook_importer.html',
@@ -1803,6 +1859,43 @@ def admin_textbook_importer_v3():
                 "message": "請先設定 Gemini API Key 後再匯入教材。",
             }), 400
 
+        curriculum = normalize_curriculum(request.form.get('curriculum'))
+        if curriculum == 'general':
+            docx_files = request.files.getlist('textbook_docx[]') or request.files.getlist('textbook_docx')
+            pdf_files = request.files.getlist('textbook_pdf[]') or request.files.getlist('textbook_pdf')
+            curriculum_info = {
+                'curriculum': 'general',
+                'publisher': request.form.get('publisher'),
+                'grade': request.form.get('grade'),
+                'volume': request.form.get('volume'),
+            }
+            task_id = enqueue_v1_textbook_upload_batch(
+                [*docx_files, *pdf_files],
+                curriculum_info,
+                import_policy={
+                    'docx_primary': True,
+                    'pdf_optional_enrich': True,
+                    'docx_formula_source_mode': 'converted_docx_latex',
+                    'formula_postprocess_mode': 'convert_only',
+                },
+                track_general_status=True,
+            )
+            if not task_id:
+                return jsonify({
+                    'ok': False,
+                    'error': 'missing_general_source_files',
+                    'message': '至少需要上傳 DOCX 或 PDF 教材檔案。',
+                }), 400
+            return jsonify({
+                'ok': True,
+                'task_id': task_id,
+                'pipeline_started': True,
+                'import_path': 'v1_general',
+                'pipeline': GENERAL_V1_PIPELINE,
+                'stream_url': url_for('core.importer_stream', task_id=task_id),
+                'status_url': url_for('core.textbook_importer_v3_general_task_status', task_id=task_id),
+            }), 200
+
         docx_files = request.files.getlist('textbook_docx[]')
         if not docx_files or all(not (f and f.filename) for f in docx_files):
             docx_files = request.files.getlist('textbook_docx')
@@ -1863,7 +1956,19 @@ def admin_textbook_importer_v3():
         'textbook_importer_v3.html',
         has_gemini_api_key=has_gemini_api_key,
         ai_settings_url='/admin/ai_prompt_settings',
+        general_source_pair_suffix_pattern=GENERAL_SOURCE_PAIR_SUFFIX_PATTERN,
     )
+
+
+@core_bp.route('/textbook_importer_v3/general_task/<task_id>', methods=['GET'])
+@login_required
+def textbook_importer_v3_general_task_status(task_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'ok': False, 'error': 'forbidden', 'message': '權限不足'}), 403
+    snapshot = get_general_v1_task_snapshot(task_id)
+    if snapshot is None:
+        return jsonify({'ok': False, 'error': 'task_not_found', 'message': '找不到匯入任務（伺服器可能已重新啟動）'}), 404
+    return jsonify(snapshot), 200
 
 
 @core_bp.route('/textbook_importer_v3/task/<task_id>', methods=['GET'])
@@ -5071,8 +5176,6 @@ def _generate_model_roles(ai_mode, available_models, cloud_model=None):
             return selected_cloud_preset
         if Config.DEFAULT_CLOUD_MODEL in keys:
             return Config.DEFAULT_CLOUD_MODEL
-        if 'gemini-3.1-flash-lite-preview' in keys:
-            return 'gemini-3.1-flash-lite-preview'
         for k in keys:
             if 'gemini' in k.lower():
                 return k

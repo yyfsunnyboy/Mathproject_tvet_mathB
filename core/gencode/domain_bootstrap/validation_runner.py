@@ -90,29 +90,44 @@ def validate_candidate_domain(
     if not callable(oracle_fn):
         blockers.append("oracle_not_callable")
 
-    operation_key = str((manifest.get("operations") or ["compute"])[0])
+    operation_keys = [str(key).strip() for key in (manifest.get("operations") or [])]
+    if not operation_keys or any(not key for key in operation_keys):
+        blockers.append("operations_missing")
+    elif len(operation_keys) != len(set(operation_keys)):
+        blockers.append("operations_duplicate")
     seed_results: list[dict[str, Any]] = []
     if callable(build_fn) and callable(oracle_fn):
-        for seed in (7, 42, 101):
-            matrix = build_fn(seed=seed, domain_operation=operation_key, constraints={"values": [1, 2, 3]})
-            ok, oracle_blockers = oracle_fn(matrix)
-            seed_results.append({"seed": seed, "passed": ok, "blockers": oracle_blockers})
-            if not ok:
-                blockers.extend([f"oracle_failed_seed_{seed}:{b}" for b in oracle_blockers])
+        for operation_key in operation_keys:
+            for seed in (7, 42, 101):
+                try:
+                    matrix = build_fn(seed=seed, domain_operation=operation_key, constraints={"values": [1, 2, 3]})
+                    if matrix.get("domain_operation") != operation_key:
+                        blockers.append(f"operation_identity_mismatch:{operation_key}:seed_{seed}")
+                    ok, oracle_blockers = oracle_fn(matrix)
+                    seed_results.append({"operation": operation_key, "seed": seed, "passed": ok, "blockers": oracle_blockers})
+                    if not ok:
+                        blockers.extend([f"oracle_failed:{operation_key}:seed_{seed}:{b}" for b in oracle_blockers])
+                except Exception as exc:
+                    blockers.append(f"operation_execution_failed:{operation_key}:seed_{seed}:{exc}")
 
-        seed42 = build_fn(seed=42, domain_operation=operation_key, constraints={"values": [4, 6]})
-        seed42b = build_fn(seed=42, domain_operation=operation_key, constraints={"values": [4, 6]})
-        checks["seed_reproducible"] = seed42 == seed42b
-        if not checks["seed_reproducible"]:
-            blockers.append("seed_not_reproducible")
+            try:
+                seed42 = build_fn(seed=42, domain_operation=operation_key, constraints={"values": [4, 6]})
+                seed42b = build_fn(seed=42, domain_operation=operation_key, constraints={"values": [4, 6]})
+                reproducible = seed42 == seed42b
+                checks[f"seed_reproducible:{operation_key}"] = reproducible
+                if not reproducible:
+                    blockers.append(f"seed_not_reproducible:{operation_key}")
 
-        varied = build_fn(seed=99, domain_operation=operation_key, constraints={"values": [9, 2, 1]})
-        checks["seed_variation"] = (
-            varied.get("answer") != seed42.get("answer")
-            or varied.get("question_text") != seed42.get("question_text")
-        )
-        if not checks["seed_variation"]:
-            blockers.append("seed_variation_missing")
+                varied = build_fn(seed=99, domain_operation=operation_key, constraints={"values": [9, 2, 1]})
+                varied_enough = (
+                    varied.get("answer") != seed42.get("answer")
+                    or varied.get("question_text") != seed42.get("question_text")
+                )
+                checks[f"seed_variation:{operation_key}"] = varied_enough
+                if not varied_enough:
+                    blockers.append(f"seed_variation_missing:{operation_key}")
+            except Exception as exc:
+                blockers.append(f"operation_validation_failed:{operation_key}:{exc}")
 
     capabilities = list(manifest.get("capabilities") or [])
     required = set(gap_report.missing_capabilities or gap_report.required_capabilities or [])

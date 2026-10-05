@@ -550,6 +550,22 @@ def check_answer(
         )
         return bool(result.get("overall_correct"))
 
+    if checker == "rational_between_bounds_checker" or equiv == "strict_between_bounds":
+        from core.checkers.rational_between_bounds_checker import check_rational_between_bounds_answer
+
+        result = check_rational_between_bounds_answer(user_answer, answer_contract=ac)
+        if result.get("system_error"):
+            raise RuntimeError(str(result.get("reason") or "grading system error"))
+        return bool(result.get("correct"))
+
+    if checker == "simplest_fraction_checker" or equiv == "simplest_fraction_exact":
+        from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
+
+        result = check_simplest_fraction_answer(user_answer, correct_answer, answer_contract=ac)
+        if result.get("system_error"):
+            raise RuntimeError(str(result.get("reason") or "grading system error"))
+        return bool(result.get("correct"))
+
     if (
         checker == "choice_label_checker"
         or family == "choice"
@@ -593,7 +609,7 @@ def check_answer(
     ):
         from core.checkers.solution_set_checker import check_solution_set_answer
 
-        return check_solution_set_answer(user_answer, correct_answer)
+        return check_solution_set_answer(user_answer, correct_answer, answer_contract=ac)
 
     if checker == "interval_checker" or family == "interval":
         from core.checkers.interval_checker import check_interval_answer
