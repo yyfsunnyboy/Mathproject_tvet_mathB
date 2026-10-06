@@ -20,7 +20,6 @@
 {% set nav_active_learn = (_ep == 'core.student_diagnosis') or ('/student/diagnosis' in _path) %}
 {% set nav_active_kg = (_ep == 'core.knowledge_graph') or ('/knowledge-graph' in _path) %}
 {% set nav_active_sim = (_ep in ('practice.similar_questions', 'practice.similar_questions_page')) or ('/practice/similar_questions' in _path) or ('/similar-questions-page' in _path) %}
-{% set nav_active_upload = (_ep == 'practice.practice' and _skill == 'custom_upload') or ('/practice/custom_upload' in _path) %}
 
 <style>
 /* ── Student Navbar — 板書風 / 黑板綠 v3 ── */
@@ -134,7 +133,6 @@
 .student-navbar a.student-navbar__pill--learn,
 .student-navbar a.student-navbar__pill--kg,
 .student-navbar a.student-navbar__pill--sim,
-.student-navbar a.student-navbar__pill--upload,
 .student-navbar a.student-navbar__pill--teacher {
     background: #f2ede0 !important;
     color: #3a4c3d !important;
@@ -152,7 +150,6 @@
 .student-navbar a.student-navbar__pill--learn:hover,
 .student-navbar a.student-navbar__pill--kg:hover,
 .student-navbar a.student-navbar__pill--sim:hover,
-.student-navbar a.student-navbar__pill--upload:hover,
 .student-navbar a.student-navbar__pill--teacher:hover {
     background: #ffffff !important;
     color: #2f3a32 !important;
@@ -228,11 +225,6 @@
            {% if nav_active_home %}aria-current="page"{% endif %}>
             <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🏠</span><span class="student-navbar__pill-text">學生主頁</span></span>
         </a>
-        <a href="{{ url_for('core.exam_upload_page') }}"
-           class="student-navbar__pill student-navbar__pill--exam{% if nav_active_exam %} student-navbar__pill--active{% endif %}"
-           {% if nav_active_exam %}aria-current="page"{% endif %}>
-            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📝</span><span class="student-navbar__pill-text">考卷診斷</span></span>
-        </a>
         <a href="{{ url_for('core.mistake_notebook') }}"
            class="student-navbar__pill student-navbar__pill--mistake{% if nav_active_mistake %} student-navbar__pill--active{% endif %}"
            {% if nav_active_mistake %}aria-current="page"{% endif %}>
@@ -243,20 +235,15 @@
            {% if nav_active_learn %}aria-current="page"{% endif %}>
             <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📊</span><span class="student-navbar__pill-text">學習診斷</span></span>
         </a>
-        <a href="{{ url_for('core.knowledge_graph') }}"
-           class="student-navbar__pill student-navbar__pill--kg{% if nav_active_kg %} student-navbar__pill--active{% endif %}"
-           {% if nav_active_kg %}aria-current="page"{% endif %}>
-            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🌳</span><span class="student-navbar__pill-text">知識圖譜</span></span>
-        </a>
         <a href="{{ url_for('practice.similar_questions') }}"
            class="student-navbar__pill student-navbar__pill--sim{% if nav_active_sim %} student-navbar__pill--active{% endif %}"
            {% if nav_active_sim %}aria-current="page"{% endif %}>
             <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">🧩</span><span class="student-navbar__pill-text">類題練習</span></span>
         </a>
-        <a href="{{ url_for('practice.practice', skill_id='custom_upload') }}"
-           class="student-navbar__pill student-navbar__pill--upload{% if nav_active_upload %} student-navbar__pill--active{% endif %}"
-           {% if nav_active_upload %}aria-current="page"{% endif %}>
-            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📷</span><span class="student-navbar__pill-text">上傳題目</span></span>
+        <a href="{{ url_for('core.exam_upload_page') }}"
+           class="student-navbar__pill student-navbar__pill--exam{% if nav_active_exam %} student-navbar__pill--active{% endif %}"
+           {% if nav_active_exam %}aria-current="page"{% endif %}>
+            <span class="student-navbar__pill-inner"><span class="student-navbar__pill-icon">📝</span><span class="student-navbar__pill-text">考卷診斷</span></span>
         </a>
         {% if current_user.role == 'teacher' or current_user.is_admin %}
         <a href="{{ url_for('teacher_dashboard') }}"
@@ -273,3 +260,4 @@
     </div>
     </div>
 </div>
+{% include '_development_notice.html' %}

@@ -1,0 +1,334 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_9ba757fa0bf387dfb2700269",
+  "proposal_revision": 4,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "human_reviewer",
+    "approved_revision": 4,
+    "approval_scope": "add decimal_to_simplest_fraction and construct_rational_between_bounds only; revision_0003 operations unchanged"
+  },
+  "domain_key": "number_system.rational_numbers",
+  "package_name": "number_system_rational_numbers",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "81eecce9724b3fd5488c874bab8dadb0148f5893f97bae4a28eafefeb6eefb90",
+    "rational_numbers_adapter.py": "13c0846e02df1f09193914a8f16d4df5d26dadd55a28f2b49bb02218d7ee49d7",
+    "rational_numbers_domain.py": "13517e193fe51d45de1478a28671da504ef2419d4d9796427cc47304ad6e0db1"
+  },
+  "domain_module": "rational_numbers_domain",
+  "entrypoint": "build_rational_numbers_matrix",
+  "capabilities": [
+    "plot_rational_points_on_number_line",
+    "evaluate_rationality_statements",
+    "identify_rational_numbers",
+    "fraction_to_decimal_expansion",
+    "decimal_to_simplest_fraction",
+    "construct_rational_between_bounds"
+  ],
+  "operations": {
+    "plot_rational_points_on_number_line": {
+      "handler": "build_rational_numbers_matrix",
+      "validator": "validate_plot_rational_points_on_number_line_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "checker_keys": [
+        "free_response_drawing_checker"
+      ],
+      "supported_answer_types": [
+        "drawing"
+      ],
+      "supported_presentation_modes": [
+        "canvas"
+      ],
+      "runtime_contract": "rational_numbers_exact_v1",
+      "provided_capabilities": [
+        "plot_rational_points_on_number_line"
+      ]
+    },
+    "evaluate_rationality_statements": {
+      "handler": "build_rational_numbers_matrix",
+      "validator": "validate_evaluate_rationality_statements_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "runtime_contract": "rational_numbers_exact_v1",
+      "provided_capabilities": [
+        "evaluate_rationality_statements"
+      ]
+    },
+    "identify_rational_numbers": {
+      "handler": "build_rational_numbers_matrix",
+      "validator": "validate_identify_rational_numbers_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "supported_answer_types": [
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "runtime_contract": "rational_numbers_exact_v1",
+      "provided_capabilities": [
+        "identify_rational_numbers"
+      ]
+    },
+    "fraction_to_decimal_expansion": {
+      "handler": "build_rational_numbers_matrix",
+      "validator": "validate_fraction_to_decimal_expansion_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "repeating_decimal_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "runtime_contract": "rational_numbers_exact_v1",
+      "provided_capabilities": [
+        "fraction_to_decimal_expansion"
+      ]
+    },
+    "decimal_to_simplest_fraction": {
+      "handler": "build_rational_numbers_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "runtime_contract": "rational_numbers_exact_v1",
+      "validator": "validate_decimal_to_simplest_fraction_matrix",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "simplest_fraction_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "provided_capabilities": [
+        "decimal_to_simplest_fraction"
+      ]
+    },
+    "construct_rational_between_bounds": {
+      "handler": "build_rational_numbers_matrix",
+      "payload_adapter": "rational_numbers_adapter.adapt_rational_numbers_matrix",
+      "runtime_contract": "rational_numbers_exact_v1",
+      "validator": "validate_construct_rational_between_bounds_matrix",
+      "checker_keys": [
+        "rational_between_bounds_checker"
+      ],
+      "supported_answer_types": [
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "provided_capabilities": [
+        "construct_rational_between_bounds"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_RationalNumbers": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "plot_rational_points_on_number_line",
+        "evaluate_rationality_statements",
+        "identify_rational_numbers",
+        "fraction_to_decimal_expansion",
+        "decimal_to_simplest_fraction",
+        "construct_rational_between_bounds"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "plot_rational_points_on_number_line": [
+      {
+        "seed": 1,
+        "constraints": {
+          "points": [
+            "3/5",
+            "-3/5"
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_rationality_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statements": [
+            {
+              "predicate": "is_irrational",
+              "value": {
+                "kind": "finite_decimal",
+                "value": "1.414"
+              }
+            },
+            {
+              "predicate": "equals",
+              "left": {
+                "kind": "sum",
+                "terms": [
+                  {
+                    "kind": "repeating_decimal",
+                    "value": "0.(4)"
+                  },
+                  {
+                    "kind": "repeating_decimal",
+                    "value": "0.(6)"
+                  }
+                ]
+              },
+              "right": {
+                "kind": "rational",
+                "value": "1"
+              }
+            },
+            {
+              "predicate": "no_rational_between",
+              "lower": "21/13",
+              "upper": "35/21"
+            },
+            {
+              "predicate": "sqrt_difference_identity",
+              "left_radicand": 3,
+              "right_radicand": 5
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "identify_rational_numbers": [
+      {
+        "seed": 1,
+        "constraints": {
+          "candidates": [
+            {
+              "kind": "rational",
+              "value": "-4/9"
+            },
+            {
+              "kind": "rational",
+              "value": "0"
+            },
+            {
+              "kind": "finite_decimal",
+              "value": "3.14159"
+            },
+            {
+              "kind": "sum",
+              "terms": [
+                {
+                  "kind": "rational",
+                  "value": "3"
+                },
+                {
+                  "kind": "sqrt",
+                  "radicand": 2
+                }
+              ]
+            },
+            {
+              "kind": "sum",
+              "terms": [
+                {
+                  "kind": "rational",
+                  "value": "12/11"
+                },
+                {
+                  "kind": "rational",
+                  "value": "11/12"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "fraction_to_decimal_expansion": [
+      {
+        "seed": 1,
+        "constraints": {
+          "fractions": [
+            "11/40",
+            "2/11"
+          ]
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "fractions": [
+            "1/37",
+            "9/22"
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "decimal_to_simplest_fraction": [
+      {
+        "seed": 1,
+        "constraints": {
+          "decimals": [
+            "0.28",
+            "0.(32)",
+            "1.4(5)"
+          ]
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "decimals": [
+            "0.(27)",
+            "5.4(38)"
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "construct_rational_between_bounds": [
+      {
+        "seed": 1,
+        "constraints": {
+          "lower": "3/2",
+          "upper": "5/3"
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ]
+  }
+}

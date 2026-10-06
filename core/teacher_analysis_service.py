@@ -988,6 +988,44 @@ def get_recent_attempts(
     return attempts[:limit]
 
 
+def build_student_analysis_context(
+    student: User,
+    *,
+    volume: str | None,
+    chapter: str | None,
+    skill_unit: str | None,
+    time_range: TimeRange,
+) -> dict[str, Any]:
+    """Build the shared student/unit analysis payload for either audience.
+
+    Authorization is deliberately outside this helper: teacher routes authorize
+    the requested student through class membership, while student routes pass
+    only the authenticated user.  The statistics and status rules are shared.
+    """
+    has_unit = bool((volume and chapter) or skill_unit)
+    overview = get_student_overview(student, time_range)
+    if not has_unit:
+        return {
+            "view": "student",
+            "student": student,
+            "student_overview": overview,
+            "unit_rows": get_student_units(student.id, time_range),
+        }
+
+    return {
+        "view": "unit",
+        "student": student,
+        "student_overview": overview,
+        "unit_detail": get_student_unit_detail(
+            student.id,
+            volume=volume,
+            chapter=chapter,
+            skill_unit=skill_unit,
+            time_range=time_range,
+        ),
+    }
+
+
 def build_analysis_page_context(
     user: Any,
     *,
@@ -1060,13 +1098,17 @@ def build_analysis_page_context(
     ctx["student"] = student
     ctx["breadcrumb"].append({"label": student_name, "url": "student"})
 
-    has_unit = bool((volume and chapter) or skill_unit)
-    if not has_unit:
+    student_context = build_student_analysis_context(
+        student,
+        volume=volume,
+        chapter=chapter,
+        skill_unit=skill_unit,
+        time_range=time_range,
+    )
+    if student_context["view"] == "student":
         ctx.update(
             {
-                "view": "student",
-                "student_overview": get_student_overview(student, time_range),
-                "unit_rows": get_student_units(student_id, time_range),
+                **student_context,
                 "back_url": {
                     "endpoint": "teacher_analysis",
                     "params": {**base_params, "range": time_range.key},
@@ -1075,19 +1117,11 @@ def build_analysis_page_context(
         )
         return ctx
 
-    unit_detail = get_student_unit_detail(
-        student_id,
-        volume=volume,
-        chapter=chapter,
-        skill_unit=skill_unit,
-        time_range=time_range,
-    )
+    unit_detail = student_context["unit_detail"]
     ctx["breadcrumb"].append({"label": unit_detail["unit_label"], "url": None})
     ctx.update(
         {
-            "view": "unit",
-            "unit_detail": unit_detail,
-            "student_overview": get_student_overview(student, time_range),
+            **student_context,
             "back_url": {
                 "endpoint": "teacher_analysis",
                 "params": {

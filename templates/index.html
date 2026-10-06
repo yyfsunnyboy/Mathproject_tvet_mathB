@@ -163,16 +163,6 @@
             overflow-wrap: anywhere;
         }
 
-        /* [Feature] Instant Practice Image Display */
-        #instant-question-image {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin: 0 auto 15px auto;
-            border: 2px solid #3498db;
-            border-radius: 8px;
-        }
-
         .input-group {
             display: flex;
             gap: 8px;
@@ -1635,8 +1625,7 @@
         }
 
         #question-media-container img,
-        #question-media-container svg,
-        #instant-question-image {
+        #question-media-container svg {
             max-height: none;
         }
 
@@ -2203,6 +2192,7 @@
 
 <body{% if chapter_review %} class="chapter-review-page"{% endif %}>
     {% set is_similar_practice = practice_mode == 'similar_practice' %}
+    {% set development_notice = is_similar_practice %}
     {% include '_student_navbar.html' %}
     <!-- 主容器 -->
     <div class="container">
@@ -2240,6 +2230,7 @@
                     <span id="level-indicator" hidden>等級：1</span>
                     <span id="streak-counter">{% if (pass_target or 0) | int > 0 %}🔥 進階答對 {{ (consecutive_correct or 0) | int }}/{{ (pass_target or 0) | int }} 題{% else %}🔥 進階答對：暫無門檻{% endif %}</span>
                     <button id="next-question-btn" class="level-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
+                    {% include '_bug_report_trigger.html' %}
                 </div>
             {% else %}
                 <h1 id="skill-title"> {{
@@ -2258,6 +2249,7 @@
                 <div class="level-selector">
                     <button id="next-question-btn" class="level-button"
                         style="background-color: #3498db; color: white;"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
+                    {% include '_bug_report_trigger.html' %}
 
 
                     {% if prereq_skills %}
@@ -2275,13 +2267,6 @@
                             style="background-color: #f39c12; color: white;">練習</button>
                     </div>
                     {% endif %}
-
-                    <!-- NEW: Upload Question Button -->
-                    <button id="upload-question-btn" class="level-button"
-                        style="background-color: #9b59b6; color: white; margin-left: 10px;{% if is_similar_practice %} display: none;{% endif %}">
-                        <i class="fas fa-camera"></i> 上傳題目
-                    </button>
-                    <input type="file" id="question-image-uploader" accept="image/*" style="display: none;">
 
                     {% if is_similar_practice %}
                     <button id="similar-upload-btn" class="level-button"
@@ -5916,6 +5901,14 @@
             params.set('mode', 'type_rotation');
             if (CHAPTER_REVIEW) params.set('chapter_review', '1');
             const currentParams = new URLSearchParams(window.location.search);
+            const mistakeId = currentParams.get('mistake_id');
+            const reviewComponentId = currentParams.get('component_id');
+            if (mistakeId) params.set('mistake_id', mistakeId);
+            if (reviewComponentId) params.set('component_id', reviewComponentId);
+            const reviewVariant = currentParams.get('variant');
+            const reviewSeed = currentParams.get('gen_seed');
+            if (reviewVariant) params.set('variant', reviewVariant);
+            if (reviewSeed) params.set('gen_seed', reviewSeed);
             if (!window.__textbookExampleIdConsumed) {
                 const textbookExampleId = currentParams.get('textbook_example_id');
                 if (textbookExampleId) {
@@ -6736,6 +6729,12 @@
                             resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
                         }
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                        if (data.mistake_notebook_review_completed && data.mistake_notebook_message) {
+                            const reviewNotice = document.createElement('div');
+                            reviewNotice.className = 'correct';
+                            reviewNotice.textContent = data.mistake_notebook_message;
+                            resultDisplay.appendChild(reviewNotice);
+                        }
                         if (Array.isArray(data.per_part_results) && isTableFillQuestion(currentQuestion)) {
                             applyTableGradingResult(data.per_part_results);
                         }
@@ -7459,148 +7458,6 @@
         });
     </script>
     <script>
-        /* [Feature] Instant Upload Handler */
-        function handleInstantUpload() {
-            const fileInput = document.getElementById('question-image-uploader');
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            // Show loading state?
-            // Maybe change button text
-            const btn = document.getElementById('upload-question-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 分析中...';
-            btn.disabled = true;
-
-            fetch('/practice/upload_instant', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        alert('上傳失敗: ' + data.message);
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('上傳發生錯誤');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                });
-        }
-
-        // Bind to the file input change event. Chapter review omits this control.
-        const instantQuestionUploader = document.getElementById('question-image-uploader');
-        if (instantQuestionUploader) {
-            instantQuestionUploader.addEventListener('change', handleInstantUpload);
-        }
-        // === 新增：題目上傳功能 ===
-        function setupQuestionUpload() {
-            const uploadBtn = document.getElementById('upload-question-btn');
-            const fileInput = document.getElementById('question-image-uploader');
-            const questionTextDiv = document.getElementById('question-text');
-            const resultDisplay = document.getElementById('result-display');
-            const canvas = document.getElementById('handwriting-canvas'); // 確保 canvas 變數存在
-
-            if (!uploadBtn || !fileInput) return;
-
-            uploadBtn.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                // 顯示載入中
-                questionTextDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>正在分析題目圖片...</div>';
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                fetch('/upload_question_image', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            alert('上傳失敗: ' + data.error);
-                            questionTextDiv.textContent = '題目分析失敗，請重試。';
-                            return;
-                        }
-
-                        if (data.success && data.question_text) {
-                            // 更新題目
-                            // [Feature] Instant Practice Display Logic
-                            if (data.is_instant_upload) {
-                                let htmlContent = '';
-                                // Prefer image_path if available for caching/display, or base64
-                                // The backend next_question returns image_base64 but we stored image_path in session...
-                                // Let's rely on what next_question returns. We might need to adjust next_question to return image_path too.
-                                // For now, assume image_base64 is populated or we modify next_question to return url.
-
-                                if (data.image_base64) {
-                                    htmlContent += `<img id="instant-question-image" src="${normalizeQuestionImageSource(data.image_base64)}" alt="Uploaded Question">`;
-                                }
-
-                                if (data.question_text) { // Changed from data.new_question_text to data.question_text to match existing data structure
-                                    htmlContent += `<div class="latex-content">${data.question_text}</div>`;
-                                }
-
-                                questionTextDiv.innerHTML = htmlContent;
-                            } else {
-                                // Normal behavior
-                                questionTextDiv.innerHTML = data.question_text; // Changed from data.new_question_text to data.question_text
-                            }
-
-                            // Render MathJax
-                            if (window.MathJax) {
-                                MathJax.typesetPromise([questionTextDiv]).catch((err) => console.log(err));
-                            }
-                            if (answerInput) answerInput.value = '';
-
-                            if (resultDisplay) {
-                                resultDisplay.textContent = '';
-                                resultDisplay.className = '';
-                            }
-
-                            if (canvas) {
-                                const ctx = canvas.getContext('2d');
-                                ctx.fillStyle = 'white';
-                                ctx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height); // [HiDPI Fix] CSS px
-                                // 重置 undo/redo
-                                if (typeof undoStack !== 'undefined') undoStack = [];
-                                if (typeof redoStack !== 'undefined') redoStack = [];
-                                if (typeof saveState === 'function') saveState();
-                            }
-
-                            // 更新等級顯示為 "自訂"
-                            const levelIndicator = document.getElementById('level-indicator');
-                            if (levelIndicator) levelIndicator.textContent = '等級：自訂';
-
-                            // 觸發 MathJax 渲染
-                            if (window.MathJax && window.MathJax.typesetPromise) {
-                                window.MathJax.typesetPromise([questionTextDiv]);
-                            }
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error:', err);
-                        questionTextDiv.textContent = '發生錯誤，請稍後再試。';
-                        alert('發生錯誤: ' + err);
-                    });
-            });
-        }
-
         // [Phase 6] 顯示前置單元推薦
         function showPrerequisiteSuggestion(prerequisite) {
             console.log('[前置單元推薦] 呼叫 showPrerequisiteSuggestion，參數:', prerequisite);
@@ -7645,8 +7502,6 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            setupQuestionUpload();
-            
             // 載入實際 Runtime Tutor Model 狀態
             async function loadRuntimeAIStatus() {
                 try {
@@ -7869,18 +7724,6 @@ button#next-question-btn.level-button:hover:not(:disabled) {
   box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
 }
 
-/* Upload question */
-button#upload-question-btn.level-button {
-  background: var(--bg-elevated) !important;
-  color: var(--text-secondary) !important;
-  border-color: var(--border-default) !important;
-}
-button#upload-question-btn.level-button:hover {
-  background: var(--green-pale) !important;
-  border-color: var(--green) !important;
-  color: var(--green-dark) !important;
-}
-
 /* Prereq practice */
 button#practice-prereq-btn.level-button {
   background: var(--amber-bg) !important;
@@ -7951,12 +7794,6 @@ button#similar-reset-btn.level-button {
 
 #question-choices {
   flex: 0 0 auto !important;
-}
-
-/* Question image */
-#instant-question-image {
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
 }
 
 /* MathJax skin: spacing only. Baseline/scale owned by practice_math_typography.css */
@@ -8603,10 +8440,11 @@ span[style*="粗細"],
 }
 
 </style>
+{% include '_bug_report_widget.html' %}
 {% if session.get('guest_demo') is true %}
 <script>
     document.addEventListener('click', (event) => {
-        const action = event.target.closest('#chat-send-button, #analyze-handwriting-button, #upload-image-button, #upload-question-btn, #similar-upload-btn, #submit-button');
+        const action = event.target.closest('#chat-send-button, #analyze-handwriting-button, #upload-image-button, #similar-upload-btn, #submit-button');
         if (!action) return;
         if (action.id === 'submit-button') {
             const mode = typeof currentQuestion !== 'undefined' && currentQuestion

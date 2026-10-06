@@ -15,7 +15,7 @@
 =============================================================================
 """
 
-from flask import request, jsonify, render_template, current_app, url_for, session
+from flask import request, jsonify, render_template, current_app, url_for, session, redirect
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
@@ -51,7 +51,10 @@ from core.adaptive.judge import (
 )
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 from core.diagnosis_analyzer import perform_weakness_analysis
-from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
+from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo, SkillCurriculum
+from core.mistake_notebook_service import active_review_mistake
+from core.mistake_notebook_answer_display import format_mistake_answer
+from core.utils import format_vocational_b_section_display
 
 
 ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -1211,14 +1214,14 @@ def _handwriting_feedback_second_prompt(
             f"錯誤機制：{error_mechanism}\n"
             f"已知錯誤重點：{main_issue}\n\n"
             "請嚴格遵守（輸出僅能是下方指定的 JSON，不要 markdown、不要多餘文字）：\n"
-            "- 若 status 為 partially_correct 或 incorrect：reply 必須指出「一個」最關鍵的具體錯誤或偏差"
-            "（可說是哪一步、哪種觀念或式子哪一段），並給出「一個」可執行的具體下一步"
-            "（例如先如何整理算式、先核對哪一類項），避免空泛只說『再想想』；"
+            "- 先依題目和學生現有書寫選最適合的方法；不可假設固定章節、公式或題型。\n"
+            "- 若 status 為 partially_correct 或 incorrect：reply 只處理第一個錯誤或遺漏；指出錯在哪一行，"
+            "寫出修正後的那一行，最後說明下一步運算。避免只說『再想想』或重講整題；"
             "優先銜接「已知錯誤重點」與錯誤機制。\n"
-            "- 若 status 為 correct：reply 以簡短肯定為主，可鼓勵進入下一題，不須刻意找錯。\n"
+            "- 若 status 為 correct：reply 直接指出學生接下來可做的下一步；不須刻意找錯。\n"
             "- 不要直接寫出或暗示題目的最終數值／最終化簡答案；不要替學生把整題解完。\n"
-            "- 不要規定固定套語或結尾句型（例如不必強迫寫「請再檢查一次」「想一下再試一次」等）。\n"
-            "- 不要限制 reply 行數；語氣簡潔、像老師批改即可；不要聊天。\n\n"
+            "- 若內容看不清楚，reply 直接要求學生把該行寫大一點再試一次；不要猜。\n"
+            "- 回覆依序寫目前問題（或正確處）、修正後那一行（若需要）、下一步；語氣簡潔，不要聊天。\n\n"
             + (f"\n\n{conversation_context}" if conversation_context else "")
             + "\n\n" + json_format_str
         )
@@ -3350,22 +3353,158 @@ def mistake_notebook():
 
 
 def api_mistake_notebook():
-
-
-
-
-
-
-
-    entries = db.session.query(MistakeNotebookEntry).filter_by(student_id=current_user.id).order_by(MistakeNotebookEntry.created_at.desc()).all()
-
-
-
-
-
-
-
+    """Legacy manual-notebook API retained for existing integrations."""
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
     return jsonify([entry.to_dict() for entry in entries])
+
+
+def _notebook_location(entry):
+    """Prefer the immutable entry snapshot; only legacy blanks consult catalog data."""
+    if entry.volume and entry.chapter and entry.section:
+        return entry.curriculum, entry.volume, entry.chapter, entry.section
+    if entry.skill_id:
+        query = db.session.query(SkillCurriculum).filter_by(skill_id=entry.skill_id)
+        if entry.curriculum:
+            row = query.filter_by(curriculum=entry.curriculum).order_by(
+                SkillCurriculum.display_order, SkillCurriculum.id
+            ).first()
+        else:
+            row = query.order_by(SkillCurriculum.display_order, SkillCurriculum.id).first()
+        if row:
+            return row.curriculum, row.volume, row.chapter, row.section
+    return None, "未分類", "未分類", "未分類"
+
+
+def _notebook_display_location(curriculum, volume, chapter, section):
+    """Apply the same vocational chapter display rule used by student views."""
+    if str(curriculum or "").strip().lower() == "vocational":
+        return volume, format_vocational_b_section_display(chapter, section), section
+    return volume, chapter, section
+
+
+def _notebook_curriculum_display_name(curriculum):
+    """Use the student-facing curriculum label while retaining the raw key."""
+    return "技高" if str(curriculum or "").strip().lower() == "vocational" else curriculum
+
+
+def _active_notebook_tree():
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id, resolved_at=None
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
+    curricula = {}
+    for entry in entries:
+        curriculum, volume, chapter, section = _notebook_location(entry)
+        curriculum = curriculum or "未分類"
+        raw_volume, raw_chapter, raw_section = volume, chapter, section
+        volume, chapter, section = _notebook_display_location(curriculum, volume, chapter, section)
+        skill_name = entry.skill.skill_ch_name if entry.skill else "未分類"
+        leaf_key = "\x1f".join([str(curriculum), str(raw_volume), str(raw_chapter), str(raw_section), str(entry.skill_id or "")])
+        curriculum_node = curricula.setdefault(str(curriculum), {
+            "name": _notebook_curriculum_display_name(curriculum),
+            "latest": entry.created_at,
+            "volumes": {},
+        })
+        curriculum_node["latest"] = max(curriculum_node["latest"], entry.created_at)
+        volume_node = curriculum_node["volumes"].setdefault(str(raw_volume), {"name": volume, "latest": entry.created_at, "chapters": {}})
+        volume_node["latest"] = max(volume_node["latest"], entry.created_at)
+        chapter_node = volume_node["chapters"].setdefault(str(chapter), {"name": chapter, "latest": entry.created_at, "sections": {}})
+        chapter_node["latest"] = max(chapter_node["latest"], entry.created_at)
+        section_node = chapter_node["sections"].setdefault(str(section), {"name": section, "latest": entry.created_at, "skills": {}})
+        section_node["latest"] = max(section_node["latest"], entry.created_at)
+        skill_node = section_node["skills"].setdefault(leaf_key, {
+            "key": leaf_key, "name": skill_name, "skill_id": entry.skill_id, "latest": entry.created_at, "entry_ids": []
+        })
+        skill_node["latest"] = max(skill_node["latest"], entry.created_at)
+        skill_node["entry_ids"].append(entry.id)
+
+    def serialize_skill(node):
+        return {"key": node["key"], "name": node["name"], "skill_id": node["skill_id"], "count": len(node["entry_ids"])}
+    def serialize_section(node):
+        children = sorted(node["skills"].values(), key=lambda item: item["latest"], reverse=True)
+        return {"name": node["name"], "count": sum(len(item["entry_ids"]) for item in children), "skills": [serialize_skill(item) for item in children]}
+    def serialize_chapter(node):
+        children = sorted(node["sections"].values(), key=lambda item: item["latest"], reverse=True)
+        return {"name": node["name"], "count": sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in children), "sections": [serialize_section(item) for item in children]}
+    def serialize_volume(node):
+        chapters = sorted(node["chapters"].values(), key=lambda item: item["latest"], reverse=True)
+        return {
+            "name": node["name"],
+            "count": sum(sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in chapter["sections"].values()) for chapter in chapters),
+            "chapters": [serialize_chapter(item) for item in chapters],
+        }
+    serialized = []
+    for node in sorted(curricula.values(), key=lambda item: item["latest"], reverse=True):
+        volumes = sorted(node["volumes"].values(), key=lambda item: item["latest"], reverse=True)
+        serialized.append({
+            "name": node["name"],
+            "count": sum(sum(sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in chapter["sections"].values()) for chapter in volume["chapters"].values()) for volume in volumes),
+            "volumes": [serialize_volume(item) for item in volumes],
+        })
+    return serialized
+
+
+@core_bp.route('/api/mistake-notebook/tree', methods=['GET'])
+@login_required
+def api_mistake_notebook_tree():
+    return jsonify({"curricula": _active_notebook_tree()})
+
+
+@core_bp.route('/api/mistake-notebook/entries', methods=['GET'])
+@login_required
+def api_mistake_notebook_entries():
+    key = str(request.args.get("key") or "")
+    # Tree payload deliberately does not expose records; re-derive the owned ids
+    # from the canonical active query rather than accepting ids from the browser.
+    parts = key.split("\x1f")
+    if len(parts) != 5:
+        return jsonify({"entries": []})
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id, resolved_at=None, skill_id=parts[4] or None
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
+    payload = []
+    for entry in entries:
+        curriculum, volume, chapter, section = _notebook_location(entry)
+        if [str(curriculum or "未分類"), str(volume), str(chapter), str(section)] != parts[:4]:
+            continue
+        snapshot = entry.question_data if isinstance(entry.question_data, dict) else {}
+        payload.append({
+            "id": entry.id,
+            "created_at": entry.created_at.strftime('%Y-%m-%d %H:%M'),
+            "question_text": entry.question_text,
+            "question": snapshot,
+            "student_wrong_answer": entry.user_answer,
+            "student_wrong_answer_display": format_mistake_answer(entry.user_answer),
+            "legacy_note": entry.to_dict()["notes"] if entry.notes else None,
+            "review_url": url_for('core.mistake_notebook_review', mistake_id=entry.id),
+        })
+    return jsonify({"entries": payload})
+
+
+@core_bp.route('/mistake-notebook/review/<int:mistake_id>')
+@login_required
+def mistake_notebook_review(mistake_id):
+    entry = active_review_mistake(mistake_id=mistake_id, student_id=current_user.id)
+    if entry is None:
+        return redirect(url_for('core.mistake_notebook'))
+    metadata = entry.generator_metadata if isinstance(entry.generator_metadata, dict) else {}
+    params = {"mistake_id": entry.id}
+    if entry.problem_type_id or metadata.get("problem_type_id") or metadata.get("problem_type"):
+        params["problem_type"] = entry.problem_type_id or metadata.get("problem_type_id") or metadata.get("problem_type")
+    if entry.component_id or metadata.get("component_id"):
+        params["component_id"] = entry.component_id or metadata["component_id"]
+    if entry.variant or metadata.get("variant"):
+        params["variant"] = entry.variant or metadata.get("variant")
+    # A retry deliberately uses a fresh production seed; no notebook-specific
+    # generator is introduced and the original payload remains immutable.
+    retry_seed = uuid.uuid4().int % 10_000_000
+    if str(retry_seed) == str(metadata.get("seed") or ""):
+        retry_seed = (retry_seed + 1) % 10_000_000
+    params["gen_seed"] = retry_seed
+    if metadata.get("difficulty") or metadata.get("current_level"):
+        params["level"] = metadata.get("difficulty") or metadata.get("current_level")
+    return redirect(url_for('practice.practice', skill_id=entry.skill_id, **params))
 
 
 
@@ -3942,22 +4081,22 @@ def upload_mistake_image():
 
 
 def student_diagnosis():
+    """Show the authenticated student's teacher-equivalent learning analysis."""
+    from core.teacher_analysis_service import (
+        build_student_analysis_context,
+        parse_time_range,
+    )
 
-
-
-
-
-
-
-    """顯示學生診斷（學習落點）頁面。"""
-
-
-
-
-
-
-
-    return render_template('student_diagnosis.html', username=current_user.username)
+    time_range = parse_time_range(request.args.get("range"))
+    context = build_student_analysis_context(
+        current_user,
+        volume=request.args.get("volume"),
+        chapter=request.args.get("chapter"),
+        skill_unit=request.args.get("skill_unit"),
+        time_range=time_range,
+    )
+    context.update({"time_range": time_range, "username": current_user.username})
+    return render_template('student_diagnosis.html', **context)
 
 
 

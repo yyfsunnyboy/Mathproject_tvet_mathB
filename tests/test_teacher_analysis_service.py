@@ -16,6 +16,7 @@ from core.teacher_analysis_service import (
     STATUS_NORMAL,
     STATUS_WATCH,
     build_analysis_page_context,
+    build_student_analysis_context,
     calculate_learning_status,
     format_accuracy,
     format_learning_time,
@@ -70,6 +71,8 @@ def _seed_fixture_data() -> None:
     cls_b = Class(id=2, name="一年乙班", teacher_id=102, class_code="BBBB2222")
 
     db.session.add_all([teacher, other_teacher, admin, s1, s2, s3, outsider, cls_a, cls_b])
+    # Log models have FKs to users without relationships, so flush order is not implied.
+    db.session.flush()
     db.session.add_all([
         ClassStudent(class_id=1, student_id=201),
         ClassStudent(class_id=1, student_id=202),
@@ -244,6 +247,34 @@ class TestAuthorization:
 
 
 class TestServiceAggregations:
+    def test_student_self_context_matches_teacher_student_context(self, app_ctx):
+        app = app_ctx
+        with app.app_context():
+            teacher_context = build_analysis_page_context(
+                db.session.get(User, 101),
+                class_id=1,
+                student_id=201,
+                volume=None,
+                chapter=None,
+                skill_unit=None,
+                time_range=parse_time_range("all"),
+            )
+            self_context = build_student_analysis_context(
+                db.session.get(User, 201),
+                volume=None,
+                chapter=None,
+                skill_unit=None,
+                time_range=parse_time_range("all"),
+            )
+            assert self_context["student_overview"]["stats"] == teacher_context["student_overview"]["stats"]
+            assert [
+                (row["unit_label"], row["stats"], row["status"])
+                for row in self_context["unit_rows"]
+            ] == [
+                (row["unit_label"], row["stats"], row["status"])
+                for row in teacher_context["unit_rows"]
+            ]
+
     def test_student_overview_includes_unmapped_adaptive(self, app_ctx):
         app = app_ctx
         with app.app_context():
@@ -385,3 +416,62 @@ class TestRoutes:
         resp = client.get("/teacher/analysis?class_id=1")
         assert resp.status_code == 200
         assert "0 分鐘".encode("utf-8") not in resp.data
+
+    def test_student_diagnosis_uses_current_user_and_supports_unit_drilldown(self, app_ctx):
+        app = app_ctx
+        client = app.test_client()
+        self._login(client, 201)
+        root = client.get("/student/diagnosis")
+        forged = client.get("/student/diagnosis?student_id=204")
+        detail = client.get("/student/diagnosis?volume=數學B4&chapter=2 概率")
+        assert root.status_code == 200
+        assert forged.status_code == 200
+        assert root.data == forged.data
+        assert "我的學習分析".encode("utf-8") in root.data
+        assert "技能分析".encode("utf-8") in detail.data
+        assert "學習趨勢".encode("utf-8") in detail.data
+        for resp in (root, detail):
+            html = resp.get_data(as_text=True)
+            assert "尚無足夠的學習記錄" not in html
+            assert "功能開發中" not in html
+            assert "一年甲班" not in html
+            assert "/student/analyze_weakness" not in html
+            assert "學習狀況" in html
+            for teacher_label in ("正常", "需要留意", "建議介入", "資料不足"):
+                assert teacher_label not in html
+
+    def test_student_diagnosis_ignores_forged_student_id(self, app_ctx):
+        app = app_ctx
+        client = app.test_client()
+        self._login(client, 204)
+        own = client.get("/student/diagnosis")
+        forged = client.get("/student/diagnosis?student_id=201")
+        assert own.data == forged.data
+        with app.app_context():
+            outsider_stats = build_student_analysis_context(
+                db.session.get(User, 204),
+                volume=None,
+                chapter=None,
+                skill_unit=None,
+                time_range=parse_time_range("all"),
+            )["student_overview"]["stats"]
+        assert outsider_stats.total == 1
+        assert "王小明" not in forged.get_data(as_text=True)
+
+    def test_student_unit_detail_matches_teacher_unit_detail(self, app_ctx):
+        app = app_ctx
+        with app.app_context():
+            for range_key in ("all", "today", "7d", "30d"):
+                kwargs = dict(volume="數學B4", chapter="2 概率", skill_unit=None,
+                              time_range=parse_time_range(range_key))
+                teacher_detail = build_analysis_page_context(
+                    db.session.get(User, 101), class_id=1, student_id=201, **kwargs
+                )["unit_detail"]
+                self_detail = build_student_analysis_context(
+                    db.session.get(User, 201), **kwargs
+                )["unit_detail"]
+                assert self_detail["stats"] == teacher_detail["stats"]
+                assert [(s["skill_name"], s["stats"], s["status"]) for s in self_detail["skills"]] == [
+                    (s["skill_name"], s["stats"], s["status"]) for s in teacher_detail["skills"]
+                ]
+                assert self_detail["trend"] == teacher_detail["trend"]

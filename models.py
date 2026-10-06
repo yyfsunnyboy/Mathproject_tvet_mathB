@@ -19,6 +19,7 @@ from pathlib import Path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
+from core.mistake_notebook_notes import normalize_mistake_notebook_note
 
 # 建立 SQLAlchemy 實例
 db = SQLAlchemy()
@@ -331,15 +332,45 @@ def init_db(engine, *, seed_bridges: bool = False):
         CREATE TABLE IF NOT EXISTS mistake_notebook_entries (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             student_id INTEGER NOT NULL,
-            exam_image_path TEXT,
-            question_data TEXT,
-            notes TEXT,
+            source_type TEXT NOT NULL DEFAULT 'practice',
+            source_attempt_id INTEGER,
+            source_question_uid TEXT,
+            source_session_id TEXT,
+            curriculum TEXT,
+            volume TEXT,
+            chapter TEXT,
+            section TEXT,
             skill_id TEXT,
+            problem_type_id TEXT,
+            component_id TEXT,
+            generator_key TEXT,
+            variant TEXT,
+            template_variant TEXT,
+            generator_metadata JSON,
+            question_text TEXT,
+            question_data JSON,
+            user_answer TEXT,
+            expected_answer TEXT,
+            exam_image_path TEXT,
+            notes TEXT,
+            retry_count INTEGER NOT NULL DEFAULT 0,
+            last_retry_at DATETIME,
+            resolved_at DATETIME,
+            resolved_attempt_id INTEGER,
+            resolution_method TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES users (id),
-            FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id)
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users (id) ON DELETE CASCADE,
+            FOREIGN KEY (skill_id) REFERENCES skills_info (skill_id),
+            FOREIGN KEY (source_attempt_id) REFERENCES practice_attempts (id),
+            FOREIGN KEY (resolved_attempt_id) REFERENCES practice_attempts (id)
         )
     ''')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_active_student_created ON mistake_notebook_entries (student_id, resolved_at, created_at)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_attempt ON mistake_notebook_entries (source_attempt_id)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_question_uid ON mistake_notebook_entries (source_question_uid)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_skill_id ON mistake_notebook_entries (skill_id)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_problem_type_id ON mistake_notebook_entries (problem_type_id)')
 
     # Textbook Examples 表格
     c.execute('''
@@ -965,12 +996,35 @@ class ClassStudent(db.Model):
 class MistakeNotebookEntry(db.Model):
     __tablename__ = 'mistake_notebook_entries'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    exam_image_path = db.Column(db.String(255), nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    source_type = db.Column(db.String(50), nullable=False, default='practice')
+    source_attempt_id = db.Column(db.Integer, db.ForeignKey('practice_attempts.id'), nullable=True, index=True)
+    source_question_uid = db.Column(db.String(255), nullable=True, index=True)
+    source_session_id = db.Column(db.String(255), nullable=True)
+    curriculum = db.Column(db.String(100), nullable=True)
+    volume = db.Column(db.String(100), nullable=True)
+    chapter = db.Column(db.String(255), nullable=True)
+    section = db.Column(db.String(255), nullable=True)
+    skill_id = db.Column(db.String(100), db.ForeignKey('skills_info.skill_id'), nullable=True, index=True)
+    problem_type_id = db.Column(db.String(255), nullable=True, index=True)
+    component_id = db.Column(db.String(255), nullable=True)
+    generator_key = db.Column(db.String(255), nullable=True)
+    variant = db.Column(db.String(255), nullable=True)
+    template_variant = db.Column(db.String(255), nullable=True)
+    generator_metadata = db.Column(db.JSON, nullable=True)
+    question_text = db.Column(db.Text, nullable=True)
     question_data = db.Column(db.JSON, nullable=True)
+    user_answer = db.Column(db.Text, nullable=True)
+    expected_answer = db.Column(db.Text, nullable=True)
+    exam_image_path = db.Column(db.String(255), nullable=True)
     notes = db.Column(db.Text, nullable=True)
-    skill_id = db.Column(db.String(50), db.ForeignKey('skills_info.skill_id'), nullable=True)
+    retry_count = db.Column(db.Integer, nullable=False, default=0)
+    last_retry_at = db.Column(db.DateTime, nullable=True)
+    resolved_at = db.Column(db.DateTime, nullable=True, index=True)
+    resolved_attempt_id = db.Column(db.Integer, db.ForeignKey('practice_attempts.id'), nullable=True)
+    resolution_method = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     student = db.relationship('User', backref=db.backref('mistake_entries', lazy=True))
     skill = db.relationship('SkillInfo', backref=db.backref('mistake_entries', lazy=True))
@@ -981,7 +1035,7 @@ class MistakeNotebookEntry(db.Model):
             'student_id': self.student_id,
             'exam_image_path': self.exam_image_path,
             'question_data': self.question_data,
-            'notes': self.notes,
+            'notes': normalize_mistake_notebook_note(self.notes),
             'skill_id': self.skill_id,
             'skill_name': self.skill.skill_ch_name if self.skill else '未分類',
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M')

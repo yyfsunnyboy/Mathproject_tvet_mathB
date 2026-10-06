@@ -34,7 +34,7 @@ from typing import Any
 from . import practice_bp
 
 # 鞈?摨急芋??
-from models import db, SkillInfo, SkillPrerequisites, SkillCurriculum, Progress, MistakeNotebookEntry
+from models import db, SkillInfo, SkillPrerequisites, SkillCurriculum, Progress
 from core.utils import get_skill_info
 from core.session import get_current, set_current
 from core.practice_question_store import (
@@ -88,6 +88,11 @@ from core.vocational_math_b4.services.b4_chap2_visibility_audit import (
     persist_b4_chap2_gated_event,
 )
 from core.practice_attempt_service import SOURCE_CHAPTER_REVIEW, persist_practice_attempt
+from core.mistake_notebook_service import (
+    active_review_mistake,
+    create_active_mistake,
+    record_active_review_verdict,
+)
 from core.database_runtime import release_db_session_before_external_call
 from core.guest_demo import is_guest_demo
 # Phase 6N: Chap2 chapter mode integration
@@ -650,6 +655,30 @@ def _build_attempt_context(
     return context
 
 
+def _mistake_notebook_review_request(skill_id: str, problem_type: str, component_id: str | None):
+    """Validate a review link before it can influence production generation."""
+    raw_id = str(request.args.get("mistake_id") or "").strip()
+    if not raw_id:
+        session.pop("mistake_notebook_review", None)
+        return None, None
+    try:
+        mistake_id = int(raw_id)
+    except ValueError:
+        return None, (jsonify({"error": "無效的錯題複習連結。"}), 400)
+    entry = active_review_mistake(mistake_id=mistake_id, student_id=current_user.id)
+    if entry is None:
+        return None, (jsonify({"error": "找不到可複習的錯題。"}), 404)
+    metadata = entry.generator_metadata if isinstance(entry.generator_metadata, dict) else {}
+    expected_skill = str(entry.skill_id or "")
+    expected_problem_type = str(entry.problem_type_id or metadata.get("problem_type_id") or metadata.get("problem_type") or "")
+    expected_component_id = str(entry.component_id or metadata.get("component_id") or "")
+    if skill_id != expected_skill or (expected_problem_type and problem_type and problem_type != expected_problem_type) or (
+        expected_component_id and component_id and component_id != expected_component_id
+    ):
+        return None, (jsonify({"error": "錯題複習題型不符。"}), 403)
+    return entry, None
+
+
 def _is_incorrect_resubmit(stale: dict[str, Any] | None) -> bool:
     """An answered-but-incorrect standard item remains open for another attempt."""
     return bool(
@@ -1199,6 +1228,7 @@ def _emit_check_result(
             out["checker_result"],
         )
     pending_write = False
+    practice_attempt = None
     if record_progress and _is_gradable and not is_guest_demo():
         try:
             update_progress(current_user.id, skill_id, bool(out.get("correct", False)), commit=False)
@@ -1214,7 +1244,6 @@ def _emit_check_result(
         record_progress
         and _is_gradable
         and not is_guest_demo()
-        and (cr_run_id or not skip_practice_attempt)
         and out.get("correct") is not None
     ):
         chapter_review_fields = (
@@ -1222,7 +1251,7 @@ def _emit_check_result(
             if cr_run_id
             else {}
         )
-        row = persist_practice_attempt(
+        practice_attempt = persist_practice_attempt(
             skill_id=skill_id,
             is_correct=bool(out.get("correct", False)),
             user_answer=ctx.get("user_answer"),
@@ -1231,7 +1260,52 @@ def _emit_check_result(
             commit=False,
             **chapter_review_fields,
         )
-        pending_write = pending_write or row is not None
+        pending_write = pending_write or practice_attempt is not None
+    # The notebook is derived from the same authoritative checker verdict and
+    # canonical attempt transaction.  It never trusts a browser-supplied
+    # `correct` flag or a naked mistake id.
+    review_context = session.get("mistake_notebook_review")
+    active_review = (
+        review_context if isinstance(review_context, dict)
+        and str(review_context.get("question_uid") or "") == uid
+        and str(review_context.get("skill_id") or "") == skill_id
+        else None
+    )
+    if practice_attempt is not None:
+        try:
+            db.session.flush()
+            if active_review:
+                recorded, resolved = record_active_review_verdict(
+                    mistake_id=int(active_review["mistake_id"]),
+                    student_id=current_user.id,
+                    retry_attempt=practice_attempt,
+                    current_question=ctx.get("current_question"),
+                    is_correct=bool(out.get("correct", False)),
+                )
+                if not recorded:
+                    current_app.logger.warning(
+                        "[MistakeNotebook] rejected review verdict due to context mismatch student_id=%s mistake_id=%s",
+                        current_user.id, active_review.get("mistake_id"),
+                    )
+                elif resolved:
+                    out["mistake_notebook_review_completed"] = True
+                    out["mistake_notebook_message"] = "這題已從錯題本完成複習 ✓"
+                    session.pop("mistake_notebook_review", None)
+                    session.modified = True
+            elif not bool(out.get("correct", False)):
+                create_active_mistake(
+                    student_id=current_user.id,
+                    attempt=practice_attempt,
+                    question=ctx.get("current_question") or {},
+                    user_answer=ctx.get("user_answer"),
+                )
+        except Exception:
+            db.session.rollback()
+            pending_write = False
+            current_app.logger.exception(
+                "[MistakeNotebook] answer persistence failed student_id=%s skill_id=%s",
+                getattr(current_user, "id", None), skill_id,
+            )
     if pending_write:
         try:
             db.session.commit()
@@ -2348,6 +2422,16 @@ def next_question():
     tree_diagram_index = request.args.get('tree_diagram_index', type=int)
     pascal_triangle_index = request.args.get('pascal_triangle_index', type=int)
     requested_level = request.args.get('level', type=int)
+    review_entry, review_error = _mistake_notebook_review_request(
+        skill_id, problem_type, requested_component_id
+    )
+    if review_error is not None:
+        return review_error
+    if review_entry is not None:
+        review_metadata = review_entry.generator_metadata if isinstance(review_entry.generator_metadata, dict) else {}
+        problem_type = str(review_entry.problem_type_id or review_metadata.get("problem_type_id") or review_metadata.get("problem_type") or problem_type)
+        requested_component_id = str(review_entry.component_id or review_metadata.get("component_id") or requested_component_id or "").strip() or None
+        requested_level = requested_level or review_metadata.get("difficulty") or review_metadata.get("current_level")
 
     # [?桀??粹?] mode=unit嚗??桀???pattern skill
     if mode == 'unit':
@@ -2415,7 +2499,7 @@ def next_question():
 
     skill_info = get_skill_info(skill_id)
     # [?桀?璅∪?] ?迂 pattern skill ??瑼?????DB 閮餃????臬憿?
-    if not skill_info and skill_id != 'instant_upload':
+    if not skill_info:
         if _is_b4_tree_diagram_request(skill_id, problem_type):
             skill_info = {"input_type": "handwriting", "skill_id": B4_TREE_DIAGRAM_FREE_RESPONSE_SKILL_ID}
         elif _is_b4_pascal_triangle_request(skill_id, problem_type):
@@ -2434,28 +2518,6 @@ def next_question():
         else:
             return jsonify({"error": f"???{skill_id} 銝??冽??芸???"}), 404
         
-    # [Feature] Instant Practice Mode (Short Loop)
-    if skill_id == 'instant_upload':
-        current = get_current()
-        if not current or 'is_instant_upload' not in current:
-             return jsonify({"error": "No instant upload session found"}), 404
-        
-        # Return either base64 or URL path. Frontend handles both in the 'image_base64' field logic (simplification)
-        # or we add a specific field. Let's use image_base64 field as a generic image source carrier for now or add image_url.
-        img_src = current.get("image_path") if current.get("image_path") else current.get("image_base64", "")
-        
-        instant_stem = str(current.get("question_text", "") or "")
-        return jsonify(_finalize_practice_question_api_fields({
-            "new_question_text": instant_stem,
-            "context_string": "",
-            "inequality_string": "",
-            "consecutive_correct": 0,
-            "current_level": 1,
-            "image_base64": img_src,
-            "visual_aids": [],
-            "answer_type": "text",
-            "is_instant_upload": True,
-        }, skill_id=skill_id))
     try:
         # 1. Resolve runtime route with published V3 facade precedence.
         from core.generator_route_resolver import resolve_runtime_route_decision
@@ -2940,6 +3002,13 @@ def next_question():
         session_data["question_uid"] = stored_current.get("question_uid", "")
         session_data["question_text_hash"] = stored_current.get("question_text_hash", "")
         session_data["skill_id"] = skill_id
+        if review_entry is not None:
+            session["mistake_notebook_review"] = {
+                "mistake_id": review_entry.id,
+                "skill_id": skill_id,
+                "question_uid": session_data["question_uid"],
+            }
+            session.modified = True
         _log_runtime_generate_payload(skill_id, session_data, module_file=module_file if wrapper_loaded else "")
         if type_rotation_pick:
             _practice_type_rotation_register(
@@ -3190,23 +3259,6 @@ def check_answer():
             {
                 "correct": is_correct_det,
                 "result": "答對了！" if is_correct_det else f"答錯了，正確答案是 {correct_ans}",
-            },
-            attempt_context=attempt_ctx,
-        )
-    
-    # [Fix] Instant Upload Special Handling
-    if skill_id == 'instant_upload':
-        # Simple string comparison for instant upload
-        correct_ans = str(current.get('correct_answer', '')).strip()
-        user_ans_clean = user_ans.strip()
-        is_correct = (user_ans_clean == correct_ans)
-        
-        return _emit_check_result(
-            question_uid,
-            skill_id,
-            {
-                "correct": is_correct,
-                "result": "答對了！" if is_correct else f"答錯了，正確答案是 {correct_ans}",
             },
             attempt_context=attempt_ctx,
         )
@@ -3744,28 +3796,6 @@ def check_answer():
         except Exception as e:
             current_app.logger.error(f"IRT ?湔蝭暺?仃?? {e}")
 
-    # ?亦??荔??芸?閮??圈憿
-    if not is_correct and not is_guest_demo():
-        try:
-            q_text = current.get('question_text')
-            existing_entry = db.session.query(MistakeNotebookEntry).filter_by(
-                student_id=current_user.id,
-                skill_id=skill_id
-            ).filter(MistakeNotebookEntry.question_data.contains(q_text)).first()
-
-            if not existing_entry and q_text:
-                new_entry = MistakeNotebookEntry(
-                    student_id=current_user.id,
-                    skill_id=skill_id,
-                    question_data={'type': 'system_question', 'text': q_text},
-                    notes='蝟餌絞蝺渡?憿????'
-                )
-                db.session.add(new_entry)
-                db.session.commit()
-        except Exception as e:
-            current_app.logger.error(f"?芸?閮??舫?憭望?: {e}")
-            db.session.rollback()
-
     return _emit_check_result(question_uid, skill_id, result, attempt_context=attempt_ctx)
 
 
@@ -3792,7 +3822,8 @@ def draw_diagram():
         # 1. ?澆 Gemini ???寧?撘?
         api_key = current_app.config['GEMINI_API_KEY']
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel(current_app.config.get('GEMINI_MODEL_NAME', 'gemini-1.5-flash'))
+        from core.ai_settings import get_active_ai_model
+        model = genai.GenerativeModel(get_active_ai_model())
         
         prompt = (
             "Extract a 2D equation from this math question. "
@@ -3940,67 +3971,3 @@ def get_suggested_prompts(skill_id):
     if skill_info:
         prompts = [p for p in [skill_info.suggested_prompt_1, skill_info.suggested_prompt_2, skill_info.suggested_prompt_3] if p]
     return jsonify(prompts)
-
-
-@practice_bp.route('/practice/upload_instant', methods=['POST'])
-@login_required # Login required for now, or could be open?
-def upload_instant():
-    """
-    Handle instant image upload for immediate practice (Short Loop).
-    Stores result in session, does NOT save to DB.
-    """
-    if 'image' not in request.files:
-        return jsonify({'success': False, 'message': 'No file part'}), 400
-    
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'success': False, 'message': 'No selected file'}), 400
-        
-    try:
-        from core.ai_analyzer import analyze_question_image
-        
-        # 1. Save temp file (optional, or pass stream directly if supported)
-        # static/temp_uploads structure
-        upload_dir = os.path.join(current_app.static_folder, 'temp_uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        filename = secure_filename(f"instant_{uuid.uuid4().hex}.png") # Force png or keep extension
-        filepath = os.path.join(upload_dir, filename)
-        file.save(filepath)
-        
-        # 2. Analyze with AI
-        # Re-open file to read for AI
-        with open(filepath, 'rb') as f_img:
-             # Mock a FileStorage object structure or adjust analyze_question_image to take path/bytes
-             # actually analyze_question_image takes a FileStorage object usually.
-             # Let's adjust usage to pass the file object or just re-create a mock
-             from werkzeug.datastructures import FileStorage
-             f_mock = FileStorage(stream=f_img, filename=filename)
-             result = analyze_question_image(f_mock)
-             
-        if "error" in result:
-             return jsonify({'success': False, 'message': result['error']}), 500
-             
-        # 3. Store in Session
-        session_data = {
-            'skill': 'instant_upload',
-            'question_text': result.get('question_text', ''),
-            'correct_answer': result.get('correct_answer', ''),
-            'predicted_topic': result.get('predicted_topic', 'Unclassified'),
-            'image_base64': result.get('image_base64', ''), # If AI returns b64, or constructed below
-            'image_path': url_for('static', filename=f'temp_uploads/{filename}'), # Use path for display
-            'is_instant_upload': True
-        }
-        
-        # If AI didn't return base64 (likely), we use the path url for frontend display
-        # But for 'image_base64' field in next_question response, we might want it? 
-        # Actually frontend can handle URL. Let's use image_path mainly.
-        
-        # CRITICAL: set_current for session management
-        set_current('instant_upload', session_data)
-        
-        return jsonify({'success': True, 'redirect_url': url_for('practice.practice', skill_id='instant_upload')})
-
-    except Exception as e:
-        current_app.logger.error(f"Instant upload failed: {e}")
-        return jsonify({'success': False, 'message': str(e)}), 500

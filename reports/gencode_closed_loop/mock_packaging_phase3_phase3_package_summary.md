@@ -175,7 +175,7 @@
   "next_action": "review_phase2_blockers_before_phase3",
   "error": "",
   "dry_run": true,
-  "timestamp": "2026-09-29T15:09:07.770793+00:00",
+  "timestamp": "2026-10-05T15:03:52.283946+00:00",
   "generated_with_warning": false,
   "warnings": [],
   "publish_gate_layers": {

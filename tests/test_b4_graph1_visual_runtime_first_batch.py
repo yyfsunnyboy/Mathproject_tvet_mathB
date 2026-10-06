@@ -114,9 +114,7 @@ def test_practice_template_keeps_existing_numberline_style_hooks(logged_client) 
     assert 'id="question-text"' in html
     assert 'id="answer-input"' in html
     assert 'id="handwriting-canvas"' in html
-    assert 'id="question-image-uploader"' in html
     assert 'id="analyze-handwriting-button"' in html
-    assert "instant-question-image" in html
 
 
 def test_ai_checked_review_mode_does_not_fall_into_deterministic_checker(logged_client) -> None:
