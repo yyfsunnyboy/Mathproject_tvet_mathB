@@ -8,6 +8,7 @@ from typing import Any, Callable
 _LOGGER = logging.getLogger(__name__)
 
 LOW_CONFIDENCE_THRESHOLD = 0.70
+RECOGNITION_INCOMPLETE_REPLY = "我目前沒有看完整前面的計算，請再按一次 AI檢查，或把每行寫開一點。"
 
 HANDWRITING_MODES = {
     "final_answer_only",
@@ -15,6 +16,68 @@ HANDWRITING_MODES = {
     "process_only",
     "unrecognized",
 }
+
+
+def join_recognized_work(recognized_answer, recognized_steps=None) -> str:
+    """Keep every recognized line. A later line does not replace earlier ones."""
+    lines: list[str] = []
+    for step in recognized_steps or []:
+        text = str(step or "").strip()
+        if text and text not in lines:
+            lines.append(text)
+    final = str(recognized_answer or "").strip()
+    if final and final not in lines:
+        lines.append(final)
+    return "\n".join(lines)
+
+
+def ink_band_count(image_bytes: bytes) -> int:
+    """Count separated horizontal ink bands. This is not a reading of the math."""
+    try:
+        import io
+
+        from PIL import Image
+
+        image = Image.open(io.BytesIO(image_bytes)).convert("L")
+    except Exception:
+        return 0
+    width, height = image.size
+    if width <= 0 or height <= 0:
+        return 0
+    pixels = image.load()
+    step = max(1, width // 80)
+    ink_rows: list[bool] = []
+    for y in range(height):
+        dark = 0
+        row_has_ink = False
+        for x in range(0, width, step):
+            if pixels[x, y] < 200:
+                dark += 1
+                if dark >= 2:
+                    row_has_ink = True
+                    break
+        ink_rows.append(row_has_ink)
+    bands = 0
+    gap = 0
+    in_band = False
+    min_gap = max(3, height // 40)
+    for ink in ink_rows:
+        if ink:
+            if not in_band:
+                bands += 1
+                in_band = True
+            gap = 0
+        else:
+            gap += 1
+            if in_band and gap >= min_gap:
+                in_band = False
+    return bands
+
+
+def recognition_is_last_line_only(work: str, ink_bands: int) -> bool:
+    """True only when the transcript is a single line but the image has several ink bands."""
+    parts = [part.strip() for part in re.split(r"[\n;；]+", str(work or "")) if part.strip()]
+    return len(parts) <= 1 and int(ink_bands or 0) >= 2
 
 
 @dataclass(frozen=True)

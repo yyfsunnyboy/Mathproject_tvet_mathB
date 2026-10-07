@@ -7,6 +7,7 @@ from core.handwriting_ai_check import (
     build_handwriting_check_response,
 )
 from core.prompts.default_templates import DEFAULT_PROMPT_TEMPLATES
+from core.routes.analysis import _handwriting_structured_analysis
 
 
 def _ctx(correct_answer="4", **overrides):
@@ -419,6 +420,19 @@ def test_handwriting_prompts_do_not_turn_format_or_missing_steps_into_failure():
     assert "本身都不是錯誤理由" in feedback
     assert "修正後的那一行" in feedback
     assert "下一步" in feedback
+
+
+def test_absolute_value_branches_are_a_correct_process_without_final_or():
+    result = _handwriting_structured_analysis(
+        "x + 2 ≥ 4; x ≥ 2; x + 2 ≤ -4; x ≤ -6",
+        "x ≤ -6 或 x ≥ 2",
+        "|x + 2| ≥ 4",
+        "absolute_value",
+    )
+
+    assert result["status"] == "partially_correct"
+    assert result["process_correct"] is True
+    assert "或" in result["main_issue"]
 
 
 def test_blank_does_not_call_checker_or_record_attempt():

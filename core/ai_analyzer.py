@@ -186,15 +186,16 @@ def sanitize_tutor_reply(reply_text, user_question='', question_context=''):
     if not isinstance(reply_text, str):
         return _build_guiding_reply(user_question, question_context)
 
-    cleaned = re.sub(r'\s+', ' ', reply_text).strip()
+    cleaned = reply_text.replace('\r\n', '\n').replace('\r', '\n').strip()
     if not cleaned:
         return _build_guiding_reply(user_question, question_context)
 
-    if _looks_like_direct_answer(cleaned):
-        return _build_guiding_reply(user_question, question_context)
-
-    if len(cleaned) > 80:
-        cleaned = cleaned[:80].rstrip('，。；、 ') + '。'
+    # The student tutor is answer-oriented: a direct, worked answer is valid
+    # when the student asks how to solve, what the answer is, or where a
+    # written step went wrong.  Do not replace it with the legacy Socratic
+    # fallback merely because it contains an equation or final answer.
+    if len(cleaned) > 500:
+        cleaned = cleaned[:500].rstrip('，。；、 ') + '。'
 
     return cleaned
 
@@ -790,6 +791,11 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
             prompt = (prompt_template
                       .replace("{context}", context)
                       .replace("{prereq_text}", prereq_text))
+            prompt += (
+                "\n\n【抄錄覆寫】由上到下，把白板每一行可見算式都放進 recognized_steps，一行一筆，包含最後一行。"
+                "recognized_answer 只放最後一行完整結果。"
+                "看不清的行不要猜、不要補。不可只回最後一行而把前面的行留空。"
+            )
 
             # Use the same role-aware client factory and credential resolver as
             # tutor. Avoid the legacy SDK upload path, which consults its
@@ -1131,6 +1137,8 @@ def build_chat_prompt(
     context,
     prereq_skills,
     correct_answer="",
+    student_answer="",
+    recognition_incomplete=False,
     authoritative_correct=None,
     authoritative_status="unknown",
 ):
@@ -1157,6 +1165,14 @@ def build_chat_prompt(
     turn_block = f"【本輪學生提問】\n{user_question or '（學生未提供）'}"
     extra_blocks.append(turn_block)
 
+    if str(student_answer or "").strip():
+        extra_blocks.append(f"【學生目前已寫的內容】\n{student_answer}")
+    if recognition_incomplete:
+        extra_blocks.append(
+            "【辨識狀態】目前沒有看完整前面的計算。"
+            "學生若問哪裡錯，只能說看不完整，不可猜學生寫了什麼。"
+        )
+
     reference_markers = ("剛剛", "這一步", "這樣", "兩種方法", "那個", "所以")
     if any(marker in str(user_question or "") for marker in reference_markers):
         extra_blocks.append(
@@ -1180,9 +1196,7 @@ def build_chat_prompt(
 
     json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）：
 {
-  "hint_focus": "...",
-  "guided_question": "...",
-  "micro_step": "...",
+  "reply": "...",
   "follow_up_prompts": [
     "...",
     "...",
@@ -1192,10 +1206,8 @@ def build_chat_prompt(
 }
 
 欄位規範：
-- hint_focus：只指出一個核心概念，不超過 18 個中文字。
-- guided_question：未答對時只能問一個引導問題，不超過 28 個中文字；已答對時必須為空字串。
-- micro_step：未答對時只能給一個下一步動作，不超過 22 個中文字；已答對時必須為空字串。
-- follow_up_prompts：未答對時固定 3 個學生可能追問，各不超過 28 個中文字；已答對時必須為空陣列。
+- reply：依學生這句話決定深度。問「怎麼算」只給下一個有效步驟，不公布最後答案。問「哪裡錯」只引用【學生目前已寫的內容】裡實際出現的文字；若辨識不完整或沒有那些內容，就說看不完整，不可猜。問「為什麼」只解釋原因，不公布最後答案。只有學生明確說「直接告訴我答案」「完整解答」或「完整算一次」時，才給完整解答。最多 8 行。
+- follow_up_prompts：可為空陣列；若提供，最多 3 個，各不超過 28 個中文字。
 - forbidden：若你輸出了任何違規內容請設為 true，否則 false。
 
 follow_up_prompts 規則：
@@ -1204,7 +1216,7 @@ follow_up_prompts 規則：
 - 不得重複學生剛問過的問題。
 - 不得使用「問題1／問題2／問題3」或「觀察／聯想／執行」等標籤。
 - 不得把學生問題嵌入固定句型。
-- 不得直接透露答案。
+- 未明確要求完整解答時，不得寫出【正確答案】的內容，也不得引用學生沒寫過的算式。
 - 三題分別聚焦：
   1. 為什麼要這樣做。
   2. 題目條件、數字、圖表或符號怎麼理解。

@@ -46,6 +46,21 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def _load_image_copy(image_path):
+    """Load a vision image into memory before handing it to an AI SDK.
+
+    Pillow keeps the source file handle open until the image is loaded and
+    closed.  That is especially visible on Windows, where deleting the
+    temporary PNG immediately after a model call raises WinError 32.  Passing
+    a detached copy keeps the temporary-file lifetime owned by the caller.
+    """
+    from PIL import Image
+
+    with Image.open(image_path) as source:
+        source.load()
+        return source.copy()
+
+
 def mask_api_key(api_key):
     """Mask API key for safe logging/UI display."""
     key = str(api_key or "").strip()
@@ -596,6 +611,12 @@ class GoogleAIClient:
         )
 
     def generate_content(self, prompt, image_path=None):
+        # Load outside the provider try/except. Image errors must propagate
+        # instead of becoming a MockResponse, and the source file must already
+        # be closed before any later temp-file cleanup.
+        detached_image = None
+        if image_path and os.path.exists(image_path):
+            detached_image = _load_image_copy(image_path)
         try:
             # [DEBUG] Print input config to verify parameter passing
             # print(f"[DEBUG] GoogleAIClient.generate_content called. MaxTokens={self.max_tokens}")
@@ -653,13 +674,8 @@ class GoogleAIClient:
                 
                 # Prepare Contents (Handle Vision)
                 contents = [prompt]
-                if image_path and os.path.exists(image_path):
-                    try:
-                        from PIL import Image
-                        img = Image.open(image_path)
-                        contents.append(img)
-                    except Exception as e:
-                        logger.error(f"Failed to load image for Gemini: {e}")
+                if detached_image is not None:
+                    contents.append(detached_image)
                 
                 # Call Generate
                 import time
@@ -716,10 +732,8 @@ class GoogleAIClient:
                 start_time = time.perf_counter()
                 
                 # [Legacy Path] Handle Vision
-                if image_path and os.path.exists(image_path):
-                    import PIL.Image
-                    img = PIL.Image.open(image_path)
-                    response = self.model.generate_content([prompt, img], generation_config=config, **kwargs)
+                if detached_image is not None:
+                    response = self.model.generate_content([prompt, detached_image], generation_config=config, **kwargs)
                 else:
                     response = self.model.generate_content(prompt, generation_config=config, **kwargs)
                 end_time = time.perf_counter()

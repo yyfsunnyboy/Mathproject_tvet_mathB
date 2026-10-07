@@ -2094,6 +2094,30 @@
       if (!element) return;
       element.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
     }
+    function studentVisibleReply(payload, fallback) {
+      const forbiddenSchemaKeys = new Set([
+        "reply", "is_process_correct", "correct", "error_type",
+        "next_question", "follow_up_prompts", "success", "status"
+      ]);
+      function extract(value, depth = 0) {
+        if (depth > 2 || value == null) return "";
+        if (typeof value === "object" && !Array.isArray(value)) return extract(value.reply, depth + 1);
+        if (typeof value !== "string") return "";
+        const text = value.trim();
+        if (!text) return "";
+        try {
+          const parsed = JSON.parse(text);
+          return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+            ? extract(parsed.reply, depth + 1)
+            : "";
+        } catch (_) {
+          if (text.includes("{") || text.includes("}") || text.includes('"reply"')) return "";
+          if (Array.from(forbiddenSchemaKeys).some((key) => text.includes(key))) return "";
+          return text.replace(/\\\\/g, "\\");
+        }
+      }
+      return extract(payload) || fallback;
+    }
     async function addMessage(role, text) {
       const box = document.getElementById("chatHistory");
       const div = document.createElement("div");
@@ -2107,8 +2131,9 @@
     function summarizeHandwritingResult(data) {
       const messages = [];
       const mode = String(data?.mode || "").trim();
-      if (typeof data?.feedback === "string" && data.feedback.trim()) {
-        messages.push(data.feedback.trim());
+      const reply = studentVisibleReply(data, "");
+      if (reply) {
+        messages.push(reply);
       } else if (data && (data.is_correct === true || data.correct === true)) {
         messages.push("答對了。");
       } else if (mode === "process_only") {
@@ -2132,14 +2157,6 @@
         }
       }
 
-      if (typeof data?.reply === "string" && data.reply.trim()) {
-        const cleaned = data.reply
-          .replace(/[{}[\]"]/g, " ")
-          .replace(/error_type|is_process_correct|next_question|correct|reply|description|improvement_suggestion/gi, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (cleaned) messages.push(cleaned);
-      }
       return messages.join(" ");
     }
     function updateOverview(response, q) {
@@ -2416,11 +2433,14 @@
             question_context: state.currentContext,
             family_id: state.currentFamilyId,
             subskill_nodes: state.currentSubskills,
+            student_answer: state.handwritingTransient?.normalizedAnswer || "",
+            handwriting_analysis: state.handwritingTransient?.structuredAnalysis || null,
+            handwriting_submission_id: state.handwritingTransient?.submissionId || "",
             question_uid: state.currentQuestionUid
           })
         });
         const data = await response.json();
-        setMessageContent(thinking, (data.reply || "先檢查題目的條件與運算順序。").trim());
+        setMessageContent(thinking, studentVisibleReply(data, "先檢查題目的條件與運算順序。"));
         await typesetMath(thinking);
         scrollChatToBottom();
       } catch (err) {

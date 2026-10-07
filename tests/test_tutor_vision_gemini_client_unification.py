@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 import core.ai_wrapper as wrapper
 
 
@@ -75,6 +77,25 @@ def test_handwriting_path_has_no_legacy_upload_or_direct_model():
     assert 'get_ai_client(role="vision_analyzer")' in body
     assert "genai.upload_file" not in body
     assert "get_model()" not in body
+
+
+def test_detached_image_releases_png_handle_and_load_errors_propagate(tmp_path):
+    from PIL import Image, UnidentifiedImageError
+
+    path = tmp_path / "board.png"
+    Image.new("RGB", (8, 8), "white").save(path)
+    detached = wrapper._load_image_copy(str(path))
+    source_handle = getattr(detached, "fp", None)
+    assert source_handle is None or getattr(source_handle, "closed", True) is True
+    path.unlink()
+    assert not path.exists()
+    assert detached.getpixel((0, 0)) == (255, 255, 255)
+
+    bad = tmp_path / "bad.png"
+    bad.write_bytes(b"not-a-png")
+    client = object.__new__(wrapper.GoogleAIClient)
+    with pytest.raises(UnidentifiedImageError):
+        wrapper.GoogleAIClient.generate_content(client, "prompt", image_path=str(bad))
 
 
 def test_handwriting_route_does_not_pass_a_second_credential_source():

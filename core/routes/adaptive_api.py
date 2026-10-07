@@ -381,6 +381,19 @@ def ai_check_handwriting():
         ctx=ctx,
         ai_result=ai_result,
     )
+    from core.handwriting_ai_check import ink_band_count, join_recognized_work, recognition_is_last_line_only
+    recognized_work = join_recognized_work(
+        response.get("recognized_answer") or response.get("normalized_answer"),
+        response.get("recognized_steps"),
+    )
+    encoded = str(image_base64 or "").split(",", 1)[-1]
+    try:
+        image_bytes = base64.b64decode(encoded, validate=False)
+    except Exception:
+        image_bytes = b""
+    response["recognition_incomplete"] = recognition_is_last_line_only(
+        recognized_work, ink_band_count(image_bytes)
+    )
     response["image_payload_nonempty"] = True
     response["vision_invoked"] = True if response.get("vision_invoked") is None else response.get("vision_invoked")
     # Do not leak hidden answer/rubric/checker internals to the browser.

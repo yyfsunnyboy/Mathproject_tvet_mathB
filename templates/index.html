@@ -3046,6 +3046,44 @@
         let practiceQuestionEpoch = 0;
         let practiceCheckLoadingInterval = null;
         let handwritingTransientState = null;
+
+        function applyHandwritingTransientLifecycle(state, event) {
+            const kind = event && event.type;
+            if (kind === 'rerender') {
+                const prev = state && String(state.questionUid || '');
+                const next = String(event.questionUid || '');
+                if (prev && next && prev !== next) return null;
+                return state;
+            }
+            if (kind === 'next-question' || kind === 'clear-canvas') return null;
+            if (kind === 'ai-check-start') {
+                return {
+                    submissionId: event.submissionId || '',
+                    sequence: event.sequence || 0,
+                    questionUid: String(event.questionUid || ''),
+                    capturedAt: event.capturedAt || '',
+                    imageSha256: '',
+                    recognizedRawText: '',
+                    normalizedAnswer: null,
+                    recognizedSteps: [],
+                    recognitionIncomplete: false,
+                    structuredAnalysis: null,
+                    checkerResult: null,
+                };
+            }
+            if (kind === 'ai-check-result') {
+                const steps = Array.isArray(event.recognizedSteps)
+                    ? event.recognizedSteps.map((step) => String(step || '').trim()).filter(Boolean)
+                    : [];
+                const next = state || {};
+                next.questionUid = String(event.questionUid || next.questionUid || '');
+                next.recognizedSteps = steps;
+                next.normalizedAnswer = event.normalizedAnswer == null ? null : event.normalizedAnswer;
+                next.recognitionIncomplete = event.recognitionIncomplete === true;
+                return next;
+            }
+            return state;
+        }
         let handwritingSubmissionSequence = 0;
         let treeDiagramQuestionIndex = 0;
         let pascalTriangleQuestionIndex = 0;
@@ -3890,6 +3928,10 @@
                 inkStrokeLog = [];
                 currentStrokePoints = null;
                 saveState();
+                handwritingTransientState = applyHandwritingTransientLifecycle(
+                    handwritingTransientState,
+                    { type: 'clear-canvas' }
+                );
             });
         }
 
@@ -3953,6 +3995,10 @@
             if (nextQuestionBtn) {
                 nextQuestionBtn.addEventListener('click', async (event) => {
                     event.preventDefault();
+                    handwritingTransientState = applyHandwritingTransientLifecycle(
+                        handwritingTransientState,
+                        { type: 'next-question' }
+                    );
                     if (PRACTICE_MODE === 'similar_practice') {
                         try {
                             await loadNextSimilarQuestion();
@@ -4318,17 +4364,13 @@
             const randomId = (window.crypto && typeof window.crypto.randomUUID === 'function')
                 ? window.crypto.randomUUID()
                 : `${Date.now()}-${handwritingSubmissionSequence}`;
-            handwritingTransientState = {
+            handwritingTransientState = applyHandwritingTransientLifecycle(handwritingTransientState, {
+                type: 'ai-check-start',
                 submissionId: `hw-${randomId}`,
                 sequence: handwritingSubmissionSequence,
                 questionUid: String((question && question.question_uid) || ''),
                 capturedAt,
-                imageSha256: '',
-                recognizedRawText: '',
-                normalizedAnswer: null,
-                structuredAnalysis: null,
-                checkerResult: null,
-            };
+            });
             console.log('[HANDWRITING SUBMISSION] fresh start', { ...handwritingTransientState });
             return handwritingTransientState;
         }
@@ -6515,6 +6557,10 @@
         }
 
         function renderQuestion(payload) {
+            handwritingTransientState = applyHandwritingTransientLifecycle(handwritingTransientState, {
+                type: 'rerender',
+                questionUid: payload && payload.question_uid,
+            });
             clearPracticeFeedback();
             applyCurrentQuestion(payload);
             const questionMainText = resolveQuestionText(payload);
@@ -6862,6 +6908,15 @@
             submission.imageSha256 = String(submissionAudit.image_sha256 || '');
             submission.recognizedRawText = submissionAudit.recognized_raw_text ?? recognition.recognized_answer ?? '';
             submission.normalizedAnswer = recognition.normalized_answer ?? recognition.recognized_answer ?? null;
+            handwritingTransientState = applyHandwritingTransientLifecycle(submission, {
+                type: 'ai-check-result',
+                questionUid: submission.questionUid,
+                recognizedSteps: recognition.recognized_steps,
+                normalizedAnswer: submission.normalizedAnswer,
+                recognitionIncomplete: recognition.recognition_incomplete === true,
+            });
+            submission.recognizedSteps = handwritingTransientState.recognizedSteps;
+            submission.recognitionIncomplete = handwritingTransientState.recognitionIncomplete;
             submission.structuredAnalysis = submissionAudit.structured_answer || null;
             const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
             console.log('[HANDWRITING SUBMISSION] recognition', {
@@ -6933,6 +6988,7 @@
                 body: JSON.stringify({
                     image_data_url: imageDataUrl,
                     normalized_answer: normalizedAnswer,
+                    recognized_steps: submission.recognizedSteps || [],
                     question_uid: cq.question_uid || '',
                     question_text: questionText.innerText || '',
                     handwriting_submission_id: submission.submissionId,
@@ -6947,6 +7003,12 @@
                 throw new Error('AI 助教回傳已過期，已忽略上一輪分析。');
             }
             submission.structuredAnalysis = feedback.handwriting_analysis || null;
+            if (feedback.recognition_incomplete === true) {
+                submission.recognitionIncomplete = true;
+                if (handwritingTransientState && handwritingTransientState.submissionId === submission.submissionId) {
+                    handwritingTransientState.recognitionIncomplete = true;
+                }
+            }
             console.log('[HANDWRITING SUBMISSION] tutor', {
                 submissionId: submission.submissionId,
                 structuredAnalysisFresh: feedback.structured_analysis_from_current_request === true,
@@ -6954,7 +7016,7 @@
             });
             const msg = document.createElement('div');
             msg.className = 'bot-message latest';
-            msg.textContent = feedback.reply || '先找出第一個不一致的步驟，再試著修正它。';
+            msg.textContent = studentVisibleReply(feedback, '目前無法整理出回饋，請再試一次。');
             chatHistory.appendChild(msg);
             scrollAiTutorToBottom();
         }
@@ -7199,6 +7261,10 @@
                     // 獲取當前題目文字
                     const questionDiv = document.getElementById('question-text');
                     const questionText = questionDiv ? questionDiv.innerText : "";
+                    const activeHandwriting = handwritingTransientState
+                        && handwritingTransientState.questionUid === String((currentQuestion && currentQuestion.question_uid) || '')
+                        ? handwritingTransientState
+                        : null;
 
                     const response = await fetch('/chat_ai', {
                         method: 'POST',
@@ -7209,6 +7275,13 @@
                             question_text: questionText,
                             image_data: imgData,
                             correct_answer: window.currentExpectedAnswer || "",
+                            student_answer: (activeHandwriting?.recognizedSteps || []).length
+                                ? activeHandwriting.recognizedSteps.join('\n')
+                                : (activeHandwriting?.normalizedAnswer || ''),
+                            recognized_steps: activeHandwriting?.recognizedSteps || [],
+                            recognition_incomplete: activeHandwriting?.recognitionIncomplete === true,
+                            handwriting_analysis: activeHandwriting?.structuredAnalysis || null,
+                            handwriting_submission_id: activeHandwriting?.submissionId || '',
                             question_uid: (currentQuestion && currentQuestion.question_uid) || ""
                         })
                     });
@@ -7221,44 +7294,10 @@
                         finalData = { reply: "老師正在思考中，請再問一次看看！", follow_up_prompts: [] };
                     }
 
-                    // 防呆：若 reply 被模型包成 JSON 字串，這裡拆出真正的 reply / prompts
-                    if (typeof finalData.reply === 'string') {
-                        const replyStr = finalData.reply.trim();
-                        if (replyStr.startsWith('{') && replyStr.includes('"reply"')) {
-                            try {
-                                const nested = JSON.parse(replyStr);
-                                if (nested && typeof nested.reply === 'string') {
-                                    finalData.reply = nested.reply;
-                                    if (Array.isArray(nested.follow_up_prompts) && (!Array.isArray(finalData.follow_up_prompts) || finalData.follow_up_prompts.length === 0)) {
-                                        finalData.follow_up_prompts = nested.follow_up_prompts;
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn('Nested reply JSON parse failed:', e);
-                            }
-                        }
-                    }
-
-                    // 1. 顯示老師的對話 (移除制式標題)
-                    // [修復] 將後端過度轉義的 \\ 轉回 \ 以讓 MathJax 識別
-                    let rawReply = finalData.reply || "";
-                    rawReply = rawReply.replace(/\\\\/g, '\\');
-
-                    let cleanedReply = rawReply.replace(/(思考|選項|建議|回覆|解析|步驟|回答)[：:\d\s]*/g, "");
-
-                    // 顯示保險：若 reply 仍是 JSON-ish 字串，提取內層 reply 再顯示
-                    if (typeof cleanedReply === 'string') {
-                        const maybeJson = cleanedReply.trim();
-                        if (maybeJson.startsWith('{') && maybeJson.includes('"reply"')) {
-                            const m = maybeJson.match(/"reply"\s*:\s*"([\s\S]*?)"\s*(,|\})/);
-                            if (m && m[1]) {
-                                cleanedReply = m[1]
-                                    .replace(/\\n/g, '\n')
-                                    .replace(/\\"/g, '"')
-                                    .replace(/\\\\/g, '\\');
-                            }
-                        }
-                    }
+                    const cleanedReply = studentVisibleReply(
+                        finalData,
+                        '目前無法整理出回覆，請換個方式再問一次。'
+                    );
 
                     // 移除思考中訊息
                     if (thinkingDiv && thinkingDiv.parentNode) {
@@ -7332,8 +7371,7 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'bot-message';
-            // 安全模式：直接使用 innerHTML
-            messageDiv.innerHTML = text;
+            messageDiv.textContent = text;
 
             // CSS 防護
             messageDiv.style.whiteSpace = 'pre-wrap';
@@ -7348,6 +7386,36 @@
                 window.MathJax.typesetPromise([messageDiv]).catch((err) => console.log('MathJax error:', err));
             }
             return messageDiv;
+        }
+
+        function studentVisibleReply(payload, fallback) {
+            const forbiddenSchemaKeys = new Set([
+                'reply', 'is_process_correct', 'correct', 'error_type',
+                'next_question', 'follow_up_prompts', 'success', 'status'
+            ]);
+            function plainText(value) {
+                if (typeof value !== 'string') return '';
+                const text = value.trim();
+                if (!text || text.includes('{') || text.includes('}') || text.includes('"reply"')) return '';
+                return text.replace(/\\\\/g, '\\');
+            }
+            function extract(value, depth = 0) {
+                if (depth > 2 || value == null) return '';
+                if (typeof value === 'object' && !Array.isArray(value)) return extract(value.reply, depth + 1);
+                if (typeof value !== 'string') return '';
+                const text = value.trim();
+                if (!text) return '';
+                try {
+                    const parsed = JSON.parse(text);
+                    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                        ? extract(parsed.reply, depth + 1)
+                        : '';
+                } catch (_) {
+                    const safe = plainText(text);
+                    return Array.from(forbiddenSchemaKeys).some(key => safe.includes(key)) ? '' : safe;
+                }
+            }
+            return extract(payload) || fallback;
         }
 
 

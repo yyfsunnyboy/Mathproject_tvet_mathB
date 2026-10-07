@@ -852,6 +852,7 @@ def _clean_math_expr(expr: str) -> str:
     cleaned = cleaned.replace(" ", "").replace("\t", "").replace("．", ".").replace("X", "x")
     return cleaned
 
+
 def _handwriting_structured_analysis(recognized_expression, expected_answer, question_text, family_id):
     exp = (expected_answer or "").strip()
     qt = (question_text or "").strip()
@@ -864,6 +865,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         "final_expression": final_expr,
         "expected_answer": exp,
         "is_correct": False,
+        "process_correct": False,
         "status": "unknown",
         "main_issue": "",
         "skill_focus": skill_focus,
@@ -900,6 +902,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         if cand_clean and cand_clean == exp_clean:
             base.update({
                 "is_correct": True,
+                "process_correct": True,
                 "status": "correct",
                 "main_issue": "",
                 "skill_focus": skill_focus or "你已掌握本題重點",
@@ -916,6 +919,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
             base.update(
                 {
                     "is_correct": True,
+                    "process_correct": True,
                     "status": "correct",
                     "main_issue": "",
                     "skill_focus": skill_focus or "你已掌握本題重點",
@@ -1181,7 +1185,12 @@ def _handwriting_feedback_second_prompt(
 
     try:
         from core.prompts.composer import compose_prompt
-        extra_blocks = [json_format_str]
+        extra_blocks = [
+            "覆寫：reply 只能引用【學生作答】裡實際出現的文字。"
+            "不要宣稱學生寫了兩個條件，除非那段文字就在學生作答裡。"
+            "不要寫出標準答案，也不要把整題重算完。",
+            json_format_str,
+        ]
         if conversation_context:
             extra_blocks.insert(0, conversation_context)
         full_prompt, source = compose_prompt(
@@ -1229,7 +1238,11 @@ def _handwriting_feedback_second_prompt(
 
 def _handwriting_rule_based_reply(analysis_result):
     """白板 second-stage fallback：最多三句白話提示，不直接給答案。"""
+    from core.handwriting_ai_check import RECOGNITION_INCOMPLETE_REPLY
+
     ar = analysis_result or {}
+    if ar.get("recognition_incomplete"):
+        return RECOGNITION_INCOMPLETE_REPLY
     st = ar.get("status")
     mech = str(ar.get("error_mechanism") or "").strip()
     expr_raw = str(ar.get("recognized_expression") or ar.get("final_expression") or "").strip()
@@ -1252,7 +1265,7 @@ def _handwriting_rule_based_reply(analysis_result):
         "combine_error": "這兩項的變數和次方都一樣，真的可以合在一起嗎？",
         "operation_error": "題目這一步要用加減、乘除，還是哪一個規則呢？",
         "substitution_error": "把題目中的數一個一個對回去，這個位置應該放哪個數呢？",
-        "notation_error": "你寫的兩個條件是要同時成立，還是只要一個成立呢？",
+        "notation_error": "這一行的符號，和題目要的意思一致嗎？",
         "unknown": "從第一步開始看，哪一步算完後和前一行對不上呢？",
     }
     key = mech if mech in issue_by_mechanism else "unknown"
@@ -1500,6 +1513,103 @@ def allowed_exam_file(filename):
 
 
 
+_FULL_SOLUTION_MARKERS = ("直接告訴我答案", "完整解答", "完整算一次")
+_TUTOR_OVER_REVEAL_FALLBACK = "先寫出下一個步驟，先不要算到最後答案。"
+_TUTOR_MISSING_WORK_FALLBACK = "目前看不到足夠的計算內容，沒辦法指出是哪一行。"
+
+
+def _requests_full_solution(text):
+    value = str(text or "")
+    return any(marker in value for marker in _FULL_SOLUTION_MARKERS)
+
+
+def _asks_where_wrong(text):
+    return "哪裡錯" in str(text or "")
+
+
+def _limits_final_answer(text):
+    if _requests_full_solution(text):
+        return False
+    value = str(text or "")
+    return any(token in value for token in ("怎麼算", "為什麼", "哪裡錯"))
+
+
+def _tutor_cites_unseen_work(reply, student_work):
+    """Quoted student text must occur in the recognized work. This is not a math check."""
+    text = str(reply or "")
+    work = re.sub(r"\s+", "", str(student_work or ""))
+    for marker in ("你寫了", "你寫成", "你寫的是", "你寫的"):
+        start = 0
+        while True:
+            idx = text.find(marker, start)
+            if idx < 0:
+                break
+            fragment = text[idx + len(marker):]
+            for sep in ("。", "\n", "？", "?"):
+                fragment = fragment.split(sep)[0]
+            compact = re.sub(r"\s+", "", fragment.strip(" ：:，,"))
+            if compact and compact not in work:
+                return True
+            start = idx + len(marker)
+    return False
+
+
+def _tutor_reply_compliance(user_message, reply, correct_answer, student_work, recognition_incomplete):
+    if _asks_where_wrong(user_message) and (
+        recognition_incomplete or not str(student_work or "").strip()
+    ):
+        return "recognition_incomplete"
+    if _tutor_cites_unseen_work(reply, student_work):
+        return "missing_work"
+    if _limits_final_answer(user_message) and _hw_second_stage_reply_suggests_final_answer(reply, correct_answer):
+        return "over_reveal"
+    return "display"
+
+
+def _rewrite_tutor_reply_once(user_message, reply, question_text, correct_answer, student_work, reason):
+    prompt = (
+        "請只重寫 reply，輸出 JSON {\"reply\":\"...\"}。\n"
+        f"原因：{reason}\n"
+        f"題目：{question_text}\n"
+        f"學生已寫（只能引用這裡面實際出現的文字）：{student_work or '（沒有）'}\n"
+        f"學生問題：{user_message}\n"
+        f"不可寫出的標準答案文字：{correct_answer}\n"
+        f"原回覆：{reply}\n"
+        "若原因是過度透露答案：只留一個下一步，刪掉最後答案。\n"
+        "若原因是引用了學生沒寫的內容：不要提到那些內容。\n"
+        "不要新增學生沒寫過的算式。"
+    )
+    rewritten = get_chat_response(prompt, user_question=user_message, question_context=question_text)
+    if isinstance(rewritten, dict):
+        return str(rewritten.get("reply") or "").strip()
+    return ""
+
+
+def _apply_tutor_disclosure(reply, user_message, question_text, correct_answer, student_work, recognition_incomplete):
+    from core.handwriting_ai_check import RECOGNITION_INCOMPLETE_REPLY
+
+    verdict = _tutor_reply_compliance(
+        user_message, reply, correct_answer, student_work, recognition_incomplete
+    )
+    if verdict == "display":
+        return reply
+    if verdict == "recognition_incomplete":
+        return RECOGNITION_INCOMPLETE_REPLY if recognition_incomplete else _TUTOR_MISSING_WORK_FALLBACK
+    rewritten = _rewrite_tutor_reply_once(
+        user_message, reply, question_text, correct_answer, student_work, verdict
+    )
+    second = _tutor_reply_compliance(
+        user_message, rewritten, correct_answer, student_work, recognition_incomplete
+    )
+    if second == "display":
+        return rewritten
+    if second == "missing_work":
+        return _TUTOR_MISSING_WORK_FALLBACK
+    if second == "recognition_incomplete":
+        return RECOGNITION_INCOMPLETE_REPLY if recognition_incomplete else _TUTOR_MISSING_WORK_FALLBACK
+    return _TUTOR_OVER_REVEAL_FALLBACK
+
+
 @practice_bp.route('/chat_ai', methods=['POST'])
 
 
@@ -1550,6 +1660,12 @@ def chat_ai():
 
     question_text = data.get('question_text', '')
     correct_answer = data.get('correct_answer', '').strip()
+    student_answer = str(data.get('student_answer') or '').strip()
+    recognized_steps = data.get("recognized_steps") if isinstance(data.get("recognized_steps"), list) else []
+    from core.handwriting_ai_check import join_recognized_work
+    if recognized_steps:
+        student_answer = join_recognized_work(student_answer, recognized_steps)
+    recognition_incomplete = bool(data.get("recognition_incomplete"))
     requested_question_uid = str(data.get('question_uid') or '').strip()
     conversation_context = format_ai_context_for_prompt(requested_question_uid)
     requested_submission_id = str(data.get('handwriting_submission_id') or '').strip()
@@ -1811,6 +1927,8 @@ def chat_ai():
         context=context,
         prereq_skills=prereq_skills,
         correct_answer=correct_answer,
+        student_answer=student_answer,
+        recognition_incomplete=recognition_incomplete,
         authoritative_correct=authoritative_correct,
         authoritative_status=authoritative_status,
     )
@@ -1934,10 +2052,27 @@ def chat_ai():
 
     )
 
-    # Tutor compliance gate: bounded language layer only.
+    # Preserve a direct student-facing reply.  The older guidance layer only
+    # understood hint_focus/guided_question/micro_step and overwrote every
+    # model reply with the same generic Socratic template.
     structured_analysis = _tutor_extract_structured_analysis(data)
+    direct_reply = str(result.get("reply") or "").strip() if isinstance(result, dict) else ""
 
-    if not isinstance(result, dict) or not result:
+    if direct_reply:
+        result = dict(result)
+        result["reply"] = _apply_tutor_disclosure(
+            direct_reply,
+            user_question,
+            question_text,
+            correct_answer,
+            student_answer,
+            recognition_incomplete,
+        )
+        result.setdefault("hint_focus", "")
+        result.setdefault("guided_question", "")
+        result.setdefault("micro_step", "")
+        result["forbidden"] = False
+    elif not isinstance(result, dict) or not result:
         current_app.logger.info("[chat_ai] tutor output non-compliant; fallback to deterministic guidance")
         guidance = _tutor_deterministic_fallback(structured_analysis)
     else:
@@ -1964,12 +2099,13 @@ def chat_ai():
                 if not has_question: guidance["guided_question"] = fb["guided_question"]
                 if not has_step: guidance["micro_step"] = fb["micro_step"]
 
-    result = result if isinstance(result, dict) else {}
-    result["hint_focus"] = guidance["hint_focus"]
-    result["guided_question"] = guidance["guided_question"]
-    result["micro_step"] = guidance["micro_step"]
-    result["forbidden"] = False
-    result["reply"] = _tutor_guidance_to_reply(guidance)
+    if not direct_reply:
+        result = result if isinstance(result, dict) else {}
+        result["hint_focus"] = guidance["hint_focus"]
+        result["guided_question"] = guidance["guided_question"]
+        result["micro_step"] = guidance["micro_step"]
+        result["forbidden"] = False
+        result["reply"] = _tutor_guidance_to_reply(guidance)
     add_ai_context_turn(
         requested_question_uid, role="student", kind="chat_message", content=user_question
     )
@@ -2693,7 +2829,35 @@ def analyze_handwriting():
         print("calling handwriting analyzer (recognition then analysis)")
         print("question_text:", question_text)
         print("image length:", len(b64) if b64 else 0)
+        from core.handwriting_ai_check import (
+            RECOGNITION_INCOMPLETE_REPLY,
+            ink_band_count,
+            join_recognized_work,
+            recognition_is_last_line_only,
+        )
+        recognized_steps = data.get("recognized_steps") if isinstance(data.get("recognized_steps"), list) else []
         supplied_normalized_answer = str(data.get("normalized_answer") or "").strip()
+        student_work = join_recognized_work(supplied_normalized_answer, recognized_steps)
+        if recognition_is_last_line_only(student_work, ink_band_count(img_data)):
+            if temp_path and os.path.exists(temp_path):
+                os.unlink(temp_path)
+            return jsonify({
+                "reply": RECOGNITION_INCOMPLETE_REPLY,
+                "recognition_incomplete": True,
+                "success": True,
+                "correct": False,
+                "is_process_correct": False,
+                "next_question": False,
+                "follow_up_prompts": [],
+                "error_type": "handwriting_unknown",
+                "handwriting_status": "unknown",
+                "handwriting_analysis": {
+                    "status": "unknown",
+                    "recognition_incomplete": True,
+                    "recognized_expression": student_work,
+                },
+                "handwriting_submission_id": handwriting_submission_id,
+            })
         recognition_prompt = (
             "Transcribe all visible handwritten mathematical content from this student whiteboard image. "
             "Return ONLY valid JSON, no markdown, no extra text. "
@@ -2702,8 +2866,8 @@ def analyze_handwriting():
             "If the image is blank, illegible, or has no mathematical writing, set \"expression\" to \"\". "
             "Do not invent symbols or steps that are not clearly visible."
         )
-        if supplied_normalized_answer:
-            expr = supplied_normalized_answer
+        if student_work:
+            expr = student_work
         elif ai_provider == 'google':
             vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
             rec_response = call_google_model(
@@ -2723,7 +2887,7 @@ def analyze_handwriting():
                 retry_delay=1,
                 verbose=False,
             )
-        if not supplied_normalized_answer:
+        if not student_work:
             rec_raw = (getattr(rec_response, 'text', '') or '').strip()
             rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
             rec_parsed = clean_and_parse_json(rec_cleaned)
@@ -2746,9 +2910,11 @@ def analyze_handwriting():
             expr, expected_answer, question_text, family_id
         )
         if handwriting_submission_id:
-            analysis_result["status"] = str(
+            analysis_result["checker_status"] = str(
                 authoritative_result.get("status") or "unknown"
             ).strip().lower()
+            if not analysis_result.get("process_correct"):
+                analysis_result["status"] = analysis_result["checker_status"]
             analysis_result["checker_authoritative"] = True
         current_app.logger.info(
             "analyze_handwriting: analysis_source=%s family_id=%s status=%s",
@@ -2769,7 +2935,7 @@ def analyze_handwriting():
             is_hw_correct = hw_status == "correct"
             result = {
                 "reply": enforce_strict_mode(reply_text),
-                "is_process_correct": hw_status in ("correct", "partially_correct"),
+                "is_process_correct": bool(analysis_result.get("process_correct")) or hw_status in ("correct", "partially_correct"),
                 "correct": is_hw_correct,
                 # 與 /check_answer 語意對齊：答對時為 True，供前端與 textbox 相同流程判斷
                 "next_question": is_hw_correct,
@@ -2839,7 +3005,12 @@ def analyze_handwriting():
                 _hw_flags,
             )
 
-            if (not reply_stripped) or (not _hw_ok):
+            if _tutor_cites_unseen_work(reply_stripped, expr):
+                current_app.logger.info(
+                    "[handwriting second stage] rejected: cited text is not in student work"
+                )
+                reply_stripped = _TUTOR_MISSING_WORK_FALLBACK
+            elif (not reply_stripped) or (not _hw_ok):
                 if _hw_flags.get("reject_reasons"):
                     current_app.logger.info(
                         "[handwriting second stage] rejected: %s; using rule-based reply",
@@ -2869,7 +3040,7 @@ def analyze_handwriting():
             result["handwriting_status"] = analysis_result.get("status", "unknown")
             st = analysis_result.get("status")
             result["correct"] = st == "correct"
-            result["is_process_correct"] = st in ("correct", "partially_correct")
+            result["is_process_correct"] = bool(analysis_result.get("process_correct")) or st in ("correct", "partially_correct")
             result["error_type"] = _hw_err.get(st, "handwriting_unknown")
             result["success"] = True
             if result.get("correct"):

@@ -43,6 +43,52 @@ def _run_analyze(monkeypatch, payloads, *, expected="3"):
     return result, client
 
 
+def test_analyze_unlinks_temp_png_on_success_and_on_error(monkeypatch):
+    import os
+
+    from flask import Flask
+
+    kept = []
+
+    class _TrackingClient:
+        def __init__(self, fail):
+            self.fail = fail
+
+        def generate_content(self, prompt, image_path=None):
+            assert image_path and os.path.exists(image_path)
+            with open(image_path, "rb") as handle:
+                assert handle.read(1)
+            kept.append(image_path)
+            if self.fail:
+                raise RuntimeError("vision failed")
+            return _Response({"expression": "x<=-6"})
+
+    monkeypatch.setattr("time.sleep", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(analyzer, "get_ai_prompt_with_source", lambda: ("Read {context} {prereq_text}", "test"))
+    monkeypatch.setattr(
+        "core.database_runtime.release_db_session_before_external_call",
+        lambda *_args, **_kwargs: None,
+    )
+    app = Flask(__name__)
+    for fail in (False, True):
+        kept.clear()
+        monkeypatch.setattr(analyzer, "get_ai_client", lambda role, fail=fail: _TrackingClient(fail))
+        with app.app_context():
+            result = analyzer.analyze(
+                "data:image/png;base64,iVBORw0KGgo=",
+                "|x+2|>=4",
+                None,
+                prerequisite_skills=[],
+                correct_answer="x<=-6 or x>=2",
+            )
+        assert kept
+        assert all(not os.path.exists(path) for path in kept)
+        if fail:
+            assert result["is_process_correct"] is False
+        else:
+            assert result.get("expression") == "x<=-6" or result.get("recognized_expression") == "x<=-6"
+
+
 def test_single_digit_misread_as_37_becomes_uncertain_and_skips_checker(monkeypatch):
     result, client = _run_analyze(
         monkeypatch,
