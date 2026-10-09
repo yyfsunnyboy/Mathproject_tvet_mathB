@@ -139,6 +139,7 @@ if (studentVisibleReply('看不懂 {reply} 這段', 'fallback') !== 'fallback') 
 
 def test_incomplete_recognition_skips_second_stage(tutor_app, monkeypatch):
     client = _login(tutor_app)
+    question_uid = _issue_question(tutor_app, "3x - 5 = 7", "x=4")
     calls = _block_second_stage(monkeypatch)
     response = client.post(
         "/analyze_handwriting",
@@ -146,8 +147,9 @@ def test_incomplete_recognition_skips_second_stage(tutor_app, monkeypatch):
             "image_data_url": "data:image/png;base64," + _png_b64(_two_band_png()),
             "normalized_answer": "x=4",
             "recognized_steps": ["x=4"],
+            "question_uid": question_uid,
             "question_text": "3x - 5 = 7",
-            "expected_answer": "x=4",
+            "expected_answer": "tampered",
         },
     )
     assert response.status_code == 200
@@ -160,6 +162,7 @@ def test_incomplete_recognition_skips_second_stage(tutor_app, monkeypatch):
 
 def test_correct_work_skips_second_stage(tutor_app, monkeypatch):
     client = _login(tutor_app)
+    question_uid = _issue_question(tutor_app, "2x - 1 > 7", "x>4")
     calls = _block_second_stage(monkeypatch)
     response = client.post(
         "/analyze_handwriting",
@@ -167,8 +170,9 @@ def test_correct_work_skips_second_stage(tutor_app, monkeypatch):
             "image_data_url": "data:image/png;base64," + _png_b64(_two_band_png()),
             "normalized_answer": "x>4",
             "recognized_steps": ["2x>8", "x>4"],
+            "question_uid": question_uid,
             "question_text": "2x - 1 > 7",
-            "expected_answer": "x>4",
+            "expected_answer": "tampered",
         },
     )
     assert response.status_code == 200
@@ -180,6 +184,7 @@ def test_correct_work_skips_second_stage(tutor_app, monkeypatch):
 
 def test_wrong_work_quotes_only_actual_steps(tutor_app, monkeypatch):
     client = _login(tutor_app)
+    question_uid = _issue_question(tutor_app, "2x + 3 = 11", "x=4")
 
     class _Reply:
         text = json.dumps({"reply": "你寫了 x≤2。下一步先改這一筆？", "is_process_correct": False, "correct": False})
@@ -198,8 +203,9 @@ def test_wrong_work_quotes_only_actual_steps(tutor_app, monkeypatch):
             "image_data_url": "data:image/png;base64," + _png_b64(_two_band_png()),
             "normalized_answer": "2x=6",
             "recognized_steps": ["2x+3=11", "2x=6"],
+            "question_uid": question_uid,
             "question_text": "2x + 3 = 11",
-            "expected_answer": "x=4",
+            "expected_answer": "tampered",
         },
     )
     assert response.status_code == 200
@@ -223,6 +229,22 @@ def _login(app):
     login = client.post("/login", data={"username": "hw_life", "password": "pass1234"})
     assert login.status_code == 302
     return client
+
+
+def _issue_question(app, question_text: str, correct_answer: str) -> str:
+    from core.practice_question_store import _STORE
+
+    with app.app_context():
+        user_id = User.query.filter_by(username="hw_life").one().id
+    question_uid = f"hw-life-{len(_STORE.get(f'user:{user_id}', {}))}"
+    _STORE.setdefault(f"user:{user_id}", {})[question_uid] = {
+        "question_uid": question_uid,
+        "skill_id": "test",
+        "question_text": question_text,
+        "correct_answer": correct_answer,
+        "status": "generated",
+    }
+    return question_uid
 
 
 def _block_second_stage(monkeypatch):

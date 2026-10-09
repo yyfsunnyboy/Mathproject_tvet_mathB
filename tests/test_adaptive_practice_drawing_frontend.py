@@ -147,3 +147,20 @@ def test_ui_contract_dispatch_logic_and_guards():
     ai_body = _function_body(standard, "setupAIButton")
     assert "expected_answer" not in ai_body
     assert "correct_answer" not in ai_body
+
+
+def test_tutor_suggestion_renderers_limit_to_three_and_handwriting_uses_them():
+    adaptive = TEMPLATE.read_text(encoding="utf-8")
+    standard = STANDARD_TEMPLATE.read_text(encoding="utf-8")
+
+    adaptive_renderer = _function_body(adaptive, "renderTutorSuggestedQuestions")
+    standard_renderer = _function_body(standard, "showDynamicSuggestions")
+    standard_handwriting = _async_function_body(standard, "submitHandwritingAsAnswer")
+    adaptive_handwriting = _async_function_body(adaptive, "analyzeHandwriting")
+
+    assert ".slice(0, 3)" in adaptive_renderer
+    assert ".slice(0, 3)" in standard_renderer
+    assert "feedback.suggested_questions || feedback.follow_up_prompts" in standard_handwriting
+    assert "feedback.suggested_questions || feedback.follow_up_prompts" in adaptive_handwriting
+    assert "handwritingTransientState.submissionId !== submission.submissionId" in standard_handwriting
+    assert "state.handwritingTransient?.submissionId !== submission.submissionId" in adaptive_handwriting

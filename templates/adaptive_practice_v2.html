@@ -719,6 +719,7 @@
                 <div class="assistant-summary-text" id="assistantSummaryText">目前先練這一題，助教會在你卡住時提供提示。</div>
               </div>
               <div class="chat-history" id="chatHistory"></div>
+              <div id="tutorSuggestedQuestions" class="guide-buttons" style="display:none;flex-direction:column"></div>
               <div style="height:10px;"></div>
               <div class="guide-buttons">
                 <button type="button" data-guide="請用國中生能懂的方式提醒我這題先看哪一個觀念。">看核心觀念</button>
@@ -2420,6 +2421,7 @@
 
     async function askTutor(question, sourceLabel = "user") {
       if (!state.currentQuestionText) { setStatus("請先開始診斷，再使用 AI 助教。"); return; }
+      const questionUid = state.currentQuestionUid;
       await addMessage(sourceLabel === "user" ? "user" : "bot", question);
       const thinking = await addMessage("bot", "AI 助教正在整理提示...");
       try {
@@ -2436,17 +2438,35 @@
             student_answer: state.handwritingTransient?.normalizedAnswer || "",
             handwriting_analysis: state.handwritingTransient?.structuredAnalysis || null,
             handwriting_submission_id: state.handwritingTransient?.submissionId || "",
-            question_uid: state.currentQuestionUid
+            question_uid: questionUid
           })
         });
         const data = await response.json();
+        if (questionUid !== state.currentQuestionUid) { thinking.remove(); return; }
         setMessageContent(thinking, studentVisibleReply(data, "先檢查題目的條件與運算順序。"));
+        renderTutorSuggestedQuestions(data.suggested_questions || data.follow_up_prompts);
         await typesetMath(thinking);
         scrollChatToBottom();
       } catch (err) {
         setMessageContent(thinking, "目前助教暫時沒有整理出新提示，先檢查你是不是抓對了這一題的核心觀念。");
         scrollChatToBottom();
       }
+    }
+
+    function renderTutorSuggestedQuestions(prompts) {
+      const box = document.getElementById("tutorSuggestedQuestions");
+      box.replaceChildren();
+      const questions = Array.isArray(prompts)
+        ? prompts.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3)
+        : [];
+      for (const question of questions) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = String(question);
+        button.addEventListener("click", () => askTutor(String(question)));
+        box.appendChild(button);
+      }
+      box.style.display = questions.length ? "flex" : "none";
     }
 
     function isDrawingQuestion(question) {
@@ -2722,6 +2742,10 @@
           })
         });
         const recognition = await recognitionResponse.json();
+        if (
+          submission.questionUid !== state.currentQuestionUid
+          || state.handwritingTransient?.submissionId !== submission.submissionId
+        ) { thinking.remove(); return; }
         if (recognition.handwriting_submission_id && recognition.handwriting_submission_id !== submission.submissionId) {
           throw new Error("手寫辨識回傳已過期，請重新送出。");
         }
@@ -2758,6 +2782,10 @@
           })
         });
         const grade = await gradeResponse.json();
+        if (
+          submission.questionUid !== state.currentQuestionUid
+          || state.handwritingTransient?.submissionId !== submission.submissionId
+        ) { thinking.remove(); return; }
         if (!gradeResponse.ok) throw new Error(grade.result || "手寫答案批改失敗。");
         submission.checkerResult = grade.checker_result || (grade.correct ? "correct" : "incorrect");
         setMessageContent(thinking, grade.result || (grade.correct ? "答對了！" : "答案尚未正確。"));
@@ -2791,11 +2819,16 @@
           })
         });
         const feedback = await feedbackResponse.json();
+        if (
+          submission.questionUid !== state.currentQuestionUid
+          || state.handwritingTransient?.submissionId !== submission.submissionId
+        ) { thinking.remove(); return; }
         if (feedback.handwriting_submission_id && feedback.handwriting_submission_id !== submission.submissionId) {
           throw new Error("AI 助教回傳已過期，已忽略上一輪分析。");
         }
         submission.structuredAnalysis = feedback.handwriting_analysis || null;
         setMessageContent(thinking, feedback.reply || "先找出第一個不一致的步驟，再試著修正它。");
+        renderTutorSuggestedQuestions(feedback.suggested_questions || feedback.follow_up_prompts);
         await typesetMath(thinking);
       } catch (err) {
         setStatus(err.message || "手寫答案處理失敗，請稍後再試。");
@@ -2850,6 +2883,7 @@
           throw new Error(data?.reply || data?.error || `handwriting api failed (${response.status})`);
         }
         setMessageContent(thinking, summarizeHandwritingResult(data));
+        renderTutorSuggestedQuestions(data.suggested_questions || data.follow_up_prompts);
         await typesetMath(thinking);
         // AI handwriting is recognition/tutoring only. It never records an
         // attempt or advances the question; authoritative submission does that.
@@ -2923,6 +2957,7 @@
       state.currentQuestion = q;
       state.currentQuestionText = q.question_text || q.new_question_text || q.question || "";
       state.currentQuestionUid = String(q.question_uid || response.question_uid || "");
+      renderTutorSuggestedQuestions([]);
       state.currentProblemTypeId = String(q.problem_type_id || response.problem_type_id || "");
       state.currentPresentationMode = String(q.presentation_mode || "");
       state.currentAnswerType = String(q.answer_contract?.answer_type || q.answer_type || "");

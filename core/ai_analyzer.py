@@ -460,7 +460,10 @@ def diversify_follow_up_prompts(prompts, last_prompts, user_question='', questio
     last_fp = [_prompt_fingerprint(p) for p in last_prompts[:3]]
 
     if current_fp == last_fp:
-        return build_generic_follow_up_fallback(variant=(turn_index + 1))
+        from core.ai_conversation_context import normalize_suggested_questions
+        return normalize_suggested_questions(
+            [], question_text=question_context, student_work=user_question, ai_reply=ai_reply
+        )
 
     return current
 
@@ -487,7 +490,11 @@ def normalize_follow_up_prompts(prompts, user_question='', question_context='', 
                 break
 
     if len(cleaned) < 3:
-        return build_generic_follow_up_fallback()
+        from core.ai_conversation_context import normalize_suggested_questions
+        return normalize_suggested_questions(
+            cleaned, question_text=question_context, student_work=user_question,
+            ai_reply=ai_reply,
+        )
 
     return cleaned[:3]
 
@@ -555,7 +562,7 @@ def configure_gemini(api_key, model_name):
     global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
     genai.configure(api_key=api_key)
     gemini_model = genai.GenerativeModel(model_name)
-    gemini_chat = gemini_model.start_chat(history=[])
+    gemini_chat = None
     gemini_model_name = model_name
     gemini_key_fingerprint = _gemini_key_fingerprint(api_key)
 
@@ -1249,10 +1256,6 @@ follow_up_prompts 規則：
     return full_prompt
 
 def get_chat_response(prompt, image=None, user_question='', question_context=''):
-    global gemini_chat
-    if gemini_chat is None and gemini_model is not None:
-        gemini_chat = gemini_model.start_chat(history=[])
-
     # Primary path for Practice AI tutor:
     # use config.py -> MODEL_ROLES['tutor'].
     # Keep the legacy Gemini flow below as fallback for quick rollback.
@@ -1312,9 +1315,9 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
             # 這裡假設 image 是 PIL Image
             content.append(image)
 
-        # 呼叫 Gemini
-        # 注意: ChatSession.send_message 支援列表 [text, image]
-        response = gemini_chat.send_message(
+        # Stateless fallback: the caller supplies only the current question's
+        # bounded history. A module-global ChatSession would mix students.
+        response = gemini_model.generate_content(
             content,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type='application/json', # 強制 JSON

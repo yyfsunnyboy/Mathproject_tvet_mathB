@@ -105,25 +105,36 @@ def _to_int(value: object, default: int = 0) -> int:
 def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]:
     runtime_store = _adaptive_runtime_store()
     session_id = str(payload.get("session_id") or "").strip()
-    if session_id and isinstance(runtime_store.get(session_id), dict):
-        return dict(runtime_store.get(session_id) or {})
     question_uid = str(payload.get("question_uid") or "").strip()
+    if session_id and isinstance(runtime_store.get(session_id), dict):
+        run = runtime_store[session_id]
+        if not question_uid or question_uid == str(run.get("question_uid") or "").strip():
+            return dict(run)
+        return {}
     if question_uid:
+        from core.practice_question_store import get_question_by_uid
+        stored = get_question_by_uid(question_uid)
+        if stored:
+            return stored
         for item in runtime_store.values():
             if isinstance(item, dict) and str(item.get("question_uid") or "").strip() == question_uid:
                 return dict(item)
-    # Standard practice uses the shared server-side question store rather than
-    # the adaptive runtime store.  Never accept expected answers from the browser.
-    try:
-        from core.session import get_current
+        # Compatibility for a server-generated standard question still held in
+        # the signed legacy session. The supplied UID must match exactly; POST
+        # question/answer fields are never used.
+        try:
+            from core.session import get_current
 
-        current = get_current()
-        if isinstance(current, dict):
-            current_uid = str(current.get("question_uid") or "").strip()
-            if not question_uid or not current_uid or question_uid == current_uid:
+            current = get_current()
+            if (
+                isinstance(current, dict)
+                and str(current.get("question_uid") or "").strip() == question_uid
+            ):
                 return dict(current)
-    except Exception:
-        current_app.logger.exception("[AI handwriting recognition] current question lookup failed")
+        except Exception:
+            current_app.logger.exception(
+                "[AI handwriting recognition] current question lookup failed"
+            )
     return {}
 
 
@@ -144,16 +155,29 @@ def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingChe
 
 
 def _persist_drawing_feedback(ctx: HandwritingCheckContext, response: dict[str, object]) -> None:
-    """Store only a readable drawing-check summary; never image or raw payload data."""
+    """Store recognized work and a non-reversible image reference, never image bytes."""
     feedback = _trim_text(response.get("feedback"), max_len=400)
     if not ctx.question_uid or not feedback:
         return
     verdict = response.get("final_answer_correct")
+    from core.handwriting_ai_check import join_recognized_work
+    work = join_recognized_work(response.get("recognized_answer") or response.get("normalized_answer"),
+                                response.get("recognized_steps"))[:1000]
+    assessment = _trim_text(response.get("error_type") or response.get("mode"), max_len=100)
+    audit = response.get("handwriting_submission_audit") or response.get("submission_audit") or {}
+    image_ref = str(audit.get("image_sha256") or "") if isinstance(audit, dict) else ""
     add_ai_context_turn(
         ctx.question_uid,
         role="student",
         kind="drawing_feedback",
-        content=f"student_action=drawing_check\nfeedback_summary={feedback}",
+        content=f"student_action=drawing_check\nrecognized_work={work}\nfeedback_summary={feedback}",
+        student_message="檢查目前手寫作答",
+        handwriting_summary=work,
+        handwriting_image_reference=image_ref,
+        ai_assessment=assessment,
+        ai_reply=feedback,
+        suggested_questions=response.get("suggested_questions") or [],
+        submission_id=str(response.get("handwriting_submission_id") or ""),
         authoritative_correct=verdict if isinstance(verdict, bool) else None,
         authoritative_status=(
             "correct" if verdict is True else "incorrect" if verdict is False else "unknown"
@@ -278,26 +302,29 @@ def ai_check_handwriting():
     )
     _debug_save_handwriting_capture(image_base64, payload.get("capture_debug"))
     runtime = _runtime_for_ai_handwriting(payload)
+    if not runtime or (payload.get("question_uid") and
+                       str(payload["question_uid"]) != str(runtime.get("question_uid") or "")):
+        return jsonify({"error": "stale_or_unknown_question"}), 409
 
     answer_contract = runtime.get("answer_contract")
     if not isinstance(answer_contract, dict):
-        answer_contract = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+        answer_contract = {}
 
     correct_answer = runtime.get("correct_answer", runtime.get("answer"))
 
     ctx = HandwritingCheckContext(
-        question_uid=str(payload.get("question_uid") or runtime.get("question_uid") or ""),
-        skill_id=str(payload.get("skill_id") or runtime.get("skill_id") or runtime.get("skill") or ""),
-        question_text=str(payload.get("question_text") or runtime.get("question_text") or ""),
-        problem_type_id=str(payload.get("problem_type_id") or runtime.get("problem_type_id") or ""),
-        presentation_mode=str(payload.get("presentation_mode") or runtime.get("presentation_mode") or ""),
-        answer_type=str(payload.get("answer_type") or runtime.get("answer_type") or answer_contract.get("answer_type", "")),
+        question_uid=str(runtime.get("question_uid") or ""),
+        skill_id=str(runtime.get("skill_id") or runtime.get("skill") or ""),
+        question_text=str(runtime.get("question_text") or runtime.get("question") or ""),
+        problem_type_id=str(runtime.get("problem_type_id") or ""),
+        presentation_mode=str(runtime.get("presentation_mode") or ""),
+        answer_type=str(runtime.get("answer_type") or answer_contract.get("answer_type", "")),
         correct_answer=correct_answer,
         semantic_answer=runtime.get("semantic_answer"),
         answer_contract=answer_contract,
         checker=str(runtime.get("checker") or runtime.get("checker_type") or answer_contract.get("checker", "")),
         equivalence=str(runtime.get("equivalence") or runtime.get("equivalence_type") or answer_contract.get("answer_equivalence", "")),
-        choices=list(runtime.get("choices") or payload.get("choices") or []),
+        choices=list(runtime.get("choices") or []),
         rubric=str(runtime.get("rubric") or ""),
     )
     transient_keys = (
@@ -407,6 +434,17 @@ def ai_check_handwriting():
         ai_result=ai_result if isinstance(ai_result, dict) else None,
         previous_state_cleared=previous_state_cleared,
     )
+    from core.ai_conversation_context import normalize_suggested_questions
+    from core.handwriting_ai_check import join_recognized_work
+    work = join_recognized_work(response.get("recognized_answer") or response.get("normalized_answer"),
+                                response.get("recognized_steps"))
+    response["reply"] = str(response.get("reply") or response.get("feedback") or "")
+    response["suggested_questions"] = normalize_suggested_questions(
+        response.get("suggested_questions") or response.get("follow_up_prompts"),
+        question_text=ctx.question_text, student_work=work, ai_reply=response["reply"],
+        correct_answer=str(ctx.correct_answer or ""),
+    )
+    response["follow_up_prompts"] = response["suggested_questions"]
     if not is_guest_demo():
         _persist_drawing_feedback(ctx, response)
     return jsonify(response), 200
@@ -506,6 +544,23 @@ def _slim_subskills(raw: object) -> list[str]:
             out.append(text)
         if len(out) >= _MAX_SUBSKILLS:
             break
+    return out
+
+
+def _handwriting_rubric_fields(question: dict) -> dict:
+    """Keep bounded server-generated rubric fields in adaptive runtime state."""
+    out: dict = {}
+    for field in ("expected_paths", "expected_row", "expected_terms"):
+        value = question.get(field)
+        if isinstance(value, list):
+            out[field] = value[:64]
+    for field, limit in (("variant", 80), ("expected_expansion", 1200)):
+        value = str(question.get(field) or "").strip()
+        if value:
+            out[field] = value[:limit]
+    for field in ("expected_count", "n"):
+        if question.get(field) is not None:
+            out[field] = question.get(field)
     return out
 
 
@@ -792,9 +847,15 @@ def adaptive_submit_and_get_next():
             if response.get("completed"):
                 runtime_store.pop(next_session_id, None)
             else:
-                runtime_store[next_session_id] = build_b4_chap2_chapter_runtime_store_entry(
+                runtime_entry = build_b4_chap2_chapter_runtime_store_entry(
                     response, chap2_step_index
                 )
+                next_question = response.get("new_question_data") or {}
+                runtime_entry["question_uid"] = str(next_question.get("question_uid") or "")
+                runtime_entry["presentation_mode"] = str(next_question.get("presentation_mode") or "")
+                runtime_entry["answer_contract"] = dict(next_question.get("answer_contract") or {})
+                runtime_entry.update(_handwriting_rubric_fields(next_question))
+                runtime_store[next_session_id] = runtime_entry
                 runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)
             session["adaptive_runtime"] = runtime_store
             session.modified = True
@@ -876,22 +937,28 @@ def adaptive_submit_and_get_next():
         if response.get("completed"):
             runtime_store.pop(next_session_id, None)
         else:
+            next_question = response["new_question_data"]
             runtime_store[next_session_id] = {
                 "family_id": _trim_text(response.get("target_family_id"), max_len=24),
                 "subskill_nodes": _slim_subskills(response.get("target_subskills")),
+                "question_uid": str(next_question.get("question_uid") or ""),
+                "skill_id": str(next_question.get("skill_id") or payload.get("skill_id") or ""),
+                "problem_type_id": str(next_question.get("problem_type_id") or ""),
+                "presentation_mode": str(next_question.get("presentation_mode") or ""),
                 "correct_answer": _trim_text(
-                    response["new_question_data"].get("correct_answer") or response["new_question_data"].get("answer") or "",
+                    next_question.get("correct_answer") or next_question.get("answer") or "",
                     max_len=_MAX_ANSWER_LEN,
                 ),
                 "question_text": _trim_text(
-                    response["new_question_data"].get("question_text") or response["new_question_data"].get("question") or "",
+                    next_question.get("question_text") or next_question.get("question") or "",
                     max_len=_MAX_TEXT_LEN,
                 ),
-                "choices": list(response["new_question_data"].get("choices") or []),
-                "answer_type": str(response["new_question_data"].get("answer_type") or ""),
-                "checker_type": str(response["new_question_data"].get("checker_type") or ""),
-                "answer_contract": dict(response["new_question_data"].get("answer_contract") or {}),
+                "choices": list(next_question.get("choices") or []),
+                "answer_type": str(next_question.get("answer_type") or ""),
+                "checker_type": str(next_question.get("checker_type") or ""),
+                "answer_contract": dict(next_question.get("answer_contract") or {}),
                 "routing_state": _slim_routing_state(response.get("routing_state", {})),
+                **_handwriting_rubric_fields(next_question),
             }
             runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)
         session["adaptive_runtime"] = runtime_store

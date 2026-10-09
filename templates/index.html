@@ -3452,6 +3452,9 @@
         function showDynamicSuggestions(prompts) {
             console.log("showDynamicSuggestions called with:", prompts);
             const container = document.getElementById('dynamic-prompts'); // RENAMED
+            const questions = Array.isArray(prompts)
+                ? prompts.map((item) => String(item || '').trim()).filter(Boolean).slice(0, 3)
+                : [];
 
             // 如果沒有動態建議容器，嘗試建立一個(容錯)
             if (!container) {
@@ -3469,7 +3472,7 @@
             }
 
             // 如果沒有提示詞，隱藏容器
-            if (!prompts || prompts.length === 0) {
+            if (questions.length === 0) {
                 container.style.display = 'none';
                 return;
             }
@@ -3480,7 +3483,7 @@
             container.style.display = 'flex';
             container.style.flexDirection = 'column';
 
-            prompts.forEach(promptText => {
+            questions.forEach(promptText => {
                 const btn = document.createElement('button');
                 // 使用 Bootstrap-like 樣式 + 自定義樣式
                 btn.className = 'dynamic-prompt-btn';
@@ -3493,7 +3496,7 @@
                 btn.style.fontSize = '0.875rem';
 
                 // 蘇格拉底式圖示
-                btn.innerHTML = `<i class="far fa-comment-dots" style="color: #e67e22; margin-right: 5px;"></i> ${promptText}`;
+                btn.textContent = promptText;
 
                 btn.onclick = () => {
                     // 點擊後自動填入並送出
@@ -6899,6 +6902,13 @@
             });
             const recognition = await recognitionResponse.json();
             if (
+                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
+                || !handwritingTransientState
+                || handwritingTransientState.submissionId !== submission.submissionId
+            ) {
+                return;
+            }
+            if (
                 recognition.handwriting_submission_id
                 && recognition.handwriting_submission_id !== submission.submissionId
             ) {
@@ -6961,6 +6971,13 @@
                 body: JSON.stringify(handwritingPayload),
             });
             const grade = await gradeResponse.json();
+            if (
+                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
+                || !handwritingTransientState
+                || handwritingTransientState.submissionId !== submission.submissionId
+            ) {
+                return;
+            }
             if (!gradeResponse.ok) throw new Error(grade.result || '手寫答案批改失敗。');
             notePracticeTypeRotation(grade);
             submission.checkerResult = grade.checker_result || (grade.correct ? 'correct' : 'incorrect');
@@ -6997,6 +7014,13 @@
             });
             const feedback = await feedbackResponse.json();
             if (
+                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
+                || !handwritingTransientState
+                || handwritingTransientState.submissionId !== submission.submissionId
+            ) {
+                return;
+            }
+            if (
                 feedback.handwriting_submission_id
                 && feedback.handwriting_submission_id !== submission.submissionId
             ) {
@@ -7018,6 +7042,8 @@
             msg.className = 'bot-message latest';
             msg.textContent = studentVisibleReply(feedback, '目前無法整理出回饋，請再試一次。');
             chatHistory.appendChild(msg);
+            showDynamicSuggestions(feedback.suggested_questions || feedback.follow_up_prompts || []);
+            renderMathContent(msg);
             scrollAiTutorToBottom();
         }
 
@@ -7098,16 +7124,22 @@
                 showLoadingMessage();
 
                 const img = canvas.toDataURL('image/png');
+                const handwritingQuestionUid = String((currentQuestion && currentQuestion.question_uid) || '');
                 fetch('/analyze_handwriting', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         image_data_url: img,
+                        question_uid: handwritingQuestionUid,
                         question_text: questionText.innerText || ""
                     })
                 })
                     .then(r => r.json())
                     .then(data => {
+                        if (handwritingQuestionUid !== String((currentQuestion && currentQuestion.question_uid) || '')) {
+                            stopLoadingMessage();
+                            return;
+                        }
                         // 停止載入訊息
                         stopLoadingMessage();
 
@@ -7147,8 +7179,8 @@
                             } catch (err) { }
                         }
 
-                        if (data.follow_up_prompts && data.follow_up_prompts.length > 0) {
-                            showDynamicSuggestions(data.follow_up_prompts);
+                        if ((data.suggested_questions || data.follow_up_prompts || []).length > 0) {
+                            showDynamicSuggestions(data.suggested_questions || data.follow_up_prompts);
                         }
 
                         const isTreeDiagramFreeResponse = window.currentProblemTypeId === 'tree_diagram_listing';
@@ -7246,6 +7278,8 @@
 
                 // 顯示思考中
                 const thinkingDiv = addBotMessage('AI 助教正在思考...');
+                const chatQuestionUid = String((currentQuestion && currentQuestion.question_uid) || '');
+                chatSendBtn.disabled = true;
 
                 try {
                     // 嘗試獲取上下文，避免變數未定義錯誤
@@ -7274,7 +7308,6 @@
                             context: contextPayload,
                             question_text: questionText,
                             image_data: imgData,
-                            correct_answer: window.currentExpectedAnswer || "",
                             student_answer: (activeHandwriting?.recognizedSteps || []).length
                                 ? activeHandwriting.recognizedSteps.join('\n')
                                 : (activeHandwriting?.normalizedAnswer || ''),
@@ -7282,7 +7315,7 @@
                             recognition_incomplete: activeHandwriting?.recognitionIncomplete === true,
                             handwriting_analysis: activeHandwriting?.structuredAnalysis || null,
                             handwriting_submission_id: activeHandwriting?.submissionId || '',
-                            question_uid: (currentQuestion && currentQuestion.question_uid) || ""
+                            question_uid: chatQuestionUid
                         })
                     });
 
@@ -7290,6 +7323,10 @@
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                     let finalData = await response.json();
+                    if (chatQuestionUid !== String((currentQuestion && currentQuestion.question_uid) || '')) {
+                        if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                        return;
+                    }
                     if (!finalData || typeof finalData !== 'object') {
                         finalData = { reply: "老師正在思考中，請再問一次看看！", follow_up_prompts: [] };
                     }
@@ -7311,7 +7348,7 @@
                     console.log("Updating dynamic prompts with:", finalData.follow_up_prompts);
 
                     // [修復] 提示詞也需要清洗反斜線
-                    let safePrompts = finalData.follow_up_prompts || [];
+                    let safePrompts = finalData.suggested_questions || finalData.follow_up_prompts || [];
                     if (Array.isArray(safePrompts)) {
                         safePrompts = safePrompts.map(p => p.replace(/\\\\/g, '\\'));
                     }
@@ -7327,6 +7364,8 @@
                         thinkingDiv.parentNode.removeChild(thinkingDiv);
                     }
                     addBotMessage("連線發生錯誤，請檢查網路。");
+                } finally {
+                    chatSendBtn.disabled = false;
                 }
             });
 

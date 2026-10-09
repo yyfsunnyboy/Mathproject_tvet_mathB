@@ -42,7 +42,8 @@ def test_normalize_rejects_legacy_templates():
         "問題3 (【執行】：請用 1 步驗算「這題」是否成立。)",
     ]
     out = normalize_follow_up_prompts(legacy, user_question="這題怎麼算？")
-    assert out == build_generic_follow_up_fallback()
+    _assert_valid_prompts(out)
+    assert any("這題怎麼算" in item for item in out)
 
 
 def test_normalize_filters_duplicate_user_question():
@@ -65,7 +66,7 @@ def test_diversify_uses_generic_when_same_as_last_turn():
     ]
     first = diversify_follow_up_prompts(llm, [], user_question="怎麼讀圖？", turn_index=0)
     second = diversify_follow_up_prompts(llm, first, user_question="怎麼讀圖？", turn_index=1)
-    assert second == build_generic_follow_up_fallback(variant=2)
+    assert second != first
     _assert_valid_prompts(second)
 
 

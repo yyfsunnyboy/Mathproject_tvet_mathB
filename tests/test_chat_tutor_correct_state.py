@@ -19,6 +19,21 @@ def tutor_app(tmp_path):
     try:
         app = create_app()
         app.config.update(TESTING=True)
+        @app.before_request
+        def install_tutor_question_fixture():
+            from flask import request
+            from core.practice_question_store import _STORE, get_practice_owner_key
+            if request.path != "/chat_ai":
+                return
+            payload = request.get_json(silent=True) or {}
+            uid = str(payload.get("question_uid") or "")
+            if uid:
+                _STORE.setdefault(get_practice_owner_key(), {})[uid] = {
+                    "question_uid": uid,
+                    "skill_id": "test",
+                    "question_text": str(payload.get("question_text") or ""),
+                    "correct_answer": str(payload.get("correct_answer") or ""),
+                }
         with app.app_context():
             for key in ("chat_tutor_prompt", "chat_guardrail_prompt"):
                 row = PromptTemplate.query.filter_by(prompt_key=key).one()
@@ -30,6 +45,8 @@ def tutor_app(tmp_path):
             db.session.commit()
         yield app
     finally:
+        from core.practice_question_store import _STORE
+        _STORE.clear()
         config_module.Config.SQLALCHEMY_DATABASE_URI = previous_uri
 
 
@@ -101,7 +118,7 @@ def test_correct_checker_result_returns_affirmation_without_question(tutor_app, 
     assert payload["reply"] == "答對了，做得很好！"
     assert payload["guided_question"] == ""
     assert payload["micro_step"] == ""
-    assert payload["follow_up_prompts"] == []
+    assert len(payload["suggested_questions"]) == 3
     assert not any(word in payload["reply"] for word in ("補格式", "補步驟", "重寫", "？", "?"))
 
 

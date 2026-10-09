@@ -117,25 +117,50 @@ def test_endpoint_with_strokes_invokes_vision_and_reaches_checker(runtime_app, m
         sess["current_question_uid"] = uid
         sess["current_skill_id"] = SKILL
 
-    vision_calls = {"n": 0}
+    vision_calls = {"n": 0, "ctx": None}
 
-    def _fake_vision(*_a, **_k):
+    def _fake_vision(_payload, ctx):
         vision_calls["n"] += 1
+        vision_calls["ctx"] = ctx
         return {"expression": "x=±12", "mode": "final_answer_only", "confidence": 0.99}
 
     monkeypatch.setattr(adaptive_api, "_call_ai_handwriting_checker", _fake_vision)
     monkeypatch.setattr(practice, "resolve_check_context", lambda _body: (current, None))
 
+    missing_uid = client.post(
+        "/api/practice/ai-check-handwriting",
+        json={
+            "image_data_url": stroke,
+            "correct_answer": "tampered",
+            "question_text": "tampered",
+        },
+    )
+    assert missing_uid.status_code == 409
+
     recognition = client.post(
         "/api/practice/ai-check-handwriting",
-        json={"image_data_url": stroke, "image_base64": stroke, "question_uid": uid},
+        json={
+            "image_data_url": stroke,
+            "image_base64": stroke,
+            "question_uid": uid,
+            "correct_answer": "tampered",
+            "question_text": "tampered",
+            "answer_contract": {"checker": "tampered"},
+            "choices": ["tampered"],
+        },
     ).get_json()
     assert recognition["is_blank"] is False
     assert recognition["image_payload_nonempty"] is True
     assert recognition["vision_invoked"] is True
     assert vision_calls["n"] == 1
+    assert vision_calls["ctx"].question_text == "|x| = 12"
+    assert vision_calls["ctx"].correct_answer == "-12, 12"
+    assert vision_calls["ctx"].checker == "solution_set_checker"
+    assert vision_calls["ctx"].choices == []
     assert recognition["completion_state"] == "completed"
     assert recognition["normalized_answer"] == "x=±12"
+    assert len(recognition["suggested_questions"]) == 3
+    assert recognition["follow_up_prompts"] == recognition["suggested_questions"]
 
     grade = client.post(
         "/check_answer",
@@ -180,6 +205,16 @@ def test_endpoint_blank_canvas_skips_vision(runtime_app, monkeypatch):
     assert recognition["vision_invoked"] is False
     assert vision_calls["n"] == 0
     assert "請先在白板作答" in recognition["feedback"]
+
+
+def test_adaptive_runtime_keeps_server_question_identity():
+    import inspect
+    import core.routes.adaptive_api as adaptive_api
+
+    source = inspect.getsource(adaptive_api.adaptive_submit_and_get_next)
+    assert '"question_uid": str(next_question.get("question_uid") or "")' in source
+    assert '"skill_id": str(next_question.get("skill_id")' in source
+    assert '"problem_type_id": str(next_question.get("problem_type_id") or "")' in source
 
 
 @pytest.mark.parametrize(

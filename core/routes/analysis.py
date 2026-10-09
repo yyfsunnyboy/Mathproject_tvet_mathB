@@ -41,6 +41,7 @@ from core.ai_analyzer import (
 from core.ai_client import call_ai, call_google_model
 from core.ai_conversation_context import add_turn as add_ai_context_turn
 from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
+from core.ai_conversation_context import normalize_suggested_questions
 from core.adaptive.judge import (
     judge_answer_with_feedback,
     _as_symbolic_tolerant,
@@ -63,6 +64,32 @@ ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def _handwriting_not_recognized_response():
     """缺圖、payload 無效、OCR 無法讀取或運算式不可用時的回應；不呼叫教學用 LLM。"""
     return jsonify({"success": False, "reason": "handwriting_not_recognized"})
+
+
+def _finish_handwriting_tutor_result(result, *, question_uid, question_text,
+                                     image_bytes, submission_id, correct_answer=""):
+    work = str((result.get("handwriting_analysis") or {}).get("recognized_expression") or
+               result.get("recognized_expression") or
+               (result.get("handwriting_analysis") or {}).get("feedback") or "").strip()
+    reply = str(result.get("reply") or "")
+    result["suggested_questions"] = normalize_suggested_questions(
+        result.get("suggested_questions") or result.get("follow_up_prompts"),
+        question_text=question_text, student_work=work, ai_reply=reply,
+        correct_answer=correct_answer,
+    )
+    result["follow_up_prompts"] = result["suggested_questions"]
+    if question_uid:
+        import hashlib
+        add_ai_context_turn(
+            question_uid, role="student", kind="handwriting_feedback",
+            content=f"辨識式：{work}\n回饋摘要：{reply}", handwriting_summary=work,
+            student_message="檢查目前手寫作答",
+            handwriting_image_reference=hashlib.sha256(image_bytes).hexdigest(),
+            ai_assessment=str(result.get("handwriting_status") or result.get("error_type") or ""),
+            ai_reply=reply, suggested_questions=result["suggested_questions"],
+            submission_id=submission_id,
+        )
+    return jsonify(result)
 
 
 def _handwriting_expression_from_parsed(parsed):
@@ -103,75 +130,45 @@ def _handwriting_expression_is_usable(expr):
     return len(expr) >= 8
 
 
-def _handwriting_expected_answer(data, state, question_text, question_context=""):
-    """Resolve expected answer with strict priority:
-    0) POST expected_answer
-    1) adaptive runtime current question correct_answer
-    2) POST correct_answer
-    2.5) session correct_answer
-    3) answer parsed from question_context
-    """
-    # 0) POST expected_answer
-    ca = str(data.get("expected_answer") or "").strip()
-    if ca: return ca
+def _resolve_trusted_tutor_question(question_uid):
+    """Resolve a server-issued question only within this owner/session."""
+    uid = str(question_uid or "").strip()
+    if not uid:
+        return None, ("question_uid_required", 400)
 
-    def _extract_from_question_context(ctx):
-        raw = str(ctx or "").strip()
-        if not raw:
-            return ""
-        try:
-            import json as _json
-            obj = _json.loads(raw)
-            if isinstance(obj, dict):
-                for k in ("correct_answer", "expected_answer", "answer"):
-                    v = str(obj.get(k) or "").strip()
-                    if v:
-                        return v
-        except Exception:
-            pass
-        m = re.search(
-            r"(?:正確答案|答案|correct_answer|expected_answer)\s*[:：=]\s*([^\n\r;；]+)",
-            raw,
-            flags=re.IGNORECASE,
+    from core.practice_question_store import STATUS_EXPIRED, get_question_by_uid
+
+    trusted = get_question_by_uid(uid)
+    if trusted:
+        if str(trusted.get("status") or "").strip() == STATUS_EXPIRED:
+            return None, ("question_expired", 409)
+        return trusted, None
+
+    runs = session.get("adaptive_runtime") or {}
+    if isinstance(runs, dict):
+        trusted = next(
+            (
+                dict(row)
+                for row in runs.values()
+                if isinstance(row, dict)
+                and str(row.get("question_uid") or "").strip() == uid
+            ),
+            None,
         )
-        if m:
-            return m.group(1).strip().strip('"').strip("'")
+    if trusted:
+        return trusted, None
+    return None, ("stale_or_unknown_question", 409)
+
+
+def _handwriting_expected_answer(trusted_question):
+    """Return only the answer attached to the server-validated question."""
+    if not isinstance(trusted_question, dict):
         return ""
-
-    sid = str(data.get("session_id") or state.get("session_id") or "").strip()
-    qt = str(question_text or "").strip()
-    store = session.get("adaptive_runtime") or {}
-
-    # 1) session runtime current question correct_answer
-    if isinstance(store, dict):
-        if sid and isinstance(store.get(sid), dict):
-            run = store.get(sid) or {}
-            rq = str(run.get("question_text") or "").strip()
-            ca = str(run.get("correct_answer") or "").strip()
-            if ca and (not qt or not rq or rq == qt):
-                return ca
-        if qt:
-            for _k, run in store.items():
-                if not isinstance(run, dict):
-                    continue
-                rq = str(run.get("question_text") or "").strip()
-                ca = str(run.get("correct_answer") or "").strip()
-                if ca and rq == qt:
-                    return ca
-
-    # 2) POST correct_answer
-    ca = str(data.get("correct_answer") or "").strip()
-    if ca:
-        return ca
-
-    # 2.5) session correct_answer
-    if isinstance(state, dict):
-        ca = str(state.get("correct_answer") or state.get("expected_answer") or "").strip()
-        if ca:
-            return ca
-
-    # 3) question_context answer
-    return _extract_from_question_context(question_context)
+    return str(
+        trusted_question.get("correct_answer")
+        or trusted_question.get("answer")
+        or ""
+    ).strip()
 
 
 def _handwriting_final_answer_candidates(expr):
@@ -1179,8 +1176,12 @@ def _handwriting_feedback_second_prompt(
     json_format_str = (
         "只輸出 JSON（不要 markdown、不要多餘文字），格式固定為："
         "{\"reply\":\"...您的教學回饋放入這裡...\",\"is_process_correct\":true/false,\"correct\":true/false,"
-        "\"next_question\":\"\",\"follow_up_prompts\":[],"
+        "\"next_question\":\"\",\"suggested_questions\":[\"...\",\"...\",\"...\"],"
+        "\"follow_up_prompts\":[\"...\",\"...\",\"...\"],"
         "\"error_type\":\"handwriting_ok|handwriting_partial|handwriting_wrong|handwriting_unknown\"}。"
+        "suggested_questions 必須恰好三題，依目前題目、學生本輪手寫步驟、近期同題對話與本次 reply 動態生成；"
+        "使用簡短學生口吻，不得固定套用問題1／問題2／問題3等標籤，不得洩漏正確答案。"
+        "follow_up_prompts 必須與 suggested_questions 相同。"
     )
 
     try:
@@ -1321,7 +1322,8 @@ def _tutor_extract_structured_analysis(data):
         "status": str(src.get("status") or data.get("status") or "unknown"),
         "main_issue": str(src.get("main_issue") or data.get("main_issue") or ""),
         "issue_tag": str(src.get("issue_tag") or data.get("issue_tag") or ""),
-        "expected_answer": str(src.get("expected_answer") or data.get("expected_answer") or ""),
+        # Expected answers are resolved later from the trusted server question.
+        "expected_answer": "",
         "error_mechanism": str(src.get("error_mechanism") or data.get("error_mechanism") or "unknown"),
         "step_focus": str(src.get("step_focus") or data.get("step_focus") or ""),
         "family_id": str(src.get("family_id") or data.get("family_id") or ""),
@@ -1658,8 +1660,6 @@ def chat_ai():
 
 
 
-    question_text = data.get('question_text', '')
-    correct_answer = data.get('correct_answer', '').strip()
     student_answer = str(data.get('student_answer') or '').strip()
     recognized_steps = data.get("recognized_steps") if isinstance(data.get("recognized_steps"), list) else []
     from core.handwriting_ai_check import join_recognized_work
@@ -1667,7 +1667,23 @@ def chat_ai():
         student_answer = join_recognized_work(student_answer, recognized_steps)
     recognition_incomplete = bool(data.get("recognition_incomplete"))
     requested_question_uid = str(data.get('question_uid') or '').strip()
+    trusted_question, trust_error = _resolve_trusted_tutor_question(requested_question_uid)
+    if trust_error:
+        error, status_code = trust_error
+        return jsonify({"error": error}), status_code
+    question_text = str(
+        trusted_question.get('question_text')
+        or trusted_question.get('question')
+        or ''
+    )
+    correct_answer = _handwriting_expected_answer(trusted_question)
     conversation_context = format_ai_context_for_prompt(requested_question_uid)
+    from core.ai_conversation_context import get_context as get_ai_context
+    stored_handwriting = next((str(turn.get('handwriting_summary') or '')
+                               for turn in reversed(get_ai_context(requested_question_uid))
+                               if turn.get('handwriting_summary')), '')
+    if stored_handwriting:
+        student_answer = stored_handwriting
     requested_submission_id = str(data.get('handwriting_submission_id') or '').strip()
     checker_result = session.get('chat_tutor_authoritative_result')
     if not isinstance(checker_result, dict):
@@ -1691,7 +1707,7 @@ def chat_ai():
 
 
 
-    family_id = (data.get('family_id') or '').strip()
+    family_id = str(trusted_question.get('family_id') or '').strip()
 
 
 
@@ -1699,7 +1715,8 @@ def chat_ai():
 
 
 
-    question_context = (data.get('question_context') or context or '').strip()
+    question_context = str(trusted_question.get('context_string') or question_text).strip()
+    context = question_context
 
 
 
@@ -1707,7 +1724,7 @@ def chat_ai():
 
 
 
-    subskill_nodes = data.get('subskill_nodes') or []
+    subskill_nodes = trusted_question.get('subskill_nodes') or []
 
 
 
@@ -1733,6 +1750,9 @@ def chat_ai():
 
         return jsonify({"reply": "缺少必要參數：question"}), 400
 
+    if not requested_question_uid:
+        return jsonify({"error": "question_uid_required"}), 400
+
 
 
 
@@ -1755,7 +1775,7 @@ def chat_ai():
 
 
 
-    skill_id = current.get("skill")
+    skill_id = (trusted_question or {}).get('skill_id') or (trusted_question or {}).get('skill') or current.get("skill")
 
 
 
@@ -1797,6 +1817,11 @@ def chat_ai():
 
     full_question_context = question_text if question_text else (current.get("question") or question_context)
     structured_analysis = _tutor_extract_structured_analysis(data)
+    # Structured analysis may describe the student's work, but browser fields
+    # cannot replace the canonical question or expected answer.
+    structured_analysis["expected_answer"] = ""
+    structured_analysis["question_text"] = question_text
+    structured_analysis["family_id"] = family_id
     _raw_ha = data.get("handwriting_analysis") if isinstance(data, dict) else None
     _has_handwriting = isinstance(_raw_ha, dict) and bool(_raw_ha)
     _sa_empty = (
@@ -1937,6 +1962,11 @@ def chat_ai():
     # tutoring before the LLM/compliance pipeline can add questions or more work.
     if _tutor_authoritative_correct(authoritative_correct, authoritative_status):
         terminal = _tutor_correct_response()
+        terminal['suggested_questions'] = normalize_suggested_questions(
+            [], question_text=question_text, student_work=student_answer,
+            ai_reply=terminal.get('reply', ''), correct_answer=correct_answer,
+        )
+        terminal['follow_up_prompts'] = terminal['suggested_questions']
         add_ai_context_turn(
             requested_question_uid, role="student", kind="chat_message", content=user_question
         )
@@ -1945,6 +1975,9 @@ def chat_ai():
             role="tutor",
             kind="tutor_reply",
             content=terminal.get("reply", ""),
+            ai_reply=terminal.get("reply", ""),
+            ai_assessment="correct",
+            suggested_questions=terminal['suggested_questions'],
             authoritative_correct=True,
             authoritative_status=authoritative_status,
         )
@@ -2056,6 +2089,8 @@ def chat_ai():
     # understood hint_focus/guided_question/micro_step and overwrote every
     # model reply with the same generic Socratic template.
     structured_analysis = _tutor_extract_structured_analysis(data)
+    structured_analysis["expected_answer"] = ""
+    structured_analysis["family_id"] = family_id
     direct_reply = str(result.get("reply") or "").strip() if isinstance(result, dict) else ""
 
     if direct_reply:
@@ -2107,15 +2142,8 @@ def chat_ai():
         result["forbidden"] = False
         result["reply"] = _tutor_guidance_to_reply(guidance)
     add_ai_context_turn(
-        requested_question_uid, role="student", kind="chat_message", content=user_question
-    )
-    add_ai_context_turn(
-        requested_question_uid,
-        role="tutor",
-        kind="tutor_reply",
-        content=result["reply"],
-        authoritative_correct=authoritative_correct if isinstance(authoritative_correct, bool) else None,
-        authoritative_status=authoritative_status,
+        requested_question_uid, role="student", kind="chat_message", content=user_question,
+        student_message=user_question, handwriting_summary=stored_handwriting,
     )
 
 
@@ -2517,6 +2545,19 @@ def chat_ai():
 
 
 
+    result['suggested_questions'] = normalize_suggested_questions(
+        result.get('follow_up_prompts'), question_text=question_text,
+        student_work=student_answer, ai_reply=result.get('reply', ''),
+        correct_answer=correct_answer,
+    )
+    result['follow_up_prompts'] = result['suggested_questions']
+    add_ai_context_turn(
+        requested_question_uid, role="tutor", kind="tutor_reply", content=result.get('reply', ''),
+        ai_reply=result.get('reply', ''), suggested_questions=result['suggested_questions'],
+        ai_assessment=str(structured_analysis.get('status') or 'unknown'),
+        authoritative_correct=authoritative_correct if isinstance(authoritative_correct, bool) else None,
+        authoritative_status=authoritative_status,
+    )
     return jsonify(result)
 
 
@@ -2566,6 +2607,11 @@ def analyze_handwriting():
 
 
     data = request.get_json(silent=True) or {}
+    requested_uid = str(data.get("question_uid") or "").strip()
+    trusted_question, trust_error = _resolve_trusted_tutor_question(requested_uid)
+    if trust_error:
+        error, status_code = trust_error
+        return jsonify({"error": error}), status_code
     handwriting_submission_id = str(data.get("handwriting_submission_id") or "").strip()
     authoritative_result = session.get("chat_tutor_authoritative_result")
     authoritative_result = authoritative_result if isinstance(authoritative_result, dict) else {}
@@ -2644,9 +2690,23 @@ def analyze_handwriting():
     ai_provider = (data.get('provider') or 'local').strip().lower()
     if ai_provider not in ('local', 'google'):
         ai_provider = 'local'
-    question_text = (data.get('question_text') or state.get('question_text') or state.get('question') or "").strip()
-    question_context = (data.get('question_context') or state.get('question') or "").strip()
-    family_id = (data.get('family_id') or state.get('family_id') or state.get('skill') or "").strip()
+    question_text = str(
+        trusted_question.get('question_text')
+        or trusted_question.get('question')
+        or ""
+    ).strip()
+    question_context = str(
+        trusted_question.get('context_string')
+        or question_text
+    ).strip()
+    expected_answer = _handwriting_expected_answer(trusted_question)
+    family_id = str(
+        trusted_question.get('family_id')
+        or state.get('family_id')
+        or trusted_question.get('skill_id')
+        or trusted_question.get('skill')
+        or ""
+    ).strip()
     skill_labels = {
         'sign_handling': '符號處理',
         'add_sub': '加減運算',
@@ -2679,11 +2739,17 @@ def analyze_handwriting():
             f.write(img_data)
             temp_path = f.name
 
-        problem_type = (data.get('problem_type') or state.get('problem_type') or "").strip()
+        problem_type = str(
+            trusted_question.get('problem_type_id')
+            or trusted_question.get('problem_type')
+            or ""
+        ).strip()
         if problem_type == "tree_diagram_listing":
-            expected_paths = data.get('expected_paths') or state.get('expected_paths') or []
-            expected_count = data.get('expected_count') or state.get('expected_count') or len(expected_paths)
-            variant = data.get('variant') or state.get('variant') or ""
+            expected_paths = trusted_question.get('expected_paths')
+            expected_count = trusted_question.get('expected_count')
+            variant = str(trusted_question.get('variant') or "").strip()
+            if not isinstance(expected_paths, list) or not expected_paths or expected_count is None:
+                return jsonify({"error": "trusted_question_rubric_missing"}), 409
 
             prompt = (
                 "You are an AI teacher grading a student's tree diagram or listing answer. "
@@ -2750,13 +2816,27 @@ def analyze_handwriting():
 
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
-            return jsonify(result)
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer,
+            )
         if problem_type == "pascal_triangle_handwriting":
-            variant = str(data.get("variant") or state.get("variant") or "").strip()
-            n_value = data.get("n") if data.get("n") is not None else state.get("n")
-            expected_row = data.get("expected_row") or state.get("expected_row") or []
-            expected_terms = data.get("expected_terms") or state.get("expected_terms") or []
-            expected_expansion = str(data.get("expected_expansion") or state.get("expected_expansion") or "").strip()
+            variant = str(trusted_question.get("variant") or "").strip()
+            n_value = trusted_question.get("n")
+            expected_row = trusted_question.get("expected_row")
+            expected_terms = trusted_question.get("expected_terms")
+            expected_expansion = str(trusted_question.get("expected_expansion") or "").strip()
+            has_row_rubric = isinstance(expected_row, list) and bool(expected_row)
+            has_expansion_rubric = (
+                (isinstance(expected_terms, list) and bool(expected_terms))
+                or bool(expected_expansion)
+            )
+            if not variant or not (has_row_rubric or has_expansion_rubric):
+                return jsonify({"error": "trusted_question_rubric_missing"}), 409
+            expected_row = expected_row if isinstance(expected_row, list) else []
+            expected_terms = expected_terms if isinstance(expected_terms, list) else []
 
             prompt = (
                 "You are an AI math teacher grading a student's handwritten answer about Pascal triangle / binomial expansion.\n"
@@ -2824,7 +2904,12 @@ def analyze_handwriting():
             }
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
-            return jsonify(result)
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer,
+            )
 
         print("calling handwriting analyzer (recognition then analysis)")
         print("question_text:", question_text)
@@ -2841,7 +2926,7 @@ def analyze_handwriting():
         if recognition_is_last_line_only(student_work, ink_band_count(img_data)):
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
-            return jsonify({
+            result = {
                 "reply": RECOGNITION_INCOMPLETE_REPLY,
                 "recognition_incomplete": True,
                 "success": True,
@@ -2857,7 +2942,13 @@ def analyze_handwriting():
                     "recognized_expression": student_work,
                 },
                 "handwriting_submission_id": handwriting_submission_id,
-            })
+            }
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer,
+            )
         recognition_prompt = (
             "Transcribe all visible handwritten mathematical content from this student whiteboard image. "
             "Return ONLY valid JSON, no markdown, no extra text. "
@@ -2895,8 +2986,6 @@ def analyze_handwriting():
         if not _handwriting_expression_is_usable(expr):
             current_app.logger.info("analyze_handwriting: no usable expression after recognition pass")
             return _handwriting_not_recognized_response()
-
-        expected_answer = _handwriting_expected_answer(data, state, question_text, question_context)
 
         current_app.logger.info(
             f"[Handwriting Grade Debug] \n"
@@ -3051,20 +3140,6 @@ def analyze_handwriting():
                 result["next_question"] = False
             if not isinstance(result.get("follow_up_prompts"), list):
                 result["follow_up_prompts"] = []
-            recognized = str(analysis_result.get("recognized_expression") or "").strip()
-            summary = str(result.get("reply") or "").strip()
-            add_ai_context_turn(
-                str(data.get("question_uid") or "").strip(),
-                role="student",
-                kind="handwriting_feedback",
-                content=f"辨識式：{recognized}\n回饋摘要：{summary}",
-                authoritative_correct=(
-                    authoritative_result.get("correct")
-                    if isinstance(authoritative_result.get("correct"), bool)
-                    else None
-                ),
-                authoritative_status=str(authoritative_result.get("status") or ""),
-            )
             print("analyzer result:", result)
     except Exception as analyzer_exc:
         current_app.logger.exception("analyze_handwriting analyzer failed: %s", analyzer_exc)
@@ -3403,7 +3478,12 @@ def analyze_handwriting():
             str(data.get("handwriting_image_sha256") or ""),
             result["tutor_authoritative_result"],
         )
-    return jsonify(result)
+    return _finish_handwriting_tutor_result(
+        result, question_uid=str(data.get("question_uid") or "").strip(),
+        question_text=question_text, image_bytes=img_data,
+        submission_id=handwriting_submission_id,
+        correct_answer=expected_answer,
+    )
 
 
 

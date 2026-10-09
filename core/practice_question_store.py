@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 import uuid
 from typing import Any
 
-from flask import current_app, session
+from flask import current_app, has_request_context, session
 
 try:
     from flask_login import current_user
@@ -18,10 +19,11 @@ except Exception:  # pragma: no cover
 
 # owner_key -> question_uid -> payload
 _STORE: dict[str, dict[str, dict[str, Any]]] = {}
+_STORE_LOCK = threading.RLock()
 _MAX_RECENT_QUESTIONS = 3
 _COOKIE_TARGET_BYTES = 3500
 _PRACTICE_SESSION_TTL_SECONDS = 1800
-AI_CONVERSATION_MAX_TURNS = 8
+AI_CONVERSATION_MAX_TURNS = 12
 
 STATUS_GENERATED = "generated"
 STATUS_ANSWERED = "answered"
@@ -96,6 +98,7 @@ PRACTICE_QUERY_SESSION_KEYS: frozenset[str] = frozenset(
 PRACTICE_MINIMAL_STATE_KEYS: frozenset[str] = frozenset(
     {
         "_practice_owner_sid",
+        "_practice_session_sid",
         "current_skill_id",
         "current_question_uid",
         "current_problem_type_id",
@@ -170,6 +173,14 @@ def get_practice_owner_key() -> str:
     return f"sid:{sid}"
 
 
+def get_practice_session_key() -> str:
+    sid = str(session.get("_practice_session_sid") or "").strip()
+    if not sid:
+        sid = str(uuid.uuid4())
+        session["_practice_session_sid"] = sid
+    return sid
+
+
 def question_text_hash(question_text: str) -> str:
     text = " ".join(str(question_text or "").split())
     return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
@@ -208,10 +219,11 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         )
         if k in meta
     }
-    return {
+    stored = {
         "skill": str(skill_id).strip(),
         "skill_id": str(skill_id).strip(),
         "question_uid": str(question_uid).strip(),
+        "practice_session": get_practice_session_key() if has_request_context() else "",
         "question_text_hash": str(data.get("question_text_hash", "")).strip()
         or question_text_hash(str(data.get("question_text", data.get("question", "")))),
         "problem_type_id": str(data.get("problem_type_id", data.get("problem_type", ""))).strip(),
@@ -242,6 +254,34 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         "chapter_review_run_id": str(data.get("chapter_review_run_id") or "").strip(),
         "chapter_review_type_key": str(data.get("chapter_review_type_key") or "").strip(),
     }
+    # Server-issued rubric fields used by the shared handwriting route. Keep
+    # these bounded so special question types never need to trust POST values.
+    for field in ("expected_paths", "expected_row", "expected_terms"):
+        value = data.get(field)
+        if isinstance(value, list):
+            bounded: list[Any] = []
+            for item in value[:64]:
+                if isinstance(item, dict):
+                    bounded.append({
+                        str(key)[:80]: (
+                            scalar if isinstance((scalar := item[key]), (bool, int, float))
+                            else str(scalar).strip()[:200]
+                        )
+                        for key in list(item)[:16]
+                    })
+                elif isinstance(item, (bool, int, float)):
+                    bounded.append(item)
+                else:
+                    bounded.append(str(item).strip()[:200])
+            stored[field] = bounded
+    for field, limit in (("variant", 80), ("expected_expansion", 1200)):
+        value = str(data.get(field) or "").strip()
+        if value:
+            stored[field] = value[:limit]
+    for field in ("expected_count", "n"):
+        if data.get(field) is not None:
+            stored[field] = data.get(field)
+    return stored
 
 
 def attach_question_identity(payload: dict[str, Any], *, skill_id: str) -> dict[str, Any]:
@@ -341,6 +381,7 @@ def _clear_practice_cookie_state() -> list[str]:
         "practice_ref",
         "practice_session_touched_at",
         "practice_session_pruned_at",
+        "_practice_session_sid",
     ):
         if key in session:
             session.pop(key, None)
@@ -430,15 +471,18 @@ def get_question_by_uid(
     if not uid:
         return None
     key = str(owner_key or get_practice_owner_key()).strip()
-    row = (_STORE.get(key) or {}).get(uid)
-    if not isinstance(row, dict):
-        return None
-    expected_skill = str(skill_id or "").strip()
-    if expected_skill:
-        stored_skill = str(row.get("skill_id", row.get("skill", ""))).strip()
-        if stored_skill and stored_skill != expected_skill:
+    with _STORE_LOCK:
+        row = (_STORE.get(key) or {}).get(uid)
+        if not isinstance(row, dict):
             return None
-    return dict(row)
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return None
+        expected_skill = str(skill_id or "").strip()
+        if expected_skill:
+            stored_skill = str(row.get("skill_id", row.get("skill", ""))).strip()
+            if stored_skill and stored_skill != expected_skill:
+                return None
+        return dict(row)
 
 
 def get_question_conversation_context(question_uid: str) -> list[dict[str, Any]]:
@@ -446,13 +490,16 @@ def get_question_conversation_context(question_uid: str) -> list[dict[str, Any]]
     uid = str(question_uid or "").strip()
     if not uid:
         return []
-    row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
-    if not isinstance(row, dict):
-        return []
-    turns = row.get("ai_conversation_context")
-    if not isinstance(turns, list):
-        return []
-    return [dict(turn) for turn in turns[-AI_CONVERSATION_MAX_TURNS:] if isinstance(turn, dict)]
+    with _STORE_LOCK:
+        row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+        if not isinstance(row, dict):
+            return []
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return []
+        turns = row.get("ai_conversation_context")
+        if not isinstance(turns, list):
+            return []
+        return [dict(turn) for turn in turns[-AI_CONVERSATION_MAX_TURNS:] if isinstance(turn, dict)]
 
 
 def append_question_conversation_turn(question_uid: str, turn: dict[str, Any]) -> bool:
@@ -460,25 +507,46 @@ def append_question_conversation_turn(question_uid: str, turn: dict[str, Any]) -
     uid = str(question_uid or "").strip()
     if not uid or not isinstance(turn, dict):
         return False
-    row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
-    if not isinstance(row, dict):
-        return False
-    turns = row.get("ai_conversation_context")
-    if not isinstance(turns, list):
-        turns = []
     safe_turn = {
         "role": str(turn.get("role") or "").strip()[:24],
         "kind": str(turn.get("kind") or "").strip()[:40],
         "content": str(turn.get("content") or "").strip()[:1200],
+        "at": time.time(),
     }
+    for field, limit in (("student_message", 600), ("handwriting_summary", 1200),
+                         ("handwriting_image_reference", 100), ("ai_assessment", 600),
+                         ("ai_reply", 1200)):
+        if turn.get(field):
+            safe_turn[field] = str(turn[field]).strip()[:limit]
+    if isinstance(turn.get("suggested_questions"), list):
+        safe_turn["suggested_questions"] = [str(item).strip()[:160]
+                                             for item in turn["suggested_questions"][:3]]
+    submission_id = str(turn.get("submission_id") or "").strip()[:100]
+    if submission_id:
+        safe_turn["submission_id"] = submission_id
     if "authoritative_correct" in turn:
         value = turn.get("authoritative_correct")
         safe_turn["authoritative_correct"] = value if isinstance(value, bool) else None
     if turn.get("authoritative_status"):
         safe_turn["authoritative_status"] = str(turn.get("authoritative_status"))[:32]
-    turns.append(safe_turn)
-    row["ai_conversation_context"] = turns[-AI_CONVERSATION_MAX_TURNS:]
-    return True
+    with _STORE_LOCK:
+        row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+        if not isinstance(row, dict):
+            return False
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return False
+        turns = row.get("ai_conversation_context")
+        if not isinstance(turns, list):
+            turns = []
+        if submission_id and any(
+            existing.get("submission_id") == submission_id
+            and existing.get("kind") == safe_turn["kind"]
+            for existing in turns
+        ):
+            return False
+        turns.append(safe_turn)
+        row["ai_conversation_context"] = turns[-AI_CONVERSATION_MAX_TURNS:]
+        return True
 
 
 def clear_practice_cache_for_owner(owner_key: str | None = None) -> None:
@@ -559,6 +627,7 @@ def clear_practice_state() -> None:
         "current_answer",
         "recent_question_uids",
         "practice_ref",
+        "_practice_session_sid",
         "current_data",
         *PRACTICE_DISPLAY_SESSION_KEYS,
     ):
