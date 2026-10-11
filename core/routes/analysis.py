@@ -4480,6 +4480,7 @@ def student_diagnosis():
         chapter=request.args.get("chapter"),
         skill_unit=request.args.get("skill_unit"),
         time_range=time_range,
+        unit_order="recent",
     )
     context.update({"time_range": time_range, "username": current_user.username})
     return render_template('student_diagnosis.html', **context)

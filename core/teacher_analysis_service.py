@@ -681,7 +681,21 @@ def get_student_overview(student: User, time_range: TimeRange) -> dict[str, Any]
     }
 
 
-def get_student_units(student_id: int, time_range: TimeRange) -> list[dict[str, Any]]:
+def _sort_units_by_recent_activity(rows: list[dict[str, Any]]) -> None:
+    """Newest last_activity first, units without activity last; ties keep a fixed label order."""
+    rows.sort(key=lambda r: (r["unit_label"], r["kind"], r["volume"], r["chapter"], r["skill_id"]))
+    rows.sort(
+        key=lambda r: (
+            r["stats"].last_activity is not None,
+            to_taipei_time(r["stats"].last_activity) or datetime.min,
+        ),
+        reverse=True,
+    )
+
+
+def get_student_units(
+    student_id: int, time_range: TimeRange, *, order: str = "total"
+) -> list[dict[str, Any]]:
     unit_map = _load_skill_unit_map()
     skill_names = _load_skill_names()
     family_map = _load_reliable_family_skill_map()
@@ -728,7 +742,10 @@ def get_student_units(student_id: int, time_range: TimeRange) -> list[dict[str, 
                 "status": calculate_learning_status(stats.total, stats.correct),
             }
         )
-    rows.sort(key=lambda r: (-r["stats"].total, r["unit_label"]))
+    if order == "recent":
+        _sort_units_by_recent_activity(rows)
+    else:
+        rows.sort(key=lambda r: (-r["stats"].total, r["unit_label"]))
     return rows
 
 
@@ -1028,6 +1045,7 @@ def build_student_analysis_context(
     chapter: str | None,
     skill_unit: str | None,
     time_range: TimeRange,
+    unit_order: str = "total",
 ) -> dict[str, Any]:
     """Build the shared student/unit analysis payload for either audience.
 
@@ -1042,7 +1060,7 @@ def build_student_analysis_context(
             "view": "student",
             "student": student,
             "student_overview": overview,
-            "unit_rows": get_student_units(student.id, time_range),
+            "unit_rows": get_student_units(student.id, time_range, order=unit_order),
         }
 
     return {
