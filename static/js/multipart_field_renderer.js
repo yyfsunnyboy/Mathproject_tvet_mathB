@@ -30,7 +30,7 @@
                 choices: Array.isArray(part.choices) ? part.choices : [],
                 checker: String(part.checker || part.checker_key || ""),
                 expected_answer: part.expected_answer == null ? "" : String(part.expected_answer),
-                answer_order: part.answer_order ?? index,
+                answer_order: part.answer_order == null ? index : part.answer_order,
             }));
         if (fromParts.length > 0) return fromParts;
         const subqs = Array.isArray(cq.subquestions) ? cq.subquestions : [];
@@ -41,7 +41,7 @@
                 field_key: String(sq.field_key || sq.key || sq.part || `part_${index + 1}`),
                 label: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
                 prompt: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
-                answer_order: sq.answer_order ?? index,
+                answer_order: sq.answer_order == null ? index : sq.answer_order,
                 input_type: "text",
                 choices: [],
                 checker: String(sq.checker || ""),
@@ -188,7 +188,7 @@
         input.className = "multi-part-input";
         input.dataset.partIndex = String(index);
         input.dataset.fieldKey = fieldKey;
-        input.dataset.answerOrder = String(part.answer_order ?? index);
+        input.dataset.answerOrder = String(part.answer_order == null ? index : part.answer_order);
         applyControlKind(input, controlKind(part));
         return input;
     }

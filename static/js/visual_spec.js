@@ -9,6 +9,15 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict';
 
+    // Same result as chaining `??`, which Safari < 13.1 cannot parse; arguments are evaluated eagerly.
+    function firstDefined() {
+        const last = arguments.length - 1;
+        for (let i = 0; i < last; i += 1) {
+            if (arguments[i] !== null && arguments[i] !== undefined) return arguments[i];
+        }
+        return arguments[last];
+    }
+
     const RENDER_KIND_TOKENS = [
         'graph',
         'chart',
@@ -608,8 +617,8 @@
                 lines: []
                     .concat(Array.isArray(visualSpec.lines) ? visualSpec.lines : [])
                     .concat(primitiveLines),
-                x_range: visualSpec.x_range || [axis.x_min ?? -10, axis.x_max ?? 10],
-                y_range: visualSpec.y_range || [axis.y_min ?? -10, axis.y_max ?? 10],
+                x_range: visualSpec.x_range || [firstDefined(axis.x_min, -10), firstDefined(axis.x_max, 10)],
+                y_range: visualSpec.y_range || [firstDefined(axis.y_min, -10), firstDefined(axis.y_max, 10)],
                 axis_range: axis
             };
         }
@@ -644,8 +653,8 @@
             const line = visualSpec.line || {};
             const points = normalizeStringPoints(line.points);
             const lines = [];
-            const slope = parseFractionLike(line.slope ?? line.m);
-            const intercept = parseFractionLike(line.intercept ?? line.b);
+            const slope = parseFractionLike(firstDefined(line.slope, line.m));
+            const intercept = parseFractionLike(firstDefined(line.intercept, line.b));
             if (Number.isFinite(slope) && Number.isFinite(intercept)) {
                 lines.push({ type: 'slope_intercept', m: slope, b: intercept });
             } else if (points.length >= 2) {
@@ -846,9 +855,9 @@
             return false;
         }
         const equation = line.equation || line;
-        const coefficientA = parseFractionLike(equation.A ?? equation.a);
-        const coefficientB = parseFractionLike(equation.B ?? equation.b);
-        const constantC = parseFractionLike(equation.C ?? equation.c ?? 0);
+        const coefficientA = parseFractionLike(firstDefined(equation.A, equation.a));
+        const coefficientB = parseFractionLike(firstDefined(equation.B, equation.b));
+        const constantC = parseFractionLike(firstDefined(equation.C, equation.c, 0));
         return [coefficientA, coefficientB, constantC].every(Number.isFinite)
             && (coefficientA !== 0 || coefficientB !== 0);
     }
@@ -1315,9 +1324,9 @@
 
     function lineCoefficients(line) {
         const equation = (line && (line.equation || line)) || {};
-        const a = parseFractionLike(equation.A ?? equation.a);
-        const b = parseFractionLike(equation.B ?? equation.b);
-        const c = parseFractionLike(equation.C ?? equation.c ?? 0);
+        const a = parseFractionLike(firstDefined(equation.A, equation.a));
+        const b = parseFractionLike(firstDefined(equation.B, equation.b));
+        const c = parseFractionLike(firstDefined(equation.C, equation.c, 0));
         if (![a, b, c].every(Number.isFinite) || (a === 0 && b === 0)) {
             return null;
         }
@@ -1480,10 +1489,10 @@
         const axis = visualSpec.axis_range || {};
         const xRange = visualSpec.x_range || [axis.x_min, axis.x_max];
         const yRange = visualSpec.y_range || [axis.y_min, axis.y_max];
-        const xMin = Number(xRange[0] ?? axis.x_min ?? -10);
-        const xMax = Number(xRange[1] ?? axis.x_max ?? 10);
-        const yMin = Number(yRange[0] ?? axis.y_min ?? -10);
-        const yMax = Number(yRange[1] ?? axis.y_max ?? 10);
+        const xMin = Number(firstDefined(xRange[0], axis.x_min, -10));
+        const xMax = Number(firstDefined(xRange[1], axis.x_max, 10));
+        const yMin = Number(firstDefined(yRange[0], axis.y_min, -10));
+        const yMax = Number(firstDefined(yRange[1], axis.y_max, 10));
         if (!(xMax > xMin) || !(yMax > yMin)) {
             return false;
         }
@@ -1614,9 +1623,9 @@
                 return;
             }
             const equation = line.equation || line;
-            const coefficientA = parseFractionLike(equation.A ?? equation.a);
-            const coefficientB = parseFractionLike(equation.B ?? equation.b);
-            const constantC = parseFractionLike(equation.C ?? equation.c ?? 0);
+            const coefficientA = parseFractionLike(firstDefined(equation.A, equation.a));
+            const coefficientB = parseFractionLike(firstDefined(equation.B, equation.b));
+            const constantC = parseFractionLike(firstDefined(equation.C, equation.c, 0));
             if (![coefficientA, coefficientB, constantC].every(Number.isFinite)) {
                 return;
             }
@@ -1643,9 +1652,9 @@
         // Circles (Ch4 circle.plane parametric visuals)
         const circles = Array.isArray(visualSpec.circles) ? visualSpec.circles : [];
         circles.forEach(function (circle, circleIndex) {
-            const h = parseFractionLike(circle.h ?? circle.cx ?? circle.x);
-            const k = parseFractionLike(circle.k ?? circle.cy ?? circle.y);
-            const r = parseFractionLike(circle.r ?? circle.radius);
+            const h = parseFractionLike(firstDefined(circle.h, circle.cx, circle.x));
+            const k = parseFractionLike(firstDefined(circle.k, circle.cy, circle.y));
+            const r = parseFractionLike(firstDefined(circle.r, circle.radius));
             if (![h, k, r].every(Number.isFinite) || r <= 0) {
                 return;
             }
@@ -2009,10 +2018,10 @@
         const axis = spec.axis_range || {};
         const xRange = spec.x_range || [axis.x_min, axis.x_max];
         const yRange = spec.y_range || [axis.y_min, axis.y_max];
-        const xMin = Number(xRange[0] ?? axis.x_min ?? -10);
-        const xMax = Number(xRange[1] ?? axis.x_max ?? 10);
-        const yMin = Number(yRange[0] ?? axis.y_min ?? -10);
-        const yMax = Number(yRange[1] ?? axis.y_max ?? 10);
+        const xMin = Number(firstDefined(xRange[0], axis.x_min, -10));
+        const xMax = Number(firstDefined(xRange[1], axis.x_max, 10));
+        const yMin = Number(firstDefined(yRange[0], axis.y_min, -10));
+        const yMax = Number(firstDefined(yRange[1], axis.y_max, 10));
         const rect = destRect || { x: 0, y: 0, width: 300, height: 200, showLabel: false };
         if (!(xMax > xMin) || !(yMax > yMin)) {
             return { points: {}, unitScale: null };

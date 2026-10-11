@@ -20,7 +20,7 @@
   }
 
   function mathText(value) {
-    const text = String(value ?? "");
+    const text = String(value == null ? "" : value);
     if (global.MathDisplayNormalizer) {
       return global.MathDisplayNormalizer.normalizeMathText(text, { mathContext: true });
     }
@@ -39,7 +39,7 @@
   // Only rewrites the grader's per-part summary when it matches the structured
   // per_part_results exactly; any other message is shown verbatim.
   function studentGradingMessage(data, message) {
-    const rows = data?.per_part_results;
+    const rows = data ? data.per_part_results : undefined;
     if (!Array.isArray(rows) || !rows.length || typeof message !== "string") return message;
     const header = "部分小題答錯。";
     const lineFor = (row, label) => `${label}：${row && row.correct ? "正確" : "錯誤"}`;
@@ -85,14 +85,14 @@
   async function render(target, data, message) {
     if (!target) return;
     target.textContent = "";
-    const shown = message || data?.message || data?.result || (data?.correct ? "正確！" : "錯誤");
+    const shown = message || (data && data.message) || (data && data.result) || (data && data.correct ? "正確！" : "錯誤");
     appendText(target, "div", studentGradingMessage(data, shown), "grading-message");
-    if (data?.required_form_feedback) {
+    if (data && data.required_form_feedback) {
       appendText(target, "div", data.required_form_feedback, "required-form-feedback");
       if (data.required_form_hint) appendText(target, "div", `格式要求：${data.required_form_hint}`, "required-form-hint");
       if (data.correct_answer_display) appendText(target, "div", "正確答案格式：", "correct-answer-format-title");
     }
-    appendDisplay(target, data?.correct_answer_display);
+    appendDisplay(target, data ? data.correct_answer_display : undefined);
     await typeset(target);
   }
 

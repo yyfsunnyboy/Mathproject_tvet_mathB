@@ -2180,13 +2180,14 @@
     </style>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=answer-strip-5">
-    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1"></script>
-    <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1"></script>
+    <script src="{{ url_for('static', filename='js/legacy_dom_polyfills.js') }}?v=ios12-1"></script>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=slash-frac-1"></script>
-    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2"></script>
-    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1"></script>
-    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2-ios12"></script>
+    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3-ios12"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 </head>
 
@@ -2785,7 +2786,7 @@
 
         function resolvePracticeResponseLevel(response, existingLevel = getSafeSelectedLevel()) {
             const source = response && typeof response === 'object' ? response : {};
-            const rawLevel = source.level ?? source.current_level ?? existingLevel ?? 1;
+            const rawLevel = [source.level, source.current_level, existingLevel, 1].find((value) => value != null);
             const parsed = Number.parseInt(rawLevel, 10);
             if (!Number.isNaN(parsed) && parsed >= 1) return parsed;
             const fallback = Number.parseInt(existingLevel, 10);
@@ -2825,7 +2826,7 @@
                 layer.clearBackgroundCanvas(backgroundCtx, cw, ch);
             }
             if (canvas && ctx) {
-                getScratchpadBackgroundLayer()?.clearInkLayer(ctx, cw, ch);
+                if (layer) layer.clearInkLayer(ctx, cw, ch);
             }
         }
 
@@ -2847,8 +2848,8 @@
                 }
             }
             return {
-                cw: Math.max(300, canvas?.clientWidth || 300),
-                ch: Math.max(200, canvas?.clientHeight || 200)
+                cw: Math.max(300, (canvas && canvas.clientWidth) || 300),
+                ch: Math.max(200, (canvas && canvas.clientHeight) || 200)
             };
         }
 
@@ -3654,13 +3655,40 @@
             canvas.addEventListener('pointercancel', stopDraw);
             canvas.addEventListener('pointerleave', stopDraw);
 
+            // Safari < 13 (iOS 12) has no Pointer Events: draw from one tracked touch there only,
+            // so browsers that fire both pointer and touch events never get duplicate strokes.
+            const useTouchDrawing = typeof window.PointerEvent === 'undefined';
+            let activeTouchId = null;
+            function findActiveTouch(touchList) {
+                for (let i = 0; i < touchList.length; i += 1) {
+                    if (touchList[i].identifier === activeTouchId) return touchList[i];
+                }
+                return null;
+            }
+            function endTouchDrawing(e) {
+                if (activeTouchId === null || !findActiveTouch(e.changedTouches)) return;
+                activeTouchId = null;
+                stopDraw();
+            }
+
             // [Surface Pro] 防止畫圖時捲動頁面
             canvas.addEventListener('touchstart', function (e) {
                 if (e.target === canvas) e.preventDefault();
+                if (!useTouchDrawing || activeTouchId !== null || !e.changedTouches.length) return;
+                const touch = e.changedTouches[0];
+                activeTouchId = touch.identifier;
+                startDraw(touch);
             }, { passive: false });
             canvas.addEventListener('touchmove', function (e) {
                 if (e.target === canvas) e.preventDefault();
+                if (!useTouchDrawing || activeTouchId === null) return;
+                const touch = findActiveTouch(e.changedTouches);
+                if (touch) draw(touch);
             }, { passive: false });
+            if (useTouchDrawing) {
+                canvas.addEventListener('touchend', endTouchDrawing);
+                canvas.addEventListener('touchcancel', endTouchDrawing);
+            }
 
             canvas.style.touchAction = 'none';
 
@@ -4405,7 +4433,7 @@
                 ...response,
                 question_text: questionTextValue,
                 new_question_text: questionTextValue,
-                question_uid: String(response.question_uid ?? ''),
+                question_uid: String(response.question_uid == null ? '' : response.question_uid),
                 answer_contract: answerContract,
                 current_level: responseLevel,
                 level: responseLevel,
@@ -4430,7 +4458,7 @@
                 level: responseLevel,
                 problem_type_id: payload.problem_type_id || payload.problem_type || '',
                 answer: payload.answer,
-                correct_answer: payload.correct_answer ?? payload.display_answer ?? payload.answer ?? '',
+                correct_answer: [payload.correct_answer, payload.display_answer, payload.answer, ''].find((value) => value != null),
                 display_answer: payload.display_answer || '',
                 answer_contract: payload.answer_contract && typeof payload.answer_contract === 'object'
                     ? { ...payload.answer_contract }
@@ -4508,7 +4536,7 @@
         }
 
         function escapeHtml(value) {
-            return String(value ?? '')
+            return String(value == null ? '' : value)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
@@ -4516,7 +4544,7 @@
         }
 
         function looksLikeTexMath(value) {
-            const text = String(value ?? '').trim();
+            const text = String(value == null ? '' : value).trim();
             if (!text) return false;
             if (/\$|\\\(|\\\[/.test(text)) return true;
             return /\\[a-zA-Z]+|\^/.test(text);
@@ -4835,7 +4863,7 @@
                     group_label: String(part.group_label || ''),
                     input_type: String(part.input_type || 'text'),
                     choices: Array.isArray(part.choices) ? part.choices : [],
-                    answer_order: part.answer_order ?? index,
+                    answer_order: part.answer_order == null ? index : part.answer_order,
                 }));
             if (fromParts.length > 0) return fromParts;
             const subqs = Array.isArray(cq.subquestions) ? cq.subquestions : [];
@@ -4846,7 +4874,7 @@
                     field_key: String(sq.field_key || sq.key || sq.part || `part_${index + 1}`),
                     label: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
                     prompt: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
-                    answer_order: sq.answer_order ?? index,
+                    answer_order: sq.answer_order == null ? index : sq.answer_order,
                 }));
         }
 
@@ -4954,7 +4982,7 @@
             input.className = 'multi-part-input';
             input.dataset.partIndex = String(index);
             input.dataset.fieldKey = fieldKey;
-            input.dataset.answerOrder = String(part.answer_order ?? index);
+            input.dataset.answerOrder = String(part.answer_order == null ? index : part.answer_order);
             return input;
         }
 
@@ -6281,10 +6309,12 @@
             if (!questionChoices || choiceGridResizeObserver) {
                 return;
             }
-            choiceGridResizeObserver = new ResizeObserver(() => {
-                updateChoiceGridLayout(currentQuestion);
-            });
-            choiceGridResizeObserver.observe(questionChoices);
+            if (typeof ResizeObserver !== 'undefined') {
+                choiceGridResizeObserver = new ResizeObserver(() => {
+                    updateChoiceGridLayout(currentQuestion);
+                });
+                choiceGridResizeObserver.observe(questionChoices);
+            }
             window.addEventListener('resize', () => {
                 updateChoiceGridLayout(currentQuestion);
             });
@@ -6916,8 +6946,10 @@
             }
             const submissionAudit = recognition.submission_audit || {};
             submission.imageSha256 = String(submissionAudit.image_sha256 || '');
-            submission.recognizedRawText = submissionAudit.recognized_raw_text ?? recognition.recognized_answer ?? '';
-            submission.normalizedAnswer = recognition.normalized_answer ?? recognition.recognized_answer ?? null;
+            submission.recognizedRawText = [submissionAudit.recognized_raw_text, recognition.recognized_answer, ''].find((value) => value != null);
+            submission.normalizedAnswer = recognition.normalized_answer != null
+                ? recognition.normalized_answer
+                : (recognition.recognized_answer != null ? recognition.recognized_answer : null);
             handwritingTransientState = applyHandwritingTransientLifecycle(submission, {
                 type: 'ai-check-result',
                 questionUid: submission.questionUid,
@@ -6937,8 +6969,8 @@
                 recognizedRawText: submission.recognizedRawText,
                 normalizedAnswer: submission.normalizedAnswer,
                 structuredAnswer: submissionAudit.structured_answer || null,
-                part_1: submissionAudit.part_1 ?? null,
-                part_2: submissionAudit.part_2 ?? null,
+                part_1: submissionAudit.part_1 == null ? null : submissionAudit.part_1,
+                part_2: submissionAudit.part_2 == null ? null : submissionAudit.part_2,
                 completionState: recognition.completion_state || '',
                 previousStateReused: submissionAudit.previous_handwriting_state_reused === true,
                 structuredAnalysisFresh: submissionAudit.structured_analysis_from_current_request === true,
@@ -6984,7 +7016,7 @@
             console.log('[HANDWRITING SUBMISSION] checker', {
                 submissionId: submission.submissionId,
                 questionUid: submission.questionUid,
-                checkerInput: grade.checker_input ?? normalizedAnswer,
+                checkerInput: grade.checker_input == null ? normalizedAnswer : grade.checker_input,
                 checkerResult: submission.checkerResult,
                 tutorAuthoritativeResult: grade.correct === true ? 'correct' : 'incorrect',
             });
@@ -7308,13 +7340,13 @@
                             context: contextPayload,
                             question_text: questionText,
                             image_data: imgData,
-                            student_answer: (activeHandwriting?.recognizedSteps || []).length
+                            student_answer: ((activeHandwriting && activeHandwriting.recognizedSteps) || []).length
                                 ? activeHandwriting.recognizedSteps.join('\n')
-                                : (activeHandwriting?.normalizedAnswer || ''),
-                            recognized_steps: activeHandwriting?.recognizedSteps || [],
-                            recognition_incomplete: activeHandwriting?.recognitionIncomplete === true,
-                            handwriting_analysis: activeHandwriting?.structuredAnalysis || null,
-                            handwriting_submission_id: activeHandwriting?.submissionId || '',
+                                : ((activeHandwriting && activeHandwriting.normalizedAnswer) || ''),
+                            recognized_steps: (activeHandwriting && activeHandwriting.recognizedSteps) || [],
+                            recognition_incomplete: Boolean(activeHandwriting) && activeHandwriting.recognitionIncomplete === true,
+                            handwriting_analysis: (activeHandwriting && activeHandwriting.structuredAnalysis) || null,
+                            handwriting_submission_id: (activeHandwriting && activeHandwriting.submissionId) || '',
                             question_uid: chatQuestionUid
                         })
                     });

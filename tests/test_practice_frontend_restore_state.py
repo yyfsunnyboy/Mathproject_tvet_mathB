@@ -26,7 +26,7 @@ def test_level_display_prefers_level_then_current_level_then_safe_fallback() -> 
     resolver = _function_body(source, "resolvePracticeResponseLevel")
     loader = _function_body(source, "loadQuestion")
 
-    assert "source.level ?? source.current_level ?? existingLevel ?? 1" in resolver
+    assert "[source.level, source.current_level, existingLevel, 1].find((value) => value != null)" in resolver
     assert "selectedLevel = responseLevel" in loader
     assert "`等級：${responseLevel}`" in loader
     assert "`等級：${data.current_level}`" not in source
@@ -41,7 +41,7 @@ def test_latest_response_replaces_all_question_identity_and_contract_fields() ->
     for expected in (
         "question_text: questionTextValue",
         "new_question_text: questionTextValue",
-        "question_uid: String(response.question_uid ?? '')",
+        "question_uid: String(response.question_uid == null ? '' : response.question_uid)",
         "answer_contract: answerContract",
         "current_level: responseLevel",
         "level: responseLevel",
