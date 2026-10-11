@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 import re
 
+from core.ai_tutor_disclosure import find_answer_disclosure
 from core.practice_question_store import (
     AI_CONVERSATION_MAX_TURNS,
     append_question_conversation_turn,
@@ -35,6 +36,24 @@ def add_turn(
     return append_question_conversation_turn(question_uid, turn)
 
 
+def current_teaching_round(question_uid: str, submission_id: str = "") -> int:
+    """Round of the next tutoring reply on this question (1-based, server-side only).
+
+    Only successful teaching replies carry ``teaching_round``; failed or duplicate
+    submissions never reach the store.  Using the highest recorded round, not a
+    count, keeps concurrent requests from the same round from skipping ahead.
+    A resent ``submission_id`` keeps the round it was first answered in.
+    """
+    turns = get_context(question_uid)
+    submission_id = str(submission_id or "").strip()
+    if submission_id:
+        for turn in turns:
+            if turn.get("submission_id") == submission_id and isinstance(turn.get("teaching_round"), int):
+                return turn["teaching_round"]
+    rounds = [turn["teaching_round"] for turn in turns if isinstance(turn.get("teaching_round"), int)]
+    return (max(rounds) if rounds else 0) + 1
+
+
 def format_for_prompt(question_uid: str) -> str:
     turns = get_context(question_uid)
     if not turns:
@@ -53,8 +72,22 @@ def format_for_prompt(question_uid: str) -> str:
                 f"status={turn.get('authoritative_status') or 'unknown'}]"
             )
         when = turn.get("at", "")
-        lines.append(f"- {when} {role}/{kind}: {content}{authority}")
+        label = f"第{turn['teaching_round']}輪 " if isinstance(turn.get("teaching_round"), int) else ""
+        lines.append(f"- {when} {label}{role}/{kind}: {content}{authority}")
     return "\n".join(lines)
+
+
+_LATEX_READABLE = (
+    (r"\\sqrt\s*\{([^{}]*)\}", r"√(\1)"),
+    (r"\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r"(\1)/(\2)"),
+    (r"\\times", "×"),
+    (r"\\cdot", "·"),
+    (r"\\div", "÷"),
+    (r"\\pi", "π"),
+    (r"\\(?:leq|le)\b", "≤"),
+    (r"\\(?:geq|ge)\b", "≥"),
+    (r"\\(?:neq|ne)\b", "≠"),
+)
 
 
 def normalize_suggested_questions(
@@ -70,6 +103,8 @@ def normalize_suggested_questions(
             return False
         compact_answer = re.sub(r"\s+", "", answer)
         compact_value = re.sub(r"\s+", "", value)
+        if find_answer_disclosure(value, answer).disclosed:
+            return True
         if len(compact_answer) >= 2:
             return compact_answer in compact_value
         if compact_answer.isalnum():
@@ -91,22 +126,30 @@ def normalize_suggested_questions(
             break
     if len(accepted) == 3:
         return accepted
-    def focus(value: str) -> str:
-        lines = [re.sub(r"\s+", " ", line).strip() for line in str(value or "").splitlines()]
-        return next((line[:32] for line in lines if line), "這一題")
-    work = focus(student_work)
-    hint = focus(ai_reply)
-    if contains_answer(work):
-        work = "我目前寫出的步驟"
-    if contains_answer(hint):
-        hint = "剛才的檢查提示"
-    question = focus(question_text)
-    if contains_answer(question):
-        question = "目前這一題"
+    def lines_of(value: str) -> list[str]:
+        cleaned = str(value or "").replace("$", "")
+        for pattern, repl in _LATEX_READABLE:
+            cleaned = re.sub(pattern, repl, cleaned)
+        cleaned = re.sub(r"\\[A-Za-z]+|[{}]", "", cleaned)
+        parts = (re.sub(r"\s+", " ", line).strip(" 。？?！!，,：:") for line in re.split(r"[\n；;]", cleaned))
+        return [part for part in parts if part]
+
+    work_lines = lines_of(student_work)
+    latest_work = work_lines[-1][:32] if work_lines else ""
+    reply_lines = lines_of(ai_reply)
+    hint = reply_lines[-1][:32] if reply_lines else ""
+    if latest_work and not contains_answer(latest_work):
+        check_question = f"我寫的「{latest_work}」對嗎？下一步要算什麼？"
+    else:
+        check_question = "我目前寫的步驟對嗎？下一步要算什麼？"
+    if hint and not contains_answer(hint):
+        example_question = f"「{hint}」可以用這題的數字示範一次嗎？"
+    else:
+        example_question = "剛才說的下一步，可以用這題的數字示範一次嗎？"
     fallback = [
-        f"我寫的「{work}」這一步，應先檢查哪個條件？",
-        f"依照剛才的提示「{hint}」，我下一步該怎麼驗證？",
-        f"回到題目「{question}」，有沒有另一種檢查方法？",
+        check_question,
+        example_question,
+        "這一步用到的公式或定義是什麼意思？",
     ]
     for item in fallback:
         if item not in accepted:
@@ -116,4 +159,11 @@ def normalize_suggested_questions(
     return accepted[:3]
 
 
-__all__ = ["AI_CONVERSATION_MAX_TURNS", "add_turn", "format_for_prompt", "get_context", "normalize_suggested_questions"]
+__all__ = [
+    "AI_CONVERSATION_MAX_TURNS",
+    "add_turn",
+    "current_teaching_round",
+    "format_for_prompt",
+    "get_context",
+    "normalize_suggested_questions",
+]

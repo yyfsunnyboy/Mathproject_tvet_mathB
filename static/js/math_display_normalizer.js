@@ -264,5 +264,125 @@
     return rootElement;
   }
 
-  return { normalizeMathText, normalizeElement, isPlainTextException, slashFractionsToLatex };
+  // --- AI Tutor replies -------------------------------------------------------
+  // Tutor text is prose with math.  Delimited math is left as TeX; only a bare run
+  // of ASCII math that contains a TeX command (4 \times 4, \frac{2}{3}) gets \( \).
+  // Chinese prose is never placed in math mode.
+  const TUTOR_SPANS = /\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$|\$[^$\n]*?\$/g;
+  const BARE_TEX_RUN = /[A-Za-z0-9\\{}()[\]^_+\-*/=<>|.,:'! ]*\\[A-Za-z]+[A-Za-z0-9\\{}()[\]^_+\-*/=<>|.,:'! ]*/g;
+  const EDGE_PUNCTUATION = /^[\s.,:;'!]+|[\s.,:;'!]+$/g;
+
+  function balanced(text) {
+    let round = 0;
+    let curly = 0;
+    for (const ch of text) {
+      if (ch === "(") round += 1;
+      else if (ch === ")") round -= 1;
+      else if (ch === "{") curly += 1;
+      else if (ch === "}") curly -= 1;
+      if (round < 0 || curly < 0) return false;
+    }
+    return round === 0 && curly === 0;
+  }
+
+  function trimUnmatchedParens(body) {
+    let text = body;
+    for (let guard = 0; guard < 4 && !balanced(text); guard += 1) {
+      if (text.endsWith(")")) text = text.slice(0, -1).trimEnd();
+      else if (text.startsWith("(")) text = text.slice(1).trimStart();
+      else break;
+    }
+    return text;
+  }
+
+  function hasPlainWord(body) {
+    // An English word that is not a TeX command or inside braces means prose, not math.
+    const stripped = body.replace(/\\[A-Za-z]+/g, " ").replace(/\{[^{}]*\}/g, " ");
+    return /[A-Za-z]{3,}/.test(stripped);
+  }
+
+  function wrapBareTex(segment) {
+    return segment.replace(BARE_TEX_RUN, (run) => {
+      const trimmed = run.replace(EDGE_PUNCTUATION, "");
+      const body = trimUnmatchedParens(trimmed);
+      if (!body || !/\\[A-Za-z]/.test(body) || !balanced(body)
+        || hasPlainWord(body) || isPlainTextException(body)) {
+        return run;
+      }
+      const start = run.indexOf(body);
+      return `${run.slice(0, start)}\\(${body}\\)${run.slice(start + body.length)}`;
+    });
+  }
+
+  function normalizeTutorText(value) {
+    const source = String(value ?? "");
+    if (!source.includes("\\")) return source;
+    let out = "";
+    let last = 0;
+    TUTOR_SPANS.lastIndex = 0;
+    let match;
+    while ((match = TUTOR_SPANS.exec(source)) !== null) {
+      out += wrapBareTex(source.slice(last, match.index)) + match[0];
+      last = match.index + match[0].length;
+    }
+    return out + wrapBareTex(source.slice(last));
+  }
+
+  function normalizeTutorElement(rootElement) {
+    if (!rootElement || typeof document === "undefined" || !document.createTreeWalker) return rootElement;
+    const walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const parent = node.parentElement;
+      if (!parent || SKIP_TAGS.has(parent.tagName) || parent.closest("mjx-container")) return;
+      const normalized = normalizeTutorText(node.nodeValue);
+      if (normalized !== node.nodeValue) node.nodeValue = normalized;
+    });
+    return rootElement;
+  }
+
+  // MathJax typeset calls must not overlap; concurrent calls on the same
+  // container can leave SVG with NaN sizes.  Typeset only after the node is in the DOM.
+  let typesetChain = Promise.resolve();
+  function mathJaxReady() {
+    // The MathJax script loads async; until then window.MathJax is only the config object.
+    return new Promise((resolve) => {
+      let tries = 0;
+      (function poll() {
+        const mathJax = typeof globalThis !== "undefined" ? globalThis.MathJax : undefined;
+        if (mathJax && mathJax.startup && mathJax.startup.promise) {
+          mathJax.startup.promise.then(() => resolve(mathJax), () => resolve(null));
+        } else if (tries++ < 200 && typeof setTimeout === "function") {
+          setTimeout(poll, 50);
+        } else {
+          resolve(null);
+        }
+      })();
+    });
+  }
+
+  function typesetSerialized(element, clearFirst) {
+    if (!element) return Promise.resolve();
+    typesetChain = typesetChain
+      .then(mathJaxReady)
+      .then((mathJax) => {
+        if (!mathJax || !element.isConnected || !mathJax.typesetPromise) return null;
+        if (clearFirst && mathJax.typesetClear) mathJax.typesetClear([element]);
+        return mathJax.typesetPromise([element]);
+      })
+      .catch((err) => { console.warn("MathJax typeset failed", err); });
+    return typesetChain;
+  }
+
+  function typesetTutorElement(element) {
+    if (!element) return Promise.resolve();
+    normalizeTutorElement(element);
+    return typesetSerialized(element, false);
+  }
+
+  return {
+    normalizeMathText, normalizeElement, isPlainTextException, slashFractionsToLatex,
+    normalizeTutorText, normalizeTutorElement, typesetTutorElement,
+  };
 }));

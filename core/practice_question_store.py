@@ -529,6 +529,9 @@ def append_question_conversation_turn(question_uid: str, turn: dict[str, Any]) -
         safe_turn["authoritative_correct"] = value if isinstance(value, bool) else None
     if turn.get("authoritative_status"):
         safe_turn["authoritative_status"] = str(turn.get("authoritative_status"))[:32]
+    teaching_round = turn.get("teaching_round")
+    if isinstance(teaching_round, int) and not isinstance(teaching_round, bool) and teaching_round > 0:
+        safe_turn["teaching_round"] = min(teaching_round, 99)
     with _STORE_LOCK:
         row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
         if not isinstance(row, dict):

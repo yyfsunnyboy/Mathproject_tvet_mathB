@@ -223,6 +223,41 @@ def test_browser_runtime_non_completed_states_do_not_record_attempt(
         assert PracticeAttempt.query.count() == 0
 
 
+def test_recognition_model_failure_is_retryable_503_not_unclear_handwriting(runtime_app, monkeypatch):
+    import core.routes.adaptive_api as adaptive_api
+
+    app, user_id = runtime_app
+    client = app.test_client()
+    uid = "runtime-recognition-down"
+    contract = {
+        "answer_type": "solution_set",
+        "checker": "solution_set_checker",
+        "answer_equivalence": "unordered_set",
+    }
+    _set_question(client, user_id, uid=uid, question="|x| = 13", answer="-13, 13", contract=contract)
+    monkeypatch.setattr(adaptive_api, "_call_ai_handwriting_checker",
+                        lambda *_a, **_k: {"reply": "Error: Gemini request timed out"})
+    failed = client.post(
+        "/api/practice/ai-check-handwriting",
+        json={"image_data_url": "data:image/png;base64,ink", "question_uid": uid},
+    )
+    body = failed.get_json()
+    assert failed.status_code == 503
+    assert body["ai_unavailable"] is True and body["retryable"] is True
+    assert body["feedback"] == adaptive_api.RECOGNITION_UNAVAILABLE_FEEDBACK
+
+    monkeypatch.setattr(adaptive_api, "_call_ai_handwriting_checker",
+                        lambda *_a, **_k: {"expression": "x=±13", "mode": "final_answer_only", "confidence": 0.99})
+    retried = client.post(
+        "/api/practice/ai-check-handwriting",
+        json={"image_data_url": "data:image/png;base64,ink", "question_uid": uid},
+    )
+    assert retried.status_code == 200
+    assert retried.get_json()["completion_state"] == "completed"
+    with app.app_context():
+        assert PracticeAttempt.query.count() == 0
+
+
 def test_browser_runtime_completed_wrong_answer_records_incorrect(runtime_app, monkeypatch):
     import core.routes.adaptive_api as adaptive_api
     import core.routes.practice as practice

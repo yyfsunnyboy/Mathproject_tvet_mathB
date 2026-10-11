@@ -49,6 +49,29 @@ def invalidate_gemini_client_cache():
 def _sanitize_sensitive_error_message(message):
     return sanitize_secret_text(str(message or ""), [])
 
+# Models often write LaTeX with one backslash inside JSON strings.  Commands whose
+# first letter is a JSON escape (\times -> TAB + "imes", \frac -> form feed) would
+# decode silently into control characters, so they are escaped before decoding.
+_LATEX_COMMANDS_WITH_JSON_ESCAPE_LETTER = (
+    "backslash|because|begin|beta|bigg|bigl|bigr|big|binom|bmod|boldsymbol|bot|boxed|bullet|bar|bf|"
+    "footnotesize|forall|frac|frown|flat|"
+    "nabla|neg|neq|newline|nexists|ngeq|nleq|nmid|notin|not|ne|ni|nu|"
+    "rangle|rbrace|rceil|rfloor|rho|rightarrow|right|rm|root|"
+    "textbf|textit|textrm|text|therefore|theta|tfrac|tilde|times|tiny|top|to|triangleq|triangle|tanh|tan|tau|"
+    "underbrace|underline|uparrow|upsilon"
+)
+_SINGLE_BACKSLASH_LATEX_COMMAND = re.compile(
+    r'(?<!\\)\\(?=(?:' + _LATEX_COMMANDS_WITH_JSON_ESCAPE_LETTER + r')(?![A-Za-z]))'
+)
+_LONE_BACKSLASH = re.compile(r'\\\\|\\(?![\\"/bfnrtu])')
+
+
+def protect_latex_in_json_text(text):
+    """Escape LaTeX backslashes in model JSON text so json.loads keeps them."""
+    text = _SINGLE_BACKSLASH_LATEX_COMMAND.sub(r'\\\\', str(text or ''))
+    return _LONE_BACKSLASH.sub(lambda m: m.group(0) if len(m.group(0)) == 2 else '\\\\', text)
+
+
 def clean_and_parse_json(text):
     try:
         # 移除 Markdown 標記
@@ -59,9 +82,7 @@ def clean_and_parse_json(text):
         match = re.search(r'\{.*\}', text, re.DOTALL)
         if match:
             text = match.group(0)
-            
-        # 關鍵修復：處理 LaTeX 中常見的雙反斜線與 Unicode
-        # 先嘗試直接解析
+        text = protect_latex_in_json_text(text)
         return json.loads(text, strict=False)
     except Exception as e:
         try:
@@ -108,7 +129,6 @@ def enforce_strict_mode(text):
     # 刪除純粹的稱讚句 (獨立成句的)
     text = re.sub(r"(^|[，！!。])同學[，！!、]*你很棒[，！!、]*", r"\1", text)
     text = re.sub(r"(^|[，！!。])你已經很棒.*?[，！!]", r"\1", text)
-    text = re.sub(r"(^|[，！!。])這一步非常正確[。！!]*", r"\1", text)
     
     # 刪除開場白
     text = re.sub(r"^同學[，！!、]*", "", text)
@@ -194,8 +214,8 @@ def sanitize_tutor_reply(reply_text, user_question='', question_context=''):
     # when the student asks how to solve, what the answer is, or where a
     # written step went wrong.  Do not replace it with the legacy Socratic
     # fallback merely because it contains an equation or final answer.
-    if len(cleaned) > 500:
-        cleaned = cleaned[:500].rstrip('，。；、 ') + '。'
+    if len(cleaned) > 1200:
+        cleaned = cleaned[:1200].rstrip('，。；、 ') + '。'
 
     return cleaned
 
@@ -544,7 +564,7 @@ def _extract_reply_and_prompts_from_jsonish(text):
 
     # 2) 抓 follow_up_prompts 陣列
     prompts = None
-    prompts_block = re.search(r'"follow_up_prompts"\s*:\s*\[([\s\S]*?)\]', raw)
+    prompts_block = re.search(r'"(?:suggested_questions|follow_up_prompts)"\s*:\s*\[([\s\S]*?)\]', raw)
     if prompts_block:
         items = re.findall(r'"((?:\\.|[^"])*)"', prompts_block.group(1))
         if items:
@@ -1148,6 +1168,7 @@ def build_chat_prompt(
     recognition_incomplete=False,
     authoritative_correct=None,
     authoritative_status="unknown",
+    teaching_round=1,
 ):
     """
     Constructs the full system prompt for the chat AI.
@@ -1201,33 +1222,27 @@ def build_chat_prompt(
         else "unknown"
     )
 
-    json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）：
+    from core.ai_tutor_pedagogy import (
+        SUGGESTED_QUESTION_RULES,
+        TUTOR_PEDAGOGICAL_CONTRACT,
+        tutor_intent_block,
+    )
+
+    extra_blocks.append(TUTOR_PEDAGOGICAL_CONTRACT)
+    extra_blocks.append(tutor_intent_block(user_question, teaching_round))
+
+    json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）；reply 內的 LaTeX 反斜線必須寫成兩個（例如 \\\\sqrt{x^2+y^2}）：
 {
   "reply": "...",
-  "follow_up_prompts": [
-    "...",
-    "...",
-    "..."
-  ],
+  "suggested_questions": ["...", "...", "..."],
   "forbidden": false
 }
 
 欄位規範：
-- reply：依學生這句話決定深度。問「怎麼算」只給下一個有效步驟，不公布最後答案。問「哪裡錯」只引用【學生目前已寫的內容】裡實際出現的文字；若辨識不完整或沒有那些內容，就說看不完整，不可猜。問「為什麼」只解釋原因，不公布最後答案。只有學生明確說「直接告訴我答案」「完整解答」或「完整算一次」時，才給完整解答。最多 8 行。
-- follow_up_prompts：可為空陣列；若提供，最多 3 個，各不超過 28 個中文字。
+- reply：依【本輪意圖】回答。問「怎麼算」或不知道下一步時，給下一個具體步驟（公式＋代入本題數字的算式），不公布最後答案。問「哪裡錯」只引用【學生目前已寫的內容】裡實際出現的文字；若辨識不完整或沒有那些內容，就說看不完整，不可猜。問「為什麼」先直接說原因，不公布最後答案。是否可以給完整解答，只依【本輪答案揭露】決定。最多 8 行。
 - forbidden：若你輸出了任何違規內容請設為 true，否則 false。
 
-follow_up_prompts 規則：
-- 必須根據目前題目、學生本輪提問及本次提示生成。
-- 使用自然、簡短的學生口吻。
-- 不得重複學生剛問過的問題。
-- 不得使用「問題1／問題2／問題3」或「觀察／聯想／執行」等標籤。
-- 不得把學生問題嵌入固定句型。
-- 未明確要求完整解答時，不得寫出【正確答案】的內容，也不得引用學生沒寫過的算式。
-- 三題分別聚焦：
-  1. 為什麼要這樣做。
-  2. 題目條件、數字、圖表或符號怎麼理解。
-  3. 最可能的誤解或錯誤做法。"""
+""" + SUGGESTED_QUESTION_RULES
     extra_blocks.append(json_guardrail)
 
     # 3. Build Prompt via Composer
@@ -1265,36 +1280,22 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
         from models import db
 
         release_db_session_before_external_call(db, logger=current_app.logger)
-        tutor_response = tutor_client.generate_content(
-            prompt + " (IMPORTANT: Output ONLY valid JSON. Escape all backslashes.)"
+        from core.ai_wrapper import call_ai_with_retry
+
+        tutor_response = call_ai_with_retry(
+            tutor_client,
+            prompt + " (IMPORTANT: Output ONLY valid JSON. Escape all backslashes.)",
+            max_retries=1,
+            timeout=TUTOR_CALL_TIMEOUT_SECONDS,
         )
         tutor_raw_text = getattr(tutor_response, 'text', '') or ''
-        if tutor_raw_text.strip():
-            data = None
-            try:
-                data = json.loads(tutor_raw_text)
-            except json.JSONDecodeError:
-                data = clean_and_parse_json(tutor_raw_text)
-
-            if data is not None:
-                reply_text = data.get('reply', '')
-                nested_prompts = None
-                if isinstance(reply_text, str):
-                    reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
-                    reply_text = reply_text.replace('**', '')
-                data['reply'] = sanitize_tutor_reply(
-                    enforce_strict_mode(reply_text),
-                    user_question=user_question,
-                    question_context=question_context,
-                )
-                prompt_source = nested_prompts if isinstance(nested_prompts, list) else data.get('follow_up_prompts', [])
-                data['follow_up_prompts'] = normalize_follow_up_prompts(
-                    prompt_source,
-                    user_question=user_question,
-                    question_context=question_context,
-                    ai_reply=data.get('reply', '')
-                )
-                return data
+        data = _finalize_tutor_payload(
+            parse_tutor_model_text(tutor_raw_text),
+            user_question=user_question,
+            question_context=question_context,
+        )
+        if data is not None:
+            return data
     except Exception as tutor_exc:
         print(f"[chat_ai] tutor role path failed; fallback to legacy Gemini path: {tutor_exc}")
 
@@ -1302,10 +1303,7 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
     取得 Gemini 的回應，並確保回傳格式為 JSON。
     """
     if not gemini_model:
-        return {
-            "reply": "系統尚未初始化 (API Key 可能無效)。",
-            "follow_up_prompts": []
-        }
+        return _tutor_unavailable_payload("model_not_configured")
 
     try:
         # 準備請求內容
@@ -1326,62 +1324,108 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
             )
         )
         
-        raw_text = response.text
-        
-        # 嘗試解析 (優先使用官方 JSON 模式，失敗則用強力清洗)
-        # 統一處理 JSON 解析
-        data = None
-        try:
-            # 優先嘗試標準 JSON 解析
-            data = json.loads(raw_text)
-        except json.JSONDecodeError:
-            # 解析失敗則嘗試清洗
-            data = clean_and_parse_json(raw_text)
-
-        # [關鍵修復]：如果解析/清洗後還是 None，回傳一個安全預設值
+        raw_text = getattr(response, 'text', '') or ''
+        data = _finalize_tutor_payload(
+            parse_tutor_model_text(raw_text),
+            user_question=user_question,
+            question_context=question_context,
+        )
         if data is None:
-            print(f"解析失敗，原始回傳: {raw_text}")
-            return {
-                "reply": "運算發生錯誤，請試著換個方式問問看。", 
-                "follow_up_prompts": ["重試"]
-            }
-
-        # [強制嚴格模式] 無論來源為何，都必須執行清洗
-        reply_text = data.get('reply', '')
-        nested_prompts = None
-
-        # 模型偶爾會把整包 JSON 放進 reply 字串，先拆開避免前端顯示原始 JSON
-        if isinstance(reply_text, str):
-            reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
-        
-        # 1. 移除 Markdown 粗體語法 (轉為純文字)
-        if isinstance(reply_text, str):
-            reply_text = reply_text.replace('**', '')
-        
-        # 2. 呼叫全域嚴格模式清洗 (去廢話 + 保護 LaTeX)
-        data['reply'] = sanitize_tutor_reply(
-            enforce_strict_mode(reply_text),
-            user_question=user_question,
-            question_context=question_context,
-        )
-        
-        # 3. 確保 follow_up_prompts 存在
-        prompt_source = nested_prompts if isinstance(nested_prompts, list) else data.get('follow_up_prompts', [])
-        data['follow_up_prompts'] = normalize_follow_up_prompts(
-            prompt_source,
-            user_question=user_question,
-            question_context=question_context,
-            ai_reply=data.get('reply', '')
-        )
-            
+            print(f"[chat_ai] tutor reply unparseable; raw_len={len(raw_text)}")
+            return _tutor_unavailable_payload("unparseable_model_output")
         return data
 
     except Exception as e:
         print(f"AI 生成錯誤: {_sanitize_sensitive_error_message(e)}")
-        return {
-            "reply": "連線忙碌中，請稍後再試。", 
-            "follow_up_prompts": ["重試"]
-        }
+        return _tutor_unavailable_payload("model_call_failed")
+
+
+TUTOR_UNAVAILABLE_REPLY = "AI 助教這次沒有成功回覆（不是你的問題問得不好），請再按一次送出。"
+TUTOR_CALL_TIMEOUT_SECONDS = 45
+
+
+def _tutor_unavailable_payload(reason):
+    return {
+        "reply": TUTOR_UNAVAILABLE_REPLY,
+        "follow_up_prompts": [],
+        "ai_unavailable": True,
+        "retryable": True,
+        "failure_reason": reason,
+    }
+
+
+def _looks_like_schema_blob(text):
+    return isinstance(text, str) and bool(
+        re.match(r'^\s*\{[\s\S]*"(reply|follow_up_prompts|suggested_questions)"\s*:', text)
+    )
+
+
+def parse_tutor_model_text(raw_text):
+    """Recover a tutor payload from model text; None only when no reply is recoverable."""
+    if not isinstance(raw_text, str) or not raw_text.strip():
+        return None
+    if raw_text.lstrip().startswith("Error:"):
+        return None
+    text = re.sub(r'^\s*```(?:json)?\s*|\s*```\s*$', '', raw_text.strip(), flags=re.IGNORECASE)
+    candidates = [text]
+    outer = re.search(r'\{[\s\S]*\}', text)
+    if outer:
+        candidates.append(outer.group(0))
+
+    for candidate in candidates:
+        for source in (protect_latex_in_json_text(candidate), candidate):
+            try:
+                parsed = json.loads(source, strict=False)
+            except (json.JSONDecodeError, ValueError):
+                continue
+            if isinstance(parsed, dict):
+                return parsed
+    if '"reply"' in text:
+        reply, prompts = _extract_reply_and_prompts_from_jsonish(text)
+        if reply == text.strip():
+            truncated = re.search(r'"reply"\s*:\s*"([\s\S]+)$', text)
+            reply = truncated.group(1).rstrip('"}, \n') if truncated else ""
+            reply = reply.replace('\\n', '\n').replace('\\"', '"').replace('\\\\', '\\')
+        if not reply.strip() or _looks_like_schema_blob(reply):
+            return None
+        return {"reply": reply, "follow_up_prompts": prompts or []}
+    if text.lstrip().startswith(('{', '[')):
+        return None
+    return {"reply": text}
+
+
+def _finalize_tutor_payload(data, user_question='', question_context=''):
+    from core.ai_tutor_pedagogy import repair_latex_escape_damage
+
+    if not isinstance(data, dict):
+        return None
+    reply_text = data.get('reply', '')
+    nested_prompts = None
+    if isinstance(reply_text, str):
+        reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
+    if not isinstance(reply_text, str) or not reply_text.strip() or _looks_like_schema_blob(reply_text):
+        if any(str(data.get(k) or '').strip() for k in ('hint_focus', 'guided_question', 'micro_step')):
+            data['reply'] = ''
+            return data
+        return None
+    reply_text = repair_latex_escape_damage(reply_text).replace('**', '')
+    # Over-escaped JSON leaves a literal "\n"; LaTeX commands such as \neq keep their letters.
+    reply_text = re.sub(r'(?<!\\)\\n(?![A-Za-z])', '\n', reply_text)
+    data['reply'] = sanitize_tutor_reply(
+        enforce_strict_mode(reply_text),
+        user_question=user_question,
+        question_context=question_context,
+    )
+    proposed = nested_prompts if isinstance(nested_prompts, list) else (
+        data.get('suggested_questions') or data.get('follow_up_prompts') or []
+    )
+    data['follow_up_prompts'] = normalize_follow_up_prompts(
+        proposed,
+        user_question=user_question,
+        question_context=question_context,
+        ai_reply=data.get('reply', '')
+    )
+    return data
 
 # 預設弱點分析 Prompt
 DEFAULT_WEAKNESS_ANALYSIS_PROMPT = """

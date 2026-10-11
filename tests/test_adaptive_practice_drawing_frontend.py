@@ -138,10 +138,14 @@ def test_ui_contract_dispatch_logic_and_guards():
         assert "ai_check_required" in source
         assert "canvas_required" in source
 
-    # Verify guards in AI button click handlers
-    assert "ui.ai_check_required !== true" in adaptive
-    assert "ui.ai_check_required === true" in standard
-    assert "ui.ai_check_required === false" in standard
+    # ai_check_required === false means "optional": any handwriting surface keeps AI check available,
+    # and an unavailable check explains itself instead of returning silently.
+    for source in (adaptive, standard):
+        assert "AI check blocked by ui_contract" not in source
+        assert "ui.ai_check_required === true" in source
+        assert "ui.handwriting_enabled !== false && ui.canvas_required !== false" in source
+    assert "!uiContract.aiCheckAvailable" in _function_body(standard, "setupAIButton")
+    assert "resolveDrawingUiContract(question).aiCheckAvailable" in _async_function_body(adaptive, "analyzeHandwriting")
 
     # Verify expected_answer removal from handwriting analysis payload in standard template
     ai_body = _function_body(standard, "setupAIButton")

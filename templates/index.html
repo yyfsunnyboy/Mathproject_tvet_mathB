@@ -2184,7 +2184,7 @@
     <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
-    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=slash-frac-1"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
     <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2-ios12"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3-ios12"></script>
@@ -3007,6 +3007,16 @@
                 });
         }
 
+        // AI Tutor bubbles and suggestions (handwriting check, chat, suggestions) share one renderer.
+        function renderTutorMath(element) {
+            if (!element) return Promise.resolve();
+            if (window.MathDisplayNormalizer && window.MathDisplayNormalizer.typesetTutorElement) {
+                return window.MathDisplayNormalizer.typesetTutorElement(element);
+            }
+            renderMathContent(element);
+            return Promise.resolve();
+        }
+
         // === 通用函式：呼叫 MathJax 渲染指定元素 ===
         function renderMathContent(element) {
             if (!element) return;
@@ -3514,7 +3524,7 @@
             });
 
             // 渲染數學公式
-            renderMathContent(container);
+            renderTutorMath(container);
 
             // 確保聊天區域捲動到底部
             scrollAiTutorToBottom();
@@ -4203,6 +4213,9 @@
         }
 
         function resetAIChat() {
+            if (typeof window.resetAiCheckForNewQuestion === 'function') {
+                window.resetAiCheckForNewQuestion();
+            }
             const chatContainer = document.getElementById('chat-history');
             if (!chatContainer) return;
             chatContainer.innerHTML = `
@@ -4389,7 +4402,7 @@
         function beginFreshHandwritingSubmission(question) {
             clearPracticeFeedback();
             clearTutorPromptSuggestions();
-            document.querySelectorAll('.bot-message.latest').forEach((msg) => msg.remove());
+            document.querySelectorAll('.bot-message.latest').forEach((msg) => msg.classList.remove('latest'));
             handwritingSubmissionSequence += 1;
             const capturedAt = new Date().toISOString();
             const randomId = (window.crypto && typeof window.crypto.randomUUID === 'function')
@@ -5503,22 +5516,13 @@
             return { ...nested, ...top };
         }
 
-        function resolveAiCheckRequired(ui, drawing) {
-            if (ui.ai_check_required === true) {
+        // ai_check_required === false means "not mandatory", not "forbidden":
+        // any question with a handwriting surface keeps AI check available.
+        function resolveAiCheckAvailable(ui, drawing) {
+            if (drawing || ui.ai_check_required === true) {
                 return true;
             }
-            if (ui.ai_check_required === false) {
-                return false;
-            }
-            if (drawing) {
-                return true;
-            }
-            const handwritingOn = ui.handwriting_enabled !== false;
-            const canvasOn = ui.canvas_required !== false;
-            if (handwritingOn && canvasOn) {
-                return true;
-            }
-            return false;
+            return ui.handwriting_enabled !== false && ui.canvas_required !== false;
         }
 
         function resolveDrawingUiContract(cq) {
@@ -5531,7 +5535,7 @@
                 responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
                 textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
                 normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
-                aiCheckRequired: resolveAiCheckRequired(ui, drawing),
+                aiCheckAvailable: resolveAiCheckAvailable(ui, drawing),
                 canvasRequired,
                 handwritingEnabled,
                 allowImageUpload: ui.allow_image_upload !== false,
@@ -5539,7 +5543,7 @@
             };
         }
 
-        function applyAnalyzeButtonVisibility(aiCheckRequired) {
+        function applyAnalyzeButtonVisibility(aiCheckAvailable) {
             if (!analyzeBtn) return;
             // Always keep AI check button visible and enabled for student scratchpad / drawing
             analyzeBtn.hidden = false;
@@ -5581,7 +5585,7 @@
                 submitBtn.removeAttribute("aria-disabled");
             }
 
-            applyAnalyzeButtonVisibility(uiContract.aiCheckRequired);
+            applyAnalyzeButtonVisibility(uiContract.aiCheckAvailable);
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
@@ -6898,19 +6902,66 @@
             };
         }
 
+        const AI_CHECK_TIMEOUT_MS = 150000;
+
+        async function postJsonWithTimeout(url, payload, timeoutMs) {
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            const timer = controller ? setTimeout(() => controller.abort(), timeoutMs || AI_CHECK_TIMEOUT_MS) : null;
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller ? controller.signal : undefined,
+                });
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    throw new Error('AI 這次回應太久，請再按一次 AI 檢查。');
+                }
+                throw new Error('網路連線中斷，請確認連線後再按一次 AI 檢查。');
+            } finally {
+                if (timer) clearTimeout(timer);
+            }
+            let body = {};
+            try {
+                body = await response.json();
+            } catch (_err) {
+                body = {};
+            }
+            return { response, body: body || {} };
+        }
+
+        function aiCheckFailureMessage(response, body) {
+            if (response && response.status === 409) {
+                return '這一題已經更新或過期，請按「下一題」重新取得題目後再作答。';
+            }
+            if (body && (body.ai_unavailable || body.retryable)) {
+                return body.reply || body.feedback || 'AI 這次沒有成功回覆，請再按一次 AI 檢查。';
+            }
+            if (body && body.reason === 'handwriting_not_recognized') {
+                return '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。';
+            }
+            return 'AI 檢查沒有完成，請再按一次 AI 檢查。';
+        }
+
         async function submitHandwritingAsAnswer() {
             const cq = currentQuestion || {};
-            const submission = beginFreshHandwritingSubmission(cq);
-            const imageDataUrl = await captureHandwritingImageForRecognition();
-            if (!imageDataUrl || imageDataUrl === 'data:,' || imageDataUrl === 'data:image/png;base64,') {
-                resultDisplay.textContent = '請先在白板作答。';
+            // Only the ink layer counts as student work; grids and system figures live on the background layer.
+            if (isInkCanvasBlank()) {
+                resultDisplay.textContent = '請先在白板寫下你的作答，再按 AI 檢查。';
                 resultDisplay.className = '';
                 return;
             }
-            const recognitionResponse = await fetch('/api/practice/ai-check-handwriting', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const submission = beginFreshHandwritingSubmission(cq);
+            const imageDataUrl = await captureHandwritingImageForRecognition();
+            if (!imageDataUrl || imageDataUrl === 'data:,' || imageDataUrl === 'data:image/png;base64,') {
+                resultDisplay.textContent = '請先在白板寫下你的作答，再按 AI 檢查。';
+                resultDisplay.className = '';
+                return;
+            }
+            const { response: recognitionResponse, body: recognition } = await postJsonWithTimeout(
+                '/api/practice/ai-check-handwriting', {
                     image_data_url: imageDataUrl,
                     image_base64: imageDataUrl,
                     student_strokes_image_data_url: (getInkCanvasEl() || canvas).toDataURL('image/png'),
@@ -6928,15 +6979,12 @@
                         stroke_count: null,
                         history_depth: Array.isArray(undoStack) ? Math.max(0, undoStack.length - 1) : null,
                     },
-                }),
-            });
-            const recognition = await recognitionResponse.json();
-            if (
-                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
-                || !handwritingTransientState
-                || handwritingTransientState.submissionId !== submission.submissionId
-            ) {
+                });
+            if (isStaleHandwritingSubmission()) {
                 return;
+            }
+            if (!recognitionResponse.ok) {
+                throw new Error(aiCheckFailureMessage(recognitionResponse, recognition));
             }
             if (
                 recognition.handwriting_submission_id
@@ -6981,12 +7029,22 @@
                 return;
             }
             if (recognition.completion_state === 'in_progress') {
-                resultDisplay.textContent = recognition.feedback || '目前還在作答中；下一步要先完成哪個式子呢？';
-                resultDisplay.className = '';
+                const partialWork = String(normalizedAnswer || '').trim();
+                const hasSteps = Array.isArray(submission.recognizedSteps) && submission.recognizedSteps.length > 0;
+                if (!partialWork && !hasSteps) {
+                    resultDisplay.textContent = recognition.feedback || '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。';
+                    resultDisplay.className = '';
+                    return;
+                }
+                // Unfinished work is not graded; the tutor still diagnoses the steps written so far.
+                if (await requestHandwritingTutorFeedback(partialWork, false)) {
+                    resultDisplay.textContent = '還在作答中，AI 助教已針對目前的步驟給你建議。';
+                    resultDisplay.className = '';
+                }
                 return;
             }
-            if (!recognitionResponse.ok || !normalizedAnswer) {
-                throw new Error(recognition.feedback || '目前無法清楚辨識，請重新書寫。');
+            if (!normalizedAnswer) {
+                throw new Error(recognition.feedback || '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。');
             }
 
             const handwritingPayload = buildCheckAnswerPayload(normalizedAnswer);
@@ -6997,20 +7055,11 @@
                 handwritingPayload.answers = normalizedAnswer;
                 handwritingPayload.user_answer = normalizedAnswer;
             }
-            const gradeResponse = await fetch('/check_answer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(handwritingPayload),
-            });
-            const grade = await gradeResponse.json();
-            if (
-                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
-                || !handwritingTransientState
-                || handwritingTransientState.submissionId !== submission.submissionId
-            ) {
+            const { response: gradeResponse, body: grade } = await postJsonWithTimeout('/check_answer', handwritingPayload);
+            if (isStaleHandwritingSubmission()) {
                 return;
             }
-            if (!gradeResponse.ok) throw new Error(grade.result || '手寫答案批改失敗。');
+            if (!gradeResponse.ok) throw new Error(grade.result || aiCheckFailureMessage(gradeResponse, grade));
             notePracticeTypeRotation(grade);
             submission.checkerResult = grade.checker_result || (grade.correct ? 'correct' : 'incorrect');
             console.log('[HANDWRITING SUBMISSION] checker', {
@@ -7031,52 +7080,65 @@
                 return;
             }
 
-            const feedbackResponse = await fetch('/analyze_handwriting', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const gradeText = resultDisplay.textContent;
+            try {
+                await requestHandwritingTutorFeedback(normalizedAnswer, true);
+            } catch (err) {
+                throw new Error(`${gradeText} ${err.message}`);
+            }
+
+            function isStaleHandwritingSubmission() {
+                return submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
+                    || !handwritingTransientState
+                    || handwritingTransientState.submissionId !== submission.submissionId;
+            }
+
+            async function requestHandwritingTutorFeedback(answerText, linkChecker) {
+                const payload = {
                     image_data_url: imageDataUrl,
-                    normalized_answer: normalizedAnswer,
+                    normalized_answer: answerText || '',
                     recognized_steps: submission.recognizedSteps || [],
-                    question_uid: cq.question_uid || '',
+                    question_uid: submission.questionUid,
                     question_text: questionText.innerText || '',
-                    handwriting_submission_id: submission.submissionId,
-                    handwriting_image_sha256: submission.imageSha256,
-                }),
-            });
-            const feedback = await feedbackResponse.json();
-            if (
-                submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
-                || !handwritingTransientState
-                || handwritingTransientState.submissionId !== submission.submissionId
-            ) {
-                return;
-            }
-            if (
-                feedback.handwriting_submission_id
-                && feedback.handwriting_submission_id !== submission.submissionId
-            ) {
-                throw new Error('AI 助教回傳已過期，已忽略上一輪分析。');
-            }
-            submission.structuredAnalysis = feedback.handwriting_analysis || null;
-            if (feedback.recognition_incomplete === true) {
-                submission.recognitionIncomplete = true;
-                if (handwritingTransientState && handwritingTransientState.submissionId === submission.submissionId) {
-                    handwritingTransientState.recognitionIncomplete = true;
+                };
+                if (linkChecker) {
+                    payload.handwriting_submission_id = submission.submissionId;
+                    payload.handwriting_image_sha256 = submission.imageSha256;
                 }
+                const { response: feedbackResponse, body: feedback } = await postJsonWithTimeout('/analyze_handwriting', payload);
+                if (isStaleHandwritingSubmission()) {
+                    return false;
+                }
+                if (!feedbackResponse.ok || feedback.success === false) {
+                    throw new Error(aiCheckFailureMessage(feedbackResponse, feedback));
+                }
+                if (
+                    feedback.handwriting_submission_id
+                    && feedback.handwriting_submission_id !== submission.submissionId
+                ) {
+                    throw new Error('AI 助教回傳已過期，已忽略上一輪分析。');
+                }
+                submission.structuredAnalysis = feedback.handwriting_analysis || null;
+                if (feedback.recognition_incomplete === true) {
+                    submission.recognitionIncomplete = true;
+                    if (handwritingTransientState && handwritingTransientState.submissionId === submission.submissionId) {
+                        handwritingTransientState.recognitionIncomplete = true;
+                    }
+                }
+                console.log('[HANDWRITING SUBMISSION] tutor', {
+                    submissionId: submission.submissionId,
+                    structuredAnalysisFresh: feedback.structured_analysis_from_current_request === true,
+                    tutorAuthoritativeResult: feedback.tutor_authoritative_result || null,
+                });
+                const msg = document.createElement('div');
+                msg.className = 'bot-message latest';
+                msg.textContent = studentVisibleReply(feedback, '目前無法整理出回饋，請再試一次。');
+                chatHistory.appendChild(msg);
+                showDynamicSuggestions(feedback.suggested_questions || feedback.follow_up_prompts || []);
+                renderTutorMath(msg);
+                scrollAiTutorToBottom();
+                return true;
             }
-            console.log('[HANDWRITING SUBMISSION] tutor', {
-                submissionId: submission.submissionId,
-                structuredAnalysisFresh: feedback.structured_analysis_from_current_request === true,
-                tutorAuthoritativeResult: feedback.tutor_authoritative_result || null,
-            });
-            const msg = document.createElement('div');
-            msg.className = 'bot-message latest';
-            msg.textContent = studentVisibleReply(feedback, '目前無法整理出回饋，請再試一次。');
-            chatHistory.appendChild(msg);
-            showDynamicSuggestions(feedback.suggested_questions || feedback.follow_up_prompts || []);
-            renderMathContent(msg);
-            scrollAiTutorToBottom();
         }
 
         // === AI 分析 / 手寫正式答案提交 ===
@@ -7084,6 +7146,7 @@
             if (!analyzeBtn) return;
 
             // 動態載入訊息效果（三個點動畫）
+            const LOADING_PREFIX = 'AI 正在分析中';
             let loadingInterval = null;
             function showLoadingMessage() {
                 let dots = 0;
@@ -7091,11 +7154,13 @@
                 resultDisplay.style.background = '#fff3cd';
                 resultDisplay.style.color = '#856404';
                 resultDisplay.style.border = '1px solid #ffeaa7';
+                resultDisplay.textContent = LOADING_PREFIX;
 
                 loadingInterval = setInterval(() => {
+                    // Stop animating once the request wrote its own status.
+                    if (!String(resultDisplay.textContent || '').startsWith(LOADING_PREFIX)) return;
                     dots = (dots + 1) % 4;
-                    const dotString = '.'.repeat(dots);
-                    resultDisplay.textContent = `AI 正在分析中${dotString}`;
+                    resultDisplay.textContent = `${LOADING_PREFIX}${'.'.repeat(dots)}`;
                 }, 300);
             }
 
@@ -7104,7 +7169,27 @@
                     clearInterval(loadingInterval);
                     loadingInterval = null;
                 }
+                resultDisplay.style.background = '';
+                resultDisplay.style.color = '';
+                resultDisplay.style.border = '';
+                if (String(resultDisplay.textContent || '').startsWith(LOADING_PREFIX)) {
+                    resultDisplay.textContent = '';
+                }
             }
+
+            let aiCheckRunId = 0;
+            function releaseAiCheckButton() {
+                stopLoadingMessage();
+                isProcessing = false;
+                analyzeBtn.textContent = 'AI檢查';
+                analyzeBtn.disabled = false;
+            }
+            // A new question must never inherit a pending AI check.
+            window.resetAiCheckForNewQuestion = () => {
+                if (!aiCheckRunId || !isProcessing) return;
+                aiCheckRunId += 1;
+                releaseAiCheckButton();
+            };
 
             analyzeBtn.onclick = async () => {
                 if (isProcessing) return;
@@ -7123,14 +7208,13 @@
                     return;
                 }
 
-                if (!uiContract.aiCheckRequired) {
-                    console.warn(
-                        "[PRACTICE UI] AI check blocked by ui_contract",
-                        cq.problem_type_id
-                    );
+                if (!uiContract.aiCheckAvailable) {
+                    resultDisplay.textContent = '這一題沒有手寫區，請直接在答案欄作答後按送出。';
+                    resultDisplay.className = '';
                     return;
                 }
 
+                const runId = ++aiCheckRunId;
                 isProcessing = true;
                 analyzeBtn.textContent = '辨識並批改中...';
                 analyzeBtn.disabled = true;
@@ -7138,13 +7222,15 @@
                 try {
                     await submitHandwritingAsAnswer();
                 } catch (err) {
-                    resultDisplay.textContent = err.message || '手寫答案處理失敗，請稍後再試。';
-                    resultDisplay.className = 'incorrect';
+                    if (runId === aiCheckRunId) {
+                        stopLoadingMessage();
+                        resultDisplay.textContent = err.message || 'AI 檢查沒有完成，請再按一次 AI 檢查。';
+                        resultDisplay.className = 'incorrect';
+                    }
                 } finally {
-                    stopLoadingMessage();
-                    isProcessing = false;
-                    analyzeBtn.textContent = 'AI檢查';
-                    analyzeBtn.disabled = false;
+                    if (runId === aiCheckRunId) {
+                        releaseAiCheckButton();
+                    }
                 }
                 return;
 
@@ -7290,14 +7376,8 @@
                     scrollAiTutorToBottom();
                 }
 
-                // 2. [新增] 關鍵：告訴 MathJax 這裡有新訊息，請它幫忙畫出數學公式
-                if (window.MathJax) {
-                    try {
-                        window.MathJax.typesetPromise([msg]);
-                    } catch (err) {
-                        console.warn('User MathJax Render Error:', err);
-                    }
-                }
+                // 2. 告訴 MathJax 這裡有新訊息（與 AI 回覆共用同一渲染流程）
+                renderTutorMath(msg);
             }
 
             // 2. 發送訊息邏輯
@@ -7351,22 +7431,27 @@
                         })
                     });
 
-                    // [Modified] Robust Error Handling Logic
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    let finalData = await response.json();
+                    let finalData = null;
+                    try {
+                        finalData = await response.json();
+                    } catch (_) {
+                        finalData = null;
+                    }
                     if (chatQuestionUid !== String((currentQuestion && currentQuestion.question_uid) || '')) {
                         if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
                         return;
                     }
-                    if (!finalData || typeof finalData !== 'object') {
-                        finalData = { reply: "老師正在思考中，請再問一次看看！", follow_up_prompts: [] };
+                    const cleanedReply = (response.ok && finalData && typeof finalData === 'object' && !finalData.ai_unavailable)
+                        ? studentVisibleReply(finalData, '')
+                        : '';
+                    if (!cleanedReply) {
+                        if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                        addBotMessage(response.status === 409
+                            ? '題目已經更新，請針對目前這一題再問一次。'
+                            : 'AI 助教這次沒有成功回覆（不是你的問題問得不好），問題已放回輸入框，請再按一次送出。');
+                        chatInput.value = question;
+                        return;
                     }
-
-                    const cleanedReply = studentVisibleReply(
-                        finalData,
-                        '目前無法整理出回覆，請換個方式再問一次。'
-                    );
 
                     // 移除思考中訊息
                     if (thinkingDiv && thinkingDiv.parentNode) {
@@ -7395,7 +7480,8 @@
                     if (thinkingDiv && thinkingDiv.parentNode) {
                         thinkingDiv.parentNode.removeChild(thinkingDiv);
                     }
-                    addBotMessage("連線發生錯誤，請檢查網路。");
+                    addBotMessage("連線發生錯誤，問題已放回輸入框，請確認網路後再按一次送出。");
+                    chatInput.value = question;
                 } finally {
                     chatSendBtn.disabled = false;
                 }
@@ -7451,39 +7537,28 @@
             chatHistory.appendChild(messageDiv);
             scrollAiTutorToBottom();
 
-            // [關鍵修復] 通知 MathJax 渲染新加入的數學公式
-            if (window.MathJax) {
-                // 使用 Promise 避免阻塞，針對整個 chat-box 或最新訊息渲染
-                window.MathJax.typesetPromise([messageDiv]).catch((err) => console.log('MathJax error:', err));
-            }
+            // 訊息已在 DOM 中，再交給共用 AI Tutor 渲染流程
+            renderTutorMath(messageDiv);
             return messageDiv;
         }
 
         function studentVisibleReply(payload, fallback) {
-            const forbiddenSchemaKeys = new Set([
-                'reply', 'is_process_correct', 'correct', 'error_type',
-                'next_question', 'follow_up_prompts', 'success', 'status'
-            ]);
-            function plainText(value) {
-                if (typeof value !== 'string') return '';
-                const text = value.trim();
-                if (!text || text.includes('{') || text.includes('}') || text.includes('"reply"')) return '';
-                return text.replace(/\\\\/g, '\\');
-            }
+            // LaTeX such as \sqrt{x^2+y^2} contains braces; only a serialized schema object is hidden.
+            const schemaBlob = /^\s*\{[\s\S]*"(reply|follow_up_prompts|suggested_questions|is_process_correct)"\s*:/;
             function extract(value, depth = 0) {
                 if (depth > 2 || value == null) return '';
                 if (typeof value === 'object' && !Array.isArray(value)) return extract(value.reply, depth + 1);
                 if (typeof value !== 'string') return '';
                 const text = value.trim();
                 if (!text) return '';
+                if (!schemaBlob.test(text)) return text.replace(/\\\\/g, '\\');
                 try {
                     const parsed = JSON.parse(text);
                     return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
                         ? extract(parsed.reply, depth + 1)
                         : '';
                 } catch (_) {
-                    const safe = plainText(text);
-                    return Array.from(forbiddenSchemaKeys).some(key => safe.includes(key)) ? '' : safe;
+                    return '';
                 }
             }
             return extract(payload) || fallback;
@@ -7504,7 +7579,7 @@
 
                     const btn = document.createElement('button');
                     btn.className = 'suggestion-btn';
-                    btn.innerHTML = promptText;
+                    btn.textContent = promptText;
 
                     btn.onclick = function () {
                         const chatInput = document.getElementById('chat-input');
@@ -7525,9 +7600,7 @@
                     suggestionsContainer.style.display = 'flex';
                 }
 
-                if (window.MathJax) {
-                    try { window.MathJax.typesetPromise([suggestionsContainer]); } catch (e) { }
-                }
+                renderTutorMath(suggestionsContainer);
             }
         }
 
@@ -7563,13 +7636,8 @@
 
             // 定義渲染函數
             const forceRender = () => {
-                if (window.MathJax && window.MathJax.typesetPromise) {
-                    // 針對整個 chatBox 進行重新排版
-                    // 使用 catch 避免報錯干擾
-                    try {
-                        window.MathJax.typesetPromise([chatBox]).catch((err) => { });
-                    } catch (e) { }
-                }
+                // Same serialized renderer as each message, so typeset calls never overlap.
+                renderTutorMath(chatBox);
             };
 
             // 1. 建立觀察者：只要對話框有變動，就觸發渲染

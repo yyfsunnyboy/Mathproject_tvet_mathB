@@ -154,6 +154,21 @@ def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingChe
     )
 
 
+RECOGNITION_UNAVAILABLE_FEEDBACK = "AI 辨識這次沒有成功回覆（不是你寫得不好），請再按一次 AI 檢查。"
+_RECOGNITION_FAILURE_PREFIXES = ("Error:", "AI 分析失敗", "AI 回應格式錯誤")
+
+
+def _recognition_model_failed(ai_result: object) -> bool:
+    """The vision wrapper reports failures as text, not exceptions."""
+    if not isinstance(ai_result, dict):
+        return True
+    if any(ai_result.get(key) for key in ("recognized_answer", "normalized_answer", "recognized_steps",
+                                          "recognized_latex", "is_blank")):
+        return False
+    message = str(ai_result.get("reply") or ai_result.get("feedback") or "").strip()
+    return message.startswith(_RECOGNITION_FAILURE_PREFIXES)
+
+
 def _persist_drawing_feedback(ctx: HandwritingCheckContext, response: dict[str, object]) -> None:
     """Store recognized work and a non-reversible image reference, never image bytes."""
     feedback = _trim_text(response.get("feedback"), max_len=400)
@@ -372,6 +387,8 @@ def ai_check_handwriting():
 
     try:
         ai_result = _call_ai_handwriting_checker(payload, ctx)
+        if _recognition_model_failed(ai_result):
+            raise RuntimeError("recognition model returned no transcription")
     except Exception as exc:
         current_app.logger.warning("[AI handwriting check] failed: %s", exc)
         error_response = _attach_handwriting_submission_audit(
@@ -387,7 +404,9 @@ def ai_check_handwriting():
                 "recognized_steps": [],
                 "first_error_step": None,
                 "error_type": "ai_timeout_or_error",
-                "feedback": "目前無法清楚辨識，請重新書寫。",
+                "feedback": RECOGNITION_UNAVAILABLE_FEEDBACK,
+                "ai_unavailable": True,
+                "retryable": True,
                 "confidence": 0.0,
                 "should_record_attempt": False,
                 "is_blank": False,
@@ -399,9 +418,7 @@ def ai_check_handwriting():
             ai_result=None,
             previous_state_cleared=previous_state_cleared,
         )
-        if not is_guest_demo():
-            _persist_drawing_feedback(ctx, error_response)
-        return jsonify(error_response), 200
+        return jsonify(error_response), 503
 
     response = build_handwriting_check_response(
         image_base64=image_base64,

@@ -251,7 +251,7 @@ def _function_source(source: str, name: str) -> str:
 ROUTING_FUNCTIONS = (
     "getTableQuestionModel", "isTableFillQuestion", "resolveMultiPartFields", "isMultiPartQuestion",
     "getChoiceItems", "isChoiceQuestionPayload", "snapshotPracticeQuestion", "getMergedUiContract",
-    "isDrawingQuestion", "resolveAiCheckRequired", "resolveDrawingUiContract",
+    "isDrawingQuestion", "resolveAiCheckAvailable", "resolveDrawingUiContract",
     "applyAnalyzeButtonVisibility", "applyDrawingUiContract", "applyMultiPartUiContract",
 )
 

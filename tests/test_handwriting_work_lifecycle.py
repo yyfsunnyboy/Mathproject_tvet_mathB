@@ -130,8 +130,16 @@ const unwrapped = studentVisibleReply('{"reply":"先移項","follow_up_prompts":
 if (unwrapped !== '先移項' || unwrapped.includes('{') || unwrapped.includes('"reply"')) {
   throw new Error('raw JSON was shown: ' + unwrapped);
 }
-if (studentVisibleReply('看不懂 {reply} 這段', 'fallback') !== 'fallback') {
-  throw new Error('raw JSON fragment was shown');
+if (studentVisibleReply('{"reply": "先移項", "follow_up_prompts": [', 'fallback') !== 'fallback') {
+  throw new Error('truncated raw JSON was shown');
+}
+const latex = '距離公式是 $\\\\sqrt{x^2+y^2}$，你寫的 $\\\\frac{3+(-1)}{2}=1$ 正確。';
+const shown = studentVisibleReply({reply: latex}, 'fallback');
+if (shown === 'fallback' || !shown.includes('\\\\sqrt{x^2+y^2}') || !shown.includes('\\\\frac{3+(-1)}{2}')) {
+  throw new Error('LaTeX reply was hidden: ' + shown);
+}
+if (studentVisibleReply({reply: '這一步 correct status 都對'}, 'fallback') === 'fallback') {
+  throw new Error('plain words were mistaken for schema keys');
 }
 """
     _run_node(script)

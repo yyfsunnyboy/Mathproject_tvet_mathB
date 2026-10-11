@@ -304,7 +304,7 @@ def test_why_does_not_publish_final_answer(tutor_app, monkeypatch):
     assert "x=4" not in payload["reply"]
 
 
-def test_explicit_full_answer_is_allowed(tutor_app, monkeypatch):
+def test_explicit_full_answer_waits_for_third_round(tutor_app, monkeypatch):
     payload, calls = _chat(
         tutor_app.test_client(),
         monkeypatch,
@@ -316,8 +316,9 @@ def test_explicit_full_answer_is_allowed(tutor_app, monkeypatch):
             "question_uid": "q-full",
         },
     )
-    assert calls["n"] == 1
-    assert "x=4" in payload["reply"]
+    assert calls["n"] == 2
+    assert "x=4" not in payload["reply"]
+    assert payload["teaching_round"] == 1
 
 
 def test_incomplete_recognition_does_not_invent_student_work(tutor_app, monkeypatch):
