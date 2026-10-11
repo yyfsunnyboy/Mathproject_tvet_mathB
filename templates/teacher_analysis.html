@@ -7,6 +7,17 @@
     <meta charset="UTF-8">
     <title>學生學習分析 - 自適應性教學系統</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% if view == 'unit' %}
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+        svg: { fontCache: 'global' },
+        startup: { typeset: false }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=teacher-math-1"></script>
+    {% endif %}
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -104,6 +115,13 @@
         .sort-hint a { color: #3d5a80; margin-right: 10px; }
         .chart-wrap { position: relative; height: 280px; max-width: 900px; }
         .apr-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        .table-scroll { overflow-x: auto; }
+        .recent-attempts td { vertical-align: top; }
+        .recent-attempts .question-summary { color: #666; line-height: 1.7; }
+        .recent-attempts .answer-part { display: block; line-height: 1.8; }
+        .recent-attempts .part-label { color: #888; margin-right: 4px; }
+        .recent-attempts mjx-container { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
+        .display-uncertain { color: #b9770e; }
         @media (max-width: 768px) {
             table { display: block; overflow-x: auto; }
             .attention-list { grid-template-columns: minmax(0, 1fr); }
@@ -139,6 +157,16 @@
             {%- set _ = p.update(extra) -%}
             {{ url_for('teacher_analysis', **p) }}
         {% endmacro %}
+
+        {% macro answer_cell(raw) -%}
+            {%- set shown = raw|attempt_answer_display -%}
+            {%- if not shown.parts -%}—{%- else -%}
+                {%- for part in shown.parts -%}
+                <span class="answer-part">{% if part.label %}<span class="part-label">{{ part.label }}</span>{% endif %}<span{% if not part.blank %} class="math-display" data-math-display="answer"{% endif %}>{{ part.text }}</span></span>
+                {%- endfor -%}
+                {%- if shown.status == 'uncertain' -%}<span class="reason-hint display-uncertain">原始資料含無法辨識的字元（�），僅供參考</span>{%- endif -%}
+            {%- endif -%}
+        {%- endmacro %}
 
         {% macro unit_url(row) %}
             {%- if row.kind == 'curriculum' -%}
@@ -442,7 +470,8 @@
             {% if unit_detail.recent_attempts|length == 0 %}
                 <p class="empty-state">此單元尚無練習紀錄。</p>
             {% else %}
-            <table>
+            <div class="table-scroll">
+            <table class="recent-attempts" id="recent-attempts">
                 <thead>
                     <tr>
                         <th>時間</th><th>技能</th><th>題型</th><th>作答</th><th>正解</th><th>結果</th>
@@ -452,15 +481,27 @@
                     {% for att in unit_detail.recent_attempts %}
                     <tr class="{% if att.is_correct %}result-correct{% else %}result-wrong{% endif %}">
                         <td>{% if att.created_at %}{{ (att.created_at|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
-                        <td>{{ att.skill_name or '—' }}{% if att.question_text %}<div class="reason-hint">{{ att.question_text[:120] }}</div>{% endif %}</td>
+                        <td>{{ att.skill_name or '—' }}{% if att.question_text %}{% set summary = att.question_text|attempt_question_summary %}<div class="reason-hint question-summary math-display" data-math-display="text">{{ summary.text }}</div>{% if summary.status == 'uncertain' %}<span class="reason-hint display-uncertain">原始資料含無法辨識的字元（�），僅供參考</span>{% endif %}{% endif %}</td>
                         <td>{{ att.problem_type or '—' }}{% if att.apr is not none %} <small>(APR {{ (att.apr * 100)|round|int }}%)</small>{% endif %}</td>
-                        <td>{{ att.user_answer if att.user_answer is not none else '—' }}</td>
-                        <td>{{ att.expected_answer if att.expected_answer is not none else '—' }}</td>
+                        <td>{{ answer_cell(att.user_answer) }}</td>
+                        <td>{{ answer_cell(att.expected_answer) }}</td>
                         <td>{% if att.is_correct %}✓ 正確{% else %}✗ 錯誤{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
+            <script>
+            (function () {
+                function render() {
+                    if (window.MathDisplayNormalizer && window.MathDisplayNormalizer.typesetMathDisplay) {
+                        window.MathDisplayNormalizer.typesetMathDisplay(document.getElementById('recent-attempts'));
+                    }
+                }
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+                else render();
+            })();
+            </script>
             {% endif %}
         </div>
 

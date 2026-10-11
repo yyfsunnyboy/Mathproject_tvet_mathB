@@ -223,6 +223,9 @@ def create_app(*, production: bool | None = None):
     from core.guest_demo import install_guest_demo
     install_guest_demo(app, db)
 
+    from core.attempt_math_display import install_attempt_math_display
+    install_attempt_math_display(app)
+
     @app.before_request
     def _question_api_auth_response():
         # The practice page can be viewed without a login, but its question API

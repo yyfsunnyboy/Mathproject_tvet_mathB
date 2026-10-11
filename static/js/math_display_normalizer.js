@@ -342,6 +342,34 @@
     return rootElement;
   }
 
+  // --- Stored answers and question summaries (teacher views) -------------------
+  // An answer cell is short: a choice letter or a word stays text, ASCII math
+  // (fractions, inequalities, intervals, TeX commands) becomes one \( \) span.
+  const CJK = /[\u3400-\u9fff\uf900-\ufaff]/;
+  const CHOICE_LETTER = /^[(（]?[A-Ha-h][)）]?$/;
+  const ANSWER_MATH = /\\[A-Za-z]+|[\^_<>=≤≥≠∞∪∩±√]|\d\s*\/\s*[\d(-]|[A-Za-z)\]}]\s*\/\s*[\dA-Za-z(]/;
+
+  function setBracesToLatex(text) {
+    // "{x | x > 3}" is a set; bare TeX braces would only group.
+    if (text[0] === "{" && matchForward(text, 0) === text.length - 1 && /[|:,]/.test(text)) {
+      return `\\{${text.slice(1, -1)}\\}`;
+    }
+    return text;
+  }
+
+  function normalizeAnswerText(value) {
+    const source = String(value ?? "").trim();
+    if (!source || CHOICE_LETTER.test(source)) return source;
+    if (/\\\(|\\\[|\$/.test(source)) return normalizeMathText(source);
+    if (CJK.test(source) || isPlainTextException(source)) return normalizeMathText(normalizeTutorText(source));
+    if (!ANSWER_MATH.test(source) || source.length > 400 || /<\/?[A-Za-z][^>]*>/.test(source)) return source;
+    return `\\(${setBracesToLatex(slashFractionsToLatex(source))}\\)`;
+  }
+
+  function normalizeQuestionText(value) {
+    return normalizeMathText(normalizeTutorText(value));
+  }
+
   // MathJax typeset calls must not overlap; concurrent calls on the same
   // container can leave SVG with NaN sizes.  Typeset only after the node is in the DOM.
   let typesetChain = Promise.resolve();
@@ -381,8 +409,23 @@
     return typesetSerialized(element, false);
   }
 
+  // Each [data-math-display="answer"|"text"] element holds escaped plain text.
+  // It is normalized once (re-render safe) and typeset after it is in the DOM.
+  function typesetMathDisplay(root) {
+    if (!root || !root.querySelectorAll) return Promise.resolve();
+    root.querySelectorAll("[data-math-display]").forEach((element) => {
+      if (element.dataset.mathNormalized === "1" || element.children.length) return;
+      const text = element.textContent;
+      const normalized = element.dataset.mathDisplay === "answer" ? normalizeAnswerText(text) : normalizeQuestionText(text);
+      if (normalized !== text) element.textContent = normalized;
+      element.dataset.mathNormalized = "1";
+    });
+    return typesetSerialized(root, true);
+  }
+
   return {
     normalizeMathText, normalizeElement, isPlainTextException, slashFractionsToLatex,
     normalizeTutorText, normalizeTutorElement, typesetTutorElement,
+    normalizeAnswerText, normalizeQuestionText, typesetMathDisplay,
   };
 }));
