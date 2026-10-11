@@ -285,6 +285,7 @@ from core.utils import (
     find_skill_curriculum_entry,
     parse_display_order_value,
 )
+from core.guest_demo import guest_demo_curriculum, guest_demo_skill_filter
 from core.ai_settings import (
     AI_ROLE_KEYS,
     SETTING_AI_CLOUD_MODEL,
@@ -334,6 +335,16 @@ VOCATIONAL_MATH_B_OUTLINE_PREFIX = "outline_vocational_數學B%"
 CORE_TEXTBOOK_REPORT_TABLES = CORE_TEXTBOOK_FULL_CLEAR_TABLES
 # Backward-compatible alias (older Math-B-only reporting).
 CORE_MATH_B_REPORT_TABLES = CORE_TEXTBOOK_REPORT_TABLES
+
+
+def _scoped_skill_query(query):
+    """Limit a SkillInfo query to the Guest Demo curriculum; real accounts are unchanged."""
+    scope = guest_demo_skill_filter(SkillInfo.skill_id)
+    return query if scope is None else query.filter(scope)
+
+
+def _requested_curriculum(raw):
+    return guest_demo_curriculum() or normalize_curriculum(raw)
 
 
 def _is_outline_skill_id(skill_id):
@@ -447,7 +458,7 @@ def _normalize_core_option_value(raw):
 
 def _collect_core_scope_options(filters=None):
     filters = dict(filters or {})
-    curriculum = normalize_curriculum(_normalize_core_option_value(filters.get("curriculum")))
+    curriculum = _requested_curriculum(_normalize_core_option_value(filters.get("curriculum")))
     grade_raw = _normalize_core_option_value(filters.get("grade"))
     volume = _normalize_core_option_value(filters.get("volume"))
     chapter = _normalize_core_option_value(filters.get("chapter"))
@@ -460,6 +471,8 @@ def _collect_core_scope_options(filters=None):
     for c in distinct_currs:
         if c not in curricula:
             curricula.append(c)
+    if guest_demo_curriculum():
+        curricula = [curriculum]
 
     q_grade = db.session.query(SkillCurriculum.grade)
     if curriculum:
@@ -2892,7 +2905,7 @@ def admin_curriculum():
                            selected_filters=selected,
                            curriculum_map=curriculum_map,
                            grade_map=grade_map,
-                           skills=SkillInfo.query.all())
+                           skills=_scoped_skill_query(SkillInfo.query).all())
 
 @core_bp.route('/curriculum/edit/<int:id>', methods=['POST'])
 @login_required
@@ -3534,7 +3547,7 @@ def admin_examples():
                                'senior_high': '普高'
                            },
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
-                           skills=SkillInfo.query.all(), 
+                           skills=_scoped_skill_query(SkillInfo.query).all(),
                            username=current_user.username)
 
 
@@ -4919,7 +4932,13 @@ def api_get_prerequisites(skill_id):
     try:
         skill = db.session.get(SkillInfo, skill_id)
         if not skill: return jsonify({"success": False, "message": "Skill not found"}), 404
-        data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in skill.prerequisites]
+        prereqs = skill.prerequisites
+        if guest_demo_curriculum():
+            visible = {s.skill_id for s in _scoped_skill_query(SkillInfo.query).filter(
+                SkillInfo.skill_id.in_([p.skill_id for p in prereqs])
+            )}
+            prereqs = [p for p in prereqs if p.skill_id in visible]
+        data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in prereqs]
         return jsonify({"success": True, "data": data})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -4967,7 +4986,7 @@ def api_search_skills():
     term = request.args.get('term', '').strip()
     if not term: return jsonify({"results": []})
     
-    query = db.session.query(SkillInfo).filter(
+    query = _scoped_skill_query(db.session.query(SkillInfo)).filter(
         SkillInfo.is_active.is_(True),
         db.or_(
             SkillInfo.skill_id.like(f'%{term}%'),
@@ -5018,7 +5037,7 @@ def import_curriculum():
 @core_bp.route('/api/get_grades')
 @login_required
 def api_get_grades():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     if not curriculum: return jsonify([])
     aliases = get_curriculum_aliases(curriculum)
     query = db.session.query(distinct(SkillCurriculum.grade)).filter(SkillCurriculum.curriculum.in_(aliases))
@@ -5028,7 +5047,7 @@ def api_get_grades():
 @core_bp.route('/api/get_volumes')
 @login_required
 def api_get_volumes():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     if not curriculum or not grade: return jsonify([])
     try:
@@ -5047,7 +5066,7 @@ def api_get_volumes():
 @core_bp.route('/api/get_chapters')
 @login_required
 def api_get_chapters():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     if not all([curriculum, grade, volume]): return jsonify([])
@@ -5068,7 +5087,7 @@ def api_get_chapters():
 @core_bp.route('/api/get_sections')
 @login_required
 def api_get_sections():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     chapter = request.args.get('chapter')

@@ -11,6 +11,14 @@ from flask_login import AnonymousUserMixin, current_user, login_required, logout
 from sqlalchemy import event
 
 SESSION_KEY = "guest_demo"
+# The only curriculum a Guest Demo session may read; real accounts are not scoped.
+GUEST_DEMO_CURRICULUM = "vocational"
+_GUEST_SKILL_PREFIX = "vh_"
+_CURRICULUM_ARGS = ("curriculum", "f_curriculum")
+_SKILL_ARGS = ("skill", "skill_id")
+_EXAMPLE_VIEW_ARGS = ("example_id", "textbook_example_id")
+_EXAMPLE_ID_ENDPOINTS = frozenset({"core.admin_example_v3_preview_page"})
+_OUT_OF_SCOPE_MESSAGE = "展示模式僅開放技術型高中課綱。"
 _SQL_PREFIX = re.compile(r"^(?:\s|--[^\n]*(?:\n|$)|/\*[\s\S]*?\*/|;)*", re.I)
 _READ_SQL = re.compile(r"^SELECT\b", re.I)
 _READ_SCHEMA_PRAGMA = re.compile(
@@ -50,6 +58,88 @@ class GuestDemoPrincipal(AnonymousUserMixin):
 
 def is_guest_demo() -> bool:
     return bool(has_request_context() and session.get(SESSION_KEY) is True)
+
+
+def guest_demo_curriculum() -> str | None:
+    """Curriculum the current request is confined to, or None when unrestricted."""
+    return GUEST_DEMO_CURRICULUM if is_guest_demo() else None
+
+
+def guest_demo_skill_filter(skill_id_column):
+    """SQL condition keeping skill_id_column inside the Guest Demo curriculum, or None when unrestricted.
+
+    A skill belongs to the curricula of its skill_curriculum rows; a skill with no row
+    falls back to the vh_ skill-id convention used for vocational skills.
+    """
+    curriculum = guest_demo_curriculum()
+    if curriculum is None:
+        return None
+    from sqlalchemy import and_, or_, select
+
+    from core.utils import get_curriculum_aliases
+    from models import SkillCurriculum
+
+    in_curriculum = select(SkillCurriculum.skill_id).where(
+        SkillCurriculum.curriculum.in_(get_curriculum_aliases(curriculum))
+    )
+    return or_(
+        skill_id_column.in_(in_curriculum),
+        and_(
+            skill_id_column.startswith(_GUEST_SKILL_PREFIX, autoescape=True),
+            skill_id_column.notin_(select(SkillCurriculum.skill_id)),
+        ),
+    )
+
+
+def _skills_in_scope(skill_ids: list[str]) -> bool:
+    from sqlalchemy import select
+
+    from core.utils import get_curriculum_aliases
+    from models import SkillCurriculum, db
+
+    wanted = {sid for sid in skill_ids if sid}
+    if not wanted:
+        return True
+    curricula: dict[str, set[str]] = {}
+    for skill_id, curriculum in db.session.execute(
+        select(SkillCurriculum.skill_id, SkillCurriculum.curriculum).where(SkillCurriculum.skill_id.in_(wanted))
+    ):
+        curricula.setdefault(skill_id, set()).add(curriculum)
+    allowed = set(get_curriculum_aliases(GUEST_DEMO_CURRICULUM))
+    return all(
+        bool(curricula[sid] & allowed) if sid in curricula else sid.startswith(_GUEST_SKILL_PREFIX)
+        for sid in wanted
+    )
+
+
+def _example_in_scope(example_id: Any) -> bool:
+    from models import TextbookExample, db
+
+    try:
+        row = db.session.get(TextbookExample, int(example_id))
+    except (TypeError, ValueError):
+        return False
+    return row is None or (bool(row.skill_id) and _skills_in_scope([str(row.skill_id)]))
+
+
+def _request_outside_guest_scope(endpoint: str) -> bool:
+    view_args = request.view_args or {}
+    skill_ids = [str(view_args["skill_id"])] if "skill_id" in view_args else []
+    for name in _SKILL_ARGS:
+        for value in request.args.getlist(name):
+            skill_ids.extend(part.strip() for part in value.split(","))
+    if skill_ids and not _skills_in_scope(skill_ids):
+        return True
+    example_ids = [view_args[name] for name in _EXAMPLE_VIEW_ARGS if name in view_args]
+    if endpoint in _EXAMPLE_ID_ENDPOINTS and "id" in view_args:
+        example_ids.append(view_args["id"])
+    return any(not _example_in_scope(example_id) for example_id in example_ids)
+
+
+def out_of_scope_response():
+    if request.accept_mimetypes.best_match(["application/json", "text/html"]) == "text/html":
+        return redirect(url_for("dashboard"))
+    return jsonify(success=False, error="review_demo_out_of_scope", message=_OUT_OF_SCOPE_MESSAGE), 404
 
 
 def _is_login_required_wrapper(view: Callable[..., Any]) -> bool:
@@ -178,12 +268,16 @@ def install_guest_demo(app, db) -> None:
         from core.vocational_student_home import VOCATIONAL_KEY
 
         session["current_curriculum"] = VOCATIONAL_KEY
-        if endpoint != "dashboard" and endpoint and any(
-            value != VOCATIONAL_KEY for value in request.args.getlist("curriculum")
-        ):
+        pinned = {
+            name: VOCATIONAL_KEY for name in _CURRICULUM_ARGS
+            if any(value != VOCATIONAL_KEY for value in request.args.getlist(name))
+        }
+        if endpoint != "dashboard" and endpoint and pinned:
             query = request.args.to_dict(flat=True)
-            query["curriculum"] = VOCATIONAL_KEY
+            query.update(pinned)
             return redirect(url_for(endpoint, **(request.view_args or {}), **query))
+        if endpoint and _request_outside_guest_scope(endpoint):
+            return out_of_scope_response()
         if endpoint == "dashboard":
             from core.vocational_student_home import build_vocational_home_context
             from flask import render_template

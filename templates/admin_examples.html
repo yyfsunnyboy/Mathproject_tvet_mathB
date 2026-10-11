@@ -487,6 +487,7 @@
 
 <body>
     {% include '_admin_navbar.html' %}
+    {% include '_guest_demo_readonly.html' %}
 
     <div class="container">
         <div class="header">
@@ -739,12 +740,12 @@
                                 ${data.gencode_status === 'not_created' ? '重新生成題目' : '重新生成題目'}
                             </button>
                             
-                            <button type="button" class="btn btn-secondary" style="width:100%; margin-bottom:8px;" ${data.dryrun_generate_exists ? '' : 'disabled'} onclick="smokeExampleV3(${data.textbook_example_id}, '${skillId}')">
+                            <button type="button" class="btn btn-secondary" data-demo-write style="width:100%; margin-bottom:8px;" ${data.dryrun_generate_exists ? '' : 'disabled'} onclick="smokeExampleV3(${data.textbook_example_id}, '${skillId}')">
                                 系統驗證
                             </button>
                             
                             ${data.gencode_status === 'smoke_passed' ? `
-                            <button type="button" class="btn btn-prereq" style="width:100%; margin-bottom:8px;" onclick="verifyExampleV3(${data.textbook_example_id}, '${skillId}')">
+                            <button type="button" class="btn btn-prereq" data-demo-write style="width:100%; margin-bottom:8px;" onclick="verifyExampleV3(${data.textbook_example_id}, '${skillId}')">
                                 標記可用
                             </button>
                             ` : ''}

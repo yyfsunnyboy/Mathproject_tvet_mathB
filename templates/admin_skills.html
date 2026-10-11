@@ -548,6 +548,7 @@
 
 
     {% include '_admin_navbar.html' %}
+    {% include '_guest_demo_readonly.html' %}
 
     <!-- Container -->
     <div class="container">
@@ -571,10 +572,12 @@
                     style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                     <!-- 課綱 -->
                     <div class="form-group" style="flex: 1; min-width: 150px;">
-                        <label for="f_curriculum">課綱</label>
+                        {% set curriculum_locked = session.get('guest_demo') is true %}
+                        <label for="f_curriculum">課綱{% if curriculum_locked %}（展示固定）{% endif %}</label>
                         <select id="f_curriculum" name="f_curriculum" class="form-select"
+                            {% if curriculum_locked %}disabled aria-label="固定課綱" data-curriculum-locked{% endif %}
                             style="width: 100%; padding: 8px;">
-                            <option value="">-- 請選擇 --</option>
+                            {% if not curriculum_locked %}<option value="">-- 請選擇 --</option>{% endif %}
                             {% for c in filters.curriculums %}
                             <option value="{{ c }}" {% if selected_filters.f_curriculum==c %}selected{% endif %}>{{ curriculum_map.get(c, c) }}</option>
                             {% endfor %}
@@ -782,18 +785,18 @@
                                     ⚠ NEEDS_CAPABILITY
                                 </button>
                                 {% elif v3_ui == 'READY' or (cap_status == 'ready' and allow_rebuild and gencode.get('publish_ready')) %}
-                                <button type="button" class="btn btn-primary btn-sm"
+                                <button type="button" class="btn btn-primary btn-sm" data-demo-write
                                     title="使用既有 domain 能力；已 published 的 component 不會重建"
                                     onclick="runSkillV3Build('{{ skill.skill_id }}', false, 'REBUILD')">
                                     REBUILD
                                 </button>
                                 {% elif v3_ui == 'FAILED' %}
-                                <button type="button" class="btn btn-danger btn-sm"
+                                <button type="button" class="btn btn-danger btn-sm" data-demo-write
                                     onclick="runSkillV3Build('{{ skill.skill_id }}', true, '重試建立 V3')">
                                     重試建立 V3
                                 </button>
                                 {% else %}
-                                <button type="button" class="btn btn-primary btn-sm"
+                                <button type="button" class="btn btn-primary btn-sm" data-demo-write
                                     title="一鍵建立 V3：自動匹配既有 capability；缺 capability 時安全停止"
                                     onclick="runSkillV3Build('{{ skill.skill_id }}', false, '建立 V3')">
                                     建立 V3
@@ -815,7 +818,7 @@
                                 {% endif %}
                                 {# 更新到學生端 — 僅 publish_ready 且能力就緒時可用 #}
                                 {% if not skill.skill_id.startswith('outline_') and gencode.get('publish_ready') and allow_rebuild %}
-                                <button type="button" class="btn btn-danger btn-sm"
+                                <button type="button" class="btn btn-danger btn-sm" data-demo-write
                                     title="使用目前已驗證題目重新編譯並發布 production wrapper"
                                     onclick="repackageSkillV3('{{ skill.skill_id }}')">
                                     更新到學生端

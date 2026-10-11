@@ -10,6 +10,7 @@ from typing import Any
 from sqlalchemy import String, and_, case, cast, func, or_, select, text
 from sqlalchemy.orm import aliased
 
+from core.guest_demo import guest_demo_skill_filter
 from models import (
     AdaptiveLearningLog,
     B4Chap2VisibilityAuditLog,
@@ -225,6 +226,11 @@ def _adaptive_time_filters(time_range: TimeRange) -> list:
         filters.append(AdaptiveLearningLog.created_at >= time_range.start)
     if time_range.end is not None:
         filters.append(AdaptiveLearningLog.created_at <= time_range.end)
+    scope = guest_demo_skill_filter(SkillFamilyBridge.skill_id)
+    if scope is not None:
+        # Adaptive logs carry only a family id; drop families bridged to skills outside the scope.
+        other_families = select(SkillFamilyBridge.family_id).where(~scope)
+        filters.append(AdaptiveLearningLog.target_family_id.notin_(other_families))
     return filters
 
 
@@ -234,6 +240,9 @@ def _practice_attempt_time_filters(time_range: TimeRange) -> list:
         filters.append(PracticeAttempt.created_at >= time_range.start)
     if time_range.end is not None:
         filters.append(PracticeAttempt.created_at <= time_range.end)
+    scope = guest_demo_skill_filter(PracticeAttempt.skill_id)
+    if scope is not None:
+        filters.append(scope)
     return filters
 
 
