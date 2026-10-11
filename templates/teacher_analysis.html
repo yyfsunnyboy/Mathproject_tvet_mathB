@@ -150,7 +150,7 @@
 
         <div class="toolbar">
             <div class="range-tabs">
-                <a href="{{ range_url() }}" class="{% if time_range.key == 'all' %}active{% endif %}">全部</a>
+                <a href="{{ range_url({'range': 'all'}) }}" class="{% if time_range.key == 'all' %}active{% endif %}">全部</a>
                 <a href="{{ range_url({'range': 'today'}) }}" class="{% if time_range.key == 'today' %}active{% endif %}">今天</a>
                 <a href="{{ range_url({'range': '7d'}) }}" class="{% if time_range.key == '7d' %}active{% endif %}">近 7 天</a>
                 <a href="{{ range_url({'range': '30d'}) }}" class="{% if time_range.key == '30d' %}active{% endif %}">近 30 天</a>
@@ -240,7 +240,7 @@
                         <td>{{ row.attention_count }}</td>
                         <td>
                             {% if row.stats.last_activity %}
-                                {{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}
+                                {{ (row.stats.last_activity|taipei_time).strftime('%Y-%m-%d %H:%M') }}
                             {% else %}—{% endif %}
                         </td>
                     </tr>
@@ -318,7 +318,7 @@
                         <td>{{ row.stats.incorrect }}</td>
                         <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
                         <td>—</td>
-                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td>{% if row.stats.last_activity %}{{ (row.stats.last_activity|taipei_time).strftime('%Y-%m-%d %H:%M') }}{% else %}—{% endif %}</td>
                         <td class="{{ row.status.css }}">
                             {{ row.status.label }}
                             <span class="reason-hint">{{ row.status.reason }}</span>
@@ -344,7 +344,7 @@
             <div class="summary-card"><div class="label">答對</div><div class="value">{{ student_overview.stats.correct }}</div></div>
             <div class="summary-card"><div class="label">答錯</div><div class="value">{{ student_overview.stats.incorrect }}</div></div>
             <div class="summary-card"><div class="label">正確率</div><div class="value">{% if student_overview.stats.accuracy is not none %}{{ (student_overview.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
-            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if student_overview.stats.last_activity %}{{ student_overview.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if student_overview.stats.last_activity %}{{ (student_overview.stats.last_activity|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
             <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
         </div>
 
@@ -368,7 +368,7 @@
                         <td>{{ row.stats.correct }}</td>
                         <td>{{ row.stats.incorrect }}</td>
                         <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
-                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%m/%d') }}{% else %}—{% endif %}</td>
+                        <td>{% if row.stats.last_activity %}{{ (row.stats.last_activity|taipei_time).strftime('%m/%d') }}{% else %}—{% endif %}</td>
                         <td class="{{ row.status.css }}">{{ row.status.label }}</td>
                     </tr>
                     {% endfor %}
@@ -390,7 +390,7 @@
             <div class="summary-card"><div class="label">答對</div><div class="value">{{ unit_detail.stats.correct }}</div></div>
             <div class="summary-card"><div class="label">答錯</div><div class="value">{{ unit_detail.stats.incorrect }}</div></div>
             <div class="summary-card"><div class="label">正確率</div><div class="value">{% if unit_detail.stats.accuracy is not none %}{{ (unit_detail.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
-            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if unit_detail.stats.last_activity %}{{ unit_detail.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if unit_detail.stats.last_activity %}{{ (unit_detail.stats.last_activity|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
             <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
         </div>
 
@@ -451,7 +451,7 @@
                 <tbody>
                     {% for att in unit_detail.recent_attempts %}
                     <tr class="{% if att.is_correct %}result-correct{% else %}result-wrong{% endif %}">
-                        <td>{% if att.created_at %}{{ att.created_at.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td>{% if att.created_at %}{{ (att.created_at|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
                         <td>{{ att.skill_name or '—' }}{% if att.question_text %}<div class="reason-hint">{{ att.question_text[:120] }}</div>{% endif %}</td>
                         <td>{{ att.problem_type or '—' }}{% if att.apr is not none %} <small>(APR {{ (att.apr * 100)|round|int }}%)</small>{% endif %}</td>
                         <td>{{ att.user_answer if att.user_answer is not none else '—' }}</td>

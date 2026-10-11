@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import String, and_, case, cast, func, or_, select, text
@@ -28,6 +28,10 @@ from models import (
 LEARNING_TIME_UNAVAILABLE = "—"
 
 VALID_RANGES = frozenset({"all", "today", "7d", "30d"})
+
+# DB timestamps are naive UTC (datetime.utcnow); teachers and students read Taiwan time.
+# Asia/Taipei has no DST, so a fixed offset avoids depending on tzdata on Windows.
+TAIPEI_TZ = timezone(timedelta(hours=8), "Asia/Taipei")
 
 STATUS_NO_DATA = "NO_DATA"
 STATUS_ATTENTION = "ATTENTION"
@@ -81,6 +85,24 @@ def teacher_analysis_authorized(user: Any) -> bool:
     return getattr(user, "role", None) == "teacher"
 
 
+def to_taipei_time(value: datetime | None) -> datetime | None:
+    """Naive values are treated as UTC; returns a naive Asia/Taipei datetime for display."""
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(TAIPEI_TZ).replace(tzinfo=None)
+
+
+def _taipei_to_utc(local: datetime) -> datetime:
+    return local.replace(tzinfo=TAIPEI_TZ).astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _taipei_date(column):
+    # SQLite-only date modifier matching TAIPEI_TZ.
+    return func.date(column, "+8 hours")
+
+
 def parse_time_range(raw: str | None) -> TimeRange:
     key = (raw or "all").strip().lower()
     if key not in VALID_RANGES:
@@ -89,8 +111,10 @@ def parse_time_range(raw: str | None) -> TimeRange:
     if key == "all":
         return TimeRange(key=key, start=None, end=None)
     if key == "today":
-        start = datetime(now.year, now.month, now.day)
-        return TimeRange(key=key, start=start, end=now)
+        local_midnight = to_taipei_time(now).replace(hour=0, minute=0, second=0, microsecond=0)
+        start = _taipei_to_utc(local_midnight)
+        end = _taipei_to_utc(local_midnight + timedelta(days=1)) - timedelta(microseconds=1)
+        return TimeRange(key=key, start=start, end=end)
     if key == "7d":
         return TimeRange(key=key, start=now - timedelta(days=7), end=now)
     return TimeRange(key=key, start=now - timedelta(days=30), end=now)
@@ -782,7 +806,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
     if not skill_ids:
         return {"labels": [], "chart_values": [], "has_enough": False}
 
-    day_expr_b4 = func.date(B4Chap2VisibilityAuditLog.created_at)
+    day_expr_b4 = _taipei_date(B4Chap2VisibilityAuditLog.created_at)
     b4_q = (
         db.session.query(
             day_expr_b4.label("day"),
@@ -802,7 +826,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
     adaptive_days: dict[str, list[bool]] = {}
 
     if reverse_family:
-        day_expr_a = func.date(AdaptiveLearningLog.created_at)
+        day_expr_a = _taipei_date(AdaptiveLearningLog.created_at)
         a_q = (
             db.session.query(
                 day_expr_a.label("day"),
@@ -828,7 +852,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
         existing = day_stats.get(day, PracticeStats())
         day_stats[day] = PracticeStats.merge(existing, _stats_from_row(total, correct, None))
 
-    day_expr_p = func.date(PracticeAttempt.created_at)
+    day_expr_p = _taipei_date(PracticeAttempt.created_at)
     practice_q = (
         db.session.query(
             day_expr_p.label("day"),

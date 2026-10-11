@@ -356,6 +356,9 @@ def create_app(*, production: bool | None = None):
             student_count=student_count,
         )
 
+    from core.teacher_analysis_service import to_taipei_time
+    app.add_template_filter(to_taipei_time, 'taipei_time')
+
     @app.route('/teacher/analysis')
     @login_required
     def teacher_analysis():
