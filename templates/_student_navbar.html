@@ -64,7 +64,8 @@
 .student-navbar__menu {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    /* flex-end would push overflowing pills off the unscrollable left edge */
+    justify-content: flex-start;
     flex-wrap: nowrap;
     gap: 5px;
     min-width: 0;
@@ -81,8 +82,8 @@
     align-items: center;
     gap: 5px;
     flex-wrap: nowrap;
-    min-width: 0;
-    overflow-x: visible;
+    /* Must not shrink: overflowing pills would otherwise sit under the logout link */
+    flex-shrink: 0;
 }
 .student-navbar__account {
     display: inline-flex;
@@ -208,6 +209,7 @@
 /* 小螢幕：水平捲動 */
 @media (max-width: 960px) {
     .student-navbar__inner { padding: 7px 14px; }
+    .student-navbar__brand { flex-shrink: 1; min-width: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; }
     .student-navbar__menu { gap: 4px; overflow-x: auto; }
     .student-navbar__pill { font-size: 0.78rem; padding: 0 8px; height: 30px; }
 }
