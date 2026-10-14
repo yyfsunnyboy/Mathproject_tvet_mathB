@@ -9,8 +9,11 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from core.gencode.domain_bootstrap import candidate_registry
 from core.gencode.domain_bootstrap.candidate_registry import (
+    DEFAULT_VERIFIED_STORE,
     VerifiedCandidateProvider,
+    list_verified_bootstrap_providers,
     register_verified_candidate,
     unregister_verified_candidate,
 )
@@ -27,6 +30,12 @@ class PromotionError(RuntimeError):
         super().__init__(message)
         self.code = code
         self.details = details or {}
+
+
+def _restore_verified_memory(snapshot: dict[str, dict[str, Any]]) -> None:
+    with candidate_registry._lock:
+        candidate_registry._verified_providers.clear()
+        candidate_registry._verified_providers.update({k: dict(v) for k, v in snapshot.items()})
 
 
 def promote_candidate_to_verified(
@@ -51,19 +60,30 @@ def promote_candidate_to_verified(
     gap_id = gap_report.gap_id
     manifest = json.loads(store.read_candidate_file(gap_id, "domain_manifest.json"))
     domain_key = str(manifest.get("domain_key") or "")
-    operation_key = str((manifest.get("operations") or [""])[0])
+    operation_keys = tuple(str(key).strip() for key in (manifest.get("operations") or []))
+    if not operation_keys or any(not key for key in operation_keys):
+        raise PromotionError("operations_missing", "candidate manifest has no complete operations list")
+    if len(operation_keys) != len(set(operation_keys)):
+        raise PromotionError("operations_duplicate", "candidate manifest operations must be unique")
     registry_revision = f"bootstrap-{uuid.uuid4().hex[:12]}"
 
     target_dir = VERIFIED_DOMAIN_ROOT / gap_id
     backup_dir = VERIFIED_DOMAIN_ROOT / f"{gap_id}.rollback"
+    registry_path = Path(registry_store_path or DEFAULT_VERIFIED_STORE)
+    registry_existed = registry_path.is_file()
+    registry_backup = registry_path.read_bytes() if registry_existed else None
+    memory_snapshot = list_verified_bootstrap_providers()
+    target_existed = target_dir.exists()
+    backup_ready = False
     promoted = False
-    registered_domain_key = ""
+    rolled_back = False
 
     try:
         if backup_dir.exists():
             shutil.rmtree(backup_dir, ignore_errors=True)
-        if target_dir.exists():
+        if target_existed:
             shutil.copytree(target_dir, backup_dir)
+            backup_ready = True
             shutil.rmtree(target_dir, ignore_errors=True)
 
         shutil.copytree(store.candidate_dir(gap_id), target_dir)
@@ -72,22 +92,32 @@ def promote_candidate_to_verified(
             domain_module=f"agent_domains_verified.{gap_id}.domain_module",
             entrypoint=str(manifest.get("entrypoint") or "build_fixture_matrix"),
             capabilities=frozenset(manifest.get("capabilities") or []),
-            allowed_operations=(operation_key,),
+            allowed_operations=operation_keys,
             gap_id=gap_id,
             artifact_hash=artifact_hash,
             registry_revision=registry_revision,
         )
         register_verified_candidate(provider, store_path=registry_store_path)
         promoted = True
-        registered_domain_key = domain_key
     except Exception as exc:
-        if promoted and registered_domain_key:
-            unregister_verified_candidate(registered_domain_key, store_path=registry_store_path)
-        if backup_dir.exists():
+        if backup_ready:
             if target_dir.exists():
                 shutil.rmtree(target_dir, ignore_errors=True)
             shutil.copytree(backup_dir, target_dir)
+        elif not target_existed and target_dir.exists():
+            shutil.rmtree(target_dir, ignore_errors=True)
+        if registry_existed and registry_backup is not None:
+            registry_path.parent.mkdir(parents=True, exist_ok=True)
+            registry_path.write_bytes(registry_backup)
+        elif registry_path.exists():
+            registry_path.unlink()
+        _restore_verified_memory(memory_snapshot)
+        rolled_back = True
         raise PromotionError("promotion_failed", str(exc)) from exc
+    finally:
+        # Keep the backup if rollback itself failed; it is the only copy of the previous artifact.
+        if (promoted or rolled_back) and backup_dir.exists():
+            shutil.rmtree(backup_dir, ignore_errors=True)
 
     return {
         "promoted": True,
@@ -95,6 +125,7 @@ def promote_candidate_to_verified(
         "registry_revision": registry_revision,
         "artifact_hash": artifact_hash,
         "verified_path": str(target_dir),
+        "allowed_operations": list(operation_keys),
     }
 
 

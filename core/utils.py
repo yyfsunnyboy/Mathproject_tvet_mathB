@@ -115,21 +115,43 @@ def get_curriculums():
     results = db.session.query(SkillCurriculum.curriculum).distinct().all()
     return [r[0] for r in results]
 
+def _volume_sort_key(volume: str) -> tuple:
+    """Deterministic sort key for volume strings.
+
+    Extracts numeric suffixes so that:
+      數學B1 < 數學B2 < 數學B3 < 數學B4 < 數學B5 ...
+
+    Volumes without a trailing number sort lexicographically before numbered ones.
+    """
+    m = re.search(r'(\d+)\s*$', str(volume or ''))
+    if m:
+        prefix = str(volume)[:m.start()].strip()
+        return (0, prefix, int(m.group(1)))
+    return (1, str(volume), 0)
+
+
 def get_volumes_by_curriculum(curriculum):
-    """根據課綱取得所有冊別，並按年級分組"""
-    # 使用 ORM 查詢
+    """根據課綱取得所有冊別，並按年級分組（冊別依數字後綴穩定排序）"""
     rows = db.session.query(SkillCurriculum.grade, SkillCurriculum.volume)\
                      .filter_by(curriculum=curriculum)\
                      .distinct()\
-                     .order_by(SkillCurriculum.grade, SkillCurriculum.display_order)\
+                     .order_by(SkillCurriculum.grade)\
                      .all()
-    
-    grouped_volumes = {}
+
+    grouped_volumes: dict = {}
+    seen: dict = {}
     for grade, volume in rows:
         if grade not in grouped_volumes:
             grouped_volumes[grade] = []
-        if volume not in grouped_volumes[grade]:
+            seen[grade] = set()
+        if volume not in seen[grade]:
             grouped_volumes[grade].append(volume)
+            seen[grade].add(volume)
+
+    # Sort volumes within each grade using a deterministic numeric key
+    for grade in grouped_volumes:
+        grouped_volumes[grade].sort(key=_volume_sort_key)
+
     return grouped_volumes
 
 def get_chapters_by_curriculum_volume(curriculum, volume):
@@ -366,25 +388,32 @@ def handle_curriculum_filters(request):
     通用五層連動過濾器邏輯 (V2.0 模組化版)
     功能：自動處理網址參數、Session 記憶、以及動態選項產生。
     """
+    from core.guest_demo import guest_demo_curriculum
+
+    # Guest Demo 課綱由伺服器固定，不讀取也不寫入其他身分留下的篩選記憶
+    scope = guest_demo_curriculum()
+    memory = {} if scope else session
+
     # 1. 取得五層篩選值 (優先順序：網址參數 > Session 記憶 > 預設 'all')
-    raw_curr = request.args.get('f_curriculum') or session.get('last_f_curr', 'all')
+    raw_curr = scope or request.args.get('f_curriculum') or memory.get('last_f_curr', 'all')
     f_curr = normalize_curriculum(raw_curr)
-    f_grade = request.args.get('f_grade') or session.get('last_f_grade', 'all')
-    f_vol = request.args.get('f_volume') or session.get('last_f_vol', 'all')
-    f_chap = request.args.get('f_chapter') or session.get('last_f_chap', 'all')
-    f_sec = request.args.get('f_section') or session.get('last_f_sec', 'all')
+    f_grade = request.args.get('f_grade') or memory.get('last_f_grade', 'all')
+    f_vol = request.args.get('f_volume') or memory.get('last_f_vol', 'all')
+    f_chap = request.args.get('f_chapter') or memory.get('last_f_chap', 'all')
+    f_sec = request.args.get('f_section') or memory.get('last_f_sec', 'all')
     
     # 2. 更新 Session 記憶，供單筆編輯後回復狀態
-    session.update({
-        'last_f_curr': f_curr, 'last_f_grade': f_grade,
-        'last_f_vol': f_vol, 'last_f_chap': f_chap, 'last_f_sec': f_sec
-    })
+    if not scope:
+        session.update({
+            'last_f_curr': f_curr, 'last_f_grade': f_grade,
+            'last_f_vol': f_vol, 'last_f_chap': f_chap, 'last_f_sec': f_sec
+        })
 
     # 3. 動態產生下拉選單選項 (五層連動邏輯)
     filters = {}
     
     # A. 課綱 - 使用統一權威定義的順序
-    filters['curriculums'] = [opt['key'] for opt in get_curriculum_options()]
+    filters['curriculums'] = [scope] if scope else [opt['key'] for opt in get_curriculum_options()]
 
     # B. 年級 (依據課綱)
     g_q = db.session.query(distinct(SkillCurriculum.grade)).filter(SkillCurriculum.grade != None)

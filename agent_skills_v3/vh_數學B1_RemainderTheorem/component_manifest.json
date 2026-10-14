@@ -4,17 +4,6 @@
   "component_count": 20,
   "components": [
     {
-      "component_id": "src_4638",
-      "textbook_example_id": 4638,
-      "status": "verified",
-      "problem_type_id": "remainder_theorem_evaluate",
-      "domain_operation": "remainder_theorem_evaluate",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
-      "source_kind": "example",
-      "generate_py": "components/src_4638/generate.py"
-    },
-    {
       "component_id": "src_4639",
       "textbook_example_id": 4639,
       "status": "verified",
@@ -24,17 +13,6 @@
       "answer_type": "expression",
       "source_kind": "example",
       "generate_py": "components/src_4639/generate.py"
-    },
-    {
-      "component_id": "src_4640",
-      "textbook_example_id": 4640,
-      "status": "verified",
-      "problem_type_id": "remainder_theorem_evaluate",
-      "domain_operation": "remainder_theorem_evaluate",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
-      "source_kind": "example",
-      "generate_py": "components/src_4640/generate.py"
     },
     {
       "component_id": "src_4641",
@@ -136,17 +114,6 @@
       "generate_py": "components/src_4659/generate.py"
     },
     {
-      "component_id": "src_4664",
-      "textbook_example_id": 4664,
-      "status": "verified",
-      "problem_type_id": "remainder_theorem_evaluate",
-      "domain_operation": "remainder_theorem_evaluate",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
-      "source_kind": "quiz",
-      "generate_py": "components/src_4664/generate.py"
-    },
-    {
       "component_id": "src_4665",
       "textbook_example_id": 4665,
       "status": "verified",
@@ -156,17 +123,6 @@
       "answer_type": "expression",
       "source_kind": "quiz",
       "generate_py": "components/src_4665/generate.py"
-    },
-    {
-      "component_id": "src_4666",
-      "textbook_example_id": 4666,
-      "status": "verified",
-      "problem_type_id": "remainder_theorem_evaluate",
-      "domain_operation": "remainder_theorem_evaluate",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
-      "source_kind": "quiz",
-      "generate_py": "components/src_4666/generate.py"
     },
     {
       "component_id": "src_4667",
@@ -213,13 +169,57 @@
       "generate_py": "components/src_4670/generate.py"
     },
     {
+      "component_id": "src_4707",
+      "textbook_example_id": 4707,
+      "status": "verified",
+      "problem_type_id": "remainder_theorem_evaluate",
+      "domain_operation": "remainder_theorem_evaluate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_4707/generate.py"
+    },
+    {
+      "component_id": "src_4708",
+      "textbook_example_id": 4708,
+      "status": "verified",
+      "problem_type_id": "remainder_theorem_evaluate",
+      "domain_operation": "remainder_theorem_evaluate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_4708/generate.py"
+    },
+    {
+      "component_id": "src_4709",
+      "textbook_example_id": 4709,
+      "status": "verified",
+      "problem_type_id": "remainder_theorem_evaluate",
+      "domain_operation": "remainder_theorem_evaluate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_4709/generate.py"
+    },
+    {
+      "component_id": "src_4721",
+      "textbook_example_id": 4721,
+      "status": "verified",
+      "problem_type_id": "remainder_theorem_evaluate",
+      "domain_operation": "remainder_theorem_evaluate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_4721/generate.py"
+    },
+    {
       "component_id": "src_4722",
       "textbook_example_id": 4722,
       "status": "verified",
       "problem_type_id": "remainder_theorem_evaluate",
       "domain_operation": "remainder_theorem_evaluate",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
       "source_kind": "test",
       "generate_py": "components/src_4722/generate.py"
     }

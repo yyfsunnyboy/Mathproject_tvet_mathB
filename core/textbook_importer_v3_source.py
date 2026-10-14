@@ -31,6 +31,14 @@ _CHINESE_CHAPTER_MAP = {
 }
 
 
+def is_generated_latex_docx(filename: str) -> bool:
+    """Return True for converter output names, never authoritative sources."""
+    return (
+        _normalized_extension(filename) == ALLOWED_DOCX_EXT
+        and get_base_name(filename).casefold().endswith("_latex")
+    )
+
+
 def get_base_name(filename: str) -> str:
     base = os.path.basename(str(filename or "").strip())
     last_dot = base.rfind(".")
@@ -152,6 +160,7 @@ def build_file_map(
     invalid_extensions: list[str] = []
     unsafe_filenames: list[str] = []
     duplicate_basenames: list[str] = []
+    generated_latex_files: list[str] = []
     seen_basenames: set[str] = set()
 
     for upload in files or []:
@@ -166,6 +175,13 @@ def build_file_map(
         ext = _normalized_extension(original_name)
         if ext != allowed_ext:
             invalid_extensions.append(os.path.basename(original_name))
+            continue
+
+        # ``*_Latex.docx`` is a converter output/compatibility artifact, not an
+        # authoritative textbook source.  Accepting it as another upload can
+        # pair the PDF with stale output from an earlier failed conversion.
+        if allowed_ext == ALLOWED_DOCX_EXT and is_generated_latex_docx(original_name):
+            generated_latex_files.append(os.path.basename(original_name))
             continue
 
         base_name = get_base_name(original_name)
@@ -197,6 +213,14 @@ def build_file_map(
             "error": error_code,
             "message": f"僅允許 {label} 副檔名 {allowed_ext}。",
             "filenames": invalid_extensions,
+        }
+
+    if generated_latex_files and not file_map:
+        return {}, {
+            "ok": False,
+            "error": "generated_latex_docx_not_source",
+            "message": "_Latex.docx 是轉換產物，請上傳原始教材 DOCX。",
+            "filenames": generated_latex_files,
         }
 
     if duplicate_basenames:

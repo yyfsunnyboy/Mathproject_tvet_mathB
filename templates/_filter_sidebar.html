@@ -39,9 +39,11 @@
     <div class="card-body" style="padding: 20px;">
         <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
             <div class="form-group" style="flex: 1; min-width: 150px;">
-                <label for="f_curriculum" class="filter-sidebar-label">課綱</label>
-                <select id="f_curriculum" name="curriculum" class="form-select filter-select">
-                    <option value="all">-- 請選擇 --</option>
+                {% set curriculum_locked = session.get('guest_demo') is true %}
+                <label for="f_curriculum" class="filter-sidebar-label">課綱{% if curriculum_locked %}（展示固定）{% endif %}</label>
+                <select id="f_curriculum" name="curriculum" class="form-select filter-select"
+                    {% if curriculum_locked %}disabled aria-label="固定課綱" data-curriculum-locked{% endif %}>
+                    {% if not curriculum_locked %}<option value="all">-- 請選擇 --</option>{% endif %}
                     {% for c in filters.curriculums %}
                     <option value="{{ c }}" {% if selected_filters.f_curriculum==c %}selected{% endif %}>{{ curriculum_map.get(c, c) }}</option>
                     {% endfor %}

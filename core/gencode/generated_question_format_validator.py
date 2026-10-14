@@ -21,11 +21,24 @@ Blockers（每種最多出現一次）:
   choices_missing                選擇題但 choices 為空或缺失
   choices_duplicate              choices 有重複文字
   answer_not_in_choices          答案標籤超出 choices 數量範圍
+  stem_references_table_but_missing
+                                 題幹提到表格/圖表但 payload 無可 render 資料
 """
 from __future__ import annotations
 
 import re
 from typing import Any
+
+# Stem phrases that imply a table/chart must be present in the payload.
+_STEM_TABLE_OR_CHART_MARKERS = (
+    "表格",
+    "下表",
+    "根據表格",
+    "資料表",
+    "圖表",
+    "次數分配表",
+    "統計表",
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Compiled regexes (module-level, compiled once)
@@ -399,4 +412,58 @@ def validate_generated_question_format(
     except Exception:  # pragma: no cover
         pass
 
+    # ── Stem references table/chart but no renderable visual payload ─────
+    try:
+        if qt and any(marker in qt for marker in _STEM_TABLE_OR_CHART_MARKERS):
+            if not _payload_has_renderable_table_or_chart(payload):
+                blockers.add("stem_references_table_but_missing")
+    except Exception:  # pragma: no cover
+        pass
+
     return sorted(blockers)
+
+
+def _payload_has_renderable_table_or_chart(payload: dict[str, Any]) -> bool:
+    """Return True if payload contains any renderable table/chart/image data."""
+    table_data = payload.get("table_data")
+    if isinstance(table_data, dict) and table_data:
+        if (
+            table_data.get("rows")
+            or table_data.get("display_rows")
+            or table_data.get("visible_table")
+            or table_data.get("headers")
+            or table_data.get("html")
+            or table_data.get("blank_cells")
+        ):
+            return True
+
+    visual_spec = payload.get("visual_spec")
+    if isinstance(visual_spec, dict) and visual_spec:
+        if (
+            visual_spec.get("rows")
+            or visual_spec.get("data_points")
+            or visual_spec.get("graph_points")
+            or visual_spec.get("points")
+            or visual_spec.get("type")
+        ):
+            return True
+
+    image_base64 = str(payload.get("image_base64") or "").strip()
+    if image_base64:
+        return True
+
+    image_url = str(payload.get("image_url") or payload.get("image") or "").strip()
+    if image_url:
+        return True
+
+    visual_aids = payload.get("visual_aids")
+    if isinstance(visual_aids, list):
+        for aid in visual_aids:
+            if isinstance(aid, dict) and (
+                aid.get("value") or aid.get("src") or aid.get("url") or aid.get("html")
+            ):
+                return True
+            if isinstance(aid, str) and aid.strip():
+                return True
+
+    return False

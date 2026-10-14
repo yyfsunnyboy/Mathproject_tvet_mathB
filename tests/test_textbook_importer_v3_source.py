@@ -216,6 +216,22 @@ class TestSourcePairValidation:
 
 
 class TestBuildHelpers:
+    def test_generated_latex_docx_is_not_an_authoritative_source(self):
+        file_map, error = build_file_map(
+            [_make_file("第一章 1-4 正弦、餘弦函數的圖形-課本_Latex.docx")],
+            ".docx",
+        )
+        assert file_map == {}
+        assert error["error"] == "generated_latex_docx_not_source"
+
+    def test_original_wins_when_generated_latex_is_also_uploaded(self):
+        original = _make_file("第一章 1-4 正弦、餘弦函數的圖形-課本.docx")
+        generated = _make_file("第一章 1-4 正弦、餘弦函數的圖形-課本_Latex.docx")
+        file_map, error = build_file_map([generated, original], ".docx")
+        assert error is None
+        assert list(file_map) == ["第一章 1-4 正弦、餘弦函數的圖形-課本"]
+        assert file_map[next(iter(file_map))] is original
+
     def test_build_file_map_duplicate_pdf(self):
         file_map, error = build_file_map(
             [

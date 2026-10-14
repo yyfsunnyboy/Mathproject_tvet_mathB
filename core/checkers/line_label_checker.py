@@ -5,7 +5,9 @@ from typing import Any
 
 
 def normalize_line_label(value: object) -> str | None:
-    s = str(value or "").strip()
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = latex_to_plain(value)
     if not s:
         return None
     

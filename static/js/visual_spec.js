@@ -9,6 +9,15 @@
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
     'use strict';
 
+    // Same result as chaining `??`, which Safari < 13.1 cannot parse; arguments are evaluated eagerly.
+    function firstDefined() {
+        const last = arguments.length - 1;
+        for (let i = 0; i < last; i += 1) {
+            if (arguments[i] !== null && arguments[i] !== undefined) return arguments[i];
+        }
+        return arguments[last];
+    }
+
     const RENDER_KIND_TOKENS = [
         'graph',
         'chart',
@@ -25,6 +34,7 @@
         'points',
         'lines',
         'segments',
+        'arrows',
         'curves',
         'series',
         'bars',
@@ -607,8 +617,8 @@
                 lines: []
                     .concat(Array.isArray(visualSpec.lines) ? visualSpec.lines : [])
                     .concat(primitiveLines),
-                x_range: visualSpec.x_range || [axis.x_min ?? -10, axis.x_max ?? 10],
-                y_range: visualSpec.y_range || [axis.y_min ?? -10, axis.y_max ?? 10],
+                x_range: visualSpec.x_range || [firstDefined(axis.x_min, -10), firstDefined(axis.x_max, 10)],
+                y_range: visualSpec.y_range || [firstDefined(axis.y_min, -10), firstDefined(axis.y_max, 10)],
                 axis_range: axis
             };
         }
@@ -643,8 +653,8 @@
             const line = visualSpec.line || {};
             const points = normalizeStringPoints(line.points);
             const lines = [];
-            const slope = parseFractionLike(line.slope ?? line.m);
-            const intercept = parseFractionLike(line.intercept ?? line.b);
+            const slope = parseFractionLike(firstDefined(line.slope, line.m));
+            const intercept = parseFractionLike(firstDefined(line.intercept, line.b));
             if (Number.isFinite(slope) && Number.isFinite(intercept)) {
                 lines.push({ type: 'slope_intercept', m: slope, b: intercept });
             } else if (points.length >= 2) {
@@ -802,11 +812,25 @@
                     })
                     : []
             );
+        if (curvesAreDrawable(normalized.curves)) {
+            return true;
+        }
         if (!lines.length) {
             return false;
         }
         return lines.some(function (line) {
             return lineIsDrawable(line, points);
+        });
+    }
+
+    function curvesAreDrawable(curves) {
+        return Array.isArray(curves) && curves.some(function (curve) {
+            const samples = curve && Array.isArray(curve.points) ? curve.points : [];
+            return samples.filter(function (p) {
+                const x = Number(Array.isArray(p) ? p[0] : p && p.x);
+                const y = Number(Array.isArray(p) ? p[1] : p && p.y);
+                return Number.isFinite(x) && Number.isFinite(y);
+            }).length >= 2;
         });
     }
 
@@ -831,9 +855,9 @@
             return false;
         }
         const equation = line.equation || line;
-        const coefficientA = parseFractionLike(equation.A ?? equation.a);
-        const coefficientB = parseFractionLike(equation.B ?? equation.b);
-        const constantC = parseFractionLike(equation.C ?? equation.c ?? 0);
+        const coefficientA = parseFractionLike(firstDefined(equation.A, equation.a));
+        const coefficientB = parseFractionLike(firstDefined(equation.B, equation.b));
+        const constantC = parseFractionLike(firstDefined(equation.C, equation.c, 0));
         return [coefficientA, coefficientB, constantC].every(Number.isFinite)
             && (coefficientA !== 0 || coefficientB !== 0);
     }
@@ -1019,6 +1043,119 @@
         context.moveTo(clipped.x1, clipped.y1);
         context.lineTo(clipped.x2, clipped.y2);
         context.stroke();
+        return clipped;
+    }
+
+    function looksLikeMathDiagramLabel(raw) {
+        const text = String(raw == null ? '' : raw);
+        if (!text) {
+            return false;
+        }
+        return /\\[a-zA-Z]+/.test(text) || /\$\$|\\\(|\\\[|\$/.test(text);
+    }
+
+    /**
+     * Canvas diagrams cannot run MathJax/KaTeX inside fillText.
+     * Convert common LaTeX math-label forms to Unicode display text while
+     * leaving plain point labels (A/B/C/O) untouched.
+     */
+    function formatDiagramLabel(raw) {
+        let text = String(raw == null ? '' : raw).trim();
+        if (!text) {
+            return '';
+        }
+        if (!looksLikeMathDiagramLabel(text)) {
+            return text;
+        }
+
+        // Strip common math delimiters first.
+        text = text
+            .replace(/^\$\$([\s\S]*)\$\$$/g, '$1')
+            .replace(/^\$([\s\S]*)\$$/g, '$1')
+            .replace(/^\\\(([\s\S]*)\\\)$/g, '$1')
+            .replace(/^\\\[([\s\S]*)\\\]$/g, '$1')
+            .trim();
+
+        // Vector / directed-segment notations → base glyph + combining arrow.
+        text = text.replace(/\\overrightarrow\{([^{}]+)\}/g, function (_m, inner) {
+            return String(inner) + '\u20D7';
+        });
+        text = text.replace(/\\vec\{([^{}]+)\}/g, function (_m, inner) {
+            return String(inner) + '\u20D7';
+        });
+
+        // Simple fractions used by current B2 Ch3 diagram labels.
+        text = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, function (_m, num, den) {
+            return '(' + String(num) + '/' + String(den) + ')';
+        });
+
+        text = text
+            .replace(/\\cdot/g, '·')
+            .replace(/\\times/g, '×')
+            .replace(/\\pm/g, '±')
+            .replace(/\\left/g, '')
+            .replace(/\\right/g, '')
+            .replace(/\\,/g, ' ')
+            .replace(/\\;/g, ' ')
+            .replace(/\\!/g, '');
+
+        // Drop residual TeX braces / whitespace noise.
+        text = text.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+
+        // If any control word remains, surface a readable fallback rather than raw TeX.
+        if (/\\[a-zA-Z]+/.test(text)) {
+            text = text.replace(/\\([a-zA-Z]+)/g, '');
+            text = text.replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+        }
+        return text;
+    }
+
+    function diagramLabelExposesRawLatex(raw) {
+        return /\\[a-zA-Z]+/.test(formatDiagramLabel(raw));
+    }
+
+    function drawArrowHead(context, x1, y1, x2, y2, color, opacity) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const ux = dx / len;
+        const uy = dy / len;
+        const size = Math.min(12, Math.max(7, len * 0.18));
+        const bx = x2 - ux * size;
+        const by = y2 - uy * size;
+        const px = -uy;
+        const py = ux;
+        context.fillStyle = applyFadedColor(color || '#1565c0', opacity);
+        context.beginPath();
+        context.moveTo(x2, y2);
+        context.lineTo(bx + px * size * 0.45, by + py * size * 0.45);
+        context.lineTo(bx - px * size * 0.45, by - py * size * 0.45);
+        context.closePath();
+        context.fill();
+    }
+
+    function drawArrows(context, mapX, mapY, visualSpec, points, clipBox, opacity) {
+        const arrows = Array.isArray(visualSpec.arrows) ? visualSpec.arrows : [];
+        arrows.forEach(function (arrow) {
+            if (!arrow) {
+                return;
+            }
+            const p1 = resolvePointReference(arrow.from || arrow.start || (arrow.points && arrow.points[0]), points);
+            const p2 = resolvePointReference(arrow.to || arrow.end || (arrow.points && arrow.points[1]), points);
+            if (!p1 || !p2) {
+                return;
+            }
+            const color = String(arrow.color || '#1565c0');
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = Number.isFinite(Number(arrow.lineWidth)) ? Number(arrow.lineWidth) : 2.2;
+            const clipped = drawLineSegment(context, mapX, mapY, p1.x, p1.y, p2.x, p2.y, clipBox);
+            if (clipped) {
+                drawArrowHead(context, clipped.x1, clipped.y1, clipped.x2, clipped.y2, color, opacity);
+            }
+            if (arrow.label) {
+                drawLineLabel(context, mapX, mapY, p1.x, p1.y, p2.x, p2.y, arrow.label, color, opacity);
+            }
+        });
     }
 
     function extendLineToBounds(p1, p2, xMin, xMax, yMin, yMax) {
@@ -1075,6 +1212,10 @@
         if (!label) {
             return;
         }
+        const display = formatDiagramLabel(label);
+        if (!display) {
+            return;
+        }
         const t = 0.78;
         const x = x1 + (x2 - x1) * t;
         const y = y1 + (y2 - y1) * t;
@@ -1082,7 +1223,7 @@
         context.font = '600 11px sans-serif';
         context.textAlign = 'left';
         context.textBaseline = 'bottom';
-        context.fillText(label, mapX(x) + 4, mapY(y) - 2);
+        context.fillText(display, mapX(x) + 4, mapY(y) - 2);
     }
 
     function buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
@@ -1181,15 +1322,177 @@
         });
     }
 
+    function lineCoefficients(line) {
+        const equation = (line && (line.equation || line)) || {};
+        const a = parseFractionLike(firstDefined(equation.A, equation.a));
+        const b = parseFractionLike(firstDefined(equation.B, equation.b));
+        const c = parseFractionLike(firstDefined(equation.C, equation.c, 0));
+        if (![a, b, c].every(Number.isFinite) || (a === 0 && b === 0)) {
+            return null;
+        }
+        return { a: a, b: b, c: c };
+    }
+
+    function parseShadeInequality(text) {
+        const raw = String(text || '').replace(/\s+/g, '');
+        const matched = raw.match(/^([+-]?(?:\d+(?:\/\d+)?))x([+-](?:\d+(?:\/\d+)?))y([+-](?:\d+(?:\/\d+)?))(≤|≥|<=|>=|<|>)0$/);
+        if (!matched) {
+            return null;
+        }
+        const a = parseFractionLike(matched[1]);
+        const b = parseFractionLike(matched[2]);
+        const c = parseFractionLike(matched[3]);
+        if (![a, b, c].every(Number.isFinite)) {
+            return null;
+        }
+        return { a: a, b: b, c: c, op: matched[4] };
+    }
+
+    function inequalityHolds(parsed, x, y) {
+        const value = parsed.a * x + parsed.b * y + parsed.c;
+        if (parsed.op === '≤' || parsed.op === '<=') {
+            return value <= 1e-8;
+        }
+        if (parsed.op === '≥' || parsed.op === '>=') {
+            return value >= -1e-8;
+        }
+        if (parsed.op === '<') {
+            return value < -1e-8;
+        }
+        if (parsed.op === '>') {
+            return value > 1e-8;
+        }
+        return false;
+    }
+
+    function resolveShadeTestPoint(visualSpec, lines, xMin, xMax, yMin, yMax) {
+        const shade = visualSpec && visualSpec.shade;
+        if (!shade || typeof shade !== 'object') {
+            return null;
+        }
+        if (Array.isArray(shade.test_point) && shade.test_point.length >= 2) {
+            const x = Number(shade.test_point[0]);
+            const y = Number(shade.test_point[1]);
+            if (Number.isFinite(x) && Number.isFinite(y)) {
+                return { x: x, y: y };
+            }
+        }
+        const parsed = parseShadeInequality(shade.inequality);
+        if (!parsed) {
+            return null;
+        }
+        for (let i = 1; i < 13; i += 1) {
+            for (let j = 1; j < 13; j += 1) {
+                const x = xMin + (xMax - xMin) * i / 13;
+                const y = yMin + (yMax - yMin) * j / 13;
+                const onBoundary = lines.some(function (line) {
+                    const coeff = lineCoefficients(line);
+                    return coeff && Math.abs(coeff.a * x + coeff.b * y + coeff.c) < 1e-6;
+                });
+                if (!onBoundary && inequalityHolds(parsed, x, y)) {
+                    return { x: x, y: y };
+                }
+            }
+        }
+        return null;
+    }
+
+    function clipPolygonHalfPlane(polygon, a, b, c, keepPositive) {
+        function valueAt(point) {
+            return a * point.x + b * point.y + c;
+        }
+        function isInside(point) {
+            const value = valueAt(point);
+            if (Math.abs(value) <= 1e-8) {
+                return true;
+            }
+            return keepPositive ? value > 0 : value < 0;
+        }
+        function intersection(p, q) {
+            const vp = valueAt(p);
+            const vq = valueAt(q);
+            const denom = vp - vq;
+            const t = Math.abs(denom) < 1e-12 ? 0 : vp / denom;
+            return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t };
+        }
+        if (!polygon.length) {
+            return [];
+        }
+        const output = [];
+        for (let index = 0; index < polygon.length; index += 1) {
+            const current = polygon[index];
+            const previous = polygon[(index + polygon.length - 1) % polygon.length];
+            const currentIn = isInside(current);
+            const previousIn = isInside(previous);
+            if (currentIn) {
+                if (!previousIn) {
+                    output.push(intersection(previous, current));
+                }
+                output.push(current);
+            } else if (previousIn) {
+                output.push(intersection(previous, current));
+            }
+        }
+        return output;
+    }
+
+    function drawInequalityShade(context, mapX, mapY, visualSpec, xMin, xMax, yMin, yMax, opacity) {
+        const lines = []
+            .concat(Array.isArray(visualSpec.lines) ? visualSpec.lines : [])
+            .concat((Array.isArray(visualSpec.drawable_primitives) ? visualSpec.drawable_primitives : []).filter(function (item) {
+                return item && item.type === 'line';
+            }));
+        const probe = resolveShadeTestPoint(visualSpec, lines, xMin, xMax, yMin, yMax);
+        if (!probe || !lines.length || typeof context.fill !== 'function') {
+            return;
+        }
+        let polygon = [
+            { x: xMin, y: yMin },
+            { x: xMax, y: yMin },
+            { x: xMax, y: yMax },
+            { x: xMin, y: yMax }
+        ];
+        lines.forEach(function (line) {
+            const coeff = lineCoefficients(line);
+            if (!coeff) {
+                return;
+            }
+            const probeValue = coeff.a * probe.x + coeff.b * probe.y + coeff.c;
+            if (Math.abs(probeValue) <= 1e-8) {
+                return;
+            }
+            polygon = clipPolygonHalfPlane(polygon, coeff.a, coeff.b, coeff.c, probeValue > 0);
+        });
+        if (polygon.length < 3) {
+            return;
+        }
+        context.save();
+        context.beginPath();
+        polygon.forEach(function (point, index) {
+            const px = mapX(point.x);
+            const py = mapY(point.y);
+            if (index === 0) {
+                context.moveTo(px, py);
+            } else {
+                context.lineTo(px, py);
+            }
+        });
+        context.closePath();
+        context.globalAlpha = Math.max(0.12, Math.min(0.28, opacity));
+        context.fillStyle = '#2563eb';
+        context.fill();
+        context.restore();
+    }
+
     function renderCoordinatePlaneInRect(context, visualSpec, destRect, options) {
         const opts = normalizeOptions(options);
         const axis = visualSpec.axis_range || {};
         const xRange = visualSpec.x_range || [axis.x_min, axis.x_max];
         const yRange = visualSpec.y_range || [axis.y_min, axis.y_max];
-        const xMin = Number(xRange[0] ?? axis.x_min ?? -10);
-        const xMax = Number(xRange[1] ?? axis.x_max ?? 10);
-        const yMin = Number(yRange[0] ?? axis.y_min ?? -10);
-        const yMax = Number(yRange[1] ?? axis.y_max ?? 10);
+        const xMin = Number(firstDefined(xRange[0], axis.x_min, -10));
+        const xMax = Number(firstDefined(xRange[1], axis.x_max, 10));
+        const yMin = Number(firstDefined(yRange[0], axis.y_min, -10));
+        const yMax = Number(firstDefined(yRange[1], axis.y_max, 10));
         if (!(xMax > xMin) || !(yMax > yMin)) {
             return false;
         }
@@ -1263,6 +1566,8 @@
             context.stroke();
         }
 
+        drawInequalityShade(context, mapX, mapY, visualSpec, xMin, xMax, yMin, yMax, opacity);
+
         const marks = Array.isArray(visualSpec.right_angle_marks) ? visualSpec.right_angle_marks : [];
         marks.forEach(function (mark) {
             drawRightAngleMark(context, mapX, mapY, mark, opacity);
@@ -1278,10 +1583,14 @@
             }));
         const points = Array.isArray(visualSpec.points) ? visualSpec.points : [];
         const lineColors = ['#1565c0', '#c2410c'];
+        const circleColors = ['#0f766e', '#7c3aed', '#b45309'];
         lines.forEach(function (line, lineIndex) {
             const color = lineColors[lineIndex % lineColors.length];
             context.strokeStyle = applyFadedColor(color, opacity);
             context.lineWidth = 2.2;
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash(String(line.style || '').toLowerCase() === 'dashed' ? [7, 5] : []);
+            }
             if (hasNumericThroughPoints(line, points)) {
                 const p1 = resolvePointReference(line.through_points[0], points);
                 const p2 = resolvePointReference(line.through_points[1], points);
@@ -1314,9 +1623,9 @@
                 return;
             }
             const equation = line.equation || line;
-            const coefficientA = parseFractionLike(equation.A ?? equation.a);
-            const coefficientB = parseFractionLike(equation.B ?? equation.b);
-            const constantC = parseFractionLike(equation.C ?? equation.c ?? 0);
+            const coefficientA = parseFractionLike(firstDefined(equation.A, equation.a));
+            const coefficientB = parseFractionLike(firstDefined(equation.B, equation.b));
+            const constantC = parseFractionLike(firstDefined(equation.C, equation.c, 0));
             if (![coefficientA, coefficientB, constantC].every(Number.isFinite)) {
                 return;
             }
@@ -1336,6 +1645,107 @@
                 drawLineSegment(context, mapX, mapY, xValue, yMin, xValue, yMax, clipBox);
             }
         });
+        if (typeof context.setLineDash === 'function') {
+            context.setLineDash([]);
+        }
+
+        // Circles (Ch4 circle.plane parametric visuals)
+        const circles = Array.isArray(visualSpec.circles) ? visualSpec.circles : [];
+        circles.forEach(function (circle, circleIndex) {
+            const h = parseFractionLike(firstDefined(circle.h, circle.cx, circle.x));
+            const k = parseFractionLike(firstDefined(circle.k, circle.cy, circle.y));
+            const r = parseFractionLike(firstDefined(circle.r, circle.radius));
+            if (![h, k, r].every(Number.isFinite) || r <= 0) {
+                return;
+            }
+            const color = circleColors[circleIndex % circleColors.length];
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = 2.0;
+            context.beginPath();
+            const rx = Math.abs(mapX(h + r) - mapX(h));
+            const ry = Math.abs(mapY(k + r) - mapY(k));
+            const radiusPx = Math.max(1, (rx + ry) / 2);
+            context.arc(mapX(h), mapY(k), radiusPx, 0, Math.PI * 2);
+            context.stroke();
+            if (circle.show_center !== false) {
+                context.fillStyle = applyFadedColor(color, opacity);
+                context.beginPath();
+                context.arc(mapX(h), mapY(k), width < 180 ? 2 : 2.5, 0, Math.PI * 2);
+                context.fill();
+            }
+            const clabel = String(circle.label || '');
+            if (clabel) {
+                context.fillStyle = applyFadedColor(color, opacity);
+                context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+                context.textAlign = 'left';
+                context.textBaseline = 'bottom';
+                context.fillText(formatDiagramLabel(clabel) || clabel, mapX(h + r * 0.7), mapY(k + r * 0.7));
+            }
+        });
+
+        // Curves: function graphs sampled server-side as [x, y] polylines. Samples
+        // outside the y-range are omitted, so a jump in x starts a new segment.
+        const curves = Array.isArray(visualSpec.curves) ? visualSpec.curves : [];
+        const curveColors = ['#1565c0', '#c2410c', '#15803d', '#7c3aed'];
+        curves.forEach(function (curve, curveIndex) {
+            const samples = (curve && Array.isArray(curve.points) ? curve.points : []).map(function (p) {
+                return Array.isArray(p) ? { x: Number(p[0]), y: Number(p[1]) } : { x: Number(p && p.x), y: Number(p && p.y) };
+            }).filter(function (p) {
+                return Number.isFinite(p.x) && Number.isFinite(p.y);
+            });
+            if (samples.length < 2) {
+                return;
+            }
+            let step = Infinity;
+            for (let i = 1; i < samples.length; i += 1) {
+                const dx = Math.abs(samples[i].x - samples[i - 1].x);
+                if (dx > 0) {
+                    step = Math.min(step, dx);
+                }
+            }
+            const color = curve.color || curveColors[curveIndex % curveColors.length];
+            context.strokeStyle = applyFadedColor(color, opacity);
+            context.lineWidth = 2.2;
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash(String(curve.style || '').toLowerCase() === 'dashed' ? [7, 5] : []);
+            }
+            context.beginPath();
+            samples.forEach(function (p, i) {
+                const gap = i > 0 && Math.abs(p.x - samples[i - 1].x) > step * 1.5 + 1e-9;
+                if (i === 0 || gap) {
+                    context.moveTo(mapX(p.x), mapY(p.y));
+                } else {
+                    context.lineTo(mapX(p.x), mapY(p.y));
+                }
+            });
+            context.stroke();
+            if (typeof context.setLineDash === 'function') {
+                context.setLineDash([]);
+            }
+            const curveLabel = String(curve.label || '');
+            if (!curveLabel) {
+                return;
+            }
+            const anchor = Array.isArray(curve.label_at) && curve.label_at.length >= 2
+                ? { x: Number(curve.label_at[0]), y: Number(curve.label_at[1]) }
+                : samples[samples.length - 1];
+            if (!Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
+                return;
+            }
+            const display = formatDiagramLabel(curveLabel) || curveLabel;
+            context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+            const textWidth = typeof context.measureText === 'function'
+                ? Number(context.measureText(display).width) || 0
+                : display.length * 7;
+            const px = Math.min(Math.max(mapX(anchor.x) + 4, clipBox.minX + 2), clipBox.maxX - textWidth - 2);
+            const py = Math.min(Math.max(mapY(anchor.y) - 4, clipBox.minY + 14), clipBox.maxY - 2);
+            context.fillStyle = applyFadedColor(color, opacity);
+            context.textAlign = 'left';
+            context.textBaseline = 'bottom';
+            context.fillText(display, px, py);
+        });
+
+        drawArrows(context, mapX, mapY, visualSpec, points, clipBox, opacity);
 
         const hideUnlabeled = visualSpec.hide_unlabeled_points === true;
         points.forEach(function (point) {
@@ -1353,12 +1763,15 @@
             context.arc(mapX(xValue), mapY(yValue), width < 180 ? 2 : 2.5, 0, Math.PI * 2);
             context.fill();
             if (label) {
+                const display = formatDiagramLabel(label);
                 context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
                 context.textAlign = xValue >= 0 ? 'left' : 'right';
                 context.textBaseline = yValue >= 0 ? 'top' : 'bottom';
                 const dx = xValue >= 0 ? 5 : -5;
                 const dy = yValue >= 0 ? 4 : -3;
-                context.fillText(label, mapX(xValue) + dx, mapY(yValue) + dy);
+                if (display) {
+                    context.fillText(display, mapX(xValue) + dx, mapY(yValue) + dy);
+                }
             }
         });
         if (canClip) {
@@ -1598,6 +2011,43 @@
         };
     }
 
+    function projectLabeledPoints(visualSpec, destRect, options) {
+        const opts = normalizeOptions(options || {});
+        const spec = normalizeVisualSpecForRendering(visualSpec) || visualSpec || {};
+        const points = Array.isArray(spec.points) ? spec.points : [];
+        const axis = spec.axis_range || {};
+        const xRange = spec.x_range || [axis.x_min, axis.x_max];
+        const yRange = spec.y_range || [axis.y_min, axis.y_max];
+        const xMin = Number(firstDefined(xRange[0], axis.x_min, -10));
+        const xMax = Number(firstDefined(xRange[1], axis.x_max, 10));
+        const yMin = Number(firstDefined(yRange[0], axis.y_min, -10));
+        const yMax = Number(firstDefined(yRange[1], axis.y_max, 10));
+        const rect = destRect || { x: 0, y: 0, width: 300, height: 200, showLabel: false };
+        if (!(xMax > xMin) || !(yMax > yMin)) {
+            return { points: {}, unitScale: null };
+        }
+        const scaleMode = spec.scale_mode || resolveScaleMode(spec) || SCALE_MODE.CARTESIAN_EQUAL_UNITS;
+        const plot = buildPlotMapper(rect, xMin, xMax, yMin, yMax, opts, scaleMode);
+        const out = {};
+        points.forEach(function (point) {
+            const label = String(Array.isArray(point) ? '' : (point.label || '')).trim();
+            const xValue = Number(Array.isArray(point) ? point[0] : point.x);
+            const yValue = Number(Array.isArray(point) ? point[1] : point.y);
+            if (!label || !Number.isFinite(xValue) || !Number.isFinite(yValue)) {
+                return;
+            }
+            out[label] = { x: plot.mapX(xValue), y: plot.mapY(yValue) };
+        });
+        return {
+            points: out,
+            unitScale: plot.unitScale,
+            unitScaleX: plot.unitScaleX,
+            unitScaleY: plot.unitScaleY,
+            plotLeft: plot.plotLeft,
+            plotBottom: plot.plotBottom
+        };
+    }
+
     return {
         SCALE_MODE: SCALE_MODE,
         hasDrawablePrimitives: hasDrawablePrimitives,
@@ -1613,10 +2063,14 @@
         buildEqualScalePlotMapper: buildEqualScalePlotMapper,
         buildIndependentAxesPlotMapper: buildIndependentAxesPlotMapper,
         buildPlotMapper: buildPlotMapper,
+        projectLabeledPoints: projectLabeledPoints,
         getLastRenderBounds: getLastRenderBounds,
         getLastRenderMeta: getLastRenderMeta,
         renderToContext: renderToContext,
         renderToCanvas: renderToCanvas,
-        computeContainRect: computeContainRect
+        computeContainRect: computeContainRect,
+        looksLikeMathDiagramLabel: looksLikeMathDiagramLabel,
+        formatDiagramLabel: formatDiagramLabel,
+        diagramLabelExposesRawLatex: diagramLabelExposesRawLatex
     };
 }));

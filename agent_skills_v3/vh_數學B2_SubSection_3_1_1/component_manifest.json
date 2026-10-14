@@ -1,0 +1,40 @@
+{
+  "skill_id": "vh_數學B2_SubSection_3_1_1",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_11731",
+      "textbook_example_id": 11731,
+      "status": "verified",
+      "problem_type_id": "express_named_vectors_in_given_basis",
+      "domain_operation": "express_named_vectors_in_given_basis",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11731/generate.py"
+    },
+    {
+      "component_id": "src_11732",
+      "textbook_example_id": 11732,
+      "status": "verified",
+      "problem_type_id": "express_named_vectors_in_given_basis",
+      "domain_operation": "express_named_vectors_in_given_basis",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11732/generate.py"
+    },
+    {
+      "component_id": "src_11806",
+      "textbook_example_id": 11806,
+      "status": "verified",
+      "problem_type_id": "identify_equal_vector_mcq",
+      "domain_operation": "identify_equal_vector_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11806/generate.py"
+    }
+  ]
+}

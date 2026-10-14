@@ -129,10 +129,22 @@ def run_with_timeout(func, timeout_seconds=5.0, *args, **kwargs):
     except queue.Empty:
         raise TimeoutError("Execution timed out")
 
-def generate_component_preview(example_id: int, seed: int = 42, timeout_seconds: float = 5.0) -> Dict[str, Any]:
+def generate_component_preview(
+    example_id: int,
+    seed: int = 42,
+    timeout_seconds: float = 5.0,
+    *,
+    persist: bool = False,
+) -> Dict[str, Any]:
     """
     Load the resolved generate.py component and call generate() safely under a timeout.
+
+    Preview generation is intentionally read-only. ``persist`` is explicit so
+    callers cannot accidentally treat this path as a publishing or tracking
+    action; persistence is not supported by this service.
     """
+    if persist:
+        raise ValueError("preview_persistence_not_supported")
     resolved = resolve_preview_component(example_id)
     artifact_path = resolved["artifact_path"]
 

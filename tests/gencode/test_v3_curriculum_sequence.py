@@ -59,6 +59,50 @@ def test_curriculum_sequence_sorting():
     conn.close()
 
 
+def test_curriculum_sequence_interleaves_problem_types_deterministically():
+    conn = sqlite3.connect(":memory:")
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE textbook_examples (
+            id INTEGER PRIMARY KEY,
+            skill_id TEXT,
+            source_description TEXT
+        )
+        """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            skill_id TEXT,
+            component_id TEXT,
+            induced_spec_payload TEXT
+        )
+        """
+    )
+    cursor.executemany(
+        "INSERT INTO textbook_examples (id, skill_id, source_description) VALUES (?, ?, ?)",
+        [(index, "variety", f"例題{index}") for index in range(1, 7)],
+    )
+    types = ["zero", "zero", "zero", "shifted", "shifted", "linear"]
+    cursor.executemany(
+        "INSERT INTO gencode_component_tracker VALUES (?, ?, ?)",
+        [
+            ("variety", f"src_{index}", '{"problem_type_id":"' + problem_type + '"}')
+            for index, problem_type in enumerate(types, 1)
+        ],
+    )
+    conn.commit()
+
+    verified = [f"src_{index}" for index in range(1, 7)]
+    first = get_sorted_component_ids_for_skill(conn, "variety", verified)
+    second = get_sorted_component_ids_for_skill(conn, "variety", verified)
+
+    assert first == ["src_1", "src_4", "src_6", "src_2", "src_5", "src_3"]
+    assert second == first
+    conn.close()
+
+
 def test_curriculum_sequence_alternating_rules():
     """Test alternating rules: Example 1 -> In Class 1 -> Example 2 -> In Class 2 etc."""
     conn = sqlite3.connect(":memory:")

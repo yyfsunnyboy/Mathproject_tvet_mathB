@@ -1,0 +1,128 @@
+{
+  "skill_id": "vh_數學B3_SubSection_1_2_4",
+  "publish_status": "package_ready_candidate",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_11936",
+      "textbook_example_id": 11936,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11936/generate.py"
+    },
+    {
+      "component_id": "src_11937",
+      "textbook_example_id": 11937,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11937/generate.py"
+    },
+    {
+      "component_id": "src_11938",
+      "textbook_example_id": 11938,
+      "status": "verified",
+      "problem_type_id": "geometric_series_recover_param",
+      "domain_operation": "geometric_series_recover_param",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11938/generate.py"
+    },
+    {
+      "component_id": "src_11939",
+      "textbook_example_id": 11939,
+      "status": "verified",
+      "problem_type_id": "geometric_series_recover_param",
+      "domain_operation": "geometric_series_recover_param",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11939/generate.py"
+    },
+    {
+      "component_id": "src_11940",
+      "textbook_example_id": 11940,
+      "status": "verified",
+      "problem_type_id": "geometric_first_threshold_crossing",
+      "domain_operation": "geometric_first_threshold_crossing",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11940/generate.py"
+    },
+    {
+      "component_id": "src_11947",
+      "textbook_example_id": 11947,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11947/generate.py"
+    },
+    {
+      "component_id": "src_11948",
+      "textbook_example_id": 11948,
+      "status": "verified",
+      "problem_type_id": "geometric_series_recover_param",
+      "domain_operation": "geometric_series_recover_param",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11948/generate.py"
+    },
+    {
+      "component_id": "src_11958",
+      "textbook_example_id": 11958,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11958/generate.py"
+    },
+    {
+      "component_id": "src_11959",
+      "textbook_example_id": 11959,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11959/generate.py"
+    },
+    {
+      "component_id": "src_11960",
+      "textbook_example_id": 11960,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11960/generate.py"
+    },
+    {
+      "component_id": "src_11969",
+      "textbook_example_id": 11969,
+      "status": "verified",
+      "problem_type_id": "geometric_series_sum_given",
+      "domain_operation": "geometric_series_sum_given",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11969/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "table": "gencode_component_tracker",
+  "columns": [
+    "id",
+    "textbook_example_id",
+    "skill_id",
+    "component_id",
+    "gencode_status",
+    "induced_spec_payload",
+    "gencode_error_log",
+    "created_at",
+    "updated_at"
+  ],
+  "rows_for_scope": [
+    {
+      "id": 1659,
+      "textbook_example_id": 4609,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "component_id": "src_4609",
+      "gencode_status": "verified",
+      "induced_spec_payload": "{\"component_id\": \"src_4609\", \"skill_id\": \"vh_數學B1_PolynomialBasicConcepts\", \"domain\": \"algebra\", \"fixed_domain_key\": \"algebra.polynomial\", \"registry_revision\": \"2026-06-23-v1.8\", \"domain_operation\": \"polynomial_descending_power_properties\", \"problem_type_id\": \"polynomial_descending_power_properties\", \"answer_schema_key\": \"\", \"presentation_mode\": \"short_answer\", \"checker_key\": \"expression_checker\", \"domain_params\": {\"exact_task_operation\": \"\"}, \"source_template\": \"\", \"source_kind\": \"example\", \"line_type\": \"polynomial_descending_power_properties\", \"answer_type\": \"expression\", \"display_order\": 4609, \"source_order\": 4609, \"sampling_weight\": 10, \"presentation_evidence\": {\"reason\": \"textbook_exercise_without_choice_group\", \"has_choices\": false, \"source_problem_type\": \"textbook_exercise\", \"source_description\": \"3-1習題 基礎題 1\", \"matched_patterns\": [\"short_answer_keyword\"]}, \"classification_status\": \"needs_human_review\", \"classification_blockers\": [\"answer_schema_key_unresolved\"], \"resolution_source\": \"confirmed_binding\", \"binding_status\": \"confirmed\", \"required_capabilities\": [\"polynomial_descending_power_properties\"], \"matched_capabilities\": [\"polynomial_descending_power_properties\"], \"selected_operation\": \"polynomial_descending_power_properties\", \"domain_module\": \"core.domain.polynomial_domain\", \"entrypoint\": \"build_polynomial_matrix\", \"allowed_operations\": [\"polynomial_descending_power_properties\", \"polynomial_param_degree_constraint\", \"polynomial_descending_power_table\", \"zero_polynomial_find_coeffs\", \"polynomial_degree_product_sum\"], \"curriculum_profile\": \"vocational_high_b\", \"domain_resolution\": {\"fixed_domain_key\": \"algebra.polynomial\", \"resolution_source\": \"confirmed_binding\", \"binding_status\": \"confirmed\", \"required_capabilities\": [\"polynomial_descending_power_properties\"], \"matched_capabilities\": [\"polynomial_descending_power_properties\"], \"selected_operation\": \"polynomial_descending_power_properties\", \"registry_revision\": \"2026-06-23-v1.8\", \"domain_module\": \"core.domain.polynomial_domain\", \"entrypoint\": \"build_polynomial_matrix\", \"source_hash\": null}, \"source_topology\": {\"source_example_id\": 4609, \"source_question_text\": \"設$f\\\\left( x \\\\right)=4{{x}^{2}}-5{{x}^{3}}-x+3$，試求：(1) $f\\\\left( x \\\\right)$依降冪排列 (2)$\\\\deg f\\\\left( x \\\\right)$(3) $f\\\\left( x \\\\right)$的首項係數 (4)$f\\\\left( x \\\\right)$在x = −1時之值\", \"source_choices\": [], \"source_answer\": \"\", \"source_explanation\": \"\", \"source_notes\": {}}, \"source_example_id\": 4609, \"source_style_ref\": \"\", \"constraints\": {\"exact_task_operation\": \"\"}, \"choice_contract_valid\": true, \"integrity_gate_passed\": true, \"integrity_gate_blockers\": [], \"integrity_gate_version\": \"v1\", \"answer_value_type\": \"expression\", \"answer_verification_type\": {\"checker_key\": \"expression_checker\", \"equivalence_type\": \"algebraic_equivalent\", \"response_mode\": \"short_answer\", \"interaction_type\": \"short_answer\", \"answer_value_type\": \"expression\", \"answer_type\": \"expression\", \"module\": \"core.checkers.structured_text_checker\"}, \"difficulty_level\": \"easy\", \"domain_library\": [\"core.domain.polynomial_domain.build_polynomial_matrix\"], \"generator_readiness\": \"draft\", \"interaction_type\": \"short_answer\", \"is_required_core\": false, \"legacy_answer_type\": \"expression\", \"math_objects\": [], \"order_weight\": 10, \"response_mode\": \"short_answer\", \"semantic_required_concepts\": [], \"source_ref\": \"src_4609\", \"target_task\": \"polynomial_descending_power_properties\", \"taxonomy_path\": \"algebra\", \"template_slot\": \"polynomial_descending_power_properties\", \"textbook_example_id\": 4609, \"force_regenerate\": false, \"cache_hit\": false, \"skip_reason\": null, \"generation_run_id\": \"bf64063b6ddd44878c4df7eb198c4fe0\", \"generation_started_at\": \"2026-09-07T23:16:34\", \"generation_finished_at\": \"2026-09-07T23:16:34\", \"old_artifact_hash\": \"f6339f95c931e7a0e6e9a0b6753c099d2733cb80ff9e7c6b2dda0a7c46c87cc4\", \"new_artifact_hash\": \"f6339f95c931e7a0e6e9a0b6753c099d2733cb80ff9e7c6b2dda0a7c46c87cc4\", \"component_draft_built\": true, \"model_generation_invoked\": true, \"phase1_classification\": {\"classification_status\": \"resolved\", \"skill_id\": \"vh_數學B1_PolynomialBasicConcepts\", \"source_example_id\": 4609, \"textbook_example_id\": 4609, \"source_hash\": \"d972a1557be96d9fa8de7d7013a352ac\", \"problem_type_id\": \"polynomial_descending_power_properties\", \"required_capabilities\": [\"polynomial_descending_power_properties\"], \"classification_source\": \"phase1_rule_pack\", \"presentation_mode\": \"short_answer\", \"answer_contract\": {\"answer_type\": \"expression\", \"checker_key\": \"expression_checker\", \"equivalence_type\": \"algebraic_equivalent\"}, \"answer_type\": \"expression\"}}",
+      "gencode_error_log": null,
+      "created_at": "2026-09-07 23:16:34",
+      "updated_at": "2026-09-07 23:16:34"
+    }
+  ],
+  "note": "Read-only dump. No tracker rows were modified or deleted."
+}

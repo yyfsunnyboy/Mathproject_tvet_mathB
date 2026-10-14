@@ -30,6 +30,100 @@ def _get_required_capabilities(payload: dict) -> list[str]:
             caps = [prob_type]
     return sorted(list(set(str(c).strip() for c in caps if str(c).strip()))) if caps else []
 
+
+def _invoke_domain_builder_for_adapter_probe(
+    builder: Any,
+    *,
+    domain_operation: str,
+    seed: int = 7,
+) -> dict[str, Any]:
+    """Invoke a domain entrypoint with production-like kwargs for adapter probing."""
+    available = {
+        "seed": seed,
+        "domain_operation": domain_operation,
+        "line_type": domain_operation,
+        "problem_type_id": domain_operation,
+        "curriculum_profile": "vocational_high_b",
+        "difficulty_profile": "easy",
+        "constraints": {},
+        "spec": {},
+    }
+    sig = inspect.signature(builder)
+    kwargs: dict[str, Any] = {}
+    for name, param in sig.parameters.items():
+        if param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+            continue
+        if name in available:
+            kwargs[name] = available[name]
+    result = builder(**kwargs) if kwargs else builder(seed=seed)
+    if not isinstance(result, dict):
+        raise TypeError("domain builder must return a dict matrix")
+    return result
+
+
+def _has_executable_adapter_route(
+    *,
+    selected_operation: str,
+    domain_module: str | None,
+    impl_fn_name: str | None,
+    presentation_mode: str | None = None,
+    answer_type: str | None = None,
+    probe_cache: dict[tuple[str, str, str], bool] | None = None,
+) -> bool:
+    """Exact Readiness adapter_route: formal adapter callable converts domain output.
+
+    Production path is ``convert_domain_matrix_to_question_payload`` (specialized
+    branches or generic Full Matrix). Operation-name string presence in adapter
+    source is NOT required and must not be used as the gate.
+    """
+    op = str(selected_operation or "").strip()
+    domain_mod = str(domain_module or "").strip()
+    handler = str(impl_fn_name or "").strip()
+    if not op or not domain_mod or not handler:
+        return False
+
+    adapter_fn = getattr(adapter_module, "convert_domain_matrix_to_question_payload", None)
+    if not callable(adapter_fn):
+        return False
+
+    cache_key = (domain_mod, handler, op)
+    if probe_cache is not None and cache_key in probe_cache:
+        return probe_cache[cache_key]
+
+    ok = False
+    try:
+        module = importlib.import_module(domain_mod)
+        builder = getattr(module, handler, None)
+        if not callable(builder):
+            ok = False
+        else:
+            matrix = _invoke_domain_builder_for_adapter_probe(
+                builder, domain_operation=op, seed=7
+            )
+            if not matrix:
+                ok = False
+            else:
+                mode = str(presentation_mode or "short_answer").strip() or "short_answer"
+                atype = str(answer_type or "expression").strip() or "expression"
+                payload = adapter_fn(
+                    matrix,
+                    presentation_mode=mode,
+                    answer_type=atype,
+                    problem_type_id=op,
+                    domain_operation=op,
+                )
+                ok = isinstance(payload, dict) and (
+                    bool(str(payload.get("question_text") or payload.get("question") or "").strip())
+                    or payload.get("answer") is not None
+                )
+    except Exception:
+        ok = False
+
+    if probe_cache is not None:
+        probe_cache[cache_key] = ok
+    return ok
+
+
 def recover_failed_components(
     skill_id: str,
     *,
@@ -91,8 +185,7 @@ def recover_failed_components(
         
         planned_generator_paths = set()
         component_ids_list = []
-        
-        adapter_source = inspect.getsource(adapter_module.convert_domain_matrix_to_question_payload)
+        adapter_probe_cache: dict[tuple[str, str, str], bool] = {}
 
         # 2. Process each group
         for caps, components in grouped_failed.items():
@@ -164,8 +257,19 @@ def recover_failed_components(
                     if not impl_exists:
                         missing_nodes.append("implementation_function")
                         
-                    # 5. Adapter has route for operation
-                    adapter_routed = f'"{selected_operation}"' in adapter_source or f"'{selected_operation}'" in adapter_source
+                    # 5. Adapter has executable formal route (generic Full Matrix OK)
+                    adapter_routed = False
+                    if spec and impl_fn_name and selected_operation:
+                        modes = tuple(checker_contract.get("presentation_modes") or ()) if checker_contract else ()
+                        atypes = tuple(checker_contract.get("answer_types") or ()) if checker_contract else ()
+                        adapter_routed = _has_executable_adapter_route(
+                            selected_operation=str(selected_operation),
+                            domain_module=getattr(spec, "domain_module", None),
+                            impl_fn_name=str(impl_fn_name),
+                            presentation_mode=(modes[0] if modes else "short_answer"),
+                            answer_type=(atypes[0] if atypes else "expression"),
+                            probe_cache=adapter_probe_cache,
+                        )
                     if not adapter_routed:
                         missing_nodes.append("adapter_route")
                         

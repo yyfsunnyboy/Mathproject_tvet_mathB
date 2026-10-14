@@ -1,0 +1,146 @@
+[
+  {
+    "textbook_question": 8,
+    "example_id": 4721,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "current_db_summary": {
+      "example_id": 4721,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "source_description": "CH1自我評量 題8",
+      "problem_type": "self_assessment",
+      "problem_text": "$f\\left( x \\right)={{x}^{101}}+98{{x}^{99}}+3{{x}^{2}}+99$，則以x + 1除$f\\left( x \\right)$之餘式為 (A) −3 (B) −4 (C) 3 (D) −5。",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "餘式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題8; stem/source aligns with 自我評量第8題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 9,
+    "example_id": 4722,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "current_db_summary": {
+      "example_id": 4722,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "source_description": "CH1自我評量 題9",
+      "problem_type": "self_assessment",
+      "problem_text": "設$f\\left( x \\right)=2{{x}^{3}}+2{{x}^{2}}-4x+a$除以x − 1的餘式為2，則a之值為",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "餘式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題9; stem/source aligns with 自我評量第9題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 10,
+    "example_id": 4707,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "current_db_summary": {
+      "example_id": 4707,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "source_description": "CH1自我評量 題10",
+      "problem_type": "self_assessment",
+      "problem_text": "設$f\\left( x \\right)={{x}^{5}}-6{{x}^{4}}-4{{x}^{3}}-25{{x}^{2}}+30x-7$，則$f\\left( 7 \\right)=$ (A) 9 (B) 8 (C) 7 (D) 6。",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "餘式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題10; stem/source aligns with 自我評量第10題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 11,
+    "example_id": 4708,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "current_db_summary": {
+      "example_id": 4708,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "source_description": "CH1自我評量 題11",
+      "problem_type": "self_assessment",
+      "problem_text": "設a、b為實數，已知多項式$f\\left( x \\right)=2{{x}^{3}}-{{x}^{2}}-ax+b$除以x − 1之餘式為−3，且除以x + 1之餘式為3，則a − b之值為 (A) 3 (B) 4",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "餘式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題11; stem/source aligns with 自我評量第11題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 12,
+    "example_id": 4709,
+    "skill_id": "vh_數學B1_RemainderTheorem",
+    "current_db_summary": {
+      "example_id": 4709,
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "source_description": "CH1自我評量 題12",
+      "problem_type": "self_assessment",
+      "problem_text": "設兩多項式$f\\left( x \\right)$和$g\\left( x \\right)$除以x + 5所得的餘式分別為2和−2，則$f\\left( x \\right)\\times g\\left( x \\right)$除以x + 5所得的餘式為 (A) −4 (B) −2 (C) −1",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "餘式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題12; stem/source aligns with 自我評量第12題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 13,
+    "example_id": 4710,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "current_db_summary": {
+      "example_id": 4710,
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "source_description": "CH1自我評量 題13",
+      "problem_type": "self_assessment",
+      "problem_text": "設x − 1為$f\\left( x \\right)=2{{x}^{3}}-k{{x}^{2}}+7x-5$之因式，則k = (A) 1 (B) 2",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "因式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題13; stem/source aligns with 自我評量第13題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 14,
+    "example_id": 4711,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "current_db_summary": {
+      "example_id": 4711,
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "source_description": "CH1自我評量 題14",
+      "problem_type": "self_assessment",
+      "problem_text": "若多項式$f\\left( x \\right)=a{{x}^{2}}\\left( x+3 \\right)+5x\\left( x+3 \\right)+2\\left( x+3 \\right)$被x + 2除盡，則a = (A) −2 (B) −1 (C) 1 (D) 2。",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "因式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題14; stem/source aligns with 自我評量第14題",
+    "allowed": true
+  },
+  {
+    "textbook_question": 15,
+    "example_id": 4712,
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "current_db_summary": {
+      "example_id": 4712,
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "source_description": "CH1自我評量 題15",
+      "problem_type": "self_assessment",
+      "problem_text": "若${{x}^{2}}-3x+2$是$a{{x}^{3}}+3{{x}^{2}}+bx-2$的因式，則a + b之值為 (A)$-\\frac{4}{3}$ (B) −1 (C)$-\\frac{1}{3}$ (D) 0。",
+      "correct_answer": null,
+      "source_section": "3-2 除法原理與餘式定理",
+      "source_paragraph": "因式定理"
+    },
+    "match_confidence": "HIGH",
+    "reason": "source_description=CH1自我評量 題15; stem/source aligns with 自我評量第15題",
+    "allowed": true
+  }
+]

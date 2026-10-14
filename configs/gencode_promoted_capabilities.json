@@ -1,0 +1,727 @@
+{
+  "domains": {
+    "algebra.absolute_value_relations": {
+      "approved_by": "human_reviewer",
+      "bundle_sha256": "2e84b9cc07e43122a40323f9ab3c6ab4645d0e056d64a8aabd5b64199b4b1ca3",
+      "capabilities": [
+        "evaluate_absolute_value_statements",
+        "evaluate_number_line_division_points",
+        "recover_absolute_value_parameters",
+        "select_extreme_weighted_point",
+        "solve_absolute_value_equations",
+        "solve_absolute_value_inequalities"
+      ],
+      "domain_module": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_domain",
+      "entrypoint": "build_absolute_value_relations_matrix",
+      "operations": {
+        "evaluate_absolute_value_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "evaluate_absolute_value_statements"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "single_choice",
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_absolute_value_statements_matrix"
+        },
+        "evaluate_number_line_division_points": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "evaluate_number_line_division_points"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_number_line_division_points_matrix"
+        },
+        "recover_absolute_value_parameters": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "recover_absolute_value_parameters"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_recover_absolute_value_parameters_matrix"
+        },
+        "select_extreme_weighted_point": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "select_extreme_weighted_point"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_select_extreme_weighted_point_matrix"
+        },
+        "solve_absolute_value_equations": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "solve_absolute_value_equations"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_absolute_value_equations_matrix"
+        },
+        "solve_absolute_value_inequalities": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "inequality_solution_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "solve_absolute_value_inequalities"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "inequality_solution"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_absolute_value_inequalities_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "37384a3067ddbc7e74106f2de65e985cbfa4ad34a82cb139298b125bccf60012",
+        "absolute_value_relations_adapter.py": "33d28c063de8317c624e41d6706723adda46103495a139b47e26a06cbf5070f7",
+        "absolute_value_relations_domain.py": "b16d71929e1432ff66a1f25c94440b1d8a5772e14898df23f7320f0d195ad18a"
+      },
+      "package_import": "core.domain.promoted.algebra_absolute_value_relations",
+      "package_name": "algebra_absolute_value_relations",
+      "proposal_id": "capability_absolute_value_relations_7c3d2e91",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-2e84b9cc07e4",
+      "skill_bindings": {
+        "gh_LinearEquationsWithAbsoluteValue": {
+          "allowed_operations": [
+            "solve_absolute_value_equations"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_LinearInequalitiesWithAbsoluteValue": {
+          "allowed_operations": [
+            "evaluate_number_line_division_points",
+            "solve_absolute_value_equations",
+            "solve_absolute_value_inequalities",
+            "recover_absolute_value_parameters",
+            "evaluate_absolute_value_statements",
+            "select_extreme_weighted_point"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PointDivisionFormulaOnNumberLine": {
+          "allowed_operations": [
+            "evaluate_number_line_division_points"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "algebra.multiplication_formulas": {
+      "approved_by": "human_reviewer",
+      "bundle_sha256": "39c0ccae9af0901dc37b80bd1c51776d29890f104513b32825b9bf1cf31ae98e",
+      "capabilities": [
+        "evaluate_product_under_power_relation",
+        "evaluate_reciprocal_power_expressions",
+        "expand_polynomial_expressions",
+        "factor_by_cube_formulas",
+        "simplify_radical_expressions",
+        "solve_rational_unknowns_from_squared_radical_identity"
+      ],
+      "domain_module": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_domain",
+      "entrypoint": "build_multiplication_formulas_matrix",
+      "operations": {
+        "evaluate_product_under_power_relation": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "evaluate_product_under_power_relation"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_product_under_power_relation_matrix"
+        },
+        "evaluate_reciprocal_power_expressions": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "expression_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "evaluate_reciprocal_power_expressions"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_reciprocal_power_expressions_matrix"
+        },
+        "expand_polynomial_expressions": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "expression_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "expand_polynomial_expressions"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_expand_polynomial_expressions_matrix"
+        },
+        "factor_by_cube_formulas": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "expression_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "factor_by_cube_formulas"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_factor_by_cube_formulas_matrix"
+        },
+        "simplify_radical_expressions": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "expression_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "simplify_radical_expressions"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_simplify_radical_expressions_matrix"
+        },
+        "solve_rational_unknowns_from_squared_radical_identity": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_multiplication_formulas_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_multiplication_formulas.multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+          "provided_capabilities": [
+            "solve_rational_unknowns_from_squared_radical_identity"
+          ],
+          "runtime_contract": "multiplication_formulas_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_rational_unknowns_from_squared_radical_identity_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "b1e332f34862657fd3e6f9de351e492d1086e4f9b7467384b89b7b638c6a6e2a",
+        "multiplication_formulas_adapter.py": "9749bd533f364d57d981ae2a8fa1bfe300606c63924f166bfdaf75c1ebd4465f",
+        "multiplication_formulas_domain.py": "c35a6d7026677275a67a0cf17d317f4ceda662b9e967563184ddee096a6e2220"
+      },
+      "package_import": "core.domain.promoted.algebra_multiplication_formulas",
+      "package_name": "algebra_multiplication_formulas",
+      "proposal_id": "capability_multiplication_formulas_3f8d2b61",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-39c0ccae9af0",
+      "skill_bindings": {
+        "gh_MultiplicationFormulas": {
+          "allowed_operations": [
+            "expand_polynomial_expressions",
+            "factor_by_cube_formulas",
+            "evaluate_reciprocal_power_expressions",
+            "simplify_radical_expressions",
+            "solve_rational_unknowns_from_squared_radical_identity",
+            "evaluate_product_under_power_relation"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "algebra.radical_operations": {
+      "approved_by": "human_reviewer",
+      "bundle_sha256": "285211635de39a592ec9e92b571402955d758d4f8e56a4c8e1b0d55e82439b61",
+      "capabilities": [
+        "denest_square_roots",
+        "evaluate_integer_fraction_part_expression",
+        "evaluate_time_dilation_relations",
+        "nearest_integer_from_radical_relation",
+        "optimize_by_am_gm",
+        "order_radical_numbers",
+        "simplify_radical_fraction_expressions"
+      ],
+      "domain_module": "core.domain.promoted.algebra_radical_operations.radical_operations_domain",
+      "entrypoint": "build_radical_operations_matrix",
+      "operations": {
+        "denest_square_roots": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "expression_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "denest_square_roots"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_denest_square_roots_matrix"
+        },
+        "evaluate_integer_fraction_part_expression": {
+          "checker_keys": [
+            "expression_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "evaluate_integer_fraction_part_expression"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_integer_fraction_part_expression_matrix"
+        },
+        "evaluate_time_dilation_relations": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "expression_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "evaluate_time_dilation_relations"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_time_dilation_relations_matrix"
+        },
+        "nearest_integer_from_radical_relation": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "nearest_integer_from_radical_relation"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_nearest_integer_from_radical_relation_matrix"
+        },
+        "optimize_by_am_gm": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "optimize_by_am_gm"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_optimize_by_am_gm_matrix"
+        },
+        "order_radical_numbers": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "ordered_inequality_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "order_radical_numbers"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_order_radical_numbers_matrix"
+        },
+        "simplify_radical_fraction_expressions": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "expression_checker"
+          ],
+          "handler": "build_radical_operations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_radical_operations.radical_operations_adapter.adapt_radical_operations_matrix",
+          "provided_capabilities": [
+            "simplify_radical_fraction_expressions"
+          ],
+          "runtime_contract": "radical_operations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_simplify_radical_fraction_expressions_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "ae6c2794e75d7e570293c21486b1c189de683f3b41627607e5ee1476a03859ef",
+        "radical_operations_adapter.py": "e55db853dc33df50ff0f7ca5994ec8a333c5fd5b6de4a744d32c5f0400ef189d",
+        "radical_operations_domain.py": "f81af8343e592fa0ab17ab7e7e3b531730724f2c3a3b39018928cc5c43aa884e"
+      },
+      "package_import": "core.domain.promoted.algebra_radical_operations",
+      "package_name": "algebra_radical_operations",
+      "proposal_id": "capability_radical_operations_5e1a9c47",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-285211635de3",
+      "skill_bindings": {
+        "gh_OperationsOfRadicalsAndFractions": {
+          "allowed_operations": [
+            "simplify_radical_fraction_expressions",
+            "denest_square_roots",
+            "evaluate_integer_fraction_part_expression",
+            "order_radical_numbers",
+            "evaluate_time_dilation_relations",
+            "optimize_by_am_gm",
+            "nearest_integer_from_radical_relation"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "number_system.rational_numbers": {
+      "approved_by": "human_reviewer",
+      "bundle_sha256": "80c3e5401b9c12089f1eb57ec589918922e2852ad6cfbfd3165d9df8ac1e470e",
+      "capabilities": [
+        "construct_rational_between_bounds",
+        "decimal_to_simplest_fraction",
+        "evaluate_rationality_statements",
+        "fraction_to_decimal_expansion",
+        "identify_rational_numbers",
+        "plot_rational_points_on_number_line"
+      ],
+      "domain_module": "core.domain.promoted.number_system_rational_numbers.rational_numbers_domain",
+      "entrypoint": "build_rational_numbers_matrix",
+      "operations": {
+        "construct_rational_between_bounds": {
+          "checker_keys": [
+            "rational_between_bounds_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "construct_rational_between_bounds"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_construct_rational_between_bounds_matrix"
+        },
+        "decimal_to_simplest_fraction": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "simplest_fraction_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "decimal_to_simplest_fraction"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_decimal_to_simplest_fraction_matrix"
+        },
+        "evaluate_rationality_statements": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "evaluate_rationality_statements"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_rationality_statements_matrix"
+        },
+        "fraction_to_decimal_expansion": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "repeating_decimal_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "fraction_to_decimal_expansion"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_fraction_to_decimal_expansion_matrix"
+        },
+        "identify_rational_numbers": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "identify_rational_numbers"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_identify_rational_numbers_matrix"
+        },
+        "plot_rational_points_on_number_line": {
+          "checker_keys": [
+            "free_response_drawing_checker"
+          ],
+          "handler": "build_rational_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_rational_numbers.rational_numbers_adapter.adapt_rational_numbers_matrix",
+          "provided_capabilities": [
+            "plot_rational_points_on_number_line"
+          ],
+          "runtime_contract": "rational_numbers_exact_v1",
+          "supported_answer_types": [
+            "drawing"
+          ],
+          "supported_presentation_modes": [
+            "canvas"
+          ],
+          "validator": "validate_plot_rational_points_on_number_line_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "81eecce9724b3fd5488c874bab8dadb0148f5893f97bae4a28eafefeb6eefb90",
+        "rational_numbers_adapter.py": "13c0846e02df1f09193914a8f16d4df5d26dadd55a28f2b49bb02218d7ee49d7",
+        "rational_numbers_domain.py": "13517e193fe51d45de1478a28671da504ef2419d4d9796427cc47304ad6e0db1"
+      },
+      "package_import": "core.domain.promoted.number_system_rational_numbers",
+      "package_name": "number_system_rational_numbers",
+      "proposal_id": "capability_9ba757fa0bf387dfb2700269",
+      "proposal_revision": 4,
+      "registry_revision": "promoted-80c3e5401b9c",
+      "skill_bindings": {
+        "gh_RationalNumbers": {
+          "allowed_operations": [
+            "plot_rational_points_on_number_line",
+            "evaluate_rationality_statements",
+            "identify_rational_numbers",
+            "fraction_to_decimal_expansion",
+            "decimal_to_simplest_fraction",
+            "construct_rational_between_bounds"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "number_system.real_numbers": {
+      "approved_by": "human_reviewer",
+      "bundle_sha256": "efbd928b05fd73feecf8056f1c424c2b6e46070daa74d74c64132c0f0ba3eccc",
+      "capabilities": [
+        "approximate_square_root_by_decimal_search",
+        "solve_rational_unknowns_from_radical_identity"
+      ],
+      "domain_module": "core.domain.promoted.number_system_real_numbers.real_numbers_domain",
+      "entrypoint": "build_real_numbers_matrix",
+      "operations": {
+        "approximate_square_root_by_decimal_search": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_real_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_real_numbers.real_numbers_adapter.adapt_real_numbers_matrix",
+          "provided_capabilities": [
+            "approximate_square_root_by_decimal_search"
+          ],
+          "runtime_contract": "real_numbers_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_approximate_square_root_by_decimal_search_matrix"
+        },
+        "solve_rational_unknowns_from_radical_identity": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_real_numbers_matrix",
+          "payload_adapter": "core.domain.promoted.number_system_real_numbers.real_numbers_adapter.adapt_real_numbers_matrix",
+          "provided_capabilities": [
+            "solve_rational_unknowns_from_radical_identity"
+          ],
+          "runtime_contract": "real_numbers_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_rational_unknowns_from_radical_identity_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "84eb28522065066077f4abc92800f31e5d4c5cb936f66905ad8ea15e71ad49dc",
+        "real_numbers_adapter.py": "9a39018febe994d116d82d4a7ee74cb0bb0181780b504211d8bcafca258cd15f",
+        "real_numbers_domain.py": "4de28b460088298bf2e6f42349c2d0ab3f91b612f2d1a16a6a14c310bcdac8bf"
+      },
+      "package_import": "core.domain.promoted.number_system_real_numbers",
+      "package_name": "number_system_real_numbers",
+      "proposal_id": "capability_real_numbers_7c1e4a20",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-efbd928b05fd",
+      "skill_bindings": {
+        "gh_IrrationalAndRealNumbers": {
+          "allowed_operations": [
+            "solve_rational_unknowns_from_radical_identity",
+            "approximate_square_root_by_decimal_search"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    }
+  },
+  "schema": "promoted_capability_store.v1"
+}

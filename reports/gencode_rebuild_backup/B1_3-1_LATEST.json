@@ -1,0 +1,7 @@
+{
+  "latest_quarantine": "B1_3-1_pre_v1_12_rebuild_20260907_232200",
+  "path": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200",
+  "rebuild_manifest": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200/B1_3-1_rebuild_manifest.json",
+  "status": "WAITING_FOR_CAPABILITY_READINESS",
+  "updated_at": "2026-09-07T23:22:01"
+}

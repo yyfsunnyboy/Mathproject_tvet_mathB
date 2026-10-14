@@ -463,14 +463,14 @@ def _build_stddev(rng: random.Random, constraints: dict[str, Any], op: str) -> d
             {
                 "field_key": "population_variance",
                 "label": "母體變異數",
-                "expected_answer": var,
+                "expected_answer": format_numeric_answer(var, rounding),
                 "answer_shape": "single_numeric",
                 "rounding_policy": rounding,
             },
             {
                 "field_key": "population_standard_deviation",
                 "label": "母體標準差",
-                "expected_answer": std,
+                "expected_answer": format_numeric_answer(std, rounding),
                 "answer_shape": "single_numeric",
                 "rounding_policy": rounding,
             }
@@ -517,7 +517,7 @@ def _build_stddev(rng: random.Random, constraints: dict[str, Any], op: str) -> d
                 "source_choices": list(constraints.get("source_choices") or []),
                 "source_answer_label": str(constraints.get("source_answer_label") or "").strip(),
             },
-            answer_value=std if presentation_mode != "single_choice" else str(constraints.get("source_answer_label") or answer_text),
+            answer_value=answer_text if presentation_mode != "single_choice" else str(constraints.get("source_answer_label") or answer_text),
             answer_text=str(constraints.get("source_answer_label") or answer_text) if presentation_mode == "single_choice" else answer_text,
             validation_facts={
                 "domain_operation": op,
@@ -627,14 +627,14 @@ def _build_sample_stddev(rng: random.Random, constraints: dict[str, Any], op: st
             {
                 "field_key": "sample_variance",
                 "label": "樣本變異數",
-                "expected_answer": var,
+                "expected_answer": format_numeric_answer(var, rounding),
                 "answer_shape": "single_numeric",
                 "rounding_policy": rounding,
             },
             {
                 "field_key": "sample_standard_deviation",
                 "label": "樣本標準差",
-                "expected_answer": std,
+                "expected_answer": format_numeric_answer(std, rounding),
                 "answer_shape": "single_numeric",
                 "rounding_policy": rounding,
             }

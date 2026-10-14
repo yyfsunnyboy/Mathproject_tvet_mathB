@@ -1,0 +1,455 @@
+{
+  "status": "FULL_COVERAGE_READY_FOR_ACCEPTANCE",
+  "total_source": 95,
+  "covered_before": 48,
+  "covered_after": 95,
+  "blocked": 0,
+  "unclassified": 0,
+  "silent_skip": 0,
+  "quality": {
+    "samples": 352,
+    "failed": 0
+  },
+  "builds": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "preflight_status": "ready",
+      "resolvable": 3,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "902f4fbf282c490ebb3a2485799f3802",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 3,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 3,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "preflight_status": "ready",
+      "resolvable": 3,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "4d330188ea2f4bfcbe089b8fb0a16c4c",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 3,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 3,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_3",
+      "preflight_status": "ready",
+      "resolvable": 7,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "937fd60dafe446b9bc566aed4db16d76",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 7,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 7,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "preflight_status": "ready",
+      "resolvable": 14,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "eaf1162f233d418e987ae662e7cab678",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 14,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 14,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "preflight_status": "ready",
+      "resolvable": 11,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "5f420485bf2f4461b457681a221d7a5a",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 11,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 11,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "preflight_status": "ready",
+      "resolvable": 15,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "035d83638768492ea6bd3bb15deee0be",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 15,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 15,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "preflight_status": "ready",
+      "resolvable": 2,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "f4844cc5d2864b0a98251ba7c4865bbe",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 2,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 2,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_4",
+      "preflight_status": "ready",
+      "resolvable": 3,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "52cb81269eb84e27a963340c942adaa7",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 3,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 3,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "preflight_status": "ready",
+      "resolvable": 4,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "71a20c7b1c6249cda0a253b561c85a04",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 4,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 4,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "preflight_status": "ready",
+      "resolvable": 5,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "700e3b5f947b4481b78864d4cb0e98aa",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 5,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 5,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "preflight_status": "ready",
+      "resolvable": 4,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "72e92930eaff4e29856b63debdb2e09a",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 4,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 4,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "preflight_status": "ready",
+      "resolvable": 5,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "ee6e75e2c9184b37b0e2c4e82f398ad8",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 5,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 5,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "preflight_status": "ready",
+      "resolvable": 9,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "973b44fa81f44418bd4c2a9073df0b8e",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 9,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 9,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "preflight_status": "ready",
+      "resolvable": 4,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "71b7df860b3e4f7bbaecb9f27a517125",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 4,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 4,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "preflight_status": "ready",
+      "resolvable": 6,
+      "skip": 0,
+      "needs_capability": 0,
+      "domain_key": "vector.plane",
+      "build": {
+        "job_id": "0cb49122c1864289b673eededf827491",
+        "final_status": "READY",
+        "generated": null,
+        "validated": null,
+        "published": 6,
+        "needs_capability": 0,
+        "failed": null,
+        "eligible": 6,
+        "skip": 0,
+        "production_preserved": true,
+        "errors": []
+      }
+    }
+  ],
+  "runtime_smoke": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": "coordinate_plane",
+      "answer_type": "multi_part",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": "coordinate_plane",
+      "answer_type": "expression",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": "coordinate_plane",
+      "answer_type": "multi_part",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "expression",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "single_choice",
+      "choices": 4
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "expression",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "expression",
+      "choices": 0
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "single_choice",
+      "choices": 4
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "fn": "generate",
+      "status": "ok",
+      "has_question": true,
+      "has_answer": true,
+      "visual_kind": null,
+      "answer_type": "expression",
+      "choices": 0
+    }
+  ],
+  "gap_ops": [
+    "classify_angle_quality_from_dot_mcq",
+    "classify_dot_sign_from_diagram_mcq",
+    "compute_chain_closure_vector_mcq",
+    "compute_directed_segment_mixed_multipart",
+    "compute_dot_identity_multipart",
+    "compute_midpoint_dot_product",
+    "compute_regular_polygon_edge_dot",
+    "construct_linear_combination_choice",
+    "expand_perpendicular_dot_product",
+    "express_linear_combination_from_givens",
+    "express_named_vectors_in_given_basis",
+    "express_section_point_vector",
+    "identify_equal_vector_mcq",
+    "identify_resultant_path_mcq",
+    "identify_unit_vector_mcq",
+    "plot_navigation_points_coordinates",
+    "simplify_vector_path_expression",
+    "solve_angle_from_magnitude_identity",
+    "solve_collinear_ratio_mcq",
+    "solve_dot_product_parameter_mcq",
+    "solve_navigation_heading_correction",
+    "solve_parallel_then_magnitude_mcq",
+    "solve_perpendicular_composite_parameter",
+    "solve_point_from_vector_combination",
+    "solve_scalar_multiple_relation_fill",
+    "solve_section_coefficient_pair",
+    "solve_unknown_vector_linear_equation"
+  ],
+  "contracts_updated": [
+    "docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md §9.1",
+    "docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md §2.2"
+  ]
+}

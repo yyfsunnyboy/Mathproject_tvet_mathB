@@ -1,0 +1,62 @@
+{
+  "skill_id": "vh_數學B2_SubSection_4_2_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 5,
+  "components": [
+    {
+      "component_id": "src_11863",
+      "textbook_example_id": 11863,
+      "status": "verified",
+      "problem_type_id": "compute_tangent_segment_lengths",
+      "domain_operation": "compute_tangent_segment_lengths",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11863/generate.py"
+    },
+    {
+      "component_id": "src_11864",
+      "textbook_example_id": 11864,
+      "status": "verified",
+      "problem_type_id": "compute_tangent_segment_lengths",
+      "domain_operation": "compute_tangent_segment_lengths",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11864/generate.py"
+    },
+    {
+      "component_id": "src_11865",
+      "textbook_example_id": 11865,
+      "status": "verified",
+      "problem_type_id": "count_line_vs_two_circles_intersections",
+      "domain_operation": "count_line_vs_two_circles_intersections",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_11865/generate.py"
+    },
+    {
+      "component_id": "src_11873",
+      "textbook_example_id": 11873,
+      "status": "verified",
+      "problem_type_id": "compute_tangent_segment_lengths",
+      "domain_operation": "compute_tangent_segment_lengths",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11873/generate.py"
+    },
+    {
+      "component_id": "src_11894",
+      "textbook_example_id": 11894,
+      "status": "verified",
+      "problem_type_id": "compute_tangent_segment_length_mcq",
+      "domain_operation": "compute_tangent_segment_length_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11894/generate.py"
+    }
+  ]
+}

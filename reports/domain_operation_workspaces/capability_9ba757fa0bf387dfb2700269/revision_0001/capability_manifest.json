@@ -1,0 +1,26 @@
+{
+  "schema": "isolated_domain_operation_candidate.v1",
+  "proposal_id": "capability_9ba757fa0bf387dfb2700269",
+  "proposal_revision": 1,
+  "status": "human_review_closed_promotion_blocked_by_mechanism",
+  "production_publish_allowed": false,
+  "target_domain": "number_system.rational_numbers",
+  "capabilities": [
+    "fraction_to_decimal_expansion",
+    "decimal_to_simplest_fraction",
+    "plot_rational_points_on_number_line",
+    "construct_rational_between_bounds",
+    "evaluate_rationality_statements",
+    "identify_rational_numbers"
+  ],
+  "operations": {
+    "fraction_to_decimal_expansion": {"handler": "operation.fraction_to_decimal_expansion", "adapter": "adapter.adapt_fraction_decimal", "checker": "adapter.check_decimal_expansion", "state": "isolated_verified"},
+    "decimal_to_simplest_fraction": {"handler": "operation.decimal_to_simplest_fraction", "adapter": "adapter.adapt_decimal_fraction", "checker": "adapter.check_reduced_fraction", "state": "isolated_verified"},
+    "plot_rational_points_on_number_line": {"handler": "operation.plot_rational_points_on_number_line", "adapter": "adapter.adapt_number_line", "checker": "adapter.check_number_line_points", "state": "isolated_verified_with_source_fidelity_blocker_12277"},
+    "construct_rational_between_bounds": {"handler": "operation.construct_rational_between_bounds", "adapter": "adapter.adapt_between_bounds", "checker": "adapter.check_rational_between_bounds", "state": "isolated_verified"},
+    "evaluate_rationality_statements": {"handler": "operation.evaluate_rationality_statements", "adapter": "adapter.adapt_true_false", "checker": "adapter.check_boolean_sequence", "state": "isolated_verified"},
+    "identify_rational_numbers": {"handler": "operation.identify_rational_numbers", "adapter": "adapter.adapt_identify_rational_numbers", "checker": "core.checkers.solution_set_checker.check_solution_set_answer", "state": "isolated_verified_human_topology_12280"}
+  },
+  "production_registry_patch_applied": false,
+  "tracker_status_change": null
+}

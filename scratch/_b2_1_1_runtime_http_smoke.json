@@ -1,0 +1,45 @@
+{
+  "live_http": {
+    "vh_數學B2_AngleMeasurementAndConversion": 200,
+    "vh_數學B2_ArcLengthAndAreaOfSector": 200,
+    "vh_數學B2_CoterminalAngles": 200
+  },
+  "route_sources": {
+    "gencode_wrapper": 76
+  },
+  "hits": {
+    "vh_數學B2_AngleMeasurementAndConversion": {
+      "src_11606": 4,
+      "src_11607": 4,
+      "src_11616": 3,
+      "src_11617": 3,
+      "src_11618": 3
+    },
+    "vh_數學B2_ArcLengthAndAreaOfSector": {
+      "src_11608": 3,
+      "src_11609": 3,
+      "src_11610": 3,
+      "src_11619": 3,
+      "src_11620": 3,
+      "src_11624": 2,
+      "src_11625": 2
+    },
+    "vh_數學B2_CoterminalAngles": {
+      "src_11611": 3,
+      "src_11612": 3,
+      "src_11613": 3,
+      "src_11614": 3,
+      "src_11615": 2,
+      "src_11621": 2,
+      "src_11622": 2,
+      "src_11623": 2
+    }
+  },
+  "http_500": 0,
+  "fallback": 0,
+  "table_fill_11616": true,
+  "errors": [],
+  "ok": true,
+  "runtime_http_200": true,
+  "old_generator_fallback": false
+}

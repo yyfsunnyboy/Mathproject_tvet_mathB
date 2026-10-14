@@ -80,13 +80,50 @@ def is_quadrant_correct_answer(correct_answer: object) -> bool:
     return str(correct_answer or "").strip() in QUADRANT_CANONICAL_LABELS
 
 
+AXIS_CANONICAL_LABELS: tuple[str, ...] = ("x軸正向", "y軸正向", "x軸負向", "y軸負向")
+_AXIS_FROM_CODE: dict[str, str] = {
+    "positive_x": "x軸正向",
+    "positive_y": "y軸正向",
+    "negative_x": "x軸負向",
+    "negative_y": "y軸負向",
+}
+_AXIS_RE = re.compile(r"^(?P<pre>正|負|\+|-)?(?P<axis>[xy])軸?(?P<post>正|負)?(?:向|方向|半軸|軸)?$")
+
+
+def normalize_axis_answer(value: object) -> str | None:
+    """Return `+x` / `-x` / `+y` / `-y` for a coordinate half-axis answer, else None."""
+    s = _preprocess(value).lower().replace("的", "").replace("上", "")
+    s = _AXIS_FROM_CODE.get(s, s)
+    match = _AXIS_RE.match(s)
+    if not match:
+        return None
+    signs = [token for token in (match.group("pre"), match.group("post")) if token]
+    if len(signs) != 1:
+        return None
+    return ("+" if signs[0] in {"正", "+"} else "-") + match.group("axis")
+
+
+def angle_location_label(value: object) -> str:
+    """Student-facing label for a terminal-side location (quadrant number or axis code)."""
+    raw = str(value or "").strip()
+    if raw in _AXIS_FROM_CODE:
+        return _AXIS_FROM_CODE[raw]
+    quadrant = normalize_quadrant_answer(raw)
+    if quadrant:
+        return QUADRANT_CANONICAL_LABELS[int(quadrant[1]) - 1]
+    return raw
+
+
 def check_quadrant_answer(user_answer: object, correct_answer: object) -> bool | None:
     """
-    Compare quadrant answers with equivalence rules.
+    Compare quadrant / half-axis answers with equivalence rules.
 
-    Returns None when correct_answer is not a canonical quadrant label,
+    Returns None when correct_answer is not a canonical quadrant or axis label,
     so callers can fall back to their default checker.
     """
+    if str(correct_answer or "").strip() in AXIS_CANONICAL_LABELS:
+        actual_axis = normalize_axis_answer(user_answer)
+        return actual_axis is not None and actual_axis == normalize_axis_answer(correct_answer)
     if not is_quadrant_correct_answer(correct_answer):
         return None
     expected = normalize_quadrant_answer(correct_answer)

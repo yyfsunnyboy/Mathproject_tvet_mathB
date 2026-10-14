@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>自適應性教學系統練習網站</title>
+    <title>{% if chapter_review %}{{ chapter_review.title }}{% else %}自適應性教學系統練習網站{% endif %}</title>
     <!-- 新增：載入 MathJax 函式庫 -->
     <script>
         {% raw %}
@@ -37,6 +37,8 @@
         </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Shared practice inline-math typography contract (MathJax SVG baseline). -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_math_typography.css') }}?v=practice-math-typo-1">
     <style>
         /* === 全局樣式 === */
         * {
@@ -130,9 +132,9 @@
         }
 
         #streak-counter {
-            position: absolute;
-            top: 20px;
-            right: 25px;
+            position: static;
+            display: inline-block;
+            margin-left: 8px;
             background: #e74c3c;
             color: white;
             padding: 5px 12px;
@@ -151,23 +153,14 @@
             line-height: 1.6;
             color: #2c3e50;
             margin: 6px 0;
-            white-space: normal;
+            white-space: pre-wrap;
             height: auto;
             min-height: 0;
             max-height: none;
             overflow: visible;
             word-wrap: break-word;
             word-break: break-word;
-        }
-
-        /* [Feature] Instant Practice Image Display */
-        #instant-question-image {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin: 0 auto 15px auto;
-            border: 2px solid #3498db;
-            border-radius: 8px;
+            overflow-wrap: anywhere;
         }
 
         .input-group {
@@ -177,7 +170,7 @@
         }
 
         #answer-input {
-            flex: 1;
+            flex: 0 1 auto;
             padding: 8px 12px;
             font-size: 0.95em;
             border: 1px solid #ced4da;
@@ -894,6 +887,30 @@
             color: #1e293b;
             margin-bottom: 8px;
         }
+        .multipart-stem {
+            display: block;
+            white-space: normal;
+        }
+        .multipart-stem-prompt,
+        .multipart-stem-item {
+            display: inline;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .multipart-stem-items,
+        .question-multipart-items {
+            display: inline-block;
+            max-width: 100%;
+        }
+        .multipart-stem-marker {
+            font-weight: 600;
+            margin-right: 0.25rem;
+            white-space: nowrap;
+        }
+        .multipart-stem-body {
+            white-space: normal;
+        }
         .multi-part-row {
             display: flex;
             align-items: center;
@@ -905,10 +922,12 @@
             font-weight: 600;
         }
         .multi-part-input {
-            min-width: 12rem;
+            min-width: 8rem;
+            min-height: 2.25rem;
             padding: 6px 8px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #334155;
             border-radius: 6px;
+            background: #fff;
         }
         .question-media-error {
             color: #c0392b;
@@ -1038,32 +1057,34 @@
         }
         .multi-part-group {
             display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 6px;
+            margin-bottom: 12px;
+            max-width: 100%;
         }
         .multi-part-group-label {
             flex: 0 0 auto;
             font-weight: 600;
             color: #333;
-            white-space: nowrap;
+            white-space: normal;
         }
         .multi-part-inline-fields {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 8px;
             align-items: center;
-            flex: 0 1 auto;
+            flex: 1 1 auto;
             min-width: 0;
+            max-width: 100%;
         }
         .multi-part-inline-field {
             display: inline-flex;
             align-items: center;
-            flex: 0 0 auto;
+            flex: 0 1 auto;
             gap: 6px;
-            white-space: nowrap;
+            white-space: normal;
         }
         .multi-part-inline-field input {
             width: 72px;
@@ -1076,22 +1097,31 @@
         .multi-part-row {
             display: flex;
             align-items: center;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 8px;
+            max-width: 100%;
         }
         .multi-part-row label {
             flex: 0 0 auto;
             min-width: 0;
+            max-width: 100%;
             font-weight: 600;
-            white-space: nowrap;
+            white-space: normal;
+            line-height: 1.35;
         }
-        .multi-part-row .multi-part-input {
+        .multi-part-row .multi-part-input,
+        .multi-part-input {
+            position: relative;
+            z-index: 2;
             flex: 0 0 auto;
-            width: 72px;
-            max-width: 12rem;
+            width: 280px;
+            min-width: 140px;
+            max-width: min(360px, 100%);
+            min-height: 2.25rem;
+            background: #fff;
             padding: 4px 8px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #334155;
             border-radius: 6px;
         }
         @media (max-width: 479px) {
@@ -1473,10 +1503,72 @@
             padding: 12px 16px 0;
         }
 
+        .chapter-review-banner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            margin: 0;
+            padding: 6px 10px;
+            border: 1px solid #cfe3d8;
+            border-radius: 8px;
+            background: #f4faf6;
+            color: #385147;
+            font-size: 0.86rem;
+            line-height: 1.35;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        .chapter-review-title {
+            color: #1e5b3a;
+            font-weight: 700;
+        }
+        .chapter-review-metric {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .chapter-review-separator {
+            color: #a8b9af;
+        }
+        .chapter-review-metric-current {
+            flex: 1 1 auto;
+            min-width: 4em;
+        }
+        .chapter-review-metric-current strong {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chapter-review-status-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            min-height: 32px;
+            color: #2c3e50;
+        }
+        .chapter-review-skill {
+            min-width: 0;
+            overflow: hidden;
+            color: #263b32;
+            font-size: 0.95rem;
+            font-weight: 650;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chapter-review-status-line #next-question-btn {
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
         .practice-answer-block {
             flex: 0 0 auto;
             padding: 0 16px;
             gap: 8px;
+            /* Multipart field groups must not be clipped by viewport-fit grid. */
+            min-height: min-content;
+            overflow: visible;
         }
 
         .practice-question-block {
@@ -1497,7 +1589,7 @@
         #question-text {
             width: 100%;
             max-width: 100%;
-            white-space: normal;
+            white-space: pre-wrap;
             line-height: 1.75;
             overflow: visible;
             overflow-wrap: anywhere;
@@ -1519,39 +1611,8 @@
             margin-right: auto;
         }
 
-        /* Inline LaTeX: keep \(...\) in sentence flow; only \[...\] centers as block */
-        #question-text mjx-container:not([display="true"]) {
-            display: inline-block !important;
-            width: auto !important;
-            max-width: none !important;
-            margin: 0 0.15em !important;
-            vertical-align: middle !important;
-            text-align: left !important;
-        }
-
-        #question-text mjx-container[display="true"] {
-            display: block !important;
-            width: auto !important;
-            max-width: 100% !important;
-            margin: 0.5em auto !important;
-            text-align: center !important;
-        }
-
-        #question-text mjx-container svg {
-            display: inline-block !important;
-            width: auto !important;
-            max-width: none !important;
-            height: auto !important;
-            margin: 0 !important;
-            vertical-align: middle !important;
-        }
-
-        #question-choices mjx-container:not([display="true"]) {
-            display: inline-block !important;
-            width: auto !important;
-            margin: 0 0.12em !important;
-            vertical-align: middle !important;
-        }
+        /* Inline math typography is owned by static/css/practice_math_typography.css
+           (.practice-math-surface). Do not re-force vertical-align: middle here. */
 
         #question-media-container img,
         #question-media-container svg {
@@ -1564,8 +1625,7 @@
         }
 
         #question-media-container img,
-        #question-media-container svg,
-        #instant-question-image {
+        #question-media-container svg {
             max-height: none;
         }
 
@@ -1802,7 +1862,9 @@
 
             .practice-area {
                 display: grid;
-                grid-template-rows: auto minmax(0, auto) auto minmax(360px, 1fr);
+                /* answer row must be min-content so multipart fields are not
+                   painted under the scratchpad canvas track. */
+                grid-template-rows: min-content minmax(min-content, auto) min-content minmax(280px, 1fr);
                 grid-template-areas:
                     "header"
                     "question"
@@ -1820,26 +1882,29 @@
             .practice-header-block {
                 grid-area: header;
                 padding: 10px 16px 0;
+                min-height: min-content;
+                overflow: visible;
             }
 
             .practice-question-block {
                 grid-area: question;
                 padding: 0 16px;
-                min-height: 0;
-                max-height: var(--question-scroll-max);
-                overflow-x: hidden;
-                overflow-y: auto;
+                min-height: min-content;
+                max-height: none;
+                overflow: visible;
             }
 
             .practice-answer-block {
                 grid-area: answer;
                 padding: 0 16px;
+                min-height: min-content;
+                overflow: visible;
             }
 
             #scratchpad-container {
                 grid-area: canvas;
                 padding: 0 16px 8px;
-                min-height: 360px;
+                min-height: 280px;
                 height: 100%;
                 display: grid;
                 grid-template-rows: auto minmax(0, 1fr);
@@ -2114,19 +2179,61 @@
         }
     </style>
 
-    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=slope-fig-5"></script>
-    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=slope-fig-5"></script>
-    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slope-fig-5"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=answer-strip-5">
+    <script src="{{ url_for('static', filename='js/legacy_dom_polyfills.js') }}?v=ios12-1"></script>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2-ios12"></script>
+    <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3-ios12"></script>
+    <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 </head>
 
-<body>
+<body{% if chapter_review %} class="chapter-review-page"{% endif %}>
     {% set is_similar_practice = practice_mode == 'similar_practice' %}
+    {% set development_notice = is_similar_practice %}
     {% include '_student_navbar.html' %}
     <!-- 主容器 -->
     <div class="container">
         <!-- 練習區 -->
         <div class="practice-area">
+            {% if session.get('guest_demo') is true %}
+            <div class="alert alert-error" role="alert" data-guest-demo-warning
+                 style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;border-radius:6px;padding:15px 20px;margin-bottom:20px;">
+                此為展示頁面，AI 助教與 AI 批改功能需登入後使用。
+            </div>
+            {% endif %}
             <div class="practice-header-block">
+            {% if chapter_review %}
+            <div id="chapter-review-banner" class="chapter-review-banner" role="status"
+                aria-label="{{ chapter_review.name }}｜{{ chapter_review.chapter_label }}；本章正確率；已作答；答對；待補題型；本章複習進度；目前小節；本節題型完成數；下一小節">
+                <strong id="chapter-review-title" class="chapter-review-title">{{ chapter_review.title }}</strong>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% set cr_passed = chapter_review.progress_passed | default(chapter_review.section_types_passed) %}
+                {% set cr_total = chapter_review.progress_total | default(chapter_review.section_types_total) %}
+                {% set cr_summary = chapter_review.chapter_summary %}
+                <span class="chapter-review-metric">進度 <strong id="chapter-review-types" aria-label="{{ cr_passed }} / {{ cr_total }}">{{ cr_passed }}/{{ cr_total }}</strong></span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                <span class="chapter-review-metric">正確率 <strong id="chapter-review-accuracy">{% if cr_summary and cr_summary.total_answered %}{{ (cr_summary.correct * 100 / cr_summary.total_answered) | round | int }}%（{{ cr_summary.correct }}/{{ cr_summary.total_answered }}）{% else %}--{% endif %}</strong></span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% if chapter_review.saved %}
+                <span class="chapter-review-metric">🔥連續答對 <strong id="chapter-review-streak">{{ chapter_review.streak or 0 }}</strong> 題</span>
+                <span class="chapter-review-separator" aria-hidden="true">｜</span>
+                {% endif %}
+                <span class="chapter-review-metric chapter-review-metric-current" title="{{ chapter_review.section_name }}">目前：<strong id="chapter-review-section">{{ chapter_review.section_name }}</strong></span>
+            </div>
+            {% endif %}
+            {% if chapter_review %}
+                <div class="chapter-review-status-line">
+                    <span id="skill-title" class="chapter-review-skill">{{ skill_ch_name }}</span>
+                    <span id="level-indicator" hidden>等級：1</span>
+                    <span id="streak-counter">{% if (pass_target or 0) | int > 0 %}🔥 進階答對 {{ (consecutive_correct or 0) | int }}/{{ (pass_target or 0) | int }} 題{% else %}🔥 進階答對：暫無門檻{% endif %}</span>
+                    <button id="next-question-btn" class="level-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
+                    {% include '_bug_report_trigger.html' %}
+                </div>
+            {% else %}
                 <h1 id="skill-title"> {{
                     skill_ch_name
                     }}
@@ -2137,12 +2244,13 @@
                     {% endif %}
                     <span id="level-indicator"
                         style="background: #1abc9c; color: white; padding: 4px 10px; font-size: 0.7em; border-radius: 12px; vertical-align: middle;">等級：1</span><span
-                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>連續答對：0</span></h1>
+                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>{% if (pass_target or 0) | int > 0 %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題{% else %}🔥 連續答對：暫無門檻{% endif %}</span></h1>
                 <!-- 新增：難度選擇器 -->
                 <!-- 新增：難度選擇器 -->
                 <div class="level-selector">
                     <button id="next-question-btn" class="level-button"
                         style="background-color: #3498db; color: white;"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>下一題</button>
+                    {% include '_bug_report_trigger.html' %}
 
 
                     {% if prereq_skills %}
@@ -2161,13 +2269,6 @@
                     </div>
                     {% endif %}
 
-                    <!-- NEW: Upload Question Button -->
-                    <button id="upload-question-btn" class="level-button"
-                        style="background-color: #9b59b6; color: white; margin-left: 10px;{% if is_similar_practice %} display: none;{% endif %}">
-                        <i class="fas fa-camera"></i> 上傳題目
-                    </button>
-                    <input type="file" id="question-image-uploader" accept="image/*" style="display: none;">
-
                     {% if is_similar_practice %}
                     <button id="similar-upload-btn" class="level-button"
                         style="background-color: #8e44ad; color: white; margin-left: 10px;">
@@ -2181,10 +2282,11 @@
                     {% endif %}
 
                 </div>
+            {% endif %}
             </div>
             <div class="practice-question-block">
                 <div class="question-content" id="question-container">
-                    <div id="question-text">
+                    <div id="question-text" class="practice-math-surface">
                         {% if manual_review_unavailable %}
                         <div class="manual-review-unavailable" data-manual-review-unavailable="true">
                             <strong>{{ manual_review_unavailable.display_name }}：暫緩 / 尚未開放一般自動判分練習</strong>
@@ -2197,7 +2299,7 @@
                     </div>
                     <!-- question-media-container: 統計圖表、折線圖等視覺資產顯示在此 -->
                     <div id="question-media-container" style="display:none;"></div>
-                    <div id="question-choices" style="margin-top: 10px;"></div>
+                    <div id="question-choices" class="practice-math-surface" style="margin-top: 10px;"></div>
                 </div>
                 {% if is_similar_practice %}
                 <div class="similar-toolbar">
@@ -2211,10 +2313,10 @@
                 {% endif %}
             </div>
             <div class="practice-answer-block">
-                <div id="subquestions-container" class="subquestions-container" style="display:none;"></div>
+                <div id="subquestions-container" class="subquestions-container practice-math-surface" style="display:none;"></div>
                 <div class="input-group"><input type="text" id="answer-input" placeholder="{% if manual_review_unavailable %}此題型尚未開放一般自動判分{% else %}輸入答案...{% endif %}"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}><button
                         id="submit-button"{% if manual_review_unavailable %} disabled aria-disabled="true"{% endif %}>{{ '檢查答案' if is_similar_practice else '提交' }}</button></div>
-                <div id="result-display"></div>
+                <div id="result-display" class="practice-math-surface"></div>
 
                 <!-- [Phase 6] Prerequisite Suggestion Card -->
                 <div id="prerequisite-suggestion" style="display: none;">
@@ -2231,7 +2333,7 @@
             <div class="practice-bottom" id="scratchpad-container">
                 <div id="scratchpad-controls">
                     <div class="scratchpad-tools-primary">
-                    <button class="tool-btn active" onclick="setTool('pen', 'black')" title="黑筆" style="color: black;">
+                    <button class="tool-btn pen-btn active" onclick="setTool('pen', 'black')" title="黑筆" style="color: black;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2240,7 +2342,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#e74c3c')" title="紅筆" style="color: #e74c3c;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#e74c3c')" title="紅筆" style="color: #e74c3c;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2249,7 +2351,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#0066cc')" title="藍筆" style="color: #0066cc;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#0066cc')" title="藍筆" style="color: #0066cc;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2258,7 +2360,7 @@
                         </svg>
                     </button>
 
-                    <button class="tool-btn" onclick="setTool('pen', '#009933')" title="綠筆" style="color: #009933;">
+                    <button class="tool-btn pen-btn" onclick="setTool('pen', '#009933')" title="綠筆" style="color: #009933;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
@@ -2311,7 +2413,7 @@
             <h3 id="tutor-model-label" style="margin-bottom: 0; padding-bottom: 2px;">AI 助教（載入中...）</h3>
             <div id="chat-history" style="padding-top: 5px;">
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">你好！有問題問我～</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% elif chapter_review %}遇到卡住的題目，可以請助教提示解題方向。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             </div>
             <!-- 1. 固定建議提示區 (來自資料庫) -->
@@ -2652,6 +2754,10 @@
                 return value;
             }
 
+            if (/^(uploads|static)\//i.test(value)) {
+                return `/${value}`;
+            }
+
             return `data:image/png;base64,${value}`;
         }
 
@@ -2663,6 +2769,10 @@
         let isErasing = false;
         let isDrawing = false;
         let undoStack = [];
+        let strokeLogStack = [];
+        let redoStrokeLogStack = [];
+        let inkStrokeLog = [];
+        let currentStrokePoints = null;
         let selectedLevel = 1; // 新增：用於儲存當前選擇的難度
 
         function getSafeSelectedLevel() {
@@ -2672,6 +2782,15 @@
                 return 1;
             }
             return parsed;
+        }
+
+        function resolvePracticeResponseLevel(response, existingLevel = getSafeSelectedLevel()) {
+            const source = response && typeof response === 'object' ? response : {};
+            const rawLevel = [source.level, source.current_level, existingLevel, 1].find((value) => value != null);
+            const parsed = Number.parseInt(rawLevel, 10);
+            if (!Number.isNaN(parsed) && parsed >= 1) return parsed;
+            const fallback = Number.parseInt(existingLevel, 10);
+            return !Number.isNaN(fallback) && fallback >= 1 ? fallback : 1;
         }
         let consecutiveWrongs = 0; // 新增：追蹤連續答錯次數
         let redoStack = [];
@@ -2699,13 +2818,15 @@
         function resetScratchpadForNextQuestion() {
             const layer = getScratchpadBackgroundLayer();
             if (layer) layer.resetQuestionBackground();
+            const scratchpad = document.getElementById('scratchpad-container');
+            if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
             const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
             const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
             if (layer && backgroundCtx) {
                 layer.clearBackgroundCanvas(backgroundCtx, cw, ch);
             }
             if (canvas && ctx) {
-                getScratchpadBackgroundLayer()?.clearInkLayer(ctx, cw, ch);
+                if (layer) layer.clearInkLayer(ctx, cw, ch);
             }
         }
 
@@ -2727,8 +2848,8 @@
                 }
             }
             return {
-                cw: Math.max(300, canvas?.clientWidth || 300),
-                ch: Math.max(200, canvas?.clientHeight || 200)
+                cw: Math.max(300, (canvas && canvas.clientWidth) || 300),
+                ch: Math.max(200, (canvas && canvas.clientHeight) || 200)
             };
         }
 
@@ -2802,10 +2923,15 @@
                 return Promise.resolve(false);
             }
             const size = resolveScratchpadCssSize();
+            if (typeof layer.setCompactQuestionFigure === 'function') {
+                layer.setCompactQuestionFigure(!(isDrawingQuestion(payload) || isVectorDrawingCheckQuestion(payload)));
+            }
             const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
             if (bgInfo.kind === 'none') {
                 layer.resetQuestionBackground();
                 layer.clearBackgroundCanvas(backgroundCtx, size.cw, size.ch);
+                const scratchpad = document.getElementById('scratchpad-container');
+                if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
                 return Promise.resolve(false);
             }
             if (bgInfo.kind === 'visual_spec') {
@@ -2841,13 +2967,34 @@
                 });
                 return Promise.resolve(ok);
             }
-            const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
-            return layer.loadImageBackground(imgSource)
-                .then((img) => {
-                    const ok = layer.setImageBackground(img, imgSource, backgroundCtx, size.cw, size.ch);
+            const imgSources = (bgInfo.rawImages || [bgInfo.rawImage])
+                .map(normalizeQuestionImageSource)
+                .filter(Boolean);
+            const scratchpad = document.getElementById('scratchpad-container');
+            const isMultiImage = imgSources.length > 1;
+            if (scratchpad) {
+                scratchpad.classList.toggle('scratchpad-has-figures', isMultiImage);
+                scratchpad.style.display = '';
+            }
+            scheduleResizeCanvas();
+            const imageSize = resolveScratchpadCssSize();
+            return layer.loadImageBackgrounds(imgSources)
+                .then((images) => {
+                    const ok = layer.setImagesBackground(
+                        images,
+                        imgSources,
+                        backgroundCtx,
+                        imageSize.cw,
+                        imageSize.ch
+                    );
                     if (ok) {
                         layer.hideQuestionMediaContainer(qmc);
                     }
+                    requestAnimationFrame(() => {
+                        scheduleResizeCanvas();
+                        const later = resolveScratchpadCssSize();
+                        layer.redrawQuestionBackground(backgroundCtx, later.cw, later.ch, window.VisualSpecRuntime);
+                    });
                     return ok;
                 })
                 .catch((err) => {
@@ -2860,9 +3007,31 @@
                 });
         }
 
+        // AI Tutor bubbles and suggestions (handwriting check, chat, suggestions) share one renderer.
+        function renderTutorMath(element) {
+            if (!element) return Promise.resolve();
+            if (window.MathDisplayNormalizer && window.MathDisplayNormalizer.typesetTutorElement) {
+                return window.MathDisplayNormalizer.typesetTutorElement(element);
+            }
+            renderMathContent(element);
+            return Promise.resolve();
+        }
+
         // === 通用函式：呼叫 MathJax 渲染指定元素 ===
         function renderMathContent(element) {
             if (!element) return;
+            // Keep practice surfaces on the shared MathJax typography contract.
+            if (element.classList && (
+                element.id === 'question-text'
+                || element.id === 'question-choices'
+                || element.id === 'subquestions-container'
+                || element.id === 'result-display'
+            )) {
+                element.classList.add('practice-math-surface');
+            }
+            if (window.MathDisplayNormalizer) {
+                window.MathDisplayNormalizer.normalizeElement(element);
+            }
             // 檢查 MathJax 是否已載入並準備好
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([element])
@@ -2887,6 +3056,46 @@
         let currentQuestion = null;
         let practiceQuestionEpoch = 0;
         let practiceCheckLoadingInterval = null;
+        let handwritingTransientState = null;
+
+        function applyHandwritingTransientLifecycle(state, event) {
+            const kind = event && event.type;
+            if (kind === 'rerender') {
+                const prev = state && String(state.questionUid || '');
+                const next = String(event.questionUid || '');
+                if (prev && next && prev !== next) return null;
+                return state;
+            }
+            if (kind === 'next-question' || kind === 'clear-canvas') return null;
+            if (kind === 'ai-check-start') {
+                return {
+                    submissionId: event.submissionId || '',
+                    sequence: event.sequence || 0,
+                    questionUid: String(event.questionUid || ''),
+                    capturedAt: event.capturedAt || '',
+                    imageSha256: '',
+                    recognizedRawText: '',
+                    normalizedAnswer: null,
+                    recognizedSteps: [],
+                    recognitionIncomplete: false,
+                    structuredAnalysis: null,
+                    checkerResult: null,
+                };
+            }
+            if (kind === 'ai-check-result') {
+                const steps = Array.isArray(event.recognizedSteps)
+                    ? event.recognizedSteps.map((step) => String(step || '').trim()).filter(Boolean)
+                    : [];
+                const next = state || {};
+                next.questionUid = String(event.questionUid || next.questionUid || '');
+                next.recognizedSteps = steps;
+                next.normalizedAnswer = event.normalizedAnswer == null ? null : event.normalizedAnswer;
+                next.recognitionIncomplete = event.recognitionIncomplete === true;
+                return next;
+            }
+            return state;
+        }
+        let handwritingSubmissionSequence = 0;
         let treeDiagramQuestionIndex = 0;
         let pascalTriangleQuestionIndex = 0;
 
@@ -2896,8 +3105,11 @@
         // 將後端資料傳給 JS
         const PRACTICE_MODE = {{ (practice_mode or 'standard') | tojson | safe }};
         const PAGE_SKILL_ID = {{ (skill_id or '') | tojson | safe }};
+        const INITIAL_CONSECUTIVE_CORRECT = {{ (consecutive_correct or 0) | int }};
+        const PRACTICE_PASS_TARGET = {{ (pass_target or 0) | int }};
         const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
+        const CHAPTER_REVIEW = {{ (chapter_review or none) | tojson | safe }};
         const SIMILAR_DEFAULT_MODEL = 'qwen3-vl-8b';
         const similarPracticeState = {
             imageData: '',
@@ -2922,6 +3134,9 @@
             subquestionsContainer = document.getElementById('subquestions-container');
             chatHistory = document.getElementById('chat-history');
             streakCounter = document.getElementById('streak-counter');
+            if (PRACTICE_MODE === 'standard') {
+                renderStreakProgress(INITIAL_CONSECUTIVE_CORRECT, PRACTICE_PASS_TARGET);
+            }
             levelIndicator = document.getElementById('level-indicator');
             canvas = document.getElementById('handwriting-canvas');
             ctx = canvas.getContext('2d');
@@ -2954,6 +3169,9 @@
                 if (streakCounter) streakCounter.style.display = 'none';
                 if (answerInput) answerInput.disabled = true;
                 if (submitBtn) submitBtn.disabled = true;
+            } else if (CHAPTER_REVIEW && CHAPTER_REVIEW.await_start) {
+                handlePracticeSkillEntry();
+                renderChapterReviewStart();
             } else {
                 handlePracticeSkillEntry();
                 loadQuestion();
@@ -3245,6 +3463,9 @@
         function showDynamicSuggestions(prompts) {
             console.log("showDynamicSuggestions called with:", prompts);
             const container = document.getElementById('dynamic-prompts'); // RENAMED
+            const questions = Array.isArray(prompts)
+                ? prompts.map((item) => String(item || '').trim()).filter(Boolean).slice(0, 3)
+                : [];
 
             // 如果沒有動態建議容器，嘗試建立一個(容錯)
             if (!container) {
@@ -3262,7 +3483,7 @@
             }
 
             // 如果沒有提示詞，隱藏容器
-            if (!prompts || prompts.length === 0) {
+            if (questions.length === 0) {
                 container.style.display = 'none';
                 return;
             }
@@ -3273,7 +3494,7 @@
             container.style.display = 'flex';
             container.style.flexDirection = 'column';
 
-            prompts.forEach(promptText => {
+            questions.forEach(promptText => {
                 const btn = document.createElement('button');
                 // 使用 Bootstrap-like 樣式 + 自定義樣式
                 btn.className = 'dynamic-prompt-btn';
@@ -3286,7 +3507,7 @@
                 btn.style.fontSize = '0.875rem';
 
                 // 蘇格拉底式圖示
-                btn.innerHTML = `<i class="far fa-comment-dots" style="color: #e67e22; margin-right: 5px;"></i> ${promptText}`;
+                btn.textContent = promptText;
 
                 btn.onclick = () => {
                     // 點擊後自動填入並送出
@@ -3303,7 +3524,7 @@
             });
 
             // 渲染數學公式
-            renderMathContent(container);
+            renderTutorMath(container);
 
             // 確保聊天區域捲動到底部
             scrollAiTutorToBottom();
@@ -3444,17 +3665,48 @@
             canvas.addEventListener('pointercancel', stopDraw);
             canvas.addEventListener('pointerleave', stopDraw);
 
+            // Safari < 13 (iOS 12) has no Pointer Events: draw from one tracked touch there only,
+            // so browsers that fire both pointer and touch events never get duplicate strokes.
+            const useTouchDrawing = typeof window.PointerEvent === 'undefined';
+            let activeTouchId = null;
+            function findActiveTouch(touchList) {
+                for (let i = 0; i < touchList.length; i += 1) {
+                    if (touchList[i].identifier === activeTouchId) return touchList[i];
+                }
+                return null;
+            }
+            function endTouchDrawing(e) {
+                if (activeTouchId === null || !findActiveTouch(e.changedTouches)) return;
+                activeTouchId = null;
+                stopDraw();
+            }
+
             // [Surface Pro] 防止畫圖時捲動頁面
             canvas.addEventListener('touchstart', function (e) {
                 if (e.target === canvas) e.preventDefault();
+                if (!useTouchDrawing || activeTouchId !== null || !e.changedTouches.length) return;
+                const touch = e.changedTouches[0];
+                activeTouchId = touch.identifier;
+                startDraw(touch);
             }, { passive: false });
             canvas.addEventListener('touchmove', function (e) {
                 if (e.target === canvas) e.preventDefault();
+                if (!useTouchDrawing || activeTouchId === null) return;
+                const touch = findActiveTouch(e.changedTouches);
+                if (touch) draw(touch);
             }, { passive: false });
+            if (useTouchDrawing) {
+                canvas.addEventListener('touchend', endTouchDrawing);
+                canvas.addEventListener('touchcancel', endTouchDrawing);
+            }
 
             canvas.style.touchAction = 'none';
 
             undoStack = [];
+            strokeLogStack = [];
+            redoStrokeLogStack = [];
+            inkStrokeLog = [];
+            currentStrokePoints = null;
             redoStack = [];
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             const cw = canvas.clientWidth || canvas.width;
@@ -3465,6 +3717,7 @@
             saveState();
             updateUndoRedoButtons();
             applyDrawingUiContract();
+            syncPenInkColor();
         }
 
         // === [HiDPI Fix] DPR-aware resizeCanvas ===
@@ -3518,8 +3771,13 @@
             const current = canvas.toDataURL();
             if (undoStack.length > 0 && undoStack[undoStack.length - 1] === current) return;
             redoStack = [];
+            redoStrokeLogStack = [];
             undoStack.push(current);
-            if (undoStack.length > 50) undoStack.shift();
+            strokeLogStack.push(JSON.stringify(inkStrokeLog));
+            if (undoStack.length > 50) {
+                undoStack.shift();
+                strokeLogStack.shift();
+            }
             updateUndoRedoButtons();
         }
 
@@ -3530,6 +3788,7 @@
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
             setPenStyle();
+            currentStrokePoints = [{ x: pos.x, y: pos.y }];
             saveState();
         }
 
@@ -3538,11 +3797,21 @@
             const pos = getMousePos(canvas, e);
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
+            if (currentStrokePoints) {
+                currentStrokePoints.push({ x: pos.x, y: pos.y });
+            }
         }
 
         function stopDraw() {
             if (isDrawing) {
                 isDrawing = false;
+                if (currentStrokePoints && currentStrokePoints.length >= 2 && !isErasing) {
+                    inkStrokeLog.push({
+                        points: currentStrokePoints.slice(),
+                        erasing: false,
+                    });
+                }
+                currentStrokePoints = null;
                 saveState();
             }
         }
@@ -3555,6 +3824,12 @@
             ctx.globalAlpha = 1.0;
             ctx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
         }
+
+        function syncPenInkColor() {
+            const controls = document.getElementById('scratchpad-controls');
+            if (controls) controls.style.setProperty('--pen-ink', currentColor);
+        }
+        syncPenInkColor();
 
         // === 工具 ===
         // === 工具 ===
@@ -3604,6 +3879,7 @@
                     else currentColor = color;
 
                 }
+                syncPenInkColor();
                 setPenStyle();
             }
         }
@@ -3634,6 +3910,12 @@
         function undo() {
             if (undoStack.length <= 1) return;
             redoStack.push(undoStack.pop());
+            redoStrokeLogStack.push(strokeLogStack.pop());
+            try {
+                inkStrokeLog = JSON.parse(strokeLogStack[strokeLogStack.length - 1] || '[]');
+            } catch (err) {
+                inkStrokeLog = [];
+            }
             const img = new Image();
             img.onload = () => {
                 const cw = canvas.clientWidth || canvas.width;
@@ -3656,6 +3938,15 @@
                 ctx.drawImage(img, 0, 0, cw, ch);
                 undoStack.push(nextSnapshot);
                 redoStack.pop();
+                const restoredLog = redoStrokeLogStack.pop();
+                if (restoredLog !== undefined) {
+                    strokeLogStack.push(restoredLog);
+                    try {
+                        inkStrokeLog = JSON.parse(restoredLog || '[]');
+                    } catch (err) {
+                        inkStrokeLog = [];
+                    }
+                }
                 updateUndoRedoButtons();
             };
             img.src = nextSnapshot;
@@ -3673,7 +3964,15 @@
                 }
                 undoStack = [];
                 redoStack = [];
+                strokeLogStack = [];
+                redoStrokeLogStack = [];
+                inkStrokeLog = [];
+                currentStrokePoints = null;
                 saveState();
+                handwritingTransientState = applyHandwritingTransientLifecycle(
+                    handwritingTransientState,
+                    { type: 'clear-canvas' }
+                );
             });
         }
 
@@ -3737,6 +4036,10 @@
             if (nextQuestionBtn) {
                 nextQuestionBtn.addEventListener('click', async (event) => {
                     event.preventDefault();
+                    handwritingTransientState = applyHandwritingTransientLifecycle(
+                        handwritingTransientState,
+                        { type: 'next-question' }
+                    );
                     if (PRACTICE_MODE === 'similar_practice') {
                         try {
                             await loadNextSimilarQuestion();
@@ -3790,9 +4093,33 @@
         }
 
         // === 連續答對 ===
-        function updateStreak(correct) {
-            currentStreak = correct ? currentStreak + 1 : 0;
-            streakCounter.textContent = `連續答對：${currentStreak}`;
+        function updateStreak(correct, authoritativeStreak, passTarget) {
+            currentStreak = authoritativeStreak !== undefined
+                ? Number(authoritativeStreak)
+                : (correct ? currentStreak + 1 : 0);
+            renderStreakProgress(
+                currentStreak,
+                passTarget !== undefined ? passTarget : PRACTICE_PASS_TARGET
+            );
+        }
+
+        function renderStreakProgress(streak, passTarget) {
+            if (!streakCounter) return;
+            if (PRACTICE_MODE !== 'standard') {
+                streakCounter.style.display = 'none';
+                return;
+            }
+            const normalizedStreak = Number.isFinite(Number(streak)) ? Number(streak) : 0;
+            const normalizedTarget = Number.isFinite(Number(passTarget)) ? Number(passTarget) : 0;
+            currentStreak = normalizedStreak;
+            streakCounter.textContent = CHAPTER_REVIEW
+                ? (normalizedTarget > 0
+                    ? `🔥 進階答對 ${normalizedStreak}/${normalizedTarget} 題`
+                    : '🔥 進階答對：暫無門檻')
+                : (normalizedTarget > 0
+                    ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
+                    : '🔥 連續答對：暫無門檻');
+            streakCounter.style.display = 'inline-block';
         }
 
         // === 出題 ===
@@ -3860,15 +4187,14 @@
         }
 
         function handleCorrectAnswer() {
-            // 功文式鼓勵：強調持續練習，而非單次答對
-            const messages = [
-                '🎉 答對了！很棒！讓我們繼續下一題吧！',
-                '正確！保持這個節奏！',
-                '做得好！你離目標又近了一步！'
-            ];
-            showCustomAlert(messages[Math.floor(Math.random() * messages.length)], () => {
-                resetAIChat();
-                setTimeout(loadQuestion, 500);
+            return window.PracticeCorrectAnswerFlow.handleCorrectAnswer({
+                confirmMessage: (message) => new Promise((resolve) => {
+                    showCustomAlert(message, resolve);
+                }),
+                onConfirm: () => {
+                    resetAIChat();
+                    setTimeout(loadQuestion, 500);
+                },
             });
         }
 
@@ -3887,11 +4213,14 @@
         }
 
         function resetAIChat() {
+            if (typeof window.resetAiCheckForNewQuestion === 'function') {
+                window.resetAiCheckForNewQuestion();
+            }
             const chatContainer = document.getElementById('chat-history');
             if (!chatContainer) return;
             chatContainer.innerHTML = `
                 <div class="bot-message initial-greeting">
-                    <div class="greeting-text">你好！有問題問我～</div>
+                    <div class="greeting-text">{% if session.get('guest_demo') is true %}此為展示頁面，AI 助教功能請登入後使用。{% elif chapter_review %}遇到卡住的題目，可以請助教提示解題方向。{% else %}你好！有問題問我～{% endif %}</div>
                 </div>
             `;
         }
@@ -4035,6 +4364,8 @@
         function resetPracticeQuestionDisplay(message) {
             practiceQuestionEpoch += 1;
             currentQuestion = null;
+            isInitialQuestionLoaded = false;
+            currentContext = '';
             window.currentProblemTypeId = '';
             window.currentExpectedAnswer = '';
             clearPracticeFeedback();
@@ -4050,10 +4381,42 @@
             if (answerInput) {
                 answerInput.value = '';
                 answerInput.disabled = false;
+                answerInput.readOnly = false;
+                answerInput.classList.remove('answer-input--drawing');
                 answerInput.placeholder = '請在此輸入答案';
             }
             if (submitBtn) submitBtn.disabled = false;
+            if (levelIndicator) levelIndicator.textContent = `等級：${getSafeSelectedLevel()}`;
+            if (subquestionsContainer) {
+                subquestionsContainer.innerHTML = '';
+                subquestionsContainer.style.display = 'none';
+            }
+            const questionMedia = document.getElementById('question-media-container');
+            if (questionMedia) {
+                questionMedia.innerHTML = '';
+                questionMedia.style.display = 'none';
+            }
             resetAIChat();
+        }
+
+        function beginFreshHandwritingSubmission(question) {
+            clearPracticeFeedback();
+            clearTutorPromptSuggestions();
+            document.querySelectorAll('.bot-message.latest').forEach((msg) => msg.classList.remove('latest'));
+            handwritingSubmissionSequence += 1;
+            const capturedAt = new Date().toISOString();
+            const randomId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+                ? window.crypto.randomUUID()
+                : `${Date.now()}-${handwritingSubmissionSequence}`;
+            handwritingTransientState = applyHandwritingTransientLifecycle(handwritingTransientState, {
+                type: 'ai-check-start',
+                submissionId: `hw-${randomId}`,
+                sequence: handwritingSubmissionSequence,
+                questionUid: String((question && question.question_uid) || ''),
+                capturedAt,
+            });
+            console.log('[HANDWRITING SUBMISSION] fresh start', { ...handwritingTransientState });
+            return handwritingTransientState;
         }
 
         function handlePracticeSkillEntry() {
@@ -4062,6 +4425,7 @@
                 try { return sessionStorage.getItem('practice_last_skill_id') || ''; } catch (e) { return ''; }
             })();
             console.log('[FRONTEND PRACTICE] skill entry', { activeSkill, lastSkill, pageSkill: PAGE_SKILL_ID });
+            clearSkillPracticeStorage(activeSkill);
             if (lastSkill && activeSkill && lastSkill !== activeSkill) {
                 clearSkillPracticeStorage(lastSkill);
                 resetPracticeQuestionDisplay('<span style="color:#7f8c8d;">已切換技能，載入新題目中…</span>');
@@ -4071,23 +4435,51 @@
             try { sessionStorage.setItem('practice_last_skill_id', activeSkill); } catch (e) { /* ignore */ }
         }
 
+        function normalizeLatestQuestionResponse(payload) {
+            const response = payload && typeof payload === 'object' ? payload : {};
+            const questionTextValue = resolveQuestionText(response);
+            const responseLevel = resolvePracticeResponseLevel(response);
+            const answerContract = response.answer_contract && typeof response.answer_contract === 'object'
+                ? { ...response.answer_contract }
+                : {};
+            return {
+                ...response,
+                question_text: questionTextValue,
+                new_question_text: questionTextValue,
+                question_uid: String(response.question_uid == null ? '' : response.question_uid),
+                answer_contract: answerContract,
+                current_level: responseLevel,
+                level: responseLevel,
+            };
+        }
+
         function snapshotPracticeQuestion(payload) {
             if (!payload || typeof payload !== 'object') {
                 return null;
             }
             const choices = getChoiceItems(payload);
             const questionTextValue = resolveQuestionText(payload);
+            const responseLevel = resolvePracticeResponseLevel(payload);
             const skillId = payload.skill_id || getSkillId() || '';
             return {
                 skill_id: skillId,
                 question_uid: payload.question_uid || '',
                 question_text_hash: payload.question_text_hash || '',
                 question_text: questionTextValue,
+                new_question_text: questionTextValue,
+                current_level: responseLevel,
+                level: responseLevel,
                 problem_type_id: payload.problem_type_id || payload.problem_type || '',
                 answer: payload.answer,
-                correct_answer: payload.correct_answer ?? payload.display_answer ?? payload.answer ?? '',
+                correct_answer: [payload.correct_answer, payload.display_answer, payload.answer, ''].find((value) => value != null),
                 display_answer: payload.display_answer || '',
-                answer_contract: payload.answer_contract || {},
+                answer_contract: payload.answer_contract && typeof payload.answer_contract === 'object'
+                    ? { ...payload.answer_contract }
+                    : {},
+                ui_contract: payload.ui_contract && typeof payload.ui_contract === 'object'
+                    ? { ...payload.ui_contract }
+                    : {},
+                expected_drawing_spec: payload.expected_drawing_spec || null,
                 checker: payload.checker || payload.checker_type || '',
                 equivalence: payload.equivalence || '',
                 choices: Array.isArray(choices) ? choices.slice() : [],
@@ -4102,6 +4494,10 @@
                     || '',
                 interaction_type: payload.interaction_type || '',
                 visual_spec: payload.visual_spec || null,
+                diagram_spec: payload.diagram_spec || null,
+                visual_aids: Array.isArray(payload.visual_aids) ? payload.visual_aids.slice() : payload.visual_aids,
+                image_assets: Array.isArray(payload.image_assets) ? payload.image_assets.slice() : [],
+                image_url: payload.image_url || '',
                 subquestions: Array.isArray(payload.subquestions) ? payload.subquestions.slice() : [],
                 table_data: payload.table_data || {},
                 table_question: payload.table_question || {},
@@ -4153,11 +4549,46 @@
         }
 
         function escapeHtml(value) {
-            return String(value ?? '')
+            return String(value == null ? '' : value)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        function looksLikeTexMath(value) {
+            const text = String(value == null ? '' : value).trim();
+            if (!text) return false;
+            if (/\$|\\\(|\\\[/.test(text)) return true;
+            return /\\[a-zA-Z]+|\^/.test(text);
+        }
+
+        function wrapTableCellForMath(value) {
+            if (value === null || value === undefined) return '';
+            const text = String(value);
+            const trimmed = text.trim();
+            if (!trimmed) return text;
+            if (
+                (trimmed.startsWith('$') && trimmed.endsWith('$') && trimmed.length >= 3)
+                || (trimmed.startsWith('\\(') && trimmed.endsWith('\\)'))
+            ) {
+                return text;
+            }
+            if (window.MathDisplayNormalizer) {
+                return window.MathDisplayNormalizer.normalizeMathText(text, { mathContext: true });
+            }
+            if (!looksLikeTexMath(trimmed)) return text;
+            return `$${trimmed}$`;
+        }
+
+        function setReadonlyTableCellContent(el, value) {
+            if (!el) return;
+            el.textContent = wrapTableCellForMath(value);
+        }
+
+        function typesetTableFillMath(container) {
+            if (!container || typeof renderMathContent !== 'function') return;
+            renderMathContent(container);
         }
 
         function renderBlankCellInput(cellSpec, showBlankLabels) {
@@ -4201,12 +4632,14 @@
                 container.innerHTML = td.html;
                 container.classList.add('math-table-readonly');
                 container.style.display = 'block';
+                typesetTableFillMath(container);
                 return;
             }
             if (!model.headers.length && !model.rows.length) {
                 if (td.html) {
                     container.innerHTML = td.html;
                     container.style.display = 'block';
+                    typesetTableFillMath(container);
                 }
                 return;
             }
@@ -4226,7 +4659,7 @@
             const headRow = document.createElement('tr');
             model.headers.forEach((header) => {
                 const th = document.createElement('th');
-                th.textContent = String(header);
+                setReadonlyTableCellContent(th, header);
                 headRow.appendChild(th);
             });
             thead.appendChild(headRow);
@@ -4248,7 +4681,7 @@
                         tdCell.dataset.fieldKey = String(spec.field_key || spec.label || '');
                         tdCell.appendChild(renderBlankCellInput(spec, model.showBlankLabels));
                     } else {
-                        tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                        setReadonlyTableCellContent(tdCell, cell);
                     }
                     tr.appendChild(tdCell);
                 });
@@ -4261,7 +4694,7 @@
                 const tr = document.createElement('tr');
                 model.totalRow.forEach((cell) => {
                     const tdCell = document.createElement('td');
-                    tdCell.textContent = cell === null || cell === undefined ? '' : String(cell);
+                    setReadonlyTableCellContent(tdCell, cell);
                     tr.appendChild(tdCell);
                 });
                 tfoot.appendChild(tr);
@@ -4271,6 +4704,7 @@
             scrollWrap.appendChild(table);
             container.appendChild(scrollWrap);
             container.style.display = 'block';
+            typesetTableFillMath(container);
         }
 
         function renderTableFillFallbackGrid(payload) {
@@ -4348,6 +4782,22 @@
             return true;
         }
 
+        function renderQuestionDiagramSpec(payload) {
+            const runtime = window.TriangleDiagramRuntime;
+            const layer = getScratchpadBackgroundLayer();
+            if (!runtime || !layer || !payload || !backgroundCtx) return false;
+            const markup = runtime.createSvgMarkup(payload.diagram_spec);
+            if (!markup) return false;
+            const question = currentQuestion;
+            const source = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(markup);
+            layer.loadImageBackground(source).then((image) => {
+                if (currentQuestion !== question || !image) return;
+                const size = resolveScratchpadCssSize();
+                layer.setReferenceDiagramBackground(image, backgroundCtx, size.cw, size.ch);
+            }).catch((error) => console.warn('Triangle diagram failed to load', error));
+            return true;
+        }
+
         function collectTableAnswers() {
             const qmc = document.getElementById('question-media-container');
             const model = getTableQuestionModel(currentQuestion || {});
@@ -4410,6 +4860,9 @@
         }
 
         function resolveMultiPartFields(payload) {
+            if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.resolveFields === 'function') {
+                return window.MultipartFieldRenderer.resolveFields(payload || currentQuestion || {});
+            }
             const cq = payload || currentQuestion || {};
             const contract = cq.answer_contract || {};
             const parts = Array.isArray(contract.parts) ? contract.parts : [];
@@ -4418,12 +4871,12 @@
                 .map((part, index) => ({
                     key: String(part.key || part.field_key),
                     field_key: String(part.key || part.field_key),
-                    label: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
-                    prompt: String(part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    label: String(part.display_label || part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
+                    prompt: String(part.display_label || part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
                     group_label: String(part.group_label || ''),
                     input_type: String(part.input_type || 'text'),
                     choices: Array.isArray(part.choices) ? part.choices : [],
-                    answer_order: part.answer_order ?? index,
+                    answer_order: part.answer_order == null ? index : part.answer_order,
                 }));
             if (fromParts.length > 0) return fromParts;
             const subqs = Array.isArray(cq.subquestions) ? cq.subquestions : [];
@@ -4434,7 +4887,7 @@
                     field_key: String(sq.field_key || sq.key || sq.part || `part_${index + 1}`),
                     label: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
                     prompt: String(sq.prompt || sq.label || sq.part || `欄位 ${index + 1}`),
-                    answer_order: sq.answer_order ?? index,
+                    answer_order: sq.answer_order == null ? index : sq.answer_order,
                 }));
         }
 
@@ -4451,26 +4904,42 @@
         }
 
         function buildMultiPartFieldGroups(payload, subqs) {
-            const ui = (payload && payload.ui_contract) || {};
+            const ui = (payload && payload.ui_contract)
+                || ((payload && payload.answer_contract && payload.answer_contract.ui_contract) || {});
+            const normalizeGroupMarker = (raw) => {
+                const text = String(raw || '').trim();
+                if (!text) return '';
+                if (/^[\(（]\s*\d+\s*[\)）]$/.test(text)) {
+                    return `(${text.replace(/[^\d]/g, '')})`;
+                }
+                if (/^\d+$/.test(text)) return `(${text})`;
+                return text;
+            };
             if (Array.isArray(ui.field_groups) && ui.field_groups.length > 0) {
                 return ui.field_groups.map((group) => {
                     const fields = (group.fields || [])
                         .map((fieldKey) => subqs.find((sq) => String(sq.field_key || sq.key || '') === String(fieldKey)))
                         .filter(Boolean);
                     return {
-                        label: String(group.group_label || group.label || ''),
+                        label: normalizeGroupMarker(group.group_label || group.label || ''),
                         fields,
                     };
                 }).filter((group) => group.fields.length > 0);
             }
             const byPart = new Map();
             subqs.forEach((sq) => {
-                const partKey = String(sq.part || sq.group_label || sq.label || '').trim();
+                const partKey = normalizeGroupMarker(String(sq.group_label || sq.part || '').trim());
+                if (!partKey) {
+                    if (!byPart.has('')) byPart.set('', []);
+                    byPart.get('').push(sq);
+                    return;
+                }
                 if (!byPart.has(partKey)) byPart.set(partKey, []);
                 byPart.get(partKey).push(sq);
             });
-            if (byPart.size > 1) {
-                return Array.from(byPart.entries()).map(([label, fields]) => ({ label, fields }));
+            const named = Array.from(byPart.entries()).filter(([label]) => label);
+            if (named.length > 1 || (named.length === 1 && named[0][1].length > 1)) {
+                return named.map(([label, fields]) => ({ label, fields }));
             }
             return [{ label: '', fields: subqs }];
         }
@@ -4489,7 +4958,9 @@
                 const index = Number(cmp[1]);
                 return `圖${marks[index - 1] || index}`;
             }
-            return String((part && (part.label || part.prompt)) || key || `欄位 ${fallbackIndex + 1}`);
+            const raw = String((part && (part.label || part.prompt)) || key || '').trim();
+            const generic = raw.match(/^(?:part|欄位|第)?[\s_\-]*[\(（]?\s*(\d{1,2})\s*[\)）]?[\s_\-]*(?:小題|題)?$/i);
+            return !raw ? `(${fallbackIndex + 1})` : (generic ? `(${Number(generic[1])})` : raw);
         }
 
         function createMultiPartControl(part, index) {
@@ -4524,7 +4995,7 @@
             input.className = 'multi-part-input';
             input.dataset.partIndex = String(index);
             input.dataset.fieldKey = fieldKey;
-            input.dataset.answerOrder = String(part.answer_order ?? index);
+            input.dataset.answerOrder = String(part.answer_order == null ? index : part.answer_order);
             return input;
         }
 
@@ -4579,6 +5050,15 @@
             }
             subquestionsContainer.style.display = 'block';
             subquestionsContainer.classList.add('multi-part-list');
+            if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.render === 'function') {
+                window.MultipartFieldRenderer.render(subquestionsContainer, payload);
+                if (answerInput) {
+                    answerInput.style.display = 'none';
+                    answerInput.disabled = true;
+                    answerInput.value = '';
+                }
+                return;
+            }
             const figParts = parts.filter((part) => /^fig\d+$/i.test(part.key));
             const cmpParts = parts.filter((part) => /^cmp\d+$/i.test(part.key));
             const autoGroups = (figParts.length && cmpParts.length)
@@ -4589,8 +5069,10 @@
                 : null;
             const legacySubqs = Array.isArray(payload.subquestions) ? payload.subquestions : [];
             const groups = autoGroups
-                || (legacySubqs.length > 0 ? buildMultiPartFieldGroups(payload, legacySubqs) : [{ label: '', fields: parts }]);
-            const useGroupedLayout = groups.length > 1 || (groups[0] && groups[0].fields && groups[0].fields.length > 1);
+                || buildMultiPartFieldGroups(payload, parts.length ? parts : legacySubqs);
+            const useGroupedLayout = groups.length > 1
+                || (groups[0] && groups[0].label)
+                || (groups[0] && groups[0].fields && groups[0].fields.length > 1);
             if (useGroupedLayout) {
                 renderGroupedMultiPartInputs(payload, groups);
             } else {
@@ -4630,10 +5112,167 @@
             return layer.setVisualSpecBackground(visualSpec, backgroundCtx, cw, ch, runtime);
         }
 
+        let answerStripFitRaf = null;
+        let answerStripLabelObserver = null;
+        let answerStripResizeBound = false;
+
+        function scheduleAnswerStripFit() {
+            const renderer = window.MultipartFieldRenderer;
+            const block = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (!block || !renderer || typeof renderer.fitAnswerStrip !== 'function') return;
+            if (!answerStripResizeBound) {
+                window.addEventListener('resize', scheduleAnswerStripFit);
+                answerStripResizeBound = true;
+            }
+            if (answerStripFitRaf) cancelAnimationFrame(answerStripFitRaf);
+            answerStripFitRaf = requestAnimationFrame(() => {
+                answerStripFitRaf = null;
+                renderer.fitAnswerStrip(block);
+            });
+        }
+
+        let questionAnswerRowRaf = null;
+        let questionAnswerRowResizeBound = false;
+
+        // A short single-field stem shares one row with its answer strip only when
+        // the rendered stem stays on one line and the strip still fits beside it.
+        function fitQuestionAnswerRow() {
+            const area = document.querySelector('.practice-area');
+            const questionBlock = area && area.querySelector(':scope > .practice-question-block');
+            const answerBlock = area && area.querySelector(':scope > .practice-answer-block');
+            if (!area || !questionBlock || !answerBlock || !questionText) return;
+            area.classList.remove('question-answer-inline');
+            area.style.removeProperty('--question-inline-width');
+            if (getComputedStyle(area).display !== 'grid') return;
+            const visible = (node) => Boolean(node && node.offsetParent !== null);
+            const media = document.getElementById('question-media-container');
+            const eligible = visible(answerInput) && visible(submitBtn)
+                && !answerBlock.classList.contains('has-multi-part-fields')
+                && !visible(subquestionsContainer)
+                && !(visible(questionChoices) && questionChoices.children.length)
+                && !visible(media)
+                && !questionText.querySelector('img, table, canvas, .multipart-stem, .manual-review-unavailable')
+                && !questionBlock.querySelector('.similar-toolbar')
+                && !area.querySelector(':scope > [data-guest-demo-warning]')
+                && !(resultDisplay && resultDisplay.textContent.trim());
+            if (!eligible) return;
+            const lineHeight = parseFloat(getComputedStyle(questionText).lineHeight) || 32;
+            const stackedHeight = questionText.getBoundingClientRect().height;
+            if (!stackedHeight || stackedHeight >= lineHeight * 1.9) return;
+            // #question-container is a size container, so its intrinsic width is 0;
+            // size the stem column from the rendered text instead.
+            const range = document.createRange();
+            range.selectNodeContents(questionText);
+            const textWidth = range.getBoundingClientRect().width;
+            const container = document.getElementById('question-container') || questionText;
+            const px = (style, key) => parseFloat(style[key]) || 0;
+            const cs = getComputedStyle(container);
+            const chrome = px(cs, 'paddingLeft') + px(cs, 'paddingRight') + px(cs, 'borderLeftWidth')
+                + px(cs, 'borderRightWidth') + px(getComputedStyle(questionBlock), 'paddingLeft');
+            area.style.setProperty('--question-inline-width', `${Math.ceil(textWidth + chrome + 2)}px`);
+            area.classList.add('question-answer-inline');
+            const q = questionBlock.getBoundingClientRect();
+            const a = answerBlock.getBoundingClientRect();
+            const input = answerInput.getBoundingClientRect();
+            const submit = submitBtn.getBoundingClientRect();
+            const areaRight = area.getBoundingClientRect().right;
+            const sameRow = a.top < q.bottom && a.bottom > q.top && a.left >= q.right - 1;
+            const stemUnwrapped = questionText.getBoundingClientRect().height <= stackedHeight + 1;
+            const stripOneRow = Math.abs((input.top + input.height / 2) - (submit.top + submit.height / 2)) < 6
+                && submit.left >= input.right - 1 && submit.right <= areaRight + 1;
+            if (!(sameRow && stemUnwrapped && stripOneRow)) {
+                area.classList.remove('question-answer-inline');
+                area.style.removeProperty('--question-inline-width');
+            }
+        }
+
+        const STEM_COMPACT_MAX_DEFICIT = 0.1;
+        const STEM_COMPACT_MIN_SCALE = 0.94;
+        const STEM_COMPACT_MAX_GAPS = 2;
+
+        function measureStemLayout(items) {
+            const lineHeight = parseFloat(getComputedStyle(questionText).lineHeight) || 28;
+            const range = document.createRange();
+            range.setStart(questionText, 0);
+            range.setEndBefore(items);
+            const prompt = range.getBoundingClientRect();
+            const run = items.getBoundingClientRect();
+            const avail = questionText.clientWidth;
+            const needed = prompt.width + run.width;
+            return {
+                oneLine: Math.abs(run.top - prompt.top) < lineHeight * 0.5 && run.height < lineHeight * 1.9,
+                promptAndRunLines: prompt.height < lineHeight * 1.9 && run.height < lineHeight * 1.9,
+                avail,
+                needed,
+                deficit: needed - avail,
+            };
+        }
+
+        // Short prompt + 2–3 short items that miss one line by a small margin: tighten
+        // padding, item gaps and (slightly) the font until the measured stem fits.
+        function fitCompactStem() {
+            const container = document.getElementById('question-container');
+            const area = document.querySelector('.practice-area');
+            if (!container || !questionText) return;
+            const reset = () => {
+                container.classList.remove('question-stem-compact');
+                container.style.removeProperty('--stem-compact-scale');
+            };
+            reset();
+            if (!area || getComputedStyle(area).display !== 'grid') return;
+            const items = questionText.querySelector('.question-multipart-items, .multipart-stem-items');
+            if (!items || items.querySelectorAll('.multipart-gap').length > STEM_COMPACT_MAX_GAPS) return;
+            const before = measureStemLayout(items);
+            if (before.oneLine || !before.promptAndRunLines || !before.avail) return;
+            if (before.deficit > before.avail * STEM_COMPACT_MAX_DEFICIT) return;
+            container.classList.add('question-stem-compact');
+            let after = measureStemLayout(items);
+            if (!after.oneLine) {
+                const scale = Math.max(STEM_COMPACT_MIN_SCALE, Math.floor((after.avail / after.needed) * 200) / 200);
+                container.style.setProperty('--stem-compact-scale', String(scale));
+                after = measureStemLayout(items);
+            }
+            if (!after.oneLine) reset();
+        }
+
+        function scheduleQuestionAnswerRowFit() {
+            if (!questionAnswerRowResizeBound) {
+                window.addEventListener('resize', scheduleQuestionAnswerRowFit);
+                questionAnswerRowResizeBound = true;
+            }
+            fitCompactStem();
+            fitQuestionAnswerRow();
+            if (questionAnswerRowRaf) cancelAnimationFrame(questionAnswerRowRaf);
+            questionAnswerRowRaf = requestAnimationFrame(() => {
+                questionAnswerRowRaf = null;
+                fitCompactStem();
+                fitQuestionAnswerRow();
+            });
+        }
+
+        // Labels change width once MathJax typesets them; refit the strip then.
+        function watchAnswerStripLabels() {
+            const block = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (block && window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.fitAnswerStrip === 'function') {
+                window.MultipartFieldRenderer.fitAnswerStrip(block);
+            }
+            scheduleAnswerStripFit();
+            scheduleQuestionAnswerRowFit();
+            if (!subquestionsContainer || typeof ResizeObserver === 'undefined') return;
+            if (!answerStripLabelObserver) answerStripLabelObserver = new ResizeObserver(scheduleAnswerStripFit);
+            answerStripLabelObserver.disconnect();
+            subquestionsContainer.querySelectorAll('.multi-part-row label, .multi-part-group-label')
+                .forEach((node) => answerStripLabelObserver.observe(node));
+        }
+
         function applyMultiPartUiContract(payload) {
             clearTableQuestionState();
             const tableFill = isTableFillQuestion(payload || currentQuestion);
             const multi = isMultiPartQuestion(payload || currentQuestion);
+            const answerBlock = subquestionsContainer && subquestionsContainer.closest('.practice-answer-block');
+            if (answerBlock) {
+                answerBlock.classList.toggle('has-multi-part-fields', multi && !tableFill);
+            }
             if (tableFill) {
                 const qmc = document.getElementById('question-media-container');
                 renderTableQuestion(qmc, payload || currentQuestion);
@@ -4659,9 +5298,19 @@
                         answerInput.style.display = 'none';
                         answerInput.disabled = true;
                         answerInput.value = '';
+                    } else if (isDrawingQuestion(currentPayload)) {
+                        applyDrawingUiContract();
                     } else {
                         answerInput.style.display = '';
                         answerInput.disabled = false;
+                        answerInput.readOnly = false;
+                        answerInput.classList.remove('answer-input--drawing');
+                        if (window.MultipartFieldRenderer && typeof window.MultipartFieldRenderer.applyControlKind === 'function') {
+                            window.MultipartFieldRenderer.applyControlKind(
+                                answerInput,
+                                window.MultipartFieldRenderer.controlKindFromPayload(currentPayload)
+                            );
+                        }
                     }
                 }
             }
@@ -4680,18 +5329,179 @@
             return composite;
         }
 
+        function getInkCanvasEl() {
+            return document.getElementById('handwriting-canvas') || canvas;
+        }
+
+        function isInkCanvasBlank(inkEl) {
+            const ink = inkEl || getInkCanvasEl();
+            if (!ink) return true;
+            try {
+                const inkCtx = ink.getContext('2d');
+                const image = inkCtx.getImageData(0, 0, ink.width, ink.height);
+                const pixels = image.data;
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] !== 0) return false;
+                }
+                return true;
+            } catch (err) {
+                console.error('isInkCanvasBlank failed:', err);
+                return false;
+            }
+        }
+
+        async function captureHandwritingImageForRecognition() {
+            const ink = getInkCanvasEl();
+            if (!ink) return '';
+            // Export only the bitmap currently visible on the live ink canvas.
+            // History is intentionally excluded: a cleared/erased canvas must never
+            // resurrect an older undo snapshot during AI recognition.
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = ink.width || 1;
+            exportCanvas.height = ink.height || 1;
+            const ect = exportCanvas.getContext('2d');
+            // Vision analyzers often fail on transparent ink-only PNGs; always export on white.
+            ect.fillStyle = '#ffffff';
+            ect.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            if (backgroundCanvas && backgroundCanvas.width && backgroundCanvas.height) {
+                ect.drawImage(backgroundCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
+            }
+            ect.drawImage(ink, 0, 0, exportCanvas.width, exportCanvas.height);
+            return exportCanvas.toDataURL('image/png');
+        }
+
+        // Mirrors core/checkers/free_response_drawing_checker.is_drawing_answer_contract.
         function isDrawingQuestion(questionInput) {
+            const DRAWING_ANSWER_TYPES = ['drawing', 'chart_drawing', 'graph_drawing', 'canvas_drawing'];
+            const DRAWING_PRESENTATION_MODES = ['canvas', 'drawing', 'drawing_answer', 'canvas_drawing'];
             const cq = questionInput || currentQuestion || {};
             const contract = cq.answer_contract || {};
             const ui = getMergedUiContract(cq);
+            const answerType = String(contract.answer_type || cq.answer_type || '');
+            const presentationMode = String(contract.presentation_mode || cq.presentation_mode || '');
+            const equivalence = String(contract.answer_equivalence || contract.equivalence_type || '');
             return (
                 contract.checker_key === 'free_response_drawing_checker' ||
                 contract.checker === 'free_response_drawing_checker' ||
                 contract.answer_shape === 'drawing' ||
                 contract.answer_type === 'drawing' ||
+                equivalence === 'drawing_equivalence' ||
+                DRAWING_ANSWER_TYPES.includes(answerType) ||
+                DRAWING_PRESENTATION_MODES.includes(presentationMode) ||
                 ui.response_mode === 'drawing' ||
                 Boolean(cq.expected_drawing_spec)
             );
+        }
+
+        function isVectorDrawingCheckQuestion(questionInput) {
+            const cq = questionInput || currentQuestion || {};
+            const contract = cq.answer_contract || {};
+            const dc = (contract.drawing_check && typeof contract.drawing_check === 'object')
+                ? contract.drawing_check
+                : ((cq.drawing_check && typeof cq.drawing_check === 'object') ? cq.drawing_check : {});
+            if (dc.enabled === true) {
+                return true;
+            }
+            const shape = String(contract.answer_shape || cq.answer_shape || '').toLowerCase();
+            return shape === 'directed_segment_drawing' || shape === 'vector_drawing';
+        }
+
+        function buildLabeledPointCanvasPositions(cq) {
+            const question = cq || currentQuestion || {};
+            const visualSpec = question.visual_spec || (question.metadata && question.metadata.visual_spec) || null;
+            const runtime = window.VisualSpecRuntime;
+            const layer = getScratchpadBackgroundLayer();
+            if (!visualSpec || !runtime || !runtime.projectLabeledPoints || !layer) {
+                return {};
+            }
+            const size = resolveScratchpadCssSize();
+            const region = layer.computeQuestionBackgroundRegion
+                ? layer.computeQuestionBackgroundRegion(size.cw, size.ch)
+                : { x: 0, y: 0, width: size.cw, height: size.ch, edgePadding: 12 };
+            const projected = runtime.projectLabeledPoints(visualSpec, {
+                x: region.x,
+                y: region.y,
+                width: region.width,
+                height: region.height,
+                showLabel: false
+            }, {
+                padding: Math.min(region.edgePadding || 12, 10)
+            });
+            return (projected && projected.points) || {};
+        }
+
+        function submitVectorDrawingCheck(triggerSource) {
+            if (isProcessing) return;
+            isProcessing = true;
+            if (submitBtn) submitBtn.disabled = true;
+            if (analyzeBtn) analyzeBtn.disabled = true;
+
+            const submitEpoch = practiceQuestionEpoch;
+            const submitQuestionUid = currentQuestion && currentQuestion.question_uid ? String(currentQuestion.question_uid) : '';
+            const size = resolveScratchpadCssSize();
+
+            stopPracticeCheckLoading();
+            resultDisplay.className = '';
+            resultDisplay.style.background = '#fff3cd';
+            resultDisplay.style.color = '#856404';
+            resultDisplay.style.border = '1px solid #ffeaa7';
+            let dots = 0;
+            practiceCheckLoadingInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                resultDisplay.textContent = `正在檢查向量作圖${'.'.repeat(dots)}`;
+            }, 300);
+
+            const payload = buildCheckAnswerPayload('[vector_drawing]');
+            payload.answer = '[vector_drawing]';
+            payload.vector_drawing_check = true;
+            payload.student_strokes = Array.isArray(inkStrokeLog) ? inkStrokeLog.slice() : [];
+            payload.labeled_point_canvas_positions = buildLabeledPointCanvasPositions(currentQuestion);
+            payload.canvas_css_size = { width: size.cw, height: size.ch };
+            payload.trigger_source = triggerSource || 'ai-check-button';
+
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(async data => {
+                stopPracticeCheckLoading();
+                if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+                    applyDrawingUiContract();
+                    return;
+                }
+                notePracticeTypeRotation(data);
+                const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
+                if (isCorrectVal === true) {
+                    resultDisplay.textContent = data.result || data.message || '作圖正確。';
+                    resultDisplay.className = 'correct';
+                    updateStreak(true, data.consecutive_correct, data.pass_target);
+                    consecutiveWrongs = 0;
+                    await handleCorrectAnswer();
+                } else {
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (analyzeBtn) analyzeBtn.disabled = false;
+                    isProcessing = false;
+                    resultDisplay.textContent = data.result || data.message || '作圖尚未正確。';
+                    resultDisplay.className = 'incorrect';
+                    if (isCorrectVal === false) {
+                        updateStreak(false, data.consecutive_correct, data.pass_target);
+                    }
+                    applyDrawingUiContract();
+                }
+            })
+            .catch(() => {
+                stopPracticeCheckLoading();
+                if (submitBtn) submitBtn.disabled = false;
+                if (analyzeBtn) analyzeBtn.disabled = false;
+                isProcessing = false;
+                resultDisplay.textContent = '向量作圖批改失敗，請稍後再試。';
+                resultDisplay.className = 'incorrect';
+            });
         }
 
         function getMergedUiContract(cq) {
@@ -4706,22 +5516,13 @@
             return { ...nested, ...top };
         }
 
-        function resolveAiCheckRequired(ui, drawing) {
-            if (ui.ai_check_required === true) {
+        // ai_check_required === false means "not mandatory", not "forbidden":
+        // any question with a handwriting surface keeps AI check available.
+        function resolveAiCheckAvailable(ui, drawing) {
+            if (drawing || ui.ai_check_required === true) {
                 return true;
             }
-            if (ui.ai_check_required === false) {
-                return false;
-            }
-            if (drawing) {
-                return true;
-            }
-            const handwritingOn = ui.handwriting_enabled !== false;
-            const canvasOn = ui.canvas_required !== false;
-            if (handwritingOn && canvasOn) {
-                return true;
-            }
-            return false;
+            return ui.handwriting_enabled !== false && ui.canvas_required !== false;
         }
 
         function resolveDrawingUiContract(cq) {
@@ -4734,7 +5535,7 @@
                 responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
                 textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
                 normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
-                aiCheckRequired: resolveAiCheckRequired(ui, drawing),
+                aiCheckAvailable: resolveAiCheckAvailable(ui, drawing),
                 canvasRequired,
                 handwritingEnabled,
                 allowImageUpload: ui.allow_image_upload !== false,
@@ -4742,7 +5543,7 @@
             };
         }
 
-        function applyAnalyzeButtonVisibility(aiCheckRequired) {
+        function applyAnalyzeButtonVisibility(aiCheckAvailable) {
             if (!analyzeBtn) return;
             // Always keep AI check button visible and enabled for student scratchpad / drawing
             analyzeBtn.hidden = false;
@@ -4756,13 +5557,24 @@
             const cq = currentQuestion || {};
             const uiContract = resolveDrawingUiContract(cq);
             const drawing = uiContract.responseMode === "drawing";
+            const drawingSurface = (drawing || isDrawingQuestion(cq)) && !uiContract.textInputEnabled;
 
             answerInput.disabled = !uiContract.textInputEnabled;
-            if (!uiContract.textInputEnabled) {
+            answerInput.readOnly = !uiContract.textInputEnabled;
+            answerInput.classList.toggle("answer-input--drawing", drawingSurface);
+            if (drawingSurface) {
                 answerInput.setAttribute("aria-disabled", "true");
+                answerInput.value = "";
+                answerInput.style.display = "";
+                answerInput.placeholder = "請在下方作圖區作答";
+                answerInput.title = "請在下方作圖區作答，並按 AI 檢查送出。";
+            } else if (!uiContract.textInputEnabled) {
+                answerInput.setAttribute("aria-disabled", "true");
+                answerInput.removeAttribute("title");
                 answerInput.placeholder = "此題請在畫布作答，並按 AI 檢查送出。";
             } else {
                 answerInput.removeAttribute("aria-disabled");
+                answerInput.removeAttribute("title");
                 answerInput.placeholder = "輸入答案...";
             }
 
@@ -4773,7 +5585,7 @@
                 submitBtn.removeAttribute("aria-disabled");
             }
 
-            applyAnalyzeButtonVisibility(uiContract.aiCheckRequired);
+            applyAnalyzeButtonVisibility(uiContract.aiCheckAvailable);
 
             const scratchpad = document.getElementById('scratchpad-container');
             if (scratchpad) {
@@ -4836,7 +5648,7 @@
                 body: JSON.stringify(payload)
             })
             .then(r => r.json())
-            .then(data => {
+            .then(async data => {
                 stopPracticeCheckLoading();
 
                 if (shouldIgnoreCheckAnswerResponse(data, submitEpoch, submitQuestionUid)) {
@@ -4857,14 +5669,15 @@
                     return;
                 }
 
+                notePracticeTypeRotation(data);
                 const isCorrectVal = data.is_correct !== undefined ? data.is_correct : data.correct;
 
                 if (isCorrectVal === true) {
                     resultDisplay.textContent = data.result || '正確！';
                     resultDisplay.className = 'correct';
-                    updateStreak(true);
+                    updateStreak(true, data.consecutive_correct, data.pass_target);
                     consecutiveWrongs = 0;
-                    handleCorrectAnswer();
+                    await handleCorrectAnswer();
                 } else {
                     if (submitBtn) submitBtn.disabled = false;
                     if (analyzeBtn) analyzeBtn.disabled = false;
@@ -4873,7 +5686,7 @@
                     if (isCorrectVal === false) {
                         resultDisplay.textContent = data.result || '錯誤';
                         resultDisplay.className = 'incorrect';
-                        updateStreak(false);
+                    updateStreak(false, data.consecutive_correct, data.pass_target);
                         consecutiveWrongs++;
                         if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
                             showPrereqSuggestionModal();
@@ -4894,6 +5707,7 @@
                 isProcessing = false;
                 resultDisplay.textContent = '批改失敗，請稍後再試。';
                 resultDisplay.className = 'incorrect';
+                applyDrawingUiContract();
             });
         }
 
@@ -4939,6 +5753,152 @@
                 return true;
             }
             return false;
+        }
+
+        function renderChapterReviewStart() {
+            isInitialQuestionLoaded = true;
+            if (!questionText) return;
+            questionText.style.opacity = '1';
+            const resume = CHAPTER_REVIEW.resume;
+            if (resume && CHAPTER_REVIEW.resume_url && CHAPTER_REVIEW.restart_url) {
+                const n = (v) => Number(v || 0);
+                const accuracy = n(resume.answered)
+                    ? `${n(resume.accuracy)}%（${n(resume.correct)}/${n(resume.answered)}）`
+                    : '--';
+                const p = document.createElement('p');
+                p.textContent = `上次進度 ${n(resume.types_passed)}/${n(resume.types_total)}｜正確率 ${accuracy}`
+                    + `｜🔥連續答對 ${n(resume.streak)} 題`
+                    + (resume.current_section_name ? `｜下一步：${resume.current_section_name}` : '');
+                const actions = document.createElement('span');
+                actions.className = 'chapter-review-start-actions';
+                [
+                    ['chapter-review-resume-btn', '繼續複習', CHAPTER_REVIEW.resume_url, '#28a745'],
+                    ['chapter-review-restart-btn', '重新開始', CHAPTER_REVIEW.restart_url, '#6c757d'],
+                ].forEach(([id, label, href, color]) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.id = id;
+                    btn.className = 'level-button';
+                    btn.style.backgroundColor = color;
+                    btn.style.color = '#fff';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => { window.location.href = href; });
+                    actions.appendChild(btn);
+                });
+                const strip = document.createElement('div');
+                strip.id = 'chapter-review-start';
+                strip.className = 'chapter-review-start-strip';
+                strip.append(p, actions);
+                questionText.replaceChildren(strip);
+                return;
+            }
+            questionText.innerHTML = '<div id="chapter-review-start" class="chapter-review-start-strip">'
+                + '<p>依序完成各小節題型；答錯題型會再出現，全部通過即完成本章總複習。</p>'
+                + '<button type="button" id="chapter-review-start-btn" class="level-button" '
+                + 'style="background-color:#28a745;color:#fff;">開始複習</button></div>';
+            document.getElementById('chapter-review-start-btn').addEventListener('click', () => {
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('chapter_review', '1');
+                    window.history.replaceState(null, '', url.toString());
+                } catch (e) { /* ignore */ }
+                loadQuestion();
+            });
+        }
+
+        function updateChapterReviewPanel(rotation) {
+            if (!CHAPTER_REVIEW || !rotation || typeof rotation !== 'object') return;
+            const setText = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = String(value);
+            };
+            const saved = rotation.chapter_review;
+            if (saved && typeof saved === 'object') {
+                const answered = Number(saved.answered || 0);
+                const total = Number(saved.types_total || 0);
+                if (total) setText('chapter-review-types', `${Number(saved.types_passed || 0)}/${total}`);
+                setText('chapter-review-accuracy', answered
+                    ? `${Number(saved.accuracy || 0)}%（${Number(saved.correct || 0)}/${answered}）`
+                    : '--');
+                setText('chapter-review-streak', Number(saved.streak || 0));
+                return;
+            }
+            const total = Number(rotation.total_types || 0);
+            const passed = Number((rotation.status_counts || {}).passed || 0);
+            if (total) setText('chapter-review-types', `${passed}/${total}`);
+            if (Array.isArray(rotation.weak_types)) setText('chapter-review-weak', rotation.weak_types.length);
+            const chapter = rotation.chapter_summary;
+            if (chapter && typeof chapter === 'object') {
+                const answered = Number(chapter.total_answered || 0);
+                setText('chapter-review-answered', answered);
+                setText('chapter-review-correct', Number(chapter.correct || 0));
+                setText('chapter-review-accuracy', answered ? `${Number(chapter.accuracy || 0)}%` : '--');
+            }
+        }
+
+        function notePracticeTypeRotation(data) {
+            const rotation = data && data.practice_type_rotation;
+            if (!rotation || typeof rotation !== 'object') return;
+            console.log('[FRONTEND PRACTICE] type_rotation', rotation);
+            updateChapterReviewPanel(rotation);
+            if (rotation.section_completed) {
+                window.__practiceTypeRotationNextSection = String(rotation.next_section_skill_id || '');
+                window.__practiceTypeRotationSectionCompleted = true;
+            }
+        }
+
+        function consumePracticeTypeRotationTransition() {
+            if (!window.__practiceTypeRotationSectionCompleted) return false;
+            const nextSection = window.__practiceTypeRotationNextSection || '';
+            window.__practiceTypeRotationSectionCompleted = false;
+            window.__practiceTypeRotationNextSection = '';
+            if (!nextSection) return false;
+            if (questionText) {
+                questionText.textContent = '本小節所有題型都已通過，前往下一小節…';
+                questionText.style.opacity = '1';
+            }
+            window.location.href = `/practice/${encodeURIComponent(nextSection)}`
+                + (CHAPTER_REVIEW ? '?chapter_review=1' : '');
+            return true;
+        }
+
+        function renderChapterCompletionSummary(summary) {
+            currentQuestion = null;
+            const n = (v) => Number(v || 0);
+            const rows = [
+                ['總作答題數', n(summary.total_answered)],
+                ['答對題數', n(summary.correct)],
+                ['答錯題數', n(summary.wrong)],
+                ['正確率', `${n(summary.accuracy)}%`],
+                ['完成題型數', n(summary.types_completed)],
+                ['完成小節數', n(summary.sections_completed)],
+            ];
+            if (questionText) {
+                questionText.style.opacity = '1';
+                questionText.innerHTML = '<div id="chapter-completion-summary">'
+                    + `<h3 style="margin:0 0 8px;">${CHAPTER_REVIEW ? '本章總複習完成' : '本章練習完成'}</h3>`
+                    + '<ul style="margin:0;padding-left:20px;line-height:1.8;">'
+                    + rows.map(([label, value]) => `<li>${label}：<strong>${value}</strong></li>`).join('')
+                    + '</ul></div>';
+            }
+            if (questionChoices) {
+                questionChoices.innerHTML = '';
+                questionChoices.style.display = 'none';
+            }
+            const qmc = document.getElementById('question-media-container');
+            if (qmc) { qmc.innerHTML = ''; qmc.style.display = 'none'; }
+            const subq = document.getElementById('subquestions-container');
+            if (subq) subq.innerHTML = '';
+            document.querySelectorAll('.practice-answer-block').forEach((el) => { el.style.display = 'none'; });
+            if (answerInput) { answerInput.value = ''; answerInput.disabled = true; }
+            if (submitBtn) submitBtn.disabled = true;
+            if (analyzeBtn) analyzeBtn.disabled = true;
+            const nextBtn = document.getElementById('next-question-btn');
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (resultDisplay) {
+                resultDisplay.textContent = '本章所有小節題型都已通過。';
+                resultDisplay.className = 'correct';
+            }
         }
 
         function applyCurrentQuestion(payload) {
@@ -4989,12 +5949,14 @@
 
         function loadQuestion() {
             const skill = getSkillId();
+            if (consumePracticeTypeRotationTransition()) return;
 
             practiceQuestionEpoch += 1;
             const loadEpoch = practiceQuestionEpoch;
             currentQuestion = null;
             clearPracticeFeedback();
             clearGlobalPracticeStorageKeys();
+            clearSkillPracticeStorage(skill);
             clearTutorPromptSuggestions();
             resetAIChat();
             if (questionText) {
@@ -5013,7 +5975,24 @@
             const params = new URLSearchParams();
             params.set('skill', skill);
             params.set('level', safeLevel);
+            params.set('mode', 'type_rotation');
+            if (CHAPTER_REVIEW) params.set('chapter_review', '1');
             const currentParams = new URLSearchParams(window.location.search);
+            const mistakeId = currentParams.get('mistake_id');
+            const reviewComponentId = currentParams.get('component_id');
+            if (mistakeId) params.set('mistake_id', mistakeId);
+            if (reviewComponentId) params.set('component_id', reviewComponentId);
+            const reviewVariant = currentParams.get('variant');
+            const reviewSeed = currentParams.get('gen_seed');
+            if (reviewVariant) params.set('variant', reviewVariant);
+            if (reviewSeed) params.set('gen_seed', reviewSeed);
+            if (!window.__textbookExampleIdConsumed) {
+                const textbookExampleId = currentParams.get('textbook_example_id');
+                if (textbookExampleId) {
+                    params.set('textbook_example_id', textbookExampleId);
+                    window.__textbookExampleIdConsumed = true;
+                }
+            }
             const problemType = currentParams.get('problem_type') || window.currentProblemTypeId || '';
             if (problemType === 'tree_diagram_listing') {
                 params.set('problem_type', 'tree_diagram_listing');
@@ -5036,9 +6015,26 @@
                     }
                     if (questionText) questionText.style.opacity = '1';
 
-                    if (data.error) {
-                        questionText.textContent = `錯誤：${data.error}`;
+                    if (data.error || data.success === false) {
+                        questionText.textContent = `錯誤：${data.error || data.message || '題目載入失敗，請通知教師檢查此技能。'}`;
                         isProcessing = false;
+                        return;
+                    }
+
+                    if (data.chapter_completed) {
+                        updateChapterReviewPanel(data.practice_type_rotation);
+                        renderChapterCompletionSummary(data.chapter_summary || {});
+                        isProcessing = false;
+                        return;
+                    }
+                    if (data.chapter_review_next_section !== undefined) {
+                        updateChapterReviewPanel(data.practice_type_rotation);
+                        window.__practiceTypeRotationSectionCompleted = true;
+                        window.__practiceTypeRotationNextSection = String(data.chapter_review_next_section || '');
+                        isProcessing = false;
+                        if (!consumePracticeTypeRotationTransition() && questionText) {
+                            questionText.textContent = '本小節所有題型都已通過。';
+                        }
                         return;
                     }
 
@@ -5053,7 +6049,9 @@
                         return;
                     }
 
+                    data = normalizeLatestQuestionResponse(data);
                     applyCurrentQuestion(data);
+                    updateChapterReviewPanel(data.practice_type_rotation);
                     if (!currentQuestion) {
                         questionText.textContent = '題目載入失敗（技能不一致），請重新整理。';
                         isProcessing = false;
@@ -5096,7 +6094,7 @@
                             qmc.style.display = 'block';
                         }
                         saveState();
-                    } else if (renderQuestionImageAssets(data)) {
+                    } else if (renderQuestionDiagramSpec(data)) {
                         saveState();
                     } else {
                         applyQuestionScratchpadBackground(data).then(() => {
@@ -5107,8 +6105,13 @@
                     // 3. MathJax 排版
                     const typesetPromise = () => {
                         return new Promise((resolve) => {
+                            const qmc = document.getElementById('question-media-container');
+                            const targets = [questionText, qmc].filter(Boolean);
+                            if (window.MathDisplayNormalizer) {
+                                targets.forEach((target) => window.MathDisplayNormalizer.normalizeElement(target));
+                            }
                             if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-                                window.MathJax.typesetPromise([questionText])
+                                window.MathJax.typesetPromise(targets)
                                     .then(() => resolve())
                                     .catch((err) => resolve());
                             } else {
@@ -5127,18 +6130,23 @@
                         } else {
                             questionText.style.fontSize = "1.25rem"; // 預設字體
                         }
+                        scheduleQuestionAnswerRowFit();
                     });
 
                     // 4. 更新連續答對數
-                    if (data.consecutive_correct !== undefined && getSafeSelectedLevel() === 1) {
-                        currentStreak = data.consecutive_correct;
-                        streakCounter.textContent = `連續答對：${currentStreak}`;
-                        streakCounter.style.display = 'inline-block';
-                    } else {
-                        streakCounter.style.display = 'none';
+                    if (PRACTICE_MODE === 'standard') {
+                        const loadedStreak = data.consecutive_correct !== undefined
+                            ? data.consecutive_correct
+                            : currentStreak;
+                        const loadedTarget = data.pass_target !== undefined
+                            ? data.pass_target
+                            : PRACTICE_PASS_TARGET;
+                        renderStreakProgress(loadedStreak, loadedTarget);
                     }
 
-                    levelIndicator.textContent = `等級：${data.current_level}`;
+                    const responseLevel = resolvePracticeResponseLevel(data, getSafeSelectedLevel());
+                    selectedLevel = responseLevel;
+                    if (levelIndicator) levelIndicator.textContent = `等級：${responseLevel}`;
                     currentContext = data.context_string || data.inequality_string || "";
 
                     // 5. 調整輸入框狀態
@@ -5146,11 +6154,19 @@
                         answerInput.disabled = true;
                         answerInput.placeholder = '請在計算紙區域作答';
                         submitBtn.disabled = true;
-                    } else {
+                    } else if (!isDrawingQuestion(data)) {
                         answerInput.disabled = false;
+                        answerInput.readOnly = false;
                         answerInput.placeholder = '請在此輸入答案';
                         submitBtn.disabled = false;
                     }
+                    // Multipart / choice UI hides #answer-input; drawing UI disables it.
+                    // Re-apply after the generic enable above so the formal contract wins.
+                    applyMultiPartUiContract(data);
+                    // Answer labels are inserted after the stem typeset. Typeset them
+                    // too, so \(\alpha^2+\beta^2\) does not stay as raw TeX.
+                    if (subquestionsContainer) renderMathContent(subquestionsContainer);
+                    watchAnswerStripLabels();
 
                     // 6. 重置介面（renderQuestion 已清空回饋與答案欄）
                     ctx.fillStyle = 'white';
@@ -5297,10 +6313,12 @@
             if (!questionChoices || choiceGridResizeObserver) {
                 return;
             }
-            choiceGridResizeObserver = new ResizeObserver(() => {
-                updateChoiceGridLayout(currentQuestion);
-            });
-            choiceGridResizeObserver.observe(questionChoices);
+            if (typeof ResizeObserver !== 'undefined') {
+                choiceGridResizeObserver = new ResizeObserver(() => {
+                    updateChoiceGridLayout(currentQuestion);
+                });
+                choiceGridResizeObserver.observe(questionChoices);
+            }
             window.addEventListener('resize', () => {
                 updateChoiceGridLayout(currentQuestion);
             });
@@ -5314,6 +6332,10 @@
             if (!isChoiceQuestionPayload(payload) || !Array.isArray(choices) || choices.length === 0) {
                 questionChoices.style.display = 'none';
                 return;
+            }
+            const skillId = String((payload && payload.skill_id) || PAGE_SKILL_ID || '');
+            if (skillId.startsWith('vh_') && choices.length !== 4) {
+                console.warn('[PRACTICE] Invalid vocational choice count', skillId, choices.length);
             }
             questionChoices.style.display = '';
             questionChoices.classList.add('choice-list');
@@ -5354,8 +6376,56 @@
             return source;
         }
 
+        function resolveStemStructure(payload) {
+            if (!payload || typeof payload !== 'object') return null;
+            const candidates = [
+                payload.stem_structure,
+                payload.question_stem,
+                payload.multipart_stem,
+                payload.metadata && payload.metadata.stem_structure,
+                payload.data && payload.data.stem_structure,
+                payload.raw && payload.raw.stem_structure,
+            ];
+            for (const raw of candidates) {
+                if (!raw || typeof raw !== 'object') continue;
+                const items = Array.isArray(raw.items) ? raw.items : [];
+                if (!items.length) continue;
+                return {
+                    prompt: String(raw.prompt || '').trim(),
+                    items: items.map((item, index) => {
+                        if (item && typeof item === 'object') {
+                            let group = String(item.group_label || item.label || item.marker || '').trim();
+                            if (!group) group = `(${index + 1})`;
+                            else if (/^\d+$/.test(group)) group = `(${group})`;
+                            else if (!/^[\(（]\s*\d+\s*[\)）]$/.test(group)) {
+                                const m = group.match(/(\d+)/);
+                                if (m && !/[\u4e00-\u9fffA-Za-z]/.test(group)) group = `(${m[1]})`;
+                            }
+                            const text = String(item.text || item.math || item.body || item.content || '').trim();
+                            return { group_label: group, text };
+                        }
+                        return { group_label: `(${index + 1})`, text: String(item || '').trim() };
+                    }).filter((item) => item.text),
+                };
+            }
+            return null;
+        }
+
         function resolveQuestionText(payload) {
             if (!payload || typeof payload !== 'object') return '';
+            const stem = resolveStemStructure(payload);
+            if (stem && stem.items && stem.items.length) {
+                const lines = [];
+                if (stem.prompt) lines.push(stem.prompt);
+                stem.items.forEach((item) => {
+                    lines.push(`${item.group_label} ${item.text}`.trim());
+                });
+                let resolved = lines.join('\n');
+                if (isChoiceQuestionPayload(payload) && getChoiceItems(payload).length > 0) {
+                    resolved = stripEmbeddedAbcdChoicesFromStem(resolved);
+                }
+                return resolved;
+            }
             const direct = String(
                 payload.question_text || payload.new_question_text || payload.question || payload.prompt || ''
             ).trim();
@@ -5396,10 +6466,125 @@
             return String(text || '').replace(/\s+/g, ' ').slice(0, 80);
         }
 
+        const MULTIPART_MARKER = /([ \t]*\r?\n\s*|[ \t]+)?([\(（]\s*(\d{1,2})\s*[\)）])/g;
+        const MULTIPART_JOIN_AFTER = /[：:，,；;、？。！]$/;
+
+        function insideInlineMath(prefix) {
+            const dollars = (prefix.replace(/\\\$/g, '').match(/\$/g) || []).length;
+            return dollars % 2 === 1 || prefix.lastIndexOf('\\(') > prefix.lastIndexOf('\\)');
+        }
+
+        // Subquestion markers flow inline; the browser wraps them only when the row is full.
+        function joinMultipartMarkerLines(text) {
+            let seenFirstMarker = false;
+            return String(text || '').replace(MULTIPART_MARKER, (match, gap, marker, number, offset, source) => {
+                const prefix = source.slice(0, offset);
+                const lineBreak = Boolean(gap && gap.includes('\n'));
+                if (insideInlineMath(prefix)) return lineBreak ? ` ${marker}` : match;
+                const before = prefix.trimEnd();
+                const first = Number(number) === 1;
+                if (first) seenFirstMarker = true;
+                // A later marker glued to a letter/digit is a function call such as f(2).
+                const isItem = first
+                    ? lineBreak
+                    : seenFirstMarker && (Boolean(gap) || !/[A-Za-z0-9]$/.test(before));
+                if (!isItem && !lineBreak) return match;
+                return (!before || MULTIPART_JOIN_AFTER.test(before) ? '' : '\u3000') + marker;
+            });
+        }
+
+        function findMultipartItemsStart(text) {
+            const pattern = /[\(（]\s*(\d{1,2})\s*[\)）]/g;
+            let start = -1;
+            let match;
+            while ((match = pattern.exec(text))) {
+                const prefix = text.slice(0, match.index);
+                if (/[A-Za-z0-9]$/.test(prefix) || insideInlineMath(prefix)) continue;
+                if (match[1] === '1' && start < 0) start = match.index;
+                else if (start >= 0 && Number(match[1]) >= 2) return start;
+            }
+            return -1;
+        }
+
         function setQuestionDisplayText(element, text) {
             if (!element) return;
-            const safeText = String(text || '');
-            element.textContent = safeText;
+            const safeText = joinMultipartMarkerLines(text);
+            const itemsStart = findMultipartItemsStart(safeText);
+            if (itemsStart < 0) {
+                element.textContent = safeText;
+                return;
+            }
+            // The item run stays on one line when it fits, otherwise drops below the prompt as a unit.
+            const items = document.createElement('span');
+            items.className = 'question-multipart-items';
+            const itemsText = safeText.slice(itemsStart);
+            let last = 0;
+            for (let at = itemsText.indexOf('\u3000'); at >= 0; at = itemsText.indexOf('\u3000', at + 1)) {
+                if (insideInlineMath(itemsText.slice(0, at))) continue;
+                items.appendChild(document.createTextNode(itemsText.slice(last, at)));
+                items.appendChild(createMultipartGap());
+                last = at + 1;
+            }
+            items.appendChild(document.createTextNode(itemsText.slice(last)));
+            element.textContent = safeText.slice(0, itemsStart);
+            element.appendChild(items);
+        }
+
+        function createMultipartGap() {
+            const gap = document.createElement('span');
+            gap.className = 'multipart-gap';
+            gap.textContent = '\u3000';
+            return gap;
+        }
+
+        function renderStructuredStem(element, payload) {
+            if (!element || !payload || typeof payload !== 'object') return false;
+            let stem = null;
+            try {
+                stem = resolveStemStructure(payload);
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] stem_structure resolve failed; using legacy question_text', err);
+                return false;
+            }
+            if (!stem || !Array.isArray(stem.items) || !stem.items.length) return false;
+            try {
+                element.textContent = '';
+                const wrap = document.createElement('div');
+                wrap.className = 'multipart-stem';
+                if (stem.prompt) {
+                    const promptEl = document.createElement('span');
+                    promptEl.className = 'multipart-stem-prompt';
+                    promptEl.textContent = stem.prompt;
+                    wrap.appendChild(promptEl);
+                }
+                if (stem.prompt && !MULTIPART_JOIN_AFTER.test(stem.prompt)) {
+                    wrap.appendChild(document.createTextNode(' '));
+                }
+                const itemsWrap = document.createElement('span');
+                itemsWrap.className = 'multipart-stem-items';
+                wrap.appendChild(itemsWrap);
+                stem.items.forEach((item, index) => {
+                    if (index > 0) itemsWrap.appendChild(createMultipartGap());
+                    const row = document.createElement('span');
+                    row.className = 'multipart-stem-item';
+                    row.dataset.groupLabel = (item && item.group_label) || '';
+                    const marker = document.createElement('span');
+                    marker.className = 'multipart-stem-marker';
+                    marker.textContent = (item && item.group_label) || '';
+                    const body = document.createElement('span');
+                    body.className = 'multipart-stem-body';
+                    body.textContent = (item && item.text) || '';
+                    row.appendChild(marker);
+                    row.appendChild(document.createTextNode(' '));
+                    row.appendChild(body);
+                    itemsWrap.appendChild(row);
+                });
+                element.appendChild(wrap);
+                return true;
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] structured stem render failed; using legacy question_text', err);
+                return false;
+            }
         }
 
         function showMissingQuestionTextError(element, payload) {
@@ -5409,6 +6594,10 @@
         }
 
         function renderQuestion(payload) {
+            handwritingTransientState = applyHandwritingTransientLifecycle(handwritingTransientState, {
+                type: 'rerender',
+                questionUid: payload && payload.question_uid,
+            });
             clearPracticeFeedback();
             applyCurrentQuestion(payload);
             const questionMainText = resolveQuestionText(payload);
@@ -5416,7 +6605,16 @@
                 showMissingQuestionTextError(questionText, payload);
                 return '';
             }
-            setQuestionDisplayText(questionText, questionMainText);
+            let usedStructuredStem = false;
+            try {
+                usedStructuredStem = Boolean(renderStructuredStem(questionText, payload));
+            } catch (err) {
+                console.warn('[FRONTEND PRACTICE] structured stem aborted; using legacy question_text', err);
+                usedStructuredStem = false;
+            }
+            if (!usedStructuredStem) {
+                setQuestionDisplayText(questionText, questionMainText);
+            }
             if (answerInput) {
                 answerInput.value = '';
             }
@@ -5431,6 +6629,8 @@
             resetQuestionScroll();
             renderChoices(payload);
             applyMultiPartUiContract(payload);
+            if (subquestionsContainer) renderMathContent(subquestionsContainer);
+            watchAnswerStripLabels();
             resetQuestionScroll();
             console.log('[FRONTEND PRACTICE] rendered question_uid', payload && payload.question_uid);
             console.log('[FRONTEND PRACTICE] rendered question_text_preview=', previewQuestionText(questionMainText));
@@ -5442,6 +6642,10 @@
             renderMathContent(questionText);
             if (questionChoices && questionChoices.style.display !== 'none') {
                 renderMathContent(questionChoices);
+            }
+            const questionMedia = document.getElementById('question-media-container');
+            if (questionMedia && questionMedia.style.display !== 'none') {
+                renderMathContent(questionMedia);
             }
             requestAnimationFrame(() => updateChoiceGridLayout(payload));
             setTimeout(() => updateChoiceGridLayout(payload), 80);
@@ -5565,7 +6769,7 @@
                     body: JSON.stringify(buildCheckAnswerPayload(userAnswer))
                 })
                     .then(r => r.json())
-                    .then(data => {
+                    .then(async data => {
                         // 停止載入訊息
                         stopLoadingMessage();
 
@@ -5581,6 +6785,7 @@
                             );
                             return;
                         }
+                        notePracticeTypeRotation(data);
 
                         if (data.duplicate_submission) {
                             resultDisplay.textContent = data.message || data.result || '此題已批改過。';
@@ -5596,12 +6801,36 @@
                             return;
                         }
 
-                        resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
+                        if (window.CorrectAnswerFeedback) {
+                            try {
+                                await window.CorrectAnswerFeedback.render(resultDisplay, data);
+                            } catch (feedbackError) {
+                                console.warn('正確答案回饋顯示失敗，不影響批改結果:', feedbackError);
+                                resultDisplay.textContent = data.result || (data.correct ? '答對了！' : '答錯了。');
+                            }
+                        } else {
+                            resultDisplay.textContent = data.result || (data.correct ? '正確！' : '錯誤');
+                        }
                         resultDisplay.className = data.correct ? 'correct' : 'incorrect';
+                        if (data.mistake_notebook_review_completed && data.mistake_notebook_message) {
+                            const reviewNotice = document.createElement('div');
+                            reviewNotice.className = 'correct';
+                            reviewNotice.textContent = data.mistake_notebook_message;
+                            resultDisplay.appendChild(reviewNotice);
+                        }
                         if (Array.isArray(data.per_part_results) && isTableFillQuestion(currentQuestion)) {
                             applyTableGradingResult(data.per_part_results);
                         }
-                        updateStreak(data.correct);
+                        updateStreak(data.correct, data.consecutive_correct, data.pass_target);
+
+                        // Authoritative correct verdict completes immediately through
+                        // the shared msgbox flow. Optional tutor/remediation UI cannot
+                        // delay or override this branch.
+                        if (data.correct) {
+                            consecutiveWrongs = 0;
+                            await handleCorrectAnswer();
+                            return;
+                        }
 
                         // [Phase 6] 處理前置單元推薦
                         console.log('[前置單元推薦] API 回應:', data);
@@ -5618,21 +6847,12 @@
                             }
                         }
 
-                        if (data.correct) {
-                            handleCorrectAnswer();
-                        } else {
-                            // 如果答錯
-                            consecutiveWrongs++;
-                            // 檢查是否觸發建議
-                            if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
-                                showPrereqSuggestionModal();
-                                consecutiveWrongs = 0; // 重置計數器
-                            }
-                        }
-
-                        // 如果答對，重置連續答錯計數器
-                        if (data.correct) {
-                            consecutiveWrongs = 0;
+                        // 如果答錯
+                        consecutiveWrongs++;
+                        // 檢查是否觸發建議
+                        if (consecutiveWrongs >= 3 && PREREQ_SKILLS && PREREQ_SKILLS.length > 0) {
+                            showPrereqSuggestionModal();
+                            consecutiveWrongs = 0; // 重置計數器
                         }
                     })
                     .catch(err => {
@@ -5682,11 +6902,251 @@
             };
         }
 
-        // === AI 分析 ===
+        const AI_CHECK_TIMEOUT_MS = 150000;
+
+        async function postJsonWithTimeout(url, payload, timeoutMs) {
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            const timer = controller ? setTimeout(() => controller.abort(), timeoutMs || AI_CHECK_TIMEOUT_MS) : null;
+            let response;
+            try {
+                response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: controller ? controller.signal : undefined,
+                });
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    throw new Error('AI 這次回應太久，請再按一次 AI 檢查。');
+                }
+                throw new Error('網路連線中斷，請確認連線後再按一次 AI 檢查。');
+            } finally {
+                if (timer) clearTimeout(timer);
+            }
+            let body = {};
+            try {
+                body = await response.json();
+            } catch (_err) {
+                body = {};
+            }
+            return { response, body: body || {} };
+        }
+
+        function aiCheckFailureMessage(response, body) {
+            if (response && response.status === 409) {
+                return '這一題已經更新或過期，請按「下一題」重新取得題目後再作答。';
+            }
+            if (body && (body.ai_unavailable || body.retryable)) {
+                return body.reply || body.feedback || 'AI 這次沒有成功回覆，請再按一次 AI 檢查。';
+            }
+            if (body && body.reason === 'handwriting_not_recognized') {
+                return '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。';
+            }
+            return 'AI 檢查沒有完成，請再按一次 AI 檢查。';
+        }
+
+        async function submitHandwritingAsAnswer() {
+            const cq = currentQuestion || {};
+            // Only the ink layer counts as student work; grids and system figures live on the background layer.
+            if (isInkCanvasBlank()) {
+                resultDisplay.textContent = '請先在白板寫下你的作答，再按 AI 檢查。';
+                resultDisplay.className = '';
+                return;
+            }
+            const submission = beginFreshHandwritingSubmission(cq);
+            const imageDataUrl = await captureHandwritingImageForRecognition();
+            if (!imageDataUrl || imageDataUrl === 'data:,' || imageDataUrl === 'data:image/png;base64,') {
+                resultDisplay.textContent = '請先在白板寫下你的作答，再按 AI 檢查。';
+                resultDisplay.className = '';
+                return;
+            }
+            const { response: recognitionResponse, body: recognition } = await postJsonWithTimeout(
+                '/api/practice/ai-check-handwriting', {
+                    image_data_url: imageDataUrl,
+                    image_base64: imageDataUrl,
+                    student_strokes_image_data_url: (getInkCanvasEl() || canvas).toDataURL('image/png'),
+                    question_uid: cq.question_uid || '',
+                    skill_id: cq.skill_id || getSkillId() || '',
+                    question_text: questionText.innerText || '',
+                    problem_type_id: cq.problem_type_id || window.currentProblemTypeId || '',
+                    presentation_mode: cq.presentation_mode || '',
+                    answer_type: cq.answer_type || (cq.answer_contract && cq.answer_contract.answer_type) || '',
+                    handwriting_submission_id: submission.submissionId,
+                    capture_debug: {
+                        captured_at: submission.capturedAt,
+                        canvas_selector: '#handwriting-canvas',
+                        reused_cache: false,
+                        stroke_count: null,
+                        history_depth: Array.isArray(undoStack) ? Math.max(0, undoStack.length - 1) : null,
+                    },
+                });
+            if (isStaleHandwritingSubmission()) {
+                return;
+            }
+            if (!recognitionResponse.ok) {
+                throw new Error(aiCheckFailureMessage(recognitionResponse, recognition));
+            }
+            if (
+                recognition.handwriting_submission_id
+                && recognition.handwriting_submission_id !== submission.submissionId
+            ) {
+                throw new Error('手寫辨識回傳已過期，請重新送出。');
+            }
+            const submissionAudit = recognition.submission_audit || {};
+            submission.imageSha256 = String(submissionAudit.image_sha256 || '');
+            submission.recognizedRawText = [submissionAudit.recognized_raw_text, recognition.recognized_answer, ''].find((value) => value != null);
+            submission.normalizedAnswer = recognition.normalized_answer != null
+                ? recognition.normalized_answer
+                : (recognition.recognized_answer != null ? recognition.recognized_answer : null);
+            handwritingTransientState = applyHandwritingTransientLifecycle(submission, {
+                type: 'ai-check-result',
+                questionUid: submission.questionUid,
+                recognizedSteps: recognition.recognized_steps,
+                normalizedAnswer: submission.normalizedAnswer,
+                recognitionIncomplete: recognition.recognition_incomplete === true,
+            });
+            submission.recognizedSteps = handwritingTransientState.recognizedSteps;
+            submission.recognitionIncomplete = handwritingTransientState.recognitionIncomplete;
+            submission.structuredAnalysis = submissionAudit.structured_answer || null;
+            const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
+            console.log('[HANDWRITING SUBMISSION] recognition', {
+                submissionId: submission.submissionId,
+                questionUid: submission.questionUid,
+                imageSha256: submission.imageSha256,
+                captureTimestamp: submission.capturedAt,
+                recognizedRawText: submission.recognizedRawText,
+                normalizedAnswer: submission.normalizedAnswer,
+                structuredAnswer: submissionAudit.structured_answer || null,
+                part_1: submissionAudit.part_1 == null ? null : submissionAudit.part_1,
+                part_2: submissionAudit.part_2 == null ? null : submissionAudit.part_2,
+                completionState: recognition.completion_state || '',
+                previousStateReused: submissionAudit.previous_handwriting_state_reused === true,
+                structuredAnalysisFresh: submissionAudit.structured_analysis_from_current_request === true,
+            });
+            if (recognition.completion_state === 'blank' || recognition.is_blank === true) {
+                resultDisplay.textContent = recognition.feedback || '請先在白板作答。';
+                resultDisplay.className = '';
+                return;
+            }
+            if (recognition.completion_state === 'in_progress') {
+                const partialWork = String(normalizedAnswer || '').trim();
+                const hasSteps = Array.isArray(submission.recognizedSteps) && submission.recognizedSteps.length > 0;
+                if (!partialWork && !hasSteps) {
+                    resultDisplay.textContent = recognition.feedback || '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。';
+                    resultDisplay.className = '';
+                    return;
+                }
+                // Unfinished work is not graded; the tutor still diagnoses the steps written so far.
+                if (await requestHandwritingTutorFeedback(partialWork, false)) {
+                    resultDisplay.textContent = '還在作答中，AI 助教已針對目前的步驟給你建議。';
+                    resultDisplay.className = '';
+                }
+                return;
+            }
+            if (!normalizedAnswer) {
+                throw new Error(recognition.feedback || '目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。');
+            }
+
+            const handwritingPayload = buildCheckAnswerPayload(normalizedAnswer);
+            handwritingPayload.handwriting_submission_id = submission.submissionId;
+            handwritingPayload.handwriting_image_sha256 = submission.imageSha256;
+            if (normalizedAnswer && typeof normalizedAnswer === 'object') {
+                handwritingPayload.answer = normalizedAnswer;
+                handwritingPayload.answers = normalizedAnswer;
+                handwritingPayload.user_answer = normalizedAnswer;
+            }
+            const { response: gradeResponse, body: grade } = await postJsonWithTimeout('/check_answer', handwritingPayload);
+            if (isStaleHandwritingSubmission()) {
+                return;
+            }
+            if (!gradeResponse.ok) throw new Error(grade.result || aiCheckFailureMessage(gradeResponse, grade));
+            notePracticeTypeRotation(grade);
+            submission.checkerResult = grade.checker_result || (grade.correct ? 'correct' : 'incorrect');
+            console.log('[HANDWRITING SUBMISSION] checker', {
+                submissionId: submission.submissionId,
+                questionUid: submission.questionUid,
+                checkerInput: grade.checker_input == null ? normalizedAnswer : grade.checker_input,
+                checkerResult: submission.checkerResult,
+                tutorAuthoritativeResult: grade.correct === true ? 'correct' : 'incorrect',
+            });
+
+            resultDisplay.textContent = grade.result || (grade.correct ? '答對了！' : '答案尚未正確。');
+            resultDisplay.className = grade.correct ? 'correct' : 'incorrect';
+            updateStreak(grade.correct === true, grade.consecutive_correct, grade.pass_target);
+            if (grade.correct === true) {
+                consecutiveWrongs = 0;
+                clearTutorPromptSuggestions();
+                await handleCorrectAnswer();
+                return;
+            }
+
+            const gradeText = resultDisplay.textContent;
+            try {
+                await requestHandwritingTutorFeedback(normalizedAnswer, true);
+            } catch (err) {
+                throw new Error(`${gradeText} ${err.message}`);
+            }
+
+            function isStaleHandwritingSubmission() {
+                return submission.questionUid !== String((currentQuestion && currentQuestion.question_uid) || '')
+                    || !handwritingTransientState
+                    || handwritingTransientState.submissionId !== submission.submissionId;
+            }
+
+            async function requestHandwritingTutorFeedback(answerText, linkChecker) {
+                const payload = {
+                    image_data_url: imageDataUrl,
+                    normalized_answer: answerText || '',
+                    recognized_steps: submission.recognizedSteps || [],
+                    question_uid: submission.questionUid,
+                    question_text: questionText.innerText || '',
+                };
+                if (linkChecker) {
+                    payload.handwriting_submission_id = submission.submissionId;
+                    payload.handwriting_image_sha256 = submission.imageSha256;
+                }
+                const { response: feedbackResponse, body: feedback } = await postJsonWithTimeout('/analyze_handwriting', payload);
+                if (isStaleHandwritingSubmission()) {
+                    return false;
+                }
+                if (!feedbackResponse.ok || feedback.success === false) {
+                    throw new Error(aiCheckFailureMessage(feedbackResponse, feedback));
+                }
+                if (
+                    feedback.handwriting_submission_id
+                    && feedback.handwriting_submission_id !== submission.submissionId
+                ) {
+                    throw new Error('AI 助教回傳已過期，已忽略上一輪分析。');
+                }
+                submission.structuredAnalysis = feedback.handwriting_analysis || null;
+                if (feedback.recognition_incomplete === true) {
+                    submission.recognitionIncomplete = true;
+                    if (handwritingTransientState && handwritingTransientState.submissionId === submission.submissionId) {
+                        handwritingTransientState.recognitionIncomplete = true;
+                    }
+                }
+                console.log('[HANDWRITING SUBMISSION] tutor', {
+                    submissionId: submission.submissionId,
+                    structuredAnalysisFresh: feedback.structured_analysis_from_current_request === true,
+                    tutorAuthoritativeResult: feedback.tutor_authoritative_result || null,
+                });
+                const msg = document.createElement('div');
+                msg.className = 'bot-message latest';
+                msg.textContent = studentVisibleReply(feedback, '目前無法整理出回饋，請再試一次。');
+                chatHistory.appendChild(msg);
+                showDynamicSuggestions(feedback.suggested_questions || feedback.follow_up_prompts || []);
+                renderTutorMath(msg);
+                scrollAiTutorToBottom();
+                return true;
+            }
+        }
+
+        // === AI 分析 / 手寫正式答案提交 ===
         function setupAIButton() {
             if (!analyzeBtn) return;
 
             // 動態載入訊息效果（三個點動畫）
+            const LOADING_PREFIX = 'AI 正在分析中';
             let loadingInterval = null;
             function showLoadingMessage() {
                 let dots = 0;
@@ -5694,11 +7154,13 @@
                 resultDisplay.style.background = '#fff3cd';
                 resultDisplay.style.color = '#856404';
                 resultDisplay.style.border = '1px solid #ffeaa7';
+                resultDisplay.textContent = LOADING_PREFIX;
 
                 loadingInterval = setInterval(() => {
+                    // Stop animating once the request wrote its own status.
+                    if (!String(resultDisplay.textContent || '').startsWith(LOADING_PREFIX)) return;
                     dots = (dots + 1) % 4;
-                    const dotString = '.'.repeat(dots);
-                    resultDisplay.textContent = `AI 正在分析中${dotString}`;
+                    resultDisplay.textContent = `${LOADING_PREFIX}${'.'.repeat(dots)}`;
                 }, 300);
             }
 
@@ -5707,26 +7169,70 @@
                     clearInterval(loadingInterval);
                     loadingInterval = null;
                 }
+                resultDisplay.style.background = '';
+                resultDisplay.style.color = '';
+                resultDisplay.style.border = '';
+                if (String(resultDisplay.textContent || '').startsWith(LOADING_PREFIX)) {
+                    resultDisplay.textContent = '';
+                }
             }
 
-            analyzeBtn.onclick = () => {
+            let aiCheckRunId = 0;
+            function releaseAiCheckButton() {
+                stopLoadingMessage();
+                isProcessing = false;
+                analyzeBtn.textContent = 'AI檢查';
+                analyzeBtn.disabled = false;
+            }
+            // A new question must never inherit a pending AI check.
+            window.resetAiCheckForNewQuestion = () => {
+                if (!aiCheckRunId || !isProcessing) return;
+                aiCheckRunId += 1;
+                releaseAiCheckButton();
+            };
+
+            analyzeBtn.onclick = async () => {
                 if (isProcessing) return;
                 
                 const cq = currentQuestion || {};
                 const uiContract = resolveDrawingUiContract(cq);
+
+                // Isolated gate: directed-segment drawing answers only.
+                if (isVectorDrawingCheckQuestion(cq)) {
+                    submitVectorDrawingCheck('ai-check-button');
+                    return;
+                }
 
                 if (isDrawingQuestion(cq)) {
                     submitDrawingAnswerFromCanvas('ai-check-button');
                     return;
                 }
 
-                if (!uiContract.aiCheckRequired) {
-                    console.warn(
-                        "[PRACTICE UI] AI check blocked by ui_contract",
-                        cq.problem_type_id
-                    );
+                if (!uiContract.aiCheckAvailable) {
+                    resultDisplay.textContent = '這一題沒有手寫區，請直接在答案欄作答後按送出。';
+                    resultDisplay.className = '';
                     return;
                 }
+
+                const runId = ++aiCheckRunId;
+                isProcessing = true;
+                analyzeBtn.textContent = '辨識並批改中...';
+                analyzeBtn.disabled = true;
+                showLoadingMessage();
+                try {
+                    await submitHandwritingAsAnswer();
+                } catch (err) {
+                    if (runId === aiCheckRunId) {
+                        stopLoadingMessage();
+                        resultDisplay.textContent = err.message || 'AI 檢查沒有完成，請再按一次 AI 檢查。';
+                        resultDisplay.className = 'incorrect';
+                    }
+                } finally {
+                    if (runId === aiCheckRunId) {
+                        releaseAiCheckButton();
+                    }
+                }
+                return;
 
                 isProcessing = true;
                 analyzeBtn.textContent = '分析中...';
@@ -5736,16 +7242,22 @@
                 showLoadingMessage();
 
                 const img = canvas.toDataURL('image/png');
+                const handwritingQuestionUid = String((currentQuestion && currentQuestion.question_uid) || '');
                 fetch('/analyze_handwriting', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         image_data_url: img,
+                        question_uid: handwritingQuestionUid,
                         question_text: questionText.innerText || ""
                     })
                 })
                     .then(r => r.json())
                     .then(data => {
+                        if (handwritingQuestionUid !== String((currentQuestion && currentQuestion.question_uid) || '')) {
+                            stopLoadingMessage();
+                            return;
+                        }
                         // 停止載入訊息
                         stopLoadingMessage();
 
@@ -5785,34 +7297,24 @@
                             } catch (err) { }
                         }
 
-                        if (data.follow_up_prompts && data.follow_up_prompts.length > 0) {
-                            showDynamicSuggestions(data.follow_up_prompts);
+                        if ((data.suggested_questions || data.follow_up_prompts || []).length > 0) {
+                            showDynamicSuggestions(data.suggested_questions || data.follow_up_prompts);
                         }
 
                         const isTreeDiagramFreeResponse = window.currentProblemTypeId === 'tree_diagram_listing';
                         const isPascalTriangleFreeResponse = window.currentProblemTypeId === 'pascal_triangle_handwriting';
 
-                        // 手寫批改：後端在答對時會設 correct=true（並搭配 next_question / auto_next）。
-                        // 舊版曾回傳 next_question: "" 導致條件失敗，故以 correct 為準，與 /check_answer 語意一致。
+                        // AI 助教只提供辨識與提示；正式完成一律由 /check_answer 的
+                        // authoritative checker / answer_contract 決定。
                         if (isTreeDiagramFreeResponse || isPascalTriangleFreeResponse) {
                             const status = data.handwriting_status || (data.handwriting_analysis && data.handwriting_analysis.status) || '';
-                            const label = status ? `AI 檢查完成（${status}），可以按「下一題」繼續練習。` : 'AI 檢查完成，可以按「下一題」繼續練習。';
-                            enableHandwritingNextQuestion(label);
-                            updateStreak(data.correct === true);
-                        } else if (data.correct) {
-                            // 在題目下方顯示"正確"
-                            resultDisplay.textContent = '正確';
-                            resultDisplay.className = 'correct';
-
-                            updateStreak(true);
-
-                            // 手寫正確後改走和 textbox 相同成功流程
-                            handleCorrectAnswer();
-                        } else if (data.correct === false) {
-                            // 如果錯誤，清空 resultDisplay（AI 的建議會在聊天區顯示）
-                            resultDisplay.textContent = '';
+                            resultDisplay.textContent = status
+                                ? `AI 辨識完成（${status}）；請使用正式提交完成批改。`
+                                : 'AI 辨識完成；請使用正式提交完成批改。';
                             resultDisplay.className = '';
-                            updateStreak(false);
+                        } else {
+                            resultDisplay.textContent = 'AI 助教回饋已更新；正式答對流程以提交答案的批改結果為準。';
+                            resultDisplay.className = '';
                         }
 
                         // [Phase 6] 處理前置單元推薦 (AI Handwriting Check)
@@ -5874,14 +7376,8 @@
                     scrollAiTutorToBottom();
                 }
 
-                // 2. [新增] 關鍵：告訴 MathJax 這裡有新訊息，請它幫忙畫出數學公式
-                if (window.MathJax) {
-                    try {
-                        window.MathJax.typesetPromise([msg]);
-                    } catch (err) {
-                        console.warn('User MathJax Render Error:', err);
-                    }
-                }
+                // 2. 告訴 MathJax 這裡有新訊息（與 AI 回覆共用同一渲染流程）
+                renderTutorMath(msg);
             }
 
             // 2. 發送訊息邏輯
@@ -5894,6 +7390,8 @@
 
                 // 顯示思考中
                 const thinkingDiv = addBotMessage('AI 助教正在思考...');
+                const chatQuestionUid = String((currentQuestion && currentQuestion.question_uid) || '');
+                chatSendBtn.disabled = true;
 
                 try {
                     // 嘗試獲取上下文，避免變數未定義錯誤
@@ -5909,6 +7407,10 @@
                     // 獲取當前題目文字
                     const questionDiv = document.getElementById('question-text');
                     const questionText = questionDiv ? questionDiv.innerText : "";
+                    const activeHandwriting = handwritingTransientState
+                        && handwritingTransientState.questionUid === String((currentQuestion && currentQuestion.question_uid) || '')
+                        ? handwritingTransientState
+                        : null;
 
                     const response = await fetch('/chat_ai', {
                         method: 'POST',
@@ -5918,55 +7420,37 @@
                             context: contextPayload,
                             question_text: questionText,
                             image_data: imgData,
-                            correct_answer: window.currentExpectedAnswer || ""
+                            student_answer: ((activeHandwriting && activeHandwriting.recognizedSteps) || []).length
+                                ? activeHandwriting.recognizedSteps.join('\n')
+                                : ((activeHandwriting && activeHandwriting.normalizedAnswer) || ''),
+                            recognized_steps: (activeHandwriting && activeHandwriting.recognizedSteps) || [],
+                            recognition_incomplete: Boolean(activeHandwriting) && activeHandwriting.recognitionIncomplete === true,
+                            handwriting_analysis: (activeHandwriting && activeHandwriting.structuredAnalysis) || null,
+                            handwriting_submission_id: (activeHandwriting && activeHandwriting.submissionId) || '',
+                            question_uid: chatQuestionUid
                         })
                     });
 
-                    // [Modified] Robust Error Handling Logic
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    let finalData = await response.json();
-                    if (!finalData || typeof finalData !== 'object') {
-                        finalData = { reply: "老師正在思考中，請再問一次看看！", follow_up_prompts: [] };
+                    let finalData = null;
+                    try {
+                        finalData = await response.json();
+                    } catch (_) {
+                        finalData = null;
                     }
-
-                    // 防呆：若 reply 被模型包成 JSON 字串，這裡拆出真正的 reply / prompts
-                    if (typeof finalData.reply === 'string') {
-                        const replyStr = finalData.reply.trim();
-                        if (replyStr.startsWith('{') && replyStr.includes('"reply"')) {
-                            try {
-                                const nested = JSON.parse(replyStr);
-                                if (nested && typeof nested.reply === 'string') {
-                                    finalData.reply = nested.reply;
-                                    if (Array.isArray(nested.follow_up_prompts) && (!Array.isArray(finalData.follow_up_prompts) || finalData.follow_up_prompts.length === 0)) {
-                                        finalData.follow_up_prompts = nested.follow_up_prompts;
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn('Nested reply JSON parse failed:', e);
-                            }
-                        }
+                    if (chatQuestionUid !== String((currentQuestion && currentQuestion.question_uid) || '')) {
+                        if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                        return;
                     }
-
-                    // 1. 顯示老師的對話 (移除制式標題)
-                    // [修復] 將後端過度轉義的 \\ 轉回 \ 以讓 MathJax 識別
-                    let rawReply = finalData.reply || "";
-                    rawReply = rawReply.replace(/\\\\/g, '\\');
-
-                    let cleanedReply = rawReply.replace(/(思考|選項|建議|回覆|解析|步驟|回答)[：:\d\s]*/g, "");
-
-                    // 顯示保險：若 reply 仍是 JSON-ish 字串，提取內層 reply 再顯示
-                    if (typeof cleanedReply === 'string') {
-                        const maybeJson = cleanedReply.trim();
-                        if (maybeJson.startsWith('{') && maybeJson.includes('"reply"')) {
-                            const m = maybeJson.match(/"reply"\s*:\s*"([\s\S]*?)"\s*(,|\})/);
-                            if (m && m[1]) {
-                                cleanedReply = m[1]
-                                    .replace(/\\n/g, '\n')
-                                    .replace(/\\"/g, '"')
-                                    .replace(/\\\\/g, '\\');
-                            }
-                        }
+                    const cleanedReply = (response.ok && finalData && typeof finalData === 'object' && !finalData.ai_unavailable)
+                        ? studentVisibleReply(finalData, '')
+                        : '';
+                    if (!cleanedReply) {
+                        if (thinkingDiv && thinkingDiv.parentNode) thinkingDiv.remove();
+                        addBotMessage(response.status === 409
+                            ? '題目已經更新，請針對目前這一題再問一次。'
+                            : 'AI 助教這次沒有成功回覆（不是你的問題問得不好），問題已放回輸入框，請再按一次送出。');
+                        chatInput.value = question;
+                        return;
                     }
 
                     // 移除思考中訊息
@@ -5981,7 +7465,7 @@
                     console.log("Updating dynamic prompts with:", finalData.follow_up_prompts);
 
                     // [修復] 提示詞也需要清洗反斜線
-                    let safePrompts = finalData.follow_up_prompts || [];
+                    let safePrompts = finalData.suggested_questions || finalData.follow_up_prompts || [];
                     if (Array.isArray(safePrompts)) {
                         safePrompts = safePrompts.map(p => p.replace(/\\\\/g, '\\'));
                     }
@@ -5996,7 +7480,10 @@
                     if (thinkingDiv && thinkingDiv.parentNode) {
                         thinkingDiv.parentNode.removeChild(thinkingDiv);
                     }
-                    addBotMessage("連線發生錯誤，請檢查網路。");
+                    addBotMessage("連線發生錯誤，問題已放回輸入框，請確認網路後再按一次送出。");
+                    chatInput.value = question;
+                } finally {
+                    chatSendBtn.disabled = false;
                 }
             });
 
@@ -6041,8 +7528,7 @@
 
             const messageDiv = document.createElement('div');
             messageDiv.className = 'bot-message';
-            // 安全模式：直接使用 innerHTML
-            messageDiv.innerHTML = text;
+            messageDiv.textContent = text;
 
             // CSS 防護
             messageDiv.style.whiteSpace = 'pre-wrap';
@@ -6051,12 +7537,31 @@
             chatHistory.appendChild(messageDiv);
             scrollAiTutorToBottom();
 
-            // [關鍵修復] 通知 MathJax 渲染新加入的數學公式
-            if (window.MathJax) {
-                // 使用 Promise 避免阻塞，針對整個 chat-box 或最新訊息渲染
-                window.MathJax.typesetPromise([messageDiv]).catch((err) => console.log('MathJax error:', err));
-            }
+            // 訊息已在 DOM 中，再交給共用 AI Tutor 渲染流程
+            renderTutorMath(messageDiv);
             return messageDiv;
+        }
+
+        function studentVisibleReply(payload, fallback) {
+            // LaTeX such as \sqrt{x^2+y^2} contains braces; only a serialized schema object is hidden.
+            const schemaBlob = /^\s*\{[\s\S]*"(reply|follow_up_prompts|suggested_questions|is_process_correct)"\s*:/;
+            function extract(value, depth = 0) {
+                if (depth > 2 || value == null) return '';
+                if (typeof value === 'object' && !Array.isArray(value)) return extract(value.reply, depth + 1);
+                if (typeof value !== 'string') return '';
+                const text = value.trim();
+                if (!text) return '';
+                if (!schemaBlob.test(text)) return text.replace(/\\\\/g, '\\');
+                try {
+                    const parsed = JSON.parse(text);
+                    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+                        ? extract(parsed.reply, depth + 1)
+                        : '';
+                } catch (_) {
+                    return '';
+                }
+            }
+            return extract(payload) || fallback;
         }
 
 
@@ -6074,7 +7579,7 @@
 
                     const btn = document.createElement('button');
                     btn.className = 'suggestion-btn';
-                    btn.innerHTML = promptText;
+                    btn.textContent = promptText;
 
                     btn.onclick = function () {
                         const chatInput = document.getElementById('chat-input');
@@ -6095,9 +7600,7 @@
                     suggestionsContainer.style.display = 'flex';
                 }
 
-                if (window.MathJax) {
-                    try { window.MathJax.typesetPromise([suggestionsContainer]); } catch (e) { }
-                }
+                renderTutorMath(suggestionsContainer);
             }
         }
 
@@ -6133,13 +7636,8 @@
 
             // 定義渲染函數
             const forceRender = () => {
-                if (window.MathJax && window.MathJax.typesetPromise) {
-                    // 針對整個 chatBox 進行重新排版
-                    // 使用 catch 避免報錯干擾
-                    try {
-                        window.MathJax.typesetPromise([chatBox]).catch((err) => { });
-                    } catch (e) { }
-                }
+                // Same serialized renderer as each message, so typeset calls never overlap.
+                renderTutorMath(chatBox);
             };
 
             // 1. 建立觀察者：只要對話框有變動，就觸發渲染
@@ -6167,145 +7665,6 @@
         });
     </script>
     <script>
-        /* [Feature] Instant Upload Handler */
-        function handleInstantUpload() {
-            const fileInput = document.getElementById('question-image-uploader');
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            // Show loading state?
-            // Maybe change button text
-            const btn = document.getElementById('upload-question-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 分析中...';
-            btn.disabled = true;
-
-            fetch('/practice/upload_instant', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        alert('上傳失敗: ' + data.message);
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('上傳發生錯誤');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                });
-        }
-
-        // Bind to the file input change event
-        document.getElementById('question-image-uploader').addEventListener('change', handleInstantUpload);
-        // === 新增：題目上傳功能 ===
-        function setupQuestionUpload() {
-            const uploadBtn = document.getElementById('upload-question-btn');
-            const fileInput = document.getElementById('question-image-uploader');
-            const questionTextDiv = document.getElementById('question-text');
-            const resultDisplay = document.getElementById('result-display');
-            const canvas = document.getElementById('handwriting-canvas'); // 確保 canvas 變數存在
-
-            if (!uploadBtn || !fileInput) return;
-
-            uploadBtn.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                // 顯示載入中
-                questionTextDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>正在分析題目圖片...</div>';
-
-                const formData = new FormData();
-                formData.append('file', file);
-
-                fetch('/upload_question_image', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            alert('上傳失敗: ' + data.error);
-                            questionTextDiv.textContent = '題目分析失敗，請重試。';
-                            return;
-                        }
-
-                        if (data.success && data.question_text) {
-                            // 更新題目
-                            // [Feature] Instant Practice Display Logic
-                            if (data.is_instant_upload) {
-                                let htmlContent = '';
-                                // Prefer image_path if available for caching/display, or base64
-                                // The backend next_question returns image_base64 but we stored image_path in session...
-                                // Let's rely on what next_question returns. We might need to adjust next_question to return image_path too.
-                                // For now, assume image_base64 is populated or we modify next_question to return url.
-
-                                if (data.image_base64) {
-                                    htmlContent += `<img id="instant-question-image" src="${normalizeQuestionImageSource(data.image_base64)}" alt="Uploaded Question">`;
-                                }
-
-                                if (data.question_text) { // Changed from data.new_question_text to data.question_text to match existing data structure
-                                    htmlContent += `<div class="latex-content">${data.question_text}</div>`;
-                                }
-
-                                questionTextDiv.innerHTML = htmlContent;
-                            } else {
-                                // Normal behavior
-                                questionTextDiv.innerHTML = data.question_text; // Changed from data.new_question_text to data.question_text
-                            }
-
-                            // Render MathJax
-                            if (window.MathJax) {
-                                MathJax.typesetPromise([questionTextDiv]).catch((err) => console.log(err));
-                            }
-                            if (answerInput) answerInput.value = '';
-
-                            if (resultDisplay) {
-                                resultDisplay.textContent = '';
-                                resultDisplay.className = '';
-                            }
-
-                            if (canvas) {
-                                const ctx = canvas.getContext('2d');
-                                ctx.fillStyle = 'white';
-                                ctx.fillRect(0, 0, canvas.clientWidth || canvas.width, canvas.clientHeight || canvas.height); // [HiDPI Fix] CSS px
-                                // 重置 undo/redo
-                                if (typeof undoStack !== 'undefined') undoStack = [];
-                                if (typeof redoStack !== 'undefined') redoStack = [];
-                                if (typeof saveState === 'function') saveState();
-                            }
-
-                            // 更新等級顯示為 "自訂"
-                            const levelIndicator = document.getElementById('level-indicator');
-                            if (levelIndicator) levelIndicator.textContent = '等級：自訂';
-
-                            // 觸發 MathJax 渲染
-                            if (window.MathJax && window.MathJax.typesetPromise) {
-                                window.MathJax.typesetPromise([questionTextDiv]);
-                            }
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error:', err);
-                        questionTextDiv.textContent = '發生錯誤，請稍後再試。';
-                        alert('發生錯誤: ' + err);
-                    });
-            });
-        }
-
         // [Phase 6] 顯示前置單元推薦
         function showPrerequisiteSuggestion(prerequisite) {
             console.log('[前置單元推薦] 呼叫 showPrerequisiteSuggestion，參數:', prerequisite);
@@ -6350,8 +7709,6 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            setupQuestionUpload();
-            
             // 載入實際 Runtime Tutor Model 狀態
             async function loadRuntimeAIStatus() {
                 try {
@@ -6574,18 +7931,6 @@ button#next-question-btn.level-button:hover:not(:disabled) {
   box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
 }
 
-/* Upload question */
-button#upload-question-btn.level-button {
-  background: var(--bg-elevated) !important;
-  color: var(--text-secondary) !important;
-  border-color: var(--border-default) !important;
-}
-button#upload-question-btn.level-button:hover {
-  background: var(--green-pale) !important;
-  border-color: var(--green) !important;
-  color: var(--green-dark) !important;
-}
-
 /* Prereq practice */
 button#practice-prereq-btn.level-button {
   background: var(--amber-bg) !important;
@@ -6658,38 +8003,8 @@ button#similar-reset-btn.level-button {
   flex: 0 0 auto !important;
 }
 
-/* Question image */
-#instant-question-image {
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-}
-
-/* MathJax — 自然融入文字（inline 保持句內；display math 才置中） */
+/* MathJax skin: spacing only. Baseline/scale owned by practice_math_typography.css */
 mjx-container { margin: 0 2px !important; }
-
-#question-text mjx-container:not([display="true"]) {
-  display: inline-block !important;
-  width: auto !important;
-  max-width: none !important;
-  margin: 0 0.15em !important;
-  vertical-align: middle !important;
-  text-align: left !important;
-}
-
-#question-text mjx-container[display="true"] {
-  display: block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  margin: 0.5em auto !important;
-  text-align: center !important;
-}
-
-#question-text mjx-container svg {
-  display: inline-block !important;
-  width: auto !important;
-  margin: 0 !important;
-  vertical-align: middle !important;
-}
 
 /* Diagram container */
 .diagram-container {
@@ -6738,6 +8053,11 @@ mjx-container { margin: 0 2px !important; }
   box-shadow: 0 0 0 3px var(--green-ring) !important;
 }
 #answer-input:disabled { opacity: 0.50 !important; cursor: not-allowed !important; }
+#answer-input.answer-input--drawing {
+  background: #eceff1 !important;
+  color: #6b7280 !important;
+  filter: grayscale(1) !important;
+}
 
 #submit-button {
   background: var(--green) !important;
@@ -6861,6 +8181,8 @@ mjx-container { margin: 0 2px !important; }
   border-color: var(--green) !important;
   box-shadow: none !important;
 }
+.tool-btn.pen-btn.active { color: var(--pen-ink, var(--green-dark)) !important; }
+.tool-btn.pen-btn.active svg { stroke-width: 2.4; }
 .tool-btn.eraser-btn:hover,
 .tool-btn.eraser-btn.active {
   background: var(--err-bg) !important;
@@ -7253,7 +8575,102 @@ span[style*="粗細"],
   color: var(--text-muted) !important;
 }
 
+/* Chapter review keeps the shared practice runtime but removes repeated header rows. */
+.chapter-review-page .practice-header-block {
+  gap: 4px !important;
+  padding-top: 6px !important;
+}
+
+.chapter-review-page .chapter-review-banner {
+  box-shadow: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #streak-counter {
+  display: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #next-question-btn {
+  padding: 5px 12px !important;
+  box-shadow: none !important;
+}
+
+.chapter-review-page #question-container {
+  margin-bottom: 0 !important;
+  padding: 14px 16px !important;
+}
+
+.chapter-review-page .practice-answer-block {
+  gap: 4px;
+}
+
+.chapter-review-page .practice-answer-block > .input-group {
+  margin-top: 0 !important;
+}
+
+.chapter-review-start-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chapter-review-start-strip p {
+  margin: 0 !important;
+  line-height: 1.45;
+}
+
+.chapter-review-start-strip .level-button {
+  flex: 0 0 auto;
+  padding: 6px 14px !important;
+}
+
+.chapter-review-start-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .chapter-review-page .practice-header-block {
+    padding-top: 4px !important;
+  }
+
+  .chapter-review-page #question-container {
+    padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .chapter-review-page .chapter-review-banner {
+    border-radius: 6px;
+  }
+}
+
 </style>
+{% include '_bug_report_widget.html' %}
+{% if session.get('guest_demo') is true %}
+<script>
+    document.addEventListener('click', (event) => {
+        const action = event.target.closest('#chat-send-button, #analyze-handwriting-button, #upload-image-button, #similar-upload-btn, #submit-button');
+        if (!action) return;
+        if (action.id === 'submit-button') {
+            const mode = typeof currentQuestion !== 'undefined' && currentQuestion
+                ? String(currentQuestion.check_mode || currentQuestion.grading_mode || '').toLowerCase() : '';
+            if (!['ai_judged_free_response', 'visual_ai_checked', 'handwriting_ai_checked', 'review_mode'].includes(mode)) return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const message = '此為展示頁面，請登入後再行操作。';
+        if (action.id === 'chat-send-button') {
+            const history = document.getElementById('chat-history');
+            if (history) history.textContent = '此為展示頁面，AI 助教功能請登入後使用。';
+        } else {
+            const result = document.getElementById('result-display');
+            if (result) result.textContent = message;
+        }
+    }, true);
+</script>
+{% endif %}
 </body>
 
 </html>

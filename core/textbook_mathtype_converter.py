@@ -13,6 +13,7 @@ Does NOT:
 from __future__ import annotations
 
 import io
+import logging
 import re
 import shutil
 import zipfile
@@ -22,6 +23,7 @@ from typing import Any
 from lxml import etree
 
 from core.mtef import equation_native_to_latex, mtef_bytes_to_latex
+from core.mtef.latex_normalize import normalize_parallel_latex
 from core.textbook_importer_v3_docx import (
     NS,
     REL_NS,
@@ -32,6 +34,9 @@ from core.textbook_importer_v3_docx import (
     find_reference_docx_in_storage,
     parse_docx_structure,
 )
+from core.xml_text_compat import describe_illegal_xml_text, sanitize_xml_text
+
+logger = logging.getLogger(__name__)
 
 try:
     import olefile
@@ -48,7 +53,7 @@ def wrap_latex_for_v2(latex: str) -> str:
 
     Prefer \\(...\\); also accept $...$ readers via the same content.
     """
-    text = (latex or "").strip()
+    text = normalize_parallel_latex((latex or "").strip())
     if not text:
         return ""
     if text.startswith("$") and text.endswith("$") and text.count("$") >= 2:
@@ -153,11 +158,49 @@ def extract_equation_native(ole_bytes: bytes) -> tuple[bytes | None, str | None]
             pass
 
 
+def _is_embedded_ooxml_package(data: bytes) -> bool:
+    """Identify an embedded Office Open XML package mislabeled as equation OLE.
+
+    Some legacy Word documents retain ``Equation.DSMT4`` on the object node
+    while its relationship target is an embedded DOCX ZIP package.  Such an
+    object has no Equation Native stream and must remain untouched rather than
+    being replaced with a math failure placeholder.
+    """
+    try:
+        with zipfile.ZipFile(io.BytesIO(data), "r") as package:
+            names = {name.replace("\\", "/") for name in package.namelist()}
+    except (OSError, zipfile.BadZipFile):
+        return False
+    return "[Content_Types].xml" in names and "word/document.xml" in names
+
+
 def _make_latex_run(latex_text: str) -> etree._Element:
+    """Build a w:r/w:t run for LaTeX text that will be written into OOXML.
+
+    Sanitize at this lxml assignment boundary so MTEF-derived control characters
+    (illegal in XML 1.0) cannot abort DOCX rewrite, while preserving PUA glyphs.
+    """
+    safe_text = sanitize_xml_text(latex_text)
+    diagnostic = describe_illegal_xml_text(
+        latex_text if isinstance(latex_text, str) else "",
+        field="latex_text",
+        extra={"boundary": "textbook_mathtype_converter._make_latex_run"},
+    )
+    if diagnostic is not None:
+        # Log escaped diagnostics only — never re-emit raw illegal controls.
+        logger.warning(
+            "[mathtype_converter] stripped XML-illegal chars before OOXML write: %s",
+            {
+                "field": diagnostic.get("field"),
+                "boundary": diagnostic.get("boundary"),
+                "illegal_chars": diagnostic.get("illegal_chars"),
+                "text_repr": diagnostic.get("text_repr"),
+            },
+        )
     run = etree.Element(f"{{{W_NS}}}r")
     text = etree.SubElement(run, f"{{{W_NS}}}t")
     text.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-    text.text = latex_text
+    text.text = safe_text if isinstance(safe_text, str) else ""
     return run
 
 
@@ -269,6 +312,7 @@ def convert_docx_mathtype_to_latex_docx(
                 "formula_index": formula_index,
                 "relationship_id": rel_id,
                 "embedding_path": embed_path,
+                "prog_id": ole.get("prog_id"),
                 "location": ole.get("location"),
                 "equation_native_found": False,
                 "mtef_version": None,
@@ -280,6 +324,12 @@ def convert_docx_mathtype_to_latex_docx(
                 if not embed_path:
                     raise ValueError("missing_embedding_path")
                 ole_bytes = zf.read(embed_path)
+                if _is_embedded_ooxml_package(ole_bytes):
+                    report["status"] = "not_mtef"
+                    report["error"] = "embedded_ooxml_not_mtef"
+                    report["classification"] = "embedded_ooxml"
+                    formula_reports.append(report)
+                    continue
                 native, native_err = extract_equation_native(ole_bytes)
                 if native is None:
                     raise ValueError(native_err or "equation_native_missing")
@@ -421,7 +471,8 @@ def convert_docx_mathtype_to_latex_docx(
                 out_zf.writestr(item, data)
 
     ok_count = sum(1 for f in formula_reports if f["status"] == "ok")
-    fail_count = sum(1 for f in formula_reports if f["status"] != "ok")
+    fail_count = sum(1 for f in formula_reports if f["status"] == "failed")
+    non_mtef_count = sum(1 for f in formula_reports if f["status"] == "not_mtef")
     native_ok = sum(1 for f in formula_reports if f.get("equation_native_found"))
     eq_ok = sum(1 for e in eq_reports if e["status"] == "ok")
 
@@ -437,6 +488,7 @@ def convert_docx_mathtype_to_latex_docx(
         "equation_native_ok": native_ok,
         "converted_ok": ok_count,
         "converted_failed": fail_count,
+        "non_mtef_objects": non_mtef_count,
         "eq_fields": len(eq_reports),
         "eq_converted_ok": eq_ok,
         "formulas": formula_reports,

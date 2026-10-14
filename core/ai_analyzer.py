@@ -17,6 +17,7 @@ import json
 import tempfile
 import os
 import re
+import hashlib
 from flask import current_app
 import PIL.Image
 import io
@@ -27,10 +28,49 @@ from core.prompts.registry import render_prompt
 gemini_model = None
 gemini_chat = None
 gemini_model_name = None
+gemini_key_fingerprint = None
+
+
+def _gemini_key_fingerprint(api_key):
+    """Return a non-reversible identity used only for client invalidation."""
+    key = str(api_key or "").strip()
+    return hashlib.sha256(key.encode("utf-8")).hexdigest() if key else None
+
+
+def invalidate_gemini_client_cache():
+    """Drop cached Gemini objects after a validated credential change."""
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
+    gemini_model = None
+    gemini_chat = None
+    gemini_model_name = None
+    gemini_key_fingerprint = None
 
 
 def _sanitize_sensitive_error_message(message):
     return sanitize_secret_text(str(message or ""), [])
+
+# Models often write LaTeX with one backslash inside JSON strings.  Commands whose
+# first letter is a JSON escape (\times -> TAB + "imes", \frac -> form feed) would
+# decode silently into control characters, so they are escaped before decoding.
+_LATEX_COMMANDS_WITH_JSON_ESCAPE_LETTER = (
+    "backslash|because|begin|beta|bigg|bigl|bigr|big|binom|bmod|boldsymbol|bot|boxed|bullet|bar|bf|"
+    "footnotesize|forall|frac|frown|flat|"
+    "nabla|neg|neq|newline|nexists|ngeq|nleq|nmid|notin|not|ne|ni|nu|"
+    "rangle|rbrace|rceil|rfloor|rho|rightarrow|right|rm|root|"
+    "textbf|textit|textrm|text|therefore|theta|tfrac|tilde|times|tiny|top|to|triangleq|triangle|tanh|tan|tau|"
+    "underbrace|underline|uparrow|upsilon"
+)
+_SINGLE_BACKSLASH_LATEX_COMMAND = re.compile(
+    r'(?<!\\)\\(?=(?:' + _LATEX_COMMANDS_WITH_JSON_ESCAPE_LETTER + r')(?![A-Za-z]))'
+)
+_LONE_BACKSLASH = re.compile(r'\\\\|\\(?![\\"/bfnrtu])')
+
+
+def protect_latex_in_json_text(text):
+    """Escape LaTeX backslashes in model JSON text so json.loads keeps them."""
+    text = _SINGLE_BACKSLASH_LATEX_COMMAND.sub(r'\\\\', str(text or ''))
+    return _LONE_BACKSLASH.sub(lambda m: m.group(0) if len(m.group(0)) == 2 else '\\\\', text)
+
 
 def clean_and_parse_json(text):
     try:
@@ -42,9 +82,7 @@ def clean_and_parse_json(text):
         match = re.search(r'\{.*\}', text, re.DOTALL)
         if match:
             text = match.group(0)
-            
-        # 關鍵修復：處理 LaTeX 中常見的雙反斜線與 Unicode
-        # 先嘗試直接解析
+        text = protect_latex_in_json_text(text)
         return json.loads(text, strict=False)
     except Exception as e:
         try:
@@ -91,7 +129,6 @@ def enforce_strict_mode(text):
     # 刪除純粹的稱讚句 (獨立成句的)
     text = re.sub(r"(^|[，！!。])同學[，！!、]*你很棒[，！!、]*", r"\1", text)
     text = re.sub(r"(^|[，！!。])你已經很棒.*?[，！!]", r"\1", text)
-    text = re.sub(r"(^|[，！!。])這一步非常正確[。！!]*", r"\1", text)
     
     # 刪除開場白
     text = re.sub(r"^同學[，！!、]*", "", text)
@@ -169,15 +206,16 @@ def sanitize_tutor_reply(reply_text, user_question='', question_context=''):
     if not isinstance(reply_text, str):
         return _build_guiding_reply(user_question, question_context)
 
-    cleaned = re.sub(r'\s+', ' ', reply_text).strip()
+    cleaned = reply_text.replace('\r\n', '\n').replace('\r', '\n').strip()
     if not cleaned:
         return _build_guiding_reply(user_question, question_context)
 
-    if _looks_like_direct_answer(cleaned):
-        return _build_guiding_reply(user_question, question_context)
-
-    if len(cleaned) > 80:
-        cleaned = cleaned[:80].rstrip('，。；、 ') + '。'
+    # The student tutor is answer-oriented: a direct, worked answer is valid
+    # when the student asks how to solve, what the answer is, or where a
+    # written step went wrong.  Do not replace it with the legacy Socratic
+    # fallback merely because it contains an equation or final answer.
+    if len(cleaned) > 1200:
+        cleaned = cleaned[:1200].rstrip('，。；、 ') + '。'
 
     return cleaned
 
@@ -442,7 +480,10 @@ def diversify_follow_up_prompts(prompts, last_prompts, user_question='', questio
     last_fp = [_prompt_fingerprint(p) for p in last_prompts[:3]]
 
     if current_fp == last_fp:
-        return build_generic_follow_up_fallback(variant=(turn_index + 1))
+        from core.ai_conversation_context import normalize_suggested_questions
+        return normalize_suggested_questions(
+            [], question_text=question_context, student_work=user_question, ai_reply=ai_reply
+        )
 
     return current
 
@@ -469,7 +510,11 @@ def normalize_follow_up_prompts(prompts, user_question='', question_context='', 
                 break
 
     if len(cleaned) < 3:
-        return build_generic_follow_up_fallback()
+        from core.ai_conversation_context import normalize_suggested_questions
+        return normalize_suggested_questions(
+            cleaned, question_text=question_context, student_work=user_question,
+            ai_reply=ai_reply,
+        )
 
     return cleaned[:3]
 
@@ -519,7 +564,7 @@ def _extract_reply_and_prompts_from_jsonish(text):
 
     # 2) 抓 follow_up_prompts 陣列
     prompts = None
-    prompts_block = re.search(r'"follow_up_prompts"\s*:\s*\[([\s\S]*?)\]', raw)
+    prompts_block = re.search(r'"(?:suggested_questions|follow_up_prompts)"\s*:\s*\[([\s\S]*?)\]', raw)
     if prompts_block:
         items = re.findall(r'"((?:\\.|[^"])*)"', prompts_block.group(1))
         if items:
@@ -534,11 +579,12 @@ def _extract_reply_and_prompts_from_jsonish(text):
     return reply, prompts
 
 def configure_gemini(api_key, model_name):
-    global gemini_model, gemini_chat, gemini_model_name
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
     genai.configure(api_key=api_key)
     gemini_model = genai.GenerativeModel(model_name)
-    gemini_chat = gemini_model.start_chat(history=[])
+    gemini_chat = None
     gemini_model_name = model_name
+    gemini_key_fingerprint = _gemini_key_fingerprint(api_key)
 
 def diagnose_error(question_text, correct_answer, student_answer, prerequisite_units=None, conversation_history=None):
     """
@@ -591,6 +637,10 @@ JSON:
 }}
 """
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content(
             prompt,
             generation_config={"max_output_tokens": 2000, "temperature": 0.1}
@@ -649,15 +699,14 @@ JSON:
         }
 
 def get_model(role="tutor"):
-    global gemini_model, gemini_chat, gemini_model_name
+    global gemini_model, gemini_chat, gemini_model_name, gemini_key_fingerprint
 
     # Keep runtime behavior aligned with /admin/ai_prompt_settings
     try:
-        from core.ai_settings import apply_ai_runtime_settings, get_effective_model_config
+        from core.ai_settings import apply_ai_runtime_settings, get_active_ai_model
 
         apply_ai_runtime_settings()
-        model_cfg = get_effective_model_config(role)
-        runtime_model = str(model_cfg.get("model") or "").strip()
+        runtime_model = get_active_ai_model()
     except Exception:
         runtime_model = ""
 
@@ -665,7 +714,7 @@ def get_model(role="tutor"):
         runtime_model = (
             str(current_app.config.get("AI_CLOUD_MODEL") or "").strip()
             or str(current_app.config.get("GEMINI_MODEL_NAME") or "").strip()
-            or "gemini-3.1-flash-lite-preview"
+            or "gemini-3.5-flash-lite"
         )
 
     from core.ai_wrapper import resolve_gemini_api_key
@@ -674,26 +723,65 @@ def get_model(role="tutor"):
         raise RuntimeError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
     if not (str(api_key).startswith("AIza") and len(str(api_key).strip()) >= 30):
         current_app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
-    current_app.logger.info(f"[AI KEY] source={source}")
+    current_app.logger.info(f"[AI KEY] source={source} last4={str(api_key)[-4:]}")
     current_app.logger.info(f"[AI MODEL] provider=google model={runtime_model}")
+
+    active_key_fingerprint = _gemini_key_fingerprint(api_key)
 
     # Always configure before constructing/using model
     genai.configure(api_key=api_key)
 
-    if gemini_model is None or gemini_model_name != runtime_model:
+    if (
+        gemini_model is None
+        or gemini_model_name != runtime_model
+        or gemini_key_fingerprint != active_key_fingerprint
+    ):
         gemini_model = genai.GenerativeModel(runtime_model)
         gemini_chat = None
         gemini_model_name = runtime_model
+        gemini_key_fingerprint = active_key_fingerprint
 
     return gemini_model
 
 def get_ai_prompt():
     from core.prompts.registry import get_prompt_template
-    return get_prompt_template("handwriting_feedback_prompt", "ai_analyzer_prompt")
+    return get_prompt_template("handwriting_recognition_prompt")
 
 def get_ai_prompt_with_source():
     from core.prompts.registry import get_prompt_with_source
-    return get_prompt_with_source("handwriting_feedback_prompt", "ai_analyzer_prompt")
+    return get_prompt_with_source("handwriting_recognition_prompt")
+
+
+def _handwriting_transcription_value(data):
+    if not isinstance(data, dict):
+        return ""
+    for key in (
+        "recognized_answer",
+        "recognized_expression",
+        "answer",
+        "final_answer",
+        "recognized_text",
+        "expression",
+        "normalized_answer",
+    ):
+        value = data.get(key)
+        if value not in (None, ""):
+            return str(value).strip()
+    return ""
+
+
+def _normalize_handwriting_transcription(value):
+    text = str(value or "").strip()
+    text = re.sub(r"^\$|\$$", "", text).strip()
+    return re.sub(r"\s+", "", text)
+
+
+def _needs_handwriting_image_verification(value):
+    """Verify compact answers where a vision model can easily add a glyph."""
+    compact = _normalize_handwriting_transcription(value)
+    if not compact or len(compact) > 12:
+        return False
+    return bool(re.fullmatch(r"[0-9A-Za-z.+\-*/^=()√±×÷]+", compact))
 
 def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_answer=""):
     """
@@ -707,32 +795,43 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
         _, b64 = image_data_url.split(',', 1)
         img_data = base64.b64decode(b64)
 
+        # Do not keep Flask-SQLAlchemy's request connection checked out while
+        # uploading to or waiting for an external model.
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
+
         # 寫入臨時檔案
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as f:
             f.write(img_data)
             temp_path = f.name
 
         try:
-            # 上傳到 Gemini
-            file = genai.upload_file(path=temp_path)
-
             # 從資料庫讀取 Prompt 模板
             prompt_template, source = get_ai_prompt_with_source()
             import logging
             logger = logging.getLogger(__name__)
-            logger.info(f"[Prompt Trace] route='/analyze_work' task_type='handwriting_feedback' prompt_key='handwriting_feedback_prompt' source='{source}' model_role='vision_analyzer'")
-            logger.info(f"[analyze] handwriting prompt has_correct_answer={bool(correct_answer)}")
+            logger.info(f"[Prompt Trace] route='/api/practice/ai-check-handwriting' task_type='handwriting_recognition' prompt_key='handwriting_recognition_prompt' source='{source}' model_role='vision_analyzer'")
             
             # 使用 str.replace() 替換變數（避免 JSON 大括號衝突）
             prompt = (prompt_template
                       .replace("{context}", context)
-                      .replace("{prereq_text}", prereq_text)
-                      .replace("{correct_answer}", correct_answer or ""))
+                      .replace("{prereq_text}", prereq_text))
+            prompt += (
+                "\n\n【抄錄覆寫】由上到下，把白板每一行可見算式都放進 recognized_steps，一行一筆，包含最後一行。"
+                "recognized_answer 只放最後一行完整結果。"
+                "看不清的行不要猜、不要補。不可只回最後一行而把前面的行留空。"
+            )
 
-            model = get_model()
+            # Use the same role-aware client factory and credential resolver as
+            # tutor. Avoid the legacy SDK upload path, which consults its
+            # process-global credential before role resolution.
+            model = get_ai_client(role="vision_analyzer")
+            release_db_session_before_external_call(db, logger=current_app.logger)
             resp = model.generate_content(
-                [prompt, file],
-                generation_config={"max_output_tokens": 4096, "temperature": 0.5}
+                prompt,
+                image_path=temp_path,
             )
             raw_text = resp.text.strip()
 
@@ -740,6 +839,33 @@ def analyze(image_data_url, context, api_key, prerequisite_skills=None, correct_
             cleaned = re.sub(r'^```json\s*|\s*```$', '', raw_text, flags=re.MULTILINE)
             # [Fix] Use robust parser
             data = clean_and_parse_json(cleaned)
+
+            first_transcription = _handwriting_transcription_value(data)
+            if _needs_handwriting_image_verification(first_transcription):
+                verification_prompt = """只看這張原始白板圖片，獨立抄錄學生實際寫下的最終答案。
+不要解題、不要推測題目或正確答案、不要補上圖片中不存在的字元。
+只輸出 JSON：{\"recognized_answer\": \"圖片中實際看到的內容\"}。"""
+                verification_resp = model.generate_content(
+                    verification_prompt,
+                    image_path=temp_path,
+                )
+                verification_text = re.sub(
+                    r'^```json\s*|\s*```$',
+                    '',
+                    str(getattr(verification_resp, "text", "") or "").strip(),
+                    flags=re.MULTILINE,
+                )
+                verification_data = clean_and_parse_json(verification_text)
+                verified_transcription = _handwriting_transcription_value(verification_data)
+                if (
+                    not verified_transcription
+                    or _normalize_handwriting_transcription(first_transcription)
+                    != _normalize_handwriting_transcription(verified_transcription)
+                ):
+                    data["recognition_uncertain"] = True
+                    data["error_type"] = "recognition_uncertain"
+                    data["feedback"] = f"我辨識成 {first_transcription or '不確定'}，請確認或重寫。"
+                    data["verification_transcription"] = verified_transcription
             
             # [關鍵] 強制注入嚴格模式清洗 (圖片路徑)
             if 'reply' in data:
@@ -821,6 +947,9 @@ def identify_skills_from_problem(problem_text):
         Do not include any other text or explanations. Just the JSON object.
         """
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = chat.send_message(
             prompt + " (IMPORTANT: Keep response concise. Do NOT solve the problem. Only guide steps. Do not reveal final answer. Use LaTeX format (surround with $). IMPORTANT: Escape all backslashes in JSON (e.g. use \\frac instead of \frac).)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -861,6 +990,9 @@ def ask_ai_text(user_question):
             student_answer=user_question,
             correct_answer="",
         )
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = model.generate_content(
             prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5},
@@ -914,6 +1046,9 @@ def ask_ai_text_with_context(user_question, context="", correct_answer=""):
         prereq_text=context_text,
     )
     try:
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         resp = model.generate_content(
             system_prompt + "\n\n(Keep concise. Do not reveal final answer. Guide next step only.)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -996,6 +1131,9 @@ def generate_quiz_from_image(image_file, description):
         """
 
         # Generate content with both the prompt and the image
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content([prompt, img])
         raw_text = response.text.strip()
 
@@ -1019,7 +1157,19 @@ def generate_quiz_from_image(image_file, description):
         return []
 
 
-def build_chat_prompt(skill_id, user_question, full_question_context, context, prereq_skills, correct_answer=""):
+def build_chat_prompt(
+    skill_id,
+    user_question,
+    full_question_context,
+    context,
+    prereq_skills,
+    correct_answer="",
+    student_answer="",
+    recognition_incomplete=False,
+    authoritative_correct=None,
+    authoritative_status="unknown",
+    teaching_round=1,
+):
     """
     Constructs the full system prompt for the chat AI.
     """
@@ -1043,37 +1193,56 @@ def build_chat_prompt(skill_id, user_question, full_question_context, context, p
     turn_block = f"【本輪學生提問】\n{user_question or '（學生未提供）'}"
     extra_blocks.append(turn_block)
 
-    json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）：
+    if str(student_answer or "").strip():
+        extra_blocks.append(f"【學生目前已寫的內容】\n{student_answer}")
+    if recognition_incomplete:
+        extra_blocks.append(
+            "【辨識狀態】目前沒有看完整前面的計算。"
+            "學生若問哪裡錯，只能說看不完整，不可猜學生寫了什麼。"
+        )
+
+    reference_markers = ("剛剛", "這一步", "這樣", "兩種方法", "那個", "所以")
+    if any(marker in str(user_question or "") for marker in reference_markers):
+        extra_blocks.append(
+            "【指涉語句承接規則】\n"
+            "本輪含有『剛剛／這一步／這樣／兩種方法／那個／所以』等指涉語句。"
+            "若同一題近期對話已清楚指出所指概念、方法、步驟或 drawing feedback，"
+            "回覆必須先用一句短句明確說出你承接的是什麼，再給蘇格拉底式提示；"
+            "不得像第一次看到本輪句子一樣另開新解釋。"
+            "不得硬編歷史中不存在的前文；若近期對話仍不足以確定指涉，才請學生簡短澄清。"
+        )
+
+    is_authoritatively_correct = (
+        authoritative_correct is True
+        or str(authoritative_status or "").strip().lower() == "correct"
+    )
+    authoritative_correct_text = (
+        "true" if authoritative_correct is True
+        else "false" if authoritative_correct is False
+        else "unknown"
+    )
+
+    from core.ai_tutor_pedagogy import (
+        SUGGESTED_QUESTION_RULES,
+        TUTOR_PEDAGOGICAL_CONTRACT,
+        tutor_intent_block,
+    )
+
+    extra_blocks.append(TUTOR_PEDAGOGICAL_CONTRACT)
+    extra_blocks.append(tutor_intent_block(user_question, teaching_round))
+
+    json_guardrail = """請嚴格輸出 JSON（不可 Markdown、不可多餘文字）；reply 內的 LaTeX 反斜線必須寫成兩個（例如 \\\\sqrt{x^2+y^2}）：
 {
-  "hint_focus": "...",
-  "guided_question": "...",
-  "micro_step": "...",
-  "follow_up_prompts": [
-    "...",
-    "...",
-    "..."
-  ],
+  "reply": "...",
+  "suggested_questions": ["...", "...", "..."],
   "forbidden": false
 }
 
 欄位規範：
-- hint_focus：只指出一個核心概念，不超過 18 個中文字。
-- guided_question：只能問一個引導問題，不超過 28 個中文字。
-- micro_step：只能給一個下一步動作，不超過 22 個中文字。
-- follow_up_prompts：固定 3 個學生可能追問，各不超過 28 個中文字。
+- reply：依【本輪意圖】回答。問「怎麼算」或不知道下一步時，給下一個具體步驟（公式＋代入本題數字的算式），不公布最後答案。問「哪裡錯」只引用【學生目前已寫的內容】裡實際出現的文字；若辨識不完整或沒有那些內容，就說看不完整，不可猜。問「為什麼」先直接說原因，不公布最後答案。是否可以給完整解答，只依【本輪答案揭露】決定。最多 8 行。
 - forbidden：若你輸出了任何違規內容請設為 true，否則 false。
 
-follow_up_prompts 規則：
-- 必須根據目前題目、學生本輪提問及本次提示生成。
-- 使用自然、簡短的學生口吻。
-- 不得重複學生剛問過的問題。
-- 不得使用「問題1／問題2／問題3」或「觀察／聯想／執行」等標籤。
-- 不得把學生問題嵌入固定句型。
-- 不得直接透露答案。
-- 三題分別聚焦：
-  1. 為什麼要這樣做。
-  2. 題目條件、數字、圖表或符號怎麼理解。
-  3. 最可能的誤解或錯誤做法。"""
+""" + SUGGESTED_QUESTION_RULES
     extra_blocks.append(json_guardrail)
 
     # 3. Build Prompt via Composer
@@ -1087,53 +1256,46 @@ follow_up_prompts 規則：
         user_answer=user_question,
         context=enhanced_context,
         prereq_text=prereq_text,
-        correct_answer=correct_answer or ""
+        correct_answer=correct_answer or "",
+        authoritative_correct=authoritative_correct_text,
+        authoritative_status=str(authoritative_status or "unknown").strip().lower(),
     )
 
-    logger.info(f"[Prompt Trace] route='/chat_ai' task_type='build_chat_prompt' prompt_key='chat_tutor_prompt' source='{source}' model_role='tutor'")
+    logger.info(
+        "[Prompt Trace] route='/chat_ai' task_type='build_chat_prompt' "
+        "prompt_key='chat_tutor_prompt' source='%s' model_role='tutor' authoritative_correct=%s",
+        source,
+        is_authoritatively_correct,
+    )
     
     return full_prompt
 
 def get_chat_response(prompt, image=None, user_question='', question_context=''):
-    global gemini_chat
-    if gemini_chat is None and gemini_model is not None:
-        gemini_chat = gemini_model.start_chat(history=[])
-
     # Primary path for Practice AI tutor:
     # use config.py -> MODEL_ROLES['tutor'].
     # Keep the legacy Gemini flow below as fallback for quick rollback.
     try:
         tutor_client = get_ai_client(role='tutor')
-        tutor_response = tutor_client.generate_content(
-            prompt + " (IMPORTANT: Output ONLY valid JSON. Escape all backslashes.)"
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+
+        release_db_session_before_external_call(db, logger=current_app.logger)
+        from core.ai_wrapper import call_ai_with_retry
+
+        tutor_response = call_ai_with_retry(
+            tutor_client,
+            prompt + " (IMPORTANT: Output ONLY valid JSON. Escape all backslashes.)",
+            max_retries=1,
+            timeout=TUTOR_CALL_TIMEOUT_SECONDS,
         )
         tutor_raw_text = getattr(tutor_response, 'text', '') or ''
-        if tutor_raw_text.strip():
-            data = None
-            try:
-                data = json.loads(tutor_raw_text)
-            except json.JSONDecodeError:
-                data = clean_and_parse_json(tutor_raw_text)
-
-            if data is not None:
-                reply_text = data.get('reply', '')
-                nested_prompts = None
-                if isinstance(reply_text, str):
-                    reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
-                    reply_text = reply_text.replace('**', '')
-                data['reply'] = sanitize_tutor_reply(
-                    enforce_strict_mode(reply_text),
-                    user_question=user_question,
-                    question_context=question_context,
-                )
-                prompt_source = nested_prompts if isinstance(nested_prompts, list) else data.get('follow_up_prompts', [])
-                data['follow_up_prompts'] = normalize_follow_up_prompts(
-                    prompt_source,
-                    user_question=user_question,
-                    question_context=question_context,
-                    ai_reply=data.get('reply', '')
-                )
-                return data
+        data = _finalize_tutor_payload(
+            parse_tutor_model_text(tutor_raw_text),
+            user_question=user_question,
+            question_context=question_context,
+        )
+        if data is not None:
+            return data
     except Exception as tutor_exc:
         print(f"[chat_ai] tutor role path failed; fallback to legacy Gemini path: {tutor_exc}")
 
@@ -1141,10 +1303,7 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
     取得 Gemini 的回應，並確保回傳格式為 JSON。
     """
     if not gemini_model:
-        return {
-            "reply": "系統尚未初始化 (API Key 可能無效)。",
-            "follow_up_prompts": []
-        }
+        return _tutor_unavailable_payload("model_not_configured")
 
     try:
         # 準備請求內容
@@ -1154,9 +1313,9 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
             # 這裡假設 image 是 PIL Image
             content.append(image)
 
-        # 呼叫 Gemini
-        # 注意: ChatSession.send_message 支援列表 [text, image]
-        response = gemini_chat.send_message(
+        # Stateless fallback: the caller supplies only the current question's
+        # bounded history. A module-global ChatSession would mix students.
+        response = gemini_model.generate_content(
             content,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type='application/json', # 強制 JSON
@@ -1165,62 +1324,108 @@ def get_chat_response(prompt, image=None, user_question='', question_context='')
             )
         )
         
-        raw_text = response.text
-        
-        # 嘗試解析 (優先使用官方 JSON 模式，失敗則用強力清洗)
-        # 統一處理 JSON 解析
-        data = None
-        try:
-            # 優先嘗試標準 JSON 解析
-            data = json.loads(raw_text)
-        except json.JSONDecodeError:
-            # 解析失敗則嘗試清洗
-            data = clean_and_parse_json(raw_text)
-
-        # [關鍵修復]：如果解析/清洗後還是 None，回傳一個安全預設值
+        raw_text = getattr(response, 'text', '') or ''
+        data = _finalize_tutor_payload(
+            parse_tutor_model_text(raw_text),
+            user_question=user_question,
+            question_context=question_context,
+        )
         if data is None:
-            print(f"解析失敗，原始回傳: {raw_text}")
-            return {
-                "reply": "運算發生錯誤，請試著換個方式問問看。", 
-                "follow_up_prompts": ["重試"]
-            }
-
-        # [強制嚴格模式] 無論來源為何，都必須執行清洗
-        reply_text = data.get('reply', '')
-        nested_prompts = None
-
-        # 模型偶爾會把整包 JSON 放進 reply 字串，先拆開避免前端顯示原始 JSON
-        if isinstance(reply_text, str):
-            reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
-        
-        # 1. 移除 Markdown 粗體語法 (轉為純文字)
-        if isinstance(reply_text, str):
-            reply_text = reply_text.replace('**', '')
-        
-        # 2. 呼叫全域嚴格模式清洗 (去廢話 + 保護 LaTeX)
-        data['reply'] = sanitize_tutor_reply(
-            enforce_strict_mode(reply_text),
-            user_question=user_question,
-            question_context=question_context,
-        )
-        
-        # 3. 確保 follow_up_prompts 存在
-        prompt_source = nested_prompts if isinstance(nested_prompts, list) else data.get('follow_up_prompts', [])
-        data['follow_up_prompts'] = normalize_follow_up_prompts(
-            prompt_source,
-            user_question=user_question,
-            question_context=question_context,
-            ai_reply=data.get('reply', '')
-        )
-            
+            print(f"[chat_ai] tutor reply unparseable; raw_len={len(raw_text)}")
+            return _tutor_unavailable_payload("unparseable_model_output")
         return data
 
     except Exception as e:
         print(f"AI 生成錯誤: {_sanitize_sensitive_error_message(e)}")
-        return {
-            "reply": "連線忙碌中，請稍後再試。", 
-            "follow_up_prompts": ["重試"]
-        }
+        return _tutor_unavailable_payload("model_call_failed")
+
+
+TUTOR_UNAVAILABLE_REPLY = "AI 助教這次沒有成功回覆（不是你的問題問得不好），請再按一次送出。"
+TUTOR_CALL_TIMEOUT_SECONDS = 45
+
+
+def _tutor_unavailable_payload(reason):
+    return {
+        "reply": TUTOR_UNAVAILABLE_REPLY,
+        "follow_up_prompts": [],
+        "ai_unavailable": True,
+        "retryable": True,
+        "failure_reason": reason,
+    }
+
+
+def _looks_like_schema_blob(text):
+    return isinstance(text, str) and bool(
+        re.match(r'^\s*\{[\s\S]*"(reply|follow_up_prompts|suggested_questions)"\s*:', text)
+    )
+
+
+def parse_tutor_model_text(raw_text):
+    """Recover a tutor payload from model text; None only when no reply is recoverable."""
+    if not isinstance(raw_text, str) or not raw_text.strip():
+        return None
+    if raw_text.lstrip().startswith("Error:"):
+        return None
+    text = re.sub(r'^\s*```(?:json)?\s*|\s*```\s*$', '', raw_text.strip(), flags=re.IGNORECASE)
+    candidates = [text]
+    outer = re.search(r'\{[\s\S]*\}', text)
+    if outer:
+        candidates.append(outer.group(0))
+
+    for candidate in candidates:
+        for source in (protect_latex_in_json_text(candidate), candidate):
+            try:
+                parsed = json.loads(source, strict=False)
+            except (json.JSONDecodeError, ValueError):
+                continue
+            if isinstance(parsed, dict):
+                return parsed
+    if '"reply"' in text:
+        reply, prompts = _extract_reply_and_prompts_from_jsonish(text)
+        if reply == text.strip():
+            truncated = re.search(r'"reply"\s*:\s*"([\s\S]+)$', text)
+            reply = truncated.group(1).rstrip('"}, \n') if truncated else ""
+            reply = reply.replace('\\n', '\n').replace('\\"', '"').replace('\\\\', '\\')
+        if not reply.strip() or _looks_like_schema_blob(reply):
+            return None
+        return {"reply": reply, "follow_up_prompts": prompts or []}
+    if text.lstrip().startswith(('{', '[')):
+        return None
+    return {"reply": text}
+
+
+def _finalize_tutor_payload(data, user_question='', question_context=''):
+    from core.ai_tutor_pedagogy import repair_latex_escape_damage
+
+    if not isinstance(data, dict):
+        return None
+    reply_text = data.get('reply', '')
+    nested_prompts = None
+    if isinstance(reply_text, str):
+        reply_text, nested_prompts = _unwrap_nested_reply_payload(reply_text)
+    if not isinstance(reply_text, str) or not reply_text.strip() or _looks_like_schema_blob(reply_text):
+        if any(str(data.get(k) or '').strip() for k in ('hint_focus', 'guided_question', 'micro_step')):
+            data['reply'] = ''
+            return data
+        return None
+    reply_text = repair_latex_escape_damage(reply_text).replace('**', '')
+    # Over-escaped JSON leaves a literal "\n"; LaTeX commands such as \neq keep their letters.
+    reply_text = re.sub(r'(?<!\\)\\n(?![A-Za-z])', '\n', reply_text)
+    data['reply'] = sanitize_tutor_reply(
+        enforce_strict_mode(reply_text),
+        user_question=user_question,
+        question_context=question_context,
+    )
+    proposed = nested_prompts if isinstance(nested_prompts, list) else (
+        data.get('suggested_questions') or data.get('follow_up_prompts') or []
+    )
+    data['follow_up_prompts'] = normalize_follow_up_prompts(
+        proposed,
+        user_question=user_question,
+        question_context=question_context,
+        ai_reply=data.get('reply', '')
+    )
+    return data
 
 # 預設弱點分析 Prompt
 DEFAULT_WEAKNESS_ANALYSIS_PROMPT = """
@@ -1260,6 +1465,9 @@ def analyze_student_weakness(prompt_data):
         
         prompt = DEFAULT_WEAKNESS_ANALYSIS_PROMPT.format(prompt_data=prompt_data)
         
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content(
             prompt + " (IMPORTANT: Keep response concise. Do NOT solve the problem. Only guide steps. Do not reveal final answer. Use LaTeX format (surround with $). IMPORTANT: Escape all backslashes in JSON (e.g. use \\frac instead of \frac).)",
             generation_config={"max_output_tokens": 4096, "temperature": 0.5}
@@ -1362,6 +1570,9 @@ def analyze_question_image(image_file):
         Do not include any other text.
         """
 
+        from core.database_runtime import release_db_session_before_external_call
+        from models import db
+        release_db_session_before_external_call(db, logger=current_app.logger)
         response = model.generate_content([prompt, img])
         raw_text = response.text.strip()
         

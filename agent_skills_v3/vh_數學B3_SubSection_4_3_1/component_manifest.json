@@ -1,0 +1,51 @@
+{
+  "skill_id": "vh_數學B3_SubSection_4_3_1",
+  "publish_status": "package_ready",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_12171",
+      "textbook_example_id": 12171,
+      "status": "verified",
+      "problem_type_id": "log_definition_eval",
+      "domain_operation": "log_definition_eval",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12171/generate.py"
+    },
+    {
+      "component_id": "src_12172",
+      "textbook_example_id": 12172,
+      "status": "verified",
+      "problem_type_id": "log_definition_eval",
+      "domain_operation": "log_definition_eval",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12172/generate.py"
+    },
+    {
+      "component_id": "src_12188",
+      "textbook_example_id": 12188,
+      "status": "verified",
+      "problem_type_id": "log_domain_validity_choice",
+      "domain_operation": "log_domain_validity_choice",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12188/generate.py"
+    },
+    {
+      "component_id": "src_12250",
+      "textbook_example_id": 12250,
+      "status": "verified",
+      "problem_type_id": "log_domain_validity_choice",
+      "domain_operation": "log_domain_validity_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12250/generate.py"
+    }
+  ]
+}

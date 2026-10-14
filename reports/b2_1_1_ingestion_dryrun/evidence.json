@@ -1,0 +1,119 @@
+{
+  "segmentation": [
+    {
+      "label": "SDG 14 保育海洋生態—扇形計算",
+      "evidence": "DOCX Phase1 has the salt-worker problem, (2), and solution; PDF page 8 has (1)/(2). No Phase2 anchor captures this problem group. Existing scope exclusion may be intentional; not changed.",
+      "pdf_page": 8
+    }
+  ],
+  "ordering": [
+    {
+      "label": "1-1習題 基礎題 1",
+      "evidence": "DOCX/PDF table contains 11 degree columns and blank answer cells. Phase1/2 emits all degrees then only four nonempty radian cells, losing blank-cell positions and column correspondence. Question and subquestion order otherwise matches source.",
+      "pdf_page": 13
+    }
+  ],
+  "visual": [
+    {
+      "label": "隨堂練習1",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "例3",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "隨堂練習3",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "例4",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "隨堂練習4",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "1-1習題 基礎題6",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "1-1習題 基礎題7",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "1-1習題 基礎題8",
+      "evidence": "Existing matcher reports unmatched or match_score=0.88, below mount threshold; no automatic image reference. This is a reference warning, not necessarily a missing required diagram."
+    },
+    {
+      "label": "例2",
+      "evidence": "Existing crop includes the following 隨堂練習2 problem, outside the example.",
+      "artifact": "crop_3.png",
+      "pdf_page": 7
+    },
+    {
+      "label": "1-1習題 基礎題 1",
+      "evidence": "Table classified text_and_formula_only; no visual fallback preserves missing blank-cell/column correspondence.",
+      "pdf_page": 13
+    },
+    {
+      "label": "1-1習題 基礎題 5",
+      "evidence": "Crop retains clock photo but cuts off most of the pendulum sector diagram.",
+      "artifact": "crop_14.png",
+      "pdf_page": 13
+    },
+    {
+      "label": "1-1習題 進階題 10",
+      "evidence": "Crop includes unrelated 熟習度自評表 below bridge photo and sector diagram.",
+      "artifact": "crop_19.png",
+      "pdf_page": 14
+    }
+  ],
+  "pipeline_blocker": {
+    "stage": "CURRICULUM_BINDING",
+    "error_code": "outline_conflict",
+    "message": "Existing section outline conflicts with authoritative metadata",
+    "details": {
+      "curriculum": "vocational",
+      "volume": "數學B2",
+      "chapter": "1",
+      "section": "1-1 角度的基本性質",
+      "section_code": "1-1",
+      "authority_source": "v3_source_context",
+      "skill_id": "outline_vocational_數學B2_11",
+      "dry_run": false,
+      "wrote": false,
+      "skill_info_created": false,
+      "skill_curriculum_created": false,
+      "action": "conflict",
+      "reason": "existing_outline_metadata_mismatch",
+      "existing": {
+        "skill_id": "outline_vocational_數學B2_11",
+        "chapter": "第1章 三角函數",
+        "section": "1-1 角度的基本性質",
+        "paragraph": null,
+        "grade": 10,
+        "display_order": 11
+      },
+      "incoming": {
+        "skill_id": "outline_vocational_數學B2_11",
+        "chapter": "1",
+        "section": "1-1 角度的基本性質",
+        "paragraph": null,
+        "grade": 10,
+        "display_order": 11
+      }
+    }
+  },
+  "phase3_blocker": "External AI call did not return; stopped. Endpoint connectivity probe returned ConnectionError, environment credential does not have expected key shape. No fabricated/cached AI metadata used.",
+  "mapping": {
+    "heading_skills_verified": 9,
+    "unresolved": 10
+  },
+  "solutions": {
+    "source_solution_present": 5,
+    "source_solution_absent": 14,
+    "note": "Four examples contain source solutions; exam item contains KEY hints. Other 14 source blocks have no solution; Phase3 fallback unverified."
+  }
+}

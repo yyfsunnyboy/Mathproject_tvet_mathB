@@ -8,12 +8,17 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from core.gencode.coordinate_math_formatter import (
+    inline_math as _coordinate_inline_math,
+    point_with_coordinates as _coordinate_point_with_coordinates,
+)
 from core.gencode.resources.rational_display import (
     canonicalize_display_answer,
     canonicalize_multi_part_display,
     canonicalize_part_display_answer,
     fraction_to_plain,
     normalize_fraction_value,
+    sanitize_student_math_display_text,
 )
 
 
@@ -38,8 +43,13 @@ def _figure_slot_display_label(key: str) -> str:
 
 def _finalize_question_payload(payload: dict[str, Any]) -> dict[str, Any]:
     from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
+    from core.gencode.choice_contract_validator import validate_vocational_multiple_choice
 
-    return normalize_single_choice_payload(payload)
+    finalized = normalize_single_choice_payload(payload)
+    errors = validate_vocational_multiple_choice(finalized)
+    if errors:
+        raise ValueError("invalid_vocational_multiple_choice:" + ",".join(errors))
+    return finalized
 
 
 def _subquestions_from_multi_field_contract(
@@ -83,6 +93,471 @@ def _subquestions_from_multi_field_contract(
             }
         )
     return subquestions
+
+
+def _student_facing_part_label(
+    key: str,
+    *,
+    explicit: str | None = None,
+    domain_operation: str | None = None,
+) -> str:
+    """Map internal part keys to student-visible labels (generic, not chapter-hardcoded)."""
+    if explicit is not None and str(explicit).strip():
+        explicit_text = str(explicit).strip()
+        # Identity map for bare "(n)" keys must not block operation-aware enrichment.
+        numbered = _split_numbered_part_key(str(key or "").strip())
+        if (
+            explicit_text == str(key or "").strip()
+            and numbered is not None
+            and not numbered[1]
+        ):
+            pass  # fall through to operation enrichment
+        elif (
+            numbered is not None
+            and not numbered[1]
+            and not re.match(r"[\(（]\s*\d+", explicit_text)
+        ):
+            # Bare "(n)" key + meaning label (e.g. 圖形) → "(1) 圖形"
+            return f"{numbered[0]} {explicit_text}".strip()
+        else:
+            return explicit_text
+    text = str(key or "").strip()
+    if not text:
+        return text
+    # Numbered classroom keys: "(1)", "(1)圓心", "（2）半徑"
+    numbered = _split_numbered_part_key(text)
+    if numbered is not None:
+        group, field = numbered
+        if field:
+            return f"{group} {field}".strip() if not field.startswith(group) else text
+        # Bare "(n)" — enrich from operation family when possible.
+        op = str(domain_operation or "").casefold()
+        n = re.sub(r"[^\d]", "", group)
+        if "classify" in op and "graph" in op:
+            return f"({n}) 圖形"
+        if "write_circle_equations" in op or "equations_from_conditions" in op:
+            return f"({n}) 方程式"
+        if "point" in op and "circle" in op:
+            return f"({n}) C{n} 關係"
+        if "line" in op and "circle" in op:
+            return f"({n}) L{n} 關係"
+        if "tangent_segment" in op:
+            return f"({n}) 切線段長"
+        if "relation_ranges" in op:
+            return text  # already descriptive like "(1)不相交"
+        return group
+    greek = {
+        "alpha": r"$\alpha$",
+        "beta": r"$\beta$",
+        "gamma": r"$\gamma$",
+        "theta": r"$\theta$",
+        "phi": r"$\phi$",
+        "lambda": r"$\lambda$",
+        "mu": r"$\mu$",
+    }
+    if text in greek:
+        return greek[text]
+    k_match = re.fullmatch(r"k(\d+)", text, flags=re.IGNORECASE)
+    if k_match:
+        return rf"$k_{{{k_match.group(1)}}}$"
+    if re.fullmatch(r"[A-Za-z]{2}", text):
+        return rf"$\overrightarrow{{{text}}}$"
+    if re.fullmatch(r"[A-Z]", text):
+        # Point coordinates / named point answers are student-visible as-is.
+        return text
+    if re.fullmatch(r"[xy]", text, flags=re.IGNORECASE):
+        return rf"${text.lower()}$"
+    if re.fullmatch(r"vec:[A-Za-z]", text, flags=re.IGNORECASE):
+        return rf"$\vec{{{text.split(':', 1)[1]}}}$"
+    # a_dot_b / a_dot_a → $\vec{a}\cdot\vec{b}$
+    dot_match = re.fullmatch(r"([a-z])_dot_([a-z])", text, flags=re.IGNORECASE)
+    if dot_match:
+        left, right = dot_match.group(1).lower(), dot_match.group(2).lower()
+        return rf"$\vec{{{left}}}\cdot\vec{{{right}}}$"
+    # mag_2a_3b / mag_a_plus_b → $|2\vec{a}+3\vec{b}|$ style
+    mag_match = re.fullmatch(r"mag_(.+)", text, flags=re.IGNORECASE)
+    if mag_match:
+        body = _vector_expr_key_to_latex(mag_match.group(1))
+        return rf"$\left|{body}\right|$"
+    dot_n = re.fullmatch(r"dot(\d+)", text, flags=re.IGNORECASE)
+    if dot_n:
+        return f"第{dot_n.group(1)}組內積"
+    if text in {"x_component", "y_component"}:
+        return r"$x$ 分量" if text.startswith("x") else r"$y$ 分量"
+    vocab = {
+        "magnitude": "大小",
+        "perimeter": "周長",
+        "simplified": "化簡結果",
+        "vector": "向量",
+        "value": "值",
+        "dot": "內積",
+        "cosine": r"$\cos\theta$",
+        "unit": "單位向量",
+        "angle_degrees": "夾角（度）",
+        "turn_degrees": "左轉角度（度）",
+        "切線一": "切線一",
+        "切線二": "切線二",
+    }
+    if text in vocab:
+        return vocab[text]
+    return text
+
+
+def _split_numbered_part_key(key: str) -> tuple[str, str] | None:
+    """Split ``(1)圓心`` / ``（2） 半徑`` into group label and field label."""
+    text = str(key or "").strip()
+    m = re.fullmatch(r"([\(（]\s*\d+\s*[\)）])\s*(.*)", text)
+    if not m:
+        return None
+    group = re.sub(r"\s+", "", m.group(1))
+    # Normalize fullwidth parens to ASCII for stable UI grouping.
+    group = group.replace("（", "(").replace("）", ")")
+    field = str(m.group(2) or "").strip()
+    return group, field
+
+
+def _is_student_facing_part_key(key: str) -> bool:
+    """True when the part key itself is already classroom-readable."""
+    text = str(key or "").strip()
+    if not text:
+        return False
+    if _split_numbered_part_key(text) is not None:
+        return True
+    # Chinese classroom labels (切線一 / 不相交 / …)
+    if re.search(r"[\u4e00-\u9fff]", text) and "_" not in text:
+        return True
+    return False
+
+
+def _vector_expr_key_to_latex(body: str) -> str:
+    """Convert compact keys like ``2a_3b`` / ``2a-3b`` into TeX vector expressions.
+
+    Underscore between letter-terms defaults to minus (``mag_2a_3b`` → ``|2a-3b|``);
+    use ``_plus_`` / ``_minus_`` or explicit ``+/-`` when the sign must be forced.
+    """
+    raw = str(body or "").strip().replace("__", "_")
+    raw = raw.replace("_plus_", "+").replace("_minus_", "-")
+    # Preserve underscores that separate terms so default joining can be minus.
+    # e.g. "2a_3b" → tokens with implied '-' ; "2a+3b" / "2a-3b" keep signs.
+    token_src = raw if any(ch in raw for ch in "+-") else raw.replace("_", "-")
+    tokens = re.findall(r"([+-]?)(\d*)([a-zA-Z])", token_src.replace("_", ""))
+    if not tokens:
+        return raw
+    parts: list[str] = []
+    for idx, (sign, coeff, letter) in enumerate(tokens):
+        letter = letter.lower()
+        piece = rf"\vec{{{letter}}}"
+        if coeff:
+            piece = f"{coeff}{piece}"
+        if idx == 0:
+            parts.append(f"-{piece}" if sign == "-" else piece)
+        else:
+            op = "-" if sign == "-" else "+"
+            parts.append(f"{op}{piece}")
+    return "".join(parts)
+
+
+def _looks_like_internal_part_key(key: str, label: str) -> bool:
+    """True when student-facing label still exposes a backend/internal key."""
+    key_text = str(key or "").strip()
+    label_text = str(label or "").strip()
+    if not key_text or not label_text:
+        return True
+    if _is_student_facing_part_key(key_text) or _is_student_facing_part_key(label_text):
+        return False
+    if label_text != key_text:
+        return False
+    # Identical label==key is OK for plain point letters / short math vars.
+    if re.fullmatch(r"[A-Z]", key_text):
+        return False
+    if re.fullmatch(r"[xy]", key_text, flags=re.IGNORECASE):
+        return False
+    # snake_case / digit-suffixed internal identifiers must not leak.
+    if "_" in key_text or re.search(r"\d", key_text) or key_text in {
+        "perimeter",
+        "magnitude",
+        "vector",
+        "value",
+        "simplified",
+        "unit",
+        "cosine",
+        "dot",
+    }:
+        return True
+    return False
+
+
+def _normalize_part_labels_map(
+    part_labels: Any,
+    semantic_answer: dict[str, Any],
+) -> dict[str, str]:
+    """Accept dict labels, or a list of keys / parallel labels."""
+    if isinstance(part_labels, dict):
+        return {str(k): str(v) for k, v in part_labels.items() if str(v).strip()}
+    if isinstance(part_labels, list) and part_labels:
+        keys = [str(k) for k in semantic_answer.keys()]
+        out: dict[str, str] = {}
+        for idx, item in enumerate(part_labels):
+            text = str(item or "").strip()
+            if not text:
+                continue
+            if text in semantic_answer:
+                # list of keys → identity (student-facing keys like "(1)圓心")
+                out[text] = text
+            elif idx < len(keys):
+                out[keys[idx]] = text
+        return out
+    return {}
+
+
+def unwrap_multipart_part_map(
+    semantic_answer: Any,
+    *,
+    answer_block: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return the student-facing part map for multi_part answers.
+
+    Accepts either a flat map ``{"(1)": ..., "(2)": ...}`` or the nested
+    envelope ``{"parts": {"(1)": ..., "(2)": ...}}`` that some domain matrices
+    historically stored in ``answer.value``. Nested envelopes must not become a
+    single contract field with ``key="parts"``.
+    """
+    block = answer_block if isinstance(answer_block, dict) else {}
+    explicit = block.get("parts")
+    if isinstance(explicit, dict) and explicit:
+        if all(not isinstance(v, dict) for v in explicit.values()):
+            return {str(k): v for k, v in explicit.items()}
+
+    if isinstance(semantic_answer, dict) and semantic_answer:
+        # Nested envelope: {"parts": {..flat map..}}
+        if (
+            set(semantic_answer.keys()) == {"parts"}
+            and isinstance(semantic_answer.get("parts"), dict)
+            and semantic_answer["parts"]
+            and all(not isinstance(v, dict) for v in semantic_answer["parts"].values())
+        ):
+            return {str(k): v for k, v in semantic_answer["parts"].items()}
+        # Already a flat part map (values are scalars / expressions).
+        if all(not isinstance(v, dict) for v in semantic_answer.values()):
+            return {str(k): v for k, v in semantic_answer.items()}
+    return {}
+
+
+def enrich_multipart_parts_from_stem(
+    parts: list[dict[str, Any]],
+    stem_structure: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    """Attach stem item text as display labels when keys match group markers.
+
+    Never overwrite strong student-facing labels already set by the domain
+    (e.g. B2 ``圓心`` / ``半徑``). Only fill when the current label is empty,
+    equals the field key, or is a bare circled marker.
+    """
+    if not isinstance(stem_structure, dict) or not parts:
+        return parts
+    items = stem_structure.get("items") if isinstance(stem_structure.get("items"), list) else []
+    by_group: dict[str, str] = {}
+    ordered_texts: list[str] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        group = str(item.get("group_label") or "").strip()
+        text = str(item.get("text") or item.get("body") or "").strip()
+        if text:
+            ordered_texts.append(text)
+        if group and text:
+            by_group[group] = text
+            # Also index by bare digits / circled markers for ①↔(1) alignment.
+            digits = "".join(ch for ch in group if ch.isdigit())
+            if digits:
+                by_group[f"({digits})"] = text
+                by_group[digits] = text
+    if not by_group and not ordered_texts:
+        return parts
+    circled = "①②③④⑤⑥⑦⑧⑨⑩"
+    strong_labels = {"圓心", "半徑", "正值", "負值"}
+
+    def _needs_enrichment(current: str, key: str) -> bool:
+        text = str(current or "").strip()
+        if not text:
+            return True
+        if text == key:
+            return True
+        if text in circled:
+            return True
+        if text in strong_labels:
+            return False
+        # Preserve non-trivial existing labels (center/radius style already set).
+        if len(text) <= 8 and text not in by_group.values():
+            # Short pedagogical labels like 圓心/半徑/公差 should stay.
+            if any("\u4e00" <= ch <= "\u9fff" for ch in text) and "$" not in text:
+                return False
+        return False
+
+    out: list[dict[str, Any]] = []
+    for index, row in enumerate(parts):
+        updated = dict(row)
+        key = str(updated.get("key") or "")
+        group = str(updated.get("group_label") or "").strip() or key
+        current = str(
+            updated.get("display_label") or updated.get("label") or updated.get("prompt") or ""
+        )
+        if not _needs_enrichment(current, key):
+            out.append(updated)
+            continue
+        label_text = by_group.get(group) or by_group.get(key)
+        if not label_text and key in circled:
+            digit = str(circled.index(key) + 1)
+            label_text = by_group.get(f"({digit})") or by_group.get(digit)
+        if not label_text and index < len(ordered_texts):
+            if current == key or current in circled or not current:
+                label_text = ordered_texts[index]
+        if label_text:
+            updated["display_label"] = label_text
+            updated["label"] = label_text
+            updated["prompt"] = label_text
+        out.append(updated)
+    return out
+
+
+def _build_multipart_field_groups(parts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Group center/radius-style parts under shared ``(1)`` / ``(2)`` headings."""
+    groups: list[dict[str, Any]] = []
+    index_by_group: dict[str, int] = {}
+    for part in parts:
+        key = str(part.get("key") or "")
+        group_label = str(part.get("group_label") or "").strip()
+        if not group_label:
+            split = _split_numbered_part_key(key)
+            if split is not None and split[1]:
+                group_label = split[0]
+        if not group_label:
+            continue
+        if group_label not in index_by_group:
+            index_by_group[group_label] = len(groups)
+            groups.append({"group_label": group_label, "fields": []})
+        groups[index_by_group[group_label]]["fields"].append(key)
+    # Only emit grouped contract when at least one group has 2+ fields
+    # (center+radius) or multiple numbered groups exist.
+    if not groups:
+        return []
+    # Skip grouping when every group is a singleton — labels already include (n).
+    if all(len(g["fields"]) == 1 for g in groups):
+        return []
+    if len(groups) == 1 and len(groups[0]["fields"]) < 2:
+        return []
+    return groups
+
+
+def _multi_part_contract_parts(
+    semantic_answer: Any,
+    *,
+    part_labels: dict[str, Any] | None = None,
+    domain_operation: str | None = None,
+) -> list[dict[str, Any]]:
+    """Build per-part checker rows from a dict answer. Duplicate values are kept."""
+    if not isinstance(semantic_answer, dict):
+        return []
+    from core.checkers.vector_answer_normalization import (
+        answer_shape_for_domain_operation,
+        expected_is_directed_segment,
+    )
+
+    labels = part_labels if isinstance(part_labels, dict) else {}
+    op_shape = answer_shape_for_domain_operation(domain_operation)
+    parts: list[dict[str, Any]] = []
+    for key, value in semantic_answer.items():
+        text = str(value).strip()
+        numeric = bool(text) and text.lstrip("+-").isdigit()
+        checker = "integer_checker" if numeric else "expression_checker"
+        key_text = str(key)
+        label = _student_facing_part_label(
+            key_text,
+            explicit=labels.get(key_text),
+            domain_operation=domain_operation,
+        )
+        group_label = ""
+        field_label = label
+        split = _split_numbered_part_key(key_text)
+        if split is not None:
+            group_label, suffix = split
+            if suffix:
+                # Prefer short field label inside a numbered group: 圓心 / 半徑
+                field_label = suffix
+                label = f"{group_label} {suffix}".strip()
+            else:
+                # Bare "(n)" — keep operation-enriched student label.
+                field_label = label
+                group_label = split[0]
+        if _looks_like_internal_part_key(key_text, label):
+            # Last-resort humanization for unknown snake_case keys.
+            label = key_text.replace("_", " ").strip() or key_text
+            field_label = label
+            if _looks_like_internal_part_key(key_text, label):
+                label = f"小题 {len(parts) + 1}"
+                field_label = label
+                group_label = ""
+        part_row: dict[str, Any] = {
+            "key": key_text,
+            "label": field_label if group_label else label,
+            "display_label": field_label if group_label else label,
+            "group_label": group_label or None,
+            "math_label": (field_label if group_label else label)
+            if "$" in (field_label if group_label else label)
+            or r"\(" in (field_label if group_label else label)
+            else None,
+            "field_key": key_text,
+            "checker": checker,
+            "checker_key": checker,
+            "equivalence_type": "numeric_exact" if numeric else "algebraic_equivalent",
+            "expected_answer": value,
+        }
+        if expected_is_directed_segment(value) or key_text.lower() == "simplified":
+            part_row["answer_shape"] = "directed_segment"
+        elif op_shape == "vector_expression" and not (text.startswith("(") and text.endswith(")")):
+            if key_text.lower() in {"vector", "unit", "ab", "ac", "bc"} or not numeric:
+                # Named basis / symbolic vector parts only (skip pure magnitudes when clearly numeric radical).
+                if key_text.lower() in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):
+                    if key_text.lower() not in {"magnitude", "perimeter", "value", "dot", "cosine", "angle_degrees"}:
+                        part_row["answer_shape"] = "vector_expression"
+        parts.append(part_row)
+    return parts
+
+
+def _apply_vector_keyboard_answer_shape(
+    answer_contract: dict[str, Any],
+    *,
+    domain_operation: str | None,
+    semantic_answer: Any,
+) -> dict[str, Any]:
+    """Annotate answer_contract so shared checkers enable keyboard-friendly vector input."""
+    from core.checkers.vector_answer_normalization import (
+        answer_shape_for_domain_operation,
+        expected_is_directed_segment,
+    )
+
+    ac = dict(answer_contract or {})
+    op_shape = answer_shape_for_domain_operation(domain_operation)
+    if expected_is_directed_segment(semantic_answer) or op_shape == "directed_segment":
+        ac["answer_shape"] = "directed_segment"
+    elif op_shape:
+        ac.setdefault("answer_shape", op_shape)
+    for part in ac.get("parts") or []:
+        if not isinstance(part, dict):
+            continue
+        expected = part.get("expected_answer")
+        if expected_is_directed_segment(expected) or str(part.get("key") or "").lower() == "simplified":
+            part["answer_shape"] = "directed_segment"
+        elif op_shape == "vector_expression" and "answer_shape" not in part:
+            text = str(expected or "")
+            key = str(part.get("key") or "").lower()
+            if key in {"magnitude", "perimeter", "value", "dot", "cosine", "angle_degrees"}:
+                continue
+            if text.startswith("(") and text.endswith(")"):
+                continue
+            if key in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):
+                part["answer_shape"] = "vector_expression"
+    return ac
 
 MATRIX_REQUIRED_FIELDS = (
     "givens",
@@ -393,13 +868,43 @@ def _build_line_equation_answer_contract(
             "equivalence_type": "numeric_exact",
             "semantic_answer": semantic_answer,
         }
+    equation_tasks = {
+        "point_slope",
+        "two_points",
+        "horizontal_line",
+        "vertical_line",
+        "oblique_line",
+        "slope_intercept_equation",
+        "intercept_form_equation",
+        "intercept_form_from_intercept_sum_and_slope",
+        "triangle_area_bisector_line_equation",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "line_through_intersection_parallel_to_line",
+        "perpendicular_bisector_application",
+        "line_through_point_perpendicular_to_segment",
+        "construct_parallel_line_at_distance",
+    }
+    if task_type in equation_tasks:
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "equation",
+            "answer_shape": "linear_equation",
+            "checker": "linear_equation_equivalent_checker",
+            "checker_key": "linear_equation_equivalent_checker",
+            "answer_equivalence": "linear_equation_equivalent",
+            "equivalence_type": "linear_equation_equivalent",
+            "equivalence": "linear_equation_equivalent",
+            "semantic_answer": semantic_answer,
+        }
     return {
         "presentation_mode": "short_answer",
         "answer_type": answer_type,
-        "checker": "linear_equation_equivalent_checker",
-        "checker_key": "linear_equation_equivalent_checker",
-        "answer_equivalence": "linear_equation_equivalent",
-        "equivalence": "linear_equation_equivalent",
+        "checker": "expression_equivalence_checker",
+        "checker_key": "expression_equivalence_checker",
+        "answer_equivalence": "algebraic_equivalent",
+        "equivalence_type": "algebraic_equivalent",
+        "equivalence": "algebraic_equivalent",
         "semantic_answer": semantic_answer,
     }
 
@@ -742,6 +1247,8 @@ def convert_line_equation_matrix_to_question_payload(
     payload: dict[str, Any] = {
         "question_text": question_text,
         "question": question_text,
+        "target_task": problem_type_id or task_type,
+        "task_family": "line_equation_family",
         "correct_answer": payload_correct,
         "answer": payload_answer,
         "display_answer": display_answer,
@@ -814,8 +1321,41 @@ def _latex_dollar(value: Any) -> str:
     return f"${_format_latex_math_text(str(value))}$"
 
 
-def _format_latex_display_answer(value: str, task_type: str = "") -> str:
+def _named_point_inline(label: str, value: Any) -> str:
+    """Render a point label and its coordinates as one MathJax atom."""
+    if isinstance(value, dict):
+        return _coordinate_point_with_coordinates(label, value.get("x"), value.get("y"))
+    if isinstance(value, (list, tuple)) and len(value) >= 2:
+        return _coordinate_point_with_coordinates(label, value[0], value[1])
+    raise ValueError(f"invalid_named_point:{label}")
+
+
+def _ensure_inline_math(value: Any) -> str:
+    """Keep an existing inline span or wrap one plain math atom."""
     text = str(value or "").strip()
+    if (text.startswith("$") and text.endswith("$")) or (
+        text.startswith(r"\(") and text.endswith(r"\)")
+    ):
+        return text
+    return _coordinate_inline_math(text)
+
+
+def _point_list_inline(points: Any, fallback: Any) -> str:
+    """Render comma-separated coordinate pairs as separate inline spans."""
+    if isinstance(points, list) and points:
+        rendered = []
+        for point in points:
+            if not isinstance(point, (list, tuple)) or len(point) < 2:
+                return _ensure_inline_math(fallback)
+            rendered.append(
+                _coordinate_inline_math(f"\\left( {point[0]},{point[1]} \\right)")
+            )
+        return "、".join(rendered)
+    return _ensure_inline_math(fallback)
+
+
+def _format_latex_display_answer(value: str, task_type: str = "") -> str:
+    text = sanitize_student_math_display_text(str(value or "").strip())
     if not text:
         return text
     if len(text) == 1 and text.upper() in {"A", "B", "C", "D"}:
@@ -837,12 +1377,29 @@ def _format_display_answer(value: Any, task_type: str = "", answer_type: str = "
     return _format_latex_display_answer(str(value), task_type)
 
 
+def _strip_math_delimiters(text: str) -> str:
+    """Remove one layer of ``$...$``, ``\\(...\\)``, or ``\\[...\\]``."""
+    normalized = str(text or "").strip()
+    if len(normalized) >= 2 and normalized.startswith("$") and normalized.endswith("$"):
+        return normalized[1:-1].strip()
+    if len(normalized) >= 4 and normalized.startswith(r"\(") and normalized.endswith(r"\)"):
+        return normalized[2:-2].strip()
+    if len(normalized) >= 4 and normalized.startswith(r"\[") and normalized.endswith(r"\]"):
+        return normalized[2:-2].strip()
+    return normalized
+
+
 def _format_latex_math_text(text: str) -> str:
     import re
 
     normalized = str(text or "").strip().replace("−", "-")
-    if normalized.startswith("$") and normalized.endswith("$"):
-        normalized = normalized[1:-1].strip()
+    # Already-delimited atoms such as ``\(-3\)`` must not be wrapped again
+    # into ``$\(-3\)$``, which shows the inner delimiters to students.
+    for _ in range(3):
+        stripped = _strip_math_delimiters(normalized)
+        if stripped == normalized:
+            break
+        normalized = stripped
 
     def repl_fraction(match: re.Match[str]) -> str:
         return canonicalize_display_answer(match.group(0), answer_type="rational")
@@ -860,8 +1417,28 @@ def _format_latex_math_text(text: str) -> str:
 
 
 def _text_needs_math_latex(text: str) -> bool:
-    return any(token in str(text) for token in ("sqrt(", "\\sqrt", "/", "*"))
+    """True when choice/display text must stay in MathJax delimiters.
 
+    Bare TeX atoms such as ``\\overrightarrow{AB}`` must be wrapped; otherwise
+    ``_format_latex_math_text`` strips existing ``$...$`` and students see raw TeX.
+    """
+    source = str(text or "")
+    if any(token in source for token in ("sqrt(", "\\sqrt", "/", "*")):
+        return True
+    if re.search(r"\\[a-zA-Z]+", source):
+        return True
+    # Classroom polynomial / circle equations with caret powers.
+    if "^" in source and re.search(r"[A-Za-z]", source):
+        return True
+    if "=" in source and re.search(r"[xyXY]", source):
+        return True
+    if "π" in source or "pi" in source.casefold():
+        return True
+    if source.startswith("$") and source.endswith("$") and len(source) >= 3:
+        return True
+    if source.startswith(r"\(") and source.endswith(r"\)"):
+        return True
+    return False
 
 def _build_line_equation_question_text(
     givens: dict[str, Any],
@@ -955,10 +1532,11 @@ def _build_line_equation_question_text(
         segment_length = _format_latex_math_text(givens.get("segment_length"))
         if point_a is None or not line or segment_length is None:
             raise ValueError("required_line_task_slot_missing:area_using_parallel_distance:givens")
-        pt = _format_point_for_question(point_a)
+        pt = _named_point_inline("A", point_a)
+        triangle_abc = _coordinate_inline_math("\\triangle ABC")
         return (
-            f"設 A 點坐標為 {pt}，且 B、C 兩點在直線 $L: {line}$ 上，"
-            f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 △ABC 的面積。"
+            f"設點 {pt}，且 {_coordinate_inline_math('B')}、{_coordinate_inline_math('C')} 兩點在直線 $L: {line}$ 上，"
+            f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 {triangle_abc} 的面積。"
         )
 
     if task_type == "parallel_lines_distance_single_choice":
@@ -987,7 +1565,7 @@ def _build_line_equation_question_text(
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
-            f"已知直線的斜率為 {_latex_inline(slope)}，且 y 截距為 {_latex_inline(y_intercept)}，"
+            f"已知直線的斜率為 {_latex_inline(slope)}，且 {_coordinate_inline_math('y')} 截距為 {_latex_inline(y_intercept)}，"
             "試求此直線方程式。"
         )
 
@@ -999,15 +1577,15 @@ def _build_line_equation_question_text(
         slope = givens.get("slope")
         y_intercept = givens.get("y_intercept")
         return (
-            f"設直線 L 的斜率為 {_latex_inline(slope)}，且 y 截距為 {_latex_inline(y_intercept)}，"
-            "求 L 的 x 截距。"
+            f"設直線 {_coordinate_inline_math('L')} 的斜率為 {_latex_inline(slope)}，且 {_coordinate_inline_math('y')} 截距為 {_latex_inline(y_intercept)}，"
+            f"求 {_coordinate_inline_math('L')} 的 {_coordinate_inline_math('x')} 截距。"
         )
 
     if task_type == "slope_intercept_read_slope_and_intercept":
         if "equation" not in givens:
             raise ValueError("required_line_task_slot_missing:slope_intercept_read_slope_and_intercept:equation")
         equation = givens.get("equation")
-        return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 y 截距。"
+        return f"已知直線方程式為 {_latex_inline_equation(equation)}，判斷其斜率與 {_coordinate_inline_math('y')} 截距。"
 
     # 2. Intercept Forms & Word Problems
     if task_type in {
@@ -1025,13 +1603,14 @@ def _build_line_equation_question_text(
             for slot in ("vertex", "edge_p1", "edge_p2", "midpoint"):
                 if slot not in givens:
                     raise ValueError(f"required_line_task_slot_missing:triangle_area_bisector_line_equation:{slot}")
-            vertex = _format_point_for_question(givens.get("vertex"))
-            edge_p1 = _format_point_for_question(givens.get("edge_p1"))
-            edge_p2 = _format_point_for_question(givens.get("edge_p2"))
-            midpoint = _format_point_for_question(givens.get("midpoint"))
+            vertex = _named_point_inline("B", givens.get("vertex"))
+            edge_p1 = _named_point_inline("A", givens.get("edge_p1"))
+            edge_p2 = _named_point_inline("C", givens.get("edge_p2"))
+            midpoint = _named_point_inline("D", givens.get("midpoint"))
             return (
-                f"已知三角形 ABC 中，A={edge_p1}、B={vertex}、C={edge_p2}。"
-                f"若直線通過 B 並通過 AC 的中點 D={midpoint}，求此平分三角形 ABC 面積的直線方程式。"
+                f"已知三角形 {_coordinate_inline_math('ABC')} 中，{edge_p1}、{vertex}、{edge_p2}。"
+                f"若直線通過 {_coordinate_inline_math('B')} 並通過 {_coordinate_inline_math('AC')} 的中點 {midpoint}，"
+                f"求此平分三角形 {_coordinate_inline_math('ABC')} 面積的直線方程式。"
             )
         if task_type == "parabola_secant_parallel_line_choice":
             if "p" not in givens or "q" not in givens:
@@ -1039,8 +1618,8 @@ def _build_line_equation_question_text(
             p = givens.get("p")
             q = givens.get("q")
             return (
-                f"若 A、B 兩點分別是拋物線 $y=x^2$ 與直線 $x={p}$、$x={q}$ 的交點，"
-                "則直線 AB 與下列哪一條直線平行？"
+                f"若 {_coordinate_inline_math('A')}、{_coordinate_inline_math('B')} 兩點分別是拋物線 $y=x^2$ 與直線 $x={p}$、$x={q}$ 的交點，"
+                f"則直線 {_coordinate_inline_math('AB')} 與下列哪一條直線平行？"
             )
         if task_type == "intercept_form_from_intercept_sum_and_slope":
             if "intercept_sum" not in givens or "slope" not in givens:
@@ -1048,17 +1627,17 @@ def _build_line_equation_question_text(
             intercept_sum = givens.get("intercept_sum")
             slope = givens.get("slope")
             return (
-                f"已知直線 L 在兩坐標軸上的截距和為 {_latex_dollar(intercept_sum)}，"
-                f"且 L 的斜率為 {_latex_dollar(slope)}，求 L 的方程式。"
+                f"已知直線 {_coordinate_inline_math('L')} 在兩坐標軸上的截距和為 {_latex_dollar(intercept_sum)}，"
+                f"且 {_coordinate_inline_math('L')} 的斜率為 {_latex_dollar(slope)}，求 {_coordinate_inline_math('L')} 的方程式。"
             )
         if task_type == "intercept_form_triangle_area":
             if equation:
                 return (
-                    f"已知直線方程式為 {_latex_dollar(equation)}，求它與 x 軸及 y 軸"
+                    f"已知直線方程式為 {_latex_dollar(equation)}，求它與 {_coordinate_inline_math('x')} 軸及 {_coordinate_inline_math('y')} 軸"
                     "所圍成的三角形面積。"
                 )
             return (
-                f"已知一直線的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
+                f"已知一直線的 {_coordinate_inline_math('x')} 截距為 {_latex_dollar(x_intercept)}，{_coordinate_inline_math('y')} 截距為 "
                 f"{_latex_dollar(y_intercept)}，求它與兩坐標軸所圍成的三角形面積。"
             )
         if equation:
@@ -1067,8 +1646,8 @@ def _build_line_equation_question_text(
                 "並求與兩坐標軸所圍成的三角形面積。"
             )
         return (
-            f"已知一直線 L 的 x 截距為 {_latex_dollar(x_intercept)}，y 截距為 "
-            f"{_latex_dollar(y_intercept)}，試求直線 L 的方程式與兩坐標軸所圍成的三角形面積。"
+            f"已知一直線 {_coordinate_inline_math('L')} 的 {_coordinate_inline_math('x')} 截距為 {_latex_dollar(x_intercept)}，{_coordinate_inline_math('y')} 截距為 "
+            f"{_latex_dollar(y_intercept)}，試求直線 {_coordinate_inline_math('L')} 的方程式與兩坐標軸所圍成的三角形面積。"
         )
 
     # 3. V3 General Form Line types
@@ -1144,20 +1723,24 @@ def _build_line_equation_question_text(
     if task_type == "slope_from_two_points":
         if "point_a" not in givens or "point_b" not in givens:
             raise ValueError("required_line_task_slot_missing:slope_from_two_points:points")
-        pa = givens.get("point_a_display") or _format_point_for_question(givens["point_a"])
-        pb = givens.get("point_b_display") or _format_point_for_question(givens["point_b"])
-        return f"試求過兩點 A{pa}、B{pb} 的直線斜率。"
+        pa = _named_point_inline("A", givens["point_a"])
+        pb = _named_point_inline("B", givens["point_b"])
+        return f"試求過兩點 {pa}、{pb} 的直線斜率。"
 
     if task_type in ("solve_parameter_from_known_slope", "solve_parameter_from_known_slope_choice"):
         if "slope" not in givens:
             raise ValueError("required_line_task_slot_missing:solve_parameter_from_known_slope:slope")
-        pa = givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
-        pb = givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        pa = _ensure_inline_math(
+            givens.get("point_a_display") or _format_point_for_question(givens.get("point_a"))
+        )
+        pb = _ensure_inline_math(
+            givens.get("point_b_display") or _format_point_for_question(givens.get("point_b"))
+        )
         slope = givens["slope"]
         param = givens.get("parameter_name") or "a"
         return (
             f"若直線通過點 {pa} 與 {pb}，且其斜率為 {_latex_dollar(str(slope))}，"
-            f"試求 {param} 之值。"
+            f"試求 {_coordinate_inline_math(param)} 之值。"
         )
 
     if task_type == "collinear_three_points_parameter":
@@ -1206,20 +1789,24 @@ def _build_line_equation_question_text(
         )
 
     if task_type == "parallel_two_point_lines_parameter_choice":
-        l1 = givens.get("line_1_display") or ""
-        l2 = givens.get("line_2_display") or ""
+        l1 = _point_list_inline(
+            givens.get("line_1_points"), givens.get("line_1_display") or ""
+        )
+        l2 = _point_list_inline(
+            givens.get("line_2_points"), givens.get("line_2_display") or ""
+        )
         param = givens.get("parameter_name") or "a"
         return (
-            f"平面上過兩點 ${l1}$ 的直線和過另兩點 ${l2}$ 的直線平行，"
-            f"則 {param} ="
+            f"平面上過兩點 {l1} 的直線和過另兩點 {l2} 的直線平行，"
+            f"則 {_coordinate_inline_math(f'{param} =')}"
         )
 
     if task_type == "parallel_and_perpendicular_slopes_from_reference":
         m1 = givens.get("reference_slope") or "m1"
         return (
-            f"已知直線 L1 的斜率為 {_latex_dollar(str(m1))}，試問："
-            f"(1) 若直線 L2 平行 L1，試求 L2 的斜率。"
-            f"(2) 若直線 L3 垂直 L1，試求 L3 的斜率。"
+            f"已知直線 {_coordinate_inline_math('L_1')} 的斜率為 {_latex_dollar(str(m1))}，試問："
+            f"(1) 若直線 {_coordinate_inline_math('L_2')} 平行 {_coordinate_inline_math('L_1')}，試求 {_coordinate_inline_math('L_2')} 的斜率。"
+            f"(2) 若直線 {_coordinate_inline_math('L_3')} 垂直 {_coordinate_inline_math('L_1')}，試求 {_coordinate_inline_math('L_3')} 的斜率。"
         )
 
     if task_type == "triangle_right_angle_verification":
@@ -1252,13 +1839,13 @@ def _build_line_equation_question_text(
         segments = givens.get("segments") if isinstance(givens.get("segments"), list) else []
         point_bits = []
         for label, coords in points.items():
-            point_bits.append(f"{label}{_format_point_for_question(coords)}")
+            point_bits.append(_named_point_inline(str(label), coords))
         seg_bits = []
         for idx, seg in enumerate(segments):
             if not isinstance(seg, dict):
                 continue
             name = str(seg.get("name") or f"L{idx + 1}")
-            seg_bits.append(f"({idx + 1})直線{name}")
+            seg_bits.append(f"({idx + 1})直線{_coordinate_inline_math(name)}")
         joined_points = "、".join(point_bits) if point_bits else "已知各點"
         joined_segs = " ".join(seg_bits) if seg_bits else "各線段"
         return f"設{joined_points}，試求下列直線的斜率。{joined_segs}。"
@@ -1299,9 +1886,9 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_a")
         if "point_b" not in givens:
             raise ValueError("required_line_task_slot_missing:perpendicular_bisector_application:point_b")
-        pa = _format_point_for_question(givens["point_a"])
-        pb = _format_point_for_question(givens["point_b"])
-        return f"已知平面上兩點 A{pa}、B{pb}，求線段 AB 的垂直平分線（中垂線）方程式。"
+        pa = _named_point_inline("A", givens["point_a"])
+        pb = _named_point_inline("B", givens["point_b"])
+        return f"已知平面上兩點 {pa}、{pb}，求線段 {_coordinate_inline_math('AB')} 的垂直平分線（中垂線）方程式。"
 
     if task_type == "line_through_point_perpendicular_to_segment":
         if "point_b" not in givens:
@@ -1310,10 +1897,13 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_a")
         if "point_c" not in givens:
             raise ValueError("required_line_task_slot_missing:line_through_point_perpendicular_to_segment:point_c")
-        pb = _format_point_for_question(givens["point_b"])
-        pa = _format_point_for_question(givens["point_a"])
-        pc = _format_point_for_question(givens["point_c"])
-        return f"若 A{pa}、B{pb}、C{pc} 為平面上三點，則過點 B 且與直線 AC 垂直的直線方程式為何？"
+        pb = _named_point_inline("B", givens["point_b"])
+        pa = _named_point_inline("A", givens["point_a"])
+        pc = _named_point_inline("C", givens["point_c"])
+        return (
+            f"若 {pa}、{pb}、{pc} 為平面上三點，則過點 {_coordinate_inline_math('B')} "
+            f"且與直線 {_coordinate_inline_math('AC')} 垂直的直線方程式為何？"
+        )
 
     if task_type == "distance_from_point_to_line":
         if "point" not in givens:
@@ -1322,7 +1912,7 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:distance_from_point_to_line:equation")
         pt = _format_point_for_question(givens["point"])
         eq = givens["equation"]
-        return f"試求平面上一點 {pt} 到直線 L : {eq} 的距離。"
+        return f"試求平面上一點 {pt} 到直線 {_latex_dollar(f'L: {eq}')} 的距離。"
 
     if task_type in (
         "distance_from_point_to_line_parameter",
@@ -1340,7 +1930,10 @@ def _build_line_equation_question_text(
         var_name = "k"
         if "a" in eq or "a" in str(givens.get("point")):
             var_name = "a"
-        return f"若點 {pt} 到直線 L : {eq} 的距離為 {dist}，試求 {var_name} 的值。"
+        return (
+            f"若點 {pt} 到直線 {_latex_dollar(f'L: {eq}')} 的距離為 {_latex_dollar(dist)}，"
+            f"試求 {_coordinate_inline_math(var_name)} 的值。"
+        )
 
     if task_type == "compare_point_to_line_distances":
         if "point" not in givens:
@@ -1349,16 +1942,16 @@ def _build_line_equation_question_text(
             raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_1")
         if "equation_2" not in givens:
             raise ValueError("required_line_task_slot_missing:compare_point_to_line_distances:equation_2")
-        pt = _format_point_for_question(givens["point"])
+        pt = _named_point_inline("P", givens["point"])
         eq1 = givens["equation_1"]
         eq2 = givens["equation_2"]
         target_direction = str(givens.get("target_direction") or "closer").strip().lower()
         if target_direction == "closer":
-            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較近？"
+            return f"已知平面上一點 {pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 {_coordinate_inline_math('P')} 到哪一條直線的距離較近？"
         elif target_direction == "farther":
-            return f"已知平面上一點 P{pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 P 到哪一條直線的距離較遠？"
+            return f"已知平面上一點 {pt} 及兩直線 $L_1: {eq1}$、$L_2: {eq2}$，試問點 {_coordinate_inline_math('P')} 到哪一條直線的距離較遠？"
         else:
-            return f"已知平面有一點 P{pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
+            return f"已知平面有一點 {pt} 及兩直線 $L_1: {eq1}$ 與 $L_2: {eq2}$，試比較該點到兩直線的距離關係。"
 
     # 4. Fallbacks for standard Point-Slope / Two-Points / Horizontal / Vertical
     if task_type == "two_points" or ("point_a" in givens and "point_b" in givens):
@@ -1399,31 +1992,173 @@ def _build_line_equation_question_text(
     raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
 
 
+def _choice_semantic_key(text: Any) -> str:
+    from core.gencode.choice_contract_validator import choice_semantic_key
+
+    return choice_semantic_key(text)
+
+
+def _synthesize_coordinate_distractors(canonical: str) -> list[str]:
+    """Build distinct coordinate-pair distractors without technical suffixes."""
+    try:
+        from core.domain.vector_plane_domain import format_pair
+        from core.gencode.choice_contract_validator import plainify_math_token
+        import sympy as sp
+
+        cleaned = str(canonical).replace("$", "")
+        cleaned = cleaned.replace(r"\left", "").replace(r"\right", "")
+        m = re.search(
+            r"[\(\[]\s*([^,]+)\s*,\s*([^)\]]+)\s*[\)\]]",
+            cleaned,
+        )
+        if not m:
+            return []
+
+        def _coord(token: str):
+            plain = plainify_math_token(token.replace("−", "-"))
+            return sp.simplify(sp.sympify(plain))
+
+        x = _coord(m.group(1))
+        y = _coord(m.group(2))
+        candidates = [
+            format_pair(-x, -y),
+            format_pair(-x, y),
+            format_pair(x, -y),
+            format_pair(y, x),
+            format_pair(x + 1, y),
+            format_pair(x, y + 1),
+            format_pair(x - 1, y),
+            format_pair(x, y - 1),
+            format_pair(x + 1, y + 1),
+            format_pair(x - 1, y - 1),
+            format_pair(1, 0),
+            format_pair(0, 1),
+            format_pair(-1, 0),
+            format_pair(0, -1),
+            format_pair(1, 1),
+            format_pair(-1, -1),
+            format_pair(2, 0),
+            format_pair(0, 2),
+        ]
+        correct = format_pair(x, y)
+        out: list[str] = []
+        seen = {_choice_semantic_key(correct)}
+        for cand in candidates:
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            out.append(cand)
+            if len(out) >= 3:
+                break
+        return out
+    except Exception:
+        return []
+
+
+def _synthesize_scalar_distractors(canonical: str) -> list[str]:
+    """Build distinct scalar/symbolic distractors without technical suffixes."""
+    try:
+        import sympy as sp
+        from core.domain.vector_plane_domain import canonical_exact
+
+        expr = sp.simplify(sp.sympify(str(canonical).replace("$", "").replace("−", "-")))
+        candidates = [
+            -expr,
+            sp.simplify(expr + 1),
+            sp.simplify(expr - 1),
+            sp.simplify(2 * expr),
+            sp.Integer(0),
+            sp.Integer(1),
+            -sp.Integer(1),
+            sp.simplify(-expr + 1),
+        ]
+        out: list[str] = []
+        seen = {_choice_semantic_key(canonical_exact(expr))}
+        for cand in candidates:
+            text = canonical_exact(cand)
+            key = _choice_semantic_key(text)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            out.append(text)
+            if len(out) >= 3:
+                break
+        return out
+    except Exception:
+        return []
+
+
 def _build_choice_options(
     canonical: str,
     distractors: list[Any],
     *,
     seed_text: str,
+    allow_technical_suffix: bool = False,
 ) -> tuple[list[dict[str, str]], str]:
     unique_wrong: list[str] = []
-    seen: set[str] = {canonical}
+    seen: set[str] = {_choice_semantic_key(canonical)}
     for item in distractors:
         text = str(item).strip()
-        if not text or text in seen:
+        key = _choice_semantic_key(text)
+        if not text or not key or key in seen:
             continue
-        seen.add(text)
+        # Never keep technical suffix artifacts in student-visible text.
+        if re.search(r"_+\d+$", text):
+            continue
+        seen.add(key)
         unique_wrong.append(text)
 
-    option_texts = [canonical] + unique_wrong[:3]
+    # Ensure 3 distractors for A/B/C/D when possible.
+    if len(unique_wrong) < 3:
+        for cand in _synthesize_coordinate_distractors(canonical):
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            unique_wrong.append(cand)
+            if len(unique_wrong) >= 3:
+                break
+    if len(unique_wrong) < 3:
+        for cand in _synthesize_scalar_distractors(canonical):
+            key = _choice_semantic_key(cand)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            unique_wrong.append(cand)
+            if len(unique_wrong) >= 3:
+                break
+    if len(unique_wrong) < 3:
+        try:
+            base = int(str(canonical).strip())
+            for d in (-3, -2, -1, 1, 2, 3, 4, -4, 5, -5, 6, -6):
+                cand = str(base + d)
+                key = _choice_semantic_key(cand)
+                if key in seen:
+                    continue
+                seen.add(key)
+                unique_wrong.append(cand)
+                if len(unique_wrong) >= 3:
+                    break
+        except (TypeError, ValueError):
+            if not allow_technical_suffix:
+                raise ValueError("insufficient_semantic_distractors")
+            raise ValueError("insufficient_semantic_distractors")
+
+    if len(unique_wrong) < 3:
+        raise ValueError("insufficient_semantic_distractors")
+
+    option_texts = [str(canonical).strip()] + unique_wrong[:3]
     rng = random.Random(sum(ord(ch) for ch in seed_text))
     rng.shuffle(option_texts)
 
     choices: list[dict[str, str]] = []
     correct_label = "A"
+    correct_key = _choice_semantic_key(canonical)
     for index, text in enumerate(option_texts):
         label = chr(ord("A") + index)
         choices.append({"label": label, "text": text})
-        if text == canonical:
+        if _choice_semantic_key(text) == correct_key:
             correct_label = label
     return choices, correct_label
 
@@ -1450,15 +2185,49 @@ def _prepare_choice_label_matrix_answer(
     answer = matrix.get("answer")
     if not isinstance(answer, dict) or answer.get("correct_label"):
         return matrix
+
+    prepared = dict(matrix)
+    prepared_answer = dict(answer)
+
+    # Domain-authored MCQ contracts already carry a shuffled label contract.
+    top_label = str(matrix.get("correct_label") or "").strip().upper()
+    if top_label in {"A", "B", "C", "D"}:
+        prepared_answer["correct_label"] = top_label
+        prepared["answer"] = prepared_answer
+        return prepared
+
+    matrix_choices = matrix.get("choices") if isinstance(matrix.get("choices"), list) else []
     display_answer = str(answer.get("canonical_form", answer.get("value", "")))
+    correct_key = _choice_semantic_key(display_answer)
+    if len(matrix_choices) >= 4 and correct_key:
+        for row in matrix_choices:
+            if not isinstance(row, dict):
+                continue
+            label = str(row.get("label") or row.get("key") or "").strip().upper()
+            value = str(row.get("value") or row.get("text") or "").strip().strip("$")
+            if label in {"A", "B", "C", "D"} and _choice_semantic_key(value) == correct_key:
+                prepared_answer["correct_label"] = label
+                prepared["answer"] = prepared_answer
+                return prepared
+
+    distractors = list(matrix.get("distractors") or [])
+    if len(distractors) < 3 and matrix_choices:
+        for row in matrix_choices:
+            if not isinstance(row, dict):
+                continue
+            value = str(row.get("value") or row.get("text") or "").strip().strip("$")
+            key = _choice_semantic_key(value)
+            if not value or not key or key == correct_key:
+                continue
+            distractors.append(value)
+
     _, correct_label = _build_choice_options(
         display_answer,
-        matrix.get("distractors", []),
+        distractors,
         seed_text=f"{op}|{display_answer}|{component_id or ''}",
     )
-    prepared = dict(matrix)
-    prepared["answer"] = dict(answer)
-    prepared["answer"]["correct_label"] = correct_label
+    prepared_answer["correct_label"] = correct_label
+    prepared["answer"] = prepared_answer
     return prepared
 
 
@@ -1918,6 +2687,15 @@ def _convert_descriptive_statistics_payload(
         raise DescriptiveStatisticsContractError(
             f"answer_contract_not_dispatchable:{','.join(dispatch_blockers)}"
         )
+    rounding_places = [
+        int(item["rounding_applied_places"])
+        for item in [answer_contract, *list(answer_contract.get("parts") or [])]
+        if isinstance(item, dict) and item.get("rounding_applied_places") is not None
+    ]
+    if rounding_places and "四捨五入" not in question_text:
+        places = max(rounding_places)
+        target = "整數" if places == 0 else f"小數點後第 {places} 位"
+        question_text = f"{question_text}（答案四捨五入至{target}）"
 
     mode = str(
         presentation_mode
@@ -1978,6 +2756,7 @@ def _convert_descriptive_statistics_payload(
             source_answer_label=source_answer_label or None,
             seed=generation_seed,
             preserve_source_choices=preserve_source,
+            curriculum_profile=validation_facts.get("curriculum_profile"),
         )
         resolved_answer_type = "single_choice"
         checker_key = "choice_label_checker"
@@ -2530,9 +3309,25 @@ def convert_domain_matrix_to_question_payload(
         validation_facts.setdefault("domain_operation", op)
         validation_facts.setdefault("task_type", op)
     semantic_answer = answer.get("value", answer.get("canonical_form"))
+    unwrapped_parts = unwrap_multipart_part_map(semantic_answer, answer_block=answer)
+    if unwrapped_parts:
+        semantic_answer = unwrapped_parts
     display_answer = str(answer.get("canonical_form", semantic_answer))
     mode = str(presentation_mode or "short_answer").strip()
     resolved_answer_type = str(answer_type or "integer").strip()
+    # Authoritative matrix MCQ contract wins over mis-wired component constants.
+    # Prevents "family ends with _mcq / matrix has choices" from collapsing to text input.
+    matrix_choice_rows = matrix.get("choices") if isinstance(matrix.get("choices"), list) else []
+    facts_mode = str(validation_facts.get("presentation_mode") or "").strip()
+    facts_atype = str(validation_facts.get("answer_type") or "").strip()
+    if (
+        (len(matrix_choice_rows) >= 2 and matrix.get("correct_label"))
+        or facts_mode == "single_choice"
+        or facts_atype in {"single_choice", "choice"}
+    ):
+        mode = "single_choice"
+        if resolved_answer_type not in {"single_choice", "choice"}:
+            resolved_answer_type = "single_choice"
     table_chart_ops = {
         "read_category_value",
         "compare_category_values",
@@ -2812,40 +3607,82 @@ def convert_domain_matrix_to_question_payload(
     if not question_text:
         if op == "solve_basic_absolute_value_equation":
             rhs = givens.get("rhs", 8)
-            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求{_coordinate_inline_math('x')}之值。"
         elif op == "solve_basic_absolute_value_equation_no_solution":
             rhs = givens.get("rhs", -3)
-            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求x之值。"
+            question_text = f"數線上，若$\\left| x \\right|={rhs}$，試求{_coordinate_inline_math('x')}之值。"
         elif op == "number_line_distance_between_two_points":
             a = givens.get("a", -3)
             b = givens.get("b", 7)
-            question_text = f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，試求A、B兩點的距離。"
+            question_text = (
+                f"已知數線上兩點$A\\left( {a} \\right)$、$B\\left( {b} \\right)$，"
+                f"試求{_coordinate_inline_math('A')}、{_coordinate_inline_math('B')}兩點的距離。"
+            )
         elif op == "absolute_value_inequality_zero_center_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             a = givens.get("a", 1)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
             ax_text = "x" if a == 1 else f"{a}x"
             question_text = f"解不等式：$\\left| {ax_text} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_shifted_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             b_val = givens.get("b", -3)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
             b_text = f"+ {b_val}" if b_val >= 0 else f"- {abs(b_val)}"
             question_text = f"解不等式：$\\left| x {b_text} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_linear_expression_basic":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
             a = givens.get("a", 1)
             b = givens.get("b", 0)
-            op_sign = givens.get("op", "<")
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<")))
             c = givens.get("c", 5)
-            b_text = f"+ {b}" if b >= 0 else f"- {abs(b)}"
-            question_text = f"解不等式：$\\left| {a}x {b_text} \\right| {op_sign} {c}$。"
+            ax_text = "x" if a == 1 else "-x" if a == -1 else f"{a}x"
+            if b == 0:
+                inner = ax_text
+            else:
+                b_text = f"+ {b}" if b > 0 else f"- {abs(b)}"
+                inner = f"{ax_text} {b_text}"
+            question_text = f"解不等式：$\\left| {inner} \\right| {op_sign} {c}$。"
         elif op == "absolute_value_inequality_interval_interpretation":
-            d = givens.get("d", 7)
-            a = givens.get("a", 0)
+            # Keep symbolic parameters a,b in the stem. Numeric solved values are
+            # givens["a_value"] / givens["b_value"] and must NOT be substituted
+            # into |k x - a|.
+            k = givens.get("k", givens.get("d", 7))
             c = givens.get("c", 28)
-            e = givens.get("e", 5)
-            a_part = f"- {a}" if a >= 0 else f"+ {abs(a)}"
-            question_text = f"若不等式 $\\left| {d}x {a_part} \\right| < {c}$ 之解為 $b < x < {e}$，則點 $(b, a)$ 屬於哪一象限？"
+            u = givens.get("u", givens.get("e", 5))
+            question_text = (
+                f"若不等式 $\\left| {k}x - a \\right| < {c}$ 之解為 $b < x < {u}$，"
+                f"則點 $(b, a)$ 屬於哪一象限？"
+            )
+        elif op == "absolute_value_inequality_integer_solution_count_choice":
+            from core.gencode.absolute_value_latex import format_abs_inequality_op
+
+            a = givens.get("a", 1)
+            b = givens.get("b", 0)
+            op_sign = format_abs_inequality_op(str(givens.get("op", "<=")))
+            c = givens.get("c", 5)
+            try:
+                a_num = int(a)
+            except (TypeError, ValueError):
+                a_num = a
+            try:
+                b_num = int(b)
+            except (TypeError, ValueError):
+                b_num = b
+            ax_text = "x" if a_num == 1 else f"{a_num}x"
+            if b_num == 0:
+                inner = ax_text
+            else:
+                b_text = f"+ {b_num}" if b_num > 0 else f"- {abs(b_num)}"
+                inner = f"{ax_text} {b_text}"
+            question_text = (
+                f"若 $\\left| {inner} \\right| {op_sign} {c}$，滿足的整數 $x$ 有幾個？"
+            )
         elif op == "compute_distance_between_two_points":
             x1 = givens.get("x1")
             y1 = givens.get("y1")
@@ -2860,10 +3697,38 @@ def convert_domain_matrix_to_question_payload(
             dist = givens.get("distance")
             question_text = f"設 $A({x1}, {y1})$、$B({x2}, {y2})$ 為坐標平面上兩點，且其距離為 ${dist}$，試求 $k$ 值。"
         else:
-            question_text = "閱讀下列資料，根據表格回答問題。"
+            # Never emit a table-referencing placeholder without table/chart payload.
+            # Stems filled by the post-pass below (histogram / target_label) may stay empty.
+            _abs_ops_without_freq_override = {
+                "solve_basic_absolute_value_equation",
+                "solve_basic_absolute_value_equation_no_solution",
+                "number_line_distance_between_two_points",
+                "absolute_value_inequality_zero_center_basic",
+                "absolute_value_inequality_shifted_basic",
+                "absolute_value_inequality_linear_expression_basic",
+                "absolute_value_inequality_integer_solution_count_choice",
+                "absolute_value_inequality_interval_interpretation",
+            }
+            defer_to_post_pass = (
+                problem_type_id
+                in {
+                    "frequency_distribution_chart_construction",
+                    "histogram_distribution_update",
+                }
+                or (
+                    bool(validation_facts.get("target_label"))
+                    and op not in _abs_ops_without_freq_override
+                )
+            )
+            if not defer_to_post_pass:
+                raise ValueError(
+                    "domain_matrix_missing_question_text: "
+                    f"op={op!r} problem_type_id={problem_type_id!r}"
+                )
 
     if problem_type_id == "frequency_distribution_chart_construction":
-        pass
+        if not str(question_text or "").strip():
+            question_text = "已知次數分配表如下，試畫出其對應的直方圖與次數分配折線圖。"
     elif problem_type_id == "histogram_distribution_update":
         question_text = "下圖為某幼兒園班上25位小朋友身高分布之直方圖。今班上轉出一位身高117公分的小朋友，轉入一位身高112公分的小朋友，則此時班上小朋友身高分布之直方圖為何？（請說明哪兩組次數改變以及各改變多少）"
     else:
@@ -2871,7 +3736,12 @@ def convert_domain_matrix_to_question_payload(
         if target_label and op not in {
             "solve_basic_absolute_value_equation",
             "solve_basic_absolute_value_equation_no_solution",
-            "number_line_distance_between_two_points"
+            "number_line_distance_between_two_points",
+            "absolute_value_inequality_zero_center_basic",
+            "absolute_value_inequality_shifted_basic",
+            "absolute_value_inequality_linear_expression_basic",
+            "absolute_value_inequality_integer_solution_count_choice",
+            "absolute_value_inequality_interval_interpretation",
         }:
             question_text = f"閱讀下列次數分配表，求 {target_label} 的次數。"
 
@@ -3022,15 +3892,125 @@ def convert_domain_matrix_to_question_payload(
             "allow_text_answer": True,
         } if problem_type_id == "histogram_distribution_update" else None,
     }
-    if mode == "single_choice":
-        choices, correct_label = _build_choice_options(
-            display_answer,
-            normalized.get("distractors", []),
-            seed_text=f"{problem_type_id or op}|{display_answer}",
+    factorized_response_required = bool(
+        (problem_type_id == "polynomial_factoring" or op == "polynomial_factoring")
+        and "因式分解" in question_text
+        and (
+            (
+                isinstance(semantic_answer, dict)
+                and semantic_answer
+                and all("(" in str(value) and ")" in str(value) for value in semantic_answer.values())
+            )
+            or (
+                not isinstance(semantic_answer, dict)
+                and "(" in str(semantic_answer)
+                and ")" in str(semantic_answer)
+            )
         )
+    )
+    if factorized_response_required:
+        answer_contract["required_form"] = "factorized"
+        if resolved_answer_type != "multi_part":
+            answer_contract["answer_equivalence"] = "required_factorized_form"
+            answer_contract["equivalence"] = "required_factorized_form"
+            answer_contract["equivalence_type"] = "required_factorized_form"
+    if mode == "single_choice":
+        from core.gencode.single_choice_contract import build_single_choice_contract
+
+        source_choices = list(
+            kwargs.get("source_choices")
+            or givens.get("source_choices")
+            or matrix.get("source_choices")
+            or []
+        )
+        source_answer_label = str(
+            kwargs.get("source_answer_label")
+            or givens.get("source_answer_label")
+            or matrix.get("source_answer_label")
+            or ""
+        ).strip().upper()
+        # Only honor explicit preserve flag. Auto-preserving textbook choices while
+        # the domain emits isomorphic variants would desync answer labels.
+        preserve_source = bool(kwargs.get("preserve_source_choices"))
+        matrix_choices = matrix.get("choices")
+        matrix_choice_rows: list[dict[str, Any]] = []
+        if isinstance(matrix_choices, list):
+            for row in matrix_choices:
+                if not isinstance(row, dict):
+                    continue
+                label = str(row.get("label") or row.get("key") or "").strip().upper()
+                raw_text = str(row.get("text") or row.get("value") or row.get("display") or "")
+                if label and raw_text:
+                    matrix_choice_rows.append(
+                        {
+                            "label": label,
+                            "text": _format_latex_display_answer(raw_text),
+                            "value": str(row.get("value") or raw_text),
+                            "display": _format_latex_display_answer(
+                                str(row.get("display") or raw_text)
+                            ),
+                        }
+                    )
+        if len(matrix_choice_rows) >= 2:
+            choices = matrix_choice_rows
+            if matrix.get("correct_label"):
+                correct_label = str(matrix.get("correct_label")).strip().upper()
+            else:
+                semantic = str(matrix.get("semantic_answer") or display_answer or "").strip()
+                correct_label = next(
+                    (
+                        c["label"]
+                        for c in matrix_choice_rows
+                        if str(c.get("value") or "").strip() == semantic
+                        or str(c.get("text") or "").strip().strip("$") == semantic.strip("$")
+                    ),
+                    "A",
+                )
+        else:
+            try:
+                choice_bundle = build_single_choice_contract(
+                    display_answer,
+                    list(normalized.get("distractors") or []),
+                    source_choices=source_choices or None,
+                    source_answer_label=source_answer_label or None,
+                    seed=kwargs.get("seed"),
+                    preserve_source_choices=preserve_source,
+                    curriculum_profile=validation_facts.get("curriculum_profile"),
+                )
+                choices = [
+                    {
+                        "label": str(c.get("label") or c.get("key")),
+                        "text": _format_latex_display_answer(str(c.get("text") or "")),
+                    }
+                    for c in (choice_bundle.get("choices") or [])
+                ]
+                correct_label = str(choice_bundle.get("correct_label") or "A")
+            except ValueError:
+                # Factor-theorem expression answers must retry / fail closed instead
+                # of padding student-visible technical suffixes like `_1`.
+                factor_like = str(op or problem_type_id or "") in {
+                    "factor_theorem_root_factor",
+                    "polynomial_factoring",
+                    "rational_expression_arithmetic",
+                    "rational_equation_solve",
+                }
+                choices, correct_label = _build_choice_options(
+                    display_answer,
+                    normalized.get("distractors", []),
+                    seed_text=f"{problem_type_id or op}|{display_answer}",
+                    allow_technical_suffix=False,
+                )
+                choices = [
+                    {
+                        **dict(c),
+                        "text": _format_latex_display_answer(str(c.get("text") or "")),
+                    }
+                    for c in choices
+                ]
         options = [str(choice["text"]) for choice in choices]
         payload_answer = correct_label
         payload_correct = correct_label
+        resolved_answer_type = "single_choice"
         answer_contract = {
             "presentation_mode": "single_choice",
             "answer_type": "single_choice",
@@ -3040,8 +4020,98 @@ def convert_domain_matrix_to_question_payload(
             "equivalence": "choice_label",
             "semantic_answer": semantic_answer,
         }
+    elif str(answer_contract.get("answer_type") or resolved_answer_type or "") == "multi_part" and not (
+        isinstance(answer_contract.get("parts"), list) and answer_contract.get("parts")
+    ):
+        part_map = unwrap_multipart_part_map(semantic_answer, answer_block=answer)
+        if not part_map and isinstance(semantic_answer, dict):
+            part_map = {
+                str(k): v
+                for k, v in semantic_answer.items()
+                if not isinstance(v, dict)
+            }
+        part_labels = _normalize_part_labels_map(
+            answer.get("part_labels"),
+            part_map if isinstance(part_map, dict) else {},
+        )
+        answer_contract["parts"] = _multi_part_contract_parts(
+            part_map,
+            part_labels=part_labels or None,
+            domain_operation=str(op or problem_type_id or ""),
+        )
+        from core.gencode.multipart_stem_contract import extract_stem_structure as _extract_stem
 
-    return _finalize_question_payload({
+        answer_contract["parts"] = enrich_multipart_parts_from_stem(
+            answer_contract["parts"],
+            _extract_stem(matrix)
+            or _extract_stem({"metadata": {"stem_structure": matrix.get("stem_structure")}}),
+        )
+        answer_contract["semantic_answer"] = part_map
+        semantic_answer = part_map
+        payload_answer = part_map
+        payload_correct = part_map
+        keys = [str(row.get("key") or "") for row in answer_contract["parts"]]
+        if len(keys) != len(set(keys)):
+            raise ValueError("duplicate_multi_part_field_key")
+        field_groups = _build_multipart_field_groups(answer_contract["parts"])
+        if field_groups:
+            ui_contract = dict(answer_contract.get("ui_contract") or {})
+            ui_contract["field_groups"] = field_groups
+            answer_contract["ui_contract"] = ui_contract
+        else:
+            # Avoid frontend auto-grouping that would duplicate "(1)" headings.
+            for row in answer_contract["parts"]:
+                if row.get("group_label") and _split_numbered_part_key(str(row.get("key") or "")) is not None:
+                    # Restore full student label on the field itself.
+                    if row.get("display_label") and str(row["display_label"]) in {
+                        "圓心",
+                        "半徑",
+                    }:
+                        continue
+                    row["group_label"] = None
+
+    answer_contract = _apply_vector_keyboard_answer_shape(
+        answer_contract,
+        domain_operation=str(op or problem_type_id or ""),
+        semantic_answer=semantic_answer,
+    )
+    # Construction-style directed segments may also be answered by drawing A→C.
+    from core.checkers.vector_answer_normalization import DIRECTED_SEGMENT_ANSWER_OPS
+    from core.checkers.vector_drawing_checker import parse_directed_segment_endpoints
+
+    if str(op or problem_type_id or "") in DIRECTED_SEGMENT_ANSWER_OPS:
+        ends = parse_directed_segment_endpoints(semantic_answer)
+        drawing_check = {
+            "enabled": True,
+            "mode": "directed_segment",
+        }
+        if ends:
+            drawing_check["expected_from"] = ends[0]
+            drawing_check["expected_to"] = ends[1]
+        answer_contract["drawing_check"] = drawing_check
+
+    question_text = sanitize_student_math_display_text(question_text, break_multipart_items=False)
+    display_answer = (
+        sanitize_student_math_display_text(display_answer)
+        if isinstance(display_answer, str)
+        else display_answer
+    )
+
+    from core.gencode.multipart_stem_contract import (
+        extract_stem_structure,
+        stem_structure_to_question_text,
+    )
+
+    stem_structure = extract_stem_structure(matrix) or extract_stem_structure(
+        {"metadata": {"stem_structure": matrix.get("stem_structure")}}
+    )
+    if stem_structure and stem_structure.get("items"):
+        # Structured multipart is source of truth; rebuild compatibility text.
+        question_text = sanitize_student_math_display_text(
+            stem_structure_to_question_text(stem_structure), break_multipart_items=False
+        )
+
+    payload_out = {
         "question_text": question_text,
         "answer": payload_answer,
         "correct_answer": payload_correct,
@@ -3052,13 +4122,13 @@ def convert_domain_matrix_to_question_payload(
         "textbook_example_id": textbook_example_id,
         "problem_type_id": problem_type_id or op,
         "source_kind": source_kind,
-        "presentation_mode": mode,
-        "answer_type": resolved_answer_type,
-        "checker": answer_contract["checker"],
-        "checker_key": answer_contract["checker_key"],
-        "equivalence": answer_contract["equivalence"],
-        "equivalence_type": answer_contract["answer_equivalence"],
-        "interaction_type": "expression",
+            "presentation_mode": mode,
+            "answer_type": resolved_answer_type,
+            "checker": answer_contract["checker"],
+            "checker_key": answer_contract["checker_key"],
+            "equivalence": answer_contract["equivalence"],
+            "equivalence_type": answer_contract["answer_equivalence"],
+            "interaction_type": "single_choice" if mode == "single_choice" else "expression",
         "auto_checkable": True,
         "grading_mode": "auto",
         "answer_contract": answer_contract,
@@ -3094,11 +4164,18 @@ def convert_domain_matrix_to_question_payload(
             )
             else normalized["visual_spec"]
         ),
+        "diagram_spec": matrix.get("diagram_spec"),
         "visual_aids": normalized.get("visual_aids", matrix.get("visual_aids", [])),
         "image_base64": normalized.get("image_base64", matrix.get("image_base64", "")),
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
-    })
+    }
+    if stem_structure and stem_structure.get("items"):
+        payload_out["stem_structure"] = stem_structure
+        meta = payload_out.get("metadata")
+        if isinstance(meta, dict):
+            meta["stem_structure"] = stem_structure
+    return _finalize_question_payload(payload_out)
 
 
 def normalize_domain_payload_to_v3_matrix(payload: Any, context: dict[str, Any]) -> dict[str, Any]:

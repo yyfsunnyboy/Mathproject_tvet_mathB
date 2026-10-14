@@ -24,6 +24,7 @@ AUTHORITATIVE_OUTLINE_SOURCES = frozenset(
         "authoritative_source_context",
         "form_confirmed",
         "v3_source_context",
+        "v3_catalog_pdf",
     }
 )
 
@@ -258,7 +259,7 @@ def ensure_section_outline_from_authoritative_metadata_v2(
             "grade": resolved_grade,
             "display_order": display_order,
         }
-        same_coords = _meta_equal(existing_meta["chapter"], chapter_title) and _meta_equal(
+        same_coords = _meta_equal(_canonical_chapter_title(existing_meta["chapter"], info), chapter_title) and _meta_equal(
             existing_meta["section"], section_title
         )
         same_sid = _meta_equal(existing_meta["skill_id"], skill_id)
@@ -272,6 +273,8 @@ def ensure_section_outline_from_authoritative_metadata_v2(
             }
         return {
             **base,
+            "chapter": existing_meta["chapter"],
+            "section": existing_meta["section"],
             "action": "existing",
             "existing": existing_meta,
             "incoming": incoming_meta,

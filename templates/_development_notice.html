@@ -1,0 +1,50 @@
+{#
+=============================================================================
+模組名稱 (Module Name): templates/_development_notice.html
+功能說明 (Description): 學生端「功能開發中」常駐提示。由 _student_navbar.html include，
+    僅在頁面設定 {% set development_notice = true %} 時顯示；原頁面內容照常呈現。
+=============================================================================
+#}
+{% if development_notice|default(false) %}
+<style>
+.dev-notice {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: calc(100% - 32px);
+    max-width: 1400px;
+    margin: 12px auto 4px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    background: #fff8e1;
+    border: 1px solid #f0c36d;
+    border-left: 5px solid #e0a100;
+    border-radius: 10px;
+    color: #6b4e00;
+    font-family: "Inter", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    line-height: 1.4;
+}
+.dev-notice__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #5a3e00;
+    white-space: nowrap;
+}
+.dev-notice__text {
+    font-size: 0.86rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+    .dev-notice { width: calc(100% - 20px); margin: 8px auto 4px; padding: 8px 12px; }
+    .dev-notice__title { font-size: 0.95rem; }
+    .dev-notice__text { font-size: 0.8rem; }
+}
+</style>
+<div class="dev-notice" role="note" aria-label="功能開發中" data-development-notice>
+    <span class="dev-notice__title">🚧 功能開發中</span>
+    <span class="dev-notice__text">此功能目前仍在持續開發與驗證，現有內容僅供展示。</span>
+</div>
+{% endif %}

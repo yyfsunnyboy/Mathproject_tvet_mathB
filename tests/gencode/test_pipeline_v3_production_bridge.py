@@ -42,7 +42,11 @@ def memory_conn() -> sqlite3.Connection:
         """
         CREATE TABLE textbook_examples (
             id INTEGER PRIMARY KEY,
-            skill_id TEXT NOT NULL
+            skill_id TEXT NOT NULL,
+            problem_text TEXT,
+            correct_answer TEXT,
+            source_description TEXT,
+            problem_type TEXT
         )
         """
     )
@@ -78,8 +82,8 @@ def test_v3_shadow_bridge_writes_tracker_and_dryrun_component(
     )
 
     memory_conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, SKILL_ID),
+        "INSERT INTO textbook_examples (id, skill_id, problem_text, correct_answer, problem_type) VALUES (?, ?, ?, ?, ?)",
+        (1, SKILL_ID, "已知點 (1,2) 與斜率 3，求直線方程式。", "y-2=3(x-1)", "point_slope"),
     )
     memory_conn.commit()
 
@@ -90,6 +94,11 @@ def test_v3_shadow_bridge_writes_tracker_and_dryrun_component(
         source_kind="ex_1",
         seed=42,
         dryrun_base_dir=str(dryrun_base_dir),
+        constraints={
+            "line_type": "point_slope",
+            "problem_type_id": "point_slope",
+            "domain_operation": "point_slope",
+        },
     )
 
     assert result["route"] == "v3_shadow_bridge"
@@ -123,17 +132,16 @@ def test_v3_shadow_bridge_writes_tracker_and_dryrun_component(
     assert _snapshot_paths(PROJECT_ROOT / "agent_skills_v3") == production_v3_snapshot
 
 
-def test_non_mvp_skill_passthrough_without_side_effects(
+def test_non_mvp_skill_still_uses_v3_shadow_bridge_without_v2(
     memory_conn: sqlite3.Connection,
     dryrun_base_dir: Path,
 ):
+    """V2 legacy passthrough is retired; non-MVP skills still enter V3 shadow bridge."""
     memory_conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, "legacy_skill_not_in_mvp"),
+        "INSERT INTO textbook_examples (id, skill_id, problem_text) VALUES (?, ?, ?)",
+        (1, "legacy_skill_not_in_mvp", "非 MVP 技能的測資題幹"),
     )
     memory_conn.commit()
-
-    before_files = list(dryrun_base_dir.rglob("*"))
 
     result = run_gencode_phase2_v3_shadow_bridge(
         conn=memory_conn,
@@ -143,15 +151,9 @@ def test_non_mvp_skill_passthrough_without_side_effects(
         dryrun_base_dir=str(dryrun_base_dir),
     )
 
-    assert result["route"] == "v2_legacy_passthrough"
-    assert result["v3_activated"] is False
-    assert result["message"] == "legacy_skill_not_in_mvp_scope"
-
-    tracker_count = memory_conn.execute(
-        "SELECT COUNT(*) FROM gencode_component_tracker"
-    ).fetchone()[0]
-    assert tracker_count == 0
-    assert list(dryrun_base_dir.rglob("*")) == before_files
+    assert result["route"] == "v3_shadow_bridge"
+    assert "v2" not in str(result.get("route", "")).lower()
+    assert "legacy_passthrough" not in str(result).lower()
 
 
 def test_shadow_bridge_raises_skill_id_mismatch(
@@ -211,8 +213,8 @@ def test_shadow_bridge_validator_failure_blocks_disk_write(
 ):
     """If the validator fails, it must raise ValueError, save tracker status as 'failed', and not write component to disk."""
     memory_conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, SKILL_ID),
+        "INSERT INTO textbook_examples (id, skill_id, problem_text, correct_answer, problem_type) VALUES (?, ?, ?, ?, ?)",
+        (1, SKILL_ID, "已知點 (1,2) 與斜率 3，求直線方程式。", "y-2=3(x-1)", "point_slope"),
     )
     memory_conn.commit()
 
@@ -248,6 +250,11 @@ def test_shadow_bridge_validator_failure_blocks_disk_write(
             source_kind="ex_1",
             seed=42,
             dryrun_base_dir=str(dryrun_base_dir),
+            constraints={
+                "line_type": "point_slope",
+                "problem_type_id": "point_slope",
+                "domain_operation": "point_slope",
+            },
         )
 
     # Verify write_v3_component_to_disk was NEVER called

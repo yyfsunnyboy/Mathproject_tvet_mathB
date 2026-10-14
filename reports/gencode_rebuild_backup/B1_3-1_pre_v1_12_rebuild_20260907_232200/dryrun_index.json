@@ -1,0 +1,219 @@
+[
+  {
+    "component_id": "src_4609",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4609",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4609",
+    "files": 6
+  },
+  {
+    "component_id": "src_4610",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4610",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610",
+    "files": 3
+  },
+  {
+    "component_id": "src_4611",
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialEquality/components/src_4611",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialEquality/components/src_4611",
+    "files": 3
+  },
+  {
+    "component_id": "src_4612",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4612",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4612",
+    "files": 3
+  },
+  {
+    "component_id": "src_4613",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4613",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4613",
+    "files": 3
+  },
+  {
+    "component_id": "src_4614",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4614",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4614",
+    "files": 3
+  },
+  {
+    "component_id": "src_4615",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4615",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4615",
+    "files": 3
+  },
+  {
+    "component_id": "src_4616",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4616",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4616",
+    "files": 3
+  },
+  {
+    "component_id": "src_4617",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4617",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4617",
+    "files": 3
+  },
+  {
+    "component_id": "src_4618",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4618",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4618",
+    "files": 3
+  },
+  {
+    "component_id": "src_4619",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4619",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4619",
+    "files": 3
+  },
+  {
+    "component_id": "src_4620",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4620",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4620",
+    "files": 3
+  },
+  {
+    "component_id": "src_4621",
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialEquality/components/src_4621",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialEquality/components/src_4621",
+    "files": 3
+  },
+  {
+    "component_id": "src_4622",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4622",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622",
+    "files": 3
+  },
+  {
+    "component_id": "src_4623",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4623",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4623",
+    "files": 3
+  },
+  {
+    "component_id": "src_4624",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4624",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4624",
+    "files": 3
+  },
+  {
+    "component_id": "src_4625",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4625",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4625",
+    "files": 3
+  },
+  {
+    "component_id": "src_4626",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4626",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4626",
+    "files": 3
+  },
+  {
+    "component_id": "src_4627",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4627",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4627",
+    "files": 3
+  },
+  {
+    "component_id": "src_4629",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4629",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4629",
+    "files": 3
+  },
+  {
+    "component_id": "src_4630",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4630",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4630",
+    "files": 3
+  },
+  {
+    "component_id": "src_4631",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4631",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4631",
+    "files": 3
+  },
+  {
+    "component_id": "src_4632",
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialEquality/components/src_4632",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialEquality/components/src_4632",
+    "files": 3
+  },
+  {
+    "component_id": "src_4633",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4633",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4633",
+    "files": 3
+  },
+  {
+    "component_id": "src_4634",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4634",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4634",
+    "files": 3
+  },
+  {
+    "component_id": "src_4635",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4635",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4635",
+    "files": 3
+  },
+  {
+    "component_id": "src_4636",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4636",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4636",
+    "files": 3
+  },
+  {
+    "component_id": "src_4637",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4637",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4637",
+    "files": 3
+  },
+  {
+    "component_id": "src_4706",
+    "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialArithmeticOperations/components/src_4706",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4706",
+    "files": 3
+  },
+  {
+    "component_id": "src_4716",
+    "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialBasicConcepts/components/src_4716",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialBasicConcepts/components/src_4716",
+    "files": 3
+  },
+  {
+    "component_id": "src_4717",
+    "skill_id": "vh_數學B1_PolynomialEquality",
+    "source_path": "reports/gencode_v3_dryrun/vh_數學B1_PolynomialEquality/components/src_4717",
+    "backup_path": "dryrun_components/vh_數學B1_PolynomialEquality/components/src_4717",
+    "files": 3
+  }
+]

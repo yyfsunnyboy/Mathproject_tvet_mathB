@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from sqlalchemy import and_, case, func, or_, text
+from sqlalchemy import String, and_, case, cast, func, or_, select, text
+from sqlalchemy.orm import aliased
 
+from core.guest_demo import guest_demo_skill_filter
 from models import (
     AdaptiveLearningLog,
     B4Chap2VisibilityAuditLog,
@@ -27,6 +29,10 @@ from models import (
 LEARNING_TIME_UNAVAILABLE = "—"
 
 VALID_RANGES = frozenset({"all", "today", "7d", "30d"})
+
+# DB timestamps are naive UTC (datetime.utcnow); teachers and students read Taiwan time.
+# Asia/Taipei has no DST, so a fixed offset avoids depending on tzdata on Windows.
+TAIPEI_TZ = timezone(timedelta(hours=8), "Asia/Taipei")
 
 STATUS_NO_DATA = "NO_DATA"
 STATUS_ATTENTION = "ATTENTION"
@@ -71,11 +77,31 @@ class PracticeStats:
 
 def teacher_analysis_authorized(user: Any) -> bool:
     """Align with b4_chap2_teacher_audit: admin or teacher role."""
-    if not getattr(user, "is_authenticated", False):
+    from core.guest_demo import is_guest_demo
+
+    if not getattr(user, "is_authenticated", False) and not is_guest_demo():
         return False
     if getattr(user, "is_admin", False):
         return True
     return getattr(user, "role", None) == "teacher"
+
+
+def to_taipei_time(value: datetime | None) -> datetime | None:
+    """Naive values are treated as UTC; returns a naive Asia/Taipei datetime for display."""
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(TAIPEI_TZ).replace(tzinfo=None)
+
+
+def _taipei_to_utc(local: datetime) -> datetime:
+    return local.replace(tzinfo=TAIPEI_TZ).astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _taipei_date(column):
+    # SQLite-only date modifier matching TAIPEI_TZ.
+    return func.date(column, "+8 hours")
 
 
 def parse_time_range(raw: str | None) -> TimeRange:
@@ -86,8 +112,10 @@ def parse_time_range(raw: str | None) -> TimeRange:
     if key == "all":
         return TimeRange(key=key, start=None, end=None)
     if key == "today":
-        start = datetime(now.year, now.month, now.day)
-        return TimeRange(key=key, start=start, end=now)
+        local_midnight = to_taipei_time(now).replace(hour=0, minute=0, second=0, microsecond=0)
+        start = _taipei_to_utc(local_midnight)
+        end = _taipei_to_utc(local_midnight + timedelta(days=1)) - timedelta(microseconds=1)
+        return TimeRange(key=key, start=start, end=end)
     if key == "7d":
         return TimeRange(key=key, start=now - timedelta(days=7), end=now)
     return TimeRange(key=key, start=now - timedelta(days=30), end=now)
@@ -198,6 +226,11 @@ def _adaptive_time_filters(time_range: TimeRange) -> list:
         filters.append(AdaptiveLearningLog.created_at >= time_range.start)
     if time_range.end is not None:
         filters.append(AdaptiveLearningLog.created_at <= time_range.end)
+    scope = guest_demo_skill_filter(SkillFamilyBridge.skill_id)
+    if scope is not None:
+        # Adaptive logs carry only a family id; drop families bridged to skills outside the scope.
+        other_families = select(SkillFamilyBridge.family_id).where(~scope)
+        filters.append(AdaptiveLearningLog.target_family_id.notin_(other_families))
     return filters
 
 
@@ -207,7 +240,27 @@ def _practice_attempt_time_filters(time_range: TimeRange) -> list:
         filters.append(PracticeAttempt.created_at >= time_range.start)
     if time_range.end is not None:
         filters.append(PracticeAttempt.created_at <= time_range.end)
+    scope = guest_demo_skill_filter(PracticeAttempt.skill_id)
+    if scope is not None:
+        filters.append(scope)
     return filters
+
+
+def _practice_attempt_first_verdict_filter(student_ids: list[int]):
+    """Keep only the first attempt row per (student, question_uid).
+
+    Handwriting re-submissions and retries of one question add rows to
+    practice_attempts; question counts and accuracy use the first verdict only.
+    Rows without a question_uid each count as their own question.
+    """
+    first = aliased(PracticeAttempt)
+    question_key = func.coalesce(func.nullif(first.question_uid, ""), cast(first.id, String))
+    first_ids = (
+        select(func.min(first.id))
+        .where(first.student_id.in_(student_ids))
+        .group_by(first.student_id, question_key)
+    )
+    return PracticeAttempt.id.in_(first_ids)
 
 
 def get_accessible_classes(user: Any) -> list[Class]:
@@ -367,22 +420,25 @@ def _aggregate_adaptive_by_student(student_ids: list[int], time_range: TimeRange
 def _aggregate_practice_by_student(student_ids: list[int], time_range: TimeRange) -> dict[int, PracticeStats]:
     if not student_ids:
         return {}
+    scope = [PracticeAttempt.student_id.in_(student_ids), *_practice_attempt_time_filters(time_range)]
     q = (
         db.session.query(
             PracticeAttempt.student_id,
             func.count(PracticeAttempt.id),
             func.sum(case((PracticeAttempt.is_correct == True, 1), else_=0)),  # noqa: E712
-            func.max(PracticeAttempt.created_at),
         )
-        .filter(
-            PracticeAttempt.student_id.in_(student_ids),
-            *_practice_attempt_time_filters(time_range),
-        )
+        .filter(*scope, _practice_attempt_first_verdict_filter(student_ids))
         .group_by(PracticeAttempt.student_id)
     )
+    last_activity = dict(
+        db.session.query(PracticeAttempt.student_id, func.max(PracticeAttempt.created_at))
+        .filter(*scope)
+        .group_by(PracticeAttempt.student_id)
+        .all()
+    )
     out: dict[int, PracticeStats] = {}
-    for sid, total, correct, last_at in q.all():
-        out[int(sid)] = _stats_from_row(total, correct, last_at)
+    for sid, total, correct in q.all():
+        out[int(sid)] = _stats_from_row(total, correct, last_activity.get(sid))
     return out
 
 
@@ -556,20 +612,23 @@ def _aggregate_b4_by_skill(student_id: int, time_range: TimeRange) -> dict[str, 
 
 
 def _aggregate_practice_by_skill(student_id: int, time_range: TimeRange) -> dict[str, PracticeStats]:
+    scope = [PracticeAttempt.student_id == student_id, *_practice_attempt_time_filters(time_range)]
     q = (
         db.session.query(
             PracticeAttempt.skill_id,
             func.count(PracticeAttempt.id),
             func.sum(case((PracticeAttempt.is_correct == True, 1), else_=0)),  # noqa: E712
-            func.max(PracticeAttempt.created_at),
         )
-        .filter(
-            PracticeAttempt.student_id == student_id,
-            *_practice_attempt_time_filters(time_range),
-        )
+        .filter(*scope, _practice_attempt_first_verdict_filter([student_id]))
         .group_by(PracticeAttempt.skill_id)
     )
-    return {sid: _stats_from_row(t, c, la) for sid, t, c, la in q.all()}
+    last_activity = dict(
+        db.session.query(PracticeAttempt.skill_id, func.max(PracticeAttempt.created_at))
+        .filter(*scope)
+        .group_by(PracticeAttempt.skill_id)
+        .all()
+    )
+    return {sid: _stats_from_row(t, c, last_activity.get(sid)) for sid, t, c in q.all()}
 
 
 def _aggregate_adaptive_mapped_by_skill(
@@ -622,7 +681,21 @@ def get_student_overview(student: User, time_range: TimeRange) -> dict[str, Any]
     }
 
 
-def get_student_units(student_id: int, time_range: TimeRange) -> list[dict[str, Any]]:
+def _sort_units_by_recent_activity(rows: list[dict[str, Any]]) -> None:
+    """Newest last_activity first, units without activity last; ties keep a fixed label order."""
+    rows.sort(key=lambda r: (r["unit_label"], r["kind"], r["volume"], r["chapter"], r["skill_id"]))
+    rows.sort(
+        key=lambda r: (
+            r["stats"].last_activity is not None,
+            to_taipei_time(r["stats"].last_activity) or datetime.min,
+        ),
+        reverse=True,
+    )
+
+
+def get_student_units(
+    student_id: int, time_range: TimeRange, *, order: str = "total"
+) -> list[dict[str, Any]]:
     unit_map = _load_skill_unit_map()
     skill_names = _load_skill_names()
     family_map = _load_reliable_family_skill_map()
@@ -669,7 +742,10 @@ def get_student_units(student_id: int, time_range: TimeRange) -> list[dict[str, 
                 "status": calculate_learning_status(stats.total, stats.correct),
             }
         )
-    rows.sort(key=lambda r: (-r["stats"].total, r["unit_label"]))
+    if order == "recent":
+        _sort_units_by_recent_activity(rows)
+    else:
+        rows.sort(key=lambda r: (-r["stats"].total, r["unit_label"]))
     return rows
 
 
@@ -756,7 +832,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
     if not skill_ids:
         return {"labels": [], "chart_values": [], "has_enough": False}
 
-    day_expr_b4 = func.date(B4Chap2VisibilityAuditLog.created_at)
+    day_expr_b4 = _taipei_date(B4Chap2VisibilityAuditLog.created_at)
     b4_q = (
         db.session.query(
             day_expr_b4.label("day"),
@@ -776,7 +852,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
     adaptive_days: dict[str, list[bool]] = {}
 
     if reverse_family:
-        day_expr_a = func.date(AdaptiveLearningLog.created_at)
+        day_expr_a = _taipei_date(AdaptiveLearningLog.created_at)
         a_q = (
             db.session.query(
                 day_expr_a.label("day"),
@@ -802,7 +878,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
         existing = day_stats.get(day, PracticeStats())
         day_stats[day] = PracticeStats.merge(existing, _stats_from_row(total, correct, None))
 
-    day_expr_p = func.date(PracticeAttempt.created_at)
+    day_expr_p = _taipei_date(PracticeAttempt.created_at)
     practice_q = (
         db.session.query(
             day_expr_p.label("day"),
@@ -813,6 +889,7 @@ def get_unit_trend(student_id: int, skill_ids: set[str], time_range: TimeRange) 
             PracticeAttempt.student_id == student_id,
             PracticeAttempt.skill_id.in_(list(skill_ids)),
             *_practice_attempt_time_filters(time_range),
+            _practice_attempt_first_verdict_filter([student_id]),
         )
         .group_by(day_expr_p)
     )
@@ -961,6 +1038,45 @@ def get_recent_attempts(
     return attempts[:limit]
 
 
+def build_student_analysis_context(
+    student: User,
+    *,
+    volume: str | None,
+    chapter: str | None,
+    skill_unit: str | None,
+    time_range: TimeRange,
+    unit_order: str = "total",
+) -> dict[str, Any]:
+    """Build the shared student/unit analysis payload for either audience.
+
+    Authorization is deliberately outside this helper: teacher routes authorize
+    the requested student through class membership, while student routes pass
+    only the authenticated user.  The statistics and status rules are shared.
+    """
+    has_unit = bool((volume and chapter) or skill_unit)
+    overview = get_student_overview(student, time_range)
+    if not has_unit:
+        return {
+            "view": "student",
+            "student": student,
+            "student_overview": overview,
+            "unit_rows": get_student_units(student.id, time_range, order=unit_order),
+        }
+
+    return {
+        "view": "unit",
+        "student": student,
+        "student_overview": overview,
+        "unit_detail": get_student_unit_detail(
+            student.id,
+            volume=volume,
+            chapter=chapter,
+            skill_unit=skill_unit,
+            time_range=time_range,
+        ),
+    }
+
+
 def build_analysis_page_context(
     user: Any,
     *,
@@ -1033,13 +1149,17 @@ def build_analysis_page_context(
     ctx["student"] = student
     ctx["breadcrumb"].append({"label": student_name, "url": "student"})
 
-    has_unit = bool((volume and chapter) or skill_unit)
-    if not has_unit:
+    student_context = build_student_analysis_context(
+        student,
+        volume=volume,
+        chapter=chapter,
+        skill_unit=skill_unit,
+        time_range=time_range,
+    )
+    if student_context["view"] == "student":
         ctx.update(
             {
-                "view": "student",
-                "student_overview": get_student_overview(student, time_range),
-                "unit_rows": get_student_units(student_id, time_range),
+                **student_context,
                 "back_url": {
                     "endpoint": "teacher_analysis",
                     "params": {**base_params, "range": time_range.key},
@@ -1048,19 +1168,11 @@ def build_analysis_page_context(
         )
         return ctx
 
-    unit_detail = get_student_unit_detail(
-        student_id,
-        volume=volume,
-        chapter=chapter,
-        skill_unit=skill_unit,
-        time_range=time_range,
-    )
+    unit_detail = student_context["unit_detail"]
     ctx["breadcrumb"].append({"label": unit_detail["unit_label"], "url": None})
     ctx.update(
         {
-            "view": "unit",
-            "unit_detail": unit_detail,
-            "student_overview": get_student_overview(student, time_range),
+            **student_context,
             "back_url": {
                 "endpoint": "teacher_analysis",
                 "params": {

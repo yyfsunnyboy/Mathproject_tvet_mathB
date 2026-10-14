@@ -97,11 +97,9 @@ mkdir agent_skills/jh_數學2上_RadicalDivide
 }
 ```
 
-### 4. 撰寫或生成 skills/*.py
+### 4. 建立 V3 出題能力
 
-- **手寫**：參考 `jh_數學2上_RadicalSimplify.py`，委派 `DomainFunctionHelper`
-- **AI 生成（方式 A）**：執行 `auto_generate_skill_code(skill_id)`，會從 `agent_skills/<id>/SKILL.md` 讀取規格並經 healer/validator 產生程式碼
-- **AI 生成（方式 B，base+delta）**：使用 `sync_unit_pattern_skills.py`，見下方說明
+教材與 skill 資料備妥後，在 `/skills` 使用 GENCODE V3 建立、補全與驗證。舊版單檔程式碼生成流程已退役。
 
 ### 5. 註冊到單元
 
@@ -156,11 +154,11 @@ GET /get_next_question?skill=jh_數學2上_FourOperationsOfRadicals&level=1
 
 之後可擴充：`enabled` 欄位、難度分配、自適應權重等。
 
-## sync_unit_pattern_skills.py（base+delta 生成）
+## V2 生成流程退役
 
-產生「單元 base + 題型 delta」的技能程式碼，適用於方式 B 的目錄結構。
+`sync_unit_pattern_skills.py` 已停用，不再產生或覆寫技能程式碼。教材與 skill 資料同步後，請從 `/skills` 使用 GENCODE V3 建立、補全或重新建置出題能力。
 
-### 用途
+## 用途
 
 - 讀取 `agent_skills/<unit_id>/SKILL.md` + `patterns/<pattern_id>.md`
 - 合併 base、delta，以及可選的 mode delta（`prompt_benchmark.md` / `prompt_liveshow.md`）

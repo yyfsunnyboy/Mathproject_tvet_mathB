@@ -1,0 +1,653 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_radical_operations_5e1a9c47",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "human_reviewer",
+    "approved_revision": 1,
+    "approval_scope": "new domain algebra.radical_operations with the seven generic operations required by the 20 gh_OperationsOfRadicalsAndFractions textbook rows only; radical arithmetic reuses the promoted algebra.multiplication_formulas public functions"
+  },
+  "domain_key": "algebra.radical_operations",
+  "package_name": "algebra_radical_operations",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "ae6c2794e75d7e570293c21486b1c189de683f3b41627607e5ee1476a03859ef",
+    "radical_operations_adapter.py": "e55db853dc33df50ff0f7ca5994ec8a333c5fd5b6de4a744d32c5f0400ef189d",
+    "radical_operations_domain.py": "f81af8343e592fa0ab17ab7e7e3b531730724f2c3a3b39018928cc5c43aa884e"
+  },
+  "domain_module": "radical_operations_domain",
+  "entrypoint": "build_radical_operations_matrix",
+  "capabilities": [
+    "simplify_radical_fraction_expressions",
+    "denest_square_roots",
+    "evaluate_integer_fraction_part_expression",
+    "order_radical_numbers",
+    "evaluate_time_dilation_relations",
+    "optimize_by_am_gm",
+    "nearest_integer_from_radical_relation"
+  ],
+  "operations": {
+    "simplify_radical_fraction_expressions": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "expression_checker"
+      ],
+      "validator": "validate_simplify_radical_fraction_expressions_matrix",
+      "provided_capabilities": [
+        "simplify_radical_fraction_expressions"
+      ]
+    },
+    "denest_square_roots": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "expression_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_denest_square_roots_matrix",
+      "provided_capabilities": [
+        "denest_square_roots"
+      ]
+    },
+    "evaluate_integer_fraction_part_expression": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "checker_keys": [
+        "expression_checker"
+      ],
+      "supported_answer_types": [
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_evaluate_integer_fraction_part_expression_matrix",
+      "provided_capabilities": [
+        "evaluate_integer_fraction_part_expression"
+      ]
+    },
+    "order_radical_numbers": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "ordered_inequality_checker"
+      ],
+      "validator": "validate_order_radical_numbers_matrix",
+      "provided_capabilities": [
+        "order_radical_numbers"
+      ]
+    },
+    "evaluate_time_dilation_relations": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "expression_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_evaluate_time_dilation_relations_matrix",
+      "provided_capabilities": [
+        "evaluate_time_dilation_relations"
+      ]
+    },
+    "optimize_by_am_gm": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_optimize_by_am_gm_matrix",
+      "provided_capabilities": [
+        "optimize_by_am_gm"
+      ]
+    },
+    "nearest_integer_from_radical_relation": {
+      "handler": "build_radical_operations_matrix",
+      "payload_adapter": "radical_operations_adapter.adapt_radical_operations_matrix",
+      "runtime_contract": "radical_operations_exact_v1",
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_nearest_integer_from_radical_relation_matrix",
+      "provided_capabilities": [
+        "nearest_integer_from_radical_relation"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_OperationsOfRadicalsAndFractions": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_radical_fraction_expressions",
+        "denest_square_roots",
+        "evaluate_integer_fraction_part_expression",
+        "order_radical_numbers",
+        "evaluate_time_dilation_relations",
+        "optimize_by_am_gm",
+        "nearest_integer_from_radical_relation"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "simplify_radical_fraction_expressions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "expressions": [
+            [
+              {
+                "denominator": [
+                  [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      -1,
+                      2
+                    ]
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "denominator": [
+                  [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ]
+                ]
+              },
+              {
+                "numerator": [
+                  [
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                ],
+                "denominator": [
+                  [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      -1,
+                      1
+                    ]
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {
+          "expressions": [
+            [
+              {
+                "numerator": [
+                  [
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      -1,
+                      45
+                    ],
+                    [
+                      1,
+                      75
+                    ]
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "numerator": [
+                  {
+                    "terms": [
+                      [
+                        1,
+                        3
+                      ],
+                      [
+                        1,
+                        1
+                      ]
+                    ],
+                    "power": 2
+                  }
+                ]
+              },
+              {
+                "numerator": [
+                  {
+                    "terms": [
+                      [
+                        1,
+                        3
+                      ],
+                      [
+                        -1,
+                        1
+                      ]
+                    ],
+                    "power": 2
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "numerator": [
+                  [
+                    [
+                      1,
+                      "4/5"
+                    ]
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "denest_square_roots": [
+      {
+        "seed": 4,
+        "constraints": {
+          "roots": [
+            {
+              "rational": 4,
+              "radical": [
+                2,
+                3
+              ]
+            },
+            {
+              "rational": 7,
+              "radical": [
+                -1,
+                40
+              ]
+            },
+            {
+              "rational": 8,
+              "radical": [
+                -4,
+                3
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 11,
+        "constraints": {
+          "roots": [
+            {
+              "rational": 6,
+              "radical": [
+                -2,
+                5
+              ]
+            },
+            {
+              "rational": 8,
+              "radical": [
+                1,
+                28
+              ]
+            },
+            {
+              "rational": 12,
+              "radical": [
+                4,
+                5
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_integer_fraction_part_expression": [
+      {
+        "seed": 5,
+        "constraints": {
+          "root": {
+            "rational": 3,
+            "radical": [
+              2,
+              2
+            ]
+          },
+          "sign": -1
+        }
+      },
+      {
+        "seed": 12,
+        "constraints": {
+          "root": {
+            "rational": 6,
+            "radical": [
+              -2,
+              5
+            ]
+          },
+          "sign": 1
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "order_radical_numbers": [
+      {
+        "seed": 2,
+        "constraints": {
+          "numbers": [
+            {
+              "label": "a",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      1,
+                      11
+                    ]
+                  ]
+                ]
+              }
+            },
+            {
+              "label": "b",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      1,
+                      10
+                    ]
+                  ]
+                ]
+              }
+            },
+            {
+              "label": "c",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      1,
+                      6
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 9,
+        "constraints": {
+          "numbers": [
+            {
+              "label": "a",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                ],
+                "denominator": [
+                  [
+                    [
+                      1,
+                      6
+                    ],
+                    [
+                      -1,
+                      4
+                    ]
+                  ]
+                ]
+              }
+            },
+            {
+              "label": "b",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      5,
+                      1
+                    ]
+                  ]
+                ],
+                "denominator": [
+                  [
+                    [
+                      1,
+                      8
+                    ],
+                    [
+                      -1,
+                      3
+                    ]
+                  ]
+                ]
+              }
+            },
+            {
+              "label": "c",
+              "term": {
+                "numerator": [
+                  [
+                    [
+                      10,
+                      1
+                    ]
+                  ]
+                ],
+                "denominator": [
+                  [
+                    [
+                      1,
+                      12
+                    ],
+                    [
+                      -1,
+                      2
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_time_dilation_relations": [
+      {
+        "seed": 3,
+        "constraints": {
+          "relations": [
+            {
+              "find": "earth_years",
+              "traveler_years": 60,
+              "speed_ratio": "5/13"
+            },
+            {
+              "find": "travel_years_from_age_match",
+              "traveler_age": 27,
+              "child_age": 3,
+              "speed_ratio": "4/5"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 10,
+        "constraints": {
+          "relations": [
+            {
+              "find": "speed_ratio",
+              "traveler_years": 10,
+              "earth_years": 20
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "optimize_by_am_gm": [
+      {
+        "seed": 6,
+        "constraints": {
+          "problem": {
+            "kind": "max_product_linear_sum",
+            "p": 2,
+            "q": 2,
+            "total": 12,
+            "context": "rope_rectangle"
+          }
+        }
+      },
+      {
+        "seed": 13,
+        "constraints": {
+          "problem": {
+            "kind": "min_linear_sum_fixed_product",
+            "p": 1,
+            "q": 2,
+            "product": 8,
+            "context": "positive_pair"
+          }
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "nearest_integer_from_radical_relation": [
+      {
+        "seed": 15,
+        "constraints": {
+          "known": 5,
+          "rhs": 10,
+          "sign": -1
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ]
+  }
+}

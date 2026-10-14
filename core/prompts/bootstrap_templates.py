@@ -19,6 +19,16 @@ def bootstrap_prompt_templates() -> int:
         print(f"Error checking table existence: {e}")
         return 0
 
+    # DB-only authority: bundled defaults are a one-time disaster bootstrap.
+    # Once any prompt row exists, startup must never merge or overwrite DB state.
+    try:
+        if db.session.query(PromptTemplate.id).first() is not None:
+            return 0
+    except OperationalError:
+        print("table not ready: OperationalError during empty-table check")
+        print("skipping bootstrap")
+        return 0
+
     created_count = 0
 
     for prompt_key, template in DEFAULT_PROMPT_TEMPLATES.items():

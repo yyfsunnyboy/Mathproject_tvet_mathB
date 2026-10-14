@@ -15,6 +15,7 @@ EXPECTED_EXPORT_ORDER = [
     "users",
     "classes",
     "class_students",
+    "prompt_templates",
     "skills_info",
     "skill_curriculum",
     "questions",
@@ -53,6 +54,7 @@ def test_account_clear_never_uses_users_full_wipe():
     assert build_account_clear_where(specs["users"]) == "role = 'student'"
     assert specs["classes"].clear_mode == "table_full"
     assert specs["class_students"].clear_mode == "table_full"
+    assert specs["prompt_templates"].clear_mode == "table_full"
     assert specs["skills_info"].clear_mode == "table_full"
     assert specs["skill_curriculum"].clear_mode == "table_full"
     assert specs["textbook_examples"].clear_mode == "table_full"
@@ -89,6 +91,7 @@ def test_textbook_full_clear_delete_order():
 def test_restore_order_users_before_classes_before_learning():
     order = get_core_table_names(include="import")
     assert order.index("users") < order.index("classes") < order.index("class_students")
+    assert order.index("class_students") < order.index("prompt_templates")
     assert order.index("class_students") < order.index("progress")
     assert order.index("questions") < order.index("practice_attempts") < order.index("progress")
     assert order.index("questions") < order.index("quiz_attempts")

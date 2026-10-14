@@ -1,0 +1,624 @@
+{
+  "ok": true,
+  "error": null,
+  "would_write": 11,
+  "metrics": {
+    "word_scan": {
+      "word_tables": 12,
+      "table_cells": 21,
+      "mathtype_found": 185,
+      "eq_fields": 5,
+      "independent_images": 17,
+      "formula_preview_media": 170
+    },
+    "formula_conversion": {
+      "mathtype_found": 185,
+      "mathtype_converted": 185,
+      "formula_failures": 0,
+      "eq_fields": 5,
+      "eq_converted": 5,
+      "latex_docx": "D:\\Python\\Mathproject_tvet_mathB\\tmp_b2_21_scoped_dryrun\\第二章 2-1 正弦定理與餘弦定理-課本_Latex.docx",
+      "original_unchanged": true,
+      "required_formula_count": 73,
+      "required_formula_success": 73,
+      "required_formula_failed": 0,
+      "non_required_formula_count": 117,
+      "non_required_formula_success": 117,
+      "non_required_formula_failed": 0,
+      "unresolved_scope": 0
+    }
+  },
+  "warnings": null,
+  "scoped_import": {
+    "questions": [
+      {
+        "index": 1,
+        "label": "例1",
+        "source_type": "textbook_example",
+        "target": true,
+        "paragraph_indices": [
+          21,
+          22,
+          23
+        ],
+        "problem_start": "在△ABC中，已知\\({\\overline{ AB }} =4\\)、\\({\\overline{ AC }} =\\sqrt[] { 3 }\\)且\\(\\angle ",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 9,
+        "formula_failed": 0,
+        "image_candidates": [
+          {
+            "paragraph_index": 23,
+            "relationship_id": "rId57",
+            "filename": "image25.jpeg",
+            "needs_review": true
+          }
+        ],
+        "would_write": "YES"
+      },
+      {
+        "index": 2,
+        "label": "隨堂練習1",
+        "source_type": "in_class_practice",
+        "target": true,
+        "paragraph_indices": [
+          26
+        ],
+        "problem_start": "在△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)、\\(b=6\\)且\\(\\angle C=30{}^\\circ\\)，試求△ABC的面積。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 3,
+        "label": "例2",
+        "source_type": "textbook_example",
+        "target": true,
+        "paragraph_indices": [
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          66,
+          67
+        ],
+        "problem_start": "在△ABC中，若\\(\\angle A=45{}^\\circ\\)，\\(\\angle B=60{}^\\circ\\)，且\\(b=3\\sqrt[] { 6 }\\)，試求",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 13,
+        "formula_failed": 0,
+        "image_candidates": [
+          {
+            "paragraph_index": 62,
+            "relationship_id": "rId126",
+            "filename": "image59.jpeg",
+            "needs_review": true
+          }
+        ],
+        "would_write": "YES"
+      },
+      {
+        "index": 4,
+        "label": "隨堂練習2",
+        "source_type": "in_class_practice",
+        "target": true,
+        "paragraph_indices": [
+          70
+        ],
+        "problem_start": "在△ABC中，若\\(\\angle B=30{}^\\circ\\)，\\(\\angle C=120{}^\\circ\\)，且\\(b=6\\)，試求c及其外接圓半徑R。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 5,
+        "label": "例3",
+        "source_type": "textbook_example",
+        "target": true,
+        "paragraph_indices": [
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79
+        ],
+        "problem_start": "△ABC中，已知\\(\\angle A=60{}^\\circ\\)，\\(a=6\\)，\\(b=2\\sqrt[] { 6 }\\)，試求\\(\\angle B\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 13,
+        "formula_failed": 0,
+        "image_candidates": [
+          {
+            "paragraph_index": 78,
+            "relationship_id": "rId163",
+            "filename": "image78.jpeg",
+            "needs_review": true
+          }
+        ],
+        "would_write": "YES"
+      },
+      {
+        "index": 6,
+        "label": "隨堂練習3",
+        "source_type": "in_class_practice",
+        "target": true,
+        "paragraph_indices": [
+          82
+        ],
+        "problem_start": "△ABC中，已知\\(a=2\\sqrt[] { 3 }\\)，\\(b=2\\sqrt[] { 2 }\\)，\\(\\angle A=60{}^\\circ\\)，試求\\(\\a",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 7,
+        "label": "例4",
+        "source_type": "textbook_example",
+        "target": true,
+        "paragraph_indices": [
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124
+        ],
+        "problem_start": "在△ABC中，已知\\(b=5\\)、\\(c=3\\)且\\(\\angle A=120{}^\\circ\\)，試求a之長。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 11,
+        "formula_failed": 0,
+        "image_candidates": [
+          {
+            "paragraph_index": 122,
+            "relationship_id": "rId240",
+            "filename": "image117.jpeg",
+            "needs_review": true
+          }
+        ],
+        "would_write": "YES"
+      },
+      {
+        "index": 8,
+        "label": "隨堂練習4",
+        "source_type": "in_class_practice",
+        "target": true,
+        "paragraph_indices": [
+          127
+        ],
+        "problem_start": "在△ABC中，已知\\(b=1+\\sqrt[] { 3 }\\)、\\(c=2\\)且\\(\\angle A=30{}^\\circ\\)，試求a之長。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 9,
+        "label": "例5",
+        "source_type": "textbook_example",
+        "target": true,
+        "paragraph_indices": [
+          130,
+          131,
+          132,
+          133,
+          134,
+          135
+        ],
+        "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=5\\)、\\(c=3\\)，試求\\(\\angle A\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 8,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 10,
+        "label": "隨堂練習5",
+        "source_type": "in_class_practice",
+        "target": true,
+        "paragraph_indices": [
+          138
+        ],
+        "problem_start": "設△ABC的三邊長\\(a=3\\)、\\(b=8\\)、\\(c=7\\)，試求\\(\\angle C\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "YES"
+      },
+      {
+        "index": 11,
+        "label": "113統測B",
+        "source_type": "exam_practice",
+        "target": true,
+        "paragraph_indices": [
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          150,
+          151
+        ],
+        "problem_start": "小仲規劃從A地直線出發到C地，但AC路段在重鋪馬路，\n無法通行，只好先繞到B地再到C地。已知AC路段的直\n線距離為300 公尺，AB路段的直線距離為800 公尺",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 2,
+        "formula_failed": 0,
+        "image_candidates": [
+          {
+            "paragraph_index": 142,
+            "relationship_id": "rId281",
+            "filename": "image138.jpeg",
+            "needs_review": true
+          }
+        ],
+        "would_write": "YES"
+      },
+      {
+        "index": 12,
+        "label": "2-1習題 基礎題 1",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          159,
+          160,
+          161,
+          162,
+          163,
+          164
+        ],
+        "problem_start": "設\\(\\Delta\\)表示△ABC的面積，a、b和c分別表示\\(\\angle A\\)、\\(\\angle B\\)和\\(\\angle C\\)之對邊長，且R為其外接圓",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 16,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 13,
+        "label": "2-1習題 基礎題 2",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          166
+        ],
+        "problem_start": "在△ABC中，已知\\(b=6\\)、\\(c=4\\)且\\(\\angle A=60{}^\\circ\\)，試求△ABC的面積。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 14,
+        "label": "2-1習題 基礎題 3",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          168
+        ],
+        "problem_start": "在△ABC中，已知\\(b=8\\sqrt[] { 2 }\\)、\\(\\angle A=45{}^\\circ\\)，且\\(\\angle B=30{}^\\circ\\)，試",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 15,
+        "label": "2-1習題 基礎題 4",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          170
+        ],
+        "problem_start": "在△ABC中，已知\\(a=4\\)、\\(b=2\\sqrt[] { 6 }\\)，且\\(\\angle B=120{}^\\circ\\)，試求\\(\\angle A\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 16,
+        "label": "2-1習題 基礎題 5",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          172
+        ],
+        "problem_start": "在△ABC中，若\\(a=2\\)、\\(b=\\sqrt[] { 2 }\\)，且\\(\\angle A=45{}^\\circ\\)，試求\\(\\angle B\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 17,
+        "label": "2-1習題 基礎題 6",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          174
+        ],
+        "problem_start": "設△ABC的三邊長\\(a=7\\)、\\(b=8\\)、\\(c=5\\)，試求\\(\\angle A\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 18,
+        "label": "2-1習題 基礎題 7",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          176
+        ],
+        "problem_start": "設△ABC的三邊長\\(a=\\sqrt[] { 3 }\\)、\\(b=2\\sqrt[] { 3 }\\)、\\(c=3\\)，試求\\(\\angle C\\)。",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 4,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 19,
+        "label": "2-1習題 基礎題 8",
+        "source_type": "textbook_exercise",
+        "target": false,
+        "paragraph_indices": [
+          178
+        ],
+        "problem_start": "設△ABC中，a、b、c為三邊長，若\\(a ^ { 2 } -\\left ( { b+c } \\right ) ^ { 2 } =-bc\\)，試求\\(\\angl",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 20,
+        "label": "2-1習題 進階題 9",
+        "source_type": "advanced_exercise",
+        "target": false,
+        "paragraph_indices": [
+          182
+        ],
+        "problem_start": "如圖，國外某一湖泊，建商想在湖泊旁蓋A、B兩棟度假飯店，今在湖之遠處C點，測得\\({\\overline{ CA }} =2\\sqrt[] { 2 }\\)公里、\\",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      },
+      {
+        "index": 21,
+        "label": "2-1習題 進階題 10",
+        "source_type": "advanced_exercise",
+        "target": false,
+        "paragraph_indices": [
+          184
+        ],
+        "problem_start": "歐洲某大城市為提升旅遊品質吸引遊客到訪，決定在A、B、C三大觀光景點等距離的地方，設置免費的Wi−Fi基地臺，已知三景點間的距離為\\({\\overline{ A",
+        "section": "2-1",
+        "skill_id": null,
+        "formula_count": 3,
+        "formula_failed": 0,
+        "image_candidates": [],
+        "would_write": "NO"
+      }
+    ],
+    "question_count": 21,
+    "target_count": 11,
+    "target_source_type_counts": {
+      "exam_practice": 1,
+      "in_class_practice": 5,
+      "self_assessment": 0,
+      "textbook_example": 5
+    },
+    "counts": {
+      "required_formula_count": 73,
+      "required_formula_success": 73,
+      "required_formula_failed": 0,
+      "non_required_formula_count": 117,
+      "non_required_formula_success": 117,
+      "non_required_formula_failed": 0
+    },
+    "failures": [],
+    "unresolved": [],
+    "image_candidate_count": 5,
+    "image_needs_review_count": 5,
+    "would_write_count": 11,
+    "runtime": {
+      "sys_executable": "C:\\Users\\Owner\\anaconda3\\python.exe",
+      "olefile": "C:\\Users\\Owner\\anaconda3\\Lib\\site-packages\\olefile\\__init__.py",
+      "converter": "D:\\Python\\Mathproject_tvet_mathB\\core\\textbook_mathtype_converter.py"
+    }
+  },
+  "would_write_counts": {
+    "YES": 11,
+    "NO": 10
+  },
+  "db_before": {
+    "file_hash": "07e2e66b880719dd318054e38215b47e432d143adac945e6914895b07e632deb",
+    "tables": {
+      "ablation_settings": 0,
+      "ablation_summary": 0,
+      "adaptive_learning_logs": 344,
+      "b4_chap2_visibility_audit_logs": 220,
+      "class_students": 50,
+      "classes": 2,
+      "evaluation_items": 0,
+      "exam_analysis": 0,
+      "execution_samples": 0,
+      "experiment_log": 0,
+      "experiment_runs": 0,
+      "gencode_component_tracker": 424,
+      "healer_events": 0,
+      "learning_diagnosis": 0,
+      "mistake_logs": 0,
+      "mistake_notebook_entries": 7,
+      "node_competency": 1,
+      "practice_attempts": 317,
+      "progress": 150,
+      "prompt_templates": 9,
+      "questions": 0,
+      "quiz_attempts": 0,
+      "skill_curriculum": 548,
+      "skill_family_bridge": 67,
+      "skill_gencode_prompt": 0,
+      "skill_prerequisites": 0,
+      "skills_info": 539,
+      "sqlite_sequence": 17,
+      "student_abilities": 0,
+      "student_uploaded_questions": 0,
+      "system_settings": 5,
+      "textbook_examples": 4329,
+      "users": 529
+    },
+    "table_names": [
+      "ablation_settings",
+      "ablation_summary",
+      "adaptive_learning_logs",
+      "b4_chap2_visibility_audit_logs",
+      "class_students",
+      "classes",
+      "evaluation_items",
+      "exam_analysis",
+      "execution_samples",
+      "experiment_log",
+      "experiment_runs",
+      "gencode_component_tracker",
+      "healer_events",
+      "learning_diagnosis",
+      "mistake_logs",
+      "mistake_notebook_entries",
+      "node_competency",
+      "practice_attempts",
+      "progress",
+      "prompt_templates",
+      "questions",
+      "quiz_attempts",
+      "skill_curriculum",
+      "skill_family_bridge",
+      "skill_gencode_prompt",
+      "skill_prerequisites",
+      "skills_info",
+      "sqlite_sequence",
+      "student_abilities",
+      "student_uploaded_questions",
+      "system_settings",
+      "textbook_examples",
+      "users"
+    ]
+  },
+  "db_after": {
+    "file_hash": "07e2e66b880719dd318054e38215b47e432d143adac945e6914895b07e632deb",
+    "tables": {
+      "ablation_settings": 0,
+      "ablation_summary": 0,
+      "adaptive_learning_logs": 344,
+      "b4_chap2_visibility_audit_logs": 220,
+      "class_students": 50,
+      "classes": 2,
+      "evaluation_items": 0,
+      "exam_analysis": 0,
+      "execution_samples": 0,
+      "experiment_log": 0,
+      "experiment_runs": 0,
+      "gencode_component_tracker": 424,
+      "healer_events": 0,
+      "learning_diagnosis": 0,
+      "mistake_logs": 0,
+      "mistake_notebook_entries": 7,
+      "node_competency": 1,
+      "practice_attempts": 317,
+      "progress": 150,
+      "prompt_templates": 9,
+      "questions": 0,
+      "quiz_attempts": 0,
+      "skill_curriculum": 548,
+      "skill_family_bridge": 67,
+      "skill_gencode_prompt": 0,
+      "skill_prerequisites": 0,
+      "skills_info": 539,
+      "sqlite_sequence": 17,
+      "student_abilities": 0,
+      "student_uploaded_questions": 0,
+      "system_settings": 5,
+      "textbook_examples": 4329,
+      "users": 529
+    },
+    "table_names": [
+      "ablation_settings",
+      "ablation_summary",
+      "adaptive_learning_logs",
+      "b4_chap2_visibility_audit_logs",
+      "class_students",
+      "classes",
+      "evaluation_items",
+      "exam_analysis",
+      "execution_samples",
+      "experiment_log",
+      "experiment_runs",
+      "gencode_component_tracker",
+      "healer_events",
+      "learning_diagnosis",
+      "mistake_logs",
+      "mistake_notebook_entries",
+      "node_competency",
+      "practice_attempts",
+      "progress",
+      "prompt_templates",
+      "questions",
+      "quiz_attempts",
+      "skill_curriculum",
+      "skill_family_bridge",
+      "skill_gencode_prompt",
+      "skill_prerequisites",
+      "skills_info",
+      "sqlite_sequence",
+      "student_abilities",
+      "student_uploaded_questions",
+      "system_settings",
+      "textbook_examples",
+      "users"
+    ]
+  },
+  "db_changed": false
+}

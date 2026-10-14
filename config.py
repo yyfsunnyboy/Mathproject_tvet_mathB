@@ -2,7 +2,7 @@
 """
 =============================================================================
 模組名稱 (Module Name): config.py
-功能說明 (Description): 全域系統設定檔，集中管理資料庫、上傳路徑、模型角色、RAG 閾值與實驗參數。
+功能說明 (Description): 全域系統設定檔，集中管理資料庫、上傳路徑、模型角色與實驗參數。
 執行語法 (Usage): 由系統自動載入
 版本資訊 (Version): V2.0
 更新日期 (Date): 2026-01-13
@@ -18,7 +18,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     """
     全域設定類別（Global Configuration）
-    包含資料庫、上傳、角色模型映射、RAG 與實驗控制參數。
+    包含資料庫、上傳、角色模型映射與實驗控制參數。
     """
     ENABLE_VISION_OCR_FALLBACK = True
     
@@ -34,7 +34,9 @@ class Config:
     db_path = os.path.join(instance_path, 'kumon_math.db')
     
     # 資料庫連線 URI
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{db_path}'
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'MATHPROJECT_DATABASE_URI', f'sqlite:///{db_path}'
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # ==========================================
@@ -57,18 +59,28 @@ class Config:
     # ==========================================
     # 3. 安全性設定
     # ==========================================
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-me'
+    DEV_SECRET_KEY = 'dev-secret-key-change-me'
 
-    # ==========================================
-    # 3.5. RAG 配置
-    # ==========================================
-    # 控制混合 RAG 中，Naive RAG (快速通道) 與 Advanced RAG (救援通道) 的分流閾值
-    # 若 Naive RAG 的首筆距離分數小於或等於此閾值，將直接採用快速通道。
-    # 數值越小，越嚴格（越常走 Advanced RAG 救援）；數值越大，越寬鬆（常走 Naive）。
-    # 管理者可以根據實驗調整此分流比例
-    ADVANCED_RAG_NAIVE_THRESHOLD = 0.35
+    @staticmethod
+    def resolve_secret_key(*, production: bool = False) -> str:
+        """Return a session signing key, failing closed in production."""
+        secret_key = str(os.environ.get('SECRET_KEY') or '').strip()
+        if secret_key:
+            if production and (
+                secret_key == Config.DEV_SECRET_KEY or len(secret_key) < 32
+            ):
+                raise RuntimeError(
+                    'Production SECRET_KEY must be a non-default value of at least 32 characters.'
+                )
+            return secret_key
+        if production:
+            raise RuntimeError('Production startup requires the SECRET_KEY environment variable.')
+        return Config.DEV_SECRET_KEY
 
-    # ==========================================
+    # Development imports remain backward compatible. create_app() resolves the
+    # value again so production startup can fail closed.
+    SECRET_KEY = os.environ.get('SECRET_KEY') or DEV_SECRET_KEY
+
     # 4. 各種 AI 模型群配置 (本地與雲端端點) 各群組
     # ==========================================
     
@@ -76,73 +88,33 @@ class Config:
     DEFAULT_PROVIDER = 'local' 
     DEFAULT_CLOUD_PROVIDER = "google"
     GOOGLE_GEMINI_MODELS = {
-        "gemini-3.5-flash": {
-            "label": "Gemini 3.5 Flash",
-            "provider": "google",
-            "enabled": True,
-            "tier": "flash_stable",
-            "recommended_for": [
-                "default_cloud",
-                "hybrid_preview",
-                "rag_tutor",
-                "structured_output",
-                "complex_reasoning",
-            ],
-        },
-        "gemini-3.1-flash-lite-preview": {
-            "label": "Gemini 3.1 Flash-Lite",
+        "gemini-3.5-flash-lite": {
+            "label": "Gemini 3.5 Flash-Lite",
             "provider": "google",
             "enabled": True,
             "tier": "flash_lite",
-            "recommended_for": [
-                "ocr_json",
-                "self_assessment_import",
-                "bulk_classification",
-                "basic_hint",
-                "simple_table",
-                "large_scale_question_generation",
-            ],
+            "recommended_for": ["default_cloud", "daily_student_use", "image_input"],
         },
-        "gemini-3-flash-preview": {
-            "label": "Gemini 3 Flash",
+        "gemini-3.8-flash": {
+            "label": "Gemini 3.8 Flash",
             "provider": "google",
             "enabled": True,
             "tier": "flash",
-            "recommended_for": [
-                "complex_math_layout",
-                "textbook_import",
-                "rag_tutor",
-                "structured_output",
-                "complex_reasoning",
-            ],
-        },
-        "gemini-2.5-flash": {
-            "label": "Gemini 2.5 Flash",
-            "provider": "google",
-            "enabled": True,
-            "tier": "flash_ga",
-            "recommended_for": [
-                "stable_fallback",
-                "ga_stable_output",
-                "conservative_production",
-            ],
+            "recommended_for": ["admin_selected_advanced"],
         },
     }
-    DEFAULT_GOOGLE_MODEL = "gemini-3.5-flash"
+    DEFAULT_GOOGLE_MODEL = "gemini-3.5-flash-lite"
     DEFAULT_CLOUD_MODEL = DEFAULT_GOOGLE_MODEL
-    DEFAULT_TUTOR_MODEL = "gemini-3.5-flash"
-    DEFAULT_HINT_MODEL = "gemini-3.5-flash"
-    DEFAULT_BASIC_QA_MODEL = "gemini-3.5-flash"
-    DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = "gemini-3.5-flash"
-    DEFAULT_OCR_JSON_MODEL = "gemini-3.5-flash"
-    DEFAULT_TEXTBOOK_IMPORT_MODEL = "gemini-3-flash-preview"
-    DEFAULT_RAG_TUTOR_MODEL = "gemini-3-flash-preview"
-    DEFAULT_STABLE_FALLBACK_MODEL = "gemini-2.5-flash"
+    DEFAULT_TUTOR_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_HINT_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_BASIC_QA_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_SELF_ASSESSMENT_IMPORT_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_OCR_JSON_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_TEXTBOOK_IMPORT_MODEL = DEFAULT_GOOGLE_MODEL
+    DEFAULT_STABLE_FALLBACK_MODEL = DEFAULT_GOOGLE_MODEL
     SUPPORTED_CLOUD_MODELS = [
-        "gemini-3.5-flash",
-        "gemini-3.1-flash-lite-preview",
-        "gemini-3-flash-preview",
-        "gemini-2.5-flash",
+        "gemini-3.5-flash-lite",
+        "gemini-3.8-flash",
     ]
 
     # [實驗與開發] 模型預設集合（Coder Presets）
@@ -150,12 +122,12 @@ class Config:
     # 格式：dictionary { 'safe-name': { config } }
     CODER_PRESETS = {
         # 1. Google Gemini (Cloud)
-        'gemini-3.5-flash': {
+        'gemini-3.5-flash-lite': {
             'provider': 'google',
-            'model': 'gemini-3.5-flash',
+            'model': 'gemini-3.5-flash-lite',
             'temperature': 0.1,
             'max_tokens': 65536,
-            'description': 'Gemini 3.5 Flash (Cloud)',
+            'description': 'Gemini 3.5 Flash-Lite (Cloud)',
             'safety_settings': [
                 {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
                 {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
@@ -163,15 +135,12 @@ class Config:
                 {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
             ],
         },
-        'gemini-3.1-flash-lite-preview': {
+        'gemini-3.8-flash': {
             'provider': 'google',
-            'model': 'gemini-3.1-flash-lite-preview',
+            'model': 'gemini-3.8-flash',
             'temperature': 0.1,
             'max_tokens': 65536,
-            'description': 'Gemini 3.1 Flash-Lite (Cloud)',
-
-            # [NEW] Gemini 安全性設定：全部門檻設為 BLOCK_NONE
-            # 用於避免題目中正常數學內容被安全機制誤擋
+            'description': 'Gemini 3.8 Flash (Cloud)',
             'safety_settings': [
                 {
                     "category": "HARM_CATEGORY_HARASSMENT",
@@ -191,59 +160,6 @@ class Config:
                 },
             ]            
         },
-        'gemini-3-flash-preview': {
-            'provider': 'google',
-            'model': 'gemini-3-flash-preview',
-            'temperature': 0.1,
-            'max_tokens': 65536,
-            'description': 'Gemini 3 Flash Preview (Cloud)',
-            'safety_settings': [
-                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-            ],
-        },
-        'gemini-3-flash': {
-            'provider': 'google',
-            'model': 'gemini-3-flash-preview',
-            'temperature': 0.1,
-            'max_tokens': 65536,
-            'description': 'Legacy alias for Gemini 3 Flash Preview',
-            'legacy': True,
-            'safety_settings': [
-                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-            ],
-        },
-        'gemini-2.5-flash': {
-            'provider': 'google',
-            'model': 'gemini-2.5-flash',
-            'temperature': 0.1,
-            'max_tokens': 65536,
-            'description': 'Gemini 2.5 Flash (Cloud)',
-            'safety_settings': [
-                {
-                    "category": "HARM_CATEGORY_HARASSMENT",
-                    "threshold": "BLOCK_NONE"
-                },
-                {
-                    "category": "HARM_CATEGORY_HATE_SPEECH",
-                    "threshold": "BLOCK_NONE"
-                },
-                {
-                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    "threshold": "BLOCK_NONE"
-                },
-                {
-                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                    "threshold": "BLOCK_NONE"
-                },
-            ]
-        },
-
         # 2. Qwen 3 14B (Local) [Thinking Disabled via Modelfile]
         'qwen3-14b': {
             'provider': 'local',
@@ -438,13 +354,6 @@ class Config:
             },
             'description': 'Legacy Mathproject coder preset',
         },
-        'gemini-1.5-flash-legacy': {
-            'provider': 'google',
-            'model': 'gemini-1.5-flash',
-            'temperature': 0.3,
-            'max_tokens': 2048,
-            'description': 'Legacy Mathproject vision preset',
-        },
     })
 
     # 模型角色對應設定
@@ -521,7 +430,7 @@ class Config:
             'provider': 'local',
             'model': 'phi3.5',
         },
-        'vision_analyzer': CODER_PRESETS['gemini-1.5-flash-legacy'],
+        'vision_analyzer': CODER_PRESETS['qwen3-vl-8b'],
         'default': CODER_PRESETS['qwen2.5-coder-7b-legacy'],
     }
 

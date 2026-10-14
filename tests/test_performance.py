@@ -27,9 +27,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from flask import Flask
 from models import db
 from config import Config
-from core.code_generator import auto_generate_skill_code
 
-pytestmark = pytest.mark.skip(reason="manual performance benchmark utility")
+pytestmark = pytest.mark.skip(reason="manual performance benchmark; V2 auto_generate_skill_code retired")
 
 def create_test_app():
     """創建測試用的 Flask app"""
@@ -65,7 +64,8 @@ def test_performance(skill_id, iterations=5):
             start_time = time.time()
             
             try:
-                success, message, stats = auto_generate_skill_code(skill_id)
+                raise RuntimeError("V2 auto_generate_skill_code retired; use /skills GENCODE V3")
+                success, message, stats = (False, "", {})
                 duration = time.time() - start_time
                 times.append(duration)
                 
@@ -139,7 +139,8 @@ def quick_test():
         print(f"測試技能：{skill.skill_ch_name} ({test_skill_id})\n")
         
         start = time.time()
-        success, msg, stats = auto_generate_skill_code(test_skill_id)
+        raise RuntimeError("V2 auto_generate_skill_code retired; use /skills GENCODE V3")
+        success, msg, stats = (False, "", {})
         duration = time.time() - start
         
         print(f"\n{'='*80}")

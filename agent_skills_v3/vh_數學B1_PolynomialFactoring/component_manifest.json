@@ -174,8 +174,8 @@
       "status": "verified",
       "problem_type_id": "polynomial_factoring",
       "domain_operation": "polynomial_factoring",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
       "source_kind": "test",
       "generate_py": "components/src_4713/generate.py"
     },
@@ -196,8 +196,8 @@
       "status": "verified",
       "problem_type_id": "polynomial_factoring",
       "domain_operation": "polynomial_factoring",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
       "source_kind": "test",
       "generate_py": "components/src_4715/generate.py"
     }

@@ -45,6 +45,8 @@ CORE_TABLE_SPECS: tuple[BackupTableSpec, ...] = (
     BackupTableSpec("users", "sqlalchemy", True, True, True, 1, 140, False, "users_students", None),
     BackupTableSpec("classes", "sqlalchemy", True, True, True, 2, 130, False, "table_full", None),
     BackupTableSpec("class_students", "sqlalchemy", True, True, True, 3, 120, False, "table_full", None),
+    # --- DB-only runtime configuration (no foreign keys) ---
+    BackupTableSpec("prompt_templates", "sqlalchemy", True, True, True, 4, 125, False, "table_full", None),
     # --- Shared parents for learning records (skills / question bank) ---
     BackupTableSpec("skills_info", "sqlalchemy", True, True, True, 10, 260, True, "table_full", None),
     BackupTableSpec("skill_curriculum", "sqlalchemy", True, True, True, 20, 250, True, "table_full", None),

@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B3_PlainHeading_3_2_2",
+  "publish_status": "package_ready",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_12065",
+      "textbook_example_id": 12065,
+      "status": "verified",
+      "problem_type_id": "integer_feasible_choice",
+      "domain_operation": "integer_feasible_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exam_practice",
+      "generate_py": "components/src_12065/generate.py"
+    },
+    {
+      "component_id": "src_12124",
+      "textbook_example_id": 12124,
+      "status": "verified",
+      "problem_type_id": "integer_feasible_count",
+      "domain_operation": "integer_feasible_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12124/generate.py"
+    }
+  ]
+}

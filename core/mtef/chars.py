@@ -812,7 +812,10 @@ Chars = {
 	"char/0xed13":          " j ",
 	"char/0xed16":          " D ",
 	"char/0xef00/mathmode": " & ",
+	# MathType mid-glyph in the parallel trigraph "/" + U+EF01 + "/".
+	# Keep empty; latex_normalize collapses the surrounding slashes to \parallel.
 	"char/0xef01":          "",
+	"char/0xef01/mathmode": "",
 	"char/0x200b":          "",
 	"char/0xef02/mathmode": "\\,",
 	"char/0x2009/mathmode": "\\,",

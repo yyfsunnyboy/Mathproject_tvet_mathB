@@ -1,0 +1,168 @@
+{
+  "vh_數學B2_AngleMeasurementAndConversion": [
+    {
+      "id": 11606,
+      "source_description": "例1",
+      "problem_type": "textbook_example",
+      "problem_text": "(1)試將135°化為弧度。\n(2)試將\\(-\\frac { 5 } { 3 }\\pi\\)化為度。",
+      "correct_answer": null,
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 利用\\(\\pi =180{}^\\circ\\)，所以\\(1{}^\\circ =\\frac { \\pi } { 180 }\\)\n(1) \\(135{}^\\circ =135\\times 1{}^\\circ =135\\times \\frac { \\pi } { 180 }=\\frac { 3\\pi } { 4 }\\)\n(2) \\(-\\frac { 5 } { 3 }\\pi =-\\frac { 5 } { 3 }\\times 180{}^\\circ =-300{}^\\circ\\)"
+    },
+    {
+      "id": 11607,
+      "source_description": "隨堂練習1",
+      "problem_type": "in_class_practice",
+      "problem_text": "(1)試將\\(-570{}^\\circ\\)化為弧度。\n(2)試將\\(\\frac { 5 } { 6 }\\pi\\)化為度。",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11616,
+      "source_description": "1-1習題 基礎題 1",
+      "problem_type": "textbook_exercise",
+      "problem_text": "請完成下列常用特別角的「度度量」與「弧度量」之對照表：\n| 度 | 0° | 30° | 45° | 60° | 90° | 120° | 135° | 150° | 180° | 270° | 360° |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 弧度 | | \\(\\frac { \\pi } { 6 }\\) | | | \\(\\frac { \\pi } { 2 }\\) | | | | \\(\\pi\\) | \\(\\frac { 3\\pi } { 2 }\\) | |",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11617,
+      "source_description": "1-1習題 基礎題 2",
+      "problem_type": "textbook_exercise",
+      "problem_text": "將下列各角化成以弧度為單位：\n(1)\\(450{}^\\circ =\\) 。 (2)\\(560{}^\\circ =\\) 。",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11618,
+      "source_description": "1-1習題 基礎題 3",
+      "problem_type": "textbook_exercise",
+      "problem_text": "將下列各角化成以度為單位：（提示：\\(1=\\frac { 180{}^\\circ } { \\pi }\\)）\n(1)\\(\\frac { 6 } { 5 }\\pi =\\) 。 (2)\\(\\frac { 5 } { 3 }\\pi =\\) 。 (3)\\(4=\\) 。",
+      "correct_answer": null,
+      "detailed_solution": null
+    }
+  ],
+  "vh_數學B2_ArcLengthAndAreaOfSector": [
+    {
+      "id": 11608,
+      "source_description": "例2",
+      "problem_type": "textbook_example",
+      "problem_text": "林媽媽製作了一個半徑為16公分的圓形披薩，並將其切成八塊大小一樣的扇形披薩，試求每一塊扇形披薩的\n(1)面積A (2)弧長S",
+      "correct_answer": null,
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 先把每一塊扇形圓心角\\(\\frac { 360{}^\\circ } { 8 }=45{}^\\circ\\)化為弧度\n即\\(\\theta =45{}^\\circ =45\\times \\frac { \\pi } { 180 }=\\frac { \\pi } { 4 }\\)\n(1) 面積\\(A=\\frac { 1 } { 2 }r ^ { 2 } \\theta =\\frac { 1 } { 2 }\\times 16 ^ { 2 } \\times \\frac { \\pi } { 4 }=32\\pi\\)（平方公分）\n(2) 弧長\\(S=r\\theta =16\\times \\frac { \\pi } { 4 }=4\\pi\\)（公分）"
+    },
+    {
+      "id": 11609,
+      "source_description": "隨堂練習2",
+      "problem_type": "in_class_practice",
+      "problem_text": "設一扇形半徑為9公分，所對應的圓心角為120°，試求：\n(1)將圓心角化為弧度。 (2)此扇形弧長S。 (3)此扇形面積A。",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11610,
+      "source_description": "SDG 14 保育海洋生態—扇形計算",
+      "problem_type": "textbook_example",
+      "problem_text": "齊柏林導演拍攝的《看見台灣》有一幕的場景是臺南市將軍區青鯤鯓的扇形鹽田。若以扇形鹽田的圓心出發，並選擇其中一條弧形水道構成的一塊扇形。使用Google 地圖測量距離工具，可以得到選擇的扇形半徑為1 公里，扇形的夾角是\\({ \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ\\)。有了這兩項數據，我們就可以算出水道的長度及扇形面積（Google 地圖現有的工具並不能算弧長及土地面積）。\n(1) 若有一鹽工沿著選擇的弧形水道進行清潔，試\n求鹽工走了（扇形弧長）多少公里？\n(2) 鹽工清潔完水道後，接著巡視選擇的扇形區域，試求鹽工巡視了（扇\n形面積）多少平方公里？",
+      "correct_answer": null,
+      "detailed_solution": "(1) 扇形夾角是\\({ \\rm{ 1 } }{ \\rm{ 1 } }{ \\rm{ 0 } }{}^\\circ =\\frac { 110 } { 180 }\\pi =\\frac { 11 } { 18 }\\pi\\)，扇形半徑是 1 公里\n因此鹽工走了\\(1\\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 18 }\\pi\\)（約 1.92）公里\n(2) 鹽工巡視了\\(\\frac { 1 } { 2 }\\times 1 ^ { 2 } \\times \\frac { 11 } { 18 }\\pi =\\frac { 11 } { 36 }\\pi\\)（約 0.96）平方公里"
+    },
+    {
+      "id": 11619,
+      "source_description": "1-1習題 基礎題 4",
+      "problem_type": "textbook_exercise",
+      "problem_text": "設一扇形半徑為12公分，所對應的圓心角為135°，試求：\n(1)此扇形弧長S。 (2)此扇形面積A。",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11620,
+      "source_description": "1-1習題 基礎題 5",
+      "problem_type": "textbook_exercise",
+      "problem_text": "爺爺收藏的古典時鐘，是一個下方有鐘擺的掛鐘，若鐘擺長為12公分，左右最大擺角各為15°，試求：\n(1)鐘擺掃出的最大面積。\n(2)鐘擺底端揮出的最大弧長。",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11624,
+      "source_description": "1-1習題 進階題 9",
+      "problem_type": "advanced_exercise",
+      "problem_text": "如圖所示：校門口有一個半徑6公尺的圓形花圃，農藝科同學打算將花圃平分成三等分的面積來種植不同的花卉，作為校園園藝造景的景觀設計，請問每一等分的扇形面積為多少？",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11625,
+      "source_description": "1-1習題 進階題 10",
+      "problem_type": "advanced_exercise",
+      "problem_text": "英國有一座「摺扇橋」橫跨在20公尺寬的帕丁頓 大聯盟運河上。它是由英國著名橋梁設計專家騎士建築事務所設計，它的設計靈感來源於日本傳統的摺扇，它是全球唯一一座可以像摺扇一般開合自如的大橋，其最大的展開角為80度。請問在最大展開時的扇形面積為何？",
+      "correct_answer": null,
+      "detailed_solution": null
+    }
+  ],
+  "vh_數學B2_CoterminalAngles": [
+    {
+      "id": 11611,
+      "source_description": "例3",
+      "problem_type": "textbook_example",
+      "problem_text": "下列何者與\\(50{}^\\circ\\)互為同界角？\n(1)\\(-310{}^\\circ\\) (2)\\(770{}^\\circ\\) (3)\\(1250{}^\\circ\\)",
+      "correct_answer": null,
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(-310{}^\\circ -50{}^\\circ =-360{}^\\circ =360{}^\\circ \\times \\left ( { -1 } \\right )\\)\n 故\\(-310{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(2) \\(770{}^\\circ -50{}^\\circ =720{}^\\circ =360{}^\\circ \\times 2\\)\n故\\(770{}^\\circ\\)與\\(50{}^\\circ\\)互為同界角\n(3) \\(1250{}^\\circ -50{}^\\circ =1200{}^\\circ\\)不是\\(360{}^\\circ\\)的整數倍\n故\\(1250{}^\\circ\\)不是\\(50{}^\\circ\\)的同界角"
+    },
+    {
+      "id": 11612,
+      "source_description": "隨堂練習3",
+      "problem_type": "in_class_practice",
+      "problem_text": "下列何者與\\(\\frac { \\pi } { 6 }\\)互為同界角？\n(1)\\(-\\frac { 5\\pi } { 6 }\\) (2)\\(\\frac { 5\\pi } { 3 }\\) (3)\\(\\frac { 73\\pi } { 6 }\\)",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11613,
+      "source_description": "例4",
+      "problem_type": "textbook_example",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(1350{}^\\circ\\) (2)\\(-1100{}^\\circ\\) (3)\\(-\\frac { 21\\pi } { 4 }\\)",
+      "correct_answer": null,
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(1350{}^\\circ =360{}^\\circ \\times 3+270{}^\\circ\\)\n 故最小正同界角為270°\n 最大負同界角為\\(270{}^\\circ -360{}^\\circ =-90{}^\\circ\\)\n(2) \\(-1100{}^\\circ =360{}^\\circ \\times \\left ( { -3 } \\right )-20{}^\\circ\\)\n故最大負同界角為\\(-20{}^\\circ\\)\n 最小正同界角為\\(-20{}^\\circ +360{}^\\circ =340{}^\\circ\\)\n(3) \\(-\\frac { 21\\pi } { 4 }=-4\\pi -\\frac { 5\\pi } { 4 }=2\\pi \\times \\left ( { -2 } \\right )-\\frac { 5\\pi } { 4 }\\)\n故最大負同界角為\\(-\\frac { 5\\pi } { 4 }\\)\n 最小正同界角為\\(-\\frac { 5\\pi } { 4 }+2\\pi =\\frac { 3\\pi } { 4 }\\)"
+    },
+    {
+      "id": 11614,
+      "source_description": "隨堂練習4",
+      "problem_type": "in_class_practice",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(750{}^\\circ\\) (2)\\(-1030{}^\\circ\\) (3)\\(\\frac { 23\\pi } { 5 }\\)",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11615,
+      "source_description": "108統測B",
+      "problem_type": "exam_practice",
+      "problem_text": "假設分針原始指在時鐘12 的位置，現將分針依順時針的方向轉了\\(2019{}^\\circ\\)。試問\n下列敘述何者正確？\n(A) 分針指在9 跟10 之間\n(B) 分針指在7 跟8 之間\n(C) 分針指在5 跟6 之間\n(D) 分針指在3 跟4 之間 〔108統測B〕",
+      "correct_answer": null,
+      "detailed_solution": "KEY\n(1) 鐘面上有60 小格，每格所對之圓心角 = \\(6{}^\\circ\\)\n(2) 最小正同界角之概念"
+    },
+    {
+      "id": 11621,
+      "source_description": "1-1習題 基礎題 6",
+      "problem_type": "textbook_exercise",
+      "problem_text": "下列何者為\\(60{}^\\circ\\)的同界角？\n(1)\\(-300{}^\\circ\\) (2)\\(1140{}^\\circ\\) (3)\\(-1120{}^\\circ\\)",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11622,
+      "source_description": "1-1習題 基礎題 7",
+      "problem_type": "textbook_exercise",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(390{}^\\circ\\) (2)\\(-1580{}^\\circ\\)",
+      "correct_answer": null,
+      "detailed_solution": null
+    },
+    {
+      "id": 11623,
+      "source_description": "1-1習題 基礎題 8",
+      "problem_type": "textbook_exercise",
+      "problem_text": "試求下列各角的最小正同界角與最大負同界角：\n(1)\\(\\frac { 15\\pi } { 4 }\\) (2)\\(-\\frac { 11\\pi } { 3 }\\)",
+      "correct_answer": null,
+      "detailed_solution": null
+    }
+  ]
+}

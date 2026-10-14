@@ -1,0 +1,92 @@
+{#
+  Shared MathJax v3 renderer for trusted, server-rendered skill-card metadata.
+  Text remains Jinja-escaped; MathJax reads text nodes only and no card content
+  is inserted through unsafe HTML assignment.
+#}
+<script>
+    (function () {
+        "use strict";
+
+        window.MathJax = window.MathJax || {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' }
+        };
+
+        var renderQueue = Promise.resolve();
+        var delimiterPattern = /\$|\\\(|\\\[|\\frac|\\sqrt|\\(?:sin|cos|tan|theta|text)\b/;
+
+        function hasMathSource(element) {
+            return Boolean(element && delimiterPattern.test(element.textContent || ''));
+        }
+
+        function typesetSkillCardDescriptions(elements) {
+            var targets = Array.from(new Set(elements || []))
+                .filter(hasMathSource);
+            if (!targets.length || !window.MathJax || !window.MathJax.typesetPromise) return;
+
+            renderQueue = renderQueue.then(function () {
+                // Clearing only these text containers makes a replaced dynamic
+                // description safe to typeset again without touching the page.
+                if (typeof window.MathJax.typesetClear === 'function') {
+                    window.MathJax.typesetClear(targets);
+                }
+                return window.MathJax.typesetPromise(targets);
+            }).catch(function (error) {
+                console.warn('Skill-card MathJax render error:', error);
+            });
+        }
+
+        function skillCardDescriptions(root) {
+            if (!root) return [];
+            var descriptions = [];
+            if (root.nodeType === Node.ELEMENT_NODE && root.matches('.skill-card-description')) {
+                descriptions.push(root);
+            }
+            if (root.querySelectorAll) {
+                descriptions = descriptions.concat(
+                    Array.from(root.querySelectorAll('.skill-card-description'))
+                );
+            }
+            return descriptions;
+        }
+
+        function loadAndRenderInitialCards() {
+            var initial = skillCardDescriptions(document);
+            if (!initial.length) return;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                typesetSkillCardDescriptions(initial);
+                return;
+            }
+            if (document.querySelector("script[data-skill-card-mathjax-loader='1']")) return;
+
+            var script = document.createElement('script');
+            script.id = 'mathjax-skill-card-loader';
+            script.defer = true;
+            script.setAttribute('data-skill-card-mathjax-loader', '1');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+            script.onload = function () { typesetSkillCardDescriptions(initial); };
+            document.head.appendChild(script);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAndRenderInitialCards();
+            if (typeof MutationObserver === 'undefined') return;
+
+            new MutationObserver(function (records) {
+                var added = [];
+                records.forEach(function (record) {
+                    Array.from(record.addedNodes).forEach(function (node) {
+                        if (node.nodeType !== Node.ELEMENT_NODE || node.matches('mjx-container')) return;
+                        added = added.concat(skillCardDescriptions(node));
+                    });
+                });
+                typesetSkillCardDescriptions(added);
+            }).observe(document.body, { childList: true, subtree: true });
+        });
+    })();
+</script>

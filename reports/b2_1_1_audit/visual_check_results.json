@@ -1,0 +1,98 @@
+[
+  {
+    "label": "例2",
+    "page": 7,
+    "fig": [
+      380,
+      320,
+      500,
+      525
+    ],
+    "size": [
+      251,
+      428
+    ],
+    "inside_text": "S\nA\n16\n16\n45ʶ",
+    "image": "reports\\b2_1_1_audit\\visual_check\\例2.png"
+  },
+  {
+    "label": "SDG 14 保育海洋生態—扇形計算",
+    "page": 8,
+    "fig": [
+      355,
+      223,
+      509,
+      408
+    ],
+    "size": [
+      322,
+      386
+    ],
+    "inside_text": "",
+    "image": "reports\\b2_1_1_audit\\visual_check\\SDG_14_保育海洋生態_扇形計算.png"
+  },
+  {
+    "label": "例3",
+    "page": 10,
+    "fig": [
+      365,
+      375,
+      505,
+      485
+    ],
+    "size": [
+      293,
+      230
+    ],
+    "inside_text": "",
+    "image": "reports\\b2_1_1_audit\\visual_check\\例3.png"
+  },
+  {
+    "label": "1-1習題 基礎題5",
+    "page": 13,
+    "fig": [
+      315,
+      533,
+      389,
+      606
+    ],
+    "size": [
+      155,
+      153
+    ],
+    "inside_text": "",
+    "image": "reports\\b2_1_1_audit\\visual_check\\1-1習題_基礎題5.png"
+  },
+  {
+    "label": "1-1習題 進階題9",
+    "page": 14,
+    "fig": [
+      408,
+      232,
+      528,
+      352
+    ],
+    "size": [
+      250,
+      251
+    ],
+    "inside_text": "",
+    "image": "reports\\b2_1_1_audit\\visual_check\\1-1習題_進階題9.png"
+  },
+  {
+    "label": "1-1習題 進階題10",
+    "page": 14,
+    "fig": [
+      361,
+      369,
+      530,
+      602
+    ],
+    "size": [
+      353,
+      487
+    ],
+    "inside_text": "",
+    "image": "reports\\b2_1_1_audit\\visual_check\\1-1習題_進階題10.png"
+  }
+]

@@ -1,0 +1,40 @@
+{
+  "skill_id": "vh_數學B2_SubSection_2_2_5",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_11695",
+      "textbook_example_id": 11695,
+      "status": "verified",
+      "problem_type_id": "solve_tower_two_elevation_path_and_river_width",
+      "domain_operation": "solve_tower_two_elevation_path_and_river_width",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11695/generate.py"
+    },
+    {
+      "component_id": "src_11697",
+      "textbook_example_id": 11697,
+      "status": "verified",
+      "problem_type_id": "solve_height_from_two_elevation_tan_ratios",
+      "domain_operation": "solve_height_from_two_elevation_tan_ratios",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_11697/generate.py"
+    },
+    {
+      "component_id": "src_11724",
+      "textbook_example_id": 11724,
+      "status": "verified",
+      "problem_type_id": "solve_height_from_isosceles_bearing_walk_elevation",
+      "domain_operation": "solve_height_from_isosceles_bearing_walk_elevation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11724/generate.py"
+    }
+  ]
+}

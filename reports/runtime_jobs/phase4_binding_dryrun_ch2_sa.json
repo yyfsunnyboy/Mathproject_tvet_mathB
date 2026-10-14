@@ -1,0 +1,193 @@
+{
+  "elapsed_seconds": 25.27,
+  "db_sha_before": "fd1997eb3470bd0934eb99e88020fae67541956a775d5aa2a5bbcd4daed2ea41",
+  "db_sha_after": "fd1997eb3470bd0934eb99e88020fae67541956a775d5aa2a5bbcd4daed2ea41",
+  "db_unchanged": true,
+  "ok": true,
+  "error": null,
+  "stages": {
+    "FILE_VALIDATION": "success",
+    "WORD_SCAN": "success",
+    "FORMULA_CONVERSION": "success",
+    "QUESTION_PARSE": "success",
+    "CURRICULUM_BINDING": "success",
+    "AI_ALIGNMENT": "success",
+    "ANCHOR": "success",
+    "DB_WRITE": "skipped",
+    "COMPLETE": "success"
+  },
+  "chapter": {
+    "outline_action": "skipped_chapter_scope",
+    "outline_skill_id": null,
+    "concepts_found": 0,
+    "formal_skills": [],
+    "section_candidate_count": 7,
+    "section_candidates": [
+      "vh_數學B2_SubSection_2_2_1",
+      "vh_數學B2_SubSection_2_1_1",
+      "vh_數學B2_SubSection_2_2_2",
+      "vh_數學B2_SubSection_2_2_3",
+      "vh_數學B2_SubSection_2_1_2",
+      "vh_數學B2_SubSection_2_2_4",
+      "vh_數學B2_SubSection_2_2_5"
+    ],
+    "formal_skills_created": 0,
+    "formal_skills_reused": 0
+  },
+  "preflight_counts": {
+    "NEW_INSERT": 15,
+    "EXISTING_SKIP": 0,
+    "WOULD_UPDATE": 0,
+    "BLOCKED_SKILL": 0,
+    "BLOCKED_AMBIGUOUS": 0
+  },
+  "preflight_ready": true,
+  "section_counts": {
+    "2-1": 6,
+    "2-2": 9
+  },
+  "scoped_counts": {
+    "required_formula_count": 63,
+    "required_formula_success": 63,
+    "required_formula_failed": 0,
+    "non_required_formula_count": 0,
+    "non_required_formula_success": 0,
+    "non_required_formula_failed": 0
+  },
+  "formula_metrics": {
+    "mathtype_found": 63,
+    "mathtype_converted": 63,
+    "formula_failures": 0,
+    "eq_fields": 0,
+    "eq_converted": 0,
+    "latex_docx": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第二章 自我評量-課本_Latex.docx",
+    "original_unchanged": true,
+    "required_formula_count": 63,
+    "required_formula_success": 63,
+    "required_formula_failed": 0,
+    "non_required_formula_count": 0,
+    "non_required_formula_success": 0,
+    "non_required_formula_failed": 0,
+    "unresolved_scope": 0
+  },
+  "binding_metrics": {
+    "outline_action": "skipped_chapter_scope",
+    "outline_skill_id": null,
+    "concepts_found": 0,
+    "formal_skills": [],
+    "section_candidate_count": 7,
+    "section_candidates": [
+      "vh_數學B2_SubSection_2_2_1",
+      "vh_數學B2_SubSection_2_1_1",
+      "vh_數學B2_SubSection_2_2_2",
+      "vh_數學B2_SubSection_2_2_3",
+      "vh_數學B2_SubSection_2_1_2",
+      "vh_數學B2_SubSection_2_2_4",
+      "vh_數學B2_SubSection_2_2_5"
+    ],
+    "formal_skills_created": 0,
+    "formal_skills_reused": 0
+  },
+  "ai_metrics": {
+    "metadata_source": "gemini",
+    "metadata_alignment": "PASS",
+    "unresolved_skill_bindings": [],
+    "needs_skill_resolution": [],
+    "section_outline_fallback_count": 0,
+    "phase3_questions": 15,
+    "gemini_requests": 2,
+    "gemini_total_tokens": 3373
+  },
+  "questions": [
+    {
+      "q": 1,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_1",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 2,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_1",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 3,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_1",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 4,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_2",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 5,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_2",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 6,
+      "sec": "2-1",
+      "skill": "vh_數學B2_SubSection_2_1_2",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 7,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 8,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 9,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 10,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 11,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_4",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 12,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_4",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 13,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 14,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_5",
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 15,
+      "sec": "2-2",
+      "skill": "vh_數學B2_SubSection_2_2_3",
+      "decision": "NEW_INSERT"
+    }
+  ]
+}

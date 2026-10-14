@@ -1,0 +1,227 @@
+{
+  "skill_id": "gh_OperationsOfRadicalsAndFractions",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 20,
+  "components": [
+    {
+      "component_id": "src_12302",
+      "textbook_example_id": 12302,
+      "status": "verified",
+      "problem_type_id": "simplify_radical_fraction_expressions",
+      "domain_operation": "simplify_radical_fraction_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12302/generate.py"
+    },
+    {
+      "component_id": "src_12303",
+      "textbook_example_id": 12303,
+      "status": "verified",
+      "problem_type_id": "order_radical_numbers",
+      "domain_operation": "order_radical_numbers",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12303/generate.py"
+    },
+    {
+      "component_id": "src_12304",
+      "textbook_example_id": 12304,
+      "status": "verified",
+      "problem_type_id": "evaluate_time_dilation_relations",
+      "domain_operation": "evaluate_time_dilation_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12304/generate.py"
+    },
+    {
+      "component_id": "src_12305",
+      "textbook_example_id": 12305,
+      "status": "verified",
+      "problem_type_id": "denest_square_roots",
+      "domain_operation": "denest_square_roots",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12305/generate.py"
+    },
+    {
+      "component_id": "src_12306",
+      "textbook_example_id": 12306,
+      "status": "verified",
+      "problem_type_id": "evaluate_integer_fraction_part_expression",
+      "domain_operation": "evaluate_integer_fraction_part_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12306/generate.py"
+    },
+    {
+      "component_id": "src_12307",
+      "textbook_example_id": 12307,
+      "status": "verified",
+      "problem_type_id": "optimize_by_am_gm",
+      "domain_operation": "optimize_by_am_gm",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12307/generate.py"
+    },
+    {
+      "component_id": "src_12308",
+      "textbook_example_id": 12308,
+      "status": "verified",
+      "problem_type_id": "simplify_radical_fraction_expressions",
+      "domain_operation": "simplify_radical_fraction_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12308/generate.py"
+    },
+    {
+      "component_id": "src_12309",
+      "textbook_example_id": 12309,
+      "status": "verified",
+      "problem_type_id": "simplify_radical_fraction_expressions",
+      "domain_operation": "simplify_radical_fraction_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12309/generate.py"
+    },
+    {
+      "component_id": "src_12310",
+      "textbook_example_id": 12310,
+      "status": "verified",
+      "problem_type_id": "order_radical_numbers",
+      "domain_operation": "order_radical_numbers",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12310/generate.py"
+    },
+    {
+      "component_id": "src_12311",
+      "textbook_example_id": 12311,
+      "status": "verified",
+      "problem_type_id": "evaluate_time_dilation_relations",
+      "domain_operation": "evaluate_time_dilation_relations",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12311/generate.py"
+    },
+    {
+      "component_id": "src_12312",
+      "textbook_example_id": 12312,
+      "status": "verified",
+      "problem_type_id": "denest_square_roots",
+      "domain_operation": "denest_square_roots",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12312/generate.py"
+    },
+    {
+      "component_id": "src_12313",
+      "textbook_example_id": 12313,
+      "status": "verified",
+      "problem_type_id": "evaluate_integer_fraction_part_expression",
+      "domain_operation": "evaluate_integer_fraction_part_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12313/generate.py"
+    },
+    {
+      "component_id": "src_12314",
+      "textbook_example_id": 12314,
+      "status": "verified",
+      "problem_type_id": "optimize_by_am_gm",
+      "domain_operation": "optimize_by_am_gm",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12314/generate.py"
+    },
+    {
+      "component_id": "src_12315",
+      "textbook_example_id": 12315,
+      "status": "verified",
+      "problem_type_id": "simplify_radical_fraction_expressions",
+      "domain_operation": "simplify_radical_fraction_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12315/generate.py"
+    },
+    {
+      "component_id": "src_12316",
+      "textbook_example_id": 12316,
+      "status": "verified",
+      "problem_type_id": "nearest_integer_from_radical_relation",
+      "domain_operation": "nearest_integer_from_radical_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12316/generate.py"
+    },
+    {
+      "component_id": "src_12317",
+      "textbook_example_id": 12317,
+      "status": "verified",
+      "problem_type_id": "denest_square_roots",
+      "domain_operation": "denest_square_roots",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12317/generate.py"
+    },
+    {
+      "component_id": "src_12318",
+      "textbook_example_id": 12318,
+      "status": "verified",
+      "problem_type_id": "denest_square_roots",
+      "domain_operation": "denest_square_roots",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12318/generate.py"
+    },
+    {
+      "component_id": "src_12319",
+      "textbook_example_id": 12319,
+      "status": "verified",
+      "problem_type_id": "evaluate_integer_fraction_part_expression",
+      "domain_operation": "evaluate_integer_fraction_part_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12319/generate.py"
+    },
+    {
+      "component_id": "src_12320",
+      "textbook_example_id": 12320,
+      "status": "verified",
+      "problem_type_id": "optimize_by_am_gm",
+      "domain_operation": "optimize_by_am_gm",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12320/generate.py"
+    },
+    {
+      "component_id": "src_12321",
+      "textbook_example_id": 12321,
+      "status": "verified",
+      "problem_type_id": "optimize_by_am_gm",
+      "domain_operation": "optimize_by_am_gm",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12321/generate.py"
+    }
+  ]
+}

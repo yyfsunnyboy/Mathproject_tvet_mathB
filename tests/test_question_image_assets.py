@@ -172,10 +172,9 @@ def _setup_fake_db(monkeypatch):
     return textbook_rows
 
 
-def test_save_to_database_infers_source_page_and_renders(monkeypatch):
+def test_save_to_database_infers_source_page_and_renders(monkeypatch, tmp_path):
     app = Flask(__name__)
-    tmp_root = os.path.join(os.getcwd(), "tmp_test_question_image_assets")
-    os.makedirs(tmp_root, exist_ok=True)
+    tmp_root = str(tmp_path)
     app.root_path = str(tmp_root)
     rows = _setup_fake_db(monkeypatch)
 
@@ -238,10 +237,9 @@ def test_save_to_database_infers_source_page_and_renders(monkeypatch):
     assert meta["image_assets"][0]["source_page_inferred"] is True
 
 
-def test_save_to_database_missing_source_page_keeps_empty_assets(monkeypatch):
+def test_save_to_database_missing_source_page_keeps_empty_assets(monkeypatch, tmp_path):
     app = Flask(__name__)
-    tmp_root = os.path.join(os.getcwd(), "tmp_test_question_image_assets_missing")
-    os.makedirs(tmp_root, exist_ok=True)
+    tmp_root = str(tmp_path)
     app.root_path = str(tmp_root)
     rows = _setup_fake_db(monkeypatch)
 

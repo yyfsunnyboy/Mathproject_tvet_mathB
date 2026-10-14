@@ -1,0 +1,161 @@
+{
+  "skill_id": "vh_數學B3_SubSection_4_2_1",
+  "publish_status": "package_ready",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_12146",
+      "textbook_example_id": 12146,
+      "status": "verified",
+      "problem_type_id": "graph_sketch_table",
+      "domain_operation": "graph_sketch_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12146/generate.py"
+    },
+    {
+      "component_id": "src_12147",
+      "textbook_example_id": 12147,
+      "status": "verified",
+      "problem_type_id": "graph_sketch_table",
+      "domain_operation": "graph_sketch_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12147/generate.py"
+    },
+    {
+      "component_id": "src_12148",
+      "textbook_example_id": 12148,
+      "status": "verified",
+      "problem_type_id": "graph_sketch_table",
+      "domain_operation": "graph_sketch_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12148/generate.py"
+    },
+    {
+      "component_id": "src_12149",
+      "textbook_example_id": 12149,
+      "status": "verified",
+      "problem_type_id": "graph_sketch_table",
+      "domain_operation": "graph_sketch_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12149/generate.py"
+    },
+    {
+      "component_id": "src_12150",
+      "textbook_example_id": 12150,
+      "status": "verified",
+      "problem_type_id": "exp_compare_same_base",
+      "domain_operation": "exp_compare_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12150/generate.py"
+    },
+    {
+      "component_id": "src_12151",
+      "textbook_example_id": 12151,
+      "status": "verified",
+      "problem_type_id": "exp_compare_same_base",
+      "domain_operation": "exp_compare_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12151/generate.py"
+    },
+    {
+      "component_id": "src_12152",
+      "textbook_example_id": 12152,
+      "status": "verified",
+      "problem_type_id": "exp_model_from_graph",
+      "domain_operation": "exp_model_from_graph",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12152/generate.py"
+    },
+    {
+      "component_id": "src_12153",
+      "textbook_example_id": 12153,
+      "status": "verified",
+      "problem_type_id": "exp_model_from_graph",
+      "domain_operation": "exp_model_from_graph",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12153/generate.py"
+    },
+    {
+      "component_id": "src_12161",
+      "textbook_example_id": 12161,
+      "status": "verified",
+      "problem_type_id": "graph_sketch_table",
+      "domain_operation": "graph_sketch_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12161/generate.py"
+    },
+    {
+      "component_id": "src_12162",
+      "textbook_example_id": 12162,
+      "status": "verified",
+      "problem_type_id": "graph_property_choice",
+      "domain_operation": "graph_property_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12162/generate.py"
+    },
+    {
+      "component_id": "src_12163",
+      "textbook_example_id": 12163,
+      "status": "verified",
+      "problem_type_id": "exp_compare_same_base",
+      "domain_operation": "exp_compare_same_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12163/generate.py"
+    },
+    {
+      "component_id": "src_12170",
+      "textbook_example_id": 12170,
+      "status": "verified",
+      "problem_type_id": "graph_property_choice",
+      "domain_operation": "graph_property_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "advanced_exercise",
+      "generate_py": "components/src_12170/generate.py"
+    },
+    {
+      "component_id": "src_12249",
+      "textbook_example_id": 12249,
+      "status": "verified",
+      "problem_type_id": "exp_compare_same_base",
+      "domain_operation": "exp_compare_same_base",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12249/generate.py"
+    },
+    {
+      "component_id": "src_12269",
+      "textbook_example_id": 12269,
+      "status": "verified",
+      "problem_type_id": "graph_property_choice",
+      "domain_operation": "graph_property_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12269/generate.py"
+    }
+  ]
+}

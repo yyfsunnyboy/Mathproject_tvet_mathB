@@ -28,7 +28,7 @@ EXAMPLES = {
 
 @pytest.fixture(scope="module")
 def db_conn() -> sqlite3.Connection:
-    conn = sqlite3.connect(REPO / "instance" / "kumon_math.db")
+    conn = sqlite3.connect(f"file:{REPO.joinpath('instance', 'kumon_math.db').resolve().as_posix()}?mode=ro", uri=True)
     yield conn
     conn.close()
 

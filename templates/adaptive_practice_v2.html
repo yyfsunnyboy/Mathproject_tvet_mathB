@@ -176,6 +176,7 @@
     .color-dot { display:inline-block; width:16px; height:16px; vertical-align:middle; border-radius:999px; border:2px solid rgba(255,255,255,.92); box-shadow:0 0 0 1px rgba(0,0,0,.12); }
     .canvas-tools .warning { white-space:nowrap; height:36px; border-radius:10px; padding:7px 12px; }
     .canvas-wrap { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:#ffffff; height:300px; }
+    .scratchpad-section.scratchpad-has-figures .canvas-wrap { height:500px; }
     .canvas-wrap canvas { position:absolute; inset:0; width:100%; height:100%; }
     #drawing-background-canvas { z-index:1; pointer-events:none; }
     #handwriting-canvas { z-index:2; display:block; background:transparent; cursor:crosshair; touch-action:none; user-select:none; }
@@ -514,6 +515,9 @@
 <body>
   {% include '_student_navbar.html' %}
   <div class="shell">
+    {% if adaptive_error %}
+    <div class="demo-route-msg" role="alert">{{ adaptive_error }}</div>
+    {% endif %}
     <div class="hero">
       <div>
         <h1>
@@ -611,6 +615,7 @@
             </div>
             <div class="controls">
               <button class="primary" id="bootstrapBtn">開始診斷</button>
+              {% include '_bug_report_trigger.html' %}
             </div>
           </section>
 
@@ -714,6 +719,7 @@
                 <div class="assistant-summary-text" id="assistantSummaryText">目前先練這一題，助教會在你卡住時提供提示。</div>
               </div>
               <div class="chat-history" id="chatHistory"></div>
+              <div id="tutorSuggestedQuestions" class="guide-buttons" style="display:none;flex-direction:column"></div>
               <div style="height:10px;"></div>
               <div class="guide-buttons">
                 <button type="button" data-guide="請用國中生能懂的方式提醒我這題先看哪一個觀念。">看核心觀念</button>
@@ -725,17 +731,6 @@
               <div class="assistant-input">
                 <input id="assistantInput" type="text" placeholder="只問本題相關問題，例如：我第一步該先做什麼？">
                 <button class="success" id="assistantSendBtn" type="button">詢問助教</button>
-              </div>
-              <div style="margin-top: 5px; font-size: 0.85em; display: flex; align-items: center;">
-                <label style="cursor: pointer;"><input type="checkbox" id="useRagToggle" checked style="margin-right: 4px;"> 使用 RAG 模式加強回答</label>
-              </div>
-              <div id="adv-rag-loading" style="display: none; text-align: center; padding: 8px; color: #1565c0; font-size: 13px;">
-                正在檢索相關單元...
-              </div>
-              <div id="adv-rag-results" style="display: none; margin-top: 10px; margin-bottom: 10px; padding: 10px; background: #f0f7ff; border: 1px solid #cce1ff; border-radius: 8px;">
-                <div id="adv-rag-routing-badge" style="font-size: 0.75em; padding: 3px 6px; border-radius: 6px; background:#e6f4ff; color:#0958d9; margin-bottom: 8px; display:none; font-weight:bold;"></div>
-                <div style="font-size: 0.8em; color: #1565c0; font-weight: 700; margin-bottom: 6px;">最相關 5 個知識點：</div>
-                <div id="adv-rag-results-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
               </div>
               <div class="hint-box" id="hintBox">這裡會顯示這一題的補救提示。若系統切到 Review，我會用簡單中文提醒你先看哪個觀念。</div>
             </div>
@@ -769,6 +764,9 @@
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <script src="{{ url_for('static', filename='js/visual_spec.js') }}"></script>
   <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
+  <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
 
   <script>
     function normalizeQuestionImageSource(rawImage) {
@@ -782,6 +780,10 @@
             value.startsWith("https://")
         ) {
             return value;
+        }
+
+        if (/^(uploads|static)\//i.test(value)) {
+            return `/${value}`;
         }
 
         return `data:image/png;base64,${value}`;
@@ -839,6 +841,8 @@
       assessmentCompleted: false,
       assessmentStopReason: "",
       demoRouteMsg: "系統尚未開始診斷。",
+      handwritingTransient: null,
+      handwritingSubmissionSequence: 0,
     };
     const centerMsgboxOverlay = document.getElementById("centerMsgboxOverlay");
     const centerMsgboxTitle = document.getElementById("centerMsgboxTitle");
@@ -946,6 +950,8 @@
       const layer = getScratchpadBackgroundLayer();
       if (layer) layer.resetQuestionBackground();
       if (questionVisualContainer) questionVisualContainer.hidden = true;
+      const scratchpad = document.querySelector('.scratchpad-section');
+      if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
       const cw = currentGeometry.cssWidth || canvas.clientWidth || 300;
       const ch = currentGeometry.cssHeight || canvas.clientHeight || 200;
       redrawScratchpadQuestionBackground();
@@ -986,6 +992,8 @@
       const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
       if (bgInfo.kind === "none") {
         layer.resetQuestionBackground();
+        const scratchpad = document.querySelector('.scratchpad-section');
+        if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
         redrawScratchpadQuestionBackground();
         return Promise.resolve(false);
       }
@@ -1002,10 +1010,23 @@
         }
         return Promise.resolve(ok);
       }
-      const imgSource = normalizeQuestionImageSource(bgInfo.rawImage);
-      return layer.loadImageBackground(imgSource)
-        .then((img) => {
-          const ok = layer.setImageBackground(img, imgSource, backgroundCtx, size.cw, size.ch);
+      const imgSources = (bgInfo.rawImages || [bgInfo.rawImage])
+        .map(normalizeQuestionImageSource)
+        .filter(Boolean);
+      const scratchpad = document.querySelector('.scratchpad-section');
+      const isMultiImage = imgSources.length > 1;
+      if (scratchpad) scratchpad.classList.toggle('scratchpad-has-figures', isMultiImage);
+      if (typeof resizeCanvas === "function") resizeCanvas();
+      const imageSize = resolveScratchpadCssSize();
+      return layer.loadImageBackgrounds(imgSources)
+        .then((images) => {
+          const ok = layer.setImagesBackground(
+            images,
+            imgSources,
+            backgroundCtx,
+            imageSize.cw,
+            imageSize.ch
+          );
           if (ok && questionVisualContainer) {
             questionVisualContainer.hidden = true;
           }
@@ -1171,7 +1192,7 @@
       card.classList.toggle("review", resolvedType === "remediation");
       card.classList.toggle("idle", resolvedType !== "remediation");
     }
-    function updateRagScopeBadge(mode = "idle") {
+    function updateHintScope(mode = "idle") {
       return;
     }
     const SUBSKILL_UI_MAP = {
@@ -1971,16 +1992,10 @@
       transitionPopupState.wasRemediationActive = current;
     }
     async function handleCorrectAnswer(onConfirm) {
-      const messages = [
-        "🎉 答對了！很棒！讓我們繼續下一題吧！",
-        "正確！保持這個節奏！",
-        "做得好！你離目標又近了一步！"
-      ];
-      const picked = messages[Math.floor(Math.random() * messages.length)];
-      await showCenterMessageBox(picked);
-      if (typeof onConfirm === "function") {
-        return onConfirm();
-      }
+      return window.PracticeCorrectAnswerFlow.handleCorrectAnswer({
+        confirmMessage: showCenterMessageBox,
+        onConfirm,
+      });
     }
     function isTextboxAnswerCorrect(data) {
       if (!data || typeof data !== "object") return false;
@@ -2010,11 +2025,11 @@
         setStatus(String(data.answer_feedback));
       }
       if (data.ppo_strategy === 3) {
-        updateRagScopeBadge("review");
+        updateHintScope("review");
         await fetchHint();
         addMessage("bot", "我已經依照你目前卡住的微技能，整理出補救提示。先看右側說明，再試下一題。");
       } else {
-        updateRagScopeBadge("active");
+        updateHintScope("active");
       }
     }
     function resetHintBox() {
@@ -2080,6 +2095,61 @@
       if (!element) return;
       element.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
     }
+    function studentVisibleReply(payload, fallback) {
+      // LaTeX such as \sqrt{x^2+y^2} contains braces; only a serialized schema object is hidden.
+      const schemaBlob = /^\s*\{[\s\S]*"(reply|follow_up_prompts|suggested_questions|is_process_correct)"\s*:/;
+      function extract(value, depth = 0) {
+        if (depth > 2 || value == null) return "";
+        if (typeof value === "object" && !Array.isArray(value)) return extract(value.reply, depth + 1);
+        if (typeof value !== "string") return "";
+        const text = value.trim();
+        if (!text) return "";
+        if (!schemaBlob.test(text)) return text.replace(/\\\\/g, "\\");
+        try {
+          const parsed = JSON.parse(text);
+          return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+            ? extract(parsed.reply, depth + 1)
+            : "";
+        } catch (_) {
+          return "";
+        }
+      }
+      return extract(payload) || fallback;
+    }
+    const AI_CHECK_TIMEOUT_MS = 150000;
+    function aiCheckTimeoutSignal() {
+      return (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function")
+        ? AbortSignal.timeout(AI_CHECK_TIMEOUT_MS)
+        : undefined;
+    }
+    async function readJsonSafely(response) {
+      try {
+        return (await response.json()) || {};
+      } catch (_) {
+        return {};
+      }
+    }
+    function aiCheckFailureMessage(response, body) {
+      if (response && response.status === 409) {
+        return "這一題已經更新或過期，請重新取得題目後再作答。";
+      }
+      if (body && (body.ai_unavailable || body.retryable)) {
+        return body.reply || body.feedback || "AI 這次沒有成功回覆，請再按一次 AI 檢查。";
+      }
+      if (body && body.reason === "handwriting_not_recognized") {
+        return "目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。";
+      }
+      return "AI 檢查沒有完成，請再按一次 AI 檢查。";
+    }
+    function aiCheckErrorText(err) {
+      if (err && (err.name === "TimeoutError" || err.name === "AbortError")) {
+        return "AI 這次回應太久，請再按一次 AI 檢查。";
+      }
+      if (err && err.name === "TypeError" && /fetch|network|load failed/i.test(String(err.message || ""))) {
+        return "網路連線中斷，請確認連線後再按一次 AI 檢查。";
+      }
+      return (err && err.message) || "AI 檢查沒有完成，請再按一次 AI 檢查。";
+    }
     async function addMessage(role, text) {
       const box = document.getElementById("chatHistory");
       const div = document.createElement("div");
@@ -2087,14 +2157,15 @@
       setMessageContent(div, text);
       box.appendChild(div);
       scrollChatToBottom();
-      await typesetMath(div);
+      await typesetTutorMath(div);
       return div;
     }
     function summarizeHandwritingResult(data) {
       const messages = [];
       const mode = String(data?.mode || "").trim();
-      if (typeof data?.feedback === "string" && data.feedback.trim()) {
-        messages.push(data.feedback.trim());
+      const reply = studentVisibleReply(data, "");
+      if (reply) {
+        messages.push(reply);
       } else if (data && (data.is_correct === true || data.correct === true)) {
         messages.push("答對了。");
       } else if (mode === "process_only") {
@@ -2118,14 +2189,6 @@
         }
       }
 
-      if (typeof data?.reply === "string" && data.reply.trim()) {
-        const cleaned = data.reply
-          .replace(/[{}[\]"]/g, " ")
-          .replace(/error_type|is_process_correct|next_question|correct|reply|description|improvement_suggestion/gi, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (cleaned) messages.push(cleaned);
-      }
       return messages.join(" ");
     }
     function updateOverview(response, q) {
@@ -2159,8 +2222,22 @@
       assistantInput.disabled = disabled;
       analyzeCanvasBtn.disabled = disabled;
     }
+    // AI Tutor bubbles and suggestions share one renderer with the practice page.
+    async function typesetTutorMath(element) {
+      if (!element) return;
+      if (window.MathDisplayNormalizer && window.MathDisplayNormalizer.typesetTutorElement) {
+        await window.MathDisplayNormalizer.typesetTutorElement(element);
+        return;
+      }
+      await typesetMath(element);
+    }
+
     async function typesetMath(element) {
-      if (!element || !window.MathJax || !window.MathJax.typesetPromise) return;
+      if (!element) return;
+      if (window.MathDisplayNormalizer) {
+        window.MathDisplayNormalizer.normalizeElement(element);
+      }
+      if (!window.MathJax || !window.MathJax.typesetPromise) return;
       try {
         await window.MathJax.typesetPromise([element]);
       } catch (err) {
@@ -2183,7 +2260,7 @@
       if (choice && typeof choice === "object" && !Array.isArray(choice)) {
         const label = String(choice.label || choiceLabelAt(index)).trim().toUpperCase() || choiceLabelAt(index);
         const text = String(choice.text || choice.content || choice.value || "").trim();
-        return { label, text: text || String(choice || "").trim() };
+        return { label, text: text || String(choice || "").trim(), display: choice.display || "" };
       }
       return { label: choiceLabelAt(index), text: String(choice || "").trim() };
     }
@@ -2204,7 +2281,7 @@
         .map((choice, idx) => {
           const safeChoice = escapeHtml(String(choice.text || ""));
           const label = escapeHtml(String(choice.label || choiceLabelAt(idx)));
-          const rendered = escapeHtml(renderChoiceText(`(${choice.label}) ${choice.text}`, idx));
+          const rendered = escapeHtml(renderChoiceText(`(${choice.label}) ${choice.display || choice.text}`, idx));
           return `<button type="button" class="choice-item" data-choice-index="${idx}" data-choice-label="${label}" data-choice-text="${safeChoice}"><span class="choice-label">(${label})</span><span class="choice-content">${rendered.replace(/^(\([A-Za-z]\)\s*)/, "")}</span></button>`;
         })
         .join("");
@@ -2302,6 +2379,24 @@
       cctx.drawImage(canvas, 0, 0, composite.width, composite.height);
       return composite;
     }
+    function getInkCanvasEl() {
+      return document.getElementById("handwriting-canvas") || canvas;
+    }
+    async function captureHandwritingImageForRecognition() {
+      const ink = getInkCanvasEl();
+      if (!ink) return "";
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = ink.width || 1;
+      exportCanvas.height = ink.height || 1;
+      const ect = exportCanvas.getContext("2d");
+      ect.fillStyle = "#ffffff";
+      ect.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      if (backgroundCanvas && backgroundCanvas.width && backgroundCanvas.height) {
+        ect.drawImage(backgroundCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
+      }
+      ect.drawImage(ink, 0, 0, exportCanvas.width, exportCanvas.height);
+      return exportCanvas.toDataURL("image/png");
+    }
     function clearCanvas(resetHistory = true) {
       ctx.clearRect(0, 0, currentGeometry.cssWidth, currentGeometry.cssHeight);
       if (resetHistory) {
@@ -2337,7 +2432,8 @@
     function stopDraw() { if (!isDrawing) return; isDrawing = false; ctx.closePath(); saveState(); }
     function setActiveToolButton(buttonId) { ["penToolBtn", "eraserToolBtn"].forEach((id) => document.getElementById(id).classList.toggle("active", id === buttonId)); }
     function setActiveColorButton(buttonId) { ["blackInkBtn", "blueInkBtn", "redInkBtn", "greenInkBtn"].forEach((id) => document.getElementById(id).classList.toggle("active", id === buttonId)); }
-    function activatePen(color, buttonId) { isErasing = false; currentColor = color; canvas.style.cursor = "crosshair"; setActiveToolButton("penToolBtn"); setActiveColorButton(buttonId); }
+    function syncPenInkColor() { document.getElementById("penToolBtn").style.setProperty("--pen-ink", currentColor); }
+    function activatePen(color, buttonId) { isErasing = false; currentColor = color; syncPenInkColor(); canvas.style.cursor = "crosshair"; setActiveToolButton("penToolBtn"); setActiveColorButton(buttonId); }
     function activateEraser() { isErasing = true; canvas.style.cursor = "cell"; setActiveToolButton("eraserToolBtn"); }
     function undo() { if (undoStack.length <= 1) return; redoStack.push(undoStack.pop()); restoreFromDataUrl(undoStack[undoStack.length - 1]); updateUndoRedoButtons(); }
     function redo() { if (redoStack.length === 0) return; const next = redoStack.pop(); undoStack.push(next); restoreFromDataUrl(next); updateUndoRedoButtons(); }
@@ -2350,38 +2446,23 @@
     }
 
       async function fetchHint() {
-        const query = new URLSearchParams();
-        state.currentSubskills.forEach((item) => query.append("subskill_nodes", item));
-        if (skillId) query.set("skill_id", skillId);
-        if (state.currentFamilyId) query.set("family_id", state.currentFamilyId);
-        if (state.currentQuestionText) query.set("question_text", state.currentQuestionText);
-        if (state.currentContext) query.set("question_context", state.currentContext);
-        const response = await fetch(`/api/adaptive/rag_hint?${query.toString()}`);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "rag hint failed");
         const hintBox = document.getElementById("hintBox");
         const focusSubskill = safeSubskillLabel(state.detectedSubskillLabel) || safeSubskillLabel(state.detectedSubskill) || (state.currentSubskills[0] ? safeSubskillLabel(state.currentSubskills[0]) : "");
         const focusPrefix = state.isRemediationActive ? "目前補救重點" : "系統偵測斷點";
         const focusHtml = focusSubskill ? `<div class="hint-focus">${focusPrefix}：${escapeHtml(focusSubskill)}</div>` : "";
-        hintBox.innerHTML = buildStudentRemediationHtml(data, focusHtml);
+        const hintSummary = focusSubskill
+          ? `先釐清「${focusSubskill}」的條件與運算順序，再逐步寫出每一步。`
+          : "先確認題目的條件、運算順序與每一步的正負號。";
+        hintBox.innerHTML = `${focusHtml}<div class="hint-card"><div class="hint-section-title">解題提示</div><p>${escapeHtml(hintSummary)}</p></div>`;
         await typesetMath(hintBox);
-        const safeSummary = sanitizeRemediationText(data.hint_summary);
-        if (safeSummary) {
-          addMessage("bot", `這題先看：${safeSummary}。`);
-        } else if (Array.isArray(data.subskill_labels) && data.subskill_labels.length) {
-          const cleanLabels = normalizeSubskillLabels(data.subskill_labels);
-          if (cleanLabels.length) {
-            addMessage("bot", `這題先看這些重點：${cleanLabels.join("、")}。`);
-          } else {
-            addMessage("bot", "這題先看：先確認正負號、括號範圍與同類項整理。");
-          }
-        }
+        addMessage("bot", `這題先看：${hintSummary}`);
         scrollChatToBottom();
-        return data;
+        return { source: "deterministic", hint_summary: hintSummary };
       }
 
     async function askTutor(question, sourceLabel = "user") {
       if (!state.currentQuestionText) { setStatus("請先開始診斷，再使用 AI 助教。"); return; }
+      const questionUid = state.currentQuestionUid;
       await addMessage(sourceLabel === "user" ? "user" : "bot", question);
       const thinking = await addMessage("bot", "AI 助教正在整理提示...");
       try {
@@ -2394,17 +2475,50 @@
             question_text: state.currentQuestionText,
             question_context: state.currentContext,
             family_id: state.currentFamilyId,
-            subskill_nodes: state.currentSubskills
+            subskill_nodes: state.currentSubskills,
+            student_answer: state.handwritingTransient?.normalizedAnswer || "",
+            handwriting_analysis: state.handwritingTransient?.structuredAnalysis || null,
+            handwriting_submission_id: state.handwritingTransient?.submissionId || "",
+            question_uid: questionUid
           })
         });
-        const data = await response.json();
-        setMessageContent(thinking, (data.reply || "先檢查題目的條件與運算順序。").trim());
-        await typesetMath(thinking);
+        const data = await response.json().catch(() => null);
+        if (questionUid !== state.currentQuestionUid) { thinking.remove(); return; }
+        const reply = (response.ok && data && !data.ai_unavailable) ? studentVisibleReply(data, "") : "";
+        if (!reply) {
+          setMessageContent(thinking, response.status === 409
+            ? "題目已經更新，請針對目前這一題再問一次。"
+            : "AI 助教這次沒有成功回覆（不是你的問題問得不好），可以按下方按鈕再試一次。");
+          renderTutorSuggestedQuestions(response.status === 409 ? [] : [question]);
+          scrollChatToBottom();
+          return;
+        }
+        setMessageContent(thinking, reply);
+        renderTutorSuggestedQuestions(data.suggested_questions || data.follow_up_prompts);
+        await typesetTutorMath(thinking);
         scrollChatToBottom();
       } catch (err) {
-        setMessageContent(thinking, "目前助教暫時沒有整理出新提示，先檢查你是不是抓對了這一題的核心觀念。");
+        setMessageContent(thinking, "連線發生錯誤，請確認網路後按下方按鈕再試一次。");
+        renderTutorSuggestedQuestions([question]);
         scrollChatToBottom();
       }
+    }
+
+    function renderTutorSuggestedQuestions(prompts) {
+      const box = document.getElementById("tutorSuggestedQuestions");
+      box.replaceChildren();
+      const questions = Array.isArray(prompts)
+        ? prompts.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 3)
+        : [];
+      for (const question of questions) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = String(question);
+        button.addEventListener("click", () => askTutor(String(question)));
+        box.appendChild(button);
+      }
+      box.style.display = questions.length ? "flex" : "none";
+      if (questions.length) typesetTutorMath(box);
     }
 
     function isDrawingQuestion(question) {
@@ -2430,7 +2544,9 @@
         responseMode: ui.response_mode || (drawing ? "drawing" : "text"),
         textInputEnabled: drawing ? (ui.text_input_enabled === true) : (ui.text_input_enabled !== false),
         normalSubmitEnabled: drawing ? (ui.normal_submit_enabled === true) : (ui.normal_submit_enabled !== false),
-        aiCheckRequired: drawing ? (ui.ai_check_required !== false) : (ui.ai_check_required === true),
+        // ai_check_required === false means "not mandatory": a handwriting surface keeps AI check available.
+        aiCheckAvailable: drawing || ui.ai_check_required === true
+          || (ui.handwriting_enabled !== false && ui.canvas_required !== false),
         canvasRequired: drawing
           ? (ui.canvas_required !== false)
           : (ui.handwriting_enabled !== false && ui.canvas_required !== false),
@@ -2517,7 +2633,7 @@
         submitBtn.removeAttribute("aria-disabled");
       }
 
-      if (!uiContract.aiCheckRequired) {
+      if (!uiContract.aiCheckAvailable) {
         analyzeCanvasBtn.style.display = 'none';
         analyzeCanvasBtn.disabled = true;
       } else {
@@ -2567,7 +2683,10 @@
       if (!response.ok) throw new Error(data.result || data.error || "drawing check failed");
       const message = data.feedback || data.result || data.message || "圖形檢查完成。";
       setStatus(message);
-      await addMessage("bot", message);
+      const feedbackMessage = await addMessage("bot", message);
+      if (window.CorrectAnswerFeedback && data.correct_answer_display) {
+        await window.CorrectAnswerFeedback.render(feedbackMessage, data, message);
+      }
 
       const isCorrect = data.correct === true;
       const isCorrectVal = data.is_correct; // True / False / None
@@ -2619,20 +2738,204 @@
         return;
       }
 
-      if (ui.ai_check_required !== true) {
-        console.warn(
-          "[PRACTICE UI] AI check blocked by ui_contract",
-          question?.problem_type_id
-        );
+      // This page has no status bar, so AI-check notices must also appear in the chat.
+      const notify = (text) => { setStatus(text); return addMessage("bot", text); };
+      if (!resolveDrawingUiContract(question).aiCheckAvailable) {
+        await notify("這一題沒有手寫區，請直接在答案欄作答後按送出。");
         return;
       }
+      // Only the ink layer counts as student work; grids and system figures live on the background layer.
+      if (isCanvasBlank()) {
+        await notify("請先在白板寫下你的作答，再按 AI 檢查。");
+        return;
+      }
+      if (analyzeCanvasBtn.disabled) return;
+      analyzeCanvasBtn.disabled = true;
+      const checkQuestionUid = String(state.currentQuestionUid || "");
+      let thinking = null;
       try {
-        if (isCanvasBlank()) {
-          setStatus("目前無法清楚辨識，請重新書寫。");
-          await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
+        state.handwritingSubmissionSequence += 1;
+        const capturedAt = new Date().toISOString();
+        const randomId = (window.crypto && typeof window.crypto.randomUUID === "function")
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${state.handwritingSubmissionSequence}`;
+        state.handwritingTransient = {
+          submissionId: `hw-${randomId}`,
+          questionUid: String(state.currentQuestionUid || ""),
+          capturedAt,
+          imageSha256: "",
+          recognizedRawText: "",
+          normalizedAnswer: null,
+          structuredAnalysis: null,
+          checkerResult: null,
+        };
+        const submission = state.handwritingTransient;
+        setStatus("");
+        const imageDataUrl = await captureHandwritingImageForRecognition();
+        if (!imageDataUrl || imageDataUrl === "data:," || imageDataUrl === "data:image/png;base64,") {
+          await notify("請先在白板寫下你的作答，再按 AI 檢查。");
           return;
         }
-        const imageDataUrl = canvas.toDataURL("image/png");
+        await addMessage("user", "AI 檢查");
+        thinking = await addMessage("bot", "正在辨識並批改手寫答案...");
+        analyzeCanvasBtn.disabled = true;
+        const recognitionResponse = await fetch("/api/practice/ai-check-handwriting", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: aiCheckTimeoutSignal(),
+          body: JSON.stringify({
+            image_data_url: imageDataUrl,
+            image_base64: imageDataUrl,
+            student_strokes_image_data_url: (getInkCanvasEl() || canvas).toDataURL("image/png"),
+            session_id: state.sessionId,
+            question_uid: state.currentQuestionUid,
+            skill_id: state.mainSkill || skillId,
+            question_text: state.currentQuestionText,
+            problem_type_id: state.currentProblemTypeId,
+            presentation_mode: state.currentPresentationMode,
+            answer_type: state.currentAnswerType,
+            handwriting_submission_id: submission.submissionId,
+            capture_debug: {
+              captured_at: submission.capturedAt,
+              canvas_selector: "#handwriting-canvas",
+              reused_cache: false,
+              stroke_count: null,
+              history_depth: Array.isArray(undoStack) ? Math.max(0, undoStack.length - 1) : null,
+            },
+          })
+        });
+        const recognition = await readJsonSafely(recognitionResponse);
+        if (
+          submission.questionUid !== state.currentQuestionUid
+          || state.handwritingTransient?.submissionId !== submission.submissionId
+        ) { thinking.remove(); return; }
+        if (!recognitionResponse.ok) {
+          throw new Error(aiCheckFailureMessage(recognitionResponse, recognition));
+        }
+        if (recognition.handwriting_submission_id && recognition.handwriting_submission_id !== submission.submissionId) {
+          throw new Error("手寫辨識回傳已過期，請重新送出。");
+        }
+        const submissionAudit = recognition.submission_audit || {};
+        submission.imageSha256 = String(submissionAudit.image_sha256 || "");
+        submission.recognizedRawText = submissionAudit.recognized_raw_text ?? recognition.recognized_answer ?? "";
+        submission.normalizedAnswer = recognition.normalized_answer ?? recognition.recognized_answer ?? null;
+        submission.structuredAnalysis = submissionAudit.structured_answer || null;
+        const normalizedAnswer = recognition.normalized_answer || recognition.recognized_answer;
+        if (recognition.completion_state === "blank" || recognition.is_blank === true) {
+          setMessageContent(thinking, recognition.feedback || "請先在白板作答。");
+          return;
+        }
+        const recognizedSteps = Array.isArray(recognition.recognized_steps) ? recognition.recognized_steps : [];
+        if (recognition.completion_state === "in_progress") {
+          const partialWork = String(normalizedAnswer || "").trim();
+          if (!partialWork && !recognizedSteps.length) {
+            setMessageContent(thinking, recognition.feedback || "目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。");
+            return;
+          }
+          // Unfinished work is not graded; the tutor still diagnoses the steps written so far.
+          await requestTutorFeedback(partialWork, false);
+          return;
+        }
+        if (!normalizedAnswer) {
+          throw new Error(recognition.feedback || "目前看不清楚白板上的字，請把算式寫大一點再按一次 AI 檢查。");
+        }
+        const gradeResponse = await fetch("/check_answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: aiCheckTimeoutSignal(),
+          body: JSON.stringify({
+            answer: normalizedAnswer,
+            ...(normalizedAnswer && typeof normalizedAnswer === "object"
+              ? { answers: normalizedAnswer, user_answer: normalizedAnswer }
+              : {}),
+            question_uid: state.currentQuestionUid,
+            skill_id: state.mainSkill || skillId,
+            problem_type_id: state.currentProblemTypeId,
+            handwriting_submission_id: submission.submissionId,
+            handwriting_image_sha256: submission.imageSha256,
+          })
+        });
+        const grade = await readJsonSafely(gradeResponse);
+        if (
+          submission.questionUid !== state.currentQuestionUid
+          || state.handwritingTransient?.submissionId !== submission.submissionId
+        ) { thinking.remove(); return; }
+        if (!gradeResponse.ok) throw new Error(grade.result || aiCheckFailureMessage(gradeResponse, grade));
+        submission.checkerResult = grade.checker_result || (grade.correct ? "correct" : "incorrect");
+        setMessageContent(thinking, grade.result || (grade.correct ? "答對了！" : "答案尚未正確。"));
+        await typesetTutorMath(thinking);
+        if (grade.correct === true) {
+          const submitAttempt = async () => {
+            const nextData = await postAdaptive({
+              ...basePayload,
+              session_id: state.sessionId,
+              step_number: state.stepNumber,
+              user_answer: normalizedAnswer,
+              is_correct: true,
+              answer_feedback: grade.result || "答對了！",
+            });
+            resetChatHistory();
+            await applyAdaptiveResponse(nextData);
+          };
+          await handleCorrectAnswer(submitAttempt);
+          return;
+        }
+        thinking = await addMessage("bot", "AI 助教正在看你的步驟...");
+        await requestTutorFeedback(normalizedAnswer, true);
+
+        async function requestTutorFeedback(answerText, linkChecker) {
+          const payload = {
+            image_data_url: imageDataUrl,
+            normalized_answer: answerText || "",
+            recognized_steps: recognizedSteps,
+            question_uid: state.currentQuestionUid,
+            question_text: state.currentQuestionText,
+          };
+          if (linkChecker) {
+            payload.handwriting_submission_id = submission.submissionId;
+            payload.handwriting_image_sha256 = submission.imageSha256;
+          }
+          const feedbackResponse = await fetch("/analyze_handwriting", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: aiCheckTimeoutSignal(),
+            body: JSON.stringify(payload),
+          });
+          const feedback = await readJsonSafely(feedbackResponse);
+          if (
+            submission.questionUid !== state.currentQuestionUid
+            || state.handwritingTransient?.submissionId !== submission.submissionId
+          ) { thinking.remove(); return; }
+          if (!feedbackResponse.ok || feedback.success === false) {
+            throw new Error(aiCheckFailureMessage(feedbackResponse, feedback));
+          }
+          if (feedback.handwriting_submission_id && feedback.handwriting_submission_id !== submission.submissionId) {
+            throw new Error("AI 助教回傳已過期，已忽略上一輪分析。");
+          }
+          submission.structuredAnalysis = feedback.handwriting_analysis || null;
+          setMessageContent(thinking, studentVisibleReply(feedback, "目前無法整理出回饋，請再按一次 AI 檢查。"));
+          renderTutorSuggestedQuestions(feedback.suggested_questions || feedback.follow_up_prompts);
+          await typesetTutorMath(thinking);
+        }
+      } catch (err) {
+        const message = aiCheckErrorText(err);
+        if (thinking && thinking.isConnected) {
+          setMessageContent(thinking, message);
+          setStatus(message);
+        } else if (String(state.currentQuestionUid || "") === checkQuestionUid) {
+          await notify(message);
+        }
+      } finally {
+        analyzeCanvasBtn.disabled = false;
+      }
+      return;
+      try {
+        if (isCanvasBlank()) {
+          setStatus("請先在白板作答。");
+          await addMessage("bot", "請先在白板作答。");
+          return;
+        }
+        const imageDataUrl = await captureHandwritingImageForRecognition();
         await addMessage("user", "AI 檢查");
         const thinking = await addMessage("bot", "正在分析你的手寫內容...");
         analyzeCanvasBtn.disabled = true;
@@ -2664,7 +2967,7 @@
             thinking,
             "目前無法辨識你的手寫內容，請確認筆跡清楚或再試一次"
           );
-          await typesetMath(thinking);
+          await typesetTutorMath(thinking);
           scrollChatToBottom();
           return;
         }
@@ -2673,27 +2976,10 @@
           throw new Error(data?.reply || data?.error || `handwriting api failed (${response.status})`);
         }
         setMessageContent(thinking, summarizeHandwritingResult(data));
-        await typesetMath(thinking);
-        if (data && data.should_record_attempt === true) {
-          const submitAttempt = async () => {
-            const adaptivePayload = {
-              ...basePayload,
-              session_id: state.sessionId,
-              step_number: state.stepNumber,
-              user_answer: data.recognized_answer || "[handwriting]",
-              is_correct: data.is_correct === true,
-              answer_feedback: data.feedback || "",
-            };
-            const nextData = await postAdaptive(adaptivePayload);
-            resetChatHistory();
-            await applyAdaptiveResponse(nextData);
-          };
-          if (data.is_correct === true) {
-            await handleCorrectAnswer(submitAttempt);
-          } else {
-            await submitAttempt();
-          }
-        }
+        renderTutorSuggestedQuestions(data.suggested_questions || data.follow_up_prompts);
+        await typesetTutorMath(thinking);
+        // AI handwriting is recognition/tutoring only. It never records an
+        // attempt or advances the question; authoritative submission does that.
       } catch (err) {
         console.error("analyzeHandwriting failed:", err);
         await addMessage("bot", "目前無法清楚辨識，請重新書寫。");
@@ -2764,6 +3050,7 @@
       state.currentQuestion = q;
       state.currentQuestionText = q.question_text || q.new_question_text || q.question || "";
       state.currentQuestionUid = String(q.question_uid || response.question_uid || "");
+      renderTutorSuggestedQuestions([]);
       state.currentProblemTypeId = String(q.problem_type_id || response.problem_type_id || "");
       state.currentPresentationMode = String(q.presentation_mode || "");
       state.currentAnswerType = String(q.answer_contract?.answer_type || q.answer_type || "");
@@ -3231,7 +3518,7 @@
           "completed",
         );
       }
-      updateRagScopeBadge("done");
+      updateHintScope("done");
     }
 
     bootstrapBtn.addEventListener("click", async () => {
@@ -3277,7 +3564,7 @@
         updateAdaptiveStatePanel();
         resetChatHistory();
         resetHintBox();
-        updateRagScopeBadge("idle");
+        updateHintScope("idle");
         const bootstrapPayload = {
           ...basePayload,
           step_number: 0,
@@ -3335,13 +3622,17 @@
             return;
           }
           await applyAdaptiveResponse(data);
+          if (window.CorrectAnswerFeedback && data.correct_answer_display) {
+            const feedbackNode = await addMessage("bot", data.answer_feedback || "答錯了。");
+            await window.CorrectAnswerFeedback.render(feedbackNode, data, data.answer_feedback || "答錯了。");
+          }
       } catch (err) { setStatus(`提交失敗：${err.message}`); }
     });
 
     answerInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); submitBtn.click(); } });
-    if (hintBtn) hintBtn.addEventListener("click", async () => { try { updateRagScopeBadge("review"); await fetchHint(); setAssistantBanner("你已手動請求補救提示。助教會優先針對本題相關的 subskill 給出提示。", true); setStatus("已載入補救提示。"); } catch (err) { setStatus(`提示載入失敗：${err.message}`); } });
-    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await performAdvRagSearch(btn.dataset.guide); }));
-    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await performAdvRagSearch(question); });
+    if (hintBtn) hintBtn.addEventListener("click", async () => { try { updateHintScope("review"); await fetchHint(); setAssistantBanner("你已手動請求補救提示。助教會優先針對本題相關的 subskill 給出提示。", true); setStatus("已載入補救提示。"); } catch (err) { setStatus(`提示載入失敗：${err.message}`); } });
+    document.querySelectorAll("[data-guide]").forEach((btn) => btn.addEventListener("click", async () => { await askAssistant(btn.dataset.guide); }));
+    assistantSendBtn.addEventListener("click", async () => { const question = assistantInput.value.trim(); if (!question) { setStatus("請輸入你想問助教的問題。"); return; } assistantInput.value = ""; await askAssistant(question); });
     assistantInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); assistantSendBtn.click(); } });
     analyzeCanvasBtn.addEventListener("click", analyzeHandwriting);
 
@@ -3367,6 +3658,7 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
     saveState();
+    syncPenInkColor();
     updateUndoRedoButtons();
     updateEntryModeBadge();
     updateAdaptiveStatePanel();
@@ -3374,195 +3666,10 @@
     assistantInput.disabled = true;
     assistantInput.disabled = true;
     analyzeCanvasBtn.disabled = true;
-
-    // === RAG-backed assistant chat ===
-
-    async function performAdvRagSearch(queryOverride = "") {
-        const query = (queryOverride || '').trim();
-        if (!query) return;
-
-        const loading = document.getElementById('adv-rag-loading');
-        const resultsDiv = document.getElementById('adv-rag-results');
-        const buttonsDiv = document.getElementById('adv-rag-results-buttons');
-        const routingBadge = document.getElementById('adv-rag-routing-badge');
-
-        const useRag = document.getElementById('useRagToggle') ? document.getElementById('useRagToggle').checked : true;
-
-        if (loading) loading.style.display = 'block';
-        if (resultsDiv) resultsDiv.style.display = 'none';
-        if (routingBadge) routingBadge.style.display = 'none';
-
-        await addMessage("user", query);
-        const thinking = await addMessage("bot", useRag ? "我先用 RAG 找相關單元，再整理成這一題的提示..." : "我正在直接回答你的問題...");
-
-        try {
-            if (!useRag) { // Direct chat mode
-                if (buttonsDiv) buttonsDiv.innerHTML = '';
-                const chatResp = await fetch('/api/adaptive/adv_rag_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        query: query,
-                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
-                        family_id: state.currentFamilyId || '',
-                        retrieved_skills: [],
-                        use_rag: false
-                    })
-                });
-                const chatParams = await chatResp.json();
-                if (chatParams.error) throw new Error(chatParams.error);
-                if (chatParams.reply) {
-                    setMessageContent(thinking, chatParams.reply);
-                    if (window.MathJax) {
-                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
-                    }
-                } else {
-                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
-                }
-                return;
-            }
-
-            // 1. Search Advanced RAG
-            const searchResp = await fetch('/api/adaptive/adv_rag_search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: query })
-            });
-
-            const searchParams = await searchResp.json();
-            console.log("[AI TUTOR META]", searchParams);
-            
-            if (searchParams.error) throw new Error(searchParams.error);
-
-            function formatRetrievalChannel(params) {
-                let rawChannel = params.retrieval_channel || params.retrieval_mode || params.rag_mode || params.search_mode || params.pipeline || params.source || params.used_pipeline;
-                if (!rawChannel && params.results && params.results.length > 0) {
-                    rawChannel = params.results[0].routing || params.results[0].source || params.results[0].pipeline || params.results[0].retrieval_channel;
-                }
-
-                const isFallback = (params.fallback_reason || params.advanced_rag_ready === false || params.used_pipeline === 'naive' || String(params.fallback_reason).length > 0);
-
-                if (!rawChannel) {
-                    if (isFallback) return "Naive RAG（Fallback）";
-                    return "未回報";
-                }
-
-                const lower = String(rawChannel).toLowerCase();
-                if (lower === "fallback_naive" || lower === "fallback_to_naive" || lower.includes("fallback")) {
-                    return "Naive RAG（Fallback）";
-                }
-                
-                if (lower === "advanced") return "Advanced RAG";
-                if (lower === "naive") {
-                    return isFallback ? "Naive RAG（Fallback）" : "Naive RAG";
-                }
-                if (lower === "hybrid") return "Hybrid RAG";
-
-                // 若都是未知，但被戳上 fallback 就標記
-                if (isFallback && lower === "unknown") return "Naive RAG（Fallback）";
-                
-                return lower === "unknown" ? "未回報" : rawChannel;
-            }
-
-            const results = searchParams.results || [];
-            if (buttonsDiv) buttonsDiv.innerHTML = '';
-
-            let channelDisplay = formatRetrievalChannel(searchParams);
-            let retrievedSkillsForChat = [];
-
-            if (results.length > 0) {
-                results.forEach((item, index) => {
-                    const btn = document.createElement('button');
-                    const chineseName = item.chinese_name || item.skill_id;
-                    const dispFamily = (typeof FAMILY_NAME_UI_MAP !== 'undefined' && FAMILY_NAME_UI_MAP[item.family_name]) ? FAMILY_NAME_UI_MAP[item.family_name] : item.family_name;
-                    const familyName = dispFamily ? ` (${dispFamily})` : '';
-                    btn.innerText = `${index + 1}. ${chineseName}${familyName}`;
-                    btn.title = item.skill_id;
-                    btn.style.cssText = `
-                        background: #f0f7ff;
-                        color: #1565c0;
-                        border: 1px solid #1565c0;
-                        border-radius: 6px;
-                        padding: 4px 8px;
-                        font-size: 0.85em;
-                        cursor: pointer;
-                        display: inline-block;
-                        text-align: left;
-                    `;
-                    btn.type = 'button';
-                    btn.onclick = () => {
-                        const targetSkillId = String(item.skill_id || "").trim();
-                        const targetFamilyId = String(item.family_id || "").trim();
-                        const currentSkillId = String(skillId || "").trim();
-
-                        if (targetSkillId && currentSkillId && targetSkillId !== currentSkillId) {
-                            window.location.assign(`/practice/${encodeURIComponent(targetSkillId)}`);
-                            return;
-                        }
-
-                        const query = new URLSearchParams({
-                            skill_id: targetSkillId || currentSkillId,
-                            mode: 'teaching',
-                        });
-                        if (targetFamilyId) query.set('family_id', targetFamilyId);
-                        window.location.assign(`/adaptive_summative?${query.toString()}`);
-                    };
-                    if (buttonsDiv) buttonsDiv.appendChild(btn);
-
-                    retrievedSkillsForChat.push({
-                        skill_id: item.skill_id,
-                        chinese_name: item.chinese_name,
-                        family_name: item.family_name,
-                        subskill_nodes: item.subskill_nodes
-                    });
-                });
-                if (resultsDiv) resultsDiv.style.display = 'block';
-                
-                if (channelDisplay !== "未回報") {
-                    if (routingBadge) {
-                        routingBadge.innerText = `檢索通道：${channelDisplay}`;
-                        routingBadge.style.display = 'inline-block';
-                    }
-                }
-
-                // 2. Query Chat AI
-                const chatResp = await fetch('/api/adaptive/adv_rag_chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        query: query,
-                        question_text: state.currentQuestionText || document.getElementById('questionText')?.innerText || '',
-                        family_id: state.currentFamilyId || '',
-                        retrieved_skills: retrievedSkillsForChat
-                    })
-                });
-
-                const chatParams = await chatResp.json();
-                if (chatParams.error) throw new Error(chatParams.error);
-                if (chatParams.reply) {
-                    const routingNote = channelDisplay !== "未回報" ? `檢索通道：${channelDisplay}\n\n` : "";
-                    setMessageContent(thinking, `${routingNote}${chatParams.reply}`);
-                    if (window.MathJax) {
-                        window.MathJax.typesetPromise([thinking]).catch(e => console.error("MathJax Error", e));
-                    }
-                } else {
-                    setMessageContent(thinking, "抱歉，處理你的問題時發生錯誤。");
-                }
-
-            } else {
-                if (buttonsDiv) buttonsDiv.innerHTML = '<span style="font-size:0.85em; color:#999;">找不到相關文章</span>';
-                if (resultsDiv) resultsDiv.style.display = 'block';
-                setMessageContent(thinking, "我目前找不到足夠相關的單元，請把題目或卡住的步驟說得更具體一點。");
-            }
-
-        } catch (err) {
-            console.error('RAG Search Failed:', err);
-            setMessageContent(thinking, `RAG 回答暫時失敗：${err.message}`);
-        } finally {
-            if (loading) loading.style.display = 'none';
-            scrollChatToBottom();
-        }
+    async function askAssistant(question) {
+      await askTutor(question, "user");
     }
+
 
 
     // AI 助教標題動態更新邏輯
@@ -4004,6 +4111,8 @@ button.warning:hover:not(:disabled),
   border-color: var(--accent) !important;
   color: var(--accent-dark) !important;
 }
+#penToolBtn.active { color: var(--pen-ink, var(--accent-dark)) !important; }
+#penToolBtn.active svg { stroke-width: 2.3; }
 .tool-sep { background: var(--line) !important; }
 
 .pen-width-wrap {
@@ -4189,22 +4298,6 @@ input[type="range"] { accent-color: var(--accent) !important; }
 }
 #assistantSendBtn:hover { background: #3a6448 !important; }
 
-/* RAG checkbox label */
-#useRagToggle { accent-color: var(--accent) !important; }
-
-/* RAG results area */
-#adv-rag-results {
-  background: var(--green-pale) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-md) !important;
-}
-#adv-rag-routing-badge {
-  background: var(--green-pale) !important;
-  color: var(--accent-dark) !important;
-  border-radius: 6px !important;
-}
-#adv-rag-loading { color: var(--accent) !important; }
-
 /* ── 14. Hint Box ────────────────────────────────────────────────── */
 .hint-box {
   background: var(--hint-bg) !important;
@@ -4337,6 +4430,7 @@ input[type="range"] { accent-color: var(--accent) !important; }
 }
 
 </style>
+{% include '_bug_report_widget.html' %}
 </body>
 </html>
 

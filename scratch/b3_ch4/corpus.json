@@ -1,0 +1,5487 @@
+[
+ {
+  "id": 12127,
+  "skill": "SubSection_4_1_1",
+  "sec": "4-1 指數",
+  "desc": "例1",
+  "para": "正整數指數與指數律",
+  "ptype": "textbook_example",
+  "q": "試求下列各式之值：\n(1)\\(3\\times 3 ^ { 2 } \\times 3 ^ { 3 }\\) (2)\\(\\left[ \\left ( { -2 } \\right ) ^ { 2 } \\right] ^ { 5 }\\) (3)\\(\\left ( { \\frac { 1 } { 5 } } \\right ) ^ { 3 } \\times { \\rm{ 2 } }{ \\rm{ 5 } } ^ { 3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_example_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|example|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "example",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "例1",
+    "source_type": "textbook_example",
+    "text_fingerprint": "2f1ad8ba24838440105de5e5d361c365e912e23365bdccf571fd8a7a7a030b52"
+   },
+   "anchor": "例1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 1
+  }
+ },
+ {
+  "id": 12128,
+  "skill": "SubSection_4_1_1",
+  "sec": "4-1 指數",
+  "desc": "隨堂練習1",
+  "para": "正整數指數與指數律",
+  "ptype": "in_class_practice",
+  "q": "試求下列各式之值：\n(1)\\(2 ^ { 2 } \\times 2 ^ { 3 } \\times 2 ^ { 4 }\\) (2)\\(\\left[ \\left ( { -4 } \\right ) ^ { 2 } \\right] ^ { 3 }\\) (3)\\(\\left ( { \\frac { 1 } { 2 } } \\right ) ^ { 4 } \\times { \\rm{ 6 } } ^ { 4 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_in_class_practice_001_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|in_class_practice|1|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "in_class_practice",
+    "question_number": "1",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "58eb6478fca2ebf938ea1b3b0c87bc8a8f228c0e4c751f1e4d443260beaf9157"
+   },
+   "anchor": "隨堂練習1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 2
+  }
+ },
+ {
+  "id": 12129,
+  "skill": "SubSection_4_1_2",
+  "sec": "4-1 指數",
+  "desc": "例2",
+  "para": "零指數與負整數指數",
+  "ptype": "textbook_example",
+  "q": "設\\(a\\ne 0\\)、\\(b\\ne 0\\)，化簡下列各式：\n(1)\\(\\left ( { \\frac { 1 } { 27 } } \\right ) ^ { 3 } \\times 81 ^ { 2 }\\) (2)\\(\\left[ a ^ { -1 } \\times \\left ( { b ^ { 3 } } \\right ) ^ { 2 } \\right] ^ { -2 } \\times \\left ( { a ^ { 2 } \\times b ^ { -4 } } \\right ) ^ { -3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_example_002_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|example|2|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "example",
+    "question_number": "2",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "例2",
+    "source_type": "textbook_example",
+    "text_fingerprint": "e1d6d717f5130086be1c7af91244955acabc2ff6aed6457f2bb0896e353504fb"
+   },
+   "anchor": "例2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 3
+  }
+ },
+ {
+  "id": 12130,
+  "skill": "SubSection_4_1_2",
+  "sec": "4-1 指數",
+  "desc": "隨堂練習2",
+  "para": "零指數與負整數指數",
+  "ptype": "in_class_practice",
+  "q": "設\\(a\\ne 0\\)，化簡下列各式：\n(1)\\(\\left ( { \\frac { 1 } { 16 } } \\right ) ^ { 3 } \\times 32 ^ { 2 }\\) (2)\\(\\left[ \\left ( { a ^ { 3 } } \\right ) ^ { -2 } \\times a ^ { 7 } \\right] ^ { -2 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_in_class_practice_002_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|in_class_practice|2|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "in_class_practice",
+    "question_number": "2",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "d28f406e55ee6dbaa5aa3e896156878e248c96565eab324320a39fd6d16197de"
+   },
+   "anchor": "隨堂練習2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 4
+  }
+ },
+ {
+  "id": 12131,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "例3",
+  "para": "有理數指數",
+  "ptype": "textbook_example",
+  "q": "試求下列各式之值：\n(1)\\(8 ^ { -\\frac { 4 } { 3 } }\\) (2)\\(\\left ( { \\frac { 81 } { 625 } } \\right ) ^ { \\frac { 1 } { 4 } }\\) (3)\\(\\left ( { 0.25 } \\right ) ^ { -1.5 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_example_003_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|example|3|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "example",
+    "question_number": "3",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "例3",
+    "source_type": "textbook_example",
+    "text_fingerprint": "f5f288ffd3464164eec89d1d9e07b09141109691b766c51cbc306b83f8b84d40"
+   },
+   "anchor": "例3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 5
+  }
+ },
+ {
+  "id": 12132,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "隨堂練習3",
+  "para": "有理數指數",
+  "ptype": "in_class_practice",
+  "q": "試求下列各式之值：\n(1)\\(27 ^ { -\\frac { 2 } { 3 } }\\) (2)\\(\\left ( { \\frac { 16 } { 81 } } \\right ) ^ { 0.25 }\\) (3)\\(\\left ( { 0.04 } \\right ) ^ { -\\frac { 3 } { 2 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_in_class_practice_003_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|in_class_practice|3|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "in_class_practice",
+    "question_number": "3",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "f667d44b6ac75ab7d8dbcc81cc5fd9a644c3677c13640e7de5b36ecb79ae2b9a"
+   },
+   "anchor": "隨堂練習3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 6
+  }
+ },
+ {
+  "id": 12133,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "例4",
+  "para": "有理數指數",
+  "ptype": "textbook_example",
+  "q": "設\\(a>0\\)，\\(b>0\\)，試化簡下列各式：\n(1)\\(\\left ( { a ^ { 9 } b ^ { 3 } } \\right ) ^ { \\frac { 2 } { 3 } } \\times \\left ( { a ^ { -\\frac { 2 } { 3 } } b ^ { \\frac { 1 } { 6 } } } \\right ) ^ { -6 }\\) (2)\\(\\frac { \\sqrt[3] { a ^ { 2 } } } { \\sqrt[4] { a ^ { 3 } } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_example_004_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|example|4|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "example",
+    "question_number": "4",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "例4",
+    "source_type": "textbook_example",
+    "text_fingerprint": "80d152584497d02f5a36ff55aab25833513c1907c9ae04d6cef7bb4c1bfb6e46"
+   },
+   "anchor": "例4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 7
+  }
+ },
+ {
+  "id": 12134,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "隨堂練習4",
+  "para": "有理數指數",
+  "ptype": "in_class_practice",
+  "q": "設\\(a>0\\)，\\(b>0\\)，試化簡下列各式：\n(1)\\(\\left ( { a ^ { 5 } b ^ { 10 } } \\right ) ^ { \\frac { 2 } { 5 } } \\times \\left ( { a ^ { -4 } b ^ { 8 } } \\right ) ^ { -\\frac { 1 } { 4 } }\\) (2)\\(\\frac { \\sqrt[] { a ^ { 5 } } } { \\sqrt[3] { a ^ { 4 } } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_in_class_practice_004_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|in_class_practice|4|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "in_class_practice",
+    "question_number": "4",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "62d3408b6aa194a724b5c044e56143cd390972e4a06a07be7273a498c66998e3"
+   },
+   "anchor": "隨堂練習4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 8
+  }
+ },
+ {
+  "id": 12135,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "111統測B",
+  "para": "有理數指數",
+  "ptype": "exam_practice",
+  "q": "某日課堂上，老師對學生勉勵：「若每天增加百分之一的功力，則一年後至少會增加三十六倍的可觀效應；反之，每天減少百分之一的功力，則一年後至少流失現今功力的九成七」，這段勉勵運用了指數函數成長及衰退的概念，其數學上的表達最貼切下列哪一個選項？\n(A)\\(1.01 ^ { 365 } \\ge 37\\)且\\(0.99 ^ { 365 } \\le 0.03\\)\n(B)\\(365 ^ { 1.01 } \\le 37\\)且\\(365 ^ { 0.99 } \\ge 0.03\\)\n(C)\\(1.01 ^ { 365 } \\ge 63\\)且\\(0.99 ^ { 365 } \\le 0.97\\)\n(D)\\(365 ^ { 1.01 } \\le 63\\)且\\(365 ^ { 0.99 } \\ge 0.97\\) 〔111統測B〕",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exam_111b_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exam|111B|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exam",
+    "question_number": "111B",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "111統測B",
+    "source_type": "exam_practice",
+    "text_fingerprint": "887f90084f954f68431975555fc2be5b48e18b65c03ca2296acf74c37e26456b"
+   },
+   "anchor": "111統測B",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 9
+  }
+ },
+ {
+  "id": 12136,
+  "skill": "SubSection_4_1_1",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 1",
+  "para": "正整數指數與指數律",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1)\\(\\left[ \\left ( { -3 } \\right ) ^ { 3 } \\right] ^ { 2 }\\) (2)\\(\\left ( { \\frac { 1 } { 3 } } \\right ) ^ { 3 } \\times { \\rm{ 2 } }{ \\rm{ 7 } } ^ { 3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_001_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|1|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "1",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題1",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "dc6e4fb54542b5a5f73e5597d1c11e670a4996e3cd3ee37a75922451441337b2"
+   },
+   "anchor": "4-1習題 基礎題 1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 10
+  }
+ },
+ {
+  "id": 12137,
+  "skill": "SubSection_4_1_2",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 2",
+  "para": "零指數與負整數指數",
+  "ptype": "textbook_exercise",
+  "q": "在下列等式中的□填上「整數」：\n(1)\\(\\frac { 1 } { 5 ^ { 2 } }=5 ^ { \\square }\\) (2)\\(1=8 ^ { \\square }\\)\n(3)\\(\\frac { 1 } { 8 }=2 ^ { \\square }\\) (4)\\(\\frac { 3 } { 2 }=\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { \\square }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_002_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|2|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "2",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題2",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "4bdfb40526f3578f797d653437eead78748dc007305c255264700b809f601e2d"
+   },
+   "anchor": "4-1習題 基礎題 2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 11
+  }
+ },
+ {
+  "id": 12138,
+  "skill": "SubSection_4_1_2",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 3",
+  "para": "零指數與負整數指數",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1)\\(5 ^ { 0 } +\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { 0 }\\) (2)\\(2 ^ { -3 } +\\left ( { \\frac { 4 } { 3 } } \\right ) ^ { -2 }\\)\n(3)\\(\\left ( { \\frac { 1 } { 16 } } \\right ) ^ { 2 } \\times 8 ^ { 3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_003_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|3|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "3",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題3",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "7617dfaed9c53e0181e1e810410c5325c2e4865701882d401f4932c7bd75db8e"
+   },
+   "anchor": "4-1習題 基礎題 3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 12
+  }
+ },
+ {
+  "id": 12139,
+  "skill": "SubSection_4_1_2",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 4",
+  "para": "零指數與負整數指數",
+  "ptype": "textbook_exercise",
+  "q": "試化簡下列各式：（\\(a\\ne 0\\)，\\(b\\ne 0\\)）\n(1)\\(\\left ( { \\frac { 1 } { a ^ { 3 } }\\times a ^ { -4 } } \\right ) ^ { -2 }\\) (2)\\(\\left ( { a ^ { -2 } \\times b ^ { 3 } } \\right ) ^ { -3 } \\times \\left ( { a ^ { 3 } \\times b ^ { -2 } } \\right ) ^ { -2 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_004_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|4|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "4",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題4",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "ff266e460b84dd42a1c034162bbb5271c23e8cf7ae2599181d9fb074e315caba"
+   },
+   "anchor": "4-1習題 基礎題 4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 13
+  }
+ },
+ {
+  "id": 12140,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 5",
+  "para": "有理數指數",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值： \n(1)\\(\\left ( { 0.25 } \\right ) ^ { -\\frac { 5 } { 2 } }\\)\n(2)\\(\\left ( { \\frac { 27 } { 8 } } \\right ) ^ { \\frac { 2 } { 3 } }\\)\n(3)\\(\\left ( { \\frac { 9 } { 25 } } \\right ) ^ { 1.5 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_005_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|5|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "5",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題5",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "54946d02a8c6216bea13b39f1defc11668a742fc3ee0e7f92f0a408fe02a3411"
+   },
+   "anchor": "4-1習題 基礎題 5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 14
+  }
+ },
+ {
+  "id": 12141,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 6",
+  "para": "有理數指數",
+  "ptype": "textbook_exercise",
+  "q": "設\\(a>0\\)，\\(b>0\\)，試化簡下列各式：\n(1)\\(\\left[ \\left ( { a ^ { 2 } b ^ { 4 } } \\right )\\left ( { a ^ { -2 } b ^ { 3 } } \\right ) ^ { 2 } \\right] ^ { \\frac { 1 } { 2 } }\\) (2)\\(\\left[ \\left ( { a ^ { 2 } b ^ { 4 } } \\right ) ^ { 2 } \\left ( { a ^ { -2 } b ^ { 4 } } \\right ) \\right] ^ { \\frac { 1 } { 2 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_006_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|6|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "6",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題6",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "09aa5be8769b9e1cbdf6596912e6dddf7e6cd58f6491c8ad92b4464f1238c9cd"
+   },
+   "anchor": "4-1習題 基礎題 6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 15
+  }
+ },
+ {
+  "id": 12142,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 7",
+  "para": "有理數指數",
+  "ptype": "textbook_exercise",
+  "q": "設\\(a>0\\)，\\(b>0\\)，\\(c>0\\)，試化簡\\(\\left ( { a ^ { -6 } b ^ { 9 } c ^ { -3 } } \\right ) ^ { \\frac { 1 } { 3 } } \\times \\left ( { a ^ { -4 } b ^ { 6 } c ^ { 2 } } \\right ) ^ { -\\frac { 1 } { 2 } }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_007_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|7|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "7",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題7",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "08ab511da42de5dd705d1b8fcddf533b77fb0796be17f3c1a6762844c31032d1"
+   },
+   "anchor": "4-1習題 基礎題 7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 16
+  }
+ },
+ {
+  "id": 12143,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 基礎題 8",
+  "para": "有理數指數",
+  "ptype": "textbook_exercise",
+  "q": "設\\(a>0\\)，試化簡下列各式：\n(1)\\(\\sqrt[] { a }\\times \\sqrt[3] { a }\\times \\sqrt[6] { a }\\)\n(2)\\(\\sqrt[6] { a ^ { 5 } }\\times \\sqrt[12] { a ^ { 5 } \\times a ^ { 9 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_exercise_008_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|exercise|8|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "exercise",
+    "question_number": "8",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 基礎題8",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "322f14a32c71964a6345c56a168624bbebf38f16bbdf4fa1533dcbef9863af30"
+   },
+   "anchor": "4-1習題 基礎題 8",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 17
+  }
+ },
+ {
+  "id": 12144,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 進階題 9",
+  "para": "有理數指數",
+  "ptype": "advanced_exercise",
+  "q": "已知\\(A=\\left ( { \\frac { 1000 } { 729 } } \\right ) ^ { -\\frac { 2 } { 3 } } -\\left ( { \\frac { 27 } { 343 } } \\right ) ^ { -\\frac { 1 } { 3 } } +\\left ( { 5\\frac { 4 } { 9 } } \\right ) ^ { \\frac { 1 } { 2 } }\\)，則A之值為何？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_advanced_exercise_009_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|advanced_exercise|9|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "advanced_exercise",
+    "question_number": "9",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 進階題9",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "246c77b59768e2c7903aa605bbee9001317aac746c7c0103c2b621faf4340e8c"
+   },
+   "anchor": "4-1習題 進階題 9",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 18
+  }
+ },
+ {
+  "id": 12145,
+  "skill": "SubSection_4_1_1",
+  "sec": "4-1 指數",
+  "desc": "4-1習題 進階題 10",
+  "para": "正整數指數與指數律",
+  "ptype": "advanced_exercise",
+  "q": "若x、y、z為有理數，且\\(12 ^ { 2 } \\times 15 ^ { 5 } \\times 20 ^ { -4 } =2 ^ { x } \\times 3 ^ { y } \\times 5 ^ { z }\\)，試求\\(2x+y+z\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_advanced_exercise_010_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|advanced_exercise|10|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "advanced_exercise",
+    "question_number": "10",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "4-1習題 進階題10",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "6cc53a474ca8311a923405efdd289002b70f121ad94cc8b640faede876097f21"
+   },
+   "anchor": "4-1習題 進階題 10",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_1_1",
+    "vh_數學B3_SubSection_4_1_2",
+    "vh_數學B3_SubSection_4_1_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_41",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 19
+  }
+ },
+ {
+  "id": 12146,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例1",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試描繪\\(y=2 ^ { x }\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "例1",
+    "source_type": "textbook_example",
+    "text_fingerprint": "83a432dd0d8d95370959b00b3e7b716e110e48d496426344727db3e97170cbfd"
+   },
+   "anchor": "例1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 1
+  }
+ },
+ {
+  "id": 12147,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習1",
+  "para": "指數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試描繪\\(y=3 ^ { x }\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_001_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|1|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "1",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "b047032ce1beab41a5e08670edfdae959d1c3480e30d189a4275f95205f12ec5"
+   },
+   "anchor": "隨堂練習1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 2
+  }
+ },
+ {
+  "id": 12148,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例2",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試描繪\\(y=\\left ( { \\frac { 1 } { 2 } } \\right ) ^ { x }\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_002_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|2|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "2",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "例2",
+    "source_type": "textbook_example",
+    "text_fingerprint": "ae2e64a70339dd6bcad0ebadfee20562f6185c9e7f89ead04206319e18170f5d"
+   },
+   "anchor": "例2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 3
+  }
+ },
+ {
+  "id": 12149,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習2",
+  "para": "指數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試描繪\\(y=\\left ( { \\frac { 1 } { 3 } } \\right ) ^ { x }\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_002_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|2|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "2",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "6ee72fddfeb9b05dded96ea931a96e4374a1f32cd801b90f90ee7d88585bb83a"
+   },
+   "anchor": "隨堂練習2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 4
+  }
+ },
+ {
+  "id": 12150,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例3",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試比較下列各數之大小：\n(1)\\(a=5 ^ { -2 }\\)，\\(b=5 ^ { \\frac { 1 } { 3 } }\\)，\\(c=5 ^ { 3 }\\)\n(2)\\(a=\\left ( { 0.5 } \\right ) ^ { -2 }\\)，\\(b=1\\)，\\(c=\\left ( { 0.5 } \\right ) ^ { \\frac { 7 } { 6 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_003_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|3|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "3",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "例3",
+    "source_type": "textbook_example",
+    "text_fingerprint": "0aa1a776123fd838b6c168998363000acbc003dcab14f943e549fca2050a5c92"
+   },
+   "anchor": "例3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 5
+  }
+ },
+ {
+  "id": 12151,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習3",
+  "para": "指數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試比較下列各數之大小：\n(1)\\(a=\\left ( { \\sqrt[] { 2 } } \\right ) ^ { -\\frac { 1 } { 2 } }\\)，\\(b=\\sqrt[] { 2 }\\)，\\(c=\\left ( { \\sqrt[] { 2 } } \\right ) ^ { 3 }\\)\n(2)\\(a=\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { \\frac { 3 } { 4 } }\\)，\\(b=\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { \\frac { 3 } { 5 } }\\)，\\(c=\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { \\frac { 1 } { 2 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_003_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|3|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "3",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "7e329e026f38042d345f5d8eafc5ff7ce017bdfa1654ccaff05af928272d4975"
+   },
+   "anchor": "隨堂練習3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 6
+  }
+ },
+ {
+  "id": 12152,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例4",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "布袋蓮的繁殖力相當驚人，因容易阻塞重要水道且難以根除，常被視為有害植物，而遭到敵視。右圖為某池塘中布袋蓮蔓延的面積與時間的關係圖。假設其關係為指數函數，試回答下列問題：\n(1)試求此指數函數\\(f\\left ( { x } \\right )\\)。\n(2)在第幾個月時，布袋蓮的面積就會超過30 m2。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_004_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|4|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "4",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "例4",
+    "source_type": "textbook_example",
+    "text_fingerprint": "8e4e06e57ce49b1cdb1e879d93bc84f846a5f6d1e23acb4bf73679761faad2e0"
+   },
+   "anchor": "例4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 7
+  }
+ },
+ {
+  "id": 12153,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習4",
+  "para": "指數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "圖為某放射性物質的質量與時間的關係圖，假設其關係為指數函數，此放射性物質的半衰期為1千年，即每經過1千年時間，該物質的質量會衰退成原來的一半。試回答下列問題：\n(1)試求此指數函數\\(f\\left ( { x } \\right )\\)。\n(2)在經過幾千年後，此放射性物質其質量將會只剩下原來的\\(\\frac { 1 } { 8 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_004_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|4|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "4",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "3ce29d8806b510d7eaf89593005c12ef61d79e410c14a99a0b53bfe112912876"
+   },
+   "anchor": "隨堂練習4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 8
+  }
+ },
+ {
+  "id": 12154,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例5",
+  "para": "指數方程式",
+  "ptype": "textbook_example",
+  "q": "解下列指數方程式：\n(1)\\(2 ^ { x-1 } =32\\) (2)\\(3 ^ { x-2 } =\\frac { 1 } { 27 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_005_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|5|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "5",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "例5",
+    "source_type": "textbook_example",
+    "text_fingerprint": "43177ad24e10a3f53f404d1c8cc9ac079042196aa2e707e90c70d27f99d4642c"
+   },
+   "anchor": "例5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 9
+  }
+ },
+ {
+  "id": 12155,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習5",
+  "para": "指數方程式",
+  "ptype": "in_class_practice",
+  "q": "解下列指數方程式：\n(1)\\(3 ^ { x } =9\\) (2)\\(2 ^ { 3x+1 } =\\frac { 1 } { 32 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_005_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|5|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "5",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習5",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "d23ee81d45429d6eb36d9c663a3cce7529e711417620d72545068481d6fd07cc"
+   },
+   "anchor": "隨堂練習5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 10
+  }
+ },
+ {
+  "id": 12156,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例6",
+  "para": "指數方程式",
+  "ptype": "textbook_example",
+  "q": "解指數方程式\\(\\left ( { \\frac { 3 } { 4 } } \\right ) ^ { x-3 } =\\left ( { \\frac { 4 } { 3 } } \\right ) ^ { 2x-1 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_006_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|6|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "6",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "例6",
+    "source_type": "textbook_example",
+    "text_fingerprint": "091a5c49dba36d1145847caeebc6f5a52a061f94fd781da0fd7716f093dce304"
+   },
+   "anchor": "例6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 11
+  }
+ },
+ {
+  "id": 12157,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習6",
+  "para": "指數方程式",
+  "ptype": "in_class_practice",
+  "q": "解指數方程式\\(\\left ( { \\frac { 2 } { 5 } } \\right ) ^ { 2x+1 } =\\left ( { \\frac { 5 } { 2 } } \\right ) ^ { x+1 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_006_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|6|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "6",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習6",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "44c3d63d6e7df1c344f1e37668da5255eff2eb9563df534c25a8191eb9c401a0"
+   },
+   "anchor": "隨堂練習6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 12
+  }
+ },
+ {
+  "id": 12158,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "例7",
+  "para": "指數方程式",
+  "ptype": "textbook_example",
+  "q": "試解方程式\\(2 ^ { 2x } -6\\times 2 ^ { x } -16=0\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_example_007_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|example|7|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "example",
+    "question_number": "7",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "例7",
+    "source_type": "textbook_example",
+    "text_fingerprint": "e7127ab11d782047f19f651ebd75d6319a542b7514f2dad019872c073885fb96"
+   },
+   "anchor": "例7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 13
+  }
+ },
+ {
+  "id": 12159,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "隨堂練習7",
+  "para": "指數方程式",
+  "ptype": "in_class_practice",
+  "q": "試解方程式\\(2 ^ { 2x } +2 ^ { x+1 } -8=0\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_in_class_practice_007_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|in_class_practice|7|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "in_class_practice",
+    "question_number": "7",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習7",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "99f359c6a4b4e80f44361aae2de345acb0f7af3db69e6d57bbd258fc330626c2"
+   },
+   "anchor": "隨堂練習7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 14
+  }
+ },
+ {
+  "id": 12160,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "110統測B",
+  "para": "指數方程式",
+  "ptype": "exam_practice",
+  "q": "若\\(f\\left ( { x } \\right )=\\left ( { \\frac { \\pi } { 4 } } \\right ) ^ { { \\rm{ } }x }\\)，則下列何者為\\(f\\left ( { x } \\right )\\)之圖形？ \n(A) (B)\n(C) (D)\n〔110統測B〕",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exam_110b_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exam|110B|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exam",
+    "question_number": "110B",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "110統測B",
+    "source_type": "exam_practice",
+    "text_fingerprint": "796464878dbbb5c63532c3fd7211123dfc3c4d2d227ce0f807b8357fe017a51b"
+   },
+   "anchor": "110統測B",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 15
+  }
+ },
+ {
+  "id": 12161,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 1",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "試將\\(y=2 ^ { x }\\)與\\(y=\\left ( { \\frac { 1 } { 2 } } \\right ) ^ { x }\\)的圖形畫在右邊\n直角坐標中。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_001_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|1|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "1",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題1",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "c9c815f736f204e536c5e086583dd4fd4d5764834c51f34597cff2f82da1fdc7"
+   },
+   "anchor": "4-2習題 基礎題 1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 16
+  }
+ },
+ {
+  "id": 12162,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 2",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "關於指數函數\\(y=f\\left ( { x } \\right )=a ^ { x }\\)，\\(a>0\\)、\\(a\\ne 1\\)，\n其圖形的性質：\n(1) 只分布在哪兩個象限？ 、 。\n(2) 圖形必通過點 ，水平方向的漸近線為 。\n(3) 當\\(a>1\\)時，\\(y=f\\left ( { x } \\right )=a ^ { x }\\)為 函數。\n(4) 當\\(0 < a < 1\\)時，\\(y=f\\left ( { x } \\right )=a ^ { x }\\)為 函數。\n(5) 函數\\(f\\left ( { x } \\right )\\)之定義域為 ，值域為 。\n(6) \\(y=a ^ { x }\\)的圖形與\\(y=\\left ( { \\frac { 1 } { a } } \\right ) ^ { x }\\)的圖形對稱於 。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_002_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|2|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "2",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題2",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "c660809988c73e3a99af6f8e4a6b3c96003eeea6ecf50b41e8731f82eacb1e13"
+   },
+   "anchor": "4-2習題 基礎題 2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 17
+  }
+ },
+ {
+  "id": 12163,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 3",
+  "para": "指數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "試比較下列各組數的大小關係：\n(1) \\(\\left ( { 0.9 } \\right ) ^ { 4 }\\)，\\(\\left ( { 0.9 } \\right ) ^ { -3 }\\)，\\(\\left ( { 0.9 } \\right ) ^ { \\frac { 1 } { 2 } }\\)，\\(\\left ( { 0.9 } \\right ) ^ { -\\frac { 1 } { 2 } }\\)\n(2) \\(\\left ( { \\sqrt[] { 7 } } \\right ) ^ { -3 }\\)，\\(\\left ( { \\sqrt[] { 7 } } \\right ) ^ { \\frac { 3 } { 2 } }\\)，\\(\\left ( { \\sqrt[] { 7 } } \\right ) ^ { -\\frac { 1 } { 4 } }\\)，\\(\\left ( { \\sqrt[] { 7 } } \\right ) ^ { 0 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_003_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|3|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "3",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題3",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "a856cec009f5ef07e291e24d624483f17eca7b2f88e5b20bd3ef986ff67ac30d"
+   },
+   "anchor": "4-2習題 基礎題 3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 18
+  }
+ },
+ {
+  "id": 12164,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 4",
+  "para": "指數方程式",
+  "ptype": "textbook_exercise",
+  "q": "解下列指數方程式：\n(1)\\(5 ^ { x } =25 ^ { 2x-1 }\\) (2)\\(5 ^ { 2x-1 } =\\frac { 1 } { 625 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_004_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|4|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "4",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題4",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "834d5fe1a0e83ba5c50b3fd0ff8a29546e9e29c0ff5deb6e4d2313fcc9a01b6e"
+   },
+   "anchor": "4-2習題 基礎題 4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 19
+  }
+ },
+ {
+  "id": 12165,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 5",
+  "para": "指數方程式",
+  "ptype": "textbook_exercise",
+  "q": "解指數方程式\\(\\left ( { \\frac { 4 } { 7 } } \\right ) ^ { 3x-4 } =\\left ( { \\frac { 7 } { 4 } } \\right ) ^ { 4x-3 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_005_020",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|5|20",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "5",
+    "source_order": 20,
+    "block_index": 19,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題5",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "7b77bbc0154265f557d8263dfa33b03ba46d89af43986cddbae2289cf93876f9"
+   },
+   "anchor": "4-2習題 基礎題 5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 20
+  }
+ },
+ {
+  "id": 12166,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 6",
+  "para": "指數方程式",
+  "ptype": "textbook_exercise",
+  "q": "方程式\\(\\left ( { \\frac { 1 } { 3 } } \\right ) ^ { x+2 } =9 ^ { 2x-3 }\\)，試求x之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_006_021",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|6|21",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "6",
+    "source_order": 21,
+    "block_index": 20,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題6",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "fbd87438bc77d4d55769b0d31cc12ec03193d1234e12c8aff0045c1ad80a44b5"
+   },
+   "anchor": "4-2習題 基礎題 6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 21
+  }
+ },
+ {
+  "id": 12167,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 7",
+  "para": "指數方程式",
+  "ptype": "textbook_exercise",
+  "q": "解指數方程式\\(5 ^ { x+1 } +5 ^ { x } =150\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_007_022",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|7|22",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "7",
+    "source_order": 22,
+    "block_index": 21,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題7",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "df2a1dbd46a73e60fb52052a9b837e86f722f97d951014a5bc10a0e614528970"
+   },
+   "anchor": "4-2習題 基礎題 7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 22
+  }
+ },
+ {
+  "id": 12168,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 基礎題 8",
+  "para": "指數方程式",
+  "ptype": "textbook_exercise",
+  "q": "試解方程式\\(3 ^ { 2x } -4\\times 3 ^ { x+1 } +27=0\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_exercise_008_023",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|exercise|8|23",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "exercise",
+    "question_number": "8",
+    "source_order": 23,
+    "block_index": 22,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 基礎題8",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "ebe143989af7d05bdbd55708f6856093479e359dd537d129ebac3082fad61e59"
+   },
+   "anchor": "4-2習題 基礎題 8",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 23
+  }
+ },
+ {
+  "id": 12169,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 進階題 9",
+  "para": "指數方程式",
+  "ptype": "advanced_exercise",
+  "q": "設\\(2 ^ { 2x+1 } +2 ^ { 3x } =5\\times 2 ^ { x+4 }\\)，則\\(x=\\)？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_advanced_exercise_009_024",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|advanced_exercise|9|24",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "advanced_exercise",
+    "question_number": "9",
+    "source_order": 24,
+    "block_index": 23,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 進階題9",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "c05e0689a9e33f085d0694b75a8c63c79aabbdf23180e225408453263f361e96"
+   },
+   "anchor": "4-2習題 進階題 9",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 24
+  }
+ },
+ {
+  "id": 12170,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "4-2習題 進階題 10",
+  "para": "指數函數的圖形",
+  "ptype": "advanced_exercise",
+  "q": "若\\(f\\left ( { x } \\right )=2 ^ { x }\\)，則下列何者正確？ (A)\\(f\\left ( { -1 } \\right )=-2\\) (B)\\(f\\left ( { 0 } \\right )=0\\)\n(C)\\(f\\left ( { -3 } \\right )>f\\left ( { -2 } \\right )\\) (D)\\(x_{ 2 } >x_{ 1 }\\)時，\\(f\\left ( { x_{ 2 } } \\right )>f\\left ( { x_{ 1 } } \\right )\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_advanced_exercise_010_025",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|advanced_exercise|10|25",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "advanced_exercise",
+    "question_number": "10",
+    "source_order": 25,
+    "block_index": 24,
+    "occurrence_index": 1,
+    "question_label": "4-2習題 進階題10",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "d0c10e98ced42557874d81303f60c78d9e392def8c3d6255c29d8c6d461ccb83"
+   },
+   "anchor": "4-2習題 進階題 10",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_2_1",
+    "vh_數學B3_SubSection_4_2_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_42",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 25
+  }
+ },
+ {
+  "id": 12171,
+  "skill": "SubSection_4_3_1",
+  "sec": "4-3 對數",
+  "desc": "例1",
+  "para": "對數的意義",
+  "ptype": "textbook_example",
+  "q": "試求下列對數之值：\n(1)\\(log_{ 3 } 9\\) (2)\\(log_{ 2 } \\frac { 1 } { 8 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "例1",
+    "source_type": "textbook_example",
+    "text_fingerprint": "77f2c2b2e1f87793d8f462d4eb8c0e078b17011eeb1bc1e719619147058af48c"
+   },
+   "anchor": "例1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 1
+  }
+ },
+ {
+  "id": 12172,
+  "skill": "SubSection_4_3_1",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習1",
+  "para": "對數的意義",
+  "ptype": "in_class_practice",
+  "q": "試求下列對數之值：\n(1)\\(log_{ 2 } 16\\) (2)\\(log_{ 3 } \\frac { 1 } { 3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_001_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|1|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "1",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "ac0d88439075ee0990c6b09730be81465add4e31b23e12d7d828ea057b54c95a"
+   },
+   "anchor": "隨堂練習1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 2
+  }
+ },
+ {
+  "id": 12173,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例2",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求下列對數的值：\n(1)\\(log_{ 2 } 1\\) (2)\\(log_{ \\sqrt[] { 2 } } \\sqrt[] { 2 }\\) (3)\\(log_{ 3 } 3 ^ { \\sqrt[] { 5 } }\\) (4)\\(10 ^ { log_{ 10 } 3 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_002_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|2|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "2",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "例2",
+    "source_type": "textbook_example",
+    "text_fingerprint": "75589bbe6b88463a290d21c33242d8ba8a4640ac38b09788d21459b83efdc64b"
+   },
+   "anchor": "例2",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 3
+  }
+ },
+ {
+  "id": 12174,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習2",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求下列對數的值：\n(1)\\(log_{ 3 } 1\\) (2)\\(log_{ 3 } 3\\) (3)\\(log_{ 5 } 5 ^ { 3 }\\) (4)\\(7 ^ { log_{ 7 } 2 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_002_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|2|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "2",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "42c0e6e76c2a40cf39c470d05db776aca4ea850604ec20da899cb606caabe590"
+   },
+   "anchor": "隨堂練習2",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 4
+  }
+ },
+ {
+  "id": 12175,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例3",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求下列各式之値：\n(1)\\(log_{ 3 } 27\\) (2)\\(log_{ 8 } \\sqrt[] { 2 }\\) (3)\\(log_{ \\sqrt[] { 8 } } \\frac { 1 } { 2 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_003_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|3|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "3",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "例3",
+    "source_type": "textbook_example",
+    "text_fingerprint": "8365f56867be2aa7e7b603fa7fddeacbb4af434988ac9b030eeb2db3889ba439"
+   },
+   "anchor": "例3",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 5
+  }
+ },
+ {
+  "id": 12176,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習3",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求下列各式之值：\n(1)\\(log_{ 5 } 25\\)\n\n\n(2)\\(log_{ \\sqrt[] { 3 } } 9\\)\n\n\n(3)\\(log_{ 25 } \\frac { 1 } { 5 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_003_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|3|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "3",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "e846c6228b04128e8840fc0007d78bfe0bbe87068dea174257524c8838fb92c4"
+   },
+   "anchor": "隨堂練習3",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 6
+  }
+ },
+ {
+  "id": 12177,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例4",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求下列各式之值：\n(1)\\(log_{ 9 } 3+log_{ 9 } 27\\) (2)\\(log_{ 5 } 250-log_{ 5 } 2\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_004_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|4|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "4",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "例4",
+    "source_type": "textbook_example",
+    "text_fingerprint": "4be576ae56532dc332b57900f37125ec22b8caf8b5d115abb353e2b44085d999"
+   },
+   "anchor": "例4",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 7
+  }
+ },
+ {
+  "id": 12178,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習4",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求下列各式之值：\n(1)\\(log_{ 10 } 5+log_{ 10 } 20\\) (2)\\(log_{ 3 } 54-log_{ 3 } 2\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_004_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|4|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "4",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "46277ab687197d686d1f62cc86faa9b6887f0723e2b17be31d7a1c9e716c6626"
+   },
+   "anchor": "隨堂練習4",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 8
+  }
+ },
+ {
+  "id": 12179,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例5",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求\\(3log_{ 10 } 2+2log_{ 10 } 5-log_{ 10 } 20\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_005_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|5|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "5",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "例5",
+    "source_type": "textbook_example",
+    "text_fingerprint": "392719491e3c8451e5f91c809c3f2a407ceb3212f3c0cc3bd78198be8a1be659"
+   },
+   "anchor": "例5",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 9
+  }
+ },
+ {
+  "id": 12180,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習5",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求\\({ \\rm{ 3 } }log_{ { \\rm{ 3 } } } 1{ \\rm{ 8 } }-2log_{ { \\rm{ 3 } } } { \\rm{ 2 } }-log_{ { \\rm{ 3 } } } { \\rm{ 6 } }\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_005_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|5|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "5",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習5",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "a3f468a06b474a2f5e08f2b96d4bdf5f27e06ddbec184a879d300c309af0fcde"
+   },
+   "anchor": "隨堂練習5",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 10
+  }
+ },
+ {
+  "id": 12181,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例6",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求下列各式之值：\n(1)\\(log_{ 2 } 3\\times log_{ 3 } 2\\)\n(2)\\(log_{ 2 } 3\\times log_{ 3 } 5\\times log_{ 5 } 6\\times log_{ 6 } 8\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_006_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|6|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "6",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "例6",
+    "source_type": "textbook_example",
+    "text_fingerprint": "61c6ec9bb128315bad20fdac65a3fd8bf06db8104874b86d95fea4f3dac2094a"
+   },
+   "anchor": "例6",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 11
+  }
+ },
+ {
+  "id": 12182,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習6",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求下列各式之值：\n(1)\\(log_{ 3 } 5\\times log_{ 5 } 3\\)\n(2)\\(log_{ 5 } 10\\times log_{ 10 } 15\\times log_{ 15 } 20\\times log_{ 20 } 25\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_006_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|6|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "6",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習6",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "73f3a2c805e2b04faa486e8bba5db7a1bb68de57f5247f95e4c4a8c9aeb24081"
+   },
+   "anchor": "隨堂練習6",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 12
+  }
+ },
+ {
+  "id": 12183,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例7",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "試求\\(\\left ( { log_{ 2 } 3+log_{ 4 } 9 } \\right )\\left ( { log_{ 3 } 4+log_{ 9 } 2 } \\right )\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_007_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|7|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "7",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "例7",
+    "source_type": "textbook_example",
+    "text_fingerprint": "00aca98a8a35109c559b301537f29a2490517f29aa66f04a762e387798040962"
+   },
+   "anchor": "例7",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 13
+  }
+ },
+ {
+  "id": 12184,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習7",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "試求\\(\\left ( { log_{ 3 } 5+log_{ 9 } 25 } \\right )\\left ( { log_{ 5 } 3+log_{ 25 } 81 } \\right )\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_007_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|7|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "7",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習7",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "6f13392e9c320e9a6383dc8fc7d9f6f5bcb0ce81b0e5383573a6364d0d1f2907"
+   },
+   "anchor": "隨堂練習7",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 14
+  }
+ },
+ {
+  "id": 12185,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "例8",
+  "para": "對數的性質",
+  "ptype": "textbook_example",
+  "q": "設\\(a=log_{ 3 } 2\\)，\\(b=log_{ 3 } 5\\)，試以a、b表示：\n(1)\\(log_{ 3 } 60\\) (2)\\(log_{ 4 } 50\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_example_008_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|example|8|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "example",
+    "question_number": "8",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "例8",
+    "source_type": "textbook_example",
+    "text_fingerprint": "e3b4dc937f51503a32608c9db353d639e229abaf7e2fd2ddc2a7459254bc805d"
+   },
+   "anchor": "例8",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 15
+  }
+ },
+ {
+  "id": 12186,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "隨堂練習8",
+  "para": "對數的性質",
+  "ptype": "in_class_practice",
+  "q": "設\\(log_{ 10 } 2=a\\)，\\(log_{ 10 } 3=b\\)，試以a、b表示：\n(1)\\(log_{ 10 } 36\\) (2)\\(log_{ 6 } 12\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_in_class_practice_008_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|in_class_practice|8|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "in_class_practice",
+    "question_number": "8",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習8",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "c1f2838361c9f2bc4435f812f86a21eef946b5c1377b0358f281bff35a1c2116"
+   },
+   "anchor": "隨堂練習8",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 16
+  }
+ },
+ {
+  "id": 12187,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "113統測B",
+  "para": "對數的性質",
+  "ptype": "exam_practice",
+  "q": "某次考試，老師出了一張滿分為100分的試卷，但因考後成績不理想，因此進行全班成績調整，若原始成績為\\(x\\)分，則調整後成績為\\(50\\times log_{ 10 } x\\)的整數部分。已知這次考試沒有人缺考且最低分數為2分，則下列敘述何者錯誤？\n（\\(log_{ 10 } 2\\approx 0.3010\\)）\n(A)考100分的同學調整前後的分數不變 \n(B)考10分的同學調整後的分數不到60分 \n(C)調整後全班的最低分是16分 \n(D)若某同學的原始成績是16分，則其調整後的成績為60分 〔113統測B〕",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exam_113b_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exam|113B|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exam",
+    "question_number": "113B",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "113統測B",
+    "source_type": "exam_practice",
+    "text_fingerprint": "f5be252d9f4b50f27a93c3ed79efae19357c32302ec02e991f23a7995fcda4b0"
+   },
+   "anchor": "113統測B",
+   "authority_source": "source_heading_recovered",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 17
+  }
+ },
+ {
+  "id": 12188,
+  "skill": "SubSection_4_3_1",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 1",
+  "para": "對數的意義",
+  "ptype": "textbook_exercise",
+  "q": "下列各式何者無意義？並說明原因。\n(1)\\(log_{ \\left ( { -3 } \\right ) } 3\\) (2)\\(log_{ 1 } 5\\) (3)\\(log_{ 3 } 27\\) (4)\\(log_{ 2 } \\left ( { -4 } \\right )\\) (5)\\(log_{ 5 } 1\\) (6)\\(log_{ 10 } 0\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_001_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|1|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "1",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題1",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "b21c8cf1f2e686f82c0b7167a58e6b58bf5b8e4bcf7be5026444e9c4bd1d3e44"
+   },
+   "anchor": "4-3習題 基礎題 1",
+   "binding_reason": "題幹要求判斷對數何時無意義，考點是底數與真數的定義限制",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 18
+  }
+ },
+ {
+  "id": 12189,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 2",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1) \\(log_{ 2 } 2 ^ { \\frac { 3 } { 5 } }\\)\n(2) \\(5 ^ { log_{ 5 } 12 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_002_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|2|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "2",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題2",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "a371b3f24fd235d49d5a4ff7e63ebd4a54fedc69d39e2a7afdb02c7699625b32"
+   },
+   "anchor": "4-3習題 基礎題 2",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 19
+  }
+ },
+ {
+  "id": 12190,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 3",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1) \\(log_{ 6 } 4+log_{ 6 } 9\\)\n(2) \\(log_{ 3 } 135-log_{ 3 } 5\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_003_020",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|3|20",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "3",
+    "source_order": 20,
+    "block_index": 19,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題3",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "6a273c7f5b7208dbbd713ef2e8f43258f702e6ca55481c6999010181e831b45b"
+   },
+   "anchor": "4-3習題 基礎題 3",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 20
+  }
+ },
+ {
+  "id": 12191,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 4",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1) \\(log_{ 3 } 30+log_{ 3 } 15-log_{ 3 } 50\\)\n(2) \\(3log_{ 10 } 5+log_{ 10 } 12-log_{ 10 } 15\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_004_021",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|4|21",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "4",
+    "source_order": 21,
+    "block_index": 20,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題4",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "fb77d2ccac45bec8771f08796d6afb6d62a116b8507be6ec6806196db75ef86d"
+   },
+   "anchor": "4-3習題 基礎題 4",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 21
+  }
+ },
+ {
+  "id": 12192,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 5",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1) \\(log_{ 5 } \\left ( { 7+4\\sqrt[] { 3 } } \\right )+log_{ 5 } \\left ( { 7-4\\sqrt[] { 3 } } \\right )\\)\n(2) \\(log_{ 10 } 2+log_{ 10 } \\sqrt[] { 15 }-\\frac { 1 } { 2 }log_{ 10 } 0.6\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_005_022",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|5|22",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "5",
+    "source_order": 22,
+    "block_index": 21,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題5",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "5c81d917f9ace2a4e8a55f6b087a8a7986558826aa374d4df8daae376dc129d7"
+   },
+   "anchor": "4-3習題 基礎題 5",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 22
+  }
+ },
+ {
+  "id": 12193,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 6",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求下列各式之值：\n(1) \\(log_{ 3 } 5\\times log_{ 5 } 7\\times log_{ 7 } 9\\)\n(2) \\(2 ^ { \\frac { log_{ 10 } 3 } { log_{ 10 } 2 } }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_006_023",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|6|23",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "6",
+    "source_order": 23,
+    "block_index": 22,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題6",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "37f464fc43e2a49aaeac4d55e06418749e598b72eb96903d8b3a5526d0fd1ad6"
+   },
+   "anchor": "4-3習題 基礎題 6",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 23
+  }
+ },
+ {
+  "id": 12194,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 7",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "試求\\(\\left ( { log_{ 9 } 4+log_{ 3 } 8 } \\right )\\left ( { log_{ 16 } 27-log_{ 4 } 3 } \\right )\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_007_024",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|7|24",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "7",
+    "source_order": 24,
+    "block_index": 23,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題7",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "6a1550144070a0950599e583920be8ac55980e8adf4cbeba1d4a77c8855126db"
+   },
+   "anchor": "4-3習題 基礎題 7",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 24
+  }
+ },
+ {
+  "id": 12195,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 基礎題 8",
+  "para": "對數的性質",
+  "ptype": "textbook_exercise",
+  "q": "設\\(log_{ 10 } 2=a\\)，\\(log_{ 10 } 3=b\\)，試以a、b表示：\n(1) \\(log_{ 4 } 3\\)\n(2) \\(log_{ 9 } 5\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_exercise_008_025",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|exercise|8|25",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "exercise",
+    "question_number": "8",
+    "source_order": 25,
+    "block_index": 24,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 基礎題8",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "a6411d677e3563b62d74a639a7afc2ab1e6592a9712db98fc22e41210c6ff4bc"
+   },
+   "anchor": "4-3習題 基礎題 8",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 25
+  }
+ },
+ {
+  "id": 12196,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 進階題 9",
+  "para": "對數的性質",
+  "ptype": "advanced_exercise",
+  "q": "設\\(log_{ 10 } 2=a\\)，\\(log_{ 2 } 3=b\\)，試以a、b表示：\n(1) \\(log_{ 10 } 3\\)\n(2) \\(log_{ 40 } 180\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_advanced_exercise_009_026",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|advanced_exercise|9|26",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "advanced_exercise",
+    "question_number": "9",
+    "source_order": 26,
+    "block_index": 25,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 進階題9",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "589d598e3be1fe935938b9aeada4898c9728c9aa5e31feaf8907411a578d6241"
+   },
+   "anchor": "4-3習題 進階題 9",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 26
+  }
+ },
+ {
+  "id": 12197,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "4-3習題 進階題 10",
+  "para": "對數的性質",
+  "ptype": "advanced_exercise",
+  "q": "設\\(3 ^ { x } =7 ^ { y } =2\\)，則\\(\\frac { 1 } { x }+\\frac { 1 } { y }=log_{ 2 } A\\)，已知\\(A>0\\)，試求式子中A之值。\n（提示：利用\\(a ^ { x } =b\\)，則\\(x=log_{ a } b\\)及\\(log_{ a } b=\\frac { 1 } { log_{ b } a }\\)）",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_advanced_exercise_010_027",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|advanced_exercise|10|27",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "advanced_exercise",
+    "question_number": "10",
+    "source_order": 27,
+    "block_index": 26,
+    "occurrence_index": 1,
+    "question_label": "4-3習題 進階題10",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "4d182bfcfc198ab730ebccf9d50756ba9372f6da6f6d7a29faa5199318fa3596"
+   },
+   "anchor": "4-3習題 進階題 10",
+   "authority_source": "source_heading_recovered",
+   "binding_reason": "題幹要求求值或改寫對數式，考點是對數運算性質",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_3_1",
+    "vh_數學B3_SubSection_4_3_2"
+   ],
+   "needs_skill_resolution": false,
+   "recovered_heading": "4-3.2對數的性質",
+   "recovery_reason": "section-local numbered heading typo; content and placement belong to 4-3",
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_heading_raw": "3-3.2對數的性質",
+   "source_order": 27
+  }
+ },
+ {
+  "id": 12198,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例1",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試描繪\\(y=log_{ 2 } x\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "例1",
+    "source_type": "textbook_example",
+    "text_fingerprint": "8431046eaab6ba9fd7ed26f2084223812787433b8f565b6ca22d4b8d85277791"
+   },
+   "anchor": "例1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 1
+  }
+ },
+ {
+  "id": 12199,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習1",
+  "para": "對數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試描繪\\(y=log_{ 3 } x\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_001_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|1|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "1",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "510584d4515d5bb88f7f7d04c5093e367b0111a3475ff07d072e98d841bfc8bc"
+   },
+   "anchor": "隨堂練習1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 2
+  }
+ },
+ {
+  "id": 12200,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例2",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試描繪\\(y=log_{ \\frac { 1 } { 2 } } x\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_002_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|2|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "2",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "例2",
+    "source_type": "textbook_example",
+    "text_fingerprint": "bd04bf5da1082ba340b9753f64c7875f16ca2bacffc79caa7a53c8dc637a68eb"
+   },
+   "anchor": "例2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 3
+  }
+ },
+ {
+  "id": 12201,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習2",
+  "para": "對數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試描繪\\(y=log_{ \\frac { 1 } { 3 } } x\\)的圖形。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_002_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|2|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "2",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "d675aab11b6a2a48b7364da09a63015c2e68d0c323310520e3c0e350682f8b8d"
+   },
+   "anchor": "隨堂練習2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 4
+  }
+ },
+ {
+  "id": 12202,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例3",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "試比較下列各數之大小：\n(1)\\(log_{ 3 } 4\\)，\\(log_{ 3 } 5\\)，\\(log_{ 3 } 6\\)\n(2)\\(log_{ \\frac { 1 } { 3 } } 2\\)，\\(log_{ \\frac { 1 } { 3 } } 3\\)，\\(log_{ \\frac { 1 } { 3 } } 4\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_003_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|3|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "3",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "例3",
+    "source_type": "textbook_example",
+    "text_fingerprint": "9a82aa60d42478c16dd9cd5f958e2e850ebb582f4e733a7f41561af2332bc80f"
+   },
+   "anchor": "例3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 5
+  }
+ },
+ {
+  "id": 12203,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習3",
+  "para": "對數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "試比較下列各數之大小：\n(1)\\(log_{ 2 } \\sqrt[] { 3 }\\)，\\(log_{ 2 } \\sqrt[] { 5 }\\)，\\(log_{ 2 } \\sqrt[] { 7 }\\)\n(2)\\(log_{ 0.5 } 7\\)，\\(log_{ 0.5 } 8\\)，\\(log_{ 0.5 } 9\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_003_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|3|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "3",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "f659aa149521396231cef194641113270d7bf976303c22a299f796d9d358c620"
+   },
+   "anchor": "隨堂練習3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 6
+  }
+ },
+ {
+  "id": 12204,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例4",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_example",
+  "q": "已知聲音分貝數公式\\(d\\left ( { I } \\right )=10\\times log_{ 10 } \\frac { I } { I_{ 0 } }\\)，\\(I_{ 0 } =10 ^ { -12 }\\)（W/m2），則：",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_004_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|4|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "4",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "例4",
+    "source_type": "textbook_example",
+    "text_fingerprint": "656db410ca32f7760b56b1880cec51780ef308cce44b21930bba579d112ccd50"
+   },
+   "anchor": "例4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 7
+  }
+ },
+ {
+  "id": 12205,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習4",
+  "para": "對數函數的圖形",
+  "ptype": "in_class_practice",
+  "q": "已知聲音分貝數公式\\(d\\left ( { I } \\right )=10\\times log_{ 10 } \\frac { I } { I_{ 0 } }\\)，\\(I_{ 0 } =10 ^ { -12 }\\)（W/m2）。選舉造勢時，若使用瓦斯汽笛測得的聲音強度\\(I\\)為\\(10 ^ { -5 }\\)（W/m2），則其產生的聲音是多少分貝？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_004_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|4|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "4",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "b3bf289c1c6c72f3e2e898adf373810fae2fb48ccc22c73d91083060e8fee0cd"
+   },
+   "anchor": "隨堂練習4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 8
+  }
+ },
+ {
+  "id": 12206,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例5",
+  "para": "對數方程式",
+  "ptype": "textbook_example",
+  "q": "試求方程式\\(log_{ 2 } \\left ( { x-1 } \\right )=3\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_005_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|5|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "5",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "例5",
+    "source_type": "textbook_example",
+    "text_fingerprint": "0759b52eb4ad517ed8fbfa84c555f403b90289e5b634e2d1603a718e28bbf315"
+   },
+   "anchor": "例5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 9
+  }
+ },
+ {
+  "id": 12207,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習5",
+  "para": "對數方程式",
+  "ptype": "in_class_practice",
+  "q": "試求方程式\\(log_{ 3 } \\left ( { x+2 } \\right )=2\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_005_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|5|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "5",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習5",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "dec1e4d2e38e67ba716ede25b6ff1c5eef760730cdd2450fd40b6f70de175828"
+   },
+   "anchor": "隨堂練習5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 10
+  }
+ },
+ {
+  "id": 12208,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "例6",
+  "para": "對數方程式",
+  "ptype": "textbook_example",
+  "q": "試求方程式\\(log_{ 2 } x+log_{ 2 } \\left ( { x-2 } \\right )=3\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_example_006_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|example|6|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "example",
+    "question_number": "6",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "例6",
+    "source_type": "textbook_example",
+    "text_fingerprint": "f4a28a1358b51266ce697b7f4541c99c5e3a327a260f3a71502c855a0822a80b"
+   },
+   "anchor": "例6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 11
+  }
+ },
+ {
+  "id": 12209,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "隨堂練習6",
+  "para": "對數方程式",
+  "ptype": "in_class_practice",
+  "q": "試求方程式\\(log_{ 8 } \\left ( { x+5 } \\right )+log_{ 8 } \\left ( { x-2 } \\right )=1\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_in_class_practice_006_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|in_class_practice|6|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "in_class_practice",
+    "question_number": "6",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習6",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "1d361580da78cf323b7f6067a31fb5409985e7bcc69b3bc0aedb08fdbecee196"
+   },
+   "anchor": "隨堂練習6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 12
+  }
+ },
+ {
+  "id": 12210,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "112統測B",
+  "para": "對數方程式",
+  "ptype": "exam_practice",
+  "q": "根據研究指出，若\\(x\\)為犬隻年齡（單位：歲），犬隻與人類的年齡換算公式可寫成：犬隻等同的人類年齡（單位：歲）約為\\(37\\times log_{ 10 } \\left ( { x } \\right )+31\\)。\n若我們稱呼「犬瑞」乃指犬隻年齡換算為人類年齡後達70歲以上，則下列哪一個選項的犬隻年齡最接近且跨過「犬瑞」的門檻？\n（\\(log_{ 10 } 2\\approx 0.3010\\)，\\(log_{ 10 } 3\\approx 0.4771\\)）\n(A)9歲\n(B)10歲\n(C)12歲\n(D)15歲 〔112統測B〕",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exam_112b_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exam|112B|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exam",
+    "question_number": "112B",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "112統測B",
+    "source_type": "exam_practice",
+    "text_fingerprint": "ae14c92abf23dabcc76cca2e357a05720e75a6822c46a0c1643f351f38af95db"
+   },
+   "anchor": "112統測B",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 13
+  }
+ },
+ {
+  "id": 12211,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 1",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "試將\\(y=log_{ 2 } x\\)與\\(y=log_{ \\frac { 1 } { 2 } } x\\)的圖形畫在下方直角坐標中。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_001_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|1|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "1",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題1",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "f7227fd7bc628e1146e3feb081745a420561be3be9a8ae62b5a590e0d5a2ae47"
+   },
+   "anchor": "4-4習題 基礎題 1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 14
+  }
+ },
+ {
+  "id": 12212,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 2",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "關於對數函數\\(y=f\\left ( { x } \\right )=log_{ a } x\\)，\\(a>0\\)、\\(a\\ne 1\\)、\\(x>0\\)，其圖形的性質：\n(1) 只分布在哪兩個象限？ 、 。\n(2) 圖形必通過點 ，垂直方向的漸近線為 。\n(3) 當\\(a>1\\)時，\\(y=f\\left ( { x } \\right )=log_{ a } x\\)為 函數。（填入遞增或遞減）\n(4) 當\\(0 < a < 1\\)時，\\(y=f\\left ( { x } \\right )=log_{ a } x\\)為 函數。（填入遞增或遞減）\n(5) \\(y=log_{ a } x\\)的圖形與\\(y=log_{ \\frac { 1 } { a } } x\\)的圖形對稱於 。\n(6) 函數\\(y=log_{ a } x\\)的圖形與函數\\(y=a ^ { x }\\)的圖形對稱於直線 。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_002_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|2|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "2",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題2",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "256cd8bed13f75682375650897a8dfbe857437b17ee6f9f9457cb1bdac02567b"
+   },
+   "anchor": "4-4習題 基礎題 2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 15
+  }
+ },
+ {
+  "id": 12213,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 3",
+  "para": "對數函數的圖形",
+  "ptype": "textbook_exercise",
+  "q": "試比較下列各數之大小：\n(1) \\(a=log_{ 2 } 4\\)，\\(b=log_{ 2 } \\pi\\)，\\(c=log_{ 2 } 3\\)\n(2) \\(a=log_{ 0.3 } \\frac { 4 } { 5 }\\)，\\(b=log_{ 0.3 } \\frac { 5 } { 6 }\\)，\\(c=log_{ 0.3 } \\frac { 3 } { 4 }\\)\n(3) \\(a=log_{ \\frac { 1 } { 2 } } \\frac { 1 } { 2 }\\)，\\(b=log_{ \\frac { 1 } { 2 } } \\frac { 1 } { 3 }\\)，\\(c=log_{ \\frac { 1 } { 2 } } \\frac { 1 } { 4 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_003_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|3|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "3",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題3",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "17728366f415244931a7f34bcaa2d080e9865fd2d91af7d15c75b53d4b2b3c6e"
+   },
+   "anchor": "4-4習題 基礎題 3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 16
+  }
+ },
+ {
+  "id": 12214,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 4",
+  "para": "對數方程式",
+  "ptype": "textbook_exercise",
+  "q": "解方程式\\(log_{ 2 } \\left ( { x+1 } \\right )=3\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_004_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|4|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "4",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題4",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "bc50590f73e572f884dfecb58e32438caef3c6518ec5c986603fea9580e861c2"
+   },
+   "anchor": "4-4習題 基礎題 4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 17
+  }
+ },
+ {
+  "id": 12215,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 5",
+  "para": "對數方程式",
+  "ptype": "textbook_exercise",
+  "q": "解方程式\\(log_{ 2 } \\left ( { x ^ { 2 } +4x } \\right )=log_{ 2 } 32\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_005_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|5|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "5",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題5",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "afc4d7d55f14e9d1ffc53a3904582e988c816a95d8b9258fe526d7aa0903916f"
+   },
+   "anchor": "4-4習題 基礎題 5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 18
+  }
+ },
+ {
+  "id": 12216,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 6",
+  "para": "對數方程式",
+  "ptype": "textbook_exercise",
+  "q": "設\\(a>0\\)且\\(a\\ne 1\\)，若\\(log_{ a } 5+log_{ a } 25=3\\)，試求a之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_006_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|6|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "6",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題6",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "ddefd43aac15da13a25b3aea5ecd56e311e586026f24f19044959fb620615654"
+   },
+   "anchor": "4-4習題 基礎題 6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 19
+  }
+ },
+ {
+  "id": 12217,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 7",
+  "para": "對數方程式",
+  "ptype": "textbook_exercise",
+  "q": "試求方程式\\(log_{ 2 } \\left ( { x-2 } \\right )+log_{ 2 } \\left ( { x-3 } \\right )=1\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_007_020",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|7|20",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "7",
+    "source_order": 20,
+    "block_index": 19,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題7",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "1040d13d06a8b5e37ba3beccbe6e6585d3e800402e9d7dfe43258d69e2386539"
+   },
+   "anchor": "4-4習題 基礎題 7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 20
+  }
+ },
+ {
+  "id": 12218,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 基礎題 8",
+  "para": "對數方程式",
+  "ptype": "textbook_exercise",
+  "q": "試求方程式\\(log_{ 5 } \\left ( { x+3 } \\right )+log_{ 5 } \\left ( { x-4 } \\right )=log_{ 5 } 30\\)之解。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_exercise_008_021",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|exercise|8|21",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "exercise",
+    "question_number": "8",
+    "source_order": 21,
+    "block_index": 20,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 基礎題8",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "2101d9745a9e969ded193730d0956dad8d784a8f87190bd1094ad5e00b1c2f7c"
+   },
+   "anchor": "4-4習題 基礎題 8",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 21
+  }
+ },
+ {
+  "id": 12219,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 進階題 9",
+  "para": "對數函數的圖形",
+  "ptype": "advanced_exercise",
+  "q": "試比較下列各數之大小：\\(a=2log_{ 2 } 3\\)，\\(b=3log_{ 4 } 3\\)，\\(c=3\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_advanced_exercise_009_022",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|advanced_exercise|9|22",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "advanced_exercise",
+    "question_number": "9",
+    "source_order": 22,
+    "block_index": 21,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 進階題9",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "816e150939bd75d0397db080c40bc839060121ecfd4aeea0c6d34fa3b9f1247f"
+   },
+   "anchor": "4-4習題 進階題 9",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 22
+  }
+ },
+ {
+  "id": 12220,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "4-4習題 進階題 10",
+  "para": "對數方程式",
+  "ptype": "advanced_exercise",
+  "q": "若曲線\\(y=log_{ a } \\left ( { x-2 } \\right )\\)通過\\(A\\left ( { 5,\\ 1 } \\right )\\)、\\(B\\left ( { b,\\ 3 } \\right )\\)兩點，試求\\(a+b\\)之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_advanced_exercise_010_023",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|advanced_exercise|10|23",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "advanced_exercise",
+    "question_number": "10",
+    "source_order": 23,
+    "block_index": 22,
+    "occurrence_index": 1,
+    "question_label": "4-4習題 進階題10",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "2026ec3e1696ffdb9fd0223fac57ed1e03e95b762133144a2d29f41f905f0d3f"
+   },
+   "anchor": "4-4習題 進階題 10",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_4_1",
+    "vh_數學B3_SubSection_4_4_2"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": "outline_vocational_數學B3_44",
+   "skill_assignment_status": "section_candidate_pending",
+   "source_order": 23
+  }
+ },
+ {
+  "id": 12221,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例1",
+  "para": "常用對數表的使用",
+  "ptype": "textbook_example",
+  "q": "試利用對數表查出下列對數的近似值：\n(1)\\(log3.8\\) (2)\\(log4.87\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "例1",
+    "source_type": "textbook_example",
+    "text_fingerprint": "6cabcfe75c0c9054ddce5cc043722254ee78dbac2f833df91b6507cb2d44c3c9"
+   },
+   "anchor": "例1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 1
+  }
+ },
+ {
+  "id": 12222,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習1",
+  "para": "常用對數表的使用",
+  "ptype": "in_class_practice",
+  "q": "試利用對數表查出下列對數的近似值：\n(1)\\(log5.4\\) (2)\\(log6.05\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_001_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|1|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "1",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習1",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "675ca02e9803133a8ae5aa91f4cf8df293c140563265950b37ac38edcf67794d"
+   },
+   "anchor": "隨堂練習1",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 2
+  }
+ },
+ {
+  "id": 12223,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例2",
+  "para": "常用對數表的使用",
+  "ptype": "textbook_example",
+  "q": "試利用對數表查出下列對數的近似值：\n(1)\\(log1.534\\) (2)\\(log7.245\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_002_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|2|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "2",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "例2",
+    "source_type": "textbook_example",
+    "text_fingerprint": "9d76be474263ccecda47885e9ffe61bf937f86b131182e80e283162180083921"
+   },
+   "anchor": "例2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 3
+  }
+ },
+ {
+  "id": 12224,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習2",
+  "para": "常用對數表的使用",
+  "ptype": "in_class_practice",
+  "q": "試利用對數表查出下列對數的近似值：\n(1)\\(log3.246\\) (2)\\(log8.378\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_002_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|2|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "2",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習2",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "3530e5000ca638c8f567c970545d244a922ba05aa182a280653981109635a4bc"
+   },
+   "anchor": "隨堂練習2",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 4
+  }
+ },
+ {
+  "id": 12225,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例3",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "設\\(logx\\approx 3.3655\\)，試求：\n(1)\\(logx\\)之首數與尾數。\n(2) x之整數部分為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_003_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|3|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "3",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "例3",
+    "source_type": "textbook_example",
+    "text_fingerprint": "ecd115c1b66dcda4907b875007b3c9df7d893c2abe20142d69b98bc1a0f805b0"
+   },
+   "anchor": "例3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 5
+  }
+ },
+ {
+  "id": 12226,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習3",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "設\\(logy=6.5999\\)，試求：\n(1)\\(logy\\)之首數與尾數。\n(2) y之整數部分為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_003_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|3|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "3",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習3",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "0eab07d435e677db1bcbb12909a82552edd213d15714acf84112c710458ae9b5"
+   },
+   "anchor": "隨堂練習3",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 6
+  }
+ },
+ {
+  "id": 12227,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例4",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "設\\(logx\\approx -3.3010\\)，試求：\n(1)\\(logx\\)之首數與尾數。\n(2) x自小數點後第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_004_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|4|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "4",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "例4",
+    "source_type": "textbook_example",
+    "text_fingerprint": "e9054deb66b65bb7a3bdb52b53f1d437ca5b3678d571289226f4cd77bab353ca"
+   },
+   "anchor": "例4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 7
+  }
+ },
+ {
+  "id": 12228,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習4",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "設\\(logy\\approx -2.7723\\)，試求：\n(1)\\(logy\\)之首數與尾數。\n(2) y自小數點後第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_004_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|4|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "4",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習4",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "5c8de0b900b4581f98562c9894e77c21f6b1807fada9eb09afcf3e6400b7f33a"
+   },
+   "anchor": "隨堂練習4",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 8
+  }
+ },
+ {
+  "id": 12229,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例5",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "已知\\(log2.95\\approx 0.4698\\)，\n(1)試求\\(log2950\\)之值。\n(2)若\\(logx\\approx 2.4698\\)，試求x之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_005_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|5|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "5",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "例5",
+    "source_type": "textbook_example",
+    "text_fingerprint": "878016b3f1437da9a59349106e32dffaf673a4b6c7a7371b75d73a8bbc5ad39f"
+   },
+   "anchor": "例5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 9
+  }
+ },
+ {
+  "id": 12230,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習5",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "已知\\(log3.88\\approx 0.5888\\)，\n(1)試求\\(log38800\\)之值。\n(2)若\\(logx\\approx 3.5888\\)，試求x之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_005_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|5|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "5",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習5",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "f85faa4aec34436dcb60290fac9720c4b480ce7231f708d545ca3b5b12ac96c3"
+   },
+   "anchor": "隨堂練習5",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 10
+  }
+ },
+ {
+  "id": 12231,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例6",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "已知\\(log2\\approx 0.3010\\)，則\\(2 ^ { 100 }\\)為幾位數？",
+  "a": "",
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_006_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|6|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "6",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "例6",
+    "source_type": "textbook_example",
+    "text_fingerprint": "dd3ab830c534173301038950100bace88342670fe33266e240ef51b4d9fddbee"
+   },
+   "anchor": "例6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 11
+  }
+ },
+ {
+  "id": 12232,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習6",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "已知\\(log2\\approx 0.3010\\)，\\(log3\\approx 0.4771\\)，則\\(3 ^ { 30 }\\)為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_006_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|6|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "6",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習6",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "c8ca2dd9854d4464941c62bd409daefb2393146ba792951220c6515db1235cca"
+   },
+   "anchor": "隨堂練習6",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 12
+  }
+ },
+ {
+  "id": 12233,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例7",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "將\\(\\left ( { \\frac { 2 } { 3 } } \\right ) ^ { 100 }\\)化為小數，則在小數點後面第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_007_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|7|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "7",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "例7",
+    "source_type": "textbook_example",
+    "text_fingerprint": "5a2b3918ff896d19400fc35c4b79f319045856942b52a549ed7916ec90e3c29d"
+   },
+   "anchor": "例7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 13
+  }
+ },
+ {
+  "id": 12234,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習7",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "將\\(\\left ( { \\frac { 1 } { 3 } } \\right ) ^ { 20 }\\)化為小數，則在小數點後面第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_007_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|7|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "7",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習7",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "dbf4cf8745224f43556f05310daa579d4225607f2d2f71e23c1471eefd1c5ce7"
+   },
+   "anchor": "隨堂練習7",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 14
+  }
+ },
+ {
+  "id": 12235,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "例8",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_example",
+  "q": "爸爸以80萬元購買一輛中古汽車，若汽車的價值以每年20%折舊，則該汽車的價值最短幾年之後會下跌到低於30萬元？（\\(log0.8\\approx -0.0969\\)、\\(log3\\approx 0.4771\\)、\\(log8\\approx 0.9031\\)）",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_example_008_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|example|8|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "example",
+    "question_number": "8",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "例8",
+    "source_type": "textbook_example",
+    "text_fingerprint": "d0087cbb781d32bbfd280c2ba87447198ae1be6d7345e3b4827edf952a450c99"
+   },
+   "anchor": "例8",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 15
+  }
+ },
+ {
+  "id": 12236,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "隨堂練習8",
+  "para": "首數、尾數及其應用",
+  "ptype": "in_class_practice",
+  "q": "一支智慧型手機價值2萬元，每月折舊率為5%，試問最快幾個月後，它的價值會少於1萬元？（\\(log2\\approx 0.3010\\)，\\(log0.95\\approx -0.0223\\)）",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_in_class_practice_008_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|in_class_practice|8|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "in_class_practice",
+    "question_number": "8",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "隨堂練習8",
+    "source_type": "in_class_practice",
+    "text_fingerprint": "8b77533a4849da1a802161e67dd1ceb02555195a47e473c249782c6f3e8ba267"
+   },
+   "anchor": "隨堂練習8",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 16
+  }
+ },
+ {
+  "id": 12237,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "113統測B",
+  "para": "首數、尾數及其應用",
+  "ptype": "exam_practice",
+  "q": "小倩在一家營運穩定的公司上班。若小倩的起薪為每個月4萬元，且每年會調薪2%，即一年後為\\(40000\\times 1.02\\)元，兩年後為\\(40000\\times \\left ( { 1.02 } \\right ) ^ { 2 }\\)元，以此類推。試問幾年後小倩的月薪最接近8萬元？（\\(log_{ 10 } 2\\approx 0.3010\\)，\\(log_{ 10 } 1.02\\approx 0.0086\\)）\n(A) 29\n(B) 31\n(C) 33\n(D) 35 〔113統測B〕",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exam_113b_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exam|113B|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exam",
+    "question_number": "113B",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "113統測B",
+    "source_type": "exam_practice",
+    "text_fingerprint": "5c90bac247038dc414a90db4c6c05ab78b5bb51e539e7f697c47cd0d37c29a84"
+   },
+   "anchor": "113統測B",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "structurally_bound",
+   "source_order": 17
+  }
+ },
+ {
+  "id": 12238,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 1",
+  "para": "常用對數表的使用",
+  "ptype": "textbook_exercise",
+  "q": "試利用對數表查出下列對數的近似值：\n(1)\\(log4.58\\) (2)\\(log6.023\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_001_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|1|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "1",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題1",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "d78fa2f995487af905d4300b995d186f0eaea81989407162e149f702f6f01d55"
+   },
+   "anchor": "4-5習題 基礎題 1",
+   "binding_reason": "題幹要求查常用對數表",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 18
+  }
+ },
+ {
+  "id": 12239,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 2",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "設\\(logx\\approx 2.5888\\)，試求：\n(1) \\(logx\\)之首數與尾數。\n(2) x之整數部分為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_002_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|2|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "2",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題2",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "45ecdfa8afea5af9156367f13a489847acaca224d02e0c3e2b1af0f53d098c55"
+   },
+   "anchor": "4-5習題 基礎題 2",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 19
+  }
+ },
+ {
+  "id": 12240,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 3",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "設\\(logy\\approx -5.3838\\)，試求：\n(1) \\(logy\\)之首數與尾數。\n(2) y自小數點後第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_003_020",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|3|20",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "3",
+    "source_order": 20,
+    "block_index": 19,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題3",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "cf5a40feb4ae3c1010609766ae8c27f2b74dfbbd7c2dad5d6a3e96e0ad98ad4d"
+   },
+   "anchor": "4-5習題 基礎題 3",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 20
+  }
+ },
+ {
+  "id": 12241,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 4",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "在下列空格填入正確答案：\n(1) 若\\(x>1\\)，且\\(logx=n+\\alpha\\)，其中n為首數，\\(\\alpha\\)為尾數，則x之整數部分為\n 位數。\n(2) 若\\(0 < x < 1\\)，且\\(logx=-n+\\alpha\\)，其中\\(-n\\)為首數，\\(\\alpha\\)為尾數，則x自小數點後第 位開始出現不為0的數字。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_004_021",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|4|21",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "4",
+    "source_order": 21,
+    "block_index": 20,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題4",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "8697fe7e8684fb49dc411004aceb688b8591c9b14410538258a91f33af587ede"
+   },
+   "anchor": "4-5習題 基礎題 4",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 21
+  }
+ },
+ {
+  "id": 12242,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 5",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "已知\\(log2950\\approx 3.4698\\)，\n(1) 試求\\(log2.95\\)之值。\n(2) 若\\(logM\\approx 4.4698\\)，試求M之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_005_022",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|5|22",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "5",
+    "source_order": 22,
+    "block_index": 21,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題5",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "cd3dc954c106aa781a3936d88a7d5aee08e18a079089bdcb45cce16fee809972"
+   },
+   "anchor": "4-5習題 基礎題 5",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 22
+  }
+ },
+ {
+  "id": 12243,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 6",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "已知\\(log2\\approx 0.3010\\)，\\(log3\\approx 0.4771\\)，則\\(6 ^ { 100 }\\)為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_006_023",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|6|23",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "6",
+    "source_order": 23,
+    "block_index": 22,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題6",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "7777482af122f0f457ee873fd4737ca5b6709f429c7a386174b22d556bfaed54"
+   },
+   "anchor": "4-5習題 基礎題 6",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 23
+  }
+ },
+ {
+  "id": 12244,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 7",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "已知\\(log2\\approx 0.3010\\)，\\(log3\\approx 0.4771\\)，則\\(12 ^ { 10 }\\)為幾位數？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_007_024",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|7|24",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "7",
+    "source_order": 24,
+    "block_index": 23,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題7",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "503fa99e617598b26db57091262ff7d6cbc431b899b36a31815f6f6e6ec68f17"
+   },
+   "anchor": "4-5習題 基礎題 7",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 24
+  }
+ },
+ {
+  "id": 12245,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 基礎題 8",
+  "para": "首數、尾數及其應用",
+  "ptype": "textbook_exercise",
+  "q": "已知\\(log2\\approx 0.3010\\)，若將\\(\\left ( { \\frac { 1 } { 2 } } \\right ) ^ { 50 }\\)化為小數，則在小數點後面第幾位開始出現不為0的數字？",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_exercise_008_025",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|exercise|8|25",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "exercise",
+    "question_number": "8",
+    "source_order": 25,
+    "block_index": 24,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 基礎題8",
+    "source_type": "textbook_exercise",
+    "text_fingerprint": "abde5040781acd5634ccf824255552027bf08ee85168446d535cd872017bb3b8"
+   },
+   "anchor": "4-5習題 基礎題 8",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 25
+  }
+ },
+ {
+  "id": 12246,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 進階題 9",
+  "para": "首數、尾數及其應用",
+  "ptype": "advanced_exercise",
+  "q": "已知\\(log2950\\approx 3.4698\\)，若\\(logN=-2.5302\\)，試求N之值。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_advanced_exercise_009_026",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|advanced_exercise|9|26",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "advanced_exercise",
+    "question_number": "9",
+    "source_order": 26,
+    "block_index": 25,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 進階題9",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "e81ad2361114f35db014923c0aa941f78534c246b7ff3261ba7679e473eeb313"
+   },
+   "anchor": "4-5習題 進階題 9",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 26
+  }
+ },
+ {
+  "id": 12247,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "4-5習題 進階題 10",
+  "para": "首數、尾數及其應用",
+  "ptype": "advanced_exercise",
+  "q": "媽媽把10萬元存入銀行，銀行的存款年利率為10%，規定一年一期複利計算，試問幾年後，媽媽在銀行存款的本利和會超過30萬元？\n（已知\\(log3\\approx 0.4771\\)，\\(log1.1\\approx 0.0414\\)）",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_advanced_exercise_010_027",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|advanced_exercise|10|27",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "advanced_exercise",
+    "question_number": "10",
+    "source_order": 27,
+    "block_index": 26,
+    "occurrence_index": 1,
+    "question_label": "4-5習題 進階題10",
+    "source_type": "advanced_exercise",
+    "text_fingerprint": "2684f51b632290584a5c87073abf71178e4a6892dc3997c2bda2ef6051ebca2c"
+   },
+   "anchor": "4-5習題 進階題 10",
+   "binding_reason": "題幹要求首數、尾數或由此估算位數與時間",
+   "candidate_skill_ids": [
+    "vh_數學B3_SubSection_4_5_1",
+    "vh_數學B3_SubSection_4_5_2",
+    "vh_數學B3_SubSection_4_5_3"
+   ],
+   "needs_skill_resolution": false,
+   "section_outline_skill_id": null,
+   "skill_assignment_status": "deterministic_content_classification",
+   "source_order": 27
+  }
+ },
+ {
+  "id": 12248,
+  "skill": "SubSection_4_1_1",
+  "sec": "4-1 指數",
+  "desc": "CH4自我評量 題1",
+  "para": "正整數指數與指數律",
+  "ptype": "self_assessment",
+  "q": "若\\(a=3 ^ { 7 } \\times 5 ^ { 3 }\\)，\\(b=3 ^ { 4 } \\times 5 ^ { 7 }\\)，則\\(a\\times b\\)的值為何？ (A)\\(15 ^ { 10 }\\) (B)\\(3\\times 15 ^ { 10 }\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_self_assessment_001_001",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|self_assessment|1|1",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "self_assessment",
+    "question_number": "1",
+    "source_order": 1,
+    "block_index": 0,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題1",
+    "source_type": "self_assessment",
+    "text_fingerprint": "e76bd1059142860000edf079fc0f04549c0f264fb165bed3144e3a6471b9a37b"
+   }
+  }
+ },
+ {
+  "id": 12249,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "CH4自我評量 題10",
+  "para": "指數函數的圖形",
+  "ptype": "self_assessment",
+  "q": "設\\(a=\\sqrt[3] { 3 ^ { 2 } }\\)、\\(b=3 ^ { \\frac { 3 } { 4 } }\\)、\\(c=\\sqrt[5] { 81 }\\)，則a、b、c之大小關係為",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_self_assessment_010_010",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|self_assessment|10|10",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "self_assessment",
+    "question_number": "10",
+    "source_order": 10,
+    "block_index": 9,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題10",
+    "source_type": "self_assessment",
+    "text_fingerprint": "951cbaa9e98a9729e08fe5e23dcce7647e9d20640bb68b387b4a1ee139dbf808"
+   }
+  }
+ },
+ {
+  "id": 12250,
+  "skill": "SubSection_4_3_1",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題11",
+  "para": "對數的意義",
+  "ptype": "self_assessment",
+  "q": "判斷下列何者有意義？ (A)\\(log_{ 0.1 } 5\\) (B)\\(log_{ 1 } 3\\) (C)\\(log_{ -2 } 8\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_011_011",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|11|11",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "11",
+    "source_order": 11,
+    "block_index": 10,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題11",
+    "source_type": "self_assessment",
+    "text_fingerprint": "965d293febd99d0be66fa59c49af5e42dc47f8cd31a8098266708e3f6ad4eccf"
+   }
+  }
+ },
+ {
+  "id": 12251,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題12",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "\\(log_{ 10 } 5+log_{ 10 } 12+log_{ 10 } 15-log_{ 10 } 9=\\) (A) 0 (B) 2 (C) 4 (D) 6。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_012_012",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|12|12",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "12",
+    "source_order": 12,
+    "block_index": 11,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題12",
+    "source_type": "self_assessment",
+    "text_fingerprint": "a7c92024542f202653797fca40c199e707119123771badbbc3a5a727f7999963"
+   }
+  }
+ },
+ {
+  "id": 12252,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題13",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "\\(\\frac { log_{ 3 } 2+log_{ 27 } 8 } { log_{ 3 } 8+log_{ 9 } 16 }=\\) (A)\\(\\frac { 2 } { 5 }\\) (B)\\(\\frac { 3 } { 5 }\\) (C)\\(\\frac { 2 } { 3 }\\) (D)\\(\\frac { 9 } { 8 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_013_013",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|13|13",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "13",
+    "source_order": 13,
+    "block_index": 12,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題13",
+    "source_type": "self_assessment",
+    "text_fingerprint": "9a2faeeb0e72521440be81bd072da8bb51c5a8fe2e30cb39fc84e11263fafffd"
+   }
+  }
+ },
+ {
+  "id": 12253,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題14",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "\\(log_{ \\frac { 1 } { 5 } } \\sqrt[] { 125 }-log_{ 9 } \\sqrt[] { 27 }=\\) (A)\\(\\frac { 9 } { 2 }\\) (B)\\(\\frac { 3 } { 4 }\\) (C)\\(-\\frac { 3 } { 4 }\\) (D)\\(-\\frac { 9 } { 4 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_014_014",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|14|14",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "14",
+    "source_order": 14,
+    "block_index": 13,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題14",
+    "source_type": "self_assessment",
+    "text_fingerprint": "540c55ad3c667b78e82e510bd04a58bc37d4ec2c056062fdaf61fde7e3419771"
+   }
+  }
+ },
+ {
+  "id": 12254,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題15",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "\\(log_{ 2 } 5\\times log_{ 5 } 9\\times log_{ 3 } 7\\times log_{ 7 } 8=\\) (A) 5 (B) 6 (C) 7 (D) 8。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_015_015",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|15|15",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "15",
+    "source_order": 15,
+    "block_index": 14,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題15",
+    "source_type": "self_assessment",
+    "text_fingerprint": "a93dbf1d035c8d8bb42f681c285d98bc6163b28e595e037292d1fbd07b31c5b5"
+   }
+  }
+ },
+ {
+  "id": 12255,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題16",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "若\\(log_{ 9 } a=\\frac { 1 } { 2 }\\)，則\\(log_{ 2 } \\left ( { \\frac { a } { 3 } } \\right )=\\) (A) 3 (B) 2 (C) 1 (D) 0。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_016_016",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|16|16",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "16",
+    "source_order": 16,
+    "block_index": 15,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題16",
+    "source_type": "self_assessment",
+    "text_fingerprint": "45205fbdc26501dc51c9109ea4519be9aef89afd51a78a8d3fecf264dd794fbb"
+   }
+  }
+ },
+ {
+  "id": 12256,
+  "skill": "SubSection_4_3_2",
+  "sec": "4-3 對數",
+  "desc": "CH4自我評量 題17",
+  "para": "對數的性質",
+  "ptype": "self_assessment",
+  "q": "若\\(log_{ 10 } 2=a\\)，\\(log_{ 10 } 3=b\\)，則\\(log_{ 10 } 15\\)等於下列何者？ (A)\\(1+a+b\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-3_self_assessment_017_017",
+    "anchor_key": "vocational|longteng|math_B3|4|4-3|self_assessment|17|17",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-3",
+    "question_type": "self_assessment",
+    "question_number": "17",
+    "source_order": 17,
+    "block_index": 16,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題17",
+    "source_type": "self_assessment",
+    "text_fingerprint": "96d44db776615de827da7d7400ca840f4ac7c4bd58deb108e3eb89d8173d38c8"
+   }
+  }
+ },
+ {
+  "id": 12257,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "CH4自我評量 題18",
+  "para": "對數函數的圖形",
+  "ptype": "self_assessment",
+  "q": "下列何者不正確？ (A)\\(y=log_{ \\frac { 1 } { 2 } } x\\)之圖形為遞增函數 (B)\\(y=2 ^ { x }\\)之圖形為遞增函數 (C)\\(y=\\left ( { \\frac { 1 } { 3 } } \\right ) ^ { x }\\)之圖形與x軸不相交 (D)\\(y=log_{ 3 } x\\)之圖形與y軸不相交。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_self_assessment_018_018",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|self_assessment|18|18",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "self_assessment",
+    "question_number": "18",
+    "source_order": 18,
+    "block_index": 17,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題18",
+    "source_type": "self_assessment",
+    "text_fingerprint": "63c8027758faee428dddb67cf6bd5414f9254a6fb61123cd2cf18e582b59f470"
+   }
+  }
+ },
+ {
+  "id": 12258,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "CH4自我評量 題2",
+  "para": "有理數指數",
+  "ptype": "self_assessment",
+  "q": "\\(\\frac { 3 ^ { \\frac { 4 } { 3 } } \\times 3 ^ { \\frac { 7 } { 3 } } } { 3 ^ { \\frac { 2 } { 3 } } }=\\) (A) 3 (B) 9 (C) 12 (D) 27。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_self_assessment_002_002",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|self_assessment|2|2",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "self_assessment",
+    "question_number": "2",
+    "source_order": 2,
+    "block_index": 1,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題2",
+    "source_type": "self_assessment",
+    "text_fingerprint": "647ca2ed1a60b298fe11cb38fa0e81d42a7a0e7dbe4cec2d2d4883a880046649"
+   }
+  }
+ },
+ {
+  "id": 12259,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "CH4自我評量 題3",
+  "para": "有理數指數",
+  "ptype": "self_assessment",
+  "q": "\\(8 ^ { \\frac { 2 } { 3 } } +\\left ( { \\frac { 243 } { 32 } } \\right ) ^ { \\frac { 1 } { 5 } } =\\) (A)\\(\\frac { 9 } { 2 }\\) (B)\\(\\frac { 11 } { 2 }\\) (C)\\(\\frac { 13 } { 2 }\\) (D) 5。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_self_assessment_003_003",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|self_assessment|3|3",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "self_assessment",
+    "question_number": "3",
+    "source_order": 3,
+    "block_index": 2,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題3",
+    "source_type": "self_assessment",
+    "text_fingerprint": "e68ccdd7c74a09b37925a6954e4ac1ca137edacae9371c227dcc6907e3a7d9ad"
+   }
+  }
+ },
+ {
+  "id": 12260,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "CH4自我評量 題4",
+  "para": "有理數指數",
+  "ptype": "self_assessment",
+  "q": "已知a、b為實數，若\\(2 ^ { a } =\\sqrt[] { 32 }\\)且\\(3 ^ { b } =\\frac { 1 } { \\sqrt[] { 27 } }\\)，則\\(a+b=\\) (A) −2",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_self_assessment_004_004",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|self_assessment|4|4",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "self_assessment",
+    "question_number": "4",
+    "source_order": 4,
+    "block_index": 3,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題4",
+    "source_type": "self_assessment",
+    "text_fingerprint": "33da9f68101a282eb71e76634d19c5d16a70634dfbcee58b680e7a0424d16594"
+   }
+  }
+ },
+ {
+  "id": 12261,
+  "skill": "SubSection_4_4_1",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "CH4自我評量 題19",
+  "para": "對數函數的圖形",
+  "ptype": "self_assessment",
+  "q": "若\\(a=2\\)、\\(b=log_{ 4 } 81\\)、\\(c=log_{ 4 } 27\\)，則下列何者正確？ (A)\\(c < a < b\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_self_assessment_019_019",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|self_assessment|19|19",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "self_assessment",
+    "question_number": "19",
+    "source_order": 19,
+    "block_index": 18,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題19",
+    "source_type": "self_assessment",
+    "text_fingerprint": "ccf6927420b52161618627d6aeaacd7d61026031101c3a43cca8355c33653427"
+   }
+  }
+ },
+ {
+  "id": 12262,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "CH4自我評量 題20",
+  "para": "對數方程式",
+  "ptype": "self_assessment",
+  "q": "方程式\\(log_{ 5 } \\left ( { x+10 } \\right )=2\\)之解為 (A)\\(x=5\\) (B)\\(x=10\\) (C)\\(x=15\\)",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_self_assessment_020_020",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|self_assessment|20|20",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "self_assessment",
+    "question_number": "20",
+    "source_order": 20,
+    "block_index": 19,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題20",
+    "source_type": "self_assessment",
+    "text_fingerprint": "7ab0e6bd455236c85c8a60e2f89e914f0706d6425612a721ea3317fea9fd65ca"
+   }
+  }
+ },
+ {
+  "id": 12263,
+  "skill": "SubSection_4_4_2",
+  "sec": "4-4 對數函數及其圖形",
+  "desc": "CH4自我評量 題21",
+  "para": "對數方程式",
+  "ptype": "self_assessment",
+  "q": "對數方程式\\(log_{ 2 } \\left ( { x-5 } \\right )+log_{ 2 } \\left ( { x+2 } \\right )=3\\)，則\\(x=\\) (A) 0 (B) 2",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-4_self_assessment_021_021",
+    "anchor_key": "vocational|longteng|math_B3|4|4-4|self_assessment|21|21",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-4",
+    "question_type": "self_assessment",
+    "question_number": "21",
+    "source_order": 21,
+    "block_index": 20,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題21",
+    "source_type": "self_assessment",
+    "text_fingerprint": "18269cbec7653ec2ca54632d981366e22739802bba0e7dd852ffc25dba7c7308"
+   }
+  }
+ },
+ {
+  "id": 12264,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "CH4自我評量 題22",
+  "para": "首數、尾數及其應用",
+  "ptype": "self_assessment",
+  "q": "若\\(loga=-2.0282\\)，則\\(loga\\)之首數為 (A) 1 (B) 0 (C) −2",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_self_assessment_022_022",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|self_assessment|22|22",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "self_assessment",
+    "question_number": "22",
+    "source_order": 22,
+    "block_index": 21,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題22",
+    "source_type": "self_assessment",
+    "text_fingerprint": "d8ad586825db126ca8d5bc4370df47b52454093c853f95eecd7a3cb857a454ee"
+   }
+  }
+ },
+ {
+  "id": 12265,
+  "skill": "SubSection_4_5_1",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "CH4自我評量 題23",
+  "para": "常用對數表的使用",
+  "ptype": "self_assessment",
+  "q": "若\\(log_{ 10 } 3\\approx 0.4771\\)、\\(log_{ 10 } 5\\approx 0.6990\\)，則\\(log_{ 10 } 375\\)之近似值為",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_self_assessment_023_023",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|self_assessment|23|23",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "self_assessment",
+    "question_number": "23",
+    "source_order": 23,
+    "block_index": 22,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題23",
+    "source_type": "self_assessment",
+    "text_fingerprint": "42d4421891ec6d0581cb65218408d4195cd6e7803ce6a66be57e5c8ac47d3611"
+   }
+  }
+ },
+ {
+  "id": 12266,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "CH4自我評量 題24",
+  "para": "首數、尾數及其應用",
+  "ptype": "self_assessment",
+  "q": "已知\\(log2\\)約等於0.3010。若\\(a=2 ^ { 60 }\\)，則a為幾位數？ (A) 18",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_self_assessment_024_024",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|self_assessment|24|24",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "self_assessment",
+    "question_number": "24",
+    "source_order": 24,
+    "block_index": 23,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題24",
+    "source_type": "self_assessment",
+    "text_fingerprint": "e3b76fac8d06638b60912e36a728c5cee770deffb4ba6b10626fb512c11e239a"
+   }
+  }
+ },
+ {
+  "id": 12267,
+  "skill": "SubSection_4_5_3",
+  "sec": "4-5 常用對數及其應用",
+  "desc": "CH4自我評量 題25",
+  "para": "首數、尾數及其應用",
+  "ptype": "self_assessment",
+  "q": "一輛汽車的折舊率為22%，已知它目前的價值為25萬元，則該汽車的價值最快幾年之後會低於10萬元？ (A) 3 (B) 4 (C) 5 (D) 6。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-5_self_assessment_025_025",
+    "anchor_key": "vocational|longteng|math_B3|4|4-5|self_assessment|25|25",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-5",
+    "question_type": "self_assessment",
+    "question_number": "25",
+    "source_order": 25,
+    "block_index": 24,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題25",
+    "source_type": "self_assessment",
+    "text_fingerprint": "7463dae885e46fb9526fd5a4a955e8421d17723a6f3b9172e11ccc14a2286b00"
+   }
+  }
+ },
+ {
+  "id": 12268,
+  "skill": "SubSection_4_1_3",
+  "sec": "4-1 指數",
+  "desc": "CH4自我評量 題5",
+  "para": "有理數指數",
+  "ptype": "self_assessment",
+  "q": "若\\(2 ^ { a } =\\sqrt[3] { 8\\times \\sqrt[5] { 64 } }\\)，則\\(a=\\) (A)\\(\\frac { 21 } { 5 }\\) (B)\\(\\frac { 7 } { 15 }\\) (C)\\(\\frac { 7 } { 5 }\\) (D)\\(\\frac { 5 } { 7 }\\)。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-1_self_assessment_005_005",
+    "anchor_key": "vocational|longteng|math_B3|4|4-1|self_assessment|5|5",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-1",
+    "question_type": "self_assessment",
+    "question_number": "5",
+    "source_order": 5,
+    "block_index": 4,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題5",
+    "source_type": "self_assessment",
+    "text_fingerprint": "2f4de2fcc428da833ee98e0c8d49a7ce0cc72eef6070b536a55e3c92016a9ea1"
+   }
+  }
+ },
+ {
+  "id": 12269,
+  "skill": "SubSection_4_2_1",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "CH4自我評量 題6",
+  "para": "指數函數的圖形",
+  "ptype": "self_assessment",
+  "q": "設\\(f\\left ( { x } \\right )=2 ^ { x }\\)，\\(g\\left ( { x } \\right )=\\left ( { \\frac { 1 } { 2 } } \\right ) ^ { x }\\)，如圖所示，",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_self_assessment_006_006",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|self_assessment|6|6",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "self_assessment",
+    "question_number": "6",
+    "source_order": 6,
+    "block_index": 5,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題6",
+    "source_type": "self_assessment",
+    "text_fingerprint": "1d19dde1f2ac76815cf50c5fe19e61c1c0d3b3d953f197fdc28f92cc3d4c07f0"
+   }
+  }
+ },
+ {
+  "id": 12270,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "CH4自我評量 題7",
+  "para": "指數方程式",
+  "ptype": "self_assessment",
+  "q": "已知\\(5 ^ { x } =4\\)，則\\(125 ^ { x }\\)之值為何？ (A) 8 (B) 16 (C) 32 (D) 64。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_self_assessment_007_007",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|self_assessment|7|7",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "self_assessment",
+    "question_number": "7",
+    "source_order": 7,
+    "block_index": 6,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題7",
+    "source_type": "self_assessment",
+    "text_fingerprint": "cfcb68a60f43f05e92f7c6d1489b399e491ca32491c3a3f2607969572352867e"
+   }
+  }
+ },
+ {
+  "id": 12271,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "CH4自我評量 題8",
+  "para": "指數方程式",
+  "ptype": "self_assessment",
+  "q": "已知\\(\\left ( { \\frac { 13 } { 17 } } \\right ) ^ { 3x-1 } =\\left ( { \\frac { 289 } { 169 } } \\right ) ^ { 2-x }\\)，則x之值為 (A) −3 (B)\\(\\frac { -1 } { 2 }\\) (C) 1",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_self_assessment_008_008",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|self_assessment|8|8",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "self_assessment",
+    "question_number": "8",
+    "source_order": 8,
+    "block_index": 7,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題8",
+    "source_type": "self_assessment",
+    "text_fingerprint": "fd2f5460993b327ec92d8f5629c5fd572c863c3ee20e03d84dc31b3f98a83543"
+   }
+  }
+ },
+ {
+  "id": 12272,
+  "skill": "SubSection_4_2_2",
+  "sec": "4-2 指數函數及其圖形",
+  "desc": "CH4自我評量 題9",
+  "para": "指數方程式",
+  "ptype": "self_assessment",
+  "q": "設方程式\\(25 ^ { x } +3\\times 5 ^ { x } -40=0\\)，則\\(x=\\) (A) 0 (B) 1 (C) 5 (D) 25。",
+  "a": null,
+  "notes": {
+   "question_anchor": {
+    "anchor_id": "vocational_math_B3_4-2_self_assessment_009_009",
+    "anchor_key": "vocational|longteng|math_B3|4|4-2|self_assessment|9|9",
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "volume": "數學B3",
+    "chapter": "4",
+    "section": "4-2",
+    "question_type": "self_assessment",
+    "question_number": "9",
+    "source_order": 9,
+    "block_index": 8,
+    "occurrence_index": 1,
+    "question_label": "CH4自我評量 題9",
+    "source_type": "self_assessment",
+    "text_fingerprint": "58924ffc1a28e13ea5fae26a54184ae18a08616e487fe4e04fe16cbfb12027b4"
+   }
+  }
+ }
+]

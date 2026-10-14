@@ -1,0 +1,947 @@
+[
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4609/generate.py",
+    "sha256": "f6339f95c931e7a0e6e9a0b6753c099d2733cb80ff9e7c6b2dda0a7c46c87cc4",
+    "size": 4712,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4609/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4609/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4609/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4609/metadata.py",
+    "sha256": "f5d8a63db3a2332ce27c9534f4dc47b036ad2a339677e8de2410f6e5426236e9",
+    "size": 1720,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4609/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4609/__pycache__/generate.cpython-314.pyc",
+    "sha256": "9cbc3233dcf077edde0e646a045c0fd560a78c36050d3b12f02c12369ceb5460",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4609/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610/generate.py",
+    "sha256": "556a90b6939d2cd0244fa2e0f1f1c4a30fc0830e42564ef2983d24f03a005881",
+    "size": 4668,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4610/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4610/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610/metadata.py",
+    "sha256": "0806f1e26621da86b5ff7186eaf63a2912ded2fb8c727189d3b801701e9677f1",
+    "size": 1700,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4610/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610/__pycache__/generate.cpython-311.pyc",
+    "sha256": "faaf606a020e36244f2deb53095e4f3d5cf0b2ba20faa35d827cbd4411942102",
+    "size": 3811,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4610/__pycache__/generate.cpython-311.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4610/__pycache__/generate.cpython-314.pyc",
+    "sha256": "a26f81c8a0a21cd8be95f072887d131cb5675b9fbb75cc08500a5f99d7448895",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4610/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4611/generate.py",
+    "sha256": "1ce74167d23a31c14a042864703ef4ed53b5b42a9430f31d4bbd0b2b92699d48",
+    "size": 4423,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4611/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4611/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4611/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4611/metadata.py",
+    "sha256": "f69f4d04615f69c6b4f9b56ed4712bbfe16c0b5f7449527410cf09a1f433a82a",
+    "size": 1665,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4611/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4611/__pycache__/generate.cpython-314.pyc",
+    "sha256": "6d56800dee6b81a68650cca87229b94e17749425261ad2da2e48790c23d65aca",
+    "size": 3985,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4611/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/generate.py",
+    "sha256": "cfbaf419ee2fb8bb51936c6d7ed4525ee28e4bf0eef31c746c051eba94f425cc",
+    "size": 4567,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/metadata.py",
+    "sha256": "0e1009263b6a18f3d0ce770214a9b60a2eb6f77a6374ca976452bf0224f39a65",
+    "size": 1627,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/__pycache__/generate.cpython-314.pyc",
+    "sha256": "fef1b549b723eefe602056a01e6cb132e88965bfbff41f21c638b1ba26a92347",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4612/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/generate.py",
+    "sha256": "fd8ca609dbb210fc6b5c183f89ae4cc151d802cc642bad31c8ed20d43f5228d0",
+    "size": 4754,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/metadata.py",
+    "sha256": "351828e2d73d3d79929a2c32c815f33d7a611a58c348ee9c23a5d44ca0186ee3",
+    "size": 1712,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/__pycache__/generate.cpython-314.pyc",
+    "sha256": "c31297a473427dd38fd680ee0ae8904f90bb2cb35141ff34a6dfa87b5c8e2850",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4613/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/generate.py",
+    "sha256": "83be4a3e6386a6bd29eaa26bcdceeecb45dc6849ee0fce211b235245a7959b1c",
+    "size": 4633,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/metadata.py",
+    "sha256": "5ddb2597c2b053ac79a2906aa5090550a58ecf7a7462f995f9c177f5aea33a13",
+    "size": 1657,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/__pycache__/generate.cpython-314.pyc",
+    "sha256": "2ad27d1112e832c9614008e5d3a449030b1d3bc85a4f8bf370385f9e0f58e63a",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4614/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/generate.py",
+    "sha256": "eaf3b37eea358c42cd9651331491bb81e41d83eaa7a6e018fc0d3229da63492f",
+    "size": 4633,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/metadata.py",
+    "sha256": "c058480a981251ada8b7b953496192586565255e91fcfde007bff62e783ed110",
+    "size": 1657,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/__pycache__/generate.cpython-314.pyc",
+    "sha256": "382146d7bbb0341a7c8f0aff42c0e2f5586ae1aa8534d580cae3032b41907017",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4615/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/generate.py",
+    "sha256": "154ea78eb69b2a2730f8bd3730f5e4209f03b435cc4df7f52350ba1587054dab",
+    "size": 4688,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/metadata.py",
+    "sha256": "677cc4b459b9ffb7121a0e192fb0b5fb1ae2570e2019c08f4455c8d5f4981c97",
+    "size": 1682,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/__pycache__/generate.cpython-314.pyc",
+    "sha256": "3961afbe8ed04f8d792d9fab22cf1046f97aea0af0d9e3df2323a4b4e9feb468",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4616/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/generate.py",
+    "sha256": "5e91c3073aba6c55496eb0e2355048803c970f6f7ebe091c4b3b4c66d48ef3ee",
+    "size": 4688,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/metadata.py",
+    "sha256": "638cc32238e8969543eb88854a31746db07b43bb9b385a793ccc9ec3e5540403",
+    "size": 1682,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/__pycache__/generate.cpython-314.pyc",
+    "sha256": "e4cba4b24f72899f25b5c01a4de4c40ae9e1673f19cf89d4a16dd50801812358",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4617/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4618/generate.py",
+    "sha256": "158251e4504900b74c2655bdd9d8de7a4cbe81e3dab10a711623efa2c36fed69",
+    "size": 4657,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4618/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4618/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4618/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4618/metadata.py",
+    "sha256": "ea8582de74e766694c919f2534ac7bb81234ed1cd282189b34d36dedc59135d3",
+    "size": 1695,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4618/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4618/__pycache__/generate.cpython-314.pyc",
+    "sha256": "5a06007a848bf3929a4a1f5948a0823ac0b28bfdc27ca37fa9ba965cf19dbc8b",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4618/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4619/generate.py",
+    "sha256": "403fd0c1c967d73e63c137e8422c262e3e5bb7906c6be4321f02adaa553d04b8",
+    "size": 4668,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4619/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4619/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4619/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4619/metadata.py",
+    "sha256": "f8b0c72a861b32e6117e6c3539e9f2cc00749979bf960babf09366b9ce2422bb",
+    "size": 1700,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4619/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4619/__pycache__/generate.cpython-314.pyc",
+    "sha256": "c0db980b80022ae7f478a6405324585b95b7ea5dcc97540562a1ceb8abd2060d",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4619/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4620/generate.py",
+    "sha256": "7ca4eb59051b78afff65dc8b424b550eecb9e6e734ca7b73a9e710f82d01669e",
+    "size": 4591,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4620/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4620/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4620/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4620/metadata.py",
+    "sha256": "d98de1e916c86080395f4d536224ca5fbb7d47a4402e2c500e301017c8198e54",
+    "size": 1665,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4620/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4620/__pycache__/generate.cpython-314.pyc",
+    "sha256": "aa3c96dd182fd5fbde14fcd9878c0947da262c72af81a7f4c6778ec54e20e88d",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4620/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4621/generate.py",
+    "sha256": "e095d9c88daba616d507d4ff7ab299d5090accc2cc514acd6beb869c782a98aa",
+    "size": 4423,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4621/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4621/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4621/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4621/metadata.py",
+    "sha256": "09d9270a3bf5213f78a6b24a3748ee1bd33a3b63ddf336f1803c2c0befd71198",
+    "size": 1665,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4621/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4621/__pycache__/generate.cpython-314.pyc",
+    "sha256": "1bb3f4b92ce45114b380a5532504c55403350f667ab8676deb012d6fb605d336",
+    "size": 3985,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4621/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/generate.py",
+    "sha256": "c136be92ed772b6b3533093dc6e1c60f9c570de2fa99bffa7f4a7b92767f8858",
+    "size": 4567,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/metadata.py",
+    "sha256": "96eb07184b603afb20b474765b4b8704d4a72bc0c798af84b20cda7345aca1ae",
+    "size": 1627,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/__pycache__/generate.cpython-311.pyc",
+    "sha256": "047a6781f9a0b37c7a023cca0ca25b78b68e615217342484395402733d29d92b",
+    "size": 3855,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/__pycache__/generate.cpython-311.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/__pycache__/generate.cpython-314.pyc",
+    "sha256": "c11c649f94ef307bd6cada74e31acf92f8d80894d00b8c88437c780f079f90e6",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4622/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/generate.py",
+    "sha256": "41613cd7a49b55e8a40f24a2b7e243764e5a34ce42f910b3ddcf1999a6c18d1c",
+    "size": 4578,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/metadata.py",
+    "sha256": "2b6078bef5ad7f2922a4099549ffbffc5801c1247fe84bf14a2fc059f69a3c37",
+    "size": 1632,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/__pycache__/generate.cpython-314.pyc",
+    "sha256": "9e15bae420c41f27cf30e7dbb5fca284b918a63607f9be8c555ab454d4b1c681",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4623/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/generate.py",
+    "sha256": "52550cff8cecc672500b3f8635ddb7400db2a008c15e1407492eaded471510ed",
+    "size": 4754,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/metadata.py",
+    "sha256": "8c1f85f5861a9fea25c700e88989c91ad40fa4df88c8b30f223756c4ff0fe074",
+    "size": 1712,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/__pycache__/generate.cpython-314.pyc",
+    "sha256": "06361244d728bdfd779739e8068906f2621d3fe1da5e9c62d3a73895dbd0ee98",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4624/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/generate.py",
+    "sha256": "28e5a1c30b8513c205b2560c47c261b4e40574302ab5e0a31dc4fb06bfa03f7f",
+    "size": 4633,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/metadata.py",
+    "sha256": "26030363ef20a6f4af4b8cbfc62bd28f5e5156be014a6f1c3caf4a9203cc3de4",
+    "size": 1657,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/__pycache__/generate.cpython-314.pyc",
+    "sha256": "fe3257e1a0b150f9630bb7e7b0287954d2c5f7de5e3a6e56d6d5a57ceb5910ec",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4625/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/generate.py",
+    "sha256": "4db70269caa1495ef004a5d109d637a203505421264543e40855cc86a2bf1ac2",
+    "size": 4688,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/metadata.py",
+    "sha256": "cb719434da5e3d7db4fd67093116d58789eee42c62846024a2ba1916e6cc85b0",
+    "size": 1682,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/__pycache__/generate.cpython-314.pyc",
+    "sha256": "d3894751be850daa2081880407d663b0b42a798de21cc7a8a85ca3f9f1a3e30c",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4626/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/generate.py",
+    "sha256": "fbd0a521260676ccb9c4a95f69b096db3f8e2da33a3ddbb34d253944e5e3a63b",
+    "size": 4721,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/metadata.py",
+    "sha256": "b7b65365ebab84e45183e629b22fc8ca5c158a69e1b981b2951e09373d46d611",
+    "size": 1697,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/__pycache__/generate.cpython-314.pyc",
+    "sha256": "02d4b57f5c9a4c0ec7d48c36d6ec8ea38d77b3911e767e99f789dd3856cc1022",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4627/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4629/generate.py",
+    "sha256": "f41975d2110e7e741bc2dea6a703484a99abd0a4f9950a57e90692eb91ab21a0",
+    "size": 4657,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4629/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4629/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4629/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4629/metadata.py",
+    "sha256": "da30a65f93bfaf29c5a347c384b77b67f08a44279fc5dbbb533f232525d81a5d",
+    "size": 1692,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4629/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4629/__pycache__/generate.cpython-314.pyc",
+    "sha256": "a3d3ac106752861683293445800e9f6cda1615738362ef952e5c2316c07a5152",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4629/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4630/generate.py",
+    "sha256": "7b4731da52a25aab1454397352658de1440e3d13685857a24eee5aa35bff28c6",
+    "size": 4668,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4630/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4630/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4630/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4630/metadata.py",
+    "sha256": "66b69783e02c970ed269b6a6ae918a19801c430e54b899c7d1af462ee756675c",
+    "size": 1697,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4630/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4630/__pycache__/generate.cpython-314.pyc",
+    "sha256": "f35ea20a4c83ef74cd61ba2b3d7b26f6460832f1449192f60c271c3d0018fa8e",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4630/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4631/generate.py",
+    "sha256": "efa27f1dbaad2379d7971df09c19319e4740328a96647503d5cbb35e6fe9041e",
+    "size": 4591,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4631/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4631/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4631/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4631/metadata.py",
+    "sha256": "5a7199c92479f6c3dca4e2576d5e49f1a467aad1520d1b2b788f8764f6416de9",
+    "size": 1662,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4631/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4631/__pycache__/generate.cpython-314.pyc",
+    "sha256": "841386ca71894ca90daed469ce41678952554205084b551805a0dfa9c7b16ca8",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4631/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4632/generate.py",
+    "sha256": "1dab63cb16421bc93db04eb0eb17a071681c83dc71c57d0f22ccf63cea99f55c",
+    "size": 4423,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4632/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4632/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4632/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4632/metadata.py",
+    "sha256": "069882b41497806349e1410a5022dc72b251ac6961192a6f850da0dc54517314",
+    "size": 1662,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4632/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4632/__pycache__/generate.cpython-314.pyc",
+    "sha256": "d6988f5fcc771fc5c5532be3da436401d33517a07c7148dfce2fb4c5bd134c43",
+    "size": 3985,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4632/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/generate.py",
+    "sha256": "7c9425932634355177bb496ff66f9c584285122e431e1d83e2b63fcd0c3a9e20",
+    "size": 4567,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/metadata.py",
+    "sha256": "30f233fb4d77e26f7acf4ce8e71c46d57b4eb17086886f4a76ec43e4bd50ba52",
+    "size": 1624,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/__pycache__/generate.cpython-314.pyc",
+    "sha256": "fc74432a4d6def58cf886fba4f824c2ac1c6edf0d1f68ccdf4857f24b5b24f54",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4633/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/generate.py",
+    "sha256": "02e7ac8b41ba68f75b00bb2ba82b3d28cf5608d3a413452c171a2dc2d9e89d30",
+    "size": 4578,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/metadata.py",
+    "sha256": "2b54ef3b2289b2b683ca86e782079a85a5b7c713bce3b303e409aca85488bbfb",
+    "size": 1629,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/__pycache__/generate.cpython-314.pyc",
+    "sha256": "857c235fc5db2075b4e764abf108bc05ead4d192c69000366597dae6f141500e",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4634/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/generate.py",
+    "sha256": "1509494107ebcc63516ab86768c2e72c120a5642d0e7287f9972a9e51c048379",
+    "size": 4754,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/metadata.py",
+    "sha256": "4f73fc667b9fca4133524db7d9a3e50ff371adc2f22b802d9a56e76b2a66ef9d",
+    "size": 1709,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/__pycache__/generate.cpython-314.pyc",
+    "sha256": "df2b439ecbfe3837f07f7dbbdf767f905f5a2218404c8775acdfd4e91588cc8e",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4635/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/generate.py",
+    "sha256": "c39cfb3e23f16198c7f7a11742d77e48774810a78482034e8bffe94e03eb0a17",
+    "size": 4633,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/metadata.py",
+    "sha256": "98f4384c79772eae58bca81b6cc2336ad5f7a84d6fd54bd3b83e638e61d7a83f",
+    "size": 1654,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/__pycache__/generate.cpython-314.pyc",
+    "sha256": "546f39358881f11869a8b30b379b6067d45471f03825bf2ec7477c369864463d",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4636/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/generate.py",
+    "sha256": "63ceaffd47083a9e0c5f9060d153dc59eee24c1ff4707237f926e87a343e21a8",
+    "size": 4688,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/metadata.py",
+    "sha256": "f5b237e0f0a016b710fdc520292aabada34766bd9cc1361e1a8cf0757fda1fab",
+    "size": 1679,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/__pycache__/generate.cpython-314.pyc",
+    "sha256": "0caba843a2b69989d52e0f3ee2604e39ea827d559c494d031d37e598039d1db8",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4637/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/generate.py",
+    "sha256": "bcb09dff1d8d0a34db29a5f43290e8e17e9950b86c6ffc7e7dc217cc3d37245a",
+    "size": 4754,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/metadata.py",
+    "sha256": "3453b3de1758dfe476e7622ebc6c4bbcf24a22e0121748eb7bd3b6790921e89b",
+    "size": 1709,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/__pycache__/generate.cpython-314.pyc",
+    "sha256": "75deb59d7e5fa0b8ac5f90ef8ace828fa51e65ba8f02e8597134bab7ee1a8dbd",
+    "size": 4185,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/components/src_4706/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4716/generate.py",
+    "sha256": "daca149fc29ef417c5b16c8be189d2f6e733170c5d3920aa46af2ac450ab2f6d",
+    "size": 4613,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4716/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4716/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4716/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4716/metadata.py",
+    "sha256": "0e1a48ffda686a388d7df732d76c1314701cdd00db727303c6680ad303e3a973",
+    "size": 1672,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4716/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialBasicConcepts/components/src_4716/__pycache__/generate.cpython-314.pyc",
+    "sha256": "8a4d1238f1aa36f62f218ffa9bb2a1456ae168100193796bccd456a9a0ef325e",
+    "size": 4142,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/components/src_4716/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4717/generate.py",
+    "sha256": "cc20b0fe624de4d0c5f3025bd1bce1f0ed67ed2008a11b14132c707d0074b01f",
+    "size": 4423,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4717/generate.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4717/get_hint.py",
+    "sha256": "294e04ba5223fb643b1dec26606c7671f5fbc41ce06faa05f9305ca5caa4ae87",
+    "size": 1746,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4717/get_hint.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4717/metadata.py",
+    "sha256": "3adcda4519a751de8b14e04faf86aa4842093563dbd67e9de1fc367f20ff74f0",
+    "size": 1662,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4717/metadata.py"
+  },
+  {
+    "role": "production_component",
+    "path": "production_components/vh_數學B1_PolynomialEquality/components/src_4717/__pycache__/generate.cpython-314.pyc",
+    "sha256": "e56ecdbdc73705036ad8f3dc02525e255513643e76e0a8733889aa44d2bdd457",
+    "size": 3985,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/components/src_4717/__pycache__/generate.cpython-314.pyc"
+  },
+  {
+    "role": "manifest",
+    "path": "manifests/vh_數學B1_PolynomialBasicConcepts/component_manifest.json",
+    "sha256": "976a020515570bcfd441065ccc844d70a57f6d11e4298af06d83038fd6384d53",
+    "size": 3830,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/component_manifest.json"
+  },
+  {
+    "role": "v3_skill_init",
+    "path": "manifests/vh_數學B1_PolynomialBasicConcepts/__init__.py",
+    "sha256": "23ce87c9d47fbc2fe73f2671cd0fdebd237336d11cbbac687400f459a211412d",
+    "size": 13982,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/__init__.py"
+  },
+  {
+    "role": "manifest",
+    "path": "manifests/vh_數學B1_PolynomialArithmeticOperations/component_manifest.json",
+    "sha256": "27bc52581668fe46cfb58f9ab39697d98a7933bf214b5f1c8323372f2984ee74",
+    "size": 7311,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/component_manifest.json"
+  },
+  {
+    "role": "v3_skill_init",
+    "path": "manifests/vh_數學B1_PolynomialArithmeticOperations/__init__.py",
+    "sha256": "35cee1c9aaa24c5f7429395df30531901c83989adcb7b7e7da4cd512245616d4",
+    "size": 19001,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/__init__.py"
+  },
+  {
+    "role": "manifest",
+    "path": "manifests/vh_數學B1_PolynomialEquality/component_manifest.json",
+    "sha256": "26532810334ce76c63f66983906695b07ecb113013a37e5a910924f3e622140c",
+    "size": 1752,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/component_manifest.json"
+  },
+  {
+    "role": "v3_skill_init",
+    "path": "manifests/vh_數學B1_PolynomialEquality/__init__.py",
+    "sha256": "21f0e10a47ef617639a02d7814ed84fc966b188e1d46fb33b4ebeff701d9a841",
+    "size": 11049,
+    "source_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/__init__.py"
+  },
+  {
+    "role": "production_wrapper",
+    "path": "wrappers/vh_數學B1_PolynomialBasicConcepts.py",
+    "sha256": "8b0c9f117b0dac28ddd9b9403bbb0e0b44e4630e02eeee38e4b7a25d1b150272",
+    "size": 6324,
+    "source_path": "skills/vh_數學B1_PolynomialBasicConcepts.py"
+  },
+  {
+    "role": "production_wrapper",
+    "path": "wrappers/vh_數學B1_PolynomialArithmeticOperations.py",
+    "sha256": "b7d5a1eaf74f30d558cd103bd1ce5b2bb0d5a6e252155ecfdd63f30c7e5de38b",
+    "size": 10920,
+    "source_path": "skills/vh_數學B1_PolynomialArithmeticOperations.py"
+  },
+  {
+    "role": "production_wrapper",
+    "path": "wrappers/vh_數學B1_PolynomialEquality.py",
+    "sha256": "0953ee64d82679b1a8e0fa39aa6615f239795dece7213f445ebf57e95646ba00",
+    "size": 3626,
+    "source_path": "skills/vh_數學B1_PolynomialEquality.py"
+  }
+]

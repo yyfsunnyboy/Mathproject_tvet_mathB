@@ -7,6 +7,17 @@
     <meta charset="UTF-8">
     <title>學生學習分析 - 自適應性教學系統</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% if view == 'unit' %}
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+        svg: { fontCache: 'global' },
+        startup: { typeset: false }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=teacher-math-1"></script>
+    {% endif %}
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -73,10 +84,28 @@
         }
         .attention-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 0; border-bottom: 1px solid #f0e0e0;
+            gap: 24px; padding: 8px 0; border-bottom: 1px solid #f0e0e0;
         }
         .attention-item:last-child { border-bottom: none; }
         .attention-item a { color: #3d5a80; text-decoration: none; font-weight: 600; }
+        .attention-list {
+            position: relative; display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px;
+        }
+        .attention-list::before {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+            width: 1px; margin-left: -0.5px; background: #ecd5d5; pointer-events: none;
+        }
+        .attention-list.is-single::before { display: none; }
+        .attention-list > .attention-item:nth-child(odd):nth-last-child(2) { border-bottom: none; }
+        .attention-name {
+            flex: 1 1 auto; min-width: 0;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .attention-stat {
+            flex: 0 0 auto; min-width: 11em; margin-left: auto;
+            text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums;
+        }
         .search-bar { margin-bottom: 14px; }
         .search-bar input {
             padding: 8px 12px; border: 1px solid #dde3ea; border-radius: 6px;
@@ -86,8 +115,18 @@
         .sort-hint a { color: #3d5a80; margin-right: 10px; }
         .chart-wrap { position: relative; height: 280px; max-width: 900px; }
         .apr-note { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        .table-scroll { overflow-x: auto; }
+        .recent-attempts td { vertical-align: top; }
+        .recent-attempts .question-summary { color: #666; line-height: 1.7; }
+        .recent-attempts .answer-part { display: block; line-height: 1.8; }
+        .recent-attempts .part-label { color: #888; margin-right: 4px; }
+        .recent-attempts mjx-container { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; }
+        .display-uncertain { color: #b9770e; }
         @media (max-width: 768px) {
             table { display: block; overflow-x: auto; }
+            .attention-list { grid-template-columns: minmax(0, 1fr); }
+            .attention-list::before { display: none; }
+            .attention-list > .attention-item:nth-child(odd):nth-last-child(2) { border-bottom: 1px solid #f0e0e0; }
         }
     </style>
 </head>
@@ -119,6 +158,16 @@
             {{ url_for('teacher_analysis', **p) }}
         {% endmacro %}
 
+        {% macro answer_cell(raw) -%}
+            {%- set shown = raw|attempt_answer_display -%}
+            {%- if not shown.parts -%}—{%- else -%}
+                {%- for part in shown.parts -%}
+                <span class="answer-part">{% if part.label %}<span class="part-label">{{ part.label }}</span>{% endif %}<span{% if not part.blank %} class="math-display" data-math-display="answer"{% endif %}>{{ part.text }}</span></span>
+                {%- endfor -%}
+                {%- if shown.status == 'uncertain' -%}<span class="reason-hint display-uncertain">原始資料含無法辨識的字元（�），僅供參考</span>{%- endif -%}
+            {%- endif -%}
+        {%- endmacro %}
+
         {% macro unit_url(row) %}
             {%- if row.kind == 'curriculum' -%}
                 {{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, volume=row.volume, chapter=row.chapter, range=time_range.key) }}
@@ -129,7 +178,7 @@
 
         <div class="toolbar">
             <div class="range-tabs">
-                <a href="{{ range_url() }}" class="{% if time_range.key == 'all' %}active{% endif %}">全部</a>
+                <a href="{{ range_url({'range': 'all'}) }}" class="{% if time_range.key == 'all' %}active{% endif %}">全部</a>
                 <a href="{{ range_url({'range': 'today'}) }}" class="{% if time_range.key == 'today' %}active{% endif %}">今天</a>
                 <a href="{{ range_url({'range': '7d'}) }}" class="{% if time_range.key == '7d' %}active{% endif %}">近 7 天</a>
                 <a href="{{ range_url({'range': '30d'}) }}" class="{% if time_range.key == '30d' %}active{% endif %}">近 30 天</a>
@@ -150,9 +199,9 @@
             {% if view in ('student', 'unit') and student %}
                 <span class="sep">&gt;</span>
                 {% if view == 'student' %}
-                    <span>{{ student_overview.display_name if student_overview else student.username }}</span>
+                    <span>{{ (student_overview.display_name if student_overview else student.username)|review_student_name }}</span>
                 {% else %}
-                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, range=time_range.key) }}">{{ student_overview.display_name if student_overview else student.username }}</a>
+                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=student.id, range=time_range.key) }}">{{ (student_overview.display_name if student_overview else student.username)|review_student_name }}</a>
                 {% endif %}
             {% endif %}
             {% if view == 'unit' and unit_detail %}
@@ -219,7 +268,7 @@
                         <td>{{ row.attention_count }}</td>
                         <td>
                             {% if row.stats.last_activity %}
-                                {{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}
+                                {{ (row.stats.last_activity|taipei_time).strftime('%Y-%m-%d %H:%M') }}
                             {% else %}—{% endif %}
                         </td>
                     </tr>
@@ -251,12 +300,14 @@
             {% if attention_students|length == 0 %}
                 <p class="empty-state" style="padding:12px;">目前沒有符合「建議介入」條件的學生。</p>
             {% else %}
+                <div class="attention-list{% if attention_students|length == 1 %} is-single{% endif %}">
                 {% for row in attention_students %}
                 <div class="attention-item">
-                    <a href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name }}</a>
-                    <span>{{ row.status.reason }}</span>
+                    <a class="attention-name" href="{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}">{{ row.display_name|review_student_name }}</a>
+                    <span class="attention-stat">{{ row.status.reason }}</span>
                 </div>
                 {% endfor %}
+                </div>
             {% endif %}
         </div>
 
@@ -287,15 +338,15 @@
                     {% for row in student_rows %}
                     <tr class="clickable" onclick="location.href='{{ url_for('teacher_analysis', class_id=class_obj.id, student_id=row.student.id, range=time_range.key) }}'">
                         <td>
-                            {% if row.seat_no is not none %}<div style="color:#555;font-size:0.95em;">{{ row.seat_no }} {{ row.display_name }}</div>{% else %}<strong>{{ row.display_name }}</strong>{% endif %}
-                            <span class="reason-hint">{{ row.student.username }}</span>
+                            {% if row.seat_no is not none %}<div style="color:#555;font-size:0.95em;">{{ row.seat_no }} {{ row.display_name|review_student_name }}</div>{% else %}<strong>{{ row.display_name|review_student_name }}</strong>{% endif %}
+                            <span class="reason-hint">{{ row.student.username|review_student_username }}</span>
                         </td>
                         <td>{{ row.stats.total }}</td>
                         <td>{{ row.stats.correct }}</td>
                         <td>{{ row.stats.incorrect }}</td>
                         <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
                         <td>—</td>
-                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%Y-%m-%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td>{% if row.stats.last_activity %}{{ (row.stats.last_activity|taipei_time).strftime('%Y-%m-%d %H:%M') }}{% else %}—{% endif %}</td>
                         <td class="{{ row.status.css }}">
                             {{ row.status.label }}
                             <span class="reason-hint">{{ row.status.reason }}</span>
@@ -312,7 +363,7 @@
         {# ========== STUDENT: 單元列表 ========== #}
         {% if view == 'student' %}
         <div class="page-header">
-            <h1>👤 {{ student_overview.display_name }}</h1>
+            <h1>👤 {{ student_overview.display_name|review_student_name }}</h1>
             <p>學習概況</p>
         </div>
 
@@ -321,7 +372,7 @@
             <div class="summary-card"><div class="label">答對</div><div class="value">{{ student_overview.stats.correct }}</div></div>
             <div class="summary-card"><div class="label">答錯</div><div class="value">{{ student_overview.stats.incorrect }}</div></div>
             <div class="summary-card"><div class="label">正確率</div><div class="value">{% if student_overview.stats.accuracy is not none %}{{ (student_overview.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
-            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if student_overview.stats.last_activity %}{{ student_overview.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if student_overview.stats.last_activity %}{{ (student_overview.stats.last_activity|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
             <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
         </div>
 
@@ -345,7 +396,7 @@
                         <td>{{ row.stats.correct }}</td>
                         <td>{{ row.stats.incorrect }}</td>
                         <td>{% if row.stats.accuracy is not none %}{{ (row.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</td>
-                        <td>{% if row.stats.last_activity %}{{ row.stats.last_activity.strftime('%m/%d') }}{% else %}—{% endif %}</td>
+                        <td>{% if row.stats.last_activity %}{{ (row.stats.last_activity|taipei_time).strftime('%m/%d') }}{% else %}—{% endif %}</td>
                         <td class="{{ row.status.css }}">{{ row.status.label }}</td>
                     </tr>
                     {% endfor %}
@@ -358,7 +409,7 @@
         {# ========== UNIT: 單元詳細 ========== #}
         {% if view == 'unit' and unit_detail %}
         <div class="page-header">
-            <h1>{{ student_overview.display_name }}</h1>
+            <h1>{{ student_overview.display_name|review_student_name }}</h1>
             <p>{{ unit_detail.unit_label }}</p>
         </div>
 
@@ -367,7 +418,7 @@
             <div class="summary-card"><div class="label">答對</div><div class="value">{{ unit_detail.stats.correct }}</div></div>
             <div class="summary-card"><div class="label">答錯</div><div class="value">{{ unit_detail.stats.incorrect }}</div></div>
             <div class="summary-card"><div class="label">正確率</div><div class="value">{% if unit_detail.stats.accuracy is not none %}{{ (unit_detail.stats.accuracy * 100)|round|int }}%{% else %}—{% endif %}</div></div>
-            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if unit_detail.stats.last_activity %}{{ unit_detail.stats.last_activity.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
+            <div class="summary-card"><div class="label">最近活動</div><div class="value" style="font-size:1rem;">{% if unit_detail.stats.last_activity %}{{ (unit_detail.stats.last_activity|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</div></div>
             <div class="summary-card"><div class="label">學習時間</div><div class="value">—</div></div>
         </div>
 
@@ -419,7 +470,8 @@
             {% if unit_detail.recent_attempts|length == 0 %}
                 <p class="empty-state">此單元尚無練習紀錄。</p>
             {% else %}
-            <table>
+            <div class="table-scroll">
+            <table class="recent-attempts" id="recent-attempts">
                 <thead>
                     <tr>
                         <th>時間</th><th>技能</th><th>題型</th><th>作答</th><th>正解</th><th>結果</th>
@@ -428,16 +480,28 @@
                 <tbody>
                     {% for att in unit_detail.recent_attempts %}
                     <tr class="{% if att.is_correct %}result-correct{% else %}result-wrong{% endif %}">
-                        <td>{% if att.created_at %}{{ att.created_at.strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
-                        <td>{{ att.skill_name or '—' }}{% if att.question_text %}<div class="reason-hint">{{ att.question_text[:120] }}</div>{% endif %}</td>
+                        <td>{% if att.created_at %}{{ (att.created_at|taipei_time).strftime('%m/%d %H:%M') }}{% else %}—{% endif %}</td>
+                        <td>{{ att.skill_name or '—' }}{% if att.question_text %}{% set summary = att.question_text|attempt_question_summary %}<div class="reason-hint question-summary math-display" data-math-display="text">{{ summary.text }}</div>{% if summary.status == 'uncertain' %}<span class="reason-hint display-uncertain">原始資料含無法辨識的字元（�），僅供參考</span>{% endif %}{% endif %}</td>
                         <td>{{ att.problem_type or '—' }}{% if att.apr is not none %} <small>(APR {{ (att.apr * 100)|round|int }}%)</small>{% endif %}</td>
-                        <td>{{ att.user_answer if att.user_answer is not none else '—' }}</td>
-                        <td>{{ att.expected_answer if att.expected_answer is not none else '—' }}</td>
+                        <td>{{ answer_cell(att.user_answer) }}</td>
+                        <td>{{ answer_cell(att.expected_answer) }}</td>
                         <td>{% if att.is_correct %}✓ 正確{% else %}✗ 錯誤{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
+            <script>
+            (function () {
+                function render() {
+                    if (window.MathDisplayNormalizer && window.MathDisplayNormalizer.typesetMathDisplay) {
+                        window.MathDisplayNormalizer.typesetMathDisplay(document.getElementById('recent-attempts'));
+                    }
+                }
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render);
+                else render();
+            })();
+            </script>
             {% endif %}
         </div>
 

@@ -22,6 +22,33 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SANDBOX_ROOT = PROJECT_ROOT / "reports" / "gencode_v3_dryrun"
 SKILL_ID = ALLOWED_PRODUCTION_SKILL_ID
 COMPONENT_ID = "src_1"
+PUBLISHABLE_PAYLOAD = {
+    "source_kind": "example_1",
+    "presentation_mode": "short_answer",
+    "line_type": "point_slope",
+    "problem_type_id": "point_slope",
+    "domain_operation": "point_slope",
+    "fixed_domain_key": "coordinate_geometry.line_equation",
+    "resolution_source": "derived_capability_match",
+    "binding_status": "derived",
+    "required_capabilities": ["point_slope"],
+    "matched_capabilities": ["point_slope"],
+    "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
+    "entrypoint": "build_line_equation_matrix",
+    "integrity_gate_passed": True,
+    "integrity_gate_version": "v1",
+}
+
+
+def test_repackage_fixture_passes_real_component_publish_gate():
+    from core.gencode.services.v3_publish_eligibility import component_publish_blockers
+
+    assert component_publish_blockers(
+        skill_id=SKILL_ID,
+        component_skill_id=SKILL_ID,
+        component_status="verified",
+        spec=PUBLISHABLE_PAYLOAD,
+    ) == []
 
 STUB_METADATA_PY = '''from __future__ import annotations
 COMPONENT_ID = "src_1"
@@ -75,6 +102,7 @@ def test_ui_none_generated_shows_fixed_v3_actions():
     with app.test_request_context():
         gencode = {
             "total_examples": 5,
+            "capability_status": "missing",
             "verified_count": 0,
             "failed_count": 0,
             "unsupported_count": 0,
@@ -113,15 +141,17 @@ def test_ui_none_generated_shows_fixed_v3_actions():
         )
         
         compact = clean_html(rendered)
-        assert "重新生成本技能題目</button>" in compact
+        assert "建立V3</button>" in compact
         assert "更新到學生端</button>" not in compact
-        assert "查看組件</a>" not in compact
+        assert "查看組件</a>" in compact
 
 def test_ui_has_package_shows_fixed_v3_actions():
     """2. 已有 V3 package 仍固定顯示三個 V3 操作。"""
     with app.test_request_context():
         gencode = {
             "total_examples": 5,
+            "capability_status": "ready",
+            "allow_v3_rebuild": True,
             "verified_count": 3,
             "failed_count": 0,
             "unsupported_count": 0,
@@ -160,7 +190,7 @@ def test_ui_has_package_shows_fixed_v3_actions():
         )
         
         compact = clean_html(rendered)
-        assert "重新生成本技能題目</button>" in compact
+        assert "重新建置與驗證</button>" in compact
         assert "更新到學生端</button>" not in compact
         assert "查看組件</a>" in compact
 
@@ -169,6 +199,8 @@ def test_ui_verified_full_shows_repackage():
     with app.test_request_context():
         gencode = {
             "total_examples": 5,
+            "capability_status": "ready",
+            "allow_v3_rebuild": True,
             "verified_count": 5,
             "failed_count": 0,
             "unsupported_count": 0,
@@ -205,8 +237,7 @@ def test_ui_verified_full_shows_repackage():
         assert "更新到學生端</button>" in compact
 
 def test_ui_legacy_vs_v3_wrapper_button_displays():
-    """9. V3 skill 不以舊版重建作為主要操作。
-    10. legacy skill 仍保留 V2 舊版重建。"""
+    """Neither legacy nor V3-packaged skills expose the removed V2 action."""
     with app.test_request_context():
         gencode_v3 = {
             "total_examples": 5,
@@ -265,7 +296,7 @@ def test_ui_legacy_vs_v3_wrapper_button_displays():
         )
 
         compact = clean_html(rendered)
-        assert compact.count("V2舊版重建") == 1
+        assert "V2舊版重建" not in compact
 
 
 # ----------------- Endpoint API Behavior Tests -----------------
@@ -397,14 +428,7 @@ def test_repackage_endpoint_preserves_generate_mtime_and_hash(isolated_publish_r
     mock_components = [{
         "textbook_example_id": 1,
         "component_id": COMPONENT_ID,
-        "induced_spec_payload": {
-            "source_kind": "ex_1",
-            "presentation_mode": "short_answer",
-            "line_type": "point_slope",
-            "problem_type_id": "line_equation_general_form",
-            "integrity_gate_passed": True,
-            "integrity_gate_version": "v1",
-        }
+        "induced_spec_payload": dict(PUBLISHABLE_PAYLOAD),
     }]
 
     with app.test_client() as client:
@@ -425,11 +449,13 @@ def test_repackage_endpoint_preserves_generate_mtime_and_hash(isolated_publish_r
              mock_eval.return_value = {
                  "allowed": True,
                  "reason": "eligible",
+                 "eligible_component_count": 1,
                  "integrity_gate_component_count": 1,
              }
              mock_eval_service.return_value = {
                  "allowed": True,
                  "reason": "eligible",
+                 "eligible_component_count": 1,
                  "integrity_gate_component_count": 1,
              }
 
@@ -469,14 +495,7 @@ def test_repackage_endpoint_success_promotes_wrapper_and_counts_specs(isolated_p
     mock_components = [{
         "textbook_example_id": 1,
         "component_id": COMPONENT_ID,
-        "induced_spec_payload": {
-            "source_kind": "ex_1",
-            "presentation_mode": "short_answer",
-            "line_type": "point_slope",
-            "problem_type_id": "line_equation_general_form",
-            "integrity_gate_passed": True,
-            "integrity_gate_version": "v1",
-        }
+        "induced_spec_payload": dict(PUBLISHABLE_PAYLOAD),
     }]
 
     with app.test_client() as client:
@@ -497,11 +516,13 @@ def test_repackage_endpoint_success_promotes_wrapper_and_counts_specs(isolated_p
              mock_eval.return_value = {
                  "allowed": True,
                  "reason": "eligible",
+                 "eligible_component_count": 1,
                  "integrity_gate_component_count": 1,
              }
              mock_eval_service.return_value = {
                  "allowed": True,
                  "reason": "eligible",
+                 "eligible_component_count": 1,
                  "integrity_gate_component_count": 1,
              }
 

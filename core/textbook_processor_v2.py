@@ -38,6 +38,7 @@ from core.textbook_filename_parser import (
     parse_textbook_filename_metadata,
     resolve_upload_filenames,
 )
+from core.mathb_chapter4_calculator_skip import chapter4_calculator_skip
 from core.mathb_concept_heading import (
     detect_mathb_concept_heading,
     is_persistable_concept_code,
@@ -55,6 +56,7 @@ from core.textbook_import_authority import (
 )
 from core.utils import normalize_vocational_math_skill_id
 from models import SkillCurriculum, SkillInfo, TextbookExample, db
+from core.textbook_b2_11 import is_b2_11, SDG_TITLE
 
 # ---------------------------------------------------------------------------
 # Regex barriers
@@ -166,7 +168,9 @@ _CH_SA_CH_MARKER_RE = re.compile(
     re.IGNORECASE,
 )
 _CH_SA_ZH_CHAPTER_RE = re.compile(r"第\s*(\d+)\s*章")
-_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)\s+(.+)$")
+# Compact B3 headings may omit the space after section code ("2-1一元…").
+# Negative lookahead blocks concept headings like "2-1.1 …".
+_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)(?!\.\d)\s*(.+)$")
 _CH_SA_PAGE_ONLY_RE = re.compile(r"^\s*\d{2,3}\s*$")
 
 # Phase1 注入觸發與 Phase2 切題；Word 列表與空行
@@ -213,6 +217,21 @@ def _normalize_docx_line_text(text: str) -> str:
     return re.sub(r" +", " ", t).strip()
 
 
+def _cut_solution_residue(problem_text: str, solution_text: str) -> tuple[str, str]:
+    """Drop solution text that was accumulated into the student stem."""
+    from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+    split = split_student_stem_at_solution_marker(problem_text)
+    if split is None:
+        return problem_text, solution_text
+    stem, trailing = split
+    if trailing:
+        solution_text = _normalize_docx_line_text(
+            "\n".join(part for part in (trailing, solution_text) if part)
+        ).strip()
+    return stem, solution_text
+
+
 def _to_half_width_digits(s: str) -> str:
     return str(s or "").translate(str.maketrans("０１２３４５６７８９", "0123456789"))
 
@@ -242,6 +261,44 @@ def _looks_like_exercise_question_start(n: str, body: str) -> bool:
     return True
 
 
+def _practice_body_is_heading_fragment(body: str) -> bool:
+    """True for short titled fragments that are not practice question stems.
+
+    Example false positive: ``數列的相加—級數`` claimed as 隨堂練習3 while still
+    inside a lingering practice zone.
+    """
+    b = str(body or "").strip()
+    if not b:
+        return True
+    compact = re.sub(r"\s+", "", b)
+    if len(compact) > 40:
+        return False
+    if "\\" in b or "$" in b:
+        return False
+    question_markers = (
+        "試",
+        "求",
+        "已知",
+        "若",
+        "設",
+        "下列",
+        "多少",
+        "幾",
+        "？",
+        "?",
+        "：",
+        ":",
+        "(",
+        "（",
+    )
+    if any(m in b for m in question_markers):
+        return False
+    # Title-like connectors commonly used in exposition headings.
+    return bool(re.search(r"[—–―﹣]|－－", b)) or (
+        len(compact) <= 16 and "題" not in compact and "練習" not in compact
+    )
+
+
 def _looks_like_practice_question_body(body: str) -> bool:
     b = str(body or "").strip()
     if not b:
@@ -254,6 +311,29 @@ def _looks_like_practice_question_body(body: str) -> bool:
     )
     if b.startswith(bad_prefixes):
         return False
+    if _practice_body_is_heading_fragment(b):
+        return False
+    return True
+
+
+def _problem_texts_compatible_for_missing_skip(existing_text: str, candidate_text: str) -> bool:
+    """Whether an existing DB row is plausibly the same question as the candidate.
+
+    Title-only structural matches can collide when a heading fragment previously
+    stole a 隨堂練習N label. Do not skip insert_missing_only in that case.
+    """
+    existing = str(existing_text or "").strip()
+    candidate = str(candidate_text or "").strip()
+    if not existing or not candidate:
+        return True
+    if _practice_body_is_heading_fragment(existing) and not _practice_body_is_heading_fragment(
+        candidate
+    ):
+        return False
+    # Very short existing body vs substantial candidate → treat as different.
+    if len(re.sub(r"\s+", "", existing)) <= 16 and len(re.sub(r"\s+", "", candidate)) >= 40:
+        if existing not in candidate:
+            return False
     return True
 
 
@@ -573,6 +653,9 @@ def _resolve_formal_concept_en_id_v2(
     AI 僅產生 concept_en_id；建立前查 DB 避免重複 skill_id。
     """
     name = str(concept_name or "").strip()
+    if (curriculum_info or {}).get('structural_skill_candidates'):
+        from core.textbook_structural_metadata import resolve_heading_identity
+        return resolve_heading_identity(curriculum_info, concept_code, name)
     subject, vol_num = _mathb_volume_parts(curriculum_info)
     if vol_num is None:
         vol_num = 1
@@ -911,6 +994,37 @@ def _is_fallback_skill_id(skill_id: str) -> bool:
     return bool(_FALLBACK_SKILL_ID_RE.search(sid))
 
 
+_NON_SUBSECTION_FALLBACK_RE = re.compile(
+    r"SelfAssessment|MixedExercise|UnknownConcept|UnknownFormalConcept|Concept_|ConceptHash",
+    re.IGNORECASE,
+)
+_BOUND_SUBSECTION_ID_RE = re.compile(r"^vh_.+_SubSection_(\d+)_(\d+)_(\d+)$")
+
+
+def _is_bound_formal_subsection_skill(
+    skill_id: str, row: SkillCurriculum, skill: SkillInfo | None,
+    *, curriculum: str, volume: str, chapter_title: str, section_code: str,
+) -> bool:
+    """Accept a numbered SubSection only with an exact existing curriculum binding."""
+    sid = _normalize_skill_id_quality(skill_id)
+    match = _BOUND_SUBSECTION_ID_RE.fullmatch(sid)
+    if not match or _NON_SUBSECTION_FALLBACK_RE.search(sid) or skill is None:
+        return False
+    if not bool(getattr(skill, "is_active", False)):
+        return False
+    if not str(getattr(skill, "skill_ch_name", "") or "").strip():
+        return False
+    if f"{int(match.group(1))}-{int(match.group(2))}" != str(section_code or "").strip():
+        return False
+    return (
+        str(getattr(row, "skill_id", "") or "") == sid
+        and str(getattr(row, "curriculum", "") or "") == curriculum
+        and str(getattr(row, "volume", "") or "") == volume
+        and _same_chapter_identity(str(getattr(row, "chapter", "") or ""), chapter_title)
+        and _section_code_boundary_matches(section_code, str(getattr(row, "section", "") or ""))
+    )
+
+
 def _mathb_fallback_formal_en_id(section_code: str, source_type: str) -> str:
     """已停用：不得建立 MixedExercise / UnknownConcept 正式 skill。"""
     _ = section_code, source_type
@@ -980,8 +1094,6 @@ def _get_formal_skills_for_section_v2(
         SkillCurriculum.volume == vol,
         SkillCurriculum.skill_id.startswith("vh_"),
     )
-    if ch:
-        q = q.filter(SkillCurriculum.chapter == ch)
     prefix = f"{code} " if code else ""
     if code:
         q = q.filter(SkillCurriculum.section.startswith(prefix))
@@ -994,6 +1106,8 @@ def _get_formal_skills_for_section_v2(
     ).all():
         sid = str(getattr(row, "skill_id", "") or "").strip()
         if not sid or not sid.startswith("vh_") or sid.startswith("outline_") or sid in seen:
+            continue
+        if ch and not _same_chapter_identity(row.chapter, ch):
             continue
         sec_label = str(getattr(row, "section", "") or "")
         if code and not _section_code_boundary_matches(code, sec_label):
@@ -1023,18 +1137,16 @@ def validate_existing_skill_binding_for_import(
     curriculum_info: dict | None,
     chapter_title: str = "",
 ) -> tuple[bool, str]:
-    """Phase4 寫入前防呆：self_assessment 只能綁定既有 DB skill。"""
-    if str(source_type or "").strip() != "self_assessment":
-        return True, ""
+    """Phase4 gate: every persisted question must bind to an in-scope leaf."""
     sid = _normalize_skill_id_quality(skill_id)
     if not sid:
         return False, "empty_skill_id"
-    if _is_fallback_skill_id(sid):
+    if sid.startswith("outline_"):
+        return False, "outline_skill"
+    if _is_fallback_skill_id(sid) and not _BOUND_SUBSECTION_ID_RE.fullmatch(sid):
         return False, "fallback_pattern"
     if not sid.startswith("vh_"):
         return False, "not_vh_prefix"
-    if sid.startswith("outline_"):
-        return False, "outline_skill"
     if SkillInfo.query.get(sid) is None:
         return False, "skill_not_in_skillinfo"
     coords = _import_scope_coords(curriculum_info or {})
@@ -1046,9 +1158,9 @@ def validate_existing_skill_binding_for_import(
         SkillCurriculum.curriculum == curr,
         SkillCurriculum.volume == vol,
     )
-    if chapter_title:
-        q = q.filter(SkillCurriculum.chapter == chapter_title)
     rows = q.all()
+    if chapter_title:
+        rows = [row for row in rows if _same_chapter_identity(row.chapter, chapter_title)]
     if not rows:
         return False, "skill_not_in_skillcurriculum"
     bounded = [
@@ -1058,6 +1170,14 @@ def validate_existing_skill_binding_for_import(
     ]
     if code and not bounded:
         return False, "section_code_mismatch"
+    if _is_fallback_skill_id(sid) and not any(
+        _is_bound_formal_subsection_skill(
+            sid, row, SkillInfo.query.get(sid), curriculum=curr, volume=vol,
+            chapter_title=chapter_title, section_code=code,
+        )
+        for row in bounded
+    ):
+        return False, "fallback_pattern"
     return True, ""
 
 
@@ -1077,9 +1197,9 @@ def _lookup_formal_skill_curriculum_row(
         SkillCurriculum.curriculum == str(curriculum or "").strip(),
         SkillCurriculum.volume == str(volume or "").strip(),
     )
-    if chapter_title:
-        q = q.filter(SkillCurriculum.chapter == chapter_title)
     rows = q.order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.id.asc()).all()
+    if chapter_title:
+        rows = [row for row in rows if _same_chapter_identity(row.chapter, chapter_title)]
     code = str(section_code or "").strip()
     if code:
         bounded = [
@@ -1111,6 +1231,8 @@ def _get_self_assessment_skill_candidates_v2(
     chapter_index: int | None = None,
 ) -> list[dict]:
     """章末自我評量：僅從既有 SkillCurriculum / SkillInfo 取候選 vh_ skill。"""
+    # A chapter index alone cannot prove title identity; the outline supplies both.
+    _ = chapter_index
     curr = str(curriculum or "").strip()
     vol = str(volume or "").strip()
     code = unicodedata.normalize("NFKC", str(section_code or "").strip())
@@ -1123,11 +1245,8 @@ def _get_self_assessment_skill_candidates_v2(
         SkillCurriculum.skill_id.startswith("vh_"),
     )
     ch = str(chapter_title or "").strip()
-    if ch:
-        q = q.filter(SkillCurriculum.chapter == ch)
-    elif chapter_index is not None:
-        ch_prefix = f"{int(chapter_index)} "
-        q = q.filter(SkillCurriculum.chapter.startswith(ch_prefix))
+    if not _chapter_identity(ch):
+        return []
 
     prefix = f"{code} "
     q = q.filter(SkillCurriculum.section.startswith(prefix))
@@ -1141,15 +1260,22 @@ def _get_self_assessment_skill_candidates_v2(
         sid = _normalize_skill_id_quality(str(getattr(row, "skill_id", "") or ""))
         if not sid or sid in seen:
             continue
-        if sid.startswith("outline_") or _is_fallback_skill_id(sid):
+        if not _same_chapter_identity(row.chapter, ch):
+            continue
+        if sid.startswith("outline_"):
             continue
         sec_label = str(getattr(row, "section", "") or "")
         if not _section_code_boundary_matches(code, sec_label):
             continue
-        if SkillInfo.query.get(sid) is None:
+        skill = SkillInfo.query.get(sid)
+        if skill is None:
+            continue
+        if _is_fallback_skill_id(sid) and not _is_bound_formal_subsection_skill(
+            sid, row, skill, curriculum=curr, volume=vol,
+            chapter_title=ch, section_code=code,
+        ):
             continue
         seen.add(sid)
-        skill = SkillInfo.query.get(sid)
         candidates.append(
             {
                 "skill_id": sid,
@@ -1234,6 +1360,7 @@ def _ai_select_formal_skill_for_problem_v2(
                     "concept_name": str(hit.get("concept_name") or "").strip(),
                     "concept_en_id": str(hit.get("concept_en_id") or "").strip(),
                     "formal_skill_id": pick_id,
+                    "reason": str(parsed.get("reason") or "").strip(),
                 }
     except Exception as exc:
         _log_info(f"[antigravity][AI_SKILL_SELECT] failed title={source_description!r}: {exc}")
@@ -1325,6 +1452,7 @@ def _persist_formal_skill_from_docx_heading(
         section_code=sec_code,
         concept_code=concept_code,
         display_order=display_order,
+        allow_ai_description=not bool(curriculum_info.get('structural_skill_candidates')),
     )
     _log_info(
         (
@@ -1371,6 +1499,7 @@ def _build_anchor_blocks_v2(
     section_code: str = "",
     section_title: str = "",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> tuple[dict[str, str], dict[str, dict[str, str]]]:
     blocks: dict[str, str] = {}
     meta: dict[str, dict[str, str]] = {}
@@ -1386,6 +1515,7 @@ def _build_anchor_blocks_v2(
     current_exercise_level = ""
     problem_lines: list[str] = []
     solution_lines: list[str] = []
+    source_line_indices: set[int] = set()
 
     active_section_code = normalize_section_code(section_code)
     if not active_section_code and curriculum_info:
@@ -1402,16 +1532,40 @@ def _build_anchor_blocks_v2(
     current_concept_name = ""
     current_concept_en_id = ""
     current_formal_skill_id = ""
+    current_heading_provenance: dict[str, str] = {}
+    accepted_heading_subs: list[int] = []
     recent_context_lines: list[str] = []
+
+    def remember_heading(code: str, detection: dict) -> None:
+        nonlocal current_heading_provenance
+        from core.mathb_concept_heading import (
+            AUTHORITY_SOURCE_HEADING_RECOVERED,
+            concept_subindex,
+            section_code_from_concept_code,
+        )
+
+        sub = concept_subindex(code)
+        if sub is not None and section_code_from_concept_code(code) == active_section_code:
+            accepted_heading_subs.append(sub)
+        if str(detection.get("authority_source") or "") == AUTHORITY_SOURCE_HEADING_RECOVERED:
+            current_heading_provenance = {
+                "source_heading_raw": str(detection.get("source_heading_raw") or ""),
+                "recovered_heading": str(detection.get("recovered_heading") or ""),
+                "recovery_reason": str(detection.get("recovery_reason") or ""),
+                "authority_source": AUTHORITY_SOURCE_HEADING_RECOVERED,
+            }
+        else:
+            current_heading_provenance = {}
     heading_idx = 0
     current_concept_display_order = 0
 
     def flush_one() -> None:
-        nonlocal cur_key, cur_anchor, cur_source_type, in_solution, problem_lines, solution_lines
+        nonlocal cur_key, cur_anchor, cur_source_type, in_solution, problem_lines, solution_lines, source_line_indices
         if not cur_key:
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
         stxt = _normalize_docx_line_text("\n".join(solution_lines)).strip()
+        ptxt, stxt = _cut_solution_residue(ptxt, stxt)
         if ptxt:
             blocks[cur_key] = ptxt
             sec_code = active_section_code
@@ -1444,12 +1598,47 @@ def _build_anchor_blocks_v2(
                 formal_skill_id=formal_sid,
                 display_order=display_order,
             )
+            if current_heading_provenance and concept_code:
+                meta[cur_key]["heading_provenance"] = dict(current_heading_provenance)
+            if read_only:
+                meta[cur_key]["source_line_indices"] = sorted(source_line_indices)
         cur_key = ""
         cur_anchor = ""
         cur_source_type = ""
         in_solution = False
         problem_lines = []
         solution_lines = []
+        source_line_indices = set()
+
+    def append_problem(value: str) -> None:
+        nonlocal in_solution
+        from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+        if in_solution:
+            append_solution(value)
+            return
+        split = split_student_stem_at_solution_marker(value) if str(value or "").strip() else None
+        if split is None:
+            problem_lines.append(value)
+            source_line_indices.add(idx)
+            return
+        prefix, rest = split
+        if prefix:
+            problem_lines.append(prefix)
+            source_line_indices.add(idx)
+        in_solution = True
+        if rest:
+            append_solution(rest)
+
+    def append_solution(value: str) -> None:
+        from core.textbook_solution_boundary import split_student_stem_at_solution_marker
+
+        split = split_student_stem_at_solution_marker(value) if str(value or "").strip() else None
+        if split is not None:
+            prefix, rest = split
+            value = "\n".join(part for part in (prefix, rest) if part)
+        solution_lines.append(value)
+        source_line_indices.add(idx)
 
     def start_block(anchor: str, source_type: str, first_problem_line: str = "") -> None:
         nonlocal cur_key, cur_anchor, cur_source_type, in_solution
@@ -1458,8 +1647,9 @@ def _build_anchor_blocks_v2(
         cur_key = anchor
         cur_source_type = source_type
         in_solution = False
+        source_line_indices.add(idx)
         if first_problem_line.strip():
-            problem_lines.append(first_problem_line.strip())
+            append_problem(first_problem_line.strip())
 
     scope_label = str((curriculum_info or {}).get("source_scope") or "section_textbook")
     line_list = list(lines or [])
@@ -1470,9 +1660,9 @@ def _build_anchor_blocks_v2(
         if not line:
             if cur_key:
                 if in_solution:
-                    solution_lines.append("")
+                    append_solution("")
                 else:
-                    problem_lines.append("")
+                    append_problem("")
             continue
 
         next_raw = [
@@ -1484,6 +1674,30 @@ def _build_anchor_blocks_v2(
             for x in line_list[max(0, idx - 6) : idx]
         ]
 
+        if is_b2_11(curriculum_info):
+            if re.match(r"^SDG\s*14\s*保育海洋生態", line):
+                in_practice_zone = in_exam_mode = in_key_mode = in_exercise_mode = False
+                start_block(SDG_TITLE, "textbook_example")
+                continue
+            if cur_anchor == SDG_TITLE:
+                if line.startswith("SDGS"):
+                    flush_one()
+                    continue
+                if not re.match(r"^1-1\.4\s", line):
+                    if "\\o\\ac(○,解)" in line or line == "解":
+                        in_solution = True
+                        continue
+                    # Word auto-numbering supplies (1), while (2) is literal text.
+                    if not in_solution and line.startswith("若有一鹽工"):
+                        line = "(1) " + line
+                    if in_solution and trigger_hit:
+                        if line.startswith("扇形夾角"):
+                            line = "(1) " + line
+                        elif line.startswith("鹽工巡視"):
+                            line = "(2) " + line
+                    (solution_lines if in_solution else problem_lines).append(line)
+                    continue
+
         parsed_concept = _parse_mathb_concept_line(
             line,
             section_code=active_section_code,
@@ -1492,6 +1706,21 @@ def _build_anchor_blocks_v2(
             current_source_scope=scope_label,
             current_concept_name=current_concept_name,
         )
+        if not parsed_concept:
+            from core.mathb_concept_heading import reconcile_inline_formula_heading
+
+            inline_heading = reconcile_inline_formula_heading(
+                line,
+                current_section_code=active_section_code,
+                candidates=(curriculum_info or {}).get("structural_skill_candidates"),
+            )
+            if inline_heading:
+                parsed_concept = (
+                    str(inline_heading.get("concept_code") or ""),
+                    str(inline_heading.get("concept_name") or ""),
+                    True,
+                    inline_heading,
+                )
         if not parsed_concept:
             sec_heading = _DOCX_SECTION_HEADING_RE.match(line)
             if sec_heading and not re.match(
@@ -1515,6 +1744,20 @@ def _build_anchor_blocks_v2(
             in_key_mode = False
             in_exercise_mode = False
             concept_code, docx_concept_name, switch_current, _det_meta = parsed_concept
+            if str(_det_meta.get("section_code") or "") != active_section_code:
+                from core.mathb_concept_heading import recover_section_local_numbered_heading
+
+                recovered_heading = recover_section_local_numbered_heading(
+                    _det_meta,
+                    current_section_code=active_section_code,
+                    accepted_subindexes=accepted_heading_subs,
+                    source_heading_raw=line,
+                )
+                if recovered_heading:
+                    concept_code = str(recovered_heading.get("concept_code") or "")
+                    docx_concept_name = str(recovered_heading.get("concept_name") or "")
+                    switch_current = True
+                    _det_meta = recovered_heading
             
             # Universal counter for concept headings
             heading_idx += 1
@@ -1524,11 +1767,16 @@ def _build_anchor_blocks_v2(
                 continue
             ch_title = str((curriculum_info or {}).get("chapter") or "").strip()
             vol_label = str((curriculum_info or {}).get("volume") or "").strip()
-            existing_sid = _find_existing_skill_id_by_section_and_ch_name(
+            existing_sid = None if read_only else _find_existing_skill_id_by_section_and_ch_name(
                 curriculum_info=curriculum_info,
                 section_code=active_section_code,
                 concept_name=docx_concept_name,
             )
+            if existing_sid and (curriculum_info or {}).get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+                from core.textbook_structural_metadata import resolve_heading_identity
+                checked = resolve_heading_identity(curriculum_info, concept_code, docx_concept_name)
+                if checked['formal_skill_id'] != existing_sid:
+                    raise ValueError('Existing heading lookup disagrees with scoped registry')
             if existing_sid:
                 current_concept_code = concept_code
                 current_concept_name = docx_concept_name
@@ -1546,9 +1794,13 @@ def _build_anchor_blocks_v2(
                     concept_en_id=current_concept_en_id,
                     formal_skill_id=existing_sid,
                 )
+                remember_heading(concept_code, _det_meta)
                 continue
+            if is_b2_11(curriculum_info):
+                raise ValueError(f"B2 1-1 requires existing heading skill: {docx_concept_name}")
             nearby = "\n".join(recent_context_lines[-6:] + [line]).strip()
-            resolved = _resolve_formal_concept_en_id_v2(
+            resolved = ({"concept_name": docx_concept_name, "concept_en_id": "", "formal_skill_id": ""}
+                        if read_only else _resolve_formal_concept_en_id_v2(
                 concept_name=docx_concept_name,
                 concept_code=concept_code,
                 section_title=active_section_title,
@@ -1556,7 +1808,7 @@ def _build_anchor_blocks_v2(
                 volume=vol_label,
                 nearby_text=nearby,
                 curriculum_info=curriculum_info,
-            )
+            ))
             concept_name = str(resolved.get("concept_name") or docx_concept_name).strip()
             if concept_name != docx_concept_name:
                 _log_info(
@@ -1579,7 +1831,7 @@ def _build_anchor_blocks_v2(
                         concept_code=concept_code,
                     )
                     active_section_code = new_sec
-            if not _det_meta.get("duplicate_merge"):
+            if not read_only and not _det_meta.get("duplicate_merge"):
                 _persist_formal_skill_from_docx_heading(
                     concept_code=concept_code,
                     concept_name=concept_name,
@@ -1603,6 +1855,7 @@ def _build_anchor_blocks_v2(
                 current_concept_name = concept_name
                 current_concept_en_id = concept_en_id
                 current_formal_skill_id = formal_skill_id
+                remember_heading(concept_code, _det_meta)
             continue
 
         if len(recent_context_lines) >= 12:
@@ -1645,7 +1898,7 @@ def _build_anchor_blocks_v2(
         if in_exam_mode and _KEY_RE.match(line):
             in_key_mode = True
             in_solution = True
-            solution_lines.append("KEY")
+            append_solution("KEY")
             continue
         if in_exam_mode and in_key_mode and _EXAM_STOP_RE.match(line):
             flush_one()
@@ -1689,10 +1942,20 @@ def _build_anchor_blocks_v2(
                 body = str(nm.group(2) or "").strip()
                 if _looks_like_practice_question_body(body):
                     anchor = f"隨堂練習{n}"
-                    if anchor in meta or anchor in blocks:
+                    existing_body = ""
+                    if anchor in blocks:
+                        existing_body = str(blocks.get(anchor) or "")
+                    elif anchor in meta:
+                        existing_body = str((meta.get(anchor) or {}).get("problem_text") or "")
+                    if existing_body and _looks_like_practice_question_body(existing_body):
+                        # Real practice already claimed this label.
                         continue
+                    # Heading-fragment false claim (or empty): allow real stem to take the label.
                     start_block(anchor, "in_class_practice", body)
                     continue
+                # Numbered exposition/heading inside a lingering zone — leave the zone.
+                if _practice_body_is_heading_fragment(body) or trigger_hit:
+                    in_practice_zone = False
             if (
                 trigger_hit
                 or _EXAM_START_RE.match(line)
@@ -1709,7 +1972,7 @@ def _build_anchor_blocks_v2(
                 body = str(em.group(2) or "").strip()
                 if not _looks_like_exercise_question_start(n, body):
                     if cur_key:
-                        problem_lines.append(line)
+                        append_problem(line)
                     continue
                 sec = f"{current_exercise_section}習題" if current_exercise_section else "習題"
                 lvl = current_exercise_level or "基礎題"
@@ -1740,7 +2003,7 @@ def _build_anchor_blocks_v2(
                         continue
             if trigger_hit and cur_source_type == "textbook_example" and problem_lines:
                 in_solution = True
-                solution_lines.append(line)
+                append_solution(line)
                 continue
             if in_exam_mode:
                 marker = _EXAM_MARKER_RE.search(line)
@@ -1750,24 +2013,24 @@ def _build_anchor_blocks_v2(
                     cur_anchor = f"{year}統測{cat}"
                     cur_key = cur_anchor
                 if in_key_mode:
-                    solution_lines.append(line)
+                    append_solution(line)
                 else:
-                    problem_lines.append(line)
+                    append_problem(line)
                 continue
             m_sol_inline = _SOLUTION_MARKER_INLINE_RE.match(line)
             if _SOLUTION_MARKER_ONLY_RE.match(line):
                 in_solution = True
-                solution_lines.append("解")
+                append_solution("解")
                 continue
             if m_sol_inline:
                 in_solution = True
                 tail = str(m_sol_inline.group(1) or "").strip()
-                solution_lines.append("解" + (f"\n{tail}" if tail else ""))
+                append_solution("解" + (f"\n{tail}" if tail else ""))
                 continue
             if in_solution:
-                solution_lines.append(line)
+                append_solution(line)
             else:
-                problem_lines.append(line)
+                append_problem(line)
     flush_one()
     return blocks, meta
 
@@ -1778,6 +2041,7 @@ def phase2_mathb_section_anchor_slice(
     section_code: str = "",
     section_title: str = "",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> dict[str, dict[str, str]]:
     """Deterministic anchor slicer for converted LaTeX DOCX (Math B section textbook)."""
     _, meta = _build_anchor_blocks_v2(
@@ -1785,6 +2049,7 @@ def phase2_mathb_section_anchor_slice(
         section_code=section_code,
         section_title=section_title,
         curriculum_info=curriculum_info,
+        read_only=read_only,
     )
     return meta
 
@@ -1795,6 +2060,7 @@ def phase2_mathb_chapter_self_assessment_slice(
     curriculum_info: dict | None = None,
     chapter_index: int | None = None,
     title_prefix: str = "",
+    read_only: bool = False,
 ) -> dict[str, dict[str, str]]:
     """Chapter-end self-assessment slicer for vocational Math B."""
     blob = "\n".join(str(ln or "") for ln in (lines or []))
@@ -1824,37 +2090,44 @@ def phase2_mathb_chapter_self_assessment_slice(
     cur_key = ""
     cur_anchor = ""
     problem_lines: list[str] = []
+    source_line_indices: set[int] = set()
     started = False
 
     def flush_one() -> None:
-        nonlocal cur_key, cur_anchor, problem_lines
+        nonlocal cur_key, cur_anchor, problem_lines, source_line_indices
         if not cur_key:
             return
         ptxt = _normalize_docx_line_text("\n".join(problem_lines)).strip()
+        ptxt, solution_text = _cut_solution_residue(ptxt, "")
         if ptxt:
             blocks[cur_key] = ptxt
             meta[cur_key] = _mathb_block_meta_base(
                 anchor=cur_anchor or cur_key,
                 source_type="self_assessment",
                 problem_text=ptxt,
-                detailed_solution="",
+                detailed_solution=solution_text,
                 section_code=current_section_code,
                 section_title=current_section_title,
                 formal_skill_id="",
             )
+            if read_only:
+                meta[cur_key]["source_line_indices"] = sorted(source_line_indices)
         cur_key = ""
         cur_anchor = ""
         problem_lines = []
+        source_line_indices = set()
 
     def start_question(num: int, first_line: str) -> None:
         nonlocal cur_key, cur_anchor, problem_lines
         flush_one()
         cur_anchor = f"{prefix} 題{num}"
         cur_key = cur_anchor
+        if read_only:
+            source_line_indices.add(line_index)
         if first_line.strip():
             problem_lines.append(first_line.strip())
 
-    for raw in lines or []:
+    for line_index, raw in enumerate(lines or []):
         trigger_hit, trigger_payload = _split_question_trigger(str(raw or ""))
         line = _normalize_docx_line_text(trigger_payload if trigger_hit else raw)
         if not line:
@@ -1888,6 +2161,8 @@ def phase2_mathb_chapter_self_assessment_slice(
             continue
         if cur_key:
             problem_lines.append(line)
+            if read_only:
+                source_line_indices.add(line_index)
 
     flush_one()
     _ = curriculum_info
@@ -2178,18 +2453,52 @@ def _scan_line_flushes_current_block(
 # ---------------------------------------------------------------------------
 
 
-def _phase1_emit_paragraph_line(lines: list[str], para) -> None:
+def _phase1_emit_paragraph_line(lines: list[str], para, *, locations: list[int] | None = None, paragraph_index: int = -1) -> None:
     """正規化 + 觸發注入，需先正規化再建 key。"""
-    text_clean = _normalize_docx_line_text(str(para.text or ""))
+    text_clean = _normalize_docx_line_text(_docx_paragraph_text_with_symbols(para))
     if not text_clean:
         return
     if _phase1_should_inject_question_trigger(para, text_clean):
         lines.append(f"{_QUESTION_TRIGGER_PREFIX} {text_clean}")
     else:
         lines.append(text_clean)
+    if locations is not None:
+        locations.append(paragraph_index)
 
 
-def phase1_extract_docx_lines(file_path: str) -> list[str]:
+def _docx_paragraph_text_with_symbols(para) -> str:
+    """Decode Word Symbol runs before python-docx discards w:sym nodes.
+
+    Work on a copy so source XML, formatting and question triggers stay intact.
+    Unknown font/code pairs remain explicit rather than silently losing a glyph.
+    """
+    from copy import deepcopy
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.text.paragraph import Paragraph
+
+    symbols = para._p.xpath('.//w:sym')
+    if not symbols:
+        return str(para.text or '')
+    node = deepcopy(para._p)
+    symbol_chars = {0x2B: '+', 0x2D: '−', 0xB0: '°'}
+    for symbol in node.xpath('.//w:sym'):
+        font = symbol.get(qn('w:font'), '')
+        code = symbol.get(qn('w:char'), '')
+        try:
+            number = int(code, 16)
+        except ValueError:
+            number = -1
+        if 0xF000 <= number <= 0xF0FF:
+            number -= 0xF000
+        value = symbol_chars.get(number) if font.casefold() == 'symbol' else None
+        replacement = OxmlElement('w:t')
+        replacement.text = value or f'[MATH_PARSE_FAILED:symbol:{font}:{code}]'
+        symbol.getparent().replace(symbol, replacement)
+    return Paragraph(node, para._parent).text
+
+
+def phase1_extract_docx_lines(file_path: str, *, curriculum_info: dict | None = None, locations: list[int] | None = None) -> list[str]:
     """Read all DOCX paragraphs and table cells into normalized lines."""
     from docx import Document
     from docx.table import Table
@@ -2197,15 +2506,43 @@ def phase1_extract_docx_lines(file_path: str) -> list[str]:
 
     doc = Document(file_path)
     lines: list[str] = []
+    paragraph_paths: dict[str, int] = {}
+    if locations is not None:
+        from pathlib import Path
+        from core.textbook_importer_v3_docx import _element_xml_path, parse_docx_structure
+        structure = parse_docx_structure(Path(file_path).read_bytes(), include_blocks=True)
+        for item in structure.get("blocks") or []:
+            paragraphs = ([item] if item.get("type") == "paragraph" else [
+                para for row in item.get("rows") or []
+                for cell in row.get("cells") or []
+                for para in cell.get("paragraphs") or []
+            ])
+            for para in paragraphs:
+                paragraph_paths[str(para.get("xml_path") or "")] = int(para["paragraph_index"])
+    def emit(para) -> None:
+        path = _element_xml_path(para._p) if locations is not None else ""
+        _phase1_emit_paragraph_line(lines, para, locations=locations,
+                                    paragraph_index=paragraph_paths.get(path, -1))
     for block in doc.element.body.iterchildren():
         if block.tag.endswith("}p"):
-            _phase1_emit_paragraph_line(lines, Paragraph(block, doc))
+            emit(Paragraph(block, doc))
         elif block.tag.endswith("}tbl"):
             tbl = Table(block, doc)
+            if (is_b2_11(curriculum_info) and len(tbl.rows) == 2
+                    and len(tbl.columns) == 12 and tbl.cell(0, 0).text.strip() == "度"
+                    and tbl.cell(1, 0).text.strip() == "弧度"):
+                # Preserve every original column, including empty answer cells.
+                rows = [[_normalize_docx_line_text(c.text) for c in r.cells] for r in tbl.rows]
+                lines.append("| " + " | ".join(rows[0]) + " |")
+                lines.append("| " + " | ".join(["---"] * 12) + " |")
+                lines.append("| " + " | ".join(rows[1]) + " |")
+                if locations is not None:
+                    locations.extend([-1, -1, -1])
+                continue
             for row in tbl.rows:
                 for cell in row.cells:
                     for para in cell.paragraphs:
-                        _phase1_emit_paragraph_line(lines, para)
+                        emit(para)
     return lines
 
 
@@ -2219,6 +2556,7 @@ def phase2_deterministic_block_slice(
     *,
     source_scope: str = "section_textbook",
     curriculum_info: dict | None = None,
+    read_only: bool = False,
 ) -> dict[str, str]:
     """
     Layout-Aware 確定性題塊切分。
@@ -2236,9 +2574,27 @@ def phase2_deterministic_block_slice(
     sa_ctx: dict[str, Any] | None = None
     if is_sa_scope or scope != "section_textbook":
         sa_ctx = detect_chapter_self_assessment_context(blob)
+    if is_sa_scope and sa_ctx and not (
+        _CH_SA_CH_MARKER_RE.search(blob) or _CH_SA_ZH_CHAPTER_RE.search(blob)
+    ):
+        # A chapter-end worksheet may omit its chapter number in the body.
+        # Use the filename's authoritative chapter metadata for question labels.
+        chapter_index = (curriculum_info or {}).get("chapter_index")
+        try:
+            chapter_number = int(chapter_index)
+        except (TypeError, ValueError):
+            chapter_number = None
+        if chapter_number is not None:
+            sa_ctx = dict(sa_ctx)
+            sa_ctx["chapter_num"] = chapter_number
+            sa_ctx["title_prefix"] = f"第{chapter_number}章自我評量"
     if is_sa_scope and not sa_ctx:
         m_ch = _CH_SA_CH_MARKER_RE.search(blob)
-        ch_num = int(m_ch.group(1)) if m_ch else 1
+        try:
+            file_ch_num = int((curriculum_info or {}).get("chapter_index") or 1)
+        except (TypeError, ValueError):
+            file_ch_num = 1
+        ch_num = int(m_ch.group(1)) if m_ch else file_ch_num
         sa_ctx = {
             "mode": "chapter_self_assessment",
             "chapter_num": ch_num,
@@ -2728,6 +3084,7 @@ def phase2_deterministic_block_slice(
             curriculum_info=curriculum_info,
             chapter_index=sa_ch_index,
             title_prefix=sa_prefix,
+            read_only=read_only,
         )
         sa_blocks = {
             k: str(v.get("problem_text") or "").strip()
@@ -2747,6 +3104,7 @@ def phase2_deterministic_block_slice(
         section_code=section_code or "",
         section_title=sec_title,
         curriculum_info=curriculum_info if is_vocational_mathb else None,
+        read_only=read_only,
     )
     anchor_blocks = {k: str(v.get("problem_text") or "").strip() for k, v in anchor_meta.items()}
     # Anchor-first: use explicit DOCX anchors as canonical blocks when available.
@@ -3102,6 +3460,12 @@ def phase3_ai_metadata_alignment(
 ) -> dict:
     """Gemini 對齊章節概念 JSON，必要時分塊合併。"""
     keys = list(blocks_keys or [])
+    if curriculum_info.get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+        from core.textbook_structural_metadata import align_structural_metadata
+        return align_structural_metadata(keys, _DOCX_BLOCK_META, curriculum_info)
+    if is_b2_11(curriculum_info):
+        from core.textbook_b2_11 import align_existing_skills
+        return align_existing_skills(keys, _DOCX_BLOCK_META, curriculum_info)
     chunks = _chunk_blocks_keys_for_phase3(keys)
     total = len(chunks)
 
@@ -3132,14 +3496,20 @@ def phase3_ai_metadata_alignment(
 
 
 def _sanitize_db_latex_delimiters(text: str) -> str:
-    """入庫前將 \\[ / \\] 轉 $，避免欄位錯位。"""
+    """入庫前將 \\[ / \\] 轉 $，並正規化 MathType 平行符號。"""
     if not text:
         return ""
-    return str(text).replace(r"\[", "$").replace(r"\]", "$")
+    from core.mtef.latex_normalize import normalize_parallel_latex
+
+    sanitized = normalize_parallel_latex(str(text))
+    return sanitized.replace(r"\[", "$").replace(r"\]", "$")
 
 
 def _extract_loose_question_number(title: str) -> str | None:
     """從 Gemini 標題寬鬆擷取題號（例 9）。"""
+    question = re.search(r"題\s*(\d+)", str(title or ""))
+    if question:
+        return question.group(1)
     m = re.search(r"(\d+)", str(title or ""))
     return m.group(1) if m else None
 
@@ -3224,6 +3594,21 @@ def normalize_chapter_title_for_db(chapter_title: str) -> str:
     num = str(m.group(1)).strip()
     rest = str(m.group(2) or "").strip()
     return f"{num} {rest}".strip() if rest else num
+
+
+def _chapter_identity(chapter_title: str) -> tuple[int, str] | None:
+    """Compare chapter number and title, independent of the printed prefix."""
+    normalized = _normalize_outline_chapter_title_strict(chapter_title)
+    match = re.fullmatch(r"(\d+)\s+(.+)", normalized)
+    if not match:
+        return None
+    title = re.sub(r"\s+", " ", unicodedata.normalize("NFKC", match.group(2))).strip()
+    return (int(match.group(1)), title.casefold()) if title else None
+
+
+def _same_chapter_identity(left: str, right: str) -> bool:
+    first, second = _chapter_identity(left), _chapter_identity(right)
+    return first is not None and first == second
 
 
 MATHB1_CHAPTER1_CANONICAL_TITLE = "1 坐標系與函數圖形"
@@ -4364,6 +4749,8 @@ def _phase4_resolve_mathb_formal_binding(
     item_sec_code: str,
     coords: dict[str, Any],
     source_description: str = "",
+    requested_skill_id: str = "",
+    mapping_status: str = "",
 ) -> tuple[str, str, SkillCurriculum] | None:
     """
     Resolve formal skill + SkillCurriculum for Math B.
@@ -4386,6 +4773,20 @@ def _phase4_resolve_mathb_formal_binding(
         return None
     if sec_code and not _section_code_boundary_matches(sec_code, section_auth["section_title"]):
         return None
+    if mapping_status == "section_outline_fallback":
+        _log_info(
+            f"[PHASE4_SKIP] reason=unresolved_leaf title={anchor!r} "
+            f"section_code={sec_code!r} requested_skill_id={requested_skill_id!r}"
+        )
+        return None
+    if mapping_status == "unresolved_leaf" or not requested_skill_id and str(
+        block_meta.get("needs_skill_resolution") or ""
+    ).lower() in {"true", "1"}:
+        _log_info(
+            f"[PHASE4_SKIP] reason=unresolved_leaf title={anchor!r} "
+            f"section_code={sec_code!r}"
+        )
+        return None
 
     outline_item = ImportAuthority(
         source_scope=str((curriculum_info or {}).get("source_scope") or "section_textbook"),
@@ -4405,6 +4806,11 @@ def _phase4_resolve_mathb_formal_binding(
         normalize_chapter_title_for_db(section_auth["chapter_title"])
         or section_auth["chapter_title"]
     )
+
+    if is_b2_11(curriculum_info):
+        from core.textbook_b2_11 import existing_skill
+        row = existing_skill(curriculum_info, docx_concept_name, formal_skill_id)
+        return docx_concept_name, row.skill_id, row
 
     ai_source_type = _normalize_mathb_ai_source_type(source_type, anchor)
 
@@ -4479,6 +4885,27 @@ def _phase4_resolve_mathb_formal_binding(
         )
         return concept_name, pick_id, formal_curriculum
 
+    if (
+        not formal_skill_id
+        and requested_skill_id.startswith("vh_")
+    ):
+        # Phase 3 already supplied a formal section skill. It is validated
+        # against SkillCurriculum below before use.
+        # Preserve that decision instead of invoking semantic skill selection.
+        formal_skill_id = requested_skill_id
+    if (
+        not formal_skill_id
+        and docx_concept_code
+        and docx_concept_name
+        and (curriculum_info or {}).get("structural_skill_candidates")
+    ):
+        from core.textbook_structural_metadata import resolve_heading_identity
+
+        structural = resolve_heading_identity(
+            curriculum_info, docx_concept_code, docx_concept_name
+        )
+        formal_skill_id = str(structural["formal_skill_id"])
+        concept_en_id = str(structural["concept_en_id"])
     if formal_skill_id and formal_skill_id.startswith("vh_"):
         concept_name = docx_concept_name
     else:
@@ -4602,6 +5029,10 @@ def _phase4_resolve_mathb_formal_binding(
         section_code=sec_code,
         concept_code=docx_concept_code,
         display_order=display_order_val,
+        allow_ai_description=not bool(
+            (curriculum_info or {}).get("structural_skill_candidates")
+            or (curriculum_info or {}).get("plain_source_headings")
+        ),
     )
     final_ch = docx_concept_name or concept_name
     bind_source = (
@@ -4699,8 +5130,11 @@ def phase4_absolute_hydrate_and_save(
     question_blocks: dict[str, str],
     curriculum_info: dict,
     queue,
-) -> dict[str, int]:
-    """絕對注水題幹並 Upsert 題庫。"""
+    target_source_types: set[str] | None = None,
+    insert_missing_only: bool = False,
+    commit: bool = True,
+) -> dict[str, Any]:
+    """絕對注水題幹並 Upsert 題庫；opt-in backfill 可跳過既有題。"""
     coords = _import_scope_coords(curriculum_info)
     subject, vol_num = parse_volume(coords["volume"])
     is_vocational_mathb = coords["curriculum"] == "vocational" and subject == "B"
@@ -4709,14 +5143,19 @@ def phase4_absolute_hydrate_and_save(
     inserted = 0
     updated = 0
     hydrated = 0
+    resolved_count = 0
     skipped = 0
+    existing_skipped = 0
+    backfill_decisions: list[dict[str, Any]] = []
     outline_shield_skipped = 0
     skills_category_fixed = 0
     skipped_fragment_count = 0
     loose_match_skipped_count = 0
     self_assessment_imported = 0
     self_assessment_skipped = 0
+    calculator_required_skip_audit: list[dict[str, str]] = []
     needs_review = 0
+    unresolved_skill_bindings: list[dict[str, str]] = []
     anchor_compact_map = {_compact_title_key(k): k for k in _DOCX_BLOCK_META.keys()}
 
     if queue is not None:
@@ -4804,6 +5243,9 @@ def phase4_absolute_hydrate_and_save(
                         block_meta = _DOCX_BLOCK_META.get(matched_key or "", {})
                         if block_meta.get("source_type"):
                             source_type = str(block_meta.get("source_type"))
+                        if target_source_types is not None and source_type not in target_source_types:
+                            skipped += 1
+                            continue
 
                         item_auth = ImportAuthorityResolver.resolve_phase4_item_authority(
                             source_scope=str(
@@ -4839,6 +5281,18 @@ def phase4_absolute_hydrate_and_save(
                             )
                             skipped_fragment_count += 1
                             skipped += 1
+                            continue
+                        calculator_skip = chapter4_calculator_skip(
+                            curriculum_info,
+                            db_problem_text,
+                            str(block_meta.get("anchor") or matched_key or title or ""),
+                        )
+                        if calculator_skip:
+                            calculator_required_skip_audit.append(calculator_skip)
+                            _log_info(
+                                "[antigravity] calculator_required "
+                                f"source_label={calculator_skip['source_label']!r}"
+                            )
                             continue
                         db_answer_raw = item.get("correct_answer")
                         if db_answer_raw is None or str(db_answer_raw).strip() == "":
@@ -4881,6 +5335,8 @@ def phase4_absolute_hydrate_and_save(
                                 source_description=str(
                                     block_meta.get("anchor") or title or ""
                                 ).strip(),
+                                requested_skill_id=str(item.get("skill_id") or "").strip(),
+                                mapping_status=str(item.get("mapping_status") or "").strip(),
                             )
                             if resolved is None:
                                 _shield_log_missing_outline(
@@ -4892,12 +5348,42 @@ def phase4_absolute_hydrate_and_save(
                                     curriculum_info=curriculum_info,
                                 )
                                 outline_shield_skipped += 1
+                                skipped += 1
+                                needs_review += 1
+                                unresolved_skill_bindings.append({
+                                    "source_label": str(block_meta.get("anchor") or title),
+                                    "section": str(item_sec_code or ""),
+                                    "source_type": str(source_type or ""),
+                                    "mapping_status": str(item.get("mapping_status") or ""),
+                                    "skip_reason": "unresolved_leaf",
+                                })
+                                if source_type == "self_assessment":
+                                    self_assessment_skipped += 1
+                                continue
+                            concept_name_final, skill_id, authority_row = resolved
+                            auth = _curriculum_authority_coords(authority_row)
+                            binding_ok, binding_reason = validate_existing_skill_binding_for_import(
+                                skill_id,
+                                source_type=source_type,
+                                section_code=item_sec_code,
+                                curriculum_info=curriculum_info,
+                                chapter_title=auth["chapter_title"],
+                            )
+                            if not binding_ok:
+                                _shield_log_phase4_skip(
+                                    f"invalid_final_skill:{binding_reason}",
+                                    title=title,
+                                    section_code=item_sec_code,
+                                    queue=queue,
+                                    gemini_section_title=gemini_section_title,
+                                )
+                                outline_shield_skipped += 1
+                                skipped += 1
                                 if source_type == "self_assessment":
                                     self_assessment_skipped += 1
                                     needs_review += 1
                                 continue
-                            concept_name_final, skill_id, authority_row = resolved
-                            auth = _curriculum_authority_coords(authority_row)
+                            resolved_count += 1
                             _log_info(
                                 f"[antigravity] mathb formal-bind title={title!r} "
                                 f"sec_code={item_sec_code!r} skill_id={skill_id!r} "
@@ -5006,6 +5492,25 @@ def phase4_absolute_hydrate_and_save(
                                 source_type=source_type,
                                 title=title,
                             )
+                        if existing is not None and not _problem_texts_compatible_for_missing_skip(
+                            str(getattr(existing, "problem_text", "") or ""),
+                            str(db_problem_text or ""),
+                        ):
+                            # Title collision with incompatible body (e.g. heading fragment
+                            # stole 隨堂練習N). Allow insert_missing_only to create the real item.
+                            existing = None
+
+                        if existing is not None and insert_missing_only:
+                            skipped += 1
+                            existing_skipped += 1
+                            backfill_decisions.append({
+                                "source_type": source_type,
+                                "source_label": source_description,
+                                "existing_db_id": existing.id,
+                                "skill_id": existing.skill_id,
+                                "decision": "EXISTING_SKIP",
+                            })
+                            continue
 
                         try:
                             difficulty_level = int(item.get("difficulty_level", 1))
@@ -5057,13 +5562,24 @@ def phase4_absolute_hydrate_and_save(
                             )
                             db.session.add(new_row)
                             inserted += 1
+                            if insert_missing_only:
+                                backfill_decisions.append({
+                                    "source_type": source_type,
+                                    "source_label": source_description,
+                                    "existing_db_id": None,
+                                    "skill_id": skill_id,
+                                    "decision": "NEW_INSERT",
+                                })
 
                         if category_fixed:
                             skills_category_fixed += 1
                         if source_type == "self_assessment":
                             self_assessment_imported += 1
 
-    db.session.commit()
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     total = inserted + updated
     if queue is not None:
         queue.put(
@@ -5075,7 +5591,9 @@ def phase4_absolute_hydrate_and_save(
             f"loose_match_skipped_count={loose_match_skipped_count} "
             f"self_assessment={self_assessment_imported} "
             f"self_assessment_skipped={self_assessment_skipped} "
-            f"needs_review={needs_review}"
+            f"calculator_required_skipped={len(calculator_required_skip_audit)} "
+            f"needs_review={needs_review} "
+            f"unresolved_skill_bindings={len(unresolved_skill_bindings)}"
         )
         queue.put(
             "INFO: Import complete: "
@@ -5088,7 +5606,10 @@ def phase4_absolute_hydrate_and_save(
         "updated": updated,
         "total": total,
         "hydrated": hydrated,
+        "resolved": resolved_count,
         "skipped": skipped,
+        "existing_skipped": existing_skipped,
+        "backfill_decisions": backfill_decisions,
         "curriculums_added": 0,
         "skills_added": 0,
         "skills_processed": 0,
@@ -5099,7 +5620,10 @@ def phase4_absolute_hydrate_and_save(
         "self_assessment_imported": self_assessment_imported,
         "self_assessments_imported": self_assessment_imported,
         "self_assessment_skipped": self_assessment_skipped,
+        "calculator_required_skipped": len(calculator_required_skip_audit),
+        "calculator_required_skip_audit": calculator_required_skip_audit,
         "needs_review": needs_review,
+        "unresolved_skill_bindings": unresolved_skill_bindings,
     }
 
 
@@ -5691,7 +6215,7 @@ def process_textbook_file_v2(file_path: str, curriculum_info: dict, queue) -> di
             queue.put(f"INFO: [antigravity] 開始處理 DOCX：{file_path}")
         _log_info(f"[antigravity] process_textbook_file_v2 path={file_path}")
 
-        lines = phase1_extract_docx_lines(file_path)
+        lines = phase1_extract_docx_lines(file_path, curriculum_info=curriculum_info)
         if queue is not None:
             queue.put(f"INFO: [antigravity] Phase1 lines={len(lines)}")
 

@@ -11,6 +11,7 @@ import json
 import queue
 import re
 import shutil
+import sqlite3
 import threading
 import traceback
 import uuid
@@ -18,9 +19,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from flask import has_app_context
+
 from core.globals import TASK_QUEUES, V3_IMPORT_TASKS
+from core.textbook_b2_11 import is_b2_11, existing_outline, existing_skill
+from core.mathb_chapter4_calculator_skip import (
+    chapter4_corpus_acceptance,
+    is_b3_chapter4,
+    replacement_counts_match,
+)
 from core.mathb_concept_heading import is_persistable_concept_code
-from core.textbook_importer_v3_docx import parse_docx_summary
+from core.textbook_importer_v3_docx import parse_docx_summary, extract_docx_skill_headings
 from core.textbook_importer_v3_orchestrate import build_curriculum_info_for_v3_import
 from core.textbook_importer_v3_phase3_dryrun import GeminiUsageTracker
 from core.textbook_mathtype_converter import convert_docx_mathtype_to_latex_docx
@@ -100,6 +109,28 @@ class V3PipelineError(Exception):
         self.error_code = error_code
         self.message = message
         self.details = details
+
+
+def _resolve_failed_stage(task_id: str, fallback: str = STAGE_FILE_VALIDATION) -> str:
+    """Prefer the stage still marked running; never label an exception as COMPLETE."""
+    state = V3_IMPORT_TASKS.get(task_id) or {}
+    stages = state.get("stages") or {}
+    for stage_name, info in stages.items():
+        if stage_name == STAGE_COMPLETE:
+            continue
+        if isinstance(info, dict) and info.get("status") == "running":
+            return stage_name
+    # Fall back to the most recently updated non-COMPLETE stage when available.
+    latest_name = fallback
+    latest_ts = ""
+    for stage_name, info in stages.items():
+        if stage_name == STAGE_COMPLETE or not isinstance(info, dict):
+            continue
+        ts = str(info.get("updated_at") or "")
+        if ts >= latest_ts:
+            latest_ts = ts
+            latest_name = stage_name
+    return latest_name or fallback
 
 
 def _utc_now() -> str:
@@ -207,8 +238,8 @@ def _latex_output_path(docx_path: Path) -> Path:
     return docx_path.with_name(f"{docx_path.stem}_Latex.docx")
 
 
-def ensure_db_backup(*, project_root: Path, label: str = "v3_import") -> dict[str, Any]:
-    """Copy instance/kumon_math.db into instance/backups before Phase4."""
+def ensure_db_backup(*, project_root: Path, label: str = "v3_import", online: bool = False) -> dict[str, Any]:
+    """Back up the DB before Phase4; online mode includes committed WAL content."""
     db_path = project_root / "instance" / "kumon_math.db"
     backup_dir = project_root / "instance" / "backups"
     backup_dir.mkdir(parents=True, exist_ok=True)
@@ -220,8 +251,109 @@ def ensure_db_backup(*, project_root: Path, label: str = "v3_import") -> dict[st
         )
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     dest = backup_dir / f"kumon_math_before_{label}_{stamp}.db"
-    shutil.copy2(db_path, dest)
+    if online:
+        source = sqlite3.connect(f"file:{db_path.as_posix()}?mode=ro", uri=True)
+        target = sqlite3.connect(dest)
+        try:
+            source.backup(target)
+            if target.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+                raise V3PipelineError(STAGE_DB_WRITE, "db_backup_invalid", "Backup integrity check failed")
+        finally:
+            target.close()
+            source.close()
+    else:
+        shutil.copy2(db_path, dest)
     return {"backup_path": str(dest), "source_path": str(db_path), "created": True}
+
+
+def _replace_section_coords(curriculum_info: dict[str, Any]) -> dict[str, str]:
+    """Require an exact, grade-checked section identity before a replace."""
+    from core.textbook_processor import grade_for_vocational_math_volume
+
+    curriculum = str(curriculum_info.get("curriculum") or "").strip()
+    volume = str(curriculum_info.get("volume") or "").strip()
+    chapter = str(curriculum_info.get("chapter") or "").strip()
+    section = str(curriculum_info.get("section") or "").strip()
+    source_scope = str(curriculum_info.get("source_scope") or "").strip()
+    expected_grade = grade_for_vocational_math_volume(volume)
+    try:
+        grade = int(curriculum_info.get("grade"))
+    except (TypeError, ValueError):
+        grade = None
+    if (curriculum != "vocational" or source_scope != "section_textbook"
+            or not chapter or not section or expected_grade is None or grade != expected_grade):
+        raise V3PipelineError(
+            STAGE_DB_WRITE, "invalid_replace_section_scope",
+            "Replace requires one authoritative vocational textbook section with matching grade",
+        )
+    return {
+        "source_curriculum": curriculum, "source_volume": volume,
+        "source_chapter": chapter, "source_section": section,
+    }
+
+
+def _replace_section_existing_rows(curriculum_info: dict[str, Any]) -> tuple[dict[str, str], list[Any]]:
+    from models import TextbookExample
+
+    coords = _replace_section_coords(curriculum_info)
+    same_section_rows = TextbookExample.query.filter_by(
+        source_curriculum=coords["source_curriculum"],
+        source_volume=coords["source_volume"],
+        source_section=coords["source_section"],
+    ).all()
+    if any(row.source_chapter != coords["source_chapter"] for row in same_section_rows):
+        raise V3PipelineError(STAGE_DB_WRITE, "replace_chapter_mismatch",
+                              "Existing section rows have a different chapter; replacement stopped")
+    return coords, TextbookExample.query.filter_by(**coords).all()
+
+
+def _require_verified_replace_backup(backup_info: dict[str, Any]) -> None:
+    if not backup_info.get("created") or not Path(str(backup_info.get("backup_path") or "")).is_file():
+        raise V3PipelineError(STAGE_DB_WRITE, "db_backup_failed",
+                              "Verified DB backup required before replace")
+
+
+def _replace_section_transaction(
+    *, curriculum_info: dict[str, Any], phase3_parsed: dict[str, Any],
+    question_blocks: dict[str, str], target_source_types: set[str], task_queue: Any,
+) -> tuple[dict[str, Any], list[int], dict[str, str]]:
+    """Delete and insert exactly one section in one transaction after preflight/backup."""
+    import core.textbook_processor_v2 as tpv2
+    from models import TextbookExample, db
+
+    coords, existing_rows = _replace_section_existing_rows(curriculum_info)
+    deleted_ids = [row.id for row in existing_rows]
+    try:
+        if deleted_ids:
+            placeholders = ",".join("?" for _ in deleted_ids)
+            linked_count = db.session.connection().exec_driver_sql(
+                f"SELECT COUNT(*) FROM gencode_component_tracker WHERE textbook_example_id IN ({placeholders})",
+                tuple(deleted_ids),
+            ).scalar_one()
+            if linked_count:
+                raise V3PipelineError(STAGE_DB_WRITE, "replace_has_gencode_links",
+                                      "Section has generator tracker rows; replacement would orphan them")
+        db.session.query(TextbookExample).filter_by(**coords).delete(synchronize_session=False)
+        stats = tpv2.phase4_absolute_hydrate_and_save(
+            phase3_parsed, question_blocks, curriculum_info, task_queue,
+            target_source_types=target_source_types, commit=False,
+        )
+        if not replacement_counts_match(
+            inserted=int(stats.get("inserted") or 0),
+            updated=int(stats.get("updated") or 0),
+            parsed=len(question_blocks),
+            calculator_required_skipped=int(stats.get("calculator_required_skipped") or 0),
+        ):
+            raise V3PipelineError(
+                STAGE_DB_WRITE, "replace_insert_incomplete",
+                "Replacement insert count differs from scoped parser question count",
+                details={"expected": len(question_blocks), "actual": stats},
+            )
+        db.session.commit()
+        return stats, deleted_ids, coords
+    except Exception:
+        db.session.rollback()
+        raise
 
 
 def _extract_chapter_title_from_lines(lines: list[str]) -> str:
@@ -241,6 +373,107 @@ def _extract_chapter_title_from_lines(lines: list[str]) -> str:
     return ""
 
 
+def _coerce_chapter_index(value: Any) -> int | None:
+    if value is None or str(value).strip() == "":
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _resolve_catalog_chapter_title(
+    *,
+    curriculum: str,
+    volume: str,
+    chapter_index: int | None,
+    chapter_label: str = "",
+) -> str:
+    """Resolve a production SkillCurriculum chapter title by chapter number.
+
+    Uses existing chapter-identity normalization so ``第2章 …`` /
+    ``2 …`` / ``第 2 章 …`` match the same catalog chapter. Never invents
+    a chapter title when the catalog has no hit.
+    """
+    from models import SkillCurriculum
+    from core.textbook_processor_v2 import _chapter_identity
+
+    idx = _coerce_chapter_index(chapter_index)
+    if idx is None:
+        label_id = _chapter_identity(chapter_label)
+        if label_id is not None:
+            idx = label_id[0]
+    if idx is None:
+        return ""
+
+    curr = str(curriculum or "").strip()
+    vol = str(volume or "").strip()
+    if not curr or not vol:
+        return ""
+
+    hits: list[str] = []
+    seen: set[str] = set()
+    rows = (
+        SkillCurriculum.query.filter(
+            SkillCurriculum.curriculum == curr,
+            SkillCurriculum.volume == vol,
+        )
+        .order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.id.asc())
+        .all()
+    )
+    for row in rows:
+        title = str(getattr(row, "chapter", "") or "").strip()
+        if not title or title in seen:
+            continue
+        identity = _chapter_identity(title)
+        if identity is None or identity[0] != idx:
+            continue
+        seen.add(title)
+        hits.append(title)
+    if not hits:
+        return ""
+    for title in hits:
+        if title.startswith("第"):
+            return title
+    return hits[0]
+
+
+def _chapter_self_assessment_outline_skip(chapter: str) -> dict[str, Any]:
+    """Document-level outline is not required for chapter self-assessment."""
+    return {
+        "action": "skipped_chapter_scope",
+        "wrote": False,
+        "chapter": str(chapter or "").strip(),
+        "section": "",
+        "section_code": "",
+        "skill_id": None,
+        "reason": "chapter_self_assessment_uses_question_level_sections",
+    }
+
+
+def _textbook_example_scope_query(curriculum_info: dict[str, Any], volume: str):
+    """Return the display/count scope used by the importer result UI."""
+    from models import TextbookExample
+
+    query = TextbookExample.query.filter_by(
+        source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
+        source_volume=str(curriculum_info.get("volume") or volume),
+    )
+    if str(curriculum_info.get("source_scope") or "") == "chapter_self_assessment":
+        chapter = str(curriculum_info.get("chapter") or "").strip()
+        if not chapter:
+            raise V3PipelineError(
+                STAGE_CURRICULUM_BINDING,
+                "missing_authoritative_chapter",
+                "Chapter self-assessment requires chapter authority",
+            )
+        return query.filter_by(
+            source_chapter=chapter,
+            problem_type="self_assessment",
+        )
+    return query.filter_by(source_section=str(curriculum_info.get("section") or ""))
+
+
 def _fill_chapter_section_from_outline_or_lines(
     curriculum_info: dict[str, Any],
     lines: list[str],
@@ -250,14 +483,93 @@ def _fill_chapter_section_from_outline_or_lines(
     chapter = str(info.get("chapter") or "").strip()
     section = str(info.get("section") or "").strip()
 
+    source_scope = str(info.get("source_scope") or "").strip()
+    filename_meta = dict(info.get("filename_meta") or {})
+    chapter_index = (
+        info.get("chapter_index")
+        if info.get("chapter_index") is not None
+        else filename_meta.get("chapter_index")
+    )
+    chapter_label = str(
+        info.get("chapter_label") or filename_meta.get("chapter_label") or ""
+    ).strip()
+    section_title = str(
+        info.get("section_title") or filename_meta.get("section_title") or ""
+    ).strip()
+    section_index = (
+        info.get("section_index")
+        if info.get("section_index") is not None
+        else filename_meta.get("section_index")
+    )
+
+    from flask import current_app
+
+    current_app.logger.info(
+        "[CURRICULUM_BINDING_INPUT] "
+        f"final_scope={source_scope!r} "
+        f"authority_source=filename_meta "
+        f"chapter_index={chapter_index!r} "
+        f"chapter_label={chapter_label!r} "
+        f"section_code={section_code!r} "
+        f"section_index={section_index!r} "
+        f"section_title={section_title[:120]!r}"
+    )
+
     from core.textbook_processor_v2 import (
         _canonical_outline_section_title,
+        _chapter_index_from_section_code,
         _lookup_outline_section_curriculum_row,
     )
+
+    # For section_textbook with authoritative filename_meta, derive chapter/section
+    # directly before falling back to outline DB or line scanning.
+    if source_scope == "section_textbook" and section_code and chapter_index is not None:
+        code_chapter_index = _chapter_index_from_section_code(section_code)
+        if code_chapter_index is not None and code_chapter_index != chapter_index:
+            current_app.logger.warning(
+                "[CURRICULUM_BINDING_FAILED] "
+                f"reason=chapter_section_mismatch "
+                f"chapter_index={chapter_index!r} "
+                f"section_code_chapter_index={code_chapter_index!r} "
+                f"section_code={section_code!r} "
+                f"available_keys=chapter_index, section_code, section_index"
+            )
+            raise V3PipelineError(
+                STAGE_CURRICULUM_BINDING,
+                "authoritative_chapter_section_conflict",
+                f"Filename chapter_index {chapter_index} conflicts with "
+                f"section_code {section_code}",
+                details={
+                    "chapter_index": chapter_index,
+                    "section_code": section_code,
+                    "section_index": section_index,
+                },
+            )
+        if not chapter:
+            chapter = chapter_label or f"第{chapter_index}章"
+        if not section:
+            _, section = _canonical_outline_section_title(
+                section_code,
+                section_title or section_code,
+            )
 
     if section_code:
         outline = _lookup_outline_section_curriculum_row(info, section_code)
         if outline is not None:
+            # A filename chapter number is incomplete metadata, not a new title.
+            # Reuse the catalog title only for the same section and chapter index.
+            outline_chapter = str(outline.chapter or "").strip()
+            chapter_match = re.match(r"^第(\d+)章", outline_chapter)
+            if (re.fullmatch(r"第\d+章", chapter)
+                    and chapter_match
+                    and chapter == f"第{chapter_match.group(1)}章"
+                    and re.sub(r"\s+", "", section) == re.sub(r"\s+", "", str(outline.section or ""))):
+                chapter = outline_chapter
+                section = str(outline.section).strip()
+            if is_b2_11(info):
+                # B2 1-1 reuses its existing curriculum names, not the numeric filename label.
+                chapter = str(outline.chapter or "").strip()
+                section = str(outline.section or "").strip()
             if not chapter:
                 chapter = str(outline.chapter or "").strip()
             if not section:
@@ -272,6 +584,16 @@ def _fill_chapter_section_from_outline_or_lines(
         ).strip()
         _, section = _canonical_outline_section_title(section_code, section_hint)
 
+    if not chapter and source_scope == "chapter_self_assessment":
+        # Chapter-level self-assessment has no document section_code; resolve
+        # the catalog chapter from curriculum/volume/chapter_index (+ label).
+        chapter = _resolve_catalog_chapter_title(
+            curriculum=str(info.get("curriculum") or "").strip(),
+            volume=str(info.get("volume") or "").strip(),
+            chapter_index=_coerce_chapter_index(chapter_index),
+            chapter_label=chapter_label,
+        )
+
     if not chapter:
         chapter = _extract_chapter_title_from_lines(lines)
 
@@ -279,7 +601,151 @@ def _fill_chapter_section_from_outline_or_lines(
         info["chapter"] = chapter
     if section:
         info["section"] = section
+    if source_scope == "chapter_self_assessment":
+        # Document-level section must stay empty; per-question sections come
+        # from Phase 2 subsection mapping (2-1 / 2-2 / …).
+        info["section"] = ""
+        info["section_code"] = ""
+        section = ""
+        section_code = ""
+
+    current_app.logger.info(
+        "[CURRICULUM_BINDING_RESOLVED] "
+        f"authoritative_chapter={chapter!r} "
+        f"authoritative_section={section!r} "
+        f"section_code={section_code!r}"
+    )
+
+    if source_scope == "chapter_self_assessment":
+        if not chapter:
+            current_app.logger.warning(
+                "[CURRICULUM_BINDING_FAILED] "
+                f"reason=missing_authoritative_chapter "
+                f"chapter={chapter!r} "
+                f"chapter_index={chapter_index!r} "
+                f"chapter_label={chapter_label!r} "
+                f"available_keys=chapter, chapter_index, chapter_label"
+            )
+    elif not chapter or (not section and not section_code):
+        current_app.logger.warning(
+            "[CURRICULUM_BINDING_FAILED] "
+            f"reason=missing_authoritative_chapter_or_section "
+            f"chapter={chapter!r} "
+            f"section={section!r} "
+            f"section_code={section_code!r} "
+            f"available_keys=chapter, section, section_code, chapter_index, section_index"
+        )
     return info
+
+
+STRUCTURAL_SKILL_NUMBERED_FOUND = "NUMBERED_FOUND"
+STRUCTURAL_SKILL_PLAIN_FOUND = "PLAIN_SOURCE_HEADINGS_FOUND"
+STRUCTURAL_SKILL_NONE = "NONE"
+STRUCTURAL_SKILL_UNRESOLVED = "UNRESOLVED"
+# Previous name kept as an alias for numbered concept headings.
+STRUCTURAL_SKILL_FOUND = STRUCTURAL_SKILL_NUMBERED_FOUND
+
+
+def resolve_v3_curriculum_binding(
+    *,
+    section_heading: dict[str, Any] | None,
+    same_section: bool,
+    candidate_count: int,
+    unresolved_heading_count: int,
+    outline_action: str,
+    chapter: str,
+    section: str,
+    section_code: str,
+    plain_source_heading_count: int = 0,
+    plain_source_sequence_ok: bool | None = None,
+) -> dict[str, Any]:
+    """Split section authority from structural skill extraction.
+
+    Numbered ``N-N.N`` headings win over plain exposition headings.  A broken
+    plain-heading sequence is unresolved.  ``NONE`` remains legal and is not
+    a binding failure by itself.
+    """
+    unresolved = int(unresolved_heading_count or 0)
+    numbered = int(candidate_count or 0)
+    plain_count = int(plain_source_heading_count or 0)
+    if unresolved > 0 or plain_source_sequence_ok is False:
+        structural_skill_status = STRUCTURAL_SKILL_UNRESOLVED
+    elif numbered > 0:
+        structural_skill_status = STRUCTURAL_SKILL_NUMBERED_FOUND
+    elif plain_count > 0:
+        structural_skill_status = STRUCTURAL_SKILL_PLAIN_FOUND
+    else:
+        structural_skill_status = STRUCTURAL_SKILL_NONE
+
+    authority_complete = bool(str(chapter or "").strip()) and bool(
+        str(section or "").strip() or str(section_code or "").strip()
+    )
+    section_binding_pass = bool(
+        section_heading
+        and same_section
+        and unresolved == 0
+        and str(outline_action or "") in ("existing", "would_create")
+        and authority_complete
+    )
+    return {
+        "curriculum_binding": "PASS" if section_binding_pass else "FAIL",
+        "structural_skill_status": structural_skill_status,
+        "section_binding_pass": section_binding_pass,
+    }
+
+
+def audit_v3_skill_extraction(docx_path, curriculum_info, lines):
+    """Pre-import gate: structural candidates and read-only curriculum binding."""
+    from flask import current_app
+    from core.mathb_concept_heading import section_identities_match
+    from core.textbook_section_outline import ensure_section_outline_from_authoritative_metadata_v2
+
+    audit = extract_docx_skill_headings(
+        docx_path,
+        section_code=curriculum_info['section_code'],
+        volume=str(curriculum_info.get('volume') or ''),
+    )
+    info = _fill_chapter_section_from_outline_or_lines(curriculum_info, lines)
+    outline = ensure_section_outline_from_authoritative_metadata_v2(
+        curriculum=info['curriculum'], volume=info['volume'], chapter=info['chapter'],
+        section=info['section'], section_code=info['section_code'], grade=info.get('grade'),
+        authority_source='v3_source_context', dry_run=True, flush=False, curriculum_info=info)
+    audit['outline_result'] = outline
+    audit['outline_conflict'] = int(outline['action'] == 'conflict')
+    audit['curriculum_info'] = info
+    info['structural_skill_candidates'] = audit['skill_candidates']
+    info['plain_source_headings'] = audit.get('plain_source_headings') or []
+    heading = audit['section_heading']
+    same_section = bool(
+        section_identities_match(
+            heading,
+            info.get("section"),
+            expected_section_code=str(info.get("section_code") or ""),
+        )
+    )
+    audit['same_section'] = same_section
+    decision = resolve_v3_curriculum_binding(
+        section_heading=heading,
+        same_section=same_section,
+        candidate_count=int(audit.get("candidate_count") or 0),
+        unresolved_heading_count=int(audit.get("unresolved_heading_count") or 0),
+        outline_action=str(outline.get("action") or ""),
+        chapter=str(info.get("chapter") or ""),
+        section=str(info.get("section") or ""),
+        section_code=str(info.get("section_code") or ""),
+        plain_source_heading_count=int(audit.get("plain_source_heading_count") or 0),
+        plain_source_sequence_ok=audit.get("plain_source_sequence_ok"),
+    )
+    audit.update(decision)
+    info['structural_skill_status'] = decision['structural_skill_status']
+    current_app.logger.info(
+        "[STRUCTURAL_SKILL_EXTRACTION] "
+        f"status={decision['structural_skill_status']} "
+        f"candidate_count={audit.get('candidate_count')} "
+        f"unresolved_heading_count={audit.get('unresolved_heading_count')} "
+        f"curriculum_binding={decision['curriculum_binding']}"
+    )
+    return audit
 
 
 def _collect_unique_concept_headings(
@@ -318,6 +784,22 @@ def _ensure_formal_concepts_for_headings(
     from models import SkillCurriculum, SkillInfo
     from core.textbook_formal_concept import ensure_formal_concept_from_authoritative_heading_v2
 
+    if curriculum_info.get('structural_skill_candidates') and not is_b2_11(curriculum_info):
+        from core.textbook_structural_metadata import resolve_heading_identity
+        results = []
+        for heading in headings:
+            resolved = resolve_heading_identity(curriculum_info, heading['concept_code'], heading['concept_name'])
+            if resolved['source'] != 'existing_registry':
+                raise ValueError('Phase2 did not establish the structural heading skill')
+            results.append(dict(action='existing', wrote=False,
+                                concept_name=heading['concept_name'], skill_id=resolved['formal_skill_id']))
+        return results
+
+    if is_b2_11(curriculum_info):
+        return [dict(action="existing", wrote=False, concept_name=h["concept_name"],
+                     skill_id=existing_skill(curriculum_info, h["concept_name"],
+                                             h.get("formal_skill_id", "")).skill_id)
+                for h in headings]
     results: list[dict[str, Any]] = []
     curr = str(curriculum_info.get("curriculum") or "vocational").strip()
     vol = str(curriculum_info.get("volume") or "").strip()
@@ -432,6 +914,14 @@ def _attach_anchor_notes_to_phase3(
                             missing += 1
                             continue
                         notes_obj = question_anchor_notes_payload(anchor)
+                        existing_notes = item.get("notes")
+                        if existing_notes:
+                            try:
+                                existing_obj = json.loads(str(existing_notes))
+                            except (TypeError, ValueError, json.JSONDecodeError):
+                                existing_obj = None
+                            if isinstance(existing_obj, dict):
+                                notes_obj.update(existing_obj)
                         item["notes"] = json.dumps(notes_obj, ensure_ascii=False)
                         item["anchor_id"] = anchor.get("anchor_id")
                         item["text_fingerprint"] = anchor.get("text_fingerprint")
@@ -457,6 +947,11 @@ def run_v3_pair_pipeline(
     task_id: str = "",
     task_queue: queue.Queue | None = None,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
+    insert_missing_only: bool = False,
+    import_mode: str | None = None,
+    phase4_preflight: bool = False,
+    allow_ai_alignment: bool = False,
     emit_stream_end: bool = True,
     app: Any = None,
 ) -> dict[str, Any]:
@@ -467,6 +962,18 @@ def run_v3_pair_pipeline(
         ensure_section_outline_from_authoritative_metadata_v2,
     )
     from models import TextbookExample, db
+
+    mode = import_mode or ("insert_missing_only" if insert_missing_only else "update_existing")
+    if mode not in {"update_existing", "insert_missing_only", "replace_section"}:
+        raise ValueError(f"Invalid import mode: {mode}")
+    if import_mode is not None and insert_missing_only and mode != "insert_missing_only":
+        raise ValueError("Conflicting import modes")
+    insert_missing_only = mode == "insert_missing_only"
+    replace_section = mode == "replace_section"
+    if phase4_preflight and (allow_phase4 or target_source_types is None or replace_section):
+        raise ValueError("Phase 4 preflight requires scoped, non-replace dry-run")
+    if allow_ai_alignment and not phase4_preflight:
+        raise ValueError("allow_ai_alignment requires phase4_preflight=True")
 
     if app is None:
         from app import app as flask_app
@@ -499,6 +1006,12 @@ def run_v3_pair_pipeline(
     tracker = GeminiUsageTracker()
 
     def fail(stage: str, code: str, message: str, details: Any = None) -> dict[str, Any]:
+        if replace_section:
+            try:
+                if has_app_context():
+                    db.session.rollback()
+            except Exception:
+                pass
         _emit(tid, task_queue, stage=stage, status="failed", message=message, error_code=code)
         report["ok"] = False
         report["error"] = {
@@ -519,6 +1032,22 @@ def run_v3_pair_pipeline(
         return report
 
     try:
+        from core.textbook_importer_v3_source import is_generated_latex_docx
+
+        if (insert_missing_only or replace_section) and target_source_types is None:
+            return fail(
+                STAGE_FILE_VALIDATION,
+                "backfill_requires_scope",
+                "Backfill and replace modes require target_source_types",
+            )
+
+        if is_generated_latex_docx(docx.name):
+            return fail(
+                STAGE_FILE_VALIDATION,
+                "generated_latex_docx_not_source",
+                "Converter output cannot be used as the authoritative DOCX source",
+                details={"filename": docx.name},
+            )
         _emit(
             tid,
             task_queue,
@@ -580,6 +1109,51 @@ def run_v3_pair_pipeline(
                 "LaTeX DOCX was not produced",
                 details=formula_metrics,
             )
+        found = int(formula_metrics.get("mathtype_found") or 0)
+        converted = int(formula_metrics.get("mathtype_converted") or 0)
+        failures = int(formula_metrics.get("formula_failures") or 0)
+        scoped = target_source_types is not None
+        if scoped:
+            from core.textbook_importer_v3_scope import analyze_scoped_conversion
+
+            scoped_curriculum_info = build_curriculum_info_for_v3_import(
+                latex_docx_path=latex_path,
+                original_docx_filename=docx.name,
+                curriculum=curriculum,
+                publisher=publisher,
+                grade=grade,
+                volume=volume,
+            )
+            scoped_curriculum_info["source_scope"] = scoped_curriculum_info.get("source_scope") or "section_textbook"
+            scope_report = analyze_scoped_conversion(
+                docx, latex_path, scoped_curriculum_info, convert_report,
+                set(target_source_types),
+            )
+            report["scoped_import"] = scope_report
+            formula_metrics.update(scope_report["counts"])
+            formula_metrics["unresolved_scope"] = len(scope_report["unresolved"])
+            if scope_report["unresolved"]:
+                print(
+                    "[FORMULA_SCOPE_ERROR] unresolved_count=%s details=%s"
+                    % (len(scope_report["unresolved"]), scope_report["unresolved"][:5]),
+                    flush=True,
+                )
+                return fail(STAGE_FORMULA_CONVERSION, "source_fidelity_scope_unresolved",
+                            "Formula or question scope could not be resolved",
+                            details=scope_report["unresolved"])
+            if int(scope_report["counts"].get("required_formula_failed") or 0):
+                return fail(STAGE_FORMULA_CONVERSION, "source_fidelity_formula_failed",
+                            "Required question formula conversion failed",
+                            details=scope_report["failures"])
+            if int(scope_report["counts"].get("non_required_formula_failed") or 0):
+                report.setdefault("warnings", []).append("non_required_formula_conversion_failed")
+        elif failures or converted != found:
+            return fail(
+                STAGE_FORMULA_CONVERSION,
+                "source_fidelity_formula_failed",
+                "MathType conversion did not pass the Source Fidelity Gate",
+                details=formula_metrics,
+            )
         _emit(
             tid,
             task_queue,
@@ -587,6 +1161,50 @@ def run_v3_pair_pipeline(
             status="success",
             metrics=formula_metrics,
         )
+
+        if scoped and not allow_phase4 and not replace_section:
+            # section_textbook scoped dry-run stops before curriculum persistence.
+            # chapter_self_assessment with phase4_preflight continues into
+            # CURRICULUM_BINDING → AI_ALIGNMENT → preflight, still without DB_WRITE.
+            sa_binding_dry_run = (
+                str((scoped_curriculum_info or {}).get("source_scope") or "")
+                == "chapter_self_assessment"
+                and bool(phase4_preflight)
+            )
+            if not sa_binding_dry_run:
+                if phase4_preflight:
+                    from core.textbook_importer_v3_preflight import preflight_self_assessment_phase4
+
+                    with flask_app.app_context():
+                        try:
+                            report["phase4_preflight"] = preflight_self_assessment_phase4(
+                                scope_report,
+                                dict(tpv2._DOCX_BLOCK_META),
+                                scoped_curriculum_info,
+                                import_mode=mode,
+                                allow_ai=bool(allow_ai_alignment),
+                            )
+                            report["preflight_ready"] = report["phase4_preflight"]["ready"]
+                            report["allow_ai_alignment"] = bool(allow_ai_alignment)
+                        finally:
+                            db.session.rollback()
+                report["ok"] = True
+                report["would_write"] = scope_report["would_write_count"]
+                _emit(tid, task_queue, stage=STAGE_DB_WRITE, status="skipped",
+                      message="scoped dry-run; no DB writes")
+                _emit(tid, task_queue, stage=STAGE_COMPLETE, status="success")
+                report["stages"] = (V3_IMPORT_TASKS.get(tid) or {}).get("stages", {})
+                tracker.restore()
+                state = V3_IMPORT_TASKS.get(tid)
+                if state is not None:
+                    state["status"] = "success"
+                    state["result"] = report
+                    state["updated_at"] = _utc_now()
+                if task_queue is not None:
+                    task_queue.put({"type": "result", "result": report})
+                    if emit_stream_end:
+                        task_queue.put("END_OF_STREAM")
+                return report
 
         curriculum_info = build_curriculum_info_for_v3_import(
             latex_docx_path=latex_path,
@@ -600,7 +1218,7 @@ def run_v3_pair_pipeline(
         with flask_app.app_context():
             # --- QUESTION_PARSE (Phase1 + metadata + outline gate + Phase2) ---
             _emit(tid, task_queue, stage=STAGE_QUESTION_PARSE, status="running")
-            lines = tpv2.phase1_extract_docx_lines(str(latex_path))
+            lines = tpv2.phase1_extract_docx_lines(str(latex_path), curriculum_info=curriculum_info)
             scope_bundle = tpv2._resolve_import_source_metadata(
                 parse_filename=str(curriculum_info.get("parse_filename") or docx.name),
                 lines=lines,
@@ -608,16 +1226,41 @@ def run_v3_pair_pipeline(
             )
             curriculum_info = scope_bundle["curriculum_info"]
             source_scope = scope_bundle["source_scope"]
+            if source_scope == "section_textbook":
+                extraction = audit_v3_skill_extraction(docx, curriculum_info, lines)
+                report["metrics"]["skill_extraction"] = extraction
+                if extraction['curriculum_binding'] != 'PASS':
+                    return fail(STAGE_CURRICULUM_BINDING, 'skill_extraction_gate_failed',
+                                'DOCX structural extraction/binding dry-run failed', details=extraction)
+                if extraction.get('structural_skill_status') == STRUCTURAL_SKILL_UNRESOLVED:
+                    return fail(STAGE_CURRICULUM_BINDING, 'structural_skill_unresolved',
+                                'DOCX concept headings are unresolved', details=extraction)
+                curriculum_info = extraction['curriculum_info']
             curriculum_info = _fill_chapter_section_from_outline_or_lines(
                 curriculum_info, lines
             )
 
             # Outline must exist before Phase2 formal skill persistence.
+            # chapter_self_assessment is chapter-scoped: section authority is
+            # per-question (Phase 2), not a single document section.
             _emit(tid, task_queue, stage=STAGE_CURRICULUM_BINDING, status="running")
             chapter = str(curriculum_info.get("chapter") or "").strip()
             section = str(curriculum_info.get("section") or "").strip()
             section_code = str(curriculum_info.get("section_code") or "").strip()
-            if not chapter or (not section and not section_code):
+            is_chapter_sa = source_scope == "chapter_self_assessment"
+            if is_chapter_sa:
+                if not chapter:
+                    return fail(
+                        STAGE_CURRICULUM_BINDING,
+                        "missing_authoritative_chapter",
+                        "Could not resolve authoritative chapter for chapter self-assessment",
+                        details={
+                            "chapter": chapter,
+                            "chapter_index": curriculum_info.get("chapter_index"),
+                            "chapter_label": curriculum_info.get("chapter_label"),
+                        },
+                    )
+            elif not chapter or (not section and not section_code):
                 return fail(
                     STAGE_CURRICULUM_BINDING,
                     "missing_authoritative_section",
@@ -629,7 +1272,18 @@ def run_v3_pair_pipeline(
                     },
                 )
 
-            outline_result = ensure_section_outline_from_authoritative_metadata_v2(
+            if is_chapter_sa:
+                outline_result = _chapter_self_assessment_outline_skip(chapter)
+            elif not allow_phase4:
+                outline_row = tpv2._lookup_outline_section_curriculum_row(curriculum_info, section_code)
+                outline_result = ({"action": "existing", "wrote": False,
+                                   "skill_id": outline_row.skill_id,
+                                   "chapter": outline_row.chapter, "section": outline_row.section}
+                                  if outline_row is not None else {"action": "would_create"})
+            elif is_b2_11(curriculum_info):
+                outline_result = existing_outline(curriculum_info)
+            else:
+                outline_result = ensure_section_outline_from_authoritative_metadata_v2(
                 curriculum=str(curriculum_info.get("curriculum") or "vocational"),
                 volume=str(curriculum_info.get("volume") or volume),
                 chapter=chapter,
@@ -648,23 +1302,40 @@ def run_v3_pair_pipeline(
                     "Existing section outline conflicts with authoritative metadata",
                     details=outline_result,
                 )
-            if outline_result.get("action") in ("invalid_authority", "would_create"):
+            if outline_result.get("action") == "invalid_authority" or (
+                allow_phase4 and outline_result.get("action") == "would_create"
+            ):
                 return fail(
                     STAGE_CURRICULUM_BINDING,
                     "outline_ensure_failed",
                     f"Outline ensure failed: {outline_result.get('action')}",
                     details=outline_result,
                 )
-            db.session.commit()
+            if allow_phase4 and not replace_section and outline_result.get("wrote"):
+                db.session.commit()
             curriculum_info["chapter"] = outline_result.get("chapter") or chapter
-            curriculum_info["section"] = outline_result.get("section") or section
+            if is_chapter_sa:
+                curriculum_info["section"] = ""
+                curriculum_info["section_code"] = ""
+            else:
+                curriculum_info["section"] = outline_result.get("section") or section
 
             question_blocks = tpv2.phase2_deterministic_block_slice(
                 lines,
                 source_scope=source_scope,
                 curriculum_info=curriculum_info,
+                read_only=replace_section and not allow_phase4,
             )
             block_meta = dict(tpv2._DOCX_BLOCK_META or {})
+            if scoped:
+                block_meta = {
+                    key: value for key, value in block_meta.items()
+                    if value.get("source_type") in target_source_types
+                }
+                question_blocks = {key: value for key, value in question_blocks.items() if key in block_meta}
+                tpv2._DOCX_BLOCK_META = dict(block_meta)
+            for block_title, block in block_meta.items():
+                block["problem_text"] = str((question_blocks or {}).get(block_title) or "")
             parse_metrics = {
                 "phase1_lines": len(lines),
                 "phase2_blocks": len(question_blocks or {}),
@@ -678,6 +1349,12 @@ def run_v3_pair_pipeline(
                     "Phase2 produced 0 question anchors",
                     details=parse_metrics,
                 )
+            if replace_section and len(question_blocks) != scope_report.get("target_count"):
+                return fail(
+                    STAGE_QUESTION_PARSE, "replace_scope_mismatch",
+                    "Parsed question count differs from source fidelity target scope",
+                    details=parse_metrics,
+                )
             _emit(
                 tid,
                 task_queue,
@@ -686,12 +1363,21 @@ def run_v3_pair_pipeline(
                 metrics=parse_metrics,
             )
 
-            headings = _collect_unique_concept_headings(block_meta)
-            concept_results = _ensure_formal_concepts_for_headings(
-                headings=headings,
-                curriculum_info=curriculum_info,
-            )
-            db.session.commit()
+            headings = (extraction['skill_candidates'] if source_scope == 'section_textbook'
+                        else _collect_unique_concept_headings(block_meta))
+            if allow_phase4:
+                concept_results = _ensure_formal_concepts_for_headings(
+                    headings=headings,
+                    curriculum_info=curriculum_info,
+                )
+                if not replace_section:
+                    db.session.commit()
+            else:
+                concept_results = [
+                    {"action": "existing", "skill_id": h.get("formal_skill_id"),
+                     "concept_name": h.get("concept_name")}
+                    for h in headings
+                ]
             formal_candidates = get_section_formal_skill_candidates(
                 curriculum=str(curriculum_info.get("curriculum") or "vocational"),
                 volume=str(curriculum_info.get("volume") or volume),
@@ -702,6 +1388,18 @@ def run_v3_pair_pipeline(
             binding_metrics = {
                 "outline_action": outline_result.get("action"),
                 "outline_skill_id": outline_result.get("skill_id"),
+                "structural_skill_status": curriculum_info.get("structural_skill_status"),
+                "plain_source_heading_count": len(curriculum_info.get("plain_source_headings") or []),
+                "plain_source_skills": [
+                    {
+                        "formal_skill_id": item.get("formal_skill_id"),
+                        "concept_name": item.get("concept_name"),
+                        "internal_coordinate": item.get("internal_coordinate"),
+                        "printed_concept_code": item.get("printed_concept_code"),
+                        "source_heading_number": item.get("source_heading_number"),
+                    }
+                    for item in (curriculum_info.get("plain_source_headings") or [])
+                ],
                 "concepts_found": len(headings),
                 "formal_skills": [
                     {
@@ -731,22 +1429,47 @@ def run_v3_pair_pipeline(
             _emit(tid, task_queue, stage=STAGE_AI_ALIGNMENT, status="running")
             from core.ai_analyzer import get_model, gemini_model_name
 
-            model = get_model("architect")
-            tracker.wrap_model(model)
+            model = None
             phase3_keys = sorted(question_blocks.keys())
-            try:
-                phase3_parsed = tpv2.phase3_ai_metadata_alignment(
-                    phase3_keys, curriculum_info, task_queue
+            plain_found = (
+                curriculum_info.get("structural_skill_status") == STRUCTURAL_SKILL_PLAIN_FOUND
+            )
+            if plain_found:
+                from core.mathb_plain_source_heading import (
+                    align_plain_source_heading_metadata,
+                    attach_pdf_page_starts,
                 )
-            except Exception as exc:
-                tracker.restore()
-                db.session.rollback()
-                return fail(
-                    STAGE_AI_ALIGNMENT,
-                    "gemini_api_error",
-                    f"Phase3 Gemini failed: {exc}",
-                    details={"error_type": type(exc).__name__},
+
+                if pdf and pdf.is_file():
+                    attach_pdf_page_starts(str(pdf), curriculum_info.get("plain_source_headings") or [])
+                    for item, stored in zip(
+                        curriculum_info.get("plain_source_headings") or [],
+                        binding_metrics.get("plain_source_skills") or [],
+                    ):
+                        stored["source_page_start"] = item.get("source_page_start")
+                        stored["source_heading_text"] = item.get("source_heading_text")
+                        stored["source_style"] = item.get("source_style")
+                        stored["authority_source"] = item.get("authority_source")
+                phase3_parsed = align_plain_source_heading_metadata(
+                    phase3_keys, block_meta, curriculum_info
                 )
+            else:
+                if not is_b2_11(curriculum_info) and not curriculum_info.get('structural_skill_candidates'):
+                    model = get_model("architect")
+                    tracker.wrap_model(model)
+                try:
+                    phase3_parsed = tpv2.phase3_ai_metadata_alignment(
+                        phase3_keys, curriculum_info, task_queue
+                    )
+                except Exception as exc:
+                    tracker.restore()
+                    db.session.rollback()
+                    return fail(
+                        STAGE_AI_ALIGNMENT,
+                        "gemini_api_error",
+                        f"Phase3 Gemini failed: {exc}",
+                        details={"error_type": type(exc).__name__},
+                    )
 
             gemini_summary = tracker.summary()
             gemini_summary["model"] = gemini_model_name or getattr(model, "model_name", None)
@@ -760,11 +1483,43 @@ def run_v3_pair_pipeline(
                         phase3_q += len((con or {}).get("examples") or [])
                         phase3_q += len((con or {}).get("practice_questions") or [])
             ai_metrics = {
+                "metadata_source": phase3_parsed.get('metadata_source', 'gemini'),
+                "metadata_alignment": phase3_parsed.get('metadata_alignment', 'PASS'),
+                "unresolved_skill_bindings": phase3_parsed.get('unresolved_skill_bindings', []),
+                "needs_skill_resolution": phase3_parsed.get('needs_skill_resolution', []),
+                "section_outline_fallback_count": phase3_parsed.get('section_outline_fallback_count', 0),
                 "phase3_questions": phase3_q,
                 "gemini_requests": gemini_summary.get("request_count"),
                 "gemini_total_tokens": gemini_summary.get("total_token_count_total"),
             }
+            if plain_found:
+                assignments = phase3_parsed.get("plain_source_assignments") or []
+                assigned_n = sum(1 for row in assignments if row.get("assigned"))
+                ai_metrics["question_skill_coverage"] = f"{assigned_n}/{len(question_blocks)}"
+                ai_metrics["plain_source_assignments"] = assignments
+                report["metrics"]["ai_alignment"] = ai_metrics
+                if (
+                    assigned_n != len(question_blocks)
+                    or phase3_parsed.get("metadata_alignment") != "PASS"
+                    or phase3_parsed.get("unresolved_skill_bindings")
+                ):
+                    return fail(
+                        STAGE_AI_ALIGNMENT,
+                        "plain_heading_skill_coverage_incomplete",
+                        "Not every parsed question is bound to a source-authored heading",
+                        details=ai_metrics,
+                    )
             report["metrics"]["ai_alignment"] = ai_metrics
+            if replace_section and (
+                phase3_q != len(question_blocks)
+                or phase3_parsed.get("unresolved_skill_bindings")
+                or phase3_parsed.get("needs_skill_resolution")
+            ):
+                return fail(
+                    STAGE_AI_ALIGNMENT, "replace_preflight_incomplete",
+                    "Replace requires every scoped question to resolve before deletion",
+                    details=ai_metrics,
+                )
             _emit(
                 tid,
                 task_queue,
@@ -804,6 +1559,43 @@ def run_v3_pair_pipeline(
 
             # --- DB_WRITE (Phase4) ---
             if not allow_phase4:
+                if replace_section:
+                    coords, existing_rows = _replace_section_existing_rows(curriculum_info)
+                    report["metrics"]["replace_preview"] = {
+                        "target_scope": dict(coords, grade=curriculum_info.get("grade")),
+                        "would_delete": [row.id for row in existing_rows],
+                        "would_delete_count": len(existing_rows),
+                        "would_insert": len(question_blocks),
+                        "source_type_distribution": scope_report["target_source_type_counts"],
+                        "formula_status": scope_report["counts"],
+                        "db_actual_changes": 0,
+                    }
+                if phase4_preflight and source_scope == "chapter_self_assessment":
+                    from core.textbook_importer_v3_preflight import preflight_self_assessment_phase4
+
+                    try:
+                        report["phase4_preflight"] = preflight_self_assessment_phase4(
+                            scope_report if scoped else {
+                                "questions": [
+                                    {
+                                        "label": key,
+                                        "source_type": "self_assessment",
+                                        "target": True,
+                                        "formula_count": 0,
+                                        "image_candidates": [],
+                                    }
+                                    for key in (question_blocks or {})
+                                ]
+                            },
+                            dict(block_meta),
+                            curriculum_info,
+                            import_mode=mode,
+                            allow_ai=bool(allow_ai_alignment),
+                        )
+                        report["preflight_ready"] = report["phase4_preflight"]["ready"]
+                        report["allow_ai_alignment"] = bool(allow_ai_alignment)
+                    finally:
+                        db.session.rollback()
                 _emit(
                     tid,
                     task_queue,
@@ -813,25 +1605,113 @@ def run_v3_pair_pipeline(
                 )
                 report["ok"] = True
                 report["metrics"]["db_write"] = {"skipped": True}
+                db.session.rollback()
             else:
+                if phase3_parsed.get('unresolved_skill_bindings'):
+                    return fail(STAGE_DB_WRITE, 'unresolved_skill_bindings',
+                                'Source exercises require an explicit reviewed skill binding',
+                                details=phase3_parsed['unresolved_skill_bindings'])
                 _emit(tid, task_queue, stage=STAGE_DB_WRITE, status="running")
-                backup_info = ensure_db_backup(project_root=root, label="v3_phase4")
+                backup_info = ensure_db_backup(project_root=root, label="v3_phase4", online=replace_section)
+                if replace_section:
+                    _require_verified_replace_backup(backup_info)
                 report["metrics"]["db_backup"] = backup_info
 
-                te_before = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).count()
+                replace_coords: dict[str, str] | None = None
+                replace_deleted_ids: list[int] = []
+                display_scope_query = _textbook_example_scope_query(curriculum_info, volume)
+                te_before = display_scope_query.count()
                 te_total_before = TextbookExample.query.count()
 
                 try:
-                    phase4_stats = tpv2.phase4_absolute_hydrate_and_save(
-                        phase3_parsed,
-                        question_blocks,
-                        curriculum_info,
-                        task_queue,
-                    )
+                    if replace_section:
+                        phase4_stats, replace_deleted_ids, replace_coords = _replace_section_transaction(
+                            curriculum_info=curriculum_info,
+                            phase3_parsed=phase3_parsed,
+                            question_blocks=question_blocks,
+                            target_source_types=set(target_source_types),
+                            task_queue=task_queue,
+                        )
+                    else:
+                        if plain_found:
+                            from core.mathb_plain_source_heading import (
+                                B3_SECTION_3_2_EXAMPLE_COUNTS,
+                                ensure_plain_source_heading_formal_skills,
+                                plain_heading_example_distribution,
+                                stamp_plain_heading_question_bindings,
+                            )
+
+                            skill_results = ensure_plain_source_heading_formal_skills(curriculum_info)
+                            stamp_plain_heading_question_bindings(
+                                block_meta,
+                                phase3_parsed.get("plain_source_assignments") or [],
+                            )
+                            binding_metrics["formal_skills"] = [
+                                {
+                                    "action": item.get("action"),
+                                    "skill_id": item.get("skill_id"),
+                                    "concept_name": item.get("concept_name"),
+                                    "internal_coordinate": item.get("internal_coordinate"),
+                                    "printed_concept_code": None,
+                                }
+                                for item in skill_results
+                            ]
+                            binding_metrics["formal_skills_created"] = sum(
+                                1 for item in skill_results if item.get("action") == "created"
+                            )
+                            binding_metrics["formal_skills_reused"] = sum(
+                                1 for item in skill_results if item.get("action") == "existing"
+                            )
+                        phase4_stats = tpv2.phase4_absolute_hydrate_and_save(
+                            phase3_parsed,
+                            question_blocks,
+                            curriculum_info,
+                            task_queue,
+                            target_source_types=target_source_types,
+                            insert_missing_only=insert_missing_only,
+                            commit=not plain_found,
+                        )
+                        if plain_found:
+                            allowed = [
+                                str(item.get("formal_skill_id") or "")
+                                for item in (curriculum_info.get("plain_source_headings") or [])
+                            ]
+                            written = TextbookExample.query.filter_by(
+                                source_curriculum=str(curriculum_info.get("curriculum") or ""),
+                                source_volume=str(curriculum_info.get("volume") or volume),
+                                source_chapter=str(curriculum_info.get("chapter") or ""),
+                                source_section=str(curriculum_info.get("section") or ""),
+                            ).all()
+                            counts = plain_heading_example_distribution(written, allowed)
+                            unexpected = sorted({
+                                str(row.skill_id or "")
+                                for row in written
+                                if str(row.skill_id or "") not in set(allowed)
+                            })
+                            expected = (
+                                B3_SECTION_3_2_EXAMPLE_COUNTS
+                                if str(curriculum_info.get("section_code") or "") == "3-2"
+                                else None
+                            )
+                            if (
+                                unexpected
+                                or len(written) != len(question_blocks)
+                                or (expected is not None and counts != expected)
+                            ):
+                                db.session.rollback()
+                                return fail(
+                                    STAGE_DB_WRITE,
+                                    "plain_heading_phase4_distribution_mismatch",
+                                    "Phase4 did not keep the source-authored skill distribution",
+                                    details={
+                                        "counts": counts,
+                                        "expected": expected,
+                                        "unexpected_skill_ids": unexpected,
+                                        "written": len(written),
+                                        "parsed": len(question_blocks),
+                                    },
+                                )
+                            db.session.commit()
                 except Exception as exc:
                     db.session.rollback()
                     return fail(
@@ -841,27 +1721,27 @@ def run_v3_pair_pipeline(
                         details={"error_type": type(exc).__name__},
                     )
 
-                te_after = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).count()
+                display_scope_query = _textbook_example_scope_query(curriculum_info, volume)
+                te_after = display_scope_query.count()
                 te_total_after = TextbookExample.query.count()
 
-                section_rows = TextbookExample.query.filter_by(
-                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
-                    source_volume=str(curriculum_info.get("volume") or volume),
-                    source_section=str(curriculum_info.get("section") or ""),
-                ).all()
+                section_rows = display_scope_query.all()
                 skill_dist: dict[str, int] = {}
+                source_section_dist: dict[str, int] = {}
                 null_answer = 0
                 for row in section_rows:
                     sid = str(row.skill_id or "")
                     skill_dist[sid] = skill_dist.get(sid, 0) + 1
+                    source_section = str(row.source_section or "")
+                    source_section_dist[source_section] = source_section_dist.get(source_section, 0) + 1
                     if row.correct_answer is None or str(row.correct_answer).strip() == "":
                         null_answer += 1
 
                 db_metrics = {
+                    "parsed_questions": len(question_blocks or {}),
+                    "resolved_questions": int(phase4_stats.get("resolved", 0) or 0),
+                    "imported_questions": int(phase4_stats.get("total", 0) or 0),
+                    "questions_written": int(phase4_stats.get("total", 0) or 0),
                     "inserted": phase4_stats.get("inserted", 0),
                     "updated": phase4_stats.get("updated", 0),
                     "skipped": phase4_stats.get("skipped", 0),
@@ -871,13 +1751,65 @@ def run_v3_pair_pipeline(
                     "textbook_example_total_before": te_total_before,
                     "textbook_example_total_after": te_total_after,
                     "skill_distribution": skill_dist,
+                    "source_section_distribution": source_section_dist,
                     "correct_answer_null_count": null_answer,
                     "backup": backup_info,
+                    "unresolved_skill_bindings": phase4_stats.get(
+                        "unresolved_skill_bindings", []
+                    ),
+                    "needs_review_count": int(phase4_stats.get("needs_review", 0) or 0),
+                    "calculator_required_skipped": int(
+                        phase4_stats.get("calculator_required_skipped") or 0
+                    ),
+                    "calculator_required_skip_audit": list(
+                        phase4_stats.get("calculator_required_skip_audit") or []
+                    ),
                 }
+                if insert_missing_only:
+                    db_metrics["existing_skipped"] = phase4_stats.get("existing_skipped", 0)
+                    db_metrics["backfill_decisions"] = phase4_stats.get("backfill_decisions", [])
+                if replace_section:
+                    db_metrics["deleted"] = len(replace_deleted_ids)
+                    db_metrics["deleted_ids"] = replace_deleted_ids
+                    db_metrics["target_scope"] = dict(replace_coords or {}, grade=curriculum_info.get("grade"))
                 report["metrics"]["db_write"] = db_metrics
-                if int(phase4_stats.get("inserted", 0) or 0) + int(
-                    phase4_stats.get("updated", 0) or 0
-                ) == 0:
+                inserted_n = int(phase4_stats.get("inserted", 0) or 0)
+                updated_n = int(phase4_stats.get("updated", 0) or 0)
+                existing_n = int(phase4_stats.get("existing_skipped", 0) or 0)
+                skipped_n = int(phase4_stats.get("skipped", 0) or 0)
+                non_existing_skips = skipped_n - existing_n
+                parsed_n = int(db_metrics.get("parsed_questions") or 0)
+                calc_skipped = int(phase4_stats.get("calculator_required_skipped") or 0)
+                imported_n = inserted_n + updated_n + existing_n
+                corpus = chapter4_corpus_acceptance(
+                    parsed_source_questions=parsed_n,
+                    imported_questions=imported_n,
+                    legitimate_calculator_required_skips=calc_skipped,
+                )
+                report["calculator_required_skipped"] = calc_skipped
+                if is_b3_chapter4(curriculum_info):
+                    db_metrics["parsed_source_questions"] = corpus["parsed_source_questions"]
+                    db_metrics["imported_questions"] = corpus["imported_questions"]
+                    db_metrics["legitimate_calculator_required_skips"] = corpus[
+                        "legitimate_calculator_required_skips"
+                    ]
+                    db_metrics["calculator_required_skipped"] = corpus["calculator_required_skipped"]
+                    if not corpus["balanced"]:
+                        return fail(
+                            STAGE_DB_WRITE,
+                            "chapter4_corpus_unbalanced",
+                            "Chapter 4 parsed_source_questions must equal imported_questions plus calculator_required skips",
+                            details=db_metrics,
+                        )
+                idempotent_noop = (
+                    insert_missing_only
+                    and existing_n > 0
+                    and non_existing_skips == 0
+                    and existing_n + calc_skipped == parsed_n
+                )
+                if inserted_n + updated_n == 0 and not idempotent_noop and not (
+                    is_b3_chapter4(curriculum_info) and corpus["balanced"] and calc_skipped == parsed_n
+                ):
                     return fail(
                         STAGE_DB_WRITE,
                         "phase4_zero_writes",
@@ -909,7 +1841,25 @@ def run_v3_pair_pipeline(
                 "reused_count": 0,
                 "status": "skipped",
             }
-            if not allow_phase4:
+            if not allow_phase4 and pdf and Path(pdf).is_file():
+                from core.textbook_pdf_visual import audit_pdf_visuals
+
+                visual_summary = audit_pdf_visuals(
+                    pdf_path=pdf,
+                    docx_path=docx,
+                    phase3_parsed=phase3_parsed,
+                    block_meta=block_meta,
+                    curriculum_info=curriculum_info,
+                )
+                pdf_metrics = dict(visual_summary, status="audited")
+                report["metrics"]["pdf_visual"] = pdf_metrics
+                report["metrics"]["image_linking"] = {
+                    "linked_count": 0, "reused_count": 0, "status": "dry_run"
+                }
+                _emit(tid, task_queue, stage=STAGE_PDF_VISUAL, status="success", metrics=pdf_metrics)
+                _emit(tid, task_queue, stage=STAGE_IMAGE_LINKING, status="skipped",
+                      message="dry-run audit; no assets written", metrics=report["metrics"]["image_linking"])
+            elif not allow_phase4:
                 _emit(
                     tid,
                     task_queue,
@@ -926,6 +1876,18 @@ def run_v3_pair_pipeline(
                     message="allow_phase4=false",
                     metrics=link_metrics,
                 )
+            elif scoped:
+                report["metrics"]["image_linking"] = {
+                    "status": "needs_review",
+                    "candidates": scope_report["image_candidate_count"],
+                    "needs_review": scope_report["image_needs_review_count"],
+                    "linked_count": 0,
+                }
+                _emit(tid, task_queue, stage=STAGE_PDF_VISUAL, status="skipped",
+                      message="scoped image candidates require review")
+                _emit(tid, task_queue, stage=STAGE_IMAGE_LINKING, status="skipped",
+                      message="scoped image candidates require review",
+                      metrics=report["metrics"]["image_linking"])
             elif not pdf or not Path(pdf).is_file():
                 _emit(
                     tid,
@@ -963,6 +1925,7 @@ def run_v3_pair_pipeline(
                         project_root=root,
                         debug_dir=debug_dir,
                         write_notes=True,
+                        publish_assets=True,
                     )
                     try:
                         db.session.commit()
@@ -1090,8 +2053,9 @@ def run_v3_pair_pipeline(
             db.session.rollback()
         except Exception:
             pass
+        fail_stage = _resolve_failed_stage(tid, fallback=STAGE_FILE_VALIDATION)
         return fail(
-            STAGE_COMPLETE,
+            fail_stage,
             "pipeline_exception",
             f"{type(exc).__name__}: {exc}",
             details={"traceback": traceback.format_exc()[-2000:]},
@@ -1116,6 +2080,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
     imported_q = 0
     inserted = 0
     updated = 0
+    existing_reused = 0
     concepts_found = 0
     skills_created = 0
     skills_reused = 0
@@ -1161,6 +2126,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         imported_q += int(dbm.get("inserted") or 0) + int(dbm.get("updated") or 0)
         inserted += int(dbm.get("inserted") or 0)
         updated += int(dbm.get("updated") or 0)
+        existing_reused += int(dbm.get("existing_skipped") or 0)
 
         concepts_found += int(cb.get("concepts_found") or 0)
         skills_created += int(cb.get("formal_skills_created") or 0)
@@ -1179,16 +2145,41 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         pdf_linked += int(ilm.get("linked_count") or 0)
         pdf_reused += int(ilm.get("reused_count") or 0)
 
+    def formula_fidelity_failed(pair: dict[str, Any]) -> bool:
+        conversion = ((pair.get("metrics") or {}).get("formula_conversion") or {})
+        if pair.get("scoped_import") is not None:
+            return bool(
+                int(conversion.get("required_formula_failed") or 0)
+                or int(conversion.get("unresolved_scope") or 0)
+            )
+        return (
+            int(conversion.get("formula_failures") or 0) > 0
+            or int(conversion.get("mathtype_found") or 0)
+            != int(conversion.get("mathtype_converted") or 0)
+        )
+
+    fidelity_failures = [
+        p for p in pairs
+        if formula_fidelity_failed(p)
+        or int(((p.get("metrics") or {}).get("ai_alignment") or {}).get("section_outline_fallback_count") or 0) > 0
+        or int(((p.get("metrics") or {}).get("pdf_visual") or {}).get("errors") or 0) > 0
+    ]
     status = "success"
+    result_code = None
     if failed_pairs and ok_pairs:
         status = "partial"
     elif failed_pairs and not ok_pairs:
         status = "failed"
     elif not pairs:
         status = "failed"
+    elif fidelity_failures:
+        status = "needs_repair"
+    elif ok_pairs and inserted + updated == 0 and existing_reused > 0 and existing_reused == parsed_q:
+        result_code = "already_up_to_date"
 
     return {
         "status": status,
+        "resultCode": result_code,
         "task_id": batch_report.get("task_id"),
         "sourcePairsStats": {
             "total": len(pairs),
@@ -1215,6 +2206,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         "questions": {
             "parsed": parsed_q if ok_pairs else None,
             "imported": imported_q if ok_pairs else None,
+            "existingReused": existing_reused if ok_pairs else None,
             "conceptsFound": concepts_found if ok_pairs else None,
             "formalSkillsCreated": skills_created if ok_pairs else None,
             "formalSkillsReused": skills_reused if ok_pairs else None,
@@ -1234,6 +2226,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
         "database": {
             "questionsWritten": inserted if ok_pairs else None,
             "questionsUpdated": updated if ok_pairs else None,
+            "questionsExistingReused": existing_reused if ok_pairs else None,
             "assetsWritten": pdf_mounted if ok_pairs else None,
             "relationshipsCreated": None,
         },
@@ -1250,7 +2243,6 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
             for p in pairs
         ],
         "stages": batch_report.get("stages"),
-        "raw": batch_report,
     }
 
 
@@ -1265,6 +2257,9 @@ def run_v3_batch_pipeline(
     task_id: str | None = None,
     task_queue: queue.Queue | None = None,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
+    insert_missing_only: bool = False,
+    import_mode: str | None = None,
 ) -> dict[str, Any]:
     """Run pipeline for each stored source pair."""
     from core.textbook_processor import grade_for_vocational_math_volume
@@ -1325,6 +2320,9 @@ def run_v3_batch_pipeline(
             task_id=tid,
             task_queue=task_queue,
             allow_phase4=allow_phase4,
+            target_source_types=target_source_types,
+            insert_missing_only=insert_missing_only,
+            import_mode=import_mode,
             emit_stream_end=False,
             app=None,
         )
@@ -1355,6 +2353,9 @@ def enqueue_v3_batch_pipeline(
     publisher: str = "longteng",
     grade: int = 10,
     allow_phase4: bool = True,
+    target_source_types: set[str] | None = None,
+    insert_missing_only: bool = False,
+    import_mode: str | None = None,
     storage_meta: dict[str, Any] | None = None,
 ) -> str:
     """Background-thread runner compatible with importer SSE / status poll."""
@@ -1395,6 +2396,9 @@ def enqueue_v3_batch_pipeline(
                     task_id=task_id,
                     task_queue=q,
                     allow_phase4=allow_phase4,
+                    target_source_types=target_source_types,
+                    insert_missing_only=insert_missing_only,
+                    import_mode=import_mode,
                 )
                 if storage_meta:
                     batch["storage_directory"] = storage_meta.get("directory")
@@ -1402,16 +2406,17 @@ def enqueue_v3_batch_pipeline(
                     batch["ui_result"] = build_v3_ui_result_payload(batch)
                     state["result"] = batch
             except Exception as exc:
+                fail_stage = _resolve_failed_stage(task_id, fallback=STAGE_FILE_VALIDATION)
                 state["status"] = "failed"
                 state["error"] = {
-                    "stage": STAGE_COMPLETE,
+                    "stage": fail_stage,
                     "error_code": "worker_exception",
                     "message": str(exc),
                 }
                 q.put(
                     {
                         "type": "error",
-                        "stage": STAGE_COMPLETE,
+                        "stage": fail_stage,
                         "error_code": "worker_exception",
                         "message": str(exc),
                     }

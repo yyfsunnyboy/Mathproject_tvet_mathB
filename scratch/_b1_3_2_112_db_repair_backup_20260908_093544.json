@@ -1,0 +1,12 @@
+[
+  {
+    "example_id": 4655,
+    "problem_text": "已知多項式$f\\left( x \\right)$除以$\\left( x+2 \\right)\\left( x-7 \\right)$的餘式為$ax+3$。若$\\left( x-7 \\right)$為$f\\left( x \\right)$的因式，則$f\\left( -2 \\right)=$？ (A)$\\frac{27}{7}$ (B)$\\frac{29}{7}$ (C)$\\frac{31}{7}$ (D)$\\frac{33}{7}$ 〔112統測B〕",
+    "choices": null,
+    "correct_answer": null,
+    "source_description": "112統測B",
+    "skill_id": "vh_數學B1_FactorTheorem",
+    "problem_type_id": null,
+    "problem_type": "exam_practice"
+  }
+]

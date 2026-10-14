@@ -1,0 +1,128 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_1_2",
+  "publish_status": "package_ready_candidate",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_11979",
+      "textbook_example_id": 11979,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11979/generate.py"
+    },
+    {
+      "component_id": "src_11980",
+      "textbook_example_id": 11980,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11980/generate.py"
+    },
+    {
+      "component_id": "src_11981",
+      "textbook_example_id": 11981,
+      "status": "verified",
+      "problem_type_id": "inequality_word_minimum",
+      "domain_operation": "inequality_word_minimum",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11981/generate.py"
+    },
+    {
+      "component_id": "src_11982",
+      "textbook_example_id": 11982,
+      "status": "verified",
+      "problem_type_id": "inequality_word_minimum",
+      "domain_operation": "inequality_word_minimum",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11982/generate.py"
+    },
+    {
+      "component_id": "src_11986",
+      "textbook_example_id": 11986,
+      "status": "verified",
+      "problem_type_id": "inequality_bmi_bound",
+      "domain_operation": "inequality_bmi_bound",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11986/generate.py"
+    },
+    {
+      "component_id": "src_11993",
+      "textbook_example_id": 11993,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11993/generate.py"
+    },
+    {
+      "component_id": "src_11994",
+      "textbook_example_id": 11994,
+      "status": "verified",
+      "problem_type_id": "inequality_word_minimum",
+      "domain_operation": "inequality_word_minimum",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11994/generate.py"
+    },
+    {
+      "component_id": "src_12035",
+      "textbook_example_id": 12035,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12035/generate.py"
+    },
+    {
+      "component_id": "src_12036",
+      "textbook_example_id": 12036,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12036/generate.py"
+    },
+    {
+      "component_id": "src_12037",
+      "textbook_example_id": 12037,
+      "status": "verified",
+      "problem_type_id": "inequality_solve",
+      "domain_operation": "inequality_solve",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12037/generate.py"
+    },
+    {
+      "component_id": "src_12038",
+      "textbook_example_id": 12038,
+      "status": "verified",
+      "problem_type_id": "inequality_word_minimum",
+      "domain_operation": "inequality_word_minimum",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12038/generate.py"
+    }
+  ]
+}

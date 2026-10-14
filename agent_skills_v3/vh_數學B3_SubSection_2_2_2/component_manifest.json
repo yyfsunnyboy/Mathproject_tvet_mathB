@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B3_SubSection_2_2_2",
+  "publish_status": "package_ready_candidate",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_11997",
+      "textbook_example_id": 11997,
+      "status": "verified",
+      "problem_type_id": "quadratic_integer_roots",
+      "domain_operation": "quadratic_integer_roots",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_11997/generate.py"
+    },
+    {
+      "component_id": "src_11998",
+      "textbook_example_id": 11998,
+      "status": "verified",
+      "problem_type_id": "quadratic_integer_roots",
+      "domain_operation": "quadratic_integer_roots",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11998/generate.py"
+    },
+    {
+      "component_id": "src_11999",
+      "textbook_example_id": 11999,
+      "status": "verified",
+      "problem_type_id": "quadratic_projectile_time",
+      "domain_operation": "quadratic_projectile_time",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11999/generate.py"
+    },
+    {
+      "component_id": "src_12000",
+      "textbook_example_id": 12000,
+      "status": "verified",
+      "problem_type_id": "quadratic_projectile_time",
+      "domain_operation": "quadratic_projectile_time",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12000/generate.py"
+    },
+    {
+      "component_id": "src_12001",
+      "textbook_example_id": 12001,
+      "status": "verified",
+      "problem_type_id": "quadratic_formula_exact",
+      "domain_operation": "quadratic_formula_exact",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "example",
+      "generate_py": "components/src_12001/generate.py"
+    },
+    {
+      "component_id": "src_12002",
+      "textbook_example_id": 12002,
+      "status": "verified",
+      "problem_type_id": "quadratic_formula_exact",
+      "domain_operation": "quadratic_formula_exact",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12002/generate.py"
+    },
+    {
+      "component_id": "src_12012",
+      "textbook_example_id": 12012,
+      "status": "verified",
+      "problem_type_id": "quadratic_integer_roots",
+      "domain_operation": "quadratic_integer_roots",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12012/generate.py"
+    },
+    {
+      "component_id": "src_12013",
+      "textbook_example_id": 12013,
+      "status": "verified",
+      "problem_type_id": "quadratic_right_triangle_side_relation",
+      "domain_operation": "quadratic_right_triangle_side_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12013/generate.py"
+    },
+    {
+      "component_id": "src_12014",
+      "textbook_example_id": 12014,
+      "status": "verified",
+      "problem_type_id": "quadratic_word_pair_count",
+      "domain_operation": "quadratic_word_pair_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12014/generate.py"
+    },
+    {
+      "component_id": "src_12015",
+      "textbook_example_id": 12015,
+      "status": "verified",
+      "problem_type_id": "quadratic_formula_exact",
+      "domain_operation": "quadratic_formula_exact",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "exercise",
+      "generate_py": "components/src_12015/generate.py"
+    },
+    {
+      "component_id": "src_12023",
+      "textbook_example_id": 12023,
+      "status": "verified",
+      "problem_type_id": "quadratic_integer_roots",
+      "domain_operation": "quadratic_integer_roots",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12023/generate.py"
+    },
+    {
+      "component_id": "src_12025",
+      "textbook_example_id": 12025,
+      "status": "verified",
+      "problem_type_id": "quadratic_word_pythagoras",
+      "domain_operation": "quadratic_word_pythagoras",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12025/generate.py"
+    },
+    {
+      "component_id": "src_12039",
+      "textbook_example_id": 12039,
+      "status": "verified",
+      "problem_type_id": "quadratic_integer_roots",
+      "domain_operation": "quadratic_integer_roots",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "test",
+      "generate_py": "components/src_12039/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+unit_skill_id: jh_數學1上_FourArithmeticOperationsOfIntegers
+
+# Keep this sequence aligned with the demo-safe catalog families.  It is data,
+# rather than a special route in the runtime, so teaching and assessment share
+# the established progression/completion schema.
+mainline_sequence: [I1, I2, I3, I4, I5, I7, I9, I10]
+assessment_sequence: [I1, I2, I3, I4, I5, I7, I9, I10]
+
+families:
+  I1: {family_name: int_numberline_add_sub, main_subskills: [sign_handling, add_sub], next_on_success: I2, fallback_on_repeat_failure: I1}
+  I2: {family_name: int_flat_add_sub, main_subskills: [sign_handling, add_sub], next_on_success: I3, fallback_on_repeat_failure: I1}
+  I3: {family_name: int_flat_mul_div_exact, main_subskills: [sign_handling, mul_div, exact_divisibility], next_on_success: I4, fallback_on_repeat_failure: I2}
+  I4: {family_name: int_flat_mixed_four_ops, main_subskills: [sign_handling, add_sub, mul_div, order_of_operations], next_on_success: I5, fallback_on_repeat_failure: I3}
+  I5: {family_name: int_bracket_mixed, main_subskills: [sign_handling, bracket_scope, order_of_operations], next_on_success: I7, fallback_on_repeat_failure: I4}
+  I7: {family_name: int_division_exact_nested, main_subskills: [sign_handling, mul_div, bracket_scope, absolute_value, exact_divisibility], next_on_success: I9, fallback_on_repeat_failure: I5}
+  I9: {family_name: int_power_sign_parentheses, main_subskills: [power_notation_basics, signed_power_interpretation, parenthesized_negative_base, minus_outside_power], next_on_success: I10, fallback_on_repeat_failure: I7}
+  I10: {family_name: int_power_mixed_evaluation, main_subskills: [power_precedence_in_mixed_ops, signed_power_evaluation, mixed_power_arithmetic], next_on_success: null, fallback_on_repeat_failure: I9}
+
+completion_gate:
+  required_core_families: [I1, I2, I3, I4, I5, I7, I9, I10]
+  integrative_family_id: I10
+  assessment:
+    required_core_families: [I1, I2, I3, I4, I5, I7, I9, I10]
+    minimum_covered_core_families: 8
+    minimum_passed_core_families: 8
+    require_integrative_family_pass: false
+  teaching:
+    required_core_families: [I1, I2, I3, I4, I5, I7, I9, I10]
+    minimum_covered_core_families: 8
+    minimum_passed_core_families: 8
+    require_integrative_family_pass: true
+    integrative_family_id: I10
+
+remediation_rules:
+  enabled: true
+  return_mastery_threshold: 0.85
+  return_mastery_with_recent_correct_threshold: 0.75

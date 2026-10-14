@@ -1,0 +1,388 @@
+{
+  "summary": {
+    "fail11": 11,
+    "auto_correct": 0,
+    "needs_review": 9,
+    "rejected": 2,
+    "wrong_accepted": 0,
+    "protected": 11,
+    "legit_share_not_flagged_suspicious": true
+  },
+  "rows": [
+    {
+      "example_id": 11732,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          413.4039001464844,
+          574.5032348632812,
+          495.0202941894531,
+          688.9222412109375
+        ],
+        "issue": "錯配：題要平行四邊形ABCD，PNG為港澳馬來西亞航線圖"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        413.4039001464844,
+        574.5032348632812,
+        495.0202941894531,
+        688.9222412109375
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "low_mapping_confidence"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11736,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          86.05509185791016,
+          453.11962890625,
+          523.4090576171875,
+          737.506591796875
+        ],
+        "issue": "錯配：題要三角形ABC，PNG為例4+隨堂4正五邊形區塊（含解答）"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        86.05509185791016,
+        453.11962890625,
+        523.4090576171875,
+        463.2567443847656
+      ],
+      "iou_vs_wrong": 0.0356,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "low_mapping_confidence",
+        "overspan_multi_question",
+        "crosses_question_boundary"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11744,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          289.1017761230469,
+          231.32492065429688,
+          572.5481567382812,
+          494.5749206542969
+        ],
+        "issue": "錯配：題要△中點D,E,F，PNG為基礎題2–4多題四邊形合圖"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        289.1017761230469,
+        231.32492065429688,
+        572.5481567382812,
+        268.22412109375
+      ],
+      "iou_vs_wrong": 0.1402,
+      "iou_vs_correct": 0.219,
+      "review_reason": [
+        "low_mapping_confidence",
+        "crosses_question_boundary"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11748,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          410.8660888671875,
+          622.1527099609375,
+          524.3630981445312,
+          735.6917114257812
+        ],
+        "issue": "錯配：題要線段AB等分點C,D，PNG為基礎6的向量網格圖"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        410.8660888671875,
+        622.1527099609375,
+        524.3630981445312,
+        735.6917114257812
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "crosses_question_boundary",
+        "suspicious_shared_asset"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11751,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          452.9901123046875,
+          370.3605041503906,
+          504.01812744140625,
+          434.8185119628906
+        ],
+        "issue": "與進階9共用殘缺三角形裁切，頂點/標籤被切"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        452.9901123046875,
+        370.3605041503906,
+        504.01812744140625,
+        434.8185119628906
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "low_mapping_confidence"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11752,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          452.9901123046875,
+          370.3605041503906,
+          504.01812744140625,
+          434.8185119628906
+        ],
+        "issue": "與基礎8共用殘缺裁切；進階9構形不同卻同圖"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        452.9901123046875,
+        370.3605041503906,
+        504.01812744140625,
+        434.8185119628906
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.1869,
+      "review_reason": [
+        "low_mapping_confidence",
+        "suspicious_shared_asset"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11753,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          420.235595703125,
+          587.7720336914062,
+          559.1336059570312,
+          637.3780517578125
+        ],
+        "issue": "錯配：題要平行四邊形構圖，PNG為「熟習度自評表」標題列"
+      },
+      "new_decision": "rejected",
+      "new_status": "rejected",
+      "new_bbox": [
+        420.235595703125,
+        587.7720336914062,
+        559.1336059570312,
+        637.3780517578125
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "low_mapping_confidence",
+        "non_question_contamination"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11795,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          85.70860290527344,
+          476.5158386230469,
+          525.7235717773438,
+          701.205810546875
+        ],
+        "issue": "不可用：幾乎空白，內容為「輸入訊息」UI框，非統測坐標圖"
+      },
+      "new_decision": "rejected",
+      "new_status": "rejected",
+      "new_bbox": [
+        85.70860290527344,
+        476.5158386230469,
+        525.7235717773438,
+        701.205810546875
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.0,
+      "review_reason": [
+        "low_mapping_confidence",
+        "non_question_contamination"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11804,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          329.61956787109375,
+          305.4530029296875,
+          513.87158203125,
+          404.666015625
+        ],
+        "issue": "僅空白坐標圖（二）；題需圖（一）標示A/B相對港口"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        329.61956787109375,
+        305.4530029296875,
+        513.87158203125,
+        404.666015625
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.2291,
+      "review_reason": [
+        "incomplete_multi_figure"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11806,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          429.28167724609375,
+          204.822998046875,
+          519.1566162109375,
+          457.33612060546875
+        ],
+        "issue": "自我評量題1裁到題1–3三張圖；矩形頂邊/標籤被切"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        429.28167724609375,
+        204.822998046875,
+        519.1566162109375,
+        309.1366271972656
+      ],
+      "iou_vs_wrong": 0.4131,
+      "iou_vs_correct": 0.45,
+      "review_reason": [
+        "crosses_question_boundary"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    },
+    {
+      "example_id": 11817,
+      "old_decision": {
+        "grade": "FAIL",
+        "bbox": [
+          450.62030029296875,
+          415.3041076660156,
+          515.311279296875,
+          457.33612060546875
+        ],
+        "issue": "左側嚴重裁切，缺A與向量起點、E/F/G等關鍵點"
+      },
+      "new_decision": "needs_review",
+      "new_status": "needs_review",
+      "new_bbox": [
+        450.62030029296875,
+        415.3041076660156,
+        515.311279296875,
+        457.33612060546875
+      ],
+      "iou_vs_wrong": 1.0,
+      "iou_vs_correct": 0.1554,
+      "review_reason": [
+        "low_mapping_confidence"
+      ],
+      "expected": "correct_or_needs_review",
+      "matched": true
+    }
+  ],
+  "false_positive_checks": [
+    {
+      "example_id": 11741,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [
+        11742
+      ],
+      "legitimate_shared_visual": true
+    },
+    {
+      "example_id": 11742,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [
+        11741
+      ],
+      "legitimate_shared_visual": true
+    },
+    {
+      "example_id": 11740,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [],
+      "legitimate_shared_visual": false
+    },
+    {
+      "example_id": 11749,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [],
+      "legitimate_shared_visual": false
+    },
+    {
+      "example_id": 11750,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [],
+      "legitimate_shared_visual": false
+    },
+    {
+      "example_id": 11783,
+      "decision": "accepted_mount",
+      "visual_status": "accepted",
+      "should_mount": true,
+      "reasons": [],
+      "shared_with": [],
+      "legitimate_shared_visual": false
+    }
+  ]
+}

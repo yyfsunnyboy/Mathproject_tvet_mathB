@@ -7,7 +7,9 @@ import os
 import sqlite3
 
 from core.gencode.services.gencode_status_query_service import (
+    build_admin_examples_gencode_status_map,
     inspect_component_production_sync,
+    inspect_skill_runtime_publication,
     resolve_teacher_facing_v3_status,
 )
 
@@ -61,6 +63,7 @@ def test_teacher_status_published_only_when_latest_component_is_synced():
         has_tracker=True,
         has_component=True,
         production_contains_latest=True,
+        production_runtime_ready=True,
     )
     assert status["status_key"] == "published"
     assert status["label"] == "已上線"
@@ -95,8 +98,11 @@ def test_production_sync_requires_matching_component_hash(tmp_path: Path):
 def _write_production_init(root: Path, skill_id: str, specs: list[dict[str, object]]) -> None:
     skill_dir = root / "agent_skills_v3" / skill_id
     skill_dir.mkdir(parents=True, exist_ok=True)
+    keys = [str(row["component_id"]) for row in specs]
     (skill_dir / "__init__.py").write_text(
-        f"SKILL_ID = {skill_id!r}\nGENERATOR_SPECS = {specs!r}\n",
+        f"SKILL_ID = {skill_id!r}\n"
+        f"GENERATOR_KEYS = {keys!r}\n"
+        f"GENERATOR_SPECS = {specs!r}\n",
         encoding="utf-8",
     )
 
@@ -375,6 +381,10 @@ def test_regression_skill_partial_publishing_states(tmp_path: Path):
     p_3827_dry.mkdir()
     (p_3827_dry / "generate.py").write_text("def gen(): pass")
 
+    runtime_specs = [{"component_id": "src_3826", "textbook_example_id": 3826}]
+    _write_production_init(tmp_path, skill_id, runtime_specs)
+    _write_runtime_facade_and_manifest(tmp_path, skill_id, runtime_specs)
+
     from core.gencode.services.gencode_status_query_service import (
         build_admin_examples_gencode_status_map,
         build_admin_skill_gencode_status_view,
@@ -424,8 +434,8 @@ def test_regression_skill_partial_publishing_states(tmp_path: Path):
             skill_id=skill_id,
             project_root=tmp_path,
         )
-        assert skill_status["teacher_status"]["status_key"] == "partially_published"
-        assert "部分上線" in skill_status["teacher_status"]["label"]
+        assert skill_status["teacher_status"]["status_key"] == "failed"
+        assert skill_status["teacher_status"]["label"] == "驗證失敗"
         assert skill_status["published_count"] == 1
         assert skill_status["generated_not_packaged_count"] == 1
     finally:
@@ -472,7 +482,7 @@ def test_src_3829_production_consistency():
     import skills.vh_數學B4_HistogramsAndFrequencyPolygons as facade
     p = facade.generate(seed=100, component_id="src_3829")
     assert p["problem_type_id"] == "histogram_distribution_update"
-    assert p["answer_contract"]["checker"] == "free_response_drawing_checker"
+    assert p["answer_contract"]["checker"] == "choice_label_checker"
 
 
 # ---------------------------------------------------------------------------
@@ -581,13 +591,14 @@ def test_regression_verified_bom_wrapper_with_component_is_published(tmp_path: P
         has_tracker=True,
         has_component=True,
         production_contains_latest=bool(sync["production_contains_latest"]),
+        production_runtime_ready=True,
     )
 
     assert sync["production_contains_latest"] is True, (
         "BOM-encoded __init__.py must be parsed correctly; component in GENERATOR_SPECS → published"
     )
     assert teacher["status_key"] == "published"
-    assert teacher["label"] == "已經上線"
+    assert teacher["label"] == "已上線"
 
 
 def test_regression_partial_publish_marks_only_included_components(tmp_path: Path) -> None:
@@ -621,6 +632,7 @@ def test_regression_partial_publish_marks_only_included_components(tmp_path: Pat
     teacher_in = resolve_teacher_facing_v3_status(
         gencode_status="verified", has_tracker=True, has_component=True,
         production_contains_latest=bool(sync_in["production_contains_latest"]),
+        production_runtime_ready=True,
     )
     teacher_ex = resolve_teacher_facing_v3_status(
         gencode_status="verified", has_tracker=True, has_component=True,
@@ -634,3 +646,220 @@ def test_regression_partial_publish_marks_only_included_components(tmp_path: Pat
         "Component not in GENERATOR_SPECS must not be published even if generate.py exists"
     )
     assert teacher_ex["status_key"] == "generated_not_packaged"
+
+
+def test_b2_12_examples_use_production_runtime_publication_evidence() -> None:
+    from core.gencode.b2_12_component_specs import COMPONENT_SPECS
+
+    conn = sqlite3.connect(":memory:")
+    pairs = [
+        (example_id, str(spec["skill_id"]))
+        for example_id, spec in sorted(COMPONENT_SPECS.items())
+    ]
+    status_map = build_admin_examples_gencode_status_map(
+        conn,
+        pairs,
+        project_root=PROJECT_ROOT,
+    )
+
+    online = [
+        example_id
+        for example_id, status in status_map.items()
+        if status["teacher_status"]["status_key"] == "published"
+    ]
+
+    assert len(status_map) == 31
+    assert len(online) == 30
+    assert 11575 not in online
+    assert status_map[11575]["production_runtime_ready"] is False
+    conn.close()
+
+
+def _write_runtime_facade_and_manifest(
+    root: Path, skill_id: str, specs: list[dict[str, object]]
+) -> None:
+    keys = [str(row["component_id"]) for row in specs]
+    skills_dir = root / "skills"
+    skills_dir.mkdir(parents=True, exist_ok=True)
+    (skills_dir / f"{skill_id}.py").write_text(
+        f"SKILL_ID = {skill_id!r}\n"
+        f"GENERATOR_KEYS = {keys!r}\n"
+        f"GENERATOR_SPECS = {specs!r}\n"
+        "def generate(*args, **kwargs): return {}\n",
+        encoding="utf-8",
+    )
+    manifest = {
+        "skill_id": skill_id,
+        "publish_status": "production_manifest_compiled",
+        "component_count": len(specs),
+        "components": [
+            {
+                "textbook_example_id": int(row["textbook_example_id"]),
+                "component_id": str(row["component_id"]),
+                "status": "verified",
+            }
+            for row in specs
+        ],
+    }
+    skill_dir = root / "agent_skills_v3" / skill_id
+    (skill_dir / "component_manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False), encoding="utf-8"
+    )
+
+
+def test_b2_11_published_examples_remain_online() -> None:
+    skill_ids = (
+        "vh_數學B2_AngleMeasurementAndConversion",
+        "vh_數學B2_ArcLengthAndAreaOfSector",
+        "vh_數學B2_CoterminalAngles",
+    )
+    pairs: list[tuple[int, str]] = []
+    for skill_id in skill_ids:
+        manifest_path = PROJECT_ROOT / "agent_skills_v3" / skill_id / "component_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        pairs.extend(
+            (int(row["textbook_example_id"]), skill_id)
+            for row in manifest["components"]
+        )
+
+    conn = sqlite3.connect(":memory:")
+    status_map = build_admin_examples_gencode_status_map(
+        conn,
+        pairs,
+        project_root=PROJECT_ROOT,
+    )
+    assert pairs
+    assert all(
+        status["teacher_status"]["status_key"] == "published"
+        for status in status_map.values()
+    )
+    conn.close()
+
+
+def test_verified_component_without_manifest_and_runtime_wrapper_is_not_online(
+    tmp_path: Path,
+) -> None:
+    skill_id = "vh_unpublished_status_regression"
+    component_id = "src_9901"
+    component_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    component_dir.mkdir(parents=True)
+    (component_dir / "generate.py").write_text("def generate(): return {}\n", encoding="utf-8")
+    _write_production_init(
+        tmp_path,
+        skill_id,
+        [{"component_id": component_id, "textbook_example_id": 9901}],
+    )
+
+    conn = sqlite3.connect(":memory:")
+    conn.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            textbook_example_id INTEGER,
+            skill_id TEXT,
+            component_id TEXT,
+            gencode_status TEXT,
+            induced_spec_payload TEXT,
+            gencode_error_log TEXT,
+            updated_at TEXT
+        )
+        """
+    )
+    conn.execute(
+        "INSERT INTO gencode_component_tracker VALUES (9901, ?, ?, 'verified', NULL, NULL, NULL)",
+        (skill_id, component_id),
+    )
+    status = build_admin_examples_gencode_status_map(
+        conn,
+        [(9901, skill_id)],
+        project_root=tmp_path,
+    )[9901]
+
+    assert inspect_skill_runtime_publication(
+        skill_id=skill_id,
+        project_root=tmp_path,
+    )["runtime_ready"] is False
+    assert status["teacher_status"]["status_key"] != "published"
+    conn.close()
+
+
+def test_production_runtime_ready_overrides_stale_tracker_status():
+    """PRODUCTION_RUNTIME_READY_OVERRIDES_STALE_TRACKER_STATUS"""
+    published = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_contains_latest=True,
+        hash_evidence_stale=True,
+        production_runtime_ready=True,
+    )
+    assert published["status_key"] == "published"
+    assert published["label"] == "已上線"
+    assert published["badge_class"] == "teacher-v3-published"
+
+    pending = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_contains_latest=True,
+        hash_evidence_stale=True,
+        deployed_without_tracker=True,
+        production_runtime_ready=False,
+    )
+    assert pending["status_key"] == "deployed_pending_revalidation"
+
+    unpackaged = resolve_teacher_facing_v3_status(
+        gencode_status="verified",
+        has_tracker=True,
+        has_component=True,
+        has_generated_artifact=True,
+        production_runtime_ready=False,
+        hash_evidence_stale=False,
+    )
+    assert unpackaged["status_key"] == "generated_not_packaged"
+
+    generating = resolve_teacher_facing_v3_status(
+        gencode_status="generating",
+        active_generation_job=True,
+        production_runtime_ready=True,
+        hash_evidence_stale=True,
+    )
+    assert generating["status_key"] == "generating"
+
+    failed = resolve_teacher_facing_v3_status(
+        gencode_status="failed",
+        has_error=True,
+        production_runtime_ready=True,
+        hash_evidence_stale=True,
+    )
+    assert failed["status_key"] == "failed"
+
+
+def test_package_ready_manifest_is_runtime_selectable(tmp_path: Path):
+    skill_id = "vh_package_ready_status"
+    component_id = "src_12042"
+    spec = {"component_id": component_id, "textbook_example_id": 12042}
+    component_dir = tmp_path / "agent_skills_v3" / skill_id / "components" / component_id
+    component_dir.mkdir(parents=True)
+    (component_dir / "generate.py").write_text("def generate():\n    return {}\n", encoding="utf-8")
+    _write_production_init(tmp_path, skill_id, [spec])
+    _write_runtime_facade_and_manifest(tmp_path, skill_id, [spec])
+    manifest_path = tmp_path / "agent_skills_v3" / skill_id / "component_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["publish_status"] = "package_ready"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    publication = inspect_skill_runtime_publication(skill_id=skill_id, project_root=tmp_path)
+    assert publication["runtime_ready"] is True
+    assert publication["selectable_components"][12042] == component_id
+
+    conn = sqlite3.connect(":memory:")
+    status = build_admin_examples_gencode_status_map(
+        conn,
+        [(12042, skill_id)],
+        project_root=tmp_path,
+    )[12042]
+    assert status["production_runtime_ready"] is True
+    assert status["teacher_status"]["status_key"] == "published"
+    conn.close()

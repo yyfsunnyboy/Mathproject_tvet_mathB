@@ -1,0 +1,16 @@
+{
+  "status": "isolated_validation_passed_formal_promotion_mechanism_blocked",
+  "production_publish_allowed": false,
+  "command": "python -m pytest reports/domain_operation_workspaces/capability_9ba757fa0bf387dfb2700269/revision_0001/test_rational_numbers_candidate.py -q",
+  "test_result": "isolated candidate plus existing solution-set regression: 137 passed",
+  "exact_readiness_gate": {
+    "1_capability_declaration": "isolated manifest present",
+    "2_operation_registry": "isolated manifest present",
+    "3_executable_implementation": "PASS: exact deterministic candidate; 8 assertions passed",
+    "4_adapter_route": "PASS in isolated workspace: human-approved short_answer + solution_set_checker",
+    "5_presentation_answer_contract": "PASS in isolated workspace: selected_candidate_index_set",
+    "6_checker": "PASS: isolated decimal, reduced-fraction, bounds, boolean, set, and point checkers tested",
+    "7_per_component_validator": "NOT APPLICABLE: no component is created; production validator is not modified",
+    "8_selected_equals_required": "PASS: verified by source-example mapping in proposal"
+  }
+}

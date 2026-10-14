@@ -354,15 +354,6 @@ log_path = sim.save_log()  # 自動存到 outputs/ 帶時間戳
 #### Q: 執行時出現 `ImportError: cannot import 'submit_and_get_next'`
 **A**: 確認工作目錄是專案根目錄 (`Mathproject/`)，或確認 `sys.path` 包含專案根目錄。腳本已有 path bootstrap 程式碼自動處理。
 
-#### Q: 第一次執行很慢
-**A**: 引擎需要初始化 RAG (Chroma + SentenceTransformer)，首次載入模型約需 10~30 秒。後續步驟會快很多。
-
-#### Q: `ModuleNotFoundError: No module named 'chromadb'`
-**A**: 安裝依賴：
-```bash
-pip install chromadb sentence-transformers
-```
-
 #### Q: LLM 模式顯示「無法連線到 Ollama」
 **A**: 確認：
 1. Ollama 已啟動: `ollama serve`

@@ -83,18 +83,6 @@
                 <label for="password">密碼:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <div class="form-group">
-                <label>身分:</label>
-                <div style="display: flex; gap: 15px; margin-top: 5px;">
-                    <label style="display: inline-flex; align-items: center; font-weight: normal;">
-                        <input type="radio" name="role" value="student" checked style="width: auto; margin-right: 5px;">
-                        學生
-                    </label>
-                    <label style="display: inline-flex; align-items: center; font-weight: normal;">
-                        <input type="radio" name="role" value="teacher" style="width: auto; margin-right: 5px;"> 教師
-                    </label>
-                </div>
-            </div>
             <button type="submit">登入</button>
         </form>
         <p>還沒有帳號嗎? <a href="{{ url_for('register') }}">點此註冊</a></p>

@@ -219,15 +219,6 @@
                         </div>
                     </div>
 
-                    <div class="card bg-light border-0 p-3 mb-4 mode-hint-docx" id="skipCodeGenWrap">
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" id="skip_code_gen" name="skip_code_gen"
-                                checked>
-                            <label class="form-check-label fw-bold text-secondary" for="skip_code_gen">
-                                跳過 Python 出題原始碼自動生成 (僅寫入資料庫，加速匯入)
-                            </label>
-                        </div>
-                    </div>
 
                     <div id="uploadProgressWrap" class="mb-3">
                         <p class="fw-semibold text-secondary mb-2" id="uploadProgressMessage">
@@ -272,7 +263,6 @@
             const submitBtnIcon = document.getElementById('submitBtnIcon');
             const progressWrap = document.getElementById('uploadProgressWrap');
             const progressMessage = document.getElementById('uploadProgressMessage');
-            const skipCodeGenWrap = document.getElementById('skipCodeGenWrap');
             const cardHeaderIcon = document.getElementById('cardHeaderIcon');
             const cardHeaderText = document.getElementById('cardHeaderText');
             const modeRadios = document.querySelectorAll('input[name="import_mode"]');
@@ -297,7 +287,6 @@
                     submitBtnIcon.className = 'bi bi-diagram-3-fill';
                     cardHeaderIcon.className = 'bi bi-file-earmark-pdf-fill text-danger';
                     cardHeaderText.textContent = 'PDF 目錄大綱樹快速建立';
-                    if (skipCodeGenWrap) skipCodeGenWrap.style.display = 'none';
                 } else {
                     fileLabel.textContent = '選擇 LaTeX 規格 Word 檔案 (.docx)';
                     fileHelp.innerHTML = '* 建議上傳前確認檔案內公式皆已呈現 <code>$x^2-4x+3\\le0$</code> 等標準 LaTeX 標記。';
@@ -305,7 +294,6 @@
                     submitBtnIcon.className = 'bi bi-cloud-arrow-up-fill';
                     cardHeaderIcon.className = 'bi bi-file-earmark-word-fill text-primary';
                     cardHeaderText.textContent = 'LaTeX DOCX 決定性分析解析';
-                    if (skipCodeGenWrap) skipCodeGenWrap.style.display = '';
                 }
             }
 

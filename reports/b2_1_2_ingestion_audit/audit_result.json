@@ -1,0 +1,1534 @@
+{
+  "production_sha256_before": "f3d0a6442eb9db05741f1ff4ced90928e86d73fee0be5e6a682c319ab1c365fb",
+  "production_sha256_after": "f3d0a6442eb9db05741f1ff4ced90928e86d73fee0be5e6a682c319ab1c365fb",
+  "production_unchanged": true,
+  "conversion": {
+    "original_unchanged": true,
+    "mathtype_ole": 350,
+    "equation_native_ok": 347,
+    "converted_ok": 347,
+    "converted_failed": 0,
+    "non_mtef_objects": 3,
+    "eq_fields": 10,
+    "eq_converted_ok": 10,
+    "summary": {
+      "paragraphs": 291,
+      "paragraph_blocks": 122,
+      "tables": 23,
+      "table_cells": 62,
+      "mathtype_ole": 350,
+      "mathtype_ole_in_table_cells": 156,
+      "ole_embeddings_resolved": 350,
+      "ole_cfb_validated": 347,
+      "eq_fields": 10,
+      "eq_fields_in_table_cells": 10,
+      "independent_images": 36,
+      "formula_preview_media_refs": 281,
+      "media_physical_files": 329,
+      "media_extension_counts": {
+        "emf": 3,
+        "wmf": 290,
+        "jpeg": 33,
+        "png": 3
+      },
+      "ole_embeddings": 362
+    }
+  },
+  "conversion_failures": [],
+  "curriculum_info": {
+    "curriculum": "vocational",
+    "publisher": "longteng",
+    "grade": 10,
+    "volume": "數學B2",
+    "section_code": "1-2",
+    "import_mode": "docx_problems",
+    "original_filename": "第一章 1-2 銳角三角函數-課本.docx",
+    "saved_filename": "第一章 1-2 銳角三角函數-課本_Latex.docx",
+    "parse_filename": "第一章 1-2 銳角三角函數-課本.docx",
+    "chapter_index": 1,
+    "source_scope": "section_textbook",
+    "filename_meta": {
+      "chapter_label": "第1章",
+      "chapter_index": 1,
+      "section_code": "1-2",
+      "section_index": 2,
+      "section_title": "1-2 銳角三角函數",
+      "source_scope": "section_textbook",
+      "volume_hint": null,
+      "parse_filename": "第一章 1-2 銳角三角函數-課本.docx"
+    },
+    "form_section_code": "1-2",
+    "filename_section_code": "1-2",
+    "chapter": "第1章",
+    "section": "1-2 銳角三角函數"
+  },
+  "phase1_lines": 188,
+  "phase2_blocks": 31,
+  "anchor_count": 31,
+  "anchor_collisions": [],
+  "preview_math_parse_failed": 0,
+  "preview_rows_with_math_parse_failed": 0,
+  "questions": [
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_001_001",
+      "source_order": 1,
+      "source_description": "例1",
+      "source_type": "textbook_example",
+      "problem_text": "小謙的身高160公分，在某一時刻陽光照射下，他的影長是200公分，同時他身旁一棵樹的影長是5公尺，試問這棵樹的高度為幾公尺？",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 如圖所示：\n假設樹高為x公尺\n因為△ABC與△DEF為\n相似三角形\n所以\\({\\overline{ AC }} \\,\\ :\\ \\, {\\overline{ DF }} = {\\overline{ BC }} \\,\\ :\\ \\, {\\overline{ EF }}\\)\n即\\(\\mathop { 1.6\\,\\ :\\ \\,x=2\\,\\ :\\ \\,5 }\\)\n整理得\\(2x=5\\times 1.6=8\\)，得\\(x=4\\)，故樹高為4公尺",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "resolved_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "meta": {
+        "anchor": "例1",
+        "source_type": "textbook_example",
+        "problem_text": "小謙的身高160公分，在某一時刻陽光照射下，他的影長是200公分，同時他身旁一棵樹的影長是5公尺，試問這棵樹的高度為幾公尺？",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 如圖所示：\n假設樹高為x公尺\n因為△ABC與△DEF為\n相似三角形\n所以\\({\\overline{ AC }} \\,\\ :\\ \\, {\\overline{ DF }} = {\\overline{ BC }} \\,\\ :\\ \\, {\\overline{ EF }}\\)\n即\\(\\mathop { 1.6\\,\\ :\\ \\,x=2\\,\\ :\\ \\,5 }\\)\n整理得\\(2x=5\\times 1.6=8\\)，得\\(x=4\\)，故樹高為4公尺",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.1",
+        "concept_name": "比與比值",
+        "concept_en_id": "RatioAndRatioValue",
+        "formal_skill_id": "vh_數學B2_RatioAndRatioValue",
+        "display_order": 1
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_001_002",
+      "source_order": 2,
+      "source_description": "隨堂練習1",
+      "source_type": "in_class_practice",
+      "problem_text": "小玹的身高150公分，在某一時刻陽光照射下，他的影長是300公分，同時他身旁一根旗桿的高度為3公尺，試問這根旗桿影長是幾公尺？",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "resolved_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "meta": {
+        "anchor": "隨堂練習1",
+        "source_type": "in_class_practice",
+        "problem_text": "小玹的身高150公分，在某一時刻陽光照射下，他的影長是300公分，同時他身旁一根旗桿的高度為3公尺，試問這根旗桿影長是幾公尺？",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.1",
+        "concept_name": "比與比值",
+        "concept_en_id": "RatioAndRatioValue",
+        "formal_skill_id": "vh_數學B2_RatioAndRatioValue",
+        "display_order": 1
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_002_003",
+      "source_order": 3,
+      "source_description": "例2",
+      "source_type": "textbook_example",
+      "problem_text": "已知直角△ABC中，\\(\\angle C=90{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ BC }} =2\\)，\n試求\\(sinA\\)、\\(cosA\\)、\\(tanA\\)之值。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 已知\\(\\angle C=90{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ BC }} =2\\)\n如右圖所示。由畢氏定理知：\n\\({\\overline{ AC }} =\\sqrt[] { {\\overline{ AB }} ^ { 2 } - {\\overline{ BC }} ^ { 2 } }=\\sqrt[] { 3 ^ { 2 } -2 ^ { 2 } }=\\sqrt[] { 5 }\\)\n故得\\(sinA=\\frac { \\angle A\\ 的對邊長 } { 斜邊長 }=\\frac { 2 } { 3 }\\)、\\(cosA=\\frac { \\angle A\\ 的鄰邊長 } { 斜邊長 }=\\frac { \\sqrt[] { 5 } } { 3 }\\)、\n\\(tanA=\\frac { \\angle A\\ 的對邊長 } { \\angle A\\ 的鄰邊長 }=\\frac { 2 } { \\sqrt[] { 5 } }=\\frac { 2\\sqrt[] { 5 } } { 5 }\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "meta": {
+        "anchor": "例2",
+        "source_type": "textbook_example",
+        "problem_text": "已知直角△ABC中，\\(\\angle C=90{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ BC }} =2\\)，\n試求\\(sinA\\)、\\(cosA\\)、\\(tanA\\)之值。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 已知\\(\\angle C=90{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({\\overline{ BC }} =2\\)\n如右圖所示。由畢氏定理知：\n\\({\\overline{ AC }} =\\sqrt[] { {\\overline{ AB }} ^ { 2 } - {\\overline{ BC }} ^ { 2 } }=\\sqrt[] { 3 ^ { 2 } -2 ^ { 2 } }=\\sqrt[] { 5 }\\)\n故得\\(sinA=\\frac { \\angle A\\ 的對邊長 } { 斜邊長 }=\\frac { 2 } { 3 }\\)、\\(cosA=\\frac { \\angle A\\ 的鄰邊長 } { 斜邊長 }=\\frac { \\sqrt[] { 5 } } { 3 }\\)、\n\\(tanA=\\frac { \\angle A\\ 的對邊長 } { \\angle A\\ 的鄰邊長 }=\\frac { 2 } { \\sqrt[] { 5 } }=\\frac { 2\\sqrt[] { 5 } } { 5 }\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.2",
+        "concept_name": "銳角三角函數",
+        "concept_en_id": "TrigonometricFunctionsOfAcuteAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "display_order": 2
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_002_004",
+      "source_order": 4,
+      "source_description": "隨堂練習2",
+      "source_type": "in_class_practice",
+      "problem_text": "試求下列各個三角形中的\\(sinA\\)、\\(cosA\\)及\\(tanA\\)之值。\n(1) (2)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "meta": {
+        "anchor": "隨堂練習2",
+        "source_type": "in_class_practice",
+        "problem_text": "試求下列各個三角形中的\\(sinA\\)、\\(cosA\\)及\\(tanA\\)之值。\n(1) (2)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.2",
+        "concept_name": "銳角三角函數",
+        "concept_en_id": "TrigonometricFunctionsOfAcuteAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "display_order": 2
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_003_005",
+      "source_order": 5,
+      "source_description": "例3",
+      "source_type": "textbook_example",
+      "problem_text": "已知\\(\\theta\\)為銳角，若\\(tan\\theta =\\frac { 3 } { 4 }\\)，試求\\(sin\\theta\\)與\\(cos\\theta\\)之值。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 因為\\(tan\\theta =\\frac { 3 } { 4 }=\\frac { \\theta \\ 的對邊長 } { \\theta \\ 的鄰邊長 }\\)\n作一直角△ABC，使\\(\\angle C=90{}^\\circ\\)\n令\\({\\overline{ AC }} =4\\)，\\({\\overline{ BC }} =3\\)，\\(\\angle A=\\theta\\)\n由畢氏定理知：\n\\({\\overline{ AB }} ^ { 2 } = {\\overline{ AC }} ^ { 2 } + {\\overline{ BC }} ^ { 2 } =4 ^ { 2 } +3 ^ { 2 } =25\\)\n所以\\({\\overline{ AB }} =5\\)\n故\\(sin\\theta =\\frac { 3 } { 5 }\\)，\\(cos\\theta =\\frac { 4 } { 5 }\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "meta": {
+        "anchor": "例3",
+        "source_type": "textbook_example",
+        "problem_text": "已知\\(\\theta\\)為銳角，若\\(tan\\theta =\\frac { 3 } { 4 }\\)，試求\\(sin\\theta\\)與\\(cos\\theta\\)之值。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 因為\\(tan\\theta =\\frac { 3 } { 4 }=\\frac { \\theta \\ 的對邊長 } { \\theta \\ 的鄰邊長 }\\)\n作一直角△ABC，使\\(\\angle C=90{}^\\circ\\)\n令\\({\\overline{ AC }} =4\\)，\\({\\overline{ BC }} =3\\)，\\(\\angle A=\\theta\\)\n由畢氏定理知：\n\\({\\overline{ AB }} ^ { 2 } = {\\overline{ AC }} ^ { 2 } + {\\overline{ BC }} ^ { 2 } =4 ^ { 2 } +3 ^ { 2 } =25\\)\n所以\\({\\overline{ AB }} =5\\)\n故\\(sin\\theta =\\frac { 3 } { 5 }\\)，\\(cos\\theta =\\frac { 4 } { 5 }\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.2",
+        "concept_name": "銳角三角函數",
+        "concept_en_id": "TrigonometricFunctionsOfAcuteAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "display_order": 2
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_003_006",
+      "source_order": 6,
+      "source_description": "隨堂練習3",
+      "source_type": "in_class_practice",
+      "problem_text": "已知\\(\\theta\\)為銳角，若\\(cos\\theta =\\frac { 12 } { 13 }\\)，試求\\(sin\\theta\\)與\\(tan\\theta\\)之值。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "meta": {
+        "anchor": "隨堂練習3",
+        "source_type": "in_class_practice",
+        "problem_text": "已知\\(\\theta\\)為銳角，若\\(cos\\theta =\\frac { 12 } { 13 }\\)，試求\\(sin\\theta\\)與\\(tan\\theta\\)之值。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.2",
+        "concept_name": "銳角三角函數",
+        "concept_en_id": "TrigonometricFunctionsOfAcuteAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "display_order": 2
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_004_007",
+      "source_order": 7,
+      "source_description": "例4",
+      "source_type": "textbook_example",
+      "problem_text": "試求下列各式之值：\n(1)\\(sin\\frac { \\pi } { 6 }+cos\\frac { \\pi } { 3 }\\) (2)\\(2sin ^ { 2 } 45{}^\\circ -tan ^ { 2 } 60{}^\\circ\\)",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) \n \n畫出各個直角三角形，並標示各邊邊長比例，\n由三角函數的定義知：\n(1) \\(sin\\frac { \\pi } { 6 }+cos\\frac { \\pi } { 3 }=sin30{}^\\circ +cos60{}^\\circ =\\frac { 1 } { 2 }+\\frac { 1 } { 2 }=1\\)\n(2) \\(2sin ^ { 2 } 45{}^\\circ -tan ^ { 2 } 60{}^\\circ =2\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } -\\left ( { \\sqrt[] { 3 } } \\right ) ^ { 2 } =1-3=-2\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "meta": {
+        "anchor": "例4",
+        "source_type": "textbook_example",
+        "problem_text": "試求下列各式之值：\n(1)\\(sin\\frac { \\pi } { 6 }+cos\\frac { \\pi } { 3 }\\) (2)\\(2sin ^ { 2 } 45{}^\\circ -tan ^ { 2 } 60{}^\\circ\\)",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) \n \n畫出各個直角三角形，並標示各邊邊長比例，\n由三角函數的定義知：\n(1) \\(sin\\frac { \\pi } { 6 }+cos\\frac { \\pi } { 3 }=sin30{}^\\circ +cos60{}^\\circ =\\frac { 1 } { 2 }+\\frac { 1 } { 2 }=1\\)\n(2) \\(2sin ^ { 2 } 45{}^\\circ -tan ^ { 2 } 60{}^\\circ =2\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } -\\left ( { \\sqrt[] { 3 } } \\right ) ^ { 2 } =1-3=-2\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.3",
+        "concept_name": "30°、45°、60° 特別角的三角函數值",
+        "concept_en_id": "TrigonometricValuesOfSpecialAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+        "display_order": 3
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_004_008",
+      "source_order": 8,
+      "source_description": "隨堂練習4",
+      "source_type": "in_class_practice",
+      "problem_text": "試求下列各式之值：\n(1)\\(cos\\frac { \\pi } { 6 }+sin\\frac { \\pi } { 3 }\\) (2)\\(\\sqrt[] { 2 }cos45{}^\\circ -tan ^ { 2 } 45{}^\\circ\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "meta": {
+        "anchor": "隨堂練習4",
+        "source_type": "in_class_practice",
+        "problem_text": "試求下列各式之值：\n(1)\\(cos\\frac { \\pi } { 6 }+sin\\frac { \\pi } { 3 }\\) (2)\\(\\sqrt[] { 2 }cos45{}^\\circ -tan ^ { 2 } 45{}^\\circ\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.3",
+        "concept_name": "30°、45°、60° 特別角的三角函數值",
+        "concept_en_id": "TrigonometricValuesOfSpecialAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+        "display_order": 3
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_005_009",
+      "source_order": 9,
+      "source_description": "例5",
+      "source_type": "textbook_example",
+      "problem_text": "世界上最陡峭的鐵路是瑞士的皮拉圖斯山鐵路（Pilatus railway），其最大傾斜度達48°。今有一登山小火車在山腳下的A站行駛500公尺後到達山頂B站，\\({\\overline{ AB }}\\)傾斜角度為30°。試求：\n(1)小火車垂直上升的高度（\\({\\overline{ BC }}\\)）。\n(2)小火車水平移動的長度（\\({\\overline{ AC }}\\)）。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 直角△ABC中\n(1) \\(sin30{}^\\circ =\\frac { {\\overline{ BC }} } { {\\overline{ AB }} }=\\frac { {\\overline{ BC }} } { 500 }\\)\n故\\({\\overline{ BC }} =500\\times sin30{}^\\circ =500\\times \\frac { 1 } { 2 }=250\\)（公尺）\n(2) \\(cos30{}^\\circ =\\frac { {\\overline{ AC }} } { {\\overline{ AB }} }=\\frac { {\\overline{ AC }} } { 500 }\\)\n故\\({\\overline{ AC }} =500\\times cos30{}^\\circ =500\\times \\frac { \\sqrt[] { 3 } } { 2 }=250\\sqrt[] { 3 }\\)（公尺）",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "meta": {
+        "anchor": "例5",
+        "source_type": "textbook_example",
+        "problem_text": "世界上最陡峭的鐵路是瑞士的皮拉圖斯山鐵路（Pilatus railway），其最大傾斜度達48°。今有一登山小火車在山腳下的A站行駛500公尺後到達山頂B站，\\({\\overline{ AB }}\\)傾斜角度為30°。試求：\n(1)小火車垂直上升的高度（\\({\\overline{ BC }}\\)）。\n(2)小火車水平移動的長度（\\({\\overline{ AC }}\\)）。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 直角△ABC中\n(1) \\(sin30{}^\\circ =\\frac { {\\overline{ BC }} } { {\\overline{ AB }} }=\\frac { {\\overline{ BC }} } { 500 }\\)\n故\\({\\overline{ BC }} =500\\times sin30{}^\\circ =500\\times \\frac { 1 } { 2 }=250\\)（公尺）\n(2) \\(cos30{}^\\circ =\\frac { {\\overline{ AC }} } { {\\overline{ AB }} }=\\frac { {\\overline{ AC }} } { 500 }\\)\n故\\({\\overline{ AC }} =500\\times cos30{}^\\circ =500\\times \\frac { \\sqrt[] { 3 } } { 2 }=250\\sqrt[] { 3 }\\)（公尺）",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.3",
+        "concept_name": "30°、45°、60° 特別角的三角函數值",
+        "concept_en_id": "TrigonometricValuesOfSpecialAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+        "display_order": 3
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_005_010",
+      "source_order": 10,
+      "source_description": "隨堂練習5",
+      "source_type": "in_class_practice",
+      "problem_text": "如圖所示，一位登山專家從山腳A處走了100公尺到達山上B處，山坡與水平地面的夾角為60°，試求：\n(1)登山專家垂直上升幾公尺（\\({\\overline{ BC }}\\)）。\n(2)登山專家水平移動幾公尺（\\({\\overline{ AC }}\\)）。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "resolved_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "meta": {
+        "anchor": "隨堂練習5",
+        "source_type": "in_class_practice",
+        "problem_text": "如圖所示，一位登山專家從山腳A處走了100公尺到達山上B處，山坡與水平地面的夾角為60°，試求：\n(1)登山專家垂直上升幾公尺（\\({\\overline{ BC }}\\)）。\n(2)登山專家水平移動幾公尺（\\({\\overline{ AC }}\\)）。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.3",
+        "concept_name": "30°、45°、60° 特別角的三角函數值",
+        "concept_en_id": "TrigonometricValuesOfSpecialAngles",
+        "formal_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+        "display_order": 3
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_006_011",
+      "source_order": 11,
+      "source_description": "例6",
+      "source_type": "textbook_example",
+      "problem_text": "試求下列各式之值：\n(1)\\(sin40{}^\\circ\\) (2)\\(cos38{}^\\circ 49'\\)",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 求\\(sin40{}^\\circ\\)時，\n 依序輸入\\(\\boxed{ 4 }\\)\\(\\boxed{ 0 }\\)\\(\\boxed{ sin }\\)\n 此時螢幕上顯示\\(\\boxed{ 0.642787609 }\\)\n 即表示\\(sin40{}^\\circ =0.642787609\\)\n(2) 求\\(cos38{}^\\circ 49'\\)時，\n依序輸入\\(\\boxed{ 4 }\\)\\(\\boxed{ 9 }\\)\\(\\boxed{ \\div }\\)\\(\\boxed{ 6 }\\)\\(\\boxed{ 0 }\\)\\(\\boxed{ + }\\)\\(\\boxed{ 3 }\\)\\(\\boxed{ 8 }\\)\\(\\boxed{ = }\\)\\(\\boxed{ cos }\\)\n此時螢幕上顯示\\(\\boxed{ 0.77915566 }\\)\n即表示\\(cos38{}^\\circ 49'=0.77915566\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "resolved_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "meta": {
+        "anchor": "例6",
+        "source_type": "textbook_example",
+        "problem_text": "試求下列各式之值：\n(1)\\(sin40{}^\\circ\\) (2)\\(cos38{}^\\circ 49'\\)",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 求\\(sin40{}^\\circ\\)時，\n 依序輸入\\(\\boxed{ 4 }\\)\\(\\boxed{ 0 }\\)\\(\\boxed{ sin }\\)\n 此時螢幕上顯示\\(\\boxed{ 0.642787609 }\\)\n 即表示\\(sin40{}^\\circ =0.642787609\\)\n(2) 求\\(cos38{}^\\circ 49'\\)時，\n依序輸入\\(\\boxed{ 4 }\\)\\(\\boxed{ 9 }\\)\\(\\boxed{ \\div }\\)\\(\\boxed{ 6 }\\)\\(\\boxed{ 0 }\\)\\(\\boxed{ + }\\)\\(\\boxed{ 3 }\\)\\(\\boxed{ 8 }\\)\\(\\boxed{ = }\\)\\(\\boxed{ cos }\\)\n此時螢幕上顯示\\(\\boxed{ 0.77915566 }\\)\n即表示\\(cos38{}^\\circ 49'=0.77915566\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.4",
+        "concept_name": "使用計算機計算函數值",
+        "concept_en_id": "CalculatingFunctionValuesUsingCalculator",
+        "formal_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+        "display_order": 4
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_006_012",
+      "source_order": 12,
+      "source_description": "隨堂練習6",
+      "source_type": "in_class_practice",
+      "problem_text": "試求下列各式之值：\n(1)\\(tan55{}^\\circ\\) (2)\\(cos80{}^\\circ 30'\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "resolved_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "meta": {
+        "anchor": "隨堂練習6",
+        "source_type": "in_class_practice",
+        "problem_text": "試求下列各式之值：\n(1)\\(tan55{}^\\circ\\) (2)\\(cos80{}^\\circ 30'\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.4",
+        "concept_name": "使用計算機計算函數值",
+        "concept_en_id": "CalculatingFunctionValuesUsingCalculator",
+        "formal_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+        "display_order": 4
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_007_013",
+      "source_order": 13,
+      "source_description": "例7",
+      "source_type": "textbook_example",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin20{}^\\circ } { cos20{}^\\circ }=\\) 。 (2)\\(tan25{}^\\circ \\times cos25{}^\\circ =\\) 。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 由商數關係式，可得\n(1) \\(\\frac { sin20{}^\\circ } { cos20{}^\\circ }=tan20{}^\\circ\\)\n(2) \\(tan25{}^\\circ \\times cos25{}^\\circ =\\frac { sin25{}^\\circ } { cos25{}^\\circ }\\times cos25{}^\\circ =sin25{}^\\circ\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "例7",
+        "source_type": "textbook_example",
+        "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin20{}^\\circ } { cos20{}^\\circ }=\\) 。 (2)\\(tan25{}^\\circ \\times cos25{}^\\circ =\\) 。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 由商數關係式，可得\n(1) \\(\\frac { sin20{}^\\circ } { cos20{}^\\circ }=tan20{}^\\circ\\)\n(2) \\(tan25{}^\\circ \\times cos25{}^\\circ =\\frac { sin25{}^\\circ } { cos25{}^\\circ }\\times cos25{}^\\circ =sin25{}^\\circ\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_007_014",
+      "source_order": 14,
+      "source_description": "隨堂練習7",
+      "source_type": "in_class_practice",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin66{}^\\circ } { cos66{}^\\circ }=\\) 。 (2)\\(tan55{}^\\circ \\times cos55{}^\\circ =\\) 。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "隨堂練習7",
+        "source_type": "in_class_practice",
+        "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin66{}^\\circ } { cos66{}^\\circ }=\\) 。 (2)\\(tan55{}^\\circ \\times cos55{}^\\circ =\\) 。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_008_015",
+      "source_order": 15,
+      "source_description": "例8",
+      "source_type": "textbook_example",
+      "problem_text": "試以銳角，分別完成下列空格。\n(1)\\(sin15{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(2)\\(cos80{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 由餘角關係式，可得\n(1)\\(sin15{}^\\circ =cos\\left ( { 90{}^\\circ -15{}^\\circ } \\right )=cos75{}^\\circ\\)\n(2)\\(cos80{}^\\circ =sin\\left ( { 90{}^\\circ -80{}^\\circ } \\right )=sin10{}^\\circ\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "例8",
+        "source_type": "textbook_example",
+        "problem_text": "試以銳角，分別完成下列空格。\n(1)\\(sin15{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(2)\\(cos80{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) 由餘角關係式，可得\n(1)\\(sin15{}^\\circ =cos\\left ( { 90{}^\\circ -15{}^\\circ } \\right )=cos75{}^\\circ\\)\n(2)\\(cos80{}^\\circ =sin\\left ( { 90{}^\\circ -80{}^\\circ } \\right )=sin10{}^\\circ\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_008_016",
+      "source_order": 16,
+      "source_description": "隨堂練習8",
+      "source_type": "in_class_practice",
+      "problem_text": "試以銳角，分別完成下列空格。\n(1)\\(sin65{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(2)\\(cos77{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "隨堂練習8",
+        "source_type": "in_class_practice",
+        "problem_text": "試以銳角，分別完成下列空格。\n(1)\\(sin65{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(2)\\(cos77{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_009_017",
+      "source_order": 17,
+      "source_description": "例9",
+      "source_type": "textbook_example",
+      "problem_text": "試求：\n(1)\\(sin ^ { 2 } 45{}^\\circ +cos ^ { 2 } 45{}^\\circ =\\) 。\n(2)\\(sin ^ { 2 } 49{}^\\circ +cos ^ { 2 } 49{}^\\circ =\\) 。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(sin ^ { 2 } 45{}^\\circ +cos ^ { 2 } 45{}^\\circ =\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } +\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } =\\frac { 1 } { 2 }+\\frac { 1 } { 2 }=1\\)\n(2) 由平方關係式，得\\(sin ^ { 2 } 49{}^\\circ +cos ^ { 2 } 49{}^\\circ =1\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "例9",
+        "source_type": "textbook_example",
+        "problem_text": "試求：\n(1)\\(sin ^ { 2 } 45{}^\\circ +cos ^ { 2 } 45{}^\\circ =\\) 。\n(2)\\(sin ^ { 2 } 49{}^\\circ +cos ^ { 2 } 49{}^\\circ =\\) 。",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) \\(sin ^ { 2 } 45{}^\\circ +cos ^ { 2 } 45{}^\\circ =\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } +\\left ( { \\frac { 1 } { \\sqrt[] { 2 } } } \\right ) ^ { 2 } =\\frac { 1 } { 2 }+\\frac { 1 } { 2 }=1\\)\n(2) 由平方關係式，得\\(sin ^ { 2 } 49{}^\\circ +cos ^ { 2 } 49{}^\\circ =1\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_009_018",
+      "source_order": 18,
+      "source_description": "隨堂練習9",
+      "source_type": "in_class_practice",
+      "problem_text": "試求：\n(1)\\(sin ^ { 2 } 60{}^\\circ +cos ^ { 2 } 60{}^\\circ =\\) 。 (2)\\(sin ^ { 2 } 85{}^\\circ +cos ^ { 2 } 85{}^\\circ =\\) 。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "隨堂練習9",
+        "source_type": "in_class_practice",
+        "problem_text": "試求：\n(1)\\(sin ^ { 2 } 60{}^\\circ +cos ^ { 2 } 60{}^\\circ =\\) 。 (2)\\(sin ^ { 2 } 85{}^\\circ +cos ^ { 2 } 85{}^\\circ =\\) 。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_example_010_019",
+      "source_order": 19,
+      "source_description": "例10",
+      "source_type": "textbook_example",
+      "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta +cos\\theta =\\frac { \\sqrt[] { 7 } } { 2 }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\) (2)\\(sin\\theta -cos\\theta\\)",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 將\\(sin\\theta +cos\\theta =\\frac { \\sqrt[] { 7 } } { 2 }\\)兩邊平方，得\n \\(sin ^ { 2 } \\theta +2sin\\theta cos\\theta +cos ^ { 2 } \\theta =\\frac { 7 } { 4 }\\)\n 即\\(1+2sin\\theta cos\\theta =\\frac { 7 } { 4 }\\)\n 計算得\\(2sin\\theta cos\\theta =\\frac { 3 } { 4 }\\)，故得\\(sin\\theta cos\\theta =\\frac { 3 } { 8 }\\)\n(2) 因為\\(\\left ( { sin\\theta -cos\\theta } \\right ) ^ { 2 } =sin ^ { 2 } \\theta -2sin\\theta cos\\theta +cos ^ { 2 } \\theta\\)\n \\(=1-2sin\\theta cos\\theta =1-2\\times \\frac { 3 } { 8 }=\\frac { 1 } { 4 }\\)\n所以\\(sin\\theta -cos\\theta =\\pm \\frac { 1 } { 2 }\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "例10",
+        "source_type": "textbook_example",
+        "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta +cos\\theta =\\frac { \\sqrt[] { 7 } } { 2 }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\) (2)\\(sin\\theta -cos\\theta\\)",
+        "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 將\\(sin\\theta +cos\\theta =\\frac { \\sqrt[] { 7 } } { 2 }\\)兩邊平方，得\n \\(sin ^ { 2 } \\theta +2sin\\theta cos\\theta +cos ^ { 2 } \\theta =\\frac { 7 } { 4 }\\)\n 即\\(1+2sin\\theta cos\\theta =\\frac { 7 } { 4 }\\)\n 計算得\\(2sin\\theta cos\\theta =\\frac { 3 } { 4 }\\)，故得\\(sin\\theta cos\\theta =\\frac { 3 } { 8 }\\)\n(2) 因為\\(\\left ( { sin\\theta -cos\\theta } \\right ) ^ { 2 } =sin ^ { 2 } \\theta -2sin\\theta cos\\theta +cos ^ { 2 } \\theta\\)\n \\(=1-2sin\\theta cos\\theta =1-2\\times \\frac { 3 } { 8 }=\\frac { 1 } { 4 }\\)\n所以\\(sin\\theta -cos\\theta =\\pm \\frac { 1 } { 2 }\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_010_020",
+      "source_order": 20,
+      "source_description": "隨堂練習10",
+      "source_type": "in_class_practice",
+      "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta -cos\\theta =\\frac { 1 } { \\sqrt[] { 2 } }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\) (2)\\(sin\\theta +cos\\theta\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "隨堂練習10",
+        "source_type": "in_class_practice",
+        "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta -cos\\theta =\\frac { 1 } { \\sqrt[] { 2 } }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\) (2)\\(sin\\theta +cos\\theta\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exam_x_021",
+      "source_order": 21,
+      "source_description": "統測題",
+      "source_type": "exam_practice",
+      "problem_text": "已知\\(0 < \\theta < \\frac { \\pi } { 2 }\\)且\\(tan\\theta =\\frac { { \\rm{ 7 } } } { 25 }\\)。若\\(sin\\theta cos\\theta =a\\)，則下列何者正確？\n(A) \\(\\frac { 1 } { 2 } < a < 1\\)\n(B) \\(0 < a < \\frac { 1 } { 2 }\\)\n(C) \\(-\\frac { 1 } { 2 } < a < 0\\)\n(D) \\(-1 < a < -\\frac { 1 } { 2 }\\) 〔110統測B改〕",
+      "detailed_solution": "KEY\n\\(sin\\theta =\\frac { 對邊 } { 斜邊 }\\)，\\(cos\\theta =\\frac { 鄰邊 } { 斜邊 }\\)，\\(tan\\theta =\\frac { 對邊 } { 鄰邊 }\\)",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "resolved_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "meta": {
+        "anchor": "統測題",
+        "source_type": "exam_practice",
+        "problem_text": "已知\\(0 < \\theta < \\frac { \\pi } { 2 }\\)且\\(tan\\theta =\\frac { { \\rm{ 7 } } } { 25 }\\)。若\\(sin\\theta cos\\theta =a\\)，則下列何者正確？\n(A) \\(\\frac { 1 } { 2 } < a < 1\\)\n(B) \\(0 < a < \\frac { 1 } { 2 }\\)\n(C) \\(-\\frac { 1 } { 2 } < a < 0\\)\n(D) \\(-1 < a < -\\frac { 1 } { 2 }\\) 〔110統測B改〕",
+        "detailed_solution": "KEY\n\\(sin\\theta =\\frac { 對邊 } { 斜邊 }\\)，\\(cos\\theta =\\frac { 鄰邊 } { 斜邊 }\\)，\\(tan\\theta =\\frac { 對邊 } { 鄰邊 }\\)",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "1-2.5",
+        "concept_name": "三角函數的基本關係式",
+        "concept_en_id": "FundamentalTrigonometricIdentities",
+        "formal_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+        "display_order": 5
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_001_022",
+      "source_order": 22,
+      "source_description": "1-2習題 基礎題 1",
+      "source_type": "textbook_exercise",
+      "problem_text": "A、B、C、D、E五個人各站在不同的位置。已知B在A的正西方2公尺處，C在A的正東方3公尺處，D在A的正北方6公尺處。若E在C的正北方m公尺處，使B、D、E的位置恰在一直線上，則\\(m=\\)？",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 1",
+        "source_type": "textbook_exercise",
+        "problem_text": "A、B、C、D、E五個人各站在不同的位置。已知B在A的正西方2公尺處，C在A的正東方3公尺處，D在A的正北方6公尺處。若E在C的正北方m公尺處，使B、D、E的位置恰在一直線上，則\\(m=\\)？",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_002_023",
+      "source_order": 23,
+      "source_description": "1-2習題 基礎題 2",
+      "source_type": "textbook_exercise",
+      "problem_text": "在△ABC中，若\\(\\angle C\\)為直角，\\({\\overline{ BC }} =7\\)，\\({\\overline{ AC }} =24\\)，試求\\(sinA\\)、\\(cosA\\)、\\(tanA\\)之值。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 2",
+        "source_type": "textbook_exercise",
+        "problem_text": "在△ABC中，若\\(\\angle C\\)為直角，\\({\\overline{ BC }} =7\\)，\\({\\overline{ AC }} =24\\)，試求\\(sinA\\)、\\(cosA\\)、\\(tanA\\)之值。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_003_024",
+      "source_order": 24,
+      "source_description": "1-2習題 基礎題 3",
+      "source_type": "textbook_exercise",
+      "problem_text": "(1) 已知\\(\\theta\\)為銳角，若\\(sin\\theta =\\frac { \\sqrt[] { 3 } } { 2 }\\)，試求\\(cos\\theta tan\\theta\\)之值。\n(2) 已知\\(\\theta\\)為銳角，若\\(tan\\theta =\\sqrt[] { 3 }\\)，試求\\(sin\\theta cos\\theta\\)之值。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 3",
+        "source_type": "textbook_exercise",
+        "problem_text": "(1) 已知\\(\\theta\\)為銳角，若\\(sin\\theta =\\frac { \\sqrt[] { 3 } } { 2 }\\)，試求\\(cos\\theta tan\\theta\\)之值。\n(2) 已知\\(\\theta\\)為銳角，若\\(tan\\theta =\\sqrt[] { 3 }\\)，試求\\(sin\\theta cos\\theta\\)之值。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_004_025",
+      "source_order": 25,
+      "source_description": "1-2習題 基礎題 4",
+      "source_type": "textbook_exercise",
+      "problem_text": "試求下列各式之值：\n(1)\\(\\frac { 1-sin ^ { 2 } \\frac { \\pi } { 4 } } { 1+sin ^ { 2 } \\frac { \\pi } { 4 } }\\) (2)\\(sin ^ { 2 } 45{}^\\circ +2cos ^ { 2 } 30{}^\\circ +tan ^ { 2 } 60{}^\\circ\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 4",
+        "source_type": "textbook_exercise",
+        "problem_text": "試求下列各式之值：\n(1)\\(\\frac { 1-sin ^ { 2 } \\frac { \\pi } { 4 } } { 1+sin ^ { 2 } \\frac { \\pi } { 4 } }\\) (2)\\(sin ^ { 2 } 45{}^\\circ +2cos ^ { 2 } 30{}^\\circ +tan ^ { 2 } 60{}^\\circ\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_005_026",
+      "source_order": 26,
+      "source_description": "1-2習題 基礎題 5",
+      "source_type": "textbook_exercise",
+      "problem_text": "直角△ABC中，\\(\\angle C=90{}^\\circ\\)，\\(\\angle A=\\theta\\)為銳角，且\\(sin\\theta =\\sqrt[] { 3 }cos\\theta\\)，試求：\n(1) \\(tan\\theta\\)\n(2)\\(sin\\theta +cos\\theta\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 5",
+        "source_type": "textbook_exercise",
+        "problem_text": "直角△ABC中，\\(\\angle C=90{}^\\circ\\)，\\(\\angle A=\\theta\\)為銳角，且\\(sin\\theta =\\sqrt[] { 3 }cos\\theta\\)，試求：\n(1) \\(tan\\theta\\)\n(2)\\(sin\\theta +cos\\theta\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_006_027",
+      "source_order": 27,
+      "source_description": "1-2習題 基礎題 6",
+      "source_type": "textbook_exercise",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin88{}^\\circ } { cos88{}^\\circ }=\\) 。 (2)\\(tan35{}^\\circ \\times cos35{}^\\circ =\\) 。\n(3)\\(sin ^ { 2 } 35{}^\\circ +cos ^ { 2 } 35{}^\\circ =\\) 。 (4)\\(sin30{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(5)\\(cos45{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 6",
+        "source_type": "textbook_exercise",
+        "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)\\(\\frac { sin88{}^\\circ } { cos88{}^\\circ }=\\) 。 (2)\\(tan35{}^\\circ \\times cos35{}^\\circ =\\) 。\n(3)\\(sin ^ { 2 } 35{}^\\circ +cos ^ { 2 } 35{}^\\circ =\\) 。 (4)\\(sin30{}^\\circ =cos\\left ( { 90{}^\\circ -\\quad } \\right )=cos\\left ( { \\quad } \\right )\\)。\n(5)\\(cos45{}^\\circ =sin\\left ( { 90{}^\\circ -\\quad } \\right )=sin\\left ( { \\quad } \\right )\\)。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_007_028",
+      "source_order": 28,
+      "source_description": "1-2習題 基礎題 7",
+      "source_type": "textbook_exercise",
+      "problem_text": "設\\(\\theta\\)為銳角，試求\\(\\left ( { sin\\theta +cos\\theta } \\right ) ^ { 2 } +\\left ( { sin\\theta -cos\\theta } \\right ) ^ { 2 }\\)之值。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 7",
+        "source_type": "textbook_exercise",
+        "problem_text": "設\\(\\theta\\)為銳角，試求\\(\\left ( { sin\\theta +cos\\theta } \\right ) ^ { 2 } +\\left ( { sin\\theta -cos\\theta } \\right ) ^ { 2 }\\)之值。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_exercise_008_029",
+      "source_order": 29,
+      "source_description": "1-2習題 基礎題 8",
+      "source_type": "textbook_exercise",
+      "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta +cos\\theta =\\sqrt[] { 2 }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\)\n(2)\\(sin\\theta -cos\\theta\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 基礎題 8",
+        "source_type": "textbook_exercise",
+        "problem_text": "設\\(\\theta\\)為銳角，且\\(sin\\theta +cos\\theta =\\sqrt[] { 2 }\\)，試求下列各式之值：\n(1)\\(sin\\theta cos\\theta\\)\n(2)\\(sin\\theta -cos\\theta\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_009_030",
+      "source_order": 30,
+      "source_description": "1-2習題 進階題 9",
+      "source_type": "advanced_exercise",
+      "problem_text": "公園有一繩長為2公尺的鞦韆，若一小朋友於鉛直方向向兩側擺動圓心角各\\(30{}^\\circ\\)至A、B兩點如圖，試求：\n(1)線段\\({\\overline{ AB }}\\) \n(2)弧長\\(\\overset \\frown { AB }\\)",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 進階題 9",
+        "source_type": "advanced_exercise",
+        "problem_text": "公園有一繩長為2公尺的鞦韆，若一小朋友於鉛直方向向兩側擺動圓心角各\\(30{}^\\circ\\)至A、B兩點如圖，試求：\n(1)線段\\({\\overline{ AB }}\\) \n(2)弧長\\(\\overset \\frown { AB }\\)",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    },
+    {
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_010_031",
+      "source_order": 31,
+      "source_description": "1-2習題 進階題 10",
+      "source_type": "advanced_exercise",
+      "problem_text": "如圖所示，觀景纜車的起始站A站與終點站山頂B站距離900公尺，\\({\\overline{ AB }}\\)傾斜角度為45°，若A站的標高為500公尺，試求：\n(1) 山頂B站的標高高度（\\({\\overline{ BE }}\\)）。\n(2) A、B兩站的水平距離（\\({\\overline{ AC }}\\)）。",
+      "detailed_solution": "",
+      "math_parse_failed_tokens": [],
+      "formal_skill_id": null,
+      "resolved_skill_id": null,
+      "meta": {
+        "anchor": "1-2習題 進階題 10",
+        "source_type": "advanced_exercise",
+        "problem_text": "如圖所示，觀景纜車的起始站A站與終點站山頂B站距離900公尺，\\({\\overline{ AB }}\\)傾斜角度為45°，若A站的標高為500公尺，試求：\n(1) 山頂B站的標高高度（\\({\\overline{ BE }}\\)）。\n(2) A、B兩站的水平距離（\\({\\overline{ AC }}\\)）。",
+        "detailed_solution": "",
+        "section_code": "1-2",
+        "section_title": "1-2 銳角三角函數",
+        "concept_code": "",
+        "concept_name": "",
+        "concept_en_id": "",
+        "formal_skill_id": "",
+        "display_order": 0
+      }
+    }
+  ],
+  "production_rows": [
+    {
+      "id": 11556,
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "source_description": "例1",
+      "problem_text": "小謙的身高160公分，在某一時刻陽光照射下，他的影長是200公分，同時他身旁一棵樹的影長是5公尺，試問這棵樹的高度為幾公尺？",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 如圖所示：\n假設樹高為x公尺\n因為△ABC與△DEF為\n相似三角形\n所以[MATH_PARSE_FAILED_71]\n即[MATH_PARSE_FAILED_72]\n整理得[MATH_PARSE_FAILED_73]，得[MATH_PARSE_FAILED_74]，故樹高為4公尺",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_001_001\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|1|1\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"1\", \"source_order\": 1, \"block_index\": 0, \"occurrence_index\": 1, \"question_label\": \"例1\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"13a2cb972dc786f9b7686d469b5f33ba816a803e7ef554030acde9e0f9cb2d7d\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_001_001",
+      "math_parse_failed_tokens": [
+        71,
+        72,
+        73,
+        74
+      ]
+    },
+    {
+      "id": 11557,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "例2",
+      "problem_text": "已知直角△ABC中，[MATH_PARSE_FAILED_111]，[MATH_PARSE_FAILED_112]，[MATH_PARSE_FAILED_113]，\n試求[MATH_PARSE_FAILED_114]、[MATH_PARSE_FAILED_115]、[MATH_PARSE_FAILED_116]之值。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 已知[MATH_PARSE_FAILED_117]，[MATH_PARSE_FAILED_118]，[MATH_PARSE_FAILED_119]\n如右圖所示。由畢氏定理知：\n[MATH_PARSE_FAILED_120]\n故得[MATH_PARSE_FAILED_121]、[MATH_PARSE_FAILED_122]、\n[MATH_PARSE_FAILED_123]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_002_003\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|2|3\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"2\", \"source_order\": 3, \"block_index\": 2, \"occurrence_index\": 1, \"question_label\": \"例2\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"ff4c70ffd16504a5cce268467b55626d86cdc2b27465775e77ff7cd8334100af\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_002_003",
+      "math_parse_failed_tokens": [
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123
+      ]
+    },
+    {
+      "id": 11558,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "例3",
+      "problem_text": "已知[MATH_PARSE_FAILED_134]為銳角，若[MATH_PARSE_FAILED_135]，試求[MATH_PARSE_FAILED_136]與[MATH_PARSE_FAILED_137]之值。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 因為[MATH_PARSE_FAILED_138]\n作一直角△ABC，使[MATH_PARSE_FAILED_139]\n令[MATH_PARSE_FAILED_140]，[MATH_PARSE_FAILED_141]，[MATH_PARSE_FAILED_142]\n由畢氏定理知：\n[MATH_PARSE_FAILED_143]\n所以[MATH_PARSE_FAILED_144]\n故[MATH_PARSE_FAILED_145]，[MATH_PARSE_FAILED_146]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_003_005\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|3|5\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"3\", \"source_order\": 5, \"block_index\": 4, \"occurrence_index\": 1, \"question_label\": \"例3\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"dcd6e1e52a3b2808e8d496bf88a372321f8bf68bd7d0bf72871ab5f1a07664bf\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_003_005",
+      "math_parse_failed_tokens": [
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146
+      ]
+    },
+    {
+      "id": 11559,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "例4",
+      "problem_text": "試求下列各式之值：\n(1)[MATH_PARSE_FAILED_180] (2)[MATH_PARSE_FAILED_181]",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) \n \n畫出各個直角三角形，並標示各邊邊長比例，\n由三角函數的定義知：\n(1) [MATH_PARSE_FAILED_182]\n(2) [MATH_PARSE_FAILED_183]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_004_007\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|4|7\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"4\", \"source_order\": 7, \"block_index\": 6, \"occurrence_index\": 1, \"question_label\": \"例4\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"21ace9cd50117a8658307d64768937342756b75596e2b16047d50f69336b9bbe\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_004_007",
+      "math_parse_failed_tokens": [
+        180,
+        181,
+        182,
+        183
+      ]
+    },
+    {
+      "id": 11560,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "例5",
+      "problem_text": "世界上最陡峭的鐵路是瑞士的皮拉圖斯山鐵路（Pilatus railway），其最大傾斜度達48°。今有一登山小火車在山腳下的A站行駛500公尺後到達山頂B站，[MATH_PARSE_FAILED_186]傾斜角度為30°。試求：\n(1)小火車垂直上升的高度（[MATH_PARSE_FAILED_187]）。\n(2)小火車水平移動的長度（[MATH_PARSE_FAILED_188]）。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 直角△ABC中\n(1) [MATH_PARSE_FAILED_189]\n故[MATH_PARSE_FAILED_190]（公尺）\n(2) [MATH_PARSE_FAILED_191]\n故[MATH_PARSE_FAILED_192]（公尺）",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_005_009\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|5|9\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"5\", \"source_order\": 9, \"block_index\": 8, \"occurrence_index\": 1, \"question_label\": \"例5\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"81340419d7c77f0849689d1c1fb97186d3253a10b25a00135ae6f339fad3e065\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/textbook_example_例5_vocation_fig1.png\", \"display_path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/textbook_example_例5_vocation_fig1.png\", \"page_index\": 9, \"source_page\": 10, \"bbox\": [85.03860473632812, 85.13496398925781, 524.4085693359375, 317.10302734375], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"photo_and_diagram_ai_reference\", \"image_description\": \"helpful\", \"visual_type\": \"diagram\", \"visual_classification\": \"helpful\", \"match_method\": \"unique_phrase+order\", \"match_score\": 0.99, \"question_anchor\": \"vocational_math_B2_1-2_example_005_009\", \"width\": 1229, \"height\": 653, \"file_size\": 329308, \"sha256\": \"6e3075cf0c497327894ab41cfb9d982ff31de2f65aaf0a323a4e7b2dae8fc593\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false}",
+      "anchor_id": "vocational_math_B2_1-2_example_005_009",
+      "math_parse_failed_tokens": [
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192
+      ]
+    },
+    {
+      "id": 11561,
+      "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "source_description": "例6",
+      "problem_text": "試求下列各式之值：\n(1)[MATH_PARSE_FAILED_195] (2)[MATH_PARSE_FAILED_196]",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 求[MATH_PARSE_FAILED_197]時，\n 依序輸入[MATH_PARSE_FAILED_198][MATH_PARSE_FAILED_199][MATH_PARSE_FAILED_200]\n 此時螢幕上顯示[MATH_PARSE_FAILED_201]\n 即表示[MATH_PARSE_FAILED_202]\n(2) 求[MATH_PARSE_FAILED_203]時，\n依序輸入[MATH_PARSE_FAILED_204][MATH_PARSE_FAILED_205][MATH_PARSE_FAILED_206][MATH_PARSE_FAILED_207][MATH_PARSE_FAILED_208][MATH_PARSE_FAILED_209][MATH_PARSE_FAILED_210][MATH_PARSE_FAILED_211][MATH_PARSE_FAILED_212][MATH_PARSE_FAILED_213]\n此時螢幕上顯示[MATH_PARSE_FAILED_214]\n即表示[MATH_PARSE_FAILED_215]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_006_011\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|6|11\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"6\", \"source_order\": 11, \"block_index\": 10, \"occurrence_index\": 1, \"question_label\": \"例6\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"a1a4ef1164f630deec9e61724b2bce0101020909f6176bcf2dbc46a05876902c\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_006_011",
+      "math_parse_failed_tokens": [
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207,
+        208,
+        209,
+        210,
+        211,
+        212,
+        213,
+        214,
+        215
+      ]
+    },
+    {
+      "id": 11562,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "例7",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)[MATH_PARSE_FAILED_241] 。 (2)[MATH_PARSE_FAILED_242] 。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 由商數關係式，可得\n(1) [MATH_PARSE_FAILED_243]\n(2) [MATH_PARSE_FAILED_244]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_007_013\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|7|13\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"7\", \"source_order\": 13, \"block_index\": 12, \"occurrence_index\": 1, \"question_label\": \"例7\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"55dc99d09f72dd6e9e02176f1eb26b589488f61b2fc8a898978a3f04d256c781\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_007_013",
+      "math_parse_failed_tokens": [
+        241,
+        242,
+        243,
+        244
+      ]
+    },
+    {
+      "id": 11563,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "例8",
+      "problem_text": "試以銳角，分別完成下列空格。\n(1)[MATH_PARSE_FAILED_270]。\n(2)[MATH_PARSE_FAILED_271]。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) 由餘角關係式，可得\n(1)[MATH_PARSE_FAILED_276]\n(2)[MATH_PARSE_FAILED_277]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_008_015\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|8|15\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"8\", \"source_order\": 15, \"block_index\": 14, \"occurrence_index\": 1, \"question_label\": \"例8\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"015549fe6fee9aeee9cb580e3742b899fa95ad9e817078dfb07a710b37f1bc5c\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_008_015",
+      "math_parse_failed_tokens": [
+        270,
+        271,
+        276,
+        277
+      ]
+    },
+    {
+      "id": 11564,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "例9",
+      "problem_text": "試求：\n(1)[MATH_PARSE_FAILED_280] 。\n(2)[MATH_PARSE_FAILED_281] 。",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) [MATH_PARSE_FAILED_282]\n(2) 由平方關係式，得[MATH_PARSE_FAILED_283]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_009_017\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|9|17\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"9\", \"source_order\": 17, \"block_index\": 16, \"occurrence_index\": 1, \"question_label\": \"例9\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"9f870dae4aef6855fc46d6d4354c26a5bcb16aef1b7785afffd9013432b3b86c\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_009_017",
+      "math_parse_failed_tokens": [
+        280,
+        281,
+        282,
+        283
+      ]
+    },
+    {
+      "id": 11565,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "例10",
+      "problem_text": "設[MATH_PARSE_FAILED_286]為銳角，且[MATH_PARSE_FAILED_287]，試求下列各式之值：\n(1)[MATH_PARSE_FAILED_288] (2)[MATH_PARSE_FAILED_289]",
+      "detailed_solution": "\\(\\o\\ac(○,解)\\) (1) 將[MATH_PARSE_FAILED_292]兩邊平方，得\n [MATH_PARSE_FAILED_293]\n 即[MATH_PARSE_FAILED_294]\n 計算得[MATH_PARSE_FAILED_295]，故得[MATH_PARSE_FAILED_296]\n(2) 因為[MATH_PARSE_FAILED_297]\n [MATH_PARSE_FAILED_298]\n所以[MATH_PARSE_FAILED_299]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_example_010_019\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|example|10|19\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"example\", \"question_number\": \"10\", \"source_order\": 19, \"block_index\": 18, \"occurrence_index\": 1, \"question_label\": \"例10\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"ea87ffec58fa964e97610ae1d192905157d007f6ee119eed7ffe31e5c15dc3d1\"}}",
+      "anchor_id": "vocational_math_B2_1-2_example_010_019",
+      "math_parse_failed_tokens": [
+        286,
+        287,
+        288,
+        289,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299
+      ]
+    },
+    {
+      "id": 11566,
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "source_description": "隨堂練習1",
+      "problem_text": "小玹的身高150公分，在某一時刻陽光照射下，他的影長是300公分，同時他身旁一根旗桿的高度為3公尺，試問這根旗桿影長是幾公尺？",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_001_002\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|1|2\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"1\", \"source_order\": 2, \"block_index\": 1, \"occurrence_index\": 1, \"question_label\": \"隨堂練習1\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"6b71ec22d39770f3840e6ccd912240f5d8778ca12c8d59aac4320e60762e0a0b\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_001_002",
+      "math_parse_failed_tokens": []
+    },
+    {
+      "id": 11567,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "隨堂練習2",
+      "problem_text": "試求下列各個三角形中的[MATH_PARSE_FAILED_124]、[MATH_PARSE_FAILED_125]及[MATH_PARSE_FAILED_126]之值。\n(1) (2)",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_002_004\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|2|4\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"2\", \"source_order\": 4, \"block_index\": 3, \"occurrence_index\": 1, \"question_label\": \"隨堂練習2\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"5310b2aab868f0907d01efc71cc03989f6845d33b28b38d3dea4a84b417763f5\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_002_004",
+      "math_parse_failed_tokens": [
+        124,
+        125,
+        126
+      ]
+    },
+    {
+      "id": 11568,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "隨堂練習3",
+      "problem_text": "已知[MATH_PARSE_FAILED_147]為銳角，若[MATH_PARSE_FAILED_148]，試求[MATH_PARSE_FAILED_149]與[MATH_PARSE_FAILED_150]之值。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_003_006\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|3|6\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"3\", \"source_order\": 6, \"block_index\": 5, \"occurrence_index\": 1, \"question_label\": \"隨堂練習3\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"935e41f34f547dff8d1ee8a7c0228528974839d7f546990689bf7156da3f11a2\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_003_006",
+      "math_parse_failed_tokens": [
+        147,
+        148,
+        149,
+        150
+      ]
+    },
+    {
+      "id": 11569,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "隨堂練習4",
+      "problem_text": "試求下列各式之值：\n(1)[MATH_PARSE_FAILED_184] (2)[MATH_PARSE_FAILED_185]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_004_008\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|4|8\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"4\", \"source_order\": 8, \"block_index\": 7, \"occurrence_index\": 1, \"question_label\": \"隨堂練習4\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"51599c476cb6c36bea5cebeb1002beba478f99557f14cd2fa7fc6419115b4df9\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_004_008",
+      "math_parse_failed_tokens": [
+        184,
+        185
+      ]
+    },
+    {
+      "id": 11570,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "隨堂練習5",
+      "problem_text": "如圖所示，一位登山專家從山腳A處走了100公尺到達山上B處，山坡與水平地面的夾角為60°，試求：\n(1)登山專家垂直上升幾公尺（[MATH_PARSE_FAILED_193]）。\n(2)登山專家水平移動幾公尺（[MATH_PARSE_FAILED_194]）。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_005_010\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|5|10\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"5\", \"source_order\": 10, \"block_index\": 9, \"occurrence_index\": 1, \"question_label\": \"隨堂練習5\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"133f7963d93534e3361883d94dc3fc675b485e979430381b02bc166fa9372526\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/in_class_practice_隨堂練習5_vocation_fig1.png\", \"display_path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/in_class_practice_隨堂練習5_vocation_fig1.png\", \"page_index\": 9, \"source_page\": 10, \"bbox\": [420.5873107910156, 598.2523193359375, 490.37432861328125, 719.1263427734375], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"figure_keyword_and_visual_in_region\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"match_method\": \"unique_phrase+order\", \"match_score\": 0.99, \"question_anchor\": \"vocational_math_B2_1-2_in_class_practice_005_010\", \"width\": 202, \"height\": 344, \"file_size\": 63923, \"sha256\": \"7057ec1c0f352d00bfec8eca5283848377c6e6dfab27e49a03c6d8fcb281a5d1\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_005_010",
+      "math_parse_failed_tokens": [
+        193,
+        194
+      ]
+    },
+    {
+      "id": 11571,
+      "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "source_description": "隨堂練習6",
+      "problem_text": "試求下列各式之值：\n(1)[MATH_PARSE_FAILED_216] (2)[MATH_PARSE_FAILED_217]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_006_012\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|6|12\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"6\", \"source_order\": 12, \"block_index\": 11, \"occurrence_index\": 1, \"question_label\": \"隨堂練習6\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"c3f9ce5296c839aad4c0d194915668acc4bb97ce4a976ccaf1abf0cd5aef72f5\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_006_012",
+      "math_parse_failed_tokens": [
+        216,
+        217
+      ]
+    },
+    {
+      "id": 11572,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "隨堂練習7",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)[MATH_PARSE_FAILED_245] 。 (2)[MATH_PARSE_FAILED_246] 。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_007_014\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|7|14\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"7\", \"source_order\": 14, \"block_index\": 13, \"occurrence_index\": 1, \"question_label\": \"隨堂練習7\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"e6263106d654e87ed94570c91608f549bfe5c42363f9d5c763c241d90281dd39\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_007_014",
+      "math_parse_failed_tokens": [
+        245,
+        246
+      ]
+    },
+    {
+      "id": 11573,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "隨堂練習8",
+      "problem_text": "試以銳角，分別完成下列空格。\n(1)[MATH_PARSE_FAILED_278]。\n(2)[MATH_PARSE_FAILED_279]。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_008_016\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|8|16\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"8\", \"source_order\": 16, \"block_index\": 15, \"occurrence_index\": 1, \"question_label\": \"隨堂練習8\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"994c77b0c9e58485d7621172109a2492f35fb917763320ab07cb365c3d960733\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_008_016",
+      "math_parse_failed_tokens": [
+        278,
+        279
+      ]
+    },
+    {
+      "id": 11574,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "隨堂練習10",
+      "problem_text": "設[MATH_PARSE_FAILED_300]為銳角，且[MATH_PARSE_FAILED_301]，試求下列各式之值：\n(1)[MATH_PARSE_FAILED_302] (2)[MATH_PARSE_FAILED_303]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_010_020\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|10|20\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"10\", \"source_order\": 20, \"block_index\": 19, \"occurrence_index\": 1, \"question_label\": \"隨堂練習10\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"e07222385905bfa1f2e5445f78a4591eee9beb0cb655c38381bc23278bf2f330\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_010_020",
+      "math_parse_failed_tokens": [
+        300,
+        301,
+        302,
+        303
+      ]
+    },
+    {
+      "id": 11575,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 1",
+      "problem_text": "A、B、C、D、E五個人各站在不同的位置。已知B在A的正西方2公尺處，C在A的正東方3公尺處，D在A的正北方6公尺處。若E在C的正北方m公尺處，使B、D、E的位置恰在一直線上，則[MATH_PARSE_FAILED_314]？",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_001_022\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|1|22\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"1\", \"source_order\": 22, \"block_index\": 21, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題1\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"5457d56a1bdc9fbfc36054e367b4a14c8a62af4d60b2af931bea387eb39dffc9\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_001_022",
+      "math_parse_failed_tokens": [
+        314
+      ]
+    },
+    {
+      "id": 11576,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 2",
+      "problem_text": "在△ABC中，若[MATH_PARSE_FAILED_315]為直角，[MATH_PARSE_FAILED_316]，[MATH_PARSE_FAILED_317]，試求[MATH_PARSE_FAILED_318]、[MATH_PARSE_FAILED_319]、[MATH_PARSE_FAILED_320]之值。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_002_023\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|2|23\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"2\", \"source_order\": 23, \"block_index\": 22, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題2\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"156047095384fd813af3aa546109578581916f7580a22265a4b18cc7007b07f8\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_002_023",
+      "math_parse_failed_tokens": [
+        315,
+        316,
+        317,
+        318,
+        319,
+        320
+      ]
+    },
+    {
+      "id": 11577,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 3",
+      "problem_text": "(1) 已知[MATH_PARSE_FAILED_321]為銳角，若[MATH_PARSE_FAILED_322]，試求[MATH_PARSE_FAILED_323]之值。\n(2) 已知[MATH_PARSE_FAILED_324]為銳角，若[MATH_PARSE_FAILED_325]，試求[MATH_PARSE_FAILED_326]之值。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_003_024\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|3|24\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"3\", \"source_order\": 24, \"block_index\": 23, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題3\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"68dbc8adc2b87b25d0ebc8938a31557280230e35ddd16c2edf675d11dc361d9a\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_003_024",
+      "math_parse_failed_tokens": [
+        321,
+        322,
+        323,
+        324,
+        325,
+        326
+      ]
+    },
+    {
+      "id": 11578,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "1-2習題 基礎題 4",
+      "problem_text": "試求下列各式之值：\n(1)[MATH_PARSE_FAILED_327] (2)[MATH_PARSE_FAILED_328]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_004_025\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|4|25\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"4\", \"source_order\": 25, \"block_index\": 24, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題4\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"979f5e97984389595bde8f58cb7876d90f1aafad359b6bfc058dd939af945752\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_004_025",
+      "math_parse_failed_tokens": [
+        327,
+        328
+      ]
+    },
+    {
+      "id": 11579,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 5",
+      "problem_text": "直角△ABC中，[MATH_PARSE_FAILED_329]，[MATH_PARSE_FAILED_330]為銳角，且[MATH_PARSE_FAILED_331]，試求：\n(1) [MATH_PARSE_FAILED_332]\n(2)[MATH_PARSE_FAILED_333]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_005_026\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|5|26\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"5\", \"source_order\": 26, \"block_index\": 25, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題5\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"8a1150413d929853ffc1e8f7d0497b8c70b5ab42675797c0ef1719da96239415\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_005_026",
+      "math_parse_failed_tokens": [
+        329,
+        330,
+        331,
+        332,
+        333
+      ]
+    },
+    {
+      "id": 11580,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "1-2習題 基礎題 6",
+      "problem_text": "試利用三角函數的基本關係式，完成下列空格：\n(1)[MATH_PARSE_FAILED_334] 。 (2)[MATH_PARSE_FAILED_335] 。\n(3)[MATH_PARSE_FAILED_336] 。 (4)[MATH_PARSE_FAILED_337]。\n(5)[MATH_PARSE_FAILED_338]。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_006_027\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|6|27\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"6\", \"source_order\": 27, \"block_index\": 26, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題6\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"016c3bd694dea9b3cab2b0e6af8f2f618281906a43e34fe912a3581fb7af8c8d\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_006_027",
+      "math_parse_failed_tokens": [
+        334,
+        335,
+        336,
+        337,
+        338
+      ]
+    },
+    {
+      "id": 11581,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 7",
+      "problem_text": "設[MATH_PARSE_FAILED_339]為銳角，試求[MATH_PARSE_FAILED_340]之值。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_007_028\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|7|28\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"7\", \"source_order\": 28, \"block_index\": 27, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題7\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"fa18887c7e99e4c8ac54d8b1392fbdf53ad8842506c99ccfd54b8b5312b554cb\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_007_028",
+      "math_parse_failed_tokens": [
+        339,
+        340
+      ]
+    },
+    {
+      "id": 11582,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 基礎題 8",
+      "problem_text": "設[MATH_PARSE_FAILED_341]為銳角，且[MATH_PARSE_FAILED_342]，試求下列各式之值：\n(1)[MATH_PARSE_FAILED_343]\n(2)[MATH_PARSE_FAILED_344]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exercise_008_029\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exercise|8|29\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exercise\", \"question_number\": \"8\", \"source_order\": 29, \"block_index\": 28, \"occurrence_index\": 1, \"question_label\": \"1-2習題 基礎題8\", \"source_type\": \"textbook_exercise\", \"text_fingerprint\": \"50aedde1c07cc44e82c36af87920516708797517144541035061ce885a00237f\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exercise_008_029",
+      "math_parse_failed_tokens": [
+        341,
+        342,
+        343,
+        344
+      ]
+    },
+    {
+      "id": 11583,
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "source_description": "1-2習題 進階題 9",
+      "problem_text": "公園有一繩長為2公尺的鞦韆，若一小朋友於鉛直方向向兩側擺動圓心角各[MATH_PARSE_FAILED_345]至A、B兩點如圖，試求：\n(1)線段[MATH_PARSE_FAILED_346] \n(2)弧長[MATH_PARSE_FAILED_347]",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_advanced_exercise_009_030\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|advanced_exercise|9|30\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"advanced_exercise\", \"question_number\": \"9\", \"source_order\": 30, \"block_index\": 29, \"occurrence_index\": 1, \"question_label\": \"1-2習題 進階題9\", \"source_type\": \"advanced_exercise\", \"text_fingerprint\": \"b585c9a68907842caae84d965d21654252286794c684d556835641d5ac94ac54\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png\", \"display_path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png\", \"page_index\": 19, \"source_page\": 20, \"bbox\": [429.9123840332031, 418.700439453125, 514.7083740234375, 503.4974365234375], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"figure_keyword_and_visual_in_region\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"match_method\": \"unique_phrase+order\", \"match_score\": 0.99, \"question_anchor\": \"vocational_math_B2_1-2_advanced_exercise_009_030\", \"width\": 244, \"height\": 244, \"file_size\": 11839, \"sha256\": \"304c01b65febb47fe4b7dea1cac465c148b2afa507dc0ac5b45d61494681945e\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false}",
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_009_030",
+      "math_parse_failed_tokens": [
+        345,
+        346,
+        347
+      ]
+    },
+    {
+      "id": 11584,
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "source_description": "1-2習題 進階題 10",
+      "problem_text": "如圖所示，觀景纜車的起始站A站與終點站山頂B站距離900公尺，[MATH_PARSE_FAILED_348]傾斜角度為45°，若A站的標高為500公尺，試求：\n(1) 山頂B站的標高高度（[MATH_PARSE_FAILED_349]）。\n(2) A、B兩站的水平距離（[MATH_PARSE_FAILED_350]）。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_advanced_exercise_010_031\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|advanced_exercise|10|31\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"advanced_exercise\", \"question_number\": \"10\", \"source_order\": 31, \"block_index\": 30, \"occurrence_index\": 1, \"question_label\": \"1-2習題 進階題10\", \"source_type\": \"advanced_exercise\", \"text_fingerprint\": \"f16d84d55bd62147e052b1b2f3aed322b1efcc0530ec34cc1ab8143cc9c8e6e8\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png\", \"display_path\": \"uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png\", \"page_index\": 19, \"source_page\": 20, \"bbox\": [429.9123840332031, 418.700439453125, 549.4957885742188, 743.6779174804688], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"figure_keyword_and_visual_in_region\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"match_method\": \"unique_phrase+order\", \"match_score\": 0.99, \"question_anchor\": \"vocational_math_B2_1-2_advanced_exercise_010_031\", \"width\": 340, \"height\": 911, \"file_size\": 41019, \"sha256\": \"5030dadb15db65b720bd989d95e648d1f147bb173b4b50376e629ede2e8881e6\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false}",
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_010_031",
+      "math_parse_failed_tokens": [
+        348,
+        349,
+        350
+      ]
+    },
+    {
+      "id": 11585,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "統測題",
+      "problem_text": "已知[MATH_PARSE_FAILED_304]且[MATH_PARSE_FAILED_305]。若[MATH_PARSE_FAILED_306]，則下列何者正確？\n(A) [MATH_PARSE_FAILED_307]\n(B) [MATH_PARSE_FAILED_308]\n(C) [MATH_PARSE_FAILED_309]\n(D) [MATH_PARSE_FAILED_310] 〔110統測B改〕",
+      "detailed_solution": "KEY\n[MATH_PARSE_FAILED_311]，[MATH_PARSE_FAILED_312]，[MATH_PARSE_FAILED_313]",
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_exam_x_021\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|exam|x|21\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"exam\", \"question_number\": \"\", \"source_order\": 21, \"block_index\": 20, \"occurrence_index\": 1, \"question_label\": \"統測題\", \"source_type\": \"exam_practice\", \"text_fingerprint\": \"c89ad30a9d705e5ad7b1e9ae49478fe8dbd2f3f3f466e49c685d5aa19ea98310\"}}",
+      "anchor_id": "vocational_math_B2_1-2_exam_x_021",
+      "math_parse_failed_tokens": [
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313
+      ]
+    },
+    {
+      "id": 11586,
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "source_description": "隨堂練習9",
+      "problem_text": "試求：\n(1)[MATH_PARSE_FAILED_284] 。 (2)[MATH_PARSE_FAILED_285] 。",
+      "detailed_solution": null,
+      "notes": "{\"question_anchor\": {\"anchor_id\": \"vocational_math_B2_1-2_in_class_practice_009_018\", \"anchor_key\": \"vocational|longteng|math_B2|1|1-2|in_class_practice|9|18\", \"curriculum\": \"vocational\", \"publisher\": \"longteng\", \"volume\": \"數學B2\", \"chapter\": \"1\", \"section\": \"1-2\", \"question_type\": \"in_class_practice\", \"question_number\": \"9\", \"source_order\": 18, \"block_index\": 17, \"occurrence_index\": 1, \"question_label\": \"隨堂練習9\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"fd36be9a62690f0db5c42bb2e8127b763db95ec0a114d7262d8285f61670546f\"}}",
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_009_018",
+      "math_parse_failed_tokens": [
+        284,
+        285
+      ]
+    }
+  ],
+  "skill_comparison": [
+    {
+      "id": 11556,
+      "anchor_id": "vocational_math_B2_1-2_example_001_001",
+      "production_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "preview_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "match": true
+    },
+    {
+      "id": 11557,
+      "anchor_id": "vocational_math_B2_1-2_example_002_003",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "match": true
+    },
+    {
+      "id": 11558,
+      "anchor_id": "vocational_math_B2_1-2_example_003_005",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "match": true
+    },
+    {
+      "id": 11559,
+      "anchor_id": "vocational_math_B2_1-2_example_004_007",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "match": true
+    },
+    {
+      "id": 11560,
+      "anchor_id": "vocational_math_B2_1-2_example_005_009",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "match": true
+    },
+    {
+      "id": 11561,
+      "anchor_id": "vocational_math_B2_1-2_example_006_011",
+      "production_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "preview_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "match": true
+    },
+    {
+      "id": 11562,
+      "anchor_id": "vocational_math_B2_1-2_example_007_013",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11563,
+      "anchor_id": "vocational_math_B2_1-2_example_008_015",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11564,
+      "anchor_id": "vocational_math_B2_1-2_example_009_017",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11565,
+      "anchor_id": "vocational_math_B2_1-2_example_010_019",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11566,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_001_002",
+      "production_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "preview_skill_id": "vh_數學B2_RatioAndRatioValue",
+      "match": true
+    },
+    {
+      "id": 11567,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_002_004",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "match": true
+    },
+    {
+      "id": 11568,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_003_006",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "match": true
+    },
+    {
+      "id": 11569,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_004_008",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "match": true
+    },
+    {
+      "id": 11570,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_005_010",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "match": true
+    },
+    {
+      "id": 11571,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_006_012",
+      "production_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "preview_skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "match": true
+    },
+    {
+      "id": 11572,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_007_014",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11573,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_008_016",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11574,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_010_020",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11575,
+      "anchor_id": "vocational_math_B2_1-2_exercise_001_022",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11576,
+      "anchor_id": "vocational_math_B2_1-2_exercise_002_023",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11577,
+      "anchor_id": "vocational_math_B2_1-2_exercise_003_024",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11578,
+      "anchor_id": "vocational_math_B2_1-2_exercise_004_025",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11579,
+      "anchor_id": "vocational_math_B2_1-2_exercise_005_026",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11580,
+      "anchor_id": "vocational_math_B2_1-2_exercise_006_027",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11581,
+      "anchor_id": "vocational_math_B2_1-2_exercise_007_028",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11582,
+      "anchor_id": "vocational_math_B2_1-2_exercise_008_029",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11583,
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_009_030",
+      "production_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11584,
+      "anchor_id": "vocational_math_B2_1-2_advanced_exercise_010_031",
+      "production_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "preview_skill_id": null,
+      "match": false
+    },
+    {
+      "id": 11585,
+      "anchor_id": "vocational_math_B2_1-2_exam_x_021",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    },
+    {
+      "id": 11586,
+      "anchor_id": "vocational_math_B2_1-2_in_class_practice_009_018",
+      "production_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "preview_skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "match": true
+    }
+  ]
+}

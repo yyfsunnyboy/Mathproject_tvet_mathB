@@ -1,0 +1,73 @@
+{
+  "skill_id": "vh_數學B3_SubSection_4_5_1",
+  "publish_status": "package_ready",
+  "component_count": 6,
+  "components": [
+    {
+      "component_id": "src_12221",
+      "textbook_example_id": 12221,
+      "status": "verified",
+      "problem_type_id": "common_log_table_lookup",
+      "domain_operation": "common_log_table_lookup",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12221/generate.py"
+    },
+    {
+      "component_id": "src_12222",
+      "textbook_example_id": 12222,
+      "status": "verified",
+      "problem_type_id": "common_log_table_lookup",
+      "domain_operation": "common_log_table_lookup",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12222/generate.py"
+    },
+    {
+      "component_id": "src_12223",
+      "textbook_example_id": 12223,
+      "status": "verified",
+      "problem_type_id": "common_log_table_lookup",
+      "domain_operation": "common_log_table_lookup",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12223/generate.py"
+    },
+    {
+      "component_id": "src_12224",
+      "textbook_example_id": 12224,
+      "status": "verified",
+      "problem_type_id": "common_log_table_lookup",
+      "domain_operation": "common_log_table_lookup",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12224/generate.py"
+    },
+    {
+      "component_id": "src_12238",
+      "textbook_example_id": 12238,
+      "status": "verified",
+      "problem_type_id": "common_log_table_lookup",
+      "domain_operation": "common_log_table_lookup",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12238/generate.py"
+    },
+    {
+      "component_id": "src_12265",
+      "textbook_example_id": 12265,
+      "status": "verified",
+      "problem_type_id": "common_log_given_approx_eval",
+      "domain_operation": "common_log_given_approx_eval",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12265/generate.py"
+    }
+  ]
+}

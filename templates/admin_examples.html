@@ -487,6 +487,7 @@
 
 <body>
     {% include '_admin_navbar.html' %}
+    {% include '_guest_demo_readonly.html' %}
 
     <div class="container">
         <div class="header">
@@ -512,6 +513,8 @@
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d1ecf1;color:#0c5460;font-size:12px;">formula_assets 題數={{ (page_formula_stats or {}).get('with_formula_assets', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#d4edda;color:#155724;font-size:12px;">FORMULA_IMAGE 題數={{ (page_formula_stats or {}).get('with_formula_image_placeholder', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#fff3cd;color:#856404;font-size:12px;">FORMULA_MISSING 題數={{ (page_formula_stats or {}).get('with_formula_missing', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">MATH_PARSE_FAILED 題數={{ (page_formula_stats or {}).get('math_parse_failed_rows', 0) }}</span>
+                <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">MATH_PARSE_FAILED tokens={{ (page_formula_stats or {}).get('math_parse_failed_tokens', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">image_placeholder_no_asset 題數={{ (page_formula_stats or {}).get('image_placeholder_no_asset', 0) }}</span>
                 <span style="display:inline-block;padding:3px 8px;border-radius:12px;background:#f8d7da;color:#721c24;font-size:12px;">missing_no_asset 題數={{ (page_formula_stats or {}).get('missing_no_asset', 0) }}</span>
             </div>
@@ -737,12 +740,12 @@
                                 ${data.gencode_status === 'not_created' ? '重新生成題目' : '重新生成題目'}
                             </button>
                             
-                            <button type="button" class="btn btn-secondary" style="width:100%; margin-bottom:8px;" ${data.dryrun_generate_exists ? '' : 'disabled'} onclick="smokeExampleV3(${data.textbook_example_id}, '${skillId}')">
+                            <button type="button" class="btn btn-secondary" data-demo-write style="width:100%; margin-bottom:8px;" ${data.dryrun_generate_exists ? '' : 'disabled'} onclick="smokeExampleV3(${data.textbook_example_id}, '${skillId}')">
                                 系統驗證
                             </button>
                             
                             ${data.gencode_status === 'smoke_passed' ? `
-                            <button type="button" class="btn btn-prereq" style="width:100%; margin-bottom:8px;" onclick="verifyExampleV3(${data.textbook_example_id}, '${skillId}')">
+                            <button type="button" class="btn btn-prereq" data-demo-write style="width:100%; margin-bottom:8px;" onclick="verifyExampleV3(${data.textbook_example_id}, '${skillId}')">
                                 標記可用
                             </button>
                             ` : ''}

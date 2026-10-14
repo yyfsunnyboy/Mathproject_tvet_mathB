@@ -1,0 +1,64 @@
+{
+  "ok": false,
+  "task_id": "b12feb26-5282-429c-bc5c-0bbadcd6a964",
+  "base_name": "第一章 1-1 角度的基本性質-課本",
+  "docx_path": "D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.docx",
+  "pdf_path": "D:\\Python\\Mathproject_tvet_mathB\\textbook_import\\source\\vocational\\math_B2\\第一章 1-1 角度的基本性質-課本.pdf",
+  "stages": {},
+  "metrics": {
+    "word_scan": {
+      "word_tables": 14,
+      "table_cells": 71,
+      "mathtype_found": 142,
+      "eq_fields": 5,
+      "independent_images": 24,
+      "formula_preview_media": 132
+    },
+    "formula_conversion": {
+      "mathtype_found": 142,
+      "mathtype_converted": 142,
+      "formula_failures": 0,
+      "eq_fields": 5,
+      "eq_converted": 5,
+      "latex_docx": "D:\\Python\\Mathproject_tvet_mathB\\reports\\b2_1_1_ingestion_dryrun\\第一章 1-1 角度的基本性質-課本_Latex.docx",
+      "original_unchanged": true
+    }
+  },
+  "error": {
+    "stage": "CURRICULUM_BINDING",
+    "error_code": "outline_conflict",
+    "message": "Existing section outline conflicts with authoritative metadata",
+    "details": {
+      "curriculum": "vocational",
+      "volume": "數學B2",
+      "chapter": "1",
+      "section": "1-1 角度的基本性質",
+      "section_code": "1-1",
+      "authority_source": "v3_source_context",
+      "skill_id": "outline_vocational_數學B2_11",
+      "dry_run": false,
+      "wrote": false,
+      "skill_info_created": false,
+      "skill_curriculum_created": false,
+      "action": "conflict",
+      "reason": "existing_outline_metadata_mismatch",
+      "existing": {
+        "skill_id": "outline_vocational_數學B2_11",
+        "chapter": "第1章 三角函數",
+        "section": "1-1 角度的基本性質",
+        "paragraph": null,
+        "grade": 10,
+        "display_order": 11
+      },
+      "incoming": {
+        "skill_id": "outline_vocational_數學B2_11",
+        "chapter": "1",
+        "section": "1-1 角度的基本性質",
+        "paragraph": null,
+        "grade": 10,
+        "display_order": 11
+      }
+    }
+  },
+  "latex_docx": "D:\\Python\\Mathproject_tvet_mathB\\reports\\b2_1_1_ingestion_dryrun\\第一章 1-1 角度的基本性質-課本_Latex.docx"
+}

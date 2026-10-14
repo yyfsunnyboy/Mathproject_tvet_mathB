@@ -1,0 +1,894 @@
+{
+  "fail11": [
+    {
+      "example_id": 11732,
+      "pdf_page": 5,
+      "failure_class": "F1_wrong_nearby_visual",
+      "question_anchor": {
+        "source_description": "隨堂練習1",
+        "match_score": 0.96,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 5,
+          "question_start_y": 391.92974853515625,
+          "hits": [
+            "如圖在平行四邊形ABCD",
+            "試以ab表示下列各向量",
+            "1BA2BC3CD",
+            "表示下列各向量",
+            "在平行四邊形"
+          ],
+          "question_bbox": [
+            36.0,
+            383.92974853515625,
+            573.4486083984375,
+            757.7006225585938
+          ],
+          "regions": [
+            {
+              "page": 5,
+              "bbox": [
+                36.0,
+                383.92974853515625,
+                573.4486083984375,
+                757.7006225585938
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          383.92974853515625,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "next_question_y": null
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 5,
+        "bbox": [
+          413.4039001464844,
+          574.5032348632812,
+          495.0202941894531,
+          688.9222412109375
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "strong_cue soft/right-cluster scored 航線圖 below 隨堂練習1",
+      "crop_region_before": [
+        413.4039001464844,
+        574.5032348632812,
+        495.0202941894531,
+        688.9222412109375
+      ],
+      "correct_region": [
+        400.0,
+        395.0,
+        530.0,
+        520.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "right_cluster_band_extended_past_question_into_intro_flight_map",
+      "pipeline_stage": "candidate_visual_selection",
+      "preventable_deterministically": true,
+      "proposed_guard": "question_boundary_band_clip",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11736,
+      "pdf_page": 9,
+      "failure_class": "F2_multi_question_crop",
+      "question_anchor": {
+        "source_description": "隨堂練習3",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 9,
+          "question_start_y": 358.3890075683594,
+          "hits": [
+            "如圖在三角形ABC中試化簡下列各向量",
+            "如圖在三角形ABC中試化簡下列各",
+            "如圖在三角形ABC中試化",
+            "試化簡下列各向量",
+            "在三角形"
+          ],
+          "question_bbox": [
+            36.0,
+            350.3890075683594,
+            573.4486083984375,
+            463.2567443847656
+          ],
+          "regions": [
+            {
+              "page": 9,
+              "bbox": [
+                36.0,
+                350.3890075683594,
+                573.4486083984375,
+                463.2567443847656
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          350.3890075683594,
+          573.4486083984375,
+          463.2567443847656
+        ],
+        "next_question_y": 467.2567443847656
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 9,
+        "bbox": [
+          86.05509185791016,
+          453.11962890625,
+          523.4090576171875,
+          463.2567443847656
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "area-ranked union spanned next question frames",
+      "crop_region_before": [
+        86.05509185791016,
+        453.11962890625,
+        523.4090576171875,
+        737.506591796875
+      ],
+      "correct_region": [
+        410.0,
+        350.0,
+        520.0,
+        440.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "union_top_draws_merged_例4_and_隨堂4",
+      "pipeline_stage": "region_band_or_union",
+      "preventable_deterministically": true,
+      "proposed_guard": "compact_single_pick + boundary_clip",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence",
+        "overspan_multi_question",
+        "crosses_question_boundary"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11744,
+      "pdf_page": 15,
+      "failure_class": "F2_multi_question_crop",
+      "question_anchor": {
+        "source_description": "3-1習題 基礎題1",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 15,
+          "question_start_y": 173.4187469482422,
+          "hits": [
+            "如圖DEF分別為ABBCAC三邊的中",
+            "如圖DEF分別為ABBCAC三邊",
+            "如圖DEF分別為ABBC",
+            "1DB2ED3EF",
+            "表示下列各向量"
+          ],
+          "question_bbox": [
+            36.0,
+            165.4187469482422,
+            573.4486083984375,
+            268.22412109375
+          ],
+          "regions": [
+            {
+              "page": 15,
+              "bbox": [
+                36.0,
+                165.4187469482422,
+                573.4486083984375,
+                268.22412109375
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          165.4187469482422,
+          573.4486083984375,
+          268.22412109375
+        ],
+        "next_question_y": 272.22412109375
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 15,
+        "bbox": [
+          289.1017761230469,
+          231.32492065429688,
+          572.5481567382812,
+          268.22412109375
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "tall crop across stacked 基礎題 diagrams",
+      "crop_region_before": [
+        289.1017761230469,
+        231.32492065429688,
+        572.5481567382812,
+        494.5749206542969
+      ],
+      "correct_region": [
+        420.0,
+        155.0,
+        555.0,
+        265.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "question_region_or_union_absorbed_基礎2_Q4",
+      "pipeline_stage": "region_band_or_union",
+      "preventable_deterministically": true,
+      "proposed_guard": "overspan_multi_question + boundary_clip",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence",
+        "crosses_question_boundary"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11748,
+      "pdf_page": 15,
+      "failure_class": "F3_invalid_shared_asset",
+      "question_anchor": {
+        "source_description": "3-1習題 基礎題5",
+        "match_score": 0.96,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 15,
+          "question_start_y": 516.3319702148438,
+          "hits": [
+            "如圖已知CD為線段AB的等分點",
+            "如圖已知CD為線段AB的",
+            "的等分點"
+          ],
+          "question_bbox": [
+            36.0,
+            508.33197021484375,
+            573.4486083984375,
+            616.2911987304688
+          ],
+          "regions": [
+            {
+              "page": 15,
+              "bbox": [
+                36.0,
+                508.33197021484375,
+                573.4486083984375,
+                616.2911987304688
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          508.33197021484375,
+          573.4486083984375,
+          616.2911987304688
+        ],
+        "next_question_y": 620.2911987304688
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 15,
+        "bbox": [
+          410.8660888671875,
+          622.1527099609375,
+          524.3630981445312,
+          735.6917114257812
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "identical/near bbox ownership without stem evidence",
+      "crop_region_before": [
+        410.8660888671875,
+        622.1527099609375,
+        524.3630981445312,
+        735.6917114257812
+      ],
+      "correct_region": [
+        400.0,
+        505.0,
+        560.0,
+        610.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "reused_basis6_grid_bbox_as_basis5",
+      "pipeline_stage": "shared_asset_dedupe",
+      "preventable_deterministically": true,
+      "proposed_guard": "suspicious_shared_asset_ownership",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "crosses_question_boundary",
+        "suspicious_shared_asset"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11751,
+      "pdf_page": 16,
+      "failure_class": "F4_critical_label_clipping",
+      "question_anchor": {
+        "source_description": "3-1習題 基礎題8",
+        "match_score": 0.92,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 16,
+          "question_start_y": 302.91119384765625,
+          "hits": [
+            "試以ab表示FD",
+            "的三等分點"
+          ],
+          "question_bbox": [
+            36.0,
+            294.91119384765625,
+            573.4486083984375,
+            435.3133850097656
+          ],
+          "regions": [
+            {
+              "page": 16,
+              "bbox": [
+                36.0,
+                294.91119384765625,
+                573.4486083984375,
+                435.3133850097656
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          294.91119384765625,
+          573.4486083984375,
+          435.3133850097656
+        ],
+        "next_question_y": 439.3133850097656
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 16,
+        "bbox": [
+          452.9901123046875,
+          370.3605041503906,
+          504.01812744140625,
+          434.8185119628906
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "compact score preferred too-tight drawing group",
+      "crop_region_before": [
+        452.9901123046875,
+        370.3605041503906,
+        504.01812744140625,
+        434.8185119628906
+      ],
+      "correct_region": [
+        400.0,
+        235.0,
+        560.0,
+        350.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "over_compact_triangle_cut_vertex_labels",
+      "pipeline_stage": "bbox_compacting",
+      "preventable_deterministically": false,
+      "proposed_guard": "needs_review_when_shared_truncated_or_low_margin",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11752,
+      "pdf_page": 16,
+      "failure_class": "F3_invalid_shared_asset",
+      "question_anchor": {
+        "source_description": "3-1習題 進階題9",
+        "match_score": 0.84,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 16,
+          "question_start_y": 439.3133850097656,
+          "hits": [
+            "1DB2CF",
+            "的三等分點"
+          ],
+          "question_bbox": [
+            36.0,
+            431.3133850097656,
+            573.4486083984375,
+            475.3133850097656
+          ],
+          "regions": [
+            {
+              "page": 16,
+              "bbox": [
+                36.0,
+                431.3133850097656,
+                573.4486083984375,
+                475.3133850097656
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          431.3133850097656,
+          573.4486083984375,
+          475.3133850097656
+        ],
+        "next_question_y": 475.7920227050781
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 16,
+        "bbox": [
+          452.9901123046875,
+          370.3605041503906,
+          504.01812744140625,
+          434.8185119628906
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "same bbox/SHA claimed by distinct stem",
+      "crop_region_before": [
+        452.9901123046875,
+        370.3605041503906,
+        504.01812744140625,
+        434.8185119628906
+      ],
+      "correct_region": [
+        395.0,
+        365.0,
+        555.0,
+        475.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "illegal_sha_reuse_of_11751_crop",
+      "pipeline_stage": "shared_asset_dedupe",
+      "preventable_deterministically": true,
+      "proposed_guard": "suspicious_shared_asset_ownership",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence",
+        "suspicious_shared_asset"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11753,
+      "pdf_page": 16,
+      "failure_class": "F6_non_question_contamination",
+      "question_anchor": {
+        "source_description": "3-1習題 進階題10",
+        "match_score": 0.96,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 16,
+          "question_start_y": 475.7920227050781,
+          "hits": [
+            "如圖平行四邊形ABCD中",
+            "試以ab表示下列各向量",
+            "1AM2AN3MN",
+            "表示下列各向量",
+            "平行四邊形"
+          ],
+          "question_bbox": [
+            36.0,
+            467.7920227050781,
+            573.4486083984375,
+            757.7006225585938
+          ],
+          "regions": [
+            {
+              "page": 16,
+              "bbox": [
+                36.0,
+                467.7920227050781,
+                573.4486083984375,
+                757.7006225585938
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          467.7920227050781,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "next_question_y": null
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 16,
+        "bbox": [
+          420.235595703125,
+          587.7720336914062,
+          559.1336059570312,
+          637.3780517578125
+        ],
+        "visual_status": "rejected",
+        "should_mount": false
+      },
+      "selection_reason": "search band past last question into footer UI text",
+      "crop_region_before": [
+        420.235595703125,
+        587.7720336914062,
+        559.1336059570312,
+        637.3780517578125
+      ],
+      "correct_region": [
+        400.0,
+        455.0,
+        560.0,
+        585.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "band_extended_into_熟習度自評表",
+      "pipeline_stage": "candidate_visual_selection",
+      "preventable_deterministically": true,
+      "proposed_guard": "contamination_text_layer + footer_band_limit",
+      "hardened_decision": "rejected",
+      "hardened_reasons": [
+        "low_mapping_confidence",
+        "non_question_contamination"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11795,
+      "pdf_page": 11,
+      "failure_class": "F1_wrong_nearby_visual",
+      "question_anchor": {
+        "source_description": "108統測B",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 11,
+          "question_start_y": 191.03932189941406,
+          "hits": [
+            "如圖所示以O為原點的直角坐標系上有四點由左至右依序為AB",
+            "CD落在第一象限且直線BC與直線OD的交點落",
+            "如圖所示以O為原點的直角坐標系上有四點由左",
+            "OC及OD求內積依次得到abc及d四個數值",
+            "至右依序為ABCD其中A落在第二象限B"
+          ],
+          "question_bbox": [
+            36.0,
+            183.03932189941406,
+            573.4486083984375,
+            757.7006225585938
+          ],
+          "regions": [
+            {
+              "page": 11,
+              "bbox": [
+                36.0,
+                183.03932189941406,
+                573.4486083984375,
+                757.7006225585938
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          183.03932189941406,
+          573.4486083984375,
+          757.7006225585938
+        ],
+        "next_question_y": null
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 11,
+        "bbox": [
+          85.70860290527344,
+          476.5158386230469,
+          525.7235717773438,
+          701.205810546875
+        ],
+        "visual_status": "rejected",
+        "should_mount": false
+      },
+      "selection_reason": "wrong candidate identity under soft/right heuristics",
+      "crop_region_before": [
+        85.70860290527344,
+        476.5158386230469,
+        525.7235717773438,
+        701.205810546875
+      ],
+      "correct_region": [
+        380.0,
+        200.0,
+        540.0,
+        320.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "selected_empty_input_ui_instead_of_coordinate_figure",
+      "pipeline_stage": "candidate_visual_selection",
+      "preventable_deterministically": true,
+      "proposed_guard": "contamination_輸入訊息 + needs_review_over_guess",
+      "hardened_decision": "rejected",
+      "hardened_reasons": [
+        "low_mapping_confidence",
+        "non_question_contamination"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11804,
+      "pdf_page": 14,
+      "failure_class": "F5_multi_figure_incomplete",
+      "question_anchor": {
+        "source_description": "3-3習題 進階題9",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 14,
+          "question_start_y": 172.2646942138672,
+          "hits": [
+            "如圖所示有一船位於甲港口的東方12公里北方5公里A處朝著",
+            "如圖所示有一船位於甲港口的東方12公里北方5公里",
+            "如圖所示有一船位於甲港口的東方12公",
+            "如圖所示有一船位於甲港口的東方1",
+            "請將圖一以甲港口為直角坐標原點O"
+          ],
+          "question_bbox": [
+            36.0,
+            164.2646942138672,
+            573.4486083984375,
+            477.5127258300781
+          ],
+          "regions": [
+            {
+              "page": 14,
+              "bbox": [
+                36.0,
+                164.2646942138672,
+                573.4486083984375,
+                477.5127258300781
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          164.2646942138672,
+          573.4486083984375,
+          477.5127258300781
+        ],
+        "next_question_y": 481.5127258300781
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 14,
+        "bbox": [
+          329.61956787109375,
+          305.4530029296875,
+          513.87158203125,
+          404.666015625
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "stem requires 圖（一）+圖（二） but single subfigure accepted",
+      "crop_region_before": [
+        329.61956787109375,
+        305.4530029296875,
+        513.87158203125,
+        404.666015625
+      ],
+      "correct_region": [
+        120.0,
+        260.0,
+        540.0,
+        450.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "mounted_only_圖二_empty_panel",
+      "pipeline_stage": "candidate_visual_selection",
+      "preventable_deterministically": true,
+      "proposed_guard": "incomplete_multi_figure",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "incomplete_multi_figure"
+      ],
+      "multi_figure_labels": [
+        "圖(一)",
+        "圖(二)"
+      ]
+    },
+    {
+      "example_id": 11806,
+      "pdf_page": 1,
+      "failure_class": "F2_multi_question_crop",
+      "question_anchor": {
+        "source_description": "CH3自我評量 題1",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 1,
+          "question_start_y": 189.3051300048828,
+          "hits": [
+            "若ABCD為長方形ABCD的四個頂點如圖所示則向量AB與",
+            "若ABCD為長方形ABCD的四個頂點如圖所示則向",
+            "若ABCD為長方形ABCD的四個頂點",
+            "若ABCD為長方形ABCD的四個",
+            "若ABCD為長方形ABC"
+          ],
+          "question_bbox": [
+            36.0,
+            181.3051300048828,
+            573.4486083984375,
+            309.1366271972656
+          ],
+          "regions": [
+            {
+              "page": 1,
+              "bbox": [
+                36.0,
+                181.3051300048828,
+                573.4486083984375,
+                309.1366271972656
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          181.3051300048828,
+          573.4486083984375,
+          309.1366271972656
+        ],
+        "next_question_y": 313.1366271972656
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 1,
+        "bbox": [
+          429.28167724609375,
+          204.822998046875,
+          519.1566162109375,
+          309.1366271972656
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "cluster merged stacked right diagrams",
+      "crop_region_before": [
+        429.28167724609375,
+        204.822998046875,
+        519.1566162109375,
+        457.33612060546875
+      ],
+      "correct_region": [
+        430.0,
+        185.0,
+        540.0,
+        270.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "right_cluster_union_across_self_assessment_Q1_Q3",
+      "pipeline_stage": "right_cluster_union",
+      "preventable_deterministically": true,
+      "proposed_guard": "boundary_clip + compact_single_pick",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "crosses_question_boundary"
+      ],
+      "multi_figure_labels": []
+    },
+    {
+      "example_id": 11817,
+      "pdf_page": 1,
+      "failure_class": "F4_critical_label_clipping",
+      "question_anchor": {
+        "source_description": "CH3自我評量 題3",
+        "match_score": 0.99,
+        "match_method": "unique_phrase+order",
+        "pdf_match": {
+          "page": 1,
+          "question_start_y": 399.92742919921875,
+          "hits": [
+            "如圖平行四邊形ABCD中對角線相交於ME為AD中點FG為",
+            "如圖平行四邊形ABCD中對角線相交於ME為AD中",
+            "如圖平行四邊形ABCD中對角線相交於",
+            "如圖平行四邊形ABCD中對角線相",
+            "如圖平行四邊形ABCD中"
+          ],
+          "question_bbox": [
+            36.0,
+            391.92742919921875,
+            573.4486083984375,
+            557.8096313476562
+          ],
+          "regions": [
+            {
+              "page": 1,
+              "bbox": [
+                36.0,
+                391.92742919921875,
+                573.4486083984375,
+                557.8096313476562
+              ]
+            }
+          ]
+        },
+        "question_bbox": [
+          36.0,
+          391.92742919921875,
+          573.4486083984375,
+          557.8096313476562
+        ],
+        "next_question_y": 561.8096313476562
+      },
+      "candidate_visuals": [],
+      "selected_candidate": {
+        "page": 1,
+        "bbox": [
+          450.62030029296875,
+          415.3041076660156,
+          515.311279296875,
+          457.33612060546875
+        ],
+        "visual_status": "needs_review",
+        "should_mount": false
+      },
+      "selection_reason": "compact right-preference shaved essential labels",
+      "crop_region_before": [
+        450.62030029296875,
+        415.3041076660156,
+        515.311279296875,
+        457.33612060546875
+      ],
+      "correct_region": [
+        400.0,
+        395.0,
+        540.0,
+        520.0
+      ],
+      "shared_asset_with": [],
+      "first_wrong_decision": "left_edge_too_tight_cut_vertex_A",
+      "pipeline_stage": "bbox_compacting",
+      "preventable_deterministically": false,
+      "proposed_guard": "needs_review_preferred_over_silent_tight_crop",
+      "hardened_decision": "needs_review",
+      "hardened_reasons": [
+        "low_mapping_confidence"
+      ],
+      "multi_figure_labels": []
+    }
+  ],
+  "taxonomy": [
+    "F1_wrong_nearby_visual",
+    "F2_multi_question_crop",
+    "F3_invalid_shared_asset",
+    "F4_critical_label_clipping",
+    "F5_multi_figure_incomplete",
+    "F6_non_question_contamination"
+  ]
+}

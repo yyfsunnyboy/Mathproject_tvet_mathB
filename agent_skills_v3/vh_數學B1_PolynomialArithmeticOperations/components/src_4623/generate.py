@@ -6,7 +6,7 @@ from core.domain.polynomial_domain import build_polynomial_matrix
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "expression"
+ANSWER_TYPE = "multi_part"
 PROBLEM_TYPE_ID = "polynomial_multiply"
 TEXTBOOK_EXAMPLE_ID = 4623
 DEFAULT_COMPONENT_ID = "src_4623" if TEXTBOOK_EXAMPLE_ID else ""
@@ -28,7 +28,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         "fixed_domain_key": "algebra.polynomial",
     }
 
-    constraints = dict({'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'source_example_id': 4623, 'textbook_example_id': 4623, 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'source_example_id': 4623, 'textbook_example_id': 4623, 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 4623, 'answer_type': 'expression', 'exact_task_operation': '', 'domain_resolution': {'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'fixed_domain_key': 'algebra.polynomial', 'resolution_source': 'confirmed_binding', 'binding_status': 'confirmed', 'required_capabilities': ['polynomial_multiply'], 'matched_capabilities': ['polynomial_multiply'], 'selected_operation': '', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.polynomial_domain', 'entrypoint': 'build_polynomial_matrix', 'allowed_operations': ['polynomial_add_sub', 'polynomial_multiply', 'polynomial_product_term_coefficient', 'polynomial_long_division', 'polynomial_synthetic_division', 'polynomial_remainder_param_solve', 'polynomial_shifted_basis_eval'], 'curriculum_profile': 'vocational_high_b'}, 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations'})
+    constraints = dict({'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'source_example_id': 4623, 'textbook_example_id': 4623, 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'source_example_id': 4623, 'textbook_example_id': 4623, 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'problem_type_id': 'polynomial_multiply', 'required_capabilities': ['polynomial_multiply'], 'classification_source': 'phase1_rule_pack', 'source_hash': '71eb40b2dc1f3913cda5120b405930fa', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 4623, 'answer_type': 'expression', 'exact_task_operation': '', 'domain_resolution': {'skill_id': 'vh_數學B1_PolynomialArithmeticOperations', 'fixed_domain_key': 'algebra.polynomial', 'resolution_source': 'confirmed_binding', 'binding_status': 'confirmed', 'required_capabilities': ['polynomial_multiply'], 'matched_capabilities': ['polynomial_multiply'], 'selected_operation': 'polynomial_multiply', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.polynomial_domain', 'entrypoint': 'build_polynomial_matrix', 'allowed_operations': ['polynomial_add_sub', 'polynomial_multiply', 'polynomial_product_term_coefficient', 'polynomial_long_division', 'polynomial_synthetic_division', 'polynomial_remainder_param_solve', 'polynomial_shifted_basis_eval'], 'curriculum_profile': 'vocational_high_b'}, 'skill_id': 'vh_數學B1_PolynomialArithmeticOperations'})
     constraints["skill_id"] = "vh_數學B1_PolynomialArithmeticOperations"
 
     matrix = _v3_invoke_domain_entrypoint(
@@ -54,6 +54,34 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         domain_operation="polynomial_multiply",
         seed=seed,
     )
+
+    # v1.12 topology alignment: ensure multi_part answer_contract.parts
+    if isinstance(payload.get("answer"), dict):
+        _ans = payload["answer"]
+        _parts = []
+        for _k, _v in sorted(_ans.items(), key=lambda kv: str(kv[0])):
+            _chk = "integer_checker" if str(_v).strip().lstrip("+-").isdigit() else "expression_checker"
+            _parts.append({
+                "key": str(_k),
+                "label": str(_k),
+                "checker": _chk,
+                "checker_key": _chk,
+                "equivalence_type": "numeric_exact" if _chk == "integer_checker" else "algebraic_equivalent",
+                "expected_answer": _v,
+            })
+        _ac = dict(payload.get("answer_contract") or {})
+        _ac.update({
+            "answer_type": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "equivalence_type": "multi_part_answer",
+            "parts": _parts,
+        })
+        payload["answer_type"] = "multi_part"
+        payload["answer_contract"] = _ac
+        payload["checker"] = "multi_part_answer_checker"
+        payload["checker_key"] = "multi_part_answer_checker"
+
     if component_id:
         payload["component_id"] = component_id
     payload["seed"] = seed

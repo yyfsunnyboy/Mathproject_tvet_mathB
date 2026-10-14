@@ -1,0 +1,175 @@
+{
+  "skills": [
+    {
+      "skill": "vh_數學B2_SubSection_4_1_1",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "circle_center_tangent_to_line",
+        "circle_equal_radius_at_origin",
+        "circle_from_diameter_endpoints",
+        "circle_origin_through_lines_intersection",
+        "circle_same_center_scaled_area",
+        "identify_center_radius_from_standard",
+        "interpret_circular_locus_equation",
+        "translate_and_scale_circle",
+        "write_circle_equations_from_conditions"
+      ],
+      "components_observed": [
+        "src_11826",
+        "src_11827",
+        "src_11828",
+        "src_11829",
+        "src_11830",
+        "src_11843",
+        "src_11850",
+        "src_11886",
+        "src_11887",
+        "src_11890"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_4_1_2",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "circle_center_on_axis_area",
+        "circle_through_three_points",
+        "classify_general_circle_graph",
+        "compute_circle_area_from_general",
+        "evaluate_center_radius_expression",
+        "identify_center_radius_from_general",
+        "identify_circle_from_product_form",
+        "solve_circle_parameter_range",
+        "solve_circle_parameter_range_mcq",
+        "translate_and_scale_circle"
+      ],
+      "components_observed": [
+        "src_11832",
+        "src_11836",
+        "src_11838",
+        "src_11840",
+        "src_11846",
+        "src_11849",
+        "src_11876",
+        "src_11888",
+        "src_11889",
+        "src_11893"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_4_2_1",
+      "request_count": 10,
+      "unique_effective_questions": 9,
+      "families_observed": [
+        "classify_point_vs_circles_multipart",
+        "identify_point_on_circle_mcq",
+        "solve_point_circle_parameter_range"
+      ],
+      "components_observed": [
+        "src_11851",
+        "src_11852",
+        "src_11866",
+        "src_11875",
+        "src_11884"
+      ],
+      "duplicate_count": 1,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_4_2_2",
+      "request_count": 10,
+      "unique_effective_questions": 10,
+      "families_observed": [
+        "classify_line_circle_relation",
+        "classify_line_circle_relation_mcq",
+        "classify_lines_vs_circle_multipart",
+        "compute_chord_length",
+        "compute_storm_path_length_in_circle",
+        "count_line_circle_intersections",
+        "solve_diameter_chord_parameter_mcq",
+        "solve_line_circle_parameter_range",
+        "solve_line_circle_relation_ranges_multipart",
+        "solve_line_circle_tangent_parameter"
+      ],
+      "components_observed": [
+        "src_11853",
+        "src_11854",
+        "src_11855",
+        "src_11856",
+        "src_11857",
+        "src_11868",
+        "src_11869",
+        "src_11874",
+        "src_11878",
+        "src_11879"
+      ],
+      "duplicate_count": 0,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_4_2_3",
+      "request_count": 10,
+      "unique_effective_questions": 8,
+      "families_observed": [
+        "compute_tangents_from_point_quad_area",
+        "tangent_at_point_on_circle",
+        "tangent_at_point_on_circle_mcq",
+        "tangents_parallel_to_line",
+        "tangents_perpendicular_to_line"
+      ],
+      "components_observed": [
+        "src_11859",
+        "src_11860",
+        "src_11861",
+        "src_11862",
+        "src_11871",
+        "src_11872",
+        "src_11885",
+        "src_11895"
+      ],
+      "duplicate_count": 2,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_4_2_4",
+      "request_count": 10,
+      "unique_effective_questions": 7,
+      "families_observed": [
+        "compute_tangent_segment_length_mcq",
+        "compute_tangent_segment_lengths",
+        "count_line_vs_two_circles_intersections"
+      ],
+      "components_observed": [
+        "src_11863",
+        "src_11864",
+        "src_11865",
+        "src_11873",
+        "src_11894"
+      ],
+      "duplicate_count": 3,
+      "root_cause": "OK",
+      "status": "PASS",
+      "errors": []
+    }
+  ],
+  "taxonomy": {
+    "OK": 6
+  },
+  "pass": 6,
+  "blocked": 0
+}

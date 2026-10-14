@@ -1,0 +1,688 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_multiplication_formulas_3f8d2b61",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "human_reviewer",
+    "approved_revision": 1,
+    "approval_scope": "new domain algebra.multiplication_formulas with the six generic operations required by the 16 gh_MultiplicationFormulas textbook rows only"
+  },
+  "domain_key": "algebra.multiplication_formulas",
+  "package_name": "algebra_multiplication_formulas",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "b1e332f34862657fd3e6f9de351e492d1086e4f9b7467384b89b7b638c6a6e2a",
+    "multiplication_formulas_adapter.py": "9749bd533f364d57d981ae2a8fa1bfe300606c63924f166bfdaf75c1ebd4465f",
+    "multiplication_formulas_domain.py": "c35a6d7026677275a67a0cf17d317f4ceda662b9e967563184ddee096a6e2220"
+  },
+  "domain_module": "multiplication_formulas_domain",
+  "entrypoint": "build_multiplication_formulas_matrix",
+  "capabilities": [
+    "expand_polynomial_expressions",
+    "factor_by_cube_formulas",
+    "evaluate_reciprocal_power_expressions",
+    "simplify_radical_expressions",
+    "solve_rational_unknowns_from_squared_radical_identity",
+    "evaluate_product_under_power_relation"
+  ],
+  "operations": {
+    "expand_polynomial_expressions": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "expression_checker"
+      ],
+      "validator": "validate_expand_polynomial_expressions_matrix",
+      "provided_capabilities": [
+        "expand_polynomial_expressions"
+      ]
+    },
+    "factor_by_cube_formulas": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "expression_checker"
+      ],
+      "validator": "validate_factor_by_cube_formulas_matrix",
+      "provided_capabilities": [
+        "factor_by_cube_formulas"
+      ]
+    },
+    "evaluate_reciprocal_power_expressions": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "expression_checker"
+      ],
+      "validator": "validate_evaluate_reciprocal_power_expressions_matrix",
+      "provided_capabilities": [
+        "evaluate_reciprocal_power_expressions"
+      ]
+    },
+    "simplify_radical_expressions": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "expression_checker"
+      ],
+      "validator": "validate_simplify_radical_expressions_matrix",
+      "provided_capabilities": [
+        "simplify_radical_expressions"
+      ]
+    },
+    "solve_rational_unknowns_from_squared_radical_identity": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_solve_rational_unknowns_from_squared_radical_identity_matrix",
+      "provided_capabilities": [
+        "solve_rational_unknowns_from_squared_radical_identity"
+      ]
+    },
+    "evaluate_product_under_power_relation": {
+      "handler": "build_multiplication_formulas_matrix",
+      "payload_adapter": "multiplication_formulas_adapter.adapt_multiplication_formulas_matrix",
+      "runtime_contract": "multiplication_formulas_exact_v1",
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_evaluate_product_under_power_relation_matrix",
+      "provided_capabilities": [
+        "evaluate_product_under_power_relation"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_MultiplicationFormulas": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "expand_polynomial_expressions",
+        "factor_by_cube_formulas",
+        "evaluate_reciprocal_power_expressions",
+        "simplify_radical_expressions",
+        "solve_rational_unknowns_from_squared_radical_identity",
+        "evaluate_product_under_power_relation"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "expand_polynomial_expressions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "expressions": [
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "1",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "-2",
+                        {
+                          "b": 1
+                        }
+                      ]
+                    ],
+                    2
+                  ]
+                ]
+              },
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "2",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "1",
+                        {
+                          "b": 1
+                        }
+                      ]
+                    ],
+                    2
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "1",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "-1",
+                        {
+                          "b": 1
+                        }
+                      ],
+                      [
+                        "1",
+                        {}
+                      ]
+                    ],
+                    1
+                  ],
+                  [
+                    [
+                      [
+                        "1",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "-1",
+                        {
+                          "b": 1
+                        }
+                      ],
+                      [
+                        "-1",
+                        {}
+                      ]
+                    ],
+                    1
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "1",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "-2",
+                        {
+                          "b": 1
+                        }
+                      ],
+                      [
+                        "3",
+                        {
+                          "c": 1
+                        }
+                      ]
+                    ],
+                    2
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "expressions": [
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "1",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "2",
+                        {
+                          "b": 1
+                        }
+                      ]
+                    ],
+                    3
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      [
+                        "2",
+                        {
+                          "a": 1
+                        }
+                      ],
+                      [
+                        "-3",
+                        {
+                          "b": 1
+                        }
+                      ]
+                    ],
+                    3
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "factor_by_cube_formulas": [
+      {
+        "seed": 4,
+        "constraints": {
+          "polynomials": [
+            [
+              [
+                "1",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "1",
+                {}
+              ]
+            ],
+            [
+              [
+                "27",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "-1",
+                {}
+              ]
+            ],
+            [
+              [
+                "1",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "9",
+                {
+                  "x": 2
+                }
+              ],
+              [
+                "27",
+                {
+                  "x": 1
+                }
+              ],
+              [
+                "27",
+                {}
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 10,
+        "constraints": {
+          "polynomials": [
+            [
+              [
+                "8",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "1",
+                {}
+              ]
+            ],
+            [
+              [
+                "1",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "-125",
+                {}
+              ]
+            ],
+            [
+              [
+                "1",
+                {
+                  "x": 3
+                }
+              ],
+              [
+                "-6",
+                {
+                  "x": 2
+                }
+              ],
+              [
+                "12",
+                {
+                  "x": 1
+                }
+              ],
+              [
+                "-8",
+                {}
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_reciprocal_power_expressions": [
+      {
+        "seed": 5,
+        "constraints": {
+          "base": {
+            "kind": "relation",
+            "sign": 1,
+            "value": 3
+          },
+          "targets": [
+            {
+              "power": 2,
+              "sign": 1
+            },
+            {
+              "power": 3,
+              "sign": 1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 11,
+        "constraints": {
+          "base": {
+            "kind": "relation",
+            "sign": -1,
+            "value": -2
+          },
+          "targets": [
+            {
+              "power": 2,
+              "sign": 1
+            },
+            {
+              "power": 3,
+              "sign": -1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "simplify_radical_expressions": [
+      {
+        "seed": 6,
+        "constraints": {
+          "expressions": [
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      1,
+                      12
+                    ]
+                  ]
+                ]
+              },
+              {
+                "factors": [
+                  [
+                    [
+                      1,
+                      75
+                    ]
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      1,
+                      7
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  [
+                    [
+                      1,
+                      7
+                    ],
+                    [
+                      -1,
+                      2
+                    ]
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "factors": [
+                  [
+                    [
+                      1,
+                      "3/2"
+                    ]
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "solve_rational_unknowns_from_squared_radical_identity": [
+      {
+        "seed": 12,
+        "constraints": {
+          "coefficient": 2,
+          "radicand": 3,
+          "rhs_radical": 4
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_product_under_power_relation": [
+      {
+        "seed": 16,
+        "constraints": {
+          "variable": "a",
+          "power": 3,
+          "value": 2,
+          "expression": [
+            {
+              "factors": [
+                [
+                  [
+                    [
+                      "1",
+                      {
+                        "a": 1
+                      }
+                    ],
+                    [
+                      "-1",
+                      {}
+                    ]
+                  ],
+                  1
+                ],
+                [
+                  [
+                    [
+                      "1",
+                      {
+                        "a": 1
+                      }
+                    ],
+                    [
+                      "1",
+                      {}
+                    ]
+                  ],
+                  1
+                ],
+                [
+                  [
+                    [
+                      "1",
+                      {
+                        "a": 2
+                      }
+                    ],
+                    [
+                      "-1",
+                      {
+                        "a": 1
+                      }
+                    ],
+                    [
+                      "1",
+                      {}
+                    ]
+                  ],
+                  1
+                ],
+                [
+                  [
+                    [
+                      "1",
+                      {
+                        "a": 2
+                      }
+                    ],
+                    [
+                      "1",
+                      {
+                        "a": 1
+                      }
+                    ],
+                    [
+                      "1",
+                      {}
+                    ]
+                  ],
+                  1
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ]
+  }
+}

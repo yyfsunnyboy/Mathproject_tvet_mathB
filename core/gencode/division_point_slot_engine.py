@@ -12,6 +12,11 @@ from typing import Any
 from core.checkers.coordinate_pair_checker import parse_coordinate_pair_answer
 from core.gencode.answer_payload import answer_type_family
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
+from core.gencode.coordinate_math_formatter import (
+    inline_math as _inline_math,
+    overline_segment as _format_overline_segment,
+    point_with_coordinates as _format_point_with_coordinates,
+)
 from core.gencode.generator_contract_schema import DEFAULT_ANTI_REPETITION
 from core.gencode.problem_type_spec import get_answer_contract, get_generator_contract
 
@@ -34,6 +39,14 @@ _TARGET_TASKS = frozenset(
         "graph_based_tiered_linear_application_multi_part",
     }
 )
+
+
+def _point_with_coordinates(name: str, x: object, y: object) -> str:
+    return _format_point_with_coordinates(name, _fmt_num(x), _fmt_num(y))
+
+
+def _triangle_name(a: str, b: str, c: str) -> str:
+    return _inline_math("\\triangle " + a + b + c)
 
 
 def is_division_point_target_task(target_task: str) -> bool:
@@ -79,8 +92,10 @@ def build_collinear_trisection_coordinate_matrix(
     answer = f"({point_c[0]}, {point_c[1]})"
     return {
         "question": (
-            f"設 A{point_a}、B、C、D{point_d} 依序在同一直線上，"
-            "且 B、C 將線段 AD 三等分，求點 C 的坐標。"
+            f"設 {_point_with_coordinates('A', *point_a)}、{_inline_math('B')}、"
+            f"{_inline_math('C')}、{_point_with_coordinates('D', *point_d)} 依序在同一直線上，"
+            f"且 {_inline_math('B')}、{_inline_math('C')} 將線段 {_overline_segment('A', 'D')} 三等分，"
+            f"求點 {_inline_math('C')} 的坐標。"
         ),
         "givens": {
             "point_a": point_a,
@@ -237,7 +252,7 @@ def _fmt_pair(x: float | Fraction | int, y: float | Fraction | int) -> str:
 
 
 def _overline_segment(p1: str, p2: str) -> str:
-    return f"$\\overline{{{p1}{p2}}}$"
+    return _format_overline_segment(p1, p2)
 
 
 def _overline_seg_name(seg: str) -> str:
@@ -270,11 +285,11 @@ def _ratio_relation_latex(
         inner = f"{m}{seg_left}={n}{seg_right}"
     else:
         inner = f"{seg_left}:{seg_right}={m}:{n}"
-    return f"${inner}$"
+    return _inline_math(inner)
 
 
 def _on_segment_phrase(point: str, a: str, b: str) -> str:
-    return f"{point} 在線段 {_overline_segment(a, b)} 上"
+    return f"{_inline_math(point)} 在線段 {_overline_segment(a, b)} 上"
 
 
 def _assert_core_answer_matches_generation_context(core: dict[str, Any]) -> None:
@@ -645,12 +660,17 @@ def _gen_internal_stem(
     if variant_id == "word_context_form":
         k = max(m, n) // max(1, min(m, n))
         q = (
-            f"平面上甲地坐標為 {a}({ax},{ay})，乙地坐標為 {b}({bx},{by})。"
-            f"某點在 {_overline_segment(a, b)} 上，且到甲地距離是到乙地距離的 {k} 倍，求該點坐標。"
+            f"平面上甲地坐標為 {_point_with_coordinates(a, ax, ay)}，"
+            f"乙地坐標為 {_point_with_coordinates(b, bx, by)}。"
+            f"某點在 {_overline_segment(a, b)} 上，且到甲地距離是到乙地距離的 {_inline_math(k)} 倍，"
+            f"求該點坐標。"
         )
     else:
         rel = _ratio_relation_latex(variant_id, a, p, b, m, n)
-        q = f"已知 {a}({ax},{ay})、{b}({bx},{by})，{seg}，且 {rel}，求 {p} 坐標。"
+        q = (
+            f"已知 {_point_with_coordinates(a, ax, ay)}、{_point_with_coordinates(b, bx, by)}，"
+            f"{seg}，且 {rel}，求 {_inline_math(p)} 坐標。"
+        )
     expl = (
         f"內分點公式：{p}=(({n}·{a}+{m}·{b})/({m}+{n}))，"
         f"得 {p}={ans}。"
@@ -677,12 +697,16 @@ def _gen_section_ratio(spec: dict[str, Any], rng: random.Random) -> dict[str, An
     if vid == "word_context_form":
         k = max(m, n) // max(1, min(m, n))
         q = (
-            f"已知 {a}({ax},{ay})、{b}({bx},{by})，"
-            f"某點在 {_overline_segment(a, b)} 上，且到 {a} 距離是到 {b} 距離的 {k} 倍，求 {c} 坐標。"
+            f"已知 {_point_with_coordinates(a, ax, ay)}、{_point_with_coordinates(b, bx, by)}，"
+            f"某點在 {_overline_segment(a, b)} 上，且到 {_inline_math(a)} 距離是到 {_inline_math(b)} "
+            f"距離的 {_inline_math(k)} 倍，求 {_inline_math(c)} 坐標。"
         )
     else:
         rel = _ratio_relation_latex(vid, a, c, b, m, n)
-        q = f"已知 {a}({ax},{ay})、{b}({bx},{by})，{seg}，且 {rel}，求 {c} 坐標。"
+        q = (
+            f"已知 {_point_with_coordinates(a, ax, ay)}、{_point_with_coordinates(b, bx, by)}，"
+            f"{seg}，且 {rel}，求 {_inline_math(c)} 坐標。"
+        )
     expl = f"由內分點公式，{c}=(({n}·{a}+{m}·{b})/({m}+{n}))={ans}。"
     return _pack(
         spec,
@@ -758,17 +782,18 @@ def _gen_section_point_distance_from_origin(
 
     if variant_id == "linear_ratio_origin_distance_choice":
         question = (
-            f"已知 {a_name}({ax},{ay})、{b_name}({bx},{by})，"
-            f"{point_name} 在線段 {a_name}{b_name} 上，且 "
-            f"{n}{a_name}{point_name}={m}{point_name}{b_name}，求 O{point_name}。"
+            f"已知 {_point_with_coordinates(a_name, ax, ay)}、{_point_with_coordinates(b_name, bx, by)}，"
+            f"{_on_segment_phrase(point_name, a_name, b_name)}，且 "
+            f"{_inline_math(f'{n}{_overline_seg_name(a_name + point_name)}={m}{_overline_seg_name(point_name + b_name)}')}，"
+            f"求 {_inline_math('O' + point_name)}。"
         )
         ratio_form = f"{n}AP={m}PB"
     else:
         question = (
-            f"已知 {a_name}({ax},{ay})、{b_name}({bx},{by})，"
-            f"{point_name} 在線段 {a_name}{b_name} 上，且 "
-            f"{a_name}{point_name}:{point_name}{b_name}={m}:{n}，"
-            f"求 {point_name} 到原點 O 的距離。"
+            f"已知 {_point_with_coordinates(a_name, ax, ay)}、{_point_with_coordinates(b_name, bx, by)}，"
+            f"{_on_segment_phrase(point_name, a_name, b_name)}，且 "
+            f"{_inline_math(f'{_overline_seg_name(a_name + point_name)}:{_overline_seg_name(point_name + b_name)}={m}:{n}')}，"
+            f"求 {_inline_math(point_name)} 到原點 {_inline_math('O')} 的距離。"
         )
         ratio_form = f"AP:PB={m}:{n}"
     explanation = (
@@ -815,7 +840,11 @@ def _gen_centroid(spec: dict[str, Any], rng: random.Random) -> dict[str, Any]:
             if not rational and (cx % 3 != 0 or cy % 3 != 0):
                 continue
             ans = _fmt_pair(cx, cy)
-            q = f"已知 {names[0]}({ax},{ay})、{names[1]}({bx},{by}) 與重心 G({gx},{gy})，求 {names[2]} 坐標。"
+            q = (
+                f"已知 {_point_with_coordinates(names[0], ax, ay)}、"
+                f"{_point_with_coordinates(names[1], bx, by)} 與重心 {_point_with_coordinates('G', gx, gy)}，"
+                f"求 {_inline_math(names[2])} 坐標。"
+            )
             expl = f"重心 {names[2]}=((A+B+G)/3) 反推：{names[2]}=3G-A-B={ans}。"
             return _pack(
                 spec,
@@ -853,11 +882,15 @@ def _gen_centroid(spec: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         ans = _fmt_pair(gx, gy)
         if vid == "worded_triangle_centroid":
             q = (
-                f"三角形頂點 {a}({ax},{ay})、{b}({bx},{by})、{c}({cx},{cy})，"
+                f"三角形頂點 {_point_with_coordinates(a, ax, ay)}、{_point_with_coordinates(b, bx, by)}、"
+                f"{_point_with_coordinates(c, cx, cy)}，"
                 f"求此三角形重心坐標。"
             )
         else:
-            q = f"已知 {a}({ax},{ay})、{b}({bx},{by})、{c}({cx},{cy})，求 △{a}{b}{c} 重心坐標。"
+            q = (
+                f"已知 {_point_with_coordinates(a, ax, ay)}、{_point_with_coordinates(b, bx, by)}、"
+                f"{_point_with_coordinates(c, cx, cy)}，求 {_triangle_name(a, b, c)} 重心坐標。"
+            )
         expl = f"重心 G=(({ax}+{bx}+{cx})/3, ({ay}+{by}+{cy})/3)={ans}。"
         return _pack(
             spec,
@@ -894,7 +927,10 @@ def _gen_midpoint(spec: dict[str, Any], rng: random.Random) -> dict[str, Any]:
             if (ax, ay) == (bx, by):
                 continue
             ans = _fmt_pair(bx, by)
-            q = f"已知 {names[0]}({ax},{ay}) 與中點 {names[2]}({mx},{my})，求 {names[1]} 坐標。"
+            q = (
+                f"已知 {_point_with_coordinates(names[0], ax, ay)} 與中點 "
+                f"{_point_with_coordinates(names[2], mx, my)}，求 {_inline_math(names[1])} 坐標。"
+            )
             expl = f"中點公式反推：{names[1]}=2{names[2]}-{names[0]}={ans}。"
             return _pack(
                 spec,
@@ -924,9 +960,12 @@ def _gen_midpoint(spec: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         a, b, m = names[0], names[1], names[2] if len(names) > 2 else "M"
         ans = _fmt_pair(mx, my)
         if vid == "word_context_midpoint":
-            q = f"平面上兩點 {a}({ax},{ay}) 與 {b}({bx},{by})，其中點為 {m}，求 {m} 坐標。"
+            q = (
+                f"平面上兩點 {_point_with_coordinates(a, ax, ay)} 與 {_point_with_coordinates(b, bx, by)}，"
+                f"其中點為 {_inline_math(m)}，求 {_inline_math(m)} 坐標。"
+            )
         else:
-            q = f"求 {a}({ax},{ay}) 與 {b}({bx},{by}) 的中點坐標。"
+            q = f"求 {_point_with_coordinates(a, ax, ay)} 與 {_point_with_coordinates(b, bx, by)} 的中點坐標。"
         expl = f"中點 {m}=(({ax}+{bx})/2, ({ay}+{by})/2)={ans}。"
         return _pack(
             spec,

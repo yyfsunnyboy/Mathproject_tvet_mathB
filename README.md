@@ -1,252 +1,339 @@
-# 智學AIGC賦能平台 (Smart-Edu AIGC Platform)
-## 🚀 AI 賦能的自適應內容生成引擎 (AI-Enabled Adaptive Content Generation Engine)
+# AI自適應學習平台(技術型高中版)
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/framework-Flask-green)](https://flask.palletsprojects.com/)
-[![Gemini AI](https://img.shields.io/badge/AI-Google%20Gemini%20Pro%20%2F%20Vision-orange)](https://deepmind.google/technologies/gemini/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+> ## ▶️ [評審／教授請點此進入公開 Demo](https://mathb.math-adaptive.org/review-demo)
+>
+> **https://mathb.math-adaptive.org/review-demo**  
+> 可直接進入唯讀展示模式，快速了解目前系統的教材、練習介面與教師端整合成果；展示模式不提供正式資料寫入。
 
-> **"不是取代教師，而是賦予教育無限可能。"**
-> **"Not replacing teachers, but empowering education with infinite possibilities."**
+## 專案定位
 
----
+**AI自適應學習平台(技術型高中版)** 是一個以技術型高中數學 B 系列為核心的長期教學研究與工程專案。
 
-## 📖 專案執行摘要 (Executive Summary)
+專案最終目標是建立一套能根據學生學習證據進行診斷、推薦與補救的 AI 自適應學習平台；但目前開發進度仍在基礎建設階段，**尚未把自適應學習架構視為已完成成果**。
 
-**智學AIGC賦能平台** 是一個專為「智慧校園」打造的教育科技解決方案，致力於解決數位教材匱乏與學習落差兩大痛點。我們運用最先進的 **Generative AI (Google Gemini)** 技術，打造了一條全自動化的內容生成流水線 (Content Pipeline)，能夠將傳統的 PDF/Word 教科書瞬間轉化為結構化的數位資產與 Python 演算法題庫。
+目前已完成的主要里程碑是：
 
-針對高中職數學學習弱勢群體，本系統提供了一個**多模態、具備感知能力的 AI 數位家教**。它不僅能透過手寫辨識 (OCR) 看懂學生的計算過程，更能進行 **「解題三部曲 (Pedagogical Trilogy)」** 引導，幫助學生跨越及格門檻，重拾學習信心。
+> **Phase 1 — 技術型高中數學 B 教材數位化與系統化導入**
 
-### 📚 完整系統文件索引
-
-*   **[整體架構 (SECG)](docs/後臺系統分析/(平台架構)Smart-Edu%20Content%20Generator%20(SECG).md)**：全系統技術藍圖。
-*   **[軟體設計文件 (SDD)](docs/軟體設計文件%20(SDD).md)**：詳細實作規格與資料庫設計。
-*   **模組文件**：
-    *   [模組一：教材數位化](docs/後臺系統分析/(模組一)textbook_importer.md)
-    *   [模組二：題庫程式化](docs/後臺系統分析/(模組二)sync_skills_files.md)
-    *   [模組三：教學引導](docs/後臺系統分析/(模組三)enrich_skills.md)
-    *   [模組四：知識圖譜](docs/後臺系統分析/(模組四)auto_build_prerequisites.md)
-    *   [單元-題型-技能檔架構](docs/UNIT_PATTERN_ARCHITECTURE.md)（一題型一 skill 檔、單元出題）
-
-**🏆 競賽組別**：育秀盃 AI 應用類——AI 賦能永續未來
+也就是先把教材內容、章節結構、例題、習題、圖形與題型資料整理成系統可以持續使用、驗證與擴充的基礎資料層。
 
 ---
 
-## 🌟 核心價值與痛點解決 (Value Proposition)
+## 目前開發階段
 
-### 1. 對學校與教師：教材數位化不再是惡夢
-*   **痛點**: 傳統題庫建置耗時費力，數位教材難以跟上課綱更新。
-*   **解法**: **「AI 自動生成引擎」**。上傳課本，AI 自動拆解章節、提取例題、甚至自動撰寫出題程式碼。
-*   **效益**: 備課時間減少 90%，實現「教材即程式 (Content as Code)」的永續管理。
+### Phase 1 — 技術型高中數學 B 教材導入
 
-### 2. 對學生：擁有一個 24 小時的私人家教
-*   **痛點**: 數學跟不上進度，不敢問老師，刷題只有對錯沒有詳解。
-*   **解法**: **「智慧適性化練習介面」**。AI 能「看見」你的手寫筆跡，分析圖形，並像真人老師一樣引導你思考，而不是直接給答案。
-*   **效益**: 個別化補救教學，精準診斷學習斷點 (Learning Gaps)。
+目前已將技術型高中數學 **B1–B4** 納入同一套 curriculum / skill / textbook import 體系，重點工作包括：
 
-### 3. 對環境與永續：SDGs 4 優質教育
-*   **痛點**: 紙張浪費，城鄉教育資源不均。
-*   **解法**: 全數位化流程，無紙化測驗，且透過 AI 降低高品質教材的製作門檻，讓偏鄉也能享有頂尖的教學資源。
+- 建立 B1–B4 的冊別、章節、小節與技能結構。
+- 匯入 PDF / DOCX 教材內容。
+- 解析例題、隨堂練習、習題與章節自我評量。
+- 保存題目來源與教材定位資訊，避免教材內容失去可追溯性。
+- 處理數學公式、向量符號、特殊字元與 LaTeX 表示。
+- 對需要圖形的教材題目建立 image / PDF crop 資產流程。
+- 將教材內容整理成後續可供 generator、checker 與 practice runtime 使用的結構化資料。
+- 透過測試、人工驗收與 runtime contract 持續檢查匯入品質。
 
----
+這個階段的核心不是「先做推薦模型」，而是先建立可靠的教材與題庫基礎。
 
-## 🏗️ 系統架構與關鍵模組 (System Architecture)
-
-本系統由四大核心 AI 模組與一個智慧互動介面組成：
-
-### 🔄 模組一：教材數位化引擎 (Textbook Importer)
-*   **功能**: 處理非結構化文件 (PDF/Word)。
-*   **技術**: **Async Pipeline** (非同步佇列) + **Retry Mechanism** (自動重試) + 混合 OCR。
-*   **產出**: 結構化的章節資料庫與標準例題集。
-
-### 💻 模組二：題庫自動程式化 (Auto-Code Sync)
-*   **功能**: 將靜態題目轉化為無限變化的演算法題庫。
-*   **技術**: **Strict Prompting** + **AST Self-Healing** 流水線，確保 AI 生成的 Python 程式碼 100% 可執行且零語法錯誤。
-*   **產出**: 可執行的 Python 題庫腳本 (`skills/*.py`)，實現 **Code-as-Content**。
-
-### 🎓 模組三：教學引導增強 (Pedagogical Enricher)
-*   **功能**: 為每道題目生成「蘇格拉底式」引導語。
-*   **技術**: **Pedagogical Trilogy** (啟動-策略-檢查) + **SQLite WAL Mode** (高併發穩定)。
-*   **產出**: 具備教學靈魂的 AI 提示詞庫。
-
-### 🕸️ 模組四：知識圖譜建構 (Knowledge Graph Builder)
-*   **功能**: 分析技能間的依賴關係，建構跨學制 (國中 -> 高中) 學習地圖。
-*   **技術**: **Context Injection** (閱讀詳解) + **Token Optimization**，精準挖掘隱性依賴。
-*   **產出**: 適性化推薦路徑圖，支援「向下診斷 (Adaptive Remediation)」。
+```text
+Textbook PDF / DOCX
+        │
+        ▼
+教材解析與結構化
+        │
+        ├── Curriculum
+        ├── Volume / Chapter / Section
+        ├── Textbook Examples
+        ├── Exercises / Self-assessment
+        └── Visual Assets
+        │
+        ▼
+可追蹤、可驗證的教材資料層
+        │
+        ▼
+Generator / Checker / Practice Runtime 驗證基礎
+```
 
 ---
 
-## 🎨 智慧適性化練習介面 (Intelligent Adaptive Interface)
+## 為什麼先做教材工程
 
-這是學生最常接觸的核心介面，具備以下未來科技特色：
+真正的自適應學習不能只靠一個推薦模型。
 
-1.  **即時上下文感知 (Context Awareness)**:
-    *   AI 不再盲聊，它知道你現在正在寫哪一題、圖形長什麼樣子、正確答案是什麼。
-2.  **多模態輸入 (Multi-modal Input)**:
-    *   **手寫辨識**: 直接在螢幕上列式，AI 看得懂你的筆跡。
-    *   **作圖題判斷**: 畫出二次函數或向量，AI 能視覺化判斷圖形正確性。
-3.  **深度錯誤分析 (Deep Error Analysis)**:
-    *   精確指出是「計算錯誤」還是「觀念錯誤」，並定位到具體的錯誤步驟 (Node)。
-4.  **跨平台無障礙 (Cross-Platform)**:
-    *   Web-based 設計，無需安裝 App，平板、電腦、手機皆可流暢使用。
+在進入學生知識狀態建模與個人化推薦之前，系統至少必須先知道：
 
----
+- 學生正在學哪一本教材、哪一章、哪一節。
+- 每一題對應哪個技能與教材來源。
+- 題目能否穩定顯示、作答與判分。
+- 數學答案是否能以語意而非單純字串判定。
+- 圖形、圖片、多小題與作圖題是否有一致的 runtime 規範。
+- 學生作答紀錄是否能形成後續研究可使用的 learning evidence。
 
-## 🛠️ 技術堆疊 (Tech Stack)
+因此目前先完成：
 
-*   **Backend**: Flask 2.0+, Python 3.9+
-*   **Database**: SQLite (WAL Mode enabled)
-*   **Document Processing**: clean_pandoc (LaTeX Cleaning)
-*   **AI Engine**: Google Gemini Pro 1.5 / Gemini Vision
-*   **Frontend**: HTML5, Bootstrap 5, Vanilla JS (ES6+)
-*   **Math Rendering**: MathJax 3.x
-*   **Visualization**: Matplotlib, SVG Dynamic Generation
+**教材 → 結構化資料 → 題型／判分／練習基礎**
+
+之後才進一步研究：
+
+**學生作答 → Learning Evidence → Knowledge / Mastery Modeling → Adaptive Decision → 個人化學習與補救**
 
 ---
 
-## 🚀 快速開始 (Getting Started)
+## 目前系統成果
 
-### 1. 環境準備
-請確保已安裝 Python 3.9+ 與 Git。
+| 項目 | 目前狀態 | 說明 |
+| --- | --- | --- |
+| 技高數學 B1–B4 curriculum | Phase 1 已導入 | 已納入冊別、章節、小節、技能與教材資料體系。 |
+| 教材 PDF / DOCX 匯入 | 已建立 | 支援教材內容解析與結構綁定。 |
+| 例題／習題／自我評量 | 已導入 | 依教材來源建立可追蹤的結構化題目資料。 |
+| 數學公式與特殊符號 | 已建立處理流程 | 包含 LaTeX、向量、特殊數學符號與異常字元處理。 |
+| 教材圖形資產 | 已建立流程 | 可由教材 PDF 擷取必要圖形並掛接到題目資料。 |
+| 題型 generator / checker 基礎 | 持續驗證 | 用於確認教材題目能否轉成可執行、可判分的練習內容。 |
+| Practice runtime | 持續驗證 | 用於檢查選擇、填充、多小題、圖片、作圖等題型的實際呈現與作答。 |
+| 教師／學生展示介面 | 可展示 | 提供目前整合成果的實際操作介面。 |
+| 自適應知識狀態模型 | **尚未列為完成成果** | 屬於後續階段。 |
+| 個人化 routing / remediation | **尚未列為完成成果** | 屬於後續階段。 |
+
+> **重要說明**：本專案不把「檔案存在」或「程式可以執行」直接視為教材完成。不同章節仍會分別檢查 source coverage、題意正確性、圖形語意、checker 與瀏覽器實際呈現。
+
+---
+
+## Phase 1 系統架構
+
+```text
+教材來源
+PDF / DOCX
+    │
+    ▼
+Textbook Import Pipeline
+    │
+    ├── 章節與小節辨識
+    ├── 題目文字與數學式解析
+    ├── 例題／練習／自評分類
+    ├── Curriculum Binding
+    └── Visual Asset Extraction
+    │
+    ▼
+結構化教材資料
+    │
+    ├── curriculum / chapter / section
+    ├── skill metadata
+    ├── textbook examples
+    ├── source traceability
+    └── image assets
+    │
+    ▼
+題庫工程驗證
+    │
+    ├── GenCode / generator
+    ├── validator
+    ├── checker
+    └── practice runtime
+```
+
+主要程式責任分布：
+
+- `app.py`：Flask application factory 與主要 Web 入口。
+- `core/`：教材匯入、資料服務、practice、GenCode 等核心邏輯。
+- `textbook_import/`：教材匯入相關流程與資產。
+- `skills/`：已整理／發布的題型與 checker。
+- `generators/`：可重用的題型生成邏輯。
+- `validators/`、`core/validators/`：題目與程式驗證。
+- `core/healers/`：生成程式的 regex / AST 修復。
+- `agent_skills*`：skill / family / prompt / evaluation metadata。
+- `templates/`、`static/`：學生與教師 Web UI。
+- `tests/`：regression、integration 與 runtime contract tests。
+- `reports/`：教材匯入、GenCode、coverage、acceptance 等驗證紀錄。
+- `docs/`：架構、SOP、runtime contract 與長期技術文件。
+
+完整目錄說明見 [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)。
+
+---
+
+## Practice Runtime 驗證原則
+
+教材匯入完成後，仍需要確認題目在實際學生介面中可以正確使用。
+
+目前技高 B1–B4 共用 practice runtime 規範，主要檢查：
+
+- 單選題、填充題與多小題的作答格式。
+- 數學式與方程式的等價判定。
+- 向量與特殊數學符號的輸入與顯示。
+- 教材圖片與動態圖形的掛接。
+- 作圖題與手寫區的互動規則。
+- reference diagram 與學生 drawing layer 分離。
+- chapter / skill 與題目來源的對應關係。
+
+詳細規範見 [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)。
+
+---
+
+## 教授／評審快速查看
+
+### 1. 直接看 Demo
+
+▶️ **https://mathb.math-adaptive.org/review-demo**
+
+這是最快了解目前成果的方式，可瀏覽目前教材、學生練習與教師端整合畫面。
+
+### 2. 看工程結構
+
+建議依序閱讀：
+
+1. 本 `README.md`
+2. [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)
+3. [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)
+4. `reports/` 中保留的教材匯入、coverage、GenCode 與 acceptance evidence
+5. `tests/` 中的 regression 與 contract tests
+
+---
+
+## 安裝與啟動
+
+### 1. Clone
 
 ```bash
-# Clone 專案
-git clone https://github.com/your-repo/math-master.git
-cd math-master
+git clone https://github.com/yyfsunnyboy/Mathproject_tvet_mathB.git
+cd Mathproject_tvet_mathB
+```
 
-# 建立虛擬環境
+### 2. 建立 Python 虛擬環境
+
+Windows PowerShell：
+
+```powershell
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# 安裝依賴
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 2. 設定配置
-複製 `.env.example` 為 `.env` 並填入您的 API Key：
-```bash
-GEMINI_API_KEY=your_google_ai_studio_key
-SECRET_KEY=your_flask_secret_key
+### 3. 環境設定
+
+建立 `.env`。正式環境至少需要：
+
+```env
+SECRET_KEY=請使用至少32字元且不可為預設值的隨機字串
 ```
 
-### 3. 初始化並啟動
-```bash
-# 初始化資料庫
-python utils/init_db.py
+需要雲端 AI 功能時再設定：
 
-# 啟動應用
+```env
+GEMINI_API_KEY=your_google_api_key
+```
+
+可選：
+
+```env
+MATHPROJECT_DATABASE_URI=sqlite:///...
+WAITRESS_THREADS=10
+```
+
+### 4. 開發模式
+
+```powershell
 python app.py
 ```
-瀏覽器打開 `http://127.0.0.1:5000` 即可開始體驗。
 
----
+預設：
 
-## 🗺️ 發展藍圖 (Roadmap)
-
-*   **Phase 1 (目前階段)**: 完成四大 AI 模組開發，實現數學科自動出題與基本手寫批改。
-*   **Phase 2**: 擴充至物理、化學學科 (只需替換 System Prompt)。
-*   **Phase 3**: 導入語音互動 (STT/TTS)，實現真正的「口說教學」互動。
-*   **Phase 4**: 商業化 API 輸出，對接現有 LMS (Moodle, Google Classroom)。
-
----
-
-## 📄 授權與聯繫 (License & Contact)
-
-本專案採用 **MIT License** 開源授權，歡迎教育工作者與開發者共同參與貢獻。
-
-*   **專案負責人**: [Your Name/Team Name]
-*   **聯繫信箱**: contact@smart-edu.ai
-*   **完整文件**: 請參閱 `docs/` 目錄下的 [軟體設計文件 (SDD)](docs/軟體設計文件%20(SDD).md)
-
----
-*Built with ❤️ for the future of education.*
-
----
-
-## Simulation-Based Ablation Experiment
-
-This repo now includes a simulation framework for comparing three teaching control strategies:
-
-* `AB1`: always assign polynomial questions, with no remediation.
-* `AB2`: after 2 consecutive polynomial failures, diagnose integer weakness, remediate with exactly 3 integer questions, then return to polynomial.
-* `AB3`: after 2 consecutive polynomial failures, diagnose integer weakness, remediate on integer until return-readiness is satisfied.
-
-### Model assumptions
-
-* Student ability vector: `integer`, `fraction`, `radical`, `polynomial`
-* IRT-style success probability: `P(correct) = 1 / (1 + exp(-6(A_eff - D)))`
-* Effective ability for polynomial: `A_eff = 0.7 * A_polynomial + 0.3 * A_integer`
-* Effective ability for integer: `A_eff = A_integer`
-* Ability update: `Delta A_s = 0.08 * w(q,s) * (0.8 + 0.4D) * r`
-* Correct reward: `r = 1.0`
-* Incorrect reward: `r = 0.3`
-* Same-skill weight: `w = 1.0`
-* Integer to polynomial transfer: `w = 0.2`
-* Other unrelated skills: `w = 0`
-
-### Extensible interfaces
-
-The experiment core is designed so diagnosis and decision logic can be swapped later:
-
-* `DiagnosisStrategy`: current implementation is `FixedIntegerDiagnosis`
-* `DecisionPolicy`: current implementations are rule-based `AB1Policy`, `AB2Policy`, `AB3Policy`
-
-This keeps the simulation loop reusable when replacing the current logic with RAG-based diagnosis or PPO-based routing.
-
-### How to run
-
-```bash
-python scripts/run_ablation_experiment.py
+```text
+http://127.0.0.1:5000
 ```
 
-Optional flags:
+### 5. Production（Windows）
 
-```bash
-python scripts/run_ablation_experiment.py --episodes 100 --max-steps 30 --seed 42 --output-dir outputs
+```powershell
+.\run_production.bat
 ```
 
-### Output files
+### 6. Health check
 
-Running the script writes:
+```text
+GET /healthz
+```
 
-* `outputs/experiment_logs.csv`: per-step simulation logs for every controller / prototype / episode
-* `outputs/summary_metrics.csv`: aggregated metrics by controller and prototype
-* `outputs/config_used.json`: exact config used for the run
-* `outputs/plots/success_rate.png`: success-rate comparison
-* `outputs/plots/total_steps.png`: average steps comparison
-* `outputs/plots/fail_streak.png`: average maximum polynomial fail streak comparison
-* `outputs/plots/sample_trajectory.png`: sample polynomial ability trajectory for one episode per controller / prototype
+---
 
-### Metrics
+## 主要技術
 
-* `success_rate`: share of episodes that reached the polynomial success condition before max steps
-* `avg_total_steps`: average number of steps used per episode
-* `avg_max_polynomial_fail_streak`: average worst consecutive polynomial failure streak within an episode
-* `avg_remediation_entries`: average number of times the controller entered remediation
-* `avg_integer_gain`: average final integer ability minus initial integer ability
-* `avg_polynomial_gain`: average final polynomial ability minus initial polynomial ability
+| 類別 | 技術 |
+| --- | --- |
+| Backend | Python, Flask, Flask-SQLAlchemy, Flask-Login |
+| Production WSGI | Waitress |
+| Database | SQLite / SQLAlchemy |
+| Math rendering | MathJax 3 SVG |
+| AI / multimodal | Google Gemini integration、OCR / vision related utilities |
+| Document processing | PyMuPDF, python-docx, pypdf, pypandoc |
+| Data / reporting | pandas, NumPy, openpyxl, Matplotlib |
+| Testing | pytest + browser / contract / integration regression suites |
 
-### Episode success condition
+---
 
-By default, an episode is marked successful when:
+## 測試與品質控制
 
-* current question is polynomial
-* the answer is correct
-* `A_polynomial >= 0.8`
-* the student has answered at least 2 consecutive polynomial questions correctly
+`tests/` 是目前教材工程的重要品質證據，不是暫存檔案。
 
-If success is not reached, the episode stops at `--max-steps`.
+常用測試：
 
-## 如何使用 Codex（最小流程）
+```powershell
+pytest -q
+```
 
-1. 先 `audit`：先做一致性檢查，找斷點與風險，不先大改。
-2. 再 `patch`：每次只做一件事，採最小修改面。
-3. 每次修改後做最小驗證：確認影響範圍、關鍵輸出與 runtime 安全。
-4. 全程遵守 [AGENTS.md](AGENTS.md)。
+教材與題型進入正式學生端前，至少需要區分：
 
-建議搭配 `docs/codex_prompts/` 的模板使用：
-- `audit_prompt.md`
-- `patch_prompt.md`
-- `debug_prompt.md`
-- `test_prompt.md`
-- `safe_patch_prompt.md`
+```text
+source coverage
+→ curriculum binding
+→ formula / symbol correctness
+→ visual asset correctness
+→ generator / checker validation
+→ runtime rendering
+→ browser / human acceptance
+```
+
+這也是本專案保留 regression tests、runtime contract 與 acceptance evidence 的原因。
+
+---
+
+## Repository Hygiene
+
+為避免教材研究與開發過程產生的中介檔案污染 repository：
+
+- 正式程式放在 `core/`、`scripts/`、`skills/`、`generators/` 等維護目錄。
+- regression tests 放在 `tests/`。
+- 長期技術文件放在 `docs/`。
+- 正式驗證證據集中於 `reports/`。
+- pytest cache、DB、WAL、local backup、probe、export 等由 `.gitignore` 排除。
+- 不將本機 SQLite database、IDE cache 或一次性測試輸出提交到 repository。
+
+---
+
+## 後續研究與開發方向
+
+Phase 1 完成教材基礎後，後續預計依序進行：
+
+1. **Learning Evidence** — 整理學生作答紀錄、錯誤型態、作答時間與章節進度等可用證據。
+2. **Knowledge / Mastery Modeling** — 定義可以反映學生學習狀態的表示方式與評估方法。
+3. **Adaptive Decision** — 研究下一題、下一技能與補救內容的個人化決策策略。
+4. **Remediation** — 建立前置知識診斷與補救路徑。
+5. **Evaluation** — 透過模擬實驗與實際學生使用資料評估自適應策略是否真的改善學習。
+
+上述項目屬於**後續 roadmap**，不是目前 README 所宣稱的已完成功能。
+
+---
+
+## 核心文件
+
+- [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md) — repository 結構與檔案治理規則
+- [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md) — 技高 B1–B4 practice runtime contract
+- `reports/` — 教材匯入、GenCode、coverage、acceptance 等驗證紀錄
+- `tests/` — regression、integration 與 runtime contract tests
+
+---
+
+## 專案目前的核心價值
+
+目前 **AI自適應學習平台(技術型高中版)** 最重要的成果，是先把技術型高中數學 B1–B4 從原始教材轉成可追蹤、可驗證、可持續擴充的系統化教材資料與題庫基礎。
+
+這個 Phase 1 基礎將作為後續 learning evidence、knowledge modeling 與真正自適應決策研究的起點。

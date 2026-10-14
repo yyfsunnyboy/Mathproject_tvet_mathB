@@ -5,6 +5,7 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from core.checkers.math_input_normalization import parse_exact_number
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
 
 SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_set"})
@@ -209,7 +210,9 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
     """Normalize practice session payload: contract resolution + coordinate_pair string answers."""
     if not isinstance(payload, dict):
         return payload
-    out = dict(payload)
+    from core.gencode.question_delivery_contract import canonicalize_question_text
+
+    out = canonicalize_question_text(dict(payload))
     sid = str(skill_id or out.get("skill_id", out.get("skill", ""))).strip()
     from core.gencode.table_question_contract import normalize_table_question_payload
 
@@ -217,6 +220,9 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
     from core.gencode.single_choice_payload_normalizer import normalize_single_choice_payload
 
     out = normalize_single_choice_payload(out)
+    from core.gencode.vocational_choice_contract import normalize_legacy_vocational_choices
+
+    out = normalize_legacy_vocational_choices(out, skill_id=sid)
     ac = resolve_answer_contract_for_runtime(out, skill_id=sid)
     if ac:
         out["answer_contract"] = ac
@@ -230,6 +236,12 @@ def refresh_runtime_question_session(payload: dict[str, Any], *, skill_id: str =
             out["equivalence"] = str(ac.get("answer_equivalence"))
     if is_coordinate_pair_contract(ac) or is_coordinate_pair_runtime_payload(out):
         out = apply_coordinate_pair_runtime_fields(out, ac or {"answer_shape": "coordinate_pair"})
+    from core.gencode.question_quality_gate import display_answer_errors, natural_inequality_display
+
+    if display_answer_errors(out):
+        natural = natural_inequality_display(out)
+        if natural:
+            out["display_answer"] = natural
     return out
 
 
@@ -447,6 +459,8 @@ def parse_single_numeric(
     if "/" in text:
         frac = parse_rational_literal(text)
         if frac is None:
+            frac = parse_exact_number(text)
+        if frac is None:
             return None, "invalid"
         if require_integer and frac.denominator != 1:
             return None, "invalid"
@@ -459,6 +473,12 @@ def parse_single_numeric(
             return float(text), None
         except ValueError:
             return None, "invalid"
+
+    frac = parse_exact_number(text)
+    if frac is not None:
+        if require_integer and (frac.denominator != 1 or "." in text):
+            return None, "invalid"
+        return float(frac), None
 
     return None, "invalid"
 
@@ -477,7 +497,7 @@ def _to_exact_rational(value: Any) -> Fraction | None:
             return Fraction(text)
     except (ValueError, ZeroDivisionError):
         return None
-    return None
+    return parse_exact_number(text)
 
 
 def check_decimal_tolerance_answer(
@@ -520,7 +540,7 @@ def grade_numeric_contract_answer(
     require_integer = answer_type == "integer"
     canonical = ac.get("canonical_answer", correct_answer)
 
-    undef = {"無", "不存在", "斜率不存在", "m不存在"}
+    undef = {"無", "不存在", "斜率不存在", "m不存在", "undefined", "Undefined", "UNDEFINED"}
     user_token = str(user_answer or "").strip().replace(" ", "")
     canon_token = str(canonical or "").strip().replace(" ", "")
     if user_token in undef or canon_token in undef:
@@ -546,7 +566,7 @@ def grade_numeric_contract_answer(
             }
         return check_decimal_tolerance_answer(user_answer, canonical, tol)
 
-    user_val, user_err = parse_single_numeric(user_answer, require_integer=require_integer)
+    user_val, user_err = parse_single_numeric(user_answer, require_integer=False)
     if user_err == "empty":
         return {"correct": False, "invalid_input": True, "result": "invalid input"}
     if user_err or user_val is None:
@@ -563,7 +583,7 @@ def grade_numeric_contract_answer(
                     "result": "批改系統錯誤：整數標準答案格式無效",
                 }
             exp_val = float(exp_frac.numerator)
-        if require_integer and abs(user_val - round(user_val)) > 1e-9:
+        if abs(user_val - round(user_val)) > 1e-9:
             return {"correct": False}
         return {"correct": abs(user_val - exp_val) < 1e-9}
 
@@ -572,6 +592,15 @@ def grade_numeric_contract_answer(
         exp_frac = _to_exact_rational(canonical)
         if user_frac is None or exp_frac is None:
             return {"correct": False, "invalid_input": True, "result": "invalid input"}
+        equiv = str(ac.get("answer_equivalence") or ac.get("equivalence_type") or "").strip()
+        allow_decimal = bool(ac.get("allow_decimal")) or equiv in {
+            "numeric_equivalence",
+            "numeric_equal",
+            "decimal_tolerance",
+            "rational_equivalent",
+        }
+        if (not allow_decimal) and "." in str(user_answer).strip():
+            return {"correct": False}
         return {"correct": user_frac == exp_frac}
 
     if checker_key == "numeric_checker" or checker_key:

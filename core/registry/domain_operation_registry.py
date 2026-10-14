@@ -6,7 +6,7 @@ manifest and runtime all read from this module.
 
 No layer may maintain its own independent operation allowlist. Adding a new
 operation requires only one call to register_domain_spec() (or updating the
-operations dict of an existing DomainCapabilitySpec) — all downstream layers
+operations dict of an existing DomainCapabilitySpec) ÃÂ¢ÃÂÃÂ all downstream layers
 are automatically aware.
 
 Verified bootstrap candidates are registered separately via
@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-# ── data model ────────────────────────────────────────────────────────────────
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ data model ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 @dataclass(frozen=True)
 class OperationSpec:
@@ -54,7 +54,7 @@ class DomainCapabilitySpec:
         return list(self.operations.keys())
 
 
-# ── registry ──────────────────────────────────────────────────────────────────
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ registry ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 _REGISTRY: dict[str, DomainCapabilitySpec] = {}
 
@@ -98,7 +98,7 @@ def operation_is_registered(domain_key: str, operation_key: str) -> bool:
     return get_operation_spec(domain_key, operation_key) is not None
 
 
-# ── consistency check ─────────────────────────────────────────────────────────
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ consistency check ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 def check_registry_consistency() -> list[dict[str, Any]]:
     """Check registry for missing layers.
@@ -158,7 +158,7 @@ def check_registry_consistency() -> list[dict[str, Any]]:
     return issues
 
 
-# ── helper for decorator-style registration ───────────────────────────────────
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ helper for decorator-style registration ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 def register_domain_operation(
     domain_key: str,
@@ -208,7 +208,7 @@ def register_domain_operation(
     spec.operations[operation_key] = op_spec
 
 
-# ── canonical registrations ───────────────────────────────────────────────────
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ canonical registrations ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 # Each domain is registered once.  All downstream layers read from _REGISTRY.
 
 _op = OperationSpec  # convenience alias
@@ -446,7 +446,7 @@ register_domain_spec(DomainCapabilitySpec(
         "cumulative_below_interval_count",
     }),
     operations={
-        # ── generic table-chart operations ──────────────────────────────────
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ generic table-chart operations ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
         "read_category_value": _op(
             "read_category_value",
             "build_statistical_chart_reading_matrix",
@@ -471,7 +471,7 @@ register_domain_spec(DomainCapabilitySpec(
             supported_answer_types=("choice",),
             supported_presentation_modes=("short_answer",),
         ),
-        # ── cumulative frequency polygon operations (formally registered) ───
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ cumulative frequency polygon operations (formally registered) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
         "cumulative_above_fail_count": _op(
             "cumulative_above_fail_count",
             "build_statistical_chart_reading_matrix",
@@ -918,8 +918,8 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_degree_product_sum": _op(
             "polynomial_degree_product_sum",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression", "integer"),
-            supported_presentation_modes=("short_answer", "multiple_inputs"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_degree_product_sum",),
         ),
         "polynomial_add_sub": _op(
@@ -937,13 +937,15 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_product_term_coefficient": _op(
             "polynomial_product_term_coefficient",
             "build_polynomial_matrix",
-            supported_answer_types=("integer", "expression", "choice", "multi_part"),
+            supported_answer_types=("integer", "expression", "choice", "single_choice", "multi_part"),
+            supported_presentation_modes=("short_answer", "single_choice"),
             provided_capabilities=("polynomial_product_term_coefficient",),
         ),
         "polynomial_long_division": _op(
             "polynomial_long_division",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_long_division",),
         ),
         "polynomial_synthetic_division": _op(
@@ -955,7 +957,8 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_remainder_param_solve": _op(
             "polynomial_remainder_param_solve",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_remainder_param_solve",),
         ),
         "polynomial_shifted_basis_eval": _op(
@@ -967,40 +970,1569 @@ register_domain_spec(DomainCapabilitySpec(
         "polynomial_equality_identity": _op(
             "polynomial_equality_identity",
             "build_polynomial_matrix",
-            supported_answer_types=("multi_part", "expression"),
+            supported_answer_types=("multi_part", "expression", "integer", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_equality_identity",),
         ),
         "remainder_theorem_evaluate": _op(
             "remainder_theorem_evaluate",
             "build_polynomial_matrix",
-            supported_answer_types=("expression", "integer", "multi_part"),
+            supported_answer_types=("expression", "integer", "multi_part", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("remainder_theorem_evaluate",),
         ),
         "factor_theorem_root_factor": _op(
             "factor_theorem_root_factor",
             "build_polynomial_matrix",
-            supported_answer_types=("expression", "multi_part", "choice"),
+            supported_answer_types=("expression", "multi_part", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("factor_theorem_root_factor",),
         ),
         "polynomial_factoring": _op(
             "polynomial_factoring",
             "build_polynomial_matrix",
-            supported_answer_types=("expression", "multi_part"),
+            supported_answer_types=("expression", "multi_part", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("polynomial_factoring",),
         ),
         "rational_expression_arithmetic": _op(
             "rational_expression_arithmetic",
             "build_polynomial_matrix",
-            supported_answer_types=("expression", "multi_part"),
+            supported_answer_types=("expression", "multi_part", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("rational_expression_arithmetic",),
         ),
         "rational_equation_solve": _op(
             "rational_equation_solve",
             "build_polynomial_matrix",
-            supported_answer_types=("solution_set", "expression", "multi_part"),
+            supported_answer_types=("solution_set", "expression", "multi_part", "single_choice", "choice"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
             provided_capabilities=("rational_equation_solve",),
         ),
     },
 ))
 
 
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="geometry.similarity",
+    domain_module="core.domain.geometry_similarity_domain",
+    entrypoint="build_geometry_similarity_matrix",
+    capabilities=frozenset({"solve_similar_triangle_proportion"}),
+    operations={
+        "solve_similar_triangle_proportion": _op(
+            "solve_similar_triangle_proportion",
+            "build_geometry_similarity_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_similarity_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("similar_triangle_correspondence", "one_unknown_proportion"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("solve_similar_triangle_proportion",),
+        ),
+    },
+))
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.acute",
+    domain_module="core.domain.trigonometry_acute_domain",
+    entrypoint="build_trigonometry_acute_matrix",
+    capabilities=frozenset({
+        "compute_right_triangle_trig_ratios",
+        "solve_acute_trig_constraints",
+        "evaluate_exact_special_angle_expression",
+        "solve_right_triangle_projection",
+        "evaluate_trig_decimal",
+        "simplify_fundamental_trig_expression",
+        "complete_cofunction_identity",
+        "collinear_three_points_parameter",
+        "sector_arc_and_area",
+        "compute_chord_and_arc_length",
+    }),
+    operations={
+        "compute_right_triangle_trig_ratios": _op(
+            "compute_right_triangle_trig_ratios",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "expression", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("right_triangle_side_roles",),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("compute_right_triangle_trig_ratios",),
+        ),
+        "evaluate_exact_special_angle_expression": _op(
+            "evaluate_exact_special_angle_expression",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("exact_special_angle_terms",),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("evaluate_exact_special_angle_expression",),
+        ),
+        "complete_cofunction_identity": _op(
+            "complete_cofunction_identity",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "expression", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("acute_angle", "cofunction_pair"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("complete_cofunction_identity",),
+        ),
+        "solve_acute_trig_constraints": _op(
+            "solve_acute_trig_constraints",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "single_choice", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "single_choice", "short_answer"),
+            required_source_features=("acute_angle", "trig_constraint", "target_expression"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("solve_acute_trig_constraints",),
+        ),
+        "solve_right_triangle_projection": _op(
+            "solve_right_triangle_projection",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "short_answer", "classification"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("hypotenuse", "acute_angle", "projection_target"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("solve_right_triangle_projection",),
+        ),
+        "evaluate_trig_decimal": _op(
+            "evaluate_trig_decimal",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "short_answer", "expression"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("degree_minute_angle", "precision", "rounding_policy"),
+            runtime_contract="b2_12_decimal_round_half_up_v1",
+            provided_capabilities=("evaluate_trig_decimal",),
+        ),
+        "simplify_fundamental_trig_expression": _op(
+            "simplify_fundamental_trig_expression",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("trig_expression", "fundamental_identity"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("simplify_fundamental_trig_expression",),
+        ),
+        "collinear_three_points_parameter": _op(
+            "collinear_three_points_parameter",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("three_collinear_points", "one_coordinate_parameter"),
+            runtime_contract="b2_12_coordinate_geometry_delegate_v1",
+            provided_capabilities=("collinear_three_points_parameter",),
+        ),
+        "sector_arc_and_area": _op(
+            "sector_arc_and_area",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("radius", "central_angle"),
+            runtime_contract="b2_12_sector_delegate_v1",
+            provided_capabilities=("sector_arc_and_area",),
+        ),
+        "compute_chord_and_arc_length": _op(
+            "compute_chord_and_arc_length",
+            "build_trigonometry_acute_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_acute_trigonometry_matrix",
+            supported_answer_types=("multi_part",),
+            supported_presentation_modes=("multiple_inputs",),
+            required_source_features=("radius", "central_angle", "chord_and_arc_targets"),
+            runtime_contract="b2_12_exact_chord_sector_delegate_v1",
+            provided_capabilities=("compute_chord_and_arc_length",),
+        ),
+    },
+))
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.angle",
+    domain_module="core.domain.trigonometry_angle_domain",
+    entrypoint="build_trigonometry_angle_matrix",
+    capabilities=frozenset({
+        "convert_angle_measure",
+        "sector_arc_and_area",
+        "coterminal_angles",
+    }),
+    operations={
+        "convert_angle_measure": _op(
+            "convert_angle_measure",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "table_fill", "expression", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "inline_table_input"),
+            provided_capabilities=("convert_angle_measure",),
+        ),
+        "sector_arc_and_area": _op(
+            "sector_arc_and_area",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "expression", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs"),
+            provided_capabilities=("sector_arc_and_area",),
+        ),
+        "coterminal_angles": _op(
+            "coterminal_angles",
+            "build_trigonometry_angle_matrix",
+            supported_answer_types=("multi_part", "single_choice", "choice", "solution_set", "short_answer"),
+            supported_presentation_modes=("short_answer", "multiple_inputs", "single_choice"),
+            provided_capabilities=("coterminal_angles",),
+        ),
+    },
+))
+
+
+_B2_14_ADAPTER = "core.gencode.b2_14_capability_adapter.adapt_b2_14_function_graph_matrix"
+_B2_14_OPERATIONS = (
+    "compare_trig_values_by_monotonicity", "solve_trig_value_quadratic_constraint",
+    "analyze_affine_transformed_trig_graph", "calculate_trig_period_from_argument_scale",
+    "classify_trig_expression_sign_change", "classify_trig_equation_feasibility",
+    "analyze_tangent_absolute_graph_period", "evaluate_trig_decimal",
+    "count_sine_cosine_intersections",
+)
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.function_graph",
+    domain_module="core.domain.trigonometry_function_graph_domain",
+    entrypoint="build_trigonometry_function_graph_matrix",
+    capabilities=frozenset(_B2_14_OPERATIONS),
+    operations={operation: _op(
+        operation, "build_trigonometry_function_graph_matrix",
+        payload_adapter=_B2_14_ADAPTER,
+        validator="validate_trigonometry_function_graph_matrix",
+        supported_answer_types=("short_answer", "single_choice", "multi_part"),
+        supported_presentation_modes=("short_answer", "single_choice", "multiple_inputs"),
+        required_source_features=("trig_function_contract",),
+        runtime_contract="b2_14_exact_trig_function_graph_v1",
+        provided_capabilities=(operation,),
+    ) for operation in _B2_14_OPERATIONS},
+))
+
+
+_B2_13_ADAPTER = "core.gencode.b2_13_capability_adapter.adapt_b2_13_arbitrary_matrix"
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.arbitrary_angle",
+    domain_module="core.domain.trigonometry_arbitrary_domain",
+    entrypoint="build_trigonometry_arbitrary_matrix",
+    capabilities=frozenset({
+        "classify_standard_position_angle",
+        "compute_terminal_ray_trig_ratios",
+        "solve_signed_trig_constraints",
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "complete_reference_angle_conversion",
+        "classify_trig_derived_point_quadrant",
+        "solve_arbitrary_angle_vertical_projection",
+        "simplify_fundamental_trig_expression",
+    }),
+    operations={
+        "classify_standard_position_angle": _op(
+            "classify_standard_position_angle", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("angle", "angle_unit"),
+            runtime_contract="b2_13_exact_angle_location_v1",
+            provided_capabilities=("classify_standard_position_angle",)),
+        "compute_terminal_ray_trig_ratios": _op(
+            "compute_terminal_ray_trig_ratios", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part",), supported_presentation_modes=("multiple_inputs",),
+            required_source_features=("terminal_point",), runtime_contract="b2_13_exact_terminal_ratios_v1",
+            provided_capabilities=("compute_terminal_ray_trig_ratios",)),
+        "solve_signed_trig_constraints": _op(
+            "solve_signed_trig_constraints", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("signed_trig_constraints",), runtime_contract="b2_13_exact_signed_constraints_v1",
+            provided_capabilities=("solve_signed_trig_constraints",)),
+        "evaluate_exact_arbitrary_angle_trig_expression": _op(
+            "evaluate_exact_arbitrary_angle_trig_expression", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("structured_trig_expression",), runtime_contract="b2_13_exact_arbitrary_expression_v1",
+            provided_capabilities=("evaluate_exact_arbitrary_angle_trig_expression",)),
+        "complete_reference_angle_conversion": _op(
+            "complete_reference_angle_conversion", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("table_fill", "multi_part"),
+            supported_presentation_modes=("inline_table_input", "multiple_inputs"),
+            required_source_features=("angle", "function", "structured_required_form"),
+            runtime_contract="b2_13_reference_angle_ast_v1",
+            provided_capabilities=("complete_reference_angle_conversion",)),
+        "classify_trig_derived_point_quadrant": _op(
+            "classify_trig_derived_point_quadrant", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("single_choice", "short_answer", "classification"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("trig_derived_point",), runtime_contract="b2_13_exact_derived_point_sign_v1",
+            provided_capabilities=("classify_trig_derived_point_quadrant",)),
+        "solve_arbitrary_angle_vertical_projection": _op(
+            "solve_arbitrary_angle_vertical_projection", "build_trigonometry_arbitrary_matrix",
+            payload_adapter=_B2_13_ADAPTER, validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("short_answer", "expression"), supported_presentation_modes=("short_answer",),
+            required_source_features=("radius", "arbitrary_angle", "base_elevation"),
+            runtime_contract="b2_13_exact_signed_projection_v1",
+            provided_capabilities=("solve_arbitrary_angle_vertical_projection",)),
+        "simplify_fundamental_trig_expression": _op(
+            "simplify_fundamental_trig_expression", "build_trigonometry_arbitrary_matrix",
+            payload_adapter="core.gencode.b2_12_capability_adapter.adapt_b2_12_batch1_matrix",
+            validator="validate_trigonometry_arbitrary_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("trig_expression", "fundamental_identity"),
+            runtime_contract="b2_12_exact_symbolic_v1",
+            provided_capabilities=("simplify_fundamental_trig_expression",)),
+    },
+))
+
+
+_B2_21_SINE_ADAPTER = "core.gencode.b2_21_law_of_sines_capability_adapter.adapt_b2_21_law_of_sines_matrix"
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.law_of_sines",
+    domain_module="core.domain.trigonometry_law_of_sines_domain",
+    entrypoint="build_trigonometry_law_of_sines_matrix",
+    capabilities=frozenset({
+        "compute_triangle_area_sas",
+        "solve_side_and_circumradius_by_sines",
+        "solve_angle_by_law_of_sines",
+        "compute_sin_from_side_and_circumradius",
+        "solve_side_ratio_by_law_of_sines",
+        "solve_side_by_law_of_sines",
+    }),
+    operations={
+        "compute_triangle_area_sas": _op(
+            "compute_triangle_area_sas",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("two_sides", "included_angle"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("compute_triangle_area_sas",),
+        ),
+        "solve_side_and_circumradius_by_sines": _op(
+            "solve_side_and_circumradius_by_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("two_angles", "one_side", "circumradius"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_and_circumradius_by_sines",),
+        ),
+        "solve_angle_by_law_of_sines": _op(
+            "solve_angle_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("ssa", "unique_angle"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_angle_by_law_of_sines",),
+        ),
+        "compute_sin_from_side_and_circumradius": _op(
+            "compute_sin_from_side_and_circumradius",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("side", "circumradius_or_area"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("compute_sin_from_side_and_circumradius",),
+        ),
+        "solve_side_ratio_by_law_of_sines": _op(
+            "solve_side_ratio_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("two_angles", "side_ratio"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_ratio_by_law_of_sines",),
+        ),
+        "solve_side_by_law_of_sines": _op(
+            "solve_side_by_law_of_sines",
+            "build_trigonometry_law_of_sines_matrix",
+            payload_adapter=_B2_21_SINE_ADAPTER,
+            validator="validate_trigonometry_law_of_sines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("aas_or_asa", "target_side"),
+            runtime_contract="b2_21_law_of_sines_exact_v1",
+            provided_capabilities=("solve_side_by_law_of_sines",),
+        ),
+    },
+))
+
+
+_B2_21_COSINE_ADAPTER = "core.gencode.b2_21_law_of_cosines_capability_adapter.adapt_b2_21_law_of_cosines_matrix"
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.law_of_cosines",
+    domain_module="core.domain.trigonometry_law_of_cosines_domain",
+    entrypoint="build_trigonometry_law_of_cosines_matrix",
+    capabilities=frozenset({
+        "solve_side_by_law_of_cosines",
+        "solve_angle_by_law_of_cosines",
+        "solve_cosine_identity_angle",
+        "solve_detour_extra_distance_by_cosines",
+        "compute_circumradius_from_three_sides",
+    }),
+    operations={
+        "solve_side_by_law_of_cosines": _op(
+            "solve_side_by_law_of_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "single_choice", "short_answer"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("two_sides", "included_angle"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_side_by_law_of_cosines",),
+        ),
+        "solve_angle_by_law_of_cosines": _op(
+            "solve_angle_by_law_of_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("three_sides",),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_angle_by_law_of_cosines",),
+        ),
+        "solve_cosine_identity_angle": _op(
+            "solve_cosine_identity_angle",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("cosine_identity",),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_cosine_identity_angle",),
+        ),
+        "solve_detour_extra_distance_by_cosines": _op(
+            "solve_detour_extra_distance_by_cosines",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("application_path", "included_angle"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("solve_detour_extra_distance_by_cosines",),
+        ),
+        "compute_circumradius_from_three_sides": _op(
+            "compute_circumradius_from_three_sides",
+            "build_trigonometry_law_of_cosines_matrix",
+            payload_adapter=_B2_21_COSINE_ADAPTER,
+            validator="validate_trigonometry_law_of_cosines_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("three_sides", "circumradius"),
+            runtime_contract="b2_21_law_of_cosines_exact_v1",
+            provided_capabilities=("compute_circumradius_from_three_sides",),
+        ),
+    },
+))
+
+
+_B2_223_MEASUREMENT_ADAPTER = (
+    "core.gencode.b2_223_right_triangle_measurement_capability_adapter"
+    ".adapt_b2_223_right_triangle_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.right_triangle_measurement",
+    domain_module="core.domain.trigonometry_right_triangle_measurement_domain",
+    entrypoint="build_trigonometry_right_triangle_measurement_matrix",
+    capabilities=frozenset({
+        "solve_height_from_sight_line_elevation",
+        "solve_adjacent_from_hypotenuse_ground_angle",
+        "solve_opposite_from_adjacent_elevation",
+        "solve_horizontal_from_height_elevation",
+        "solve_horizontal_from_height_depression",
+        "solve_two_elevation_horizontal_shift",
+        "solve_two_elevation_unknown_height",
+        "solve_building_height_with_flagpole_elevations",
+        "solve_broken_tree_original_height",
+        "solve_height_decimal_from_sight_line_elevation",
+    }),
+    operations={
+        "solve_height_from_sight_line_elevation": _op(
+            "solve_height_from_sight_line_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("sight_line", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_height_from_sight_line_elevation",),
+        ),
+        "solve_adjacent_from_hypotenuse_ground_angle": _op(
+            "solve_adjacent_from_hypotenuse_ground_angle",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("ladder_or_hypotenuse", "ground_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_adjacent_from_hypotenuse_ground_angle",),
+        ),
+        "solve_opposite_from_adjacent_elevation": _op(
+            "solve_opposite_from_adjacent_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("adjacent_distance", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_opposite_from_adjacent_elevation",),
+        ),
+        "solve_horizontal_from_height_elevation": _op(
+            "solve_horizontal_from_height_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "elevation_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_horizontal_from_height_elevation",),
+        ),
+        "solve_horizontal_from_height_depression": _op(
+            "solve_horizontal_from_height_depression",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "depression_angle"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_horizontal_from_height_depression",),
+        ),
+        "solve_two_elevation_horizontal_shift": _op(
+            "solve_two_elevation_horizontal_shift",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("known_height", "two_elevations"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_two_elevation_horizontal_shift",),
+        ),
+        "solve_two_elevation_unknown_height": _op(
+            "solve_two_elevation_unknown_height",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("advance_distance", "two_elevations"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_two_elevation_unknown_height",),
+        ),
+        "solve_building_height_with_flagpole_elevations": _op(
+            "solve_building_height_with_flagpole_elevations",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("flagpole_length", "two_elevations_same_station"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_building_height_with_flagpole_elevations",),
+        ),
+        "solve_broken_tree_original_height": _op(
+            "solve_broken_tree_original_height",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("broken_tree", "tan_and_cos"),
+            runtime_contract="b2_223_right_triangle_measurement_exact_v1",
+            provided_capabilities=("solve_broken_tree_original_height",),
+        ),
+        "solve_height_decimal_from_sight_line_elevation": _op(
+            "solve_height_decimal_from_sight_line_elevation",
+            "build_trigonometry_right_triangle_measurement_matrix",
+            payload_adapter=_B2_223_MEASUREMENT_ADAPTER,
+            validator="validate_trigonometry_right_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer"),
+            supported_presentation_modes=("short_answer",),
+            required_source_features=("sight_line", "non_special_elevation", "decimal_round"),
+            runtime_contract="b2_223_right_triangle_measurement_decimal_v1",
+            provided_capabilities=("solve_height_decimal_from_sight_line_elevation",),
+        ),
+    },
+))
+
+
+_B2_224_OBLIQUE_ADAPTER = (
+    "core.gencode.b2_224_oblique_triangle_measurement_capability_adapter"
+    ".adapt_b2_224_oblique_triangle_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.oblique_triangle_measurement",
+    domain_module="core.domain.trigonometry_oblique_triangle_measurement_domain",
+    entrypoint="build_trigonometry_oblique_triangle_measurement_matrix",
+    capabilities=frozenset({
+        "solve_side_by_law_of_sines",
+        "solve_side_by_law_of_cosines",
+    }),
+    operations={
+        "solve_side_by_law_of_sines": _op(
+            "solve_side_by_law_of_sines",
+            "build_trigonometry_oblique_triangle_measurement_matrix",
+            payload_adapter=_B2_224_OBLIQUE_ADAPTER,
+            validator="validate_trigonometry_oblique_triangle_measurement_matrix",
+            supported_answer_types=("single_choice", "expression", "short_answer"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("oblique_triangle", "law_of_sines", "measurement"),
+            runtime_contract="b2_224_oblique_measurement_delegate_sines_v1",
+            provided_capabilities=("solve_side_by_law_of_sines",),
+        ),
+        "solve_side_by_law_of_cosines": _op(
+            "solve_side_by_law_of_cosines",
+            "build_trigonometry_oblique_triangle_measurement_matrix",
+            payload_adapter=_B2_224_OBLIQUE_ADAPTER,
+            validator="validate_trigonometry_oblique_triangle_measurement_matrix",
+            supported_answer_types=("expression", "short_answer", "single_choice"),
+            supported_presentation_modes=("short_answer", "single_choice"),
+            required_source_features=("oblique_triangle", "law_of_cosines", "measurement"),
+            runtime_contract="b2_224_oblique_measurement_delegate_cosines_v1",
+            provided_capabilities=("solve_side_by_law_of_cosines",),
+        ),
+    },
+))
+
+
+_B2_225_SOLID_ADAPTER = (
+    "core.gencode.b2_225_solid_measurement_capability_adapter"
+    ".adapt_b2_225_solid_measurement_matrix"
+)
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="trigonometry.solid_measurement",
+    domain_module="core.domain.trigonometry_solid_measurement_domain",
+    entrypoint="build_trigonometry_solid_measurement_matrix",
+    capabilities=frozenset({
+        "solve_tower_two_elevation_path_and_river_width",
+        "solve_height_from_two_elevation_tan_ratios",
+        "solve_height_from_isosceles_bearing_walk_elevation",
+    }),
+    operations={
+        "solve_tower_two_elevation_path_and_river_width": _op(
+            "solve_tower_two_elevation_path_and_river_width",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("multi_part", "short_answer"),
+            supported_presentation_modes=("multiple_inputs", "short_answer"),
+            required_source_features=("tower_height", "two_elevations", "right_path_river"),
+            runtime_contract="b2_225_solid_measurement_compose_v1",
+            provided_capabilities=("solve_tower_two_elevation_path_and_river_width",),
+        ),
+        "solve_height_from_two_elevation_tan_ratios": _op(
+            "solve_height_from_two_elevation_tan_ratios",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("advance_distance", "two_tan_elevations"),
+            runtime_contract="b2_225_solid_measurement_tan_ratio_v1",
+            provided_capabilities=("solve_height_from_two_elevation_tan_ratios",),
+        ),
+        "solve_height_from_isosceles_bearing_walk_elevation": _op(
+            "solve_height_from_isosceles_bearing_walk_elevation",
+            "build_trigonometry_solid_measurement_matrix",
+            payload_adapter=_B2_225_SOLID_ADAPTER,
+            validator="validate_trigonometry_solid_measurement_matrix",
+            supported_answer_types=("single_choice", "expression"),
+            supported_presentation_modes=("single_choice", "short_answer"),
+            required_source_features=("bearing_walk", "elevation", "isosceles_horizontal"),
+            runtime_contract="b2_225_solid_measurement_bearing_v1",
+            provided_capabilities=("solve_height_from_isosceles_bearing_walk_elevation",),
+        ),
+    },
+))
+
+
+_VECTOR_PLANE_ADAPTER = "core.gencode.vector_plane_capability_adapter.adapt_vector_plane_matrix"
+_VECTOR_PLANE_VALIDATOR = "validate_vector_plane_matrix"
+_VECTOR_PLANE_BUILDER = "build_vector_plane_matrix"
+_VECTOR_PLANE_CONTRACT = "b2_ch3_vector_plane_exact_v1"
+
+
+def _vector_op(
+    key: str,
+    *,
+    answer_types: tuple[str, ...] = ("expression", "short_answer"),
+    presentation_modes: tuple[str, ...] = ("short_answer",),
+    features: tuple[str, ...] = (),
+) -> OperationSpec:
+    return _op(
+        key,
+        _VECTOR_PLANE_BUILDER,
+        payload_adapter=_VECTOR_PLANE_ADAPTER,
+        validator=_VECTOR_PLANE_VALIDATOR,
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentation_modes,
+        required_source_features=features,
+        runtime_contract=_VECTOR_PLANE_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="vector.plane",
+    domain_module="core.domain.vector_plane_domain",
+    entrypoint="build_vector_plane_matrix",
+    capabilities=frozenset({
+        "compute_vector_components_and_magnitude",
+        "solve_equal_vector_coordinates",
+        "compute_directed_segment_and_magnitude",
+        "solve_parallelogram_fourth_vertex",
+        "compute_triangle_perimeter_from_two_vectors",
+        "compute_vector_sum_difference",
+        "compute_point_vectors_linear_combination",
+        "compute_scalar_multiple_coordinates",
+        "solve_parallel_vector_parameter",
+        "compute_unit_vector",
+        "compute_dot_product_coordinates",
+        "compute_dot_product_from_magnitudes_angle",
+        "solve_perpendicular_vector_parameter",
+        "compute_cosine_of_angle_from_dot",
+        "compute_vector_linear_combination",
+        "compute_scaled_direction_vector",
+        "compute_triangle_chain_and_perimeter",
+        "simplify_vector_path_expression",
+        "express_named_vectors_in_given_basis",
+        "solve_scalar_multiple_relation_fill",
+        "express_section_point_vector",
+        "solve_section_coefficient_pair",
+        "identify_equal_vector_mcq",
+        "identify_resultant_path_mcq",
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "compute_directed_segment_mixed_multipart",
+        "compute_chain_closure_vector_mcq",
+        "solve_point_from_vector_combination",
+        "solve_collinear_ratio_mcq",
+        "solve_unknown_vector_linear_equation",
+        "solve_parallel_then_magnitude_mcq",
+        "identify_unit_vector_mcq",
+        "solve_navigation_heading_correction",
+        "classify_angle_quality_from_dot_mcq",
+        "compute_regular_polygon_edge_dot",
+        "compute_dot_identity_multipart",
+        "plot_navigation_points_coordinates",
+        "compute_midpoint_dot_product",
+        "solve_dot_product_parameter_mcq",
+        "solve_perpendicular_composite_parameter",
+        "classify_dot_sign_from_diagram_mcq",
+        "expand_perpendicular_dot_product",
+        "solve_angle_from_magnitude_identity",
+    }),
+    operations={
+        "compute_vector_components_and_magnitude": _vector_op(
+            "compute_vector_components_and_magnitude",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("vector_components", "magnitude"),
+        ),
+        "solve_equal_vector_coordinates": _vector_op(
+            "solve_equal_vector_coordinates",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("equal_vectors", "unknown_coordinates"),
+        ),
+        "compute_directed_segment_and_magnitude": _vector_op(
+            "compute_directed_segment_and_magnitude",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("two_points", "directed_segment"),
+        ),
+        "solve_parallelogram_fourth_vertex": _vector_op(
+            "solve_parallelogram_fourth_vertex",
+            features=("parallelogram", "three_vertices"),
+        ),
+        "compute_triangle_perimeter_from_two_vectors": _vector_op(
+            "compute_triangle_perimeter_from_two_vectors",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("two_side_vectors", "perimeter"),
+        ),
+        "compute_vector_sum_difference": _vector_op(
+            "compute_vector_sum_difference",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("vector_add_sub",),
+        ),
+        "compute_point_vectors_linear_combination": _vector_op(
+            "compute_point_vectors_linear_combination",
+            features=("named_points", "segment_sum"),
+        ),
+        "compute_scalar_multiple_coordinates": _vector_op(
+            "compute_scalar_multiple_coordinates",
+            features=("scalar_multiple",),
+        ),
+        "solve_parallel_vector_parameter": _vector_op(
+            "solve_parallel_vector_parameter",
+            features=("parallel_condition", "parameter"),
+        ),
+        "compute_unit_vector": _vector_op(
+            "compute_unit_vector",
+            features=("unit_vector",),
+        ),
+        "compute_dot_product_coordinates": _vector_op(
+            "compute_dot_product_coordinates",
+            features=("dot_product", "coordinates"),
+        ),
+        "compute_dot_product_from_magnitudes_angle": _vector_op(
+            "compute_dot_product_from_magnitudes_angle",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("magnitudes", "included_angle"),
+        ),
+        "solve_perpendicular_vector_parameter": _vector_op(
+            "solve_perpendicular_vector_parameter",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("perpendicular_condition", "parameter"),
+        ),
+        "compute_cosine_of_angle_from_dot": _vector_op(
+            "compute_cosine_of_angle_from_dot",
+            answer_types=("expression", "single_choice"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("angle_cosine", "dot_product"),
+        ),
+        "compute_vector_linear_combination": _vector_op(
+            "compute_vector_linear_combination",
+            features=("linear_combination",),
+        ),
+        "compute_scaled_direction_vector": _vector_op(
+            "compute_scaled_direction_vector",
+            answer_types=("expression", "multi_part", "short_answer"),
+            presentation_modes=("short_answer", "multiple_inputs"),
+            features=("scaled_unit", "direction"),
+        ),
+        "compute_triangle_chain_and_perimeter": _vector_op(
+            "compute_triangle_chain_and_perimeter",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chain_sides", "perimeter"),
+        ),
+        "simplify_vector_path_expression": _vector_op(
+            "simplify_vector_path_expression",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "express_named_vectors_in_given_basis": _vector_op(
+            "express_named_vectors_in_given_basis",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_scalar_multiple_relation_fill": _vector_op(
+            "solve_scalar_multiple_relation_fill",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "express_section_point_vector": _vector_op(
+            "express_section_point_vector",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "solve_section_coefficient_pair": _vector_op(
+            "solve_section_coefficient_pair",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "identify_equal_vector_mcq": _vector_op(
+            "identify_equal_vector_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "identify_resultant_path_mcq": _vector_op(
+            "identify_resultant_path_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "construct_linear_combination_choice": _vector_op(
+            "construct_linear_combination_choice",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "express_linear_combination_from_givens": _vector_op(
+            "express_linear_combination_from_givens",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "compute_directed_segment_mixed_multipart": _vector_op(
+            "compute_directed_segment_mixed_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "compute_chain_closure_vector_mcq": _vector_op(
+            "compute_chain_closure_vector_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_point_from_vector_combination": _vector_op(
+            "solve_point_from_vector_combination",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "solve_collinear_ratio_mcq": _vector_op(
+            "solve_collinear_ratio_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_unknown_vector_linear_equation": _vector_op(
+            "solve_unknown_vector_linear_equation",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_parallel_then_magnitude_mcq": _vector_op(
+            "solve_parallel_then_magnitude_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "identify_unit_vector_mcq": _vector_op(
+            "identify_unit_vector_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_navigation_heading_correction": _vector_op(
+            "solve_navigation_heading_correction",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "classify_angle_quality_from_dot_mcq": _vector_op(
+            "classify_angle_quality_from_dot_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "compute_regular_polygon_edge_dot": _vector_op(
+            "compute_regular_polygon_edge_dot",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "compute_dot_identity_multipart": _vector_op(
+            "compute_dot_identity_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "plot_navigation_points_coordinates": _vector_op(
+            "plot_navigation_points_coordinates",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "compute_midpoint_dot_product": _vector_op(
+            "compute_midpoint_dot_product",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_dot_product_parameter_mcq": _vector_op(
+            "solve_dot_product_parameter_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "solve_perpendicular_composite_parameter": _vector_op(
+            "solve_perpendicular_composite_parameter",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "classify_dot_sign_from_diagram_mcq": _vector_op(
+            "classify_dot_sign_from_diagram_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage",),
+        ),
+        "expand_perpendicular_dot_product": _vector_op(
+            "expand_perpendicular_dot_product",
+            answer_types=("expression", "short_answer"),
+            presentation_modes=("short_answer",),
+            features=("gap_coverage",),
+        ),
+        "solve_angle_from_magnitude_identity": _vector_op(
+            "solve_angle_from_magnitude_identity",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("gap_coverage",),
+        ),
+    },
+))
+
+
+_CIRCLE_PLANE_ADAPTER = "core.gencode.circle_plane_capability_adapter.adapt_circle_plane_matrix"
+_CIRCLE_PLANE_VALIDATOR = "validate_circle_plane_matrix"
+_CIRCLE_PLANE_BUILDER = "build_circle_plane_matrix"
+_CIRCLE_PLANE_CONTRACT = "b2_ch4_circle_plane_exact_v1"
+
+
+def _circle_op(
+    key: str,
+    *,
+    answer_types: tuple[str, ...] = ("expression", "short_answer"),
+    presentation_modes: tuple[str, ...] = ("short_answer",),
+    features: tuple[str, ...] = (),
+) -> OperationSpec:
+    return _op(
+        key,
+        _CIRCLE_PLANE_BUILDER,
+        payload_adapter=_CIRCLE_PLANE_ADAPTER,
+        validator=_CIRCLE_PLANE_VALIDATOR,
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentation_modes,
+        required_source_features=features,
+        runtime_contract=_CIRCLE_PLANE_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="circle.plane",
+    domain_module="core.domain.circle_plane_domain",
+    entrypoint="build_circle_plane_matrix",
+    capabilities=frozenset({
+        "identify_center_radius_from_standard",
+        "write_circle_from_center_radius",
+        "write_circle_from_center_point",
+        "write_circle_equations_from_conditions",
+        "interpret_circular_locus_equation",
+        "circle_from_diameter_endpoints",
+        "circle_equal_radius_at_origin",
+        "translate_and_scale_circle",
+        "circle_origin_through_lines_intersection",
+        "circle_same_center_scaled_area",
+        "circle_center_tangent_to_line",
+        "identify_center_radius_from_general",
+        "solve_circle_parameter_range",
+        "circle_through_three_points",
+        "circle_center_on_axis_area",
+        "classify_general_circle_graph",
+        "compute_circle_area_from_general",
+        "identify_circle_from_product_form",
+        "evaluate_center_radius_expression",
+        # 4-2.1 point vs circle
+        "classify_point_vs_circles_multipart",
+        "solve_point_circle_parameter_range",
+        "identify_point_on_circle_mcq",
+        # 4-2.2 line vs circle
+        "classify_line_circle_relation",
+        "classify_lines_vs_circle_multipart",
+        "solve_line_circle_parameter_range",
+        "solve_line_circle_tangent_parameter",
+        "compute_chord_length",
+        "solve_line_circle_relation_ranges_multipart",
+        "count_line_circle_intersections",
+        "compute_storm_path_length_in_circle",
+        "classify_line_circle_relation_mcq",
+        "solve_diameter_chord_parameter_mcq",
+        "compute_triangle_center_chord_area",
+        "solve_axis_tangent_parameter",
+        # 4-2.3 tangent lines
+        "tangent_at_point_on_circle",
+        "tangents_parallel_to_line",
+        "tangents_perpendicular_to_line",
+        "compute_tangents_from_point_quad_area",
+        # 4-2.4 tangent segments
+        "compute_tangent_segment_lengths",
+        "count_line_vs_two_circles_intersections",
+        "compute_tangent_segment_length_mcq",
+        "solve_circle_parameter_range_mcq",
+        "tangent_at_point_on_circle_mcq",
+    }),
+    operations={
+        "identify_center_radius_from_standard": _circle_op(
+            "identify_center_radius_from_standard",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("standard_form", "center_radius"),
+        ),
+        "write_circle_from_center_radius": _circle_op(
+            "write_circle_from_center_radius",
+            features=("center", "radius", "standard_form"),
+        ),
+        "write_circle_from_center_point": _circle_op(
+            "write_circle_from_center_point",
+            features=("center", "point_on_circle"),
+        ),
+        "write_circle_equations_from_conditions": _circle_op(
+            "write_circle_equations_from_conditions",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("multipart_conditions",),
+        ),
+        "interpret_circular_locus_equation": _circle_op(
+            "interpret_circular_locus_equation",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("locus", "center_radius"),
+        ),
+        "circle_from_diameter_endpoints": _circle_op(
+            "circle_from_diameter_endpoints",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("diameter", "midpoint"),
+        ),
+        "circle_equal_radius_at_origin": _circle_op(
+            "circle_equal_radius_at_origin",
+            features=("equal_radius", "origin_center"),
+        ),
+        "translate_and_scale_circle": _circle_op(
+            "translate_and_scale_circle",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("translate", "scale_radius"),
+        ),
+        "circle_origin_through_lines_intersection": _circle_op(
+            "circle_origin_through_lines_intersection",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("line_intersection", "origin_center"),
+        ),
+        "circle_same_center_scaled_area": _circle_op(
+            "circle_same_center_scaled_area",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("same_center", "area_scale"),
+        ),
+        "circle_center_tangent_to_line": _circle_op(
+            "circle_center_tangent_to_line",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("tangent", "point_line_distance"),
+        ),
+        "identify_center_radius_from_general": _circle_op(
+            "identify_center_radius_from_general",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("general_form", "complete_square"),
+        ),
+        "solve_circle_parameter_range": _circle_op(
+            "solve_circle_parameter_range",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("parameter", "validity"),
+        ),
+        "circle_through_three_points": _circle_op(
+            "circle_through_three_points",
+            answer_types=("expression", "single_choice", "short_answer"),
+            presentation_modes=("short_answer", "single_choice"),
+            features=("three_points", "circumcircle"),
+        ),
+        "circle_center_on_axis_area": _circle_op(
+            "circle_center_on_axis_area",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("center_constraint", "area"),
+        ),
+        "classify_general_circle_graph": _circle_op(
+            "classify_general_circle_graph",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("validity", "degenerate"),
+        ),
+        "compute_circle_area_from_general": _circle_op(
+            "compute_circle_area_from_general",
+            features=("general_form", "area"),
+        ),
+        "identify_circle_from_product_form": _circle_op(
+            "identify_circle_from_product_form",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("expand", "identify"),
+        ),
+        "evaluate_center_radius_expression": _circle_op(
+            "evaluate_center_radius_expression",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("center_radius", "expression"),
+        ),
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ 4-2.1 point vs circle ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+        "classify_point_vs_circles_multipart": _circle_op(
+            "classify_point_vs_circles_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("point_vs_circle", "classification"),
+        ),
+        "solve_point_circle_parameter_range": _circle_op(
+            "solve_point_circle_parameter_range",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("point_vs_circle", "parameter"),
+        ),
+        "identify_point_on_circle_mcq": _circle_op(
+            "identify_point_on_circle_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("point_vs_circle", "identify"),
+        ),
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ 4-2.2 line vs circle ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+        "classify_line_circle_relation": _circle_op(
+            "classify_line_circle_relation",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "point_line_distance", "classification"),
+        ),
+        "classify_lines_vs_circle_multipart": _circle_op(
+            "classify_lines_vs_circle_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "classification"),
+        ),
+        "solve_line_circle_parameter_range": _circle_op(
+            "solve_line_circle_parameter_range",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "parameter"),
+        ),
+        "solve_line_circle_tangent_parameter": _circle_op(
+            "solve_line_circle_tangent_parameter",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parameter"),
+        ),
+        "compute_chord_length": _circle_op(
+            "compute_chord_length",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "point_line_distance"),
+        ),
+        "solve_line_circle_relation_ranges_multipart": _circle_op(
+            "solve_line_circle_relation_ranges_multipart",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "parameter", "classification"),
+        ),
+        "count_line_circle_intersections": _circle_op(
+            "count_line_circle_intersections",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "intersection_count"),
+        ),
+        "compute_storm_path_length_in_circle": _circle_op(
+            "compute_storm_path_length_in_circle",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "application"),
+        ),
+        "classify_line_circle_relation_mcq": _circle_op(
+            "classify_line_circle_relation_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("line_vs_circle", "classification"),
+        ),
+        "solve_diameter_chord_parameter_mcq": _circle_op(
+            "solve_diameter_chord_parameter_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("diameter", "parameter"),
+        ),
+        "compute_triangle_center_chord_area": _circle_op(
+            "compute_triangle_center_chord_area",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("chord", "area"),
+        ),
+        "solve_axis_tangent_parameter": _circle_op(
+            "solve_axis_tangent_parameter",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parameter", "general_form"),
+        ),
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ 4-2.3 tangent lines ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+        "tangent_at_point_on_circle": _circle_op(
+            "tangent_at_point_on_circle",
+            answer_types=("multi_part", "expression", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "point_on_circle"),
+        ),
+        "tangents_parallel_to_line": _circle_op(
+            "tangents_parallel_to_line",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "parallel"),
+        ),
+        "tangents_perpendicular_to_line": _circle_op(
+            "tangents_perpendicular_to_line",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent", "perpendicular"),
+        ),
+        "compute_tangents_from_point_quad_area": _circle_op(
+            "compute_tangents_from_point_quad_area",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent_segment", "area"),
+        ),
+        # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ 4-2.4 tangent segments ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
+        "compute_tangent_segment_lengths": _circle_op(
+            "compute_tangent_segment_lengths",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("tangent_segment",),
+        ),
+        "count_line_vs_two_circles_intersections": _circle_op(
+            "count_line_vs_two_circles_intersections",
+            answer_types=("multi_part", "short_answer"),
+            presentation_modes=("multiple_inputs", "short_answer"),
+            features=("line_vs_circle", "intersection_count"),
+        ),
+        "compute_tangent_segment_length_mcq": _circle_op(
+            "compute_tangent_segment_length_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("tangent_segment",),
+        ),
+        "solve_circle_parameter_range_mcq": _circle_op(
+            "solve_circle_parameter_range_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage", "mcq"),
+        ),
+        "tangent_at_point_on_circle_mcq": _circle_op(
+            "tangent_at_point_on_circle_mcq",
+            answer_types=("single_choice", "expression"),
+            presentation_modes=("single_choice", "short_answer"),
+            features=("gap_coverage", "mcq"),
+        ),
+    },
+))
+
+
+# --- B3 Chapter 1: sequence / series ---
+_SEQ_SERIES_ADAPTER = "core.gencode.sequence_series_capability_adapter.adapt_sequence_series_matrix"
+_SEQ_SERIES_VALIDATOR = "validate_sequence_series_matrix"
+_SEQ_SERIES_BUILDER = "build_sequence_series_matrix"
+_SEQ_SERIES_CONTRACT = "b3_ch1_sequence_series_exact_v1"
+_SEQ_SERIES_OPS = (
+    "expand_general_term_first_n",
+    "arithmetic_nth_from_a1_d",
+    "arithmetic_d_from_a1_an",
+    "arithmetic_from_two_terms",
+    "arithmetic_insert_terms",
+    "arithmetic_mean_solve",
+    "arithmetic_recurrence_general",
+    "arithmetic_series_sum_given",
+    "arithmetic_series_recover_param",
+    "arithmetic_series_from_two_terms",
+    "arithmetic_sum_multiples_range",
+    "arithmetic_odd_count_mid_total",
+    "geometric_nth_from_a1_r",
+    "geometric_r_from_a1_an",
+    "geometric_from_two_terms",
+    "geometric_insert_terms",
+    "geometric_mean_value",
+    "geometric_mean_solve_x",
+    "geometric_recurrence_general",
+    "geometric_series_sum_given",
+    "geometric_series_recover_param",
+    "geometric_ratio_from_shifted_pair_sums",
+    "geometric_ratio_from_product_quotient",
+    "arithmetic_index_and_total_sum",
+    "arithmetic_first_threshold_crossing",
+    "geometric_first_threshold_crossing",
+    "ap_gp_mixed_mean_middle",
+    "geometric_growth_table_cells",
+)
+_SEQ_SERIES_MULTIPART = frozenset({
+    "expand_general_term_first_n",
+    "arithmetic_from_two_terms",
+    "arithmetic_recurrence_general",
+    "geometric_mean_value",
+    "geometric_recurrence_general",
+    "arithmetic_index_and_total_sum",
+    "geometric_growth_table_cells",
+})
+
+
+def _seq_op(key: str) -> OperationSpec:
+    multipart = key in _SEQ_SERIES_MULTIPART
+    if multipart:
+        answer_types = ("multi_part", "short_answer")
+        presentations = ("multiple_inputs", "short_answer")
+    else:
+        answer_types = ("expression", "short_answer", "single_choice")
+        presentations = ("short_answer", "single_choice")
+    return _op(
+        key,
+        _SEQ_SERIES_BUILDER,
+        payload_adapter=_SEQ_SERIES_ADAPTER,
+        validator=_SEQ_SERIES_VALIDATOR,
+        supported_answer_types=answer_types,
+        supported_presentation_modes=presentations,
+        required_source_features=("sequence_or_series",),
+        runtime_contract=_SEQ_SERIES_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="sequence.series",
+    domain_module="core.domain.sequence_series_domain",
+    entrypoint="build_sequence_series_matrix",
+    capabilities=frozenset(_SEQ_SERIES_OPS),
+    operations={op: _seq_op(op) for op in _SEQ_SERIES_OPS},
+))
+
+
+# --- B3 Chapter 2: linear / inequality / quadratic ---
+_EQ_ADAPTER = "core.gencode.equation_solving_capability_adapter.adapt_equation_solving_matrix"
+_EQ_VALIDATOR = "validate_equation_solving_matrix"
+_EQ_BUILDER = "build_equation_solving_matrix"
+_EQ_CONTRACT = "b3_ch2_equation_solving_exact_v1"
+
+
+def _eq_op(key: str) -> OperationSpec:
+    return _op(
+        key,
+        _EQ_BUILDER,
+        payload_adapter=_EQ_ADAPTER,
+        validator=_EQ_VALIDATOR,
+        supported_answer_types=("expression", "multi_part", "single_choice", "short_answer"),
+        supported_presentation_modes=("short_answer", "single_choice", "multiple_inputs"),
+        required_source_features=("equation",),
+        runtime_contract=_EQ_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+from core.domain.equation_solving_domain import OPS as _EQ_OPS  # noqa: E402
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="equation.solving",
+    domain_module="core.domain.equation_solving_domain",
+    entrypoint="build_equation_solving_matrix",
+    capabilities=frozenset(_EQ_OPS),
+    operations={op: _eq_op(op) for op in sorted(_EQ_OPS)},
+))
+
+
+# --- B3 Chapter 3: systems, half-planes, linear programming ---
+_LP_ADAPTER = "core.gencode.linear_inequality_planning_capability_adapter.adapt_linear_inequality_planning_matrix"
+_LP_VALIDATOR = "validate_linear_inequality_planning_matrix"
+_LP_BUILDER = "build_linear_inequality_planning_matrix"
+_LP_CONTRACT = "b3_ch3_linear_inequality_planning_exact_v1"
+
+
+def _lp_op(key: str) -> OperationSpec:
+    return _op(
+        key,
+        _LP_BUILDER,
+        payload_adapter=_LP_ADAPTER,
+        validator=_LP_VALIDATOR,
+        supported_answer_types=("expression", "multi_part", "single_choice", "short_answer", "ordered_pair", "inequality"),
+        supported_presentation_modes=("short_answer", "single_choice", "multiple_inputs"),
+        required_source_features=("inequality",),
+        runtime_contract=_LP_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+from core.domain.linear_inequality_planning_domain import OPS as _LP_OPS  # noqa: E402
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="linear.inequality.planning",
+    domain_module="core.domain.linear_inequality_planning_domain",
+    entrypoint="build_linear_inequality_planning_matrix",
+    capabilities=frozenset(_LP_OPS),
+    operations={op: _lp_op(op) for op in sorted(_LP_OPS)},
+))
+
+
+# --- B3 Chapter 4: exponents and logarithms ---
+_EL_ADAPTER = "core.gencode.exponential_logarithmic_capability_adapter.adapt_exponential_logarithmic_matrix"
+_EL_VALIDATOR = "validate_exponential_logarithmic_matrix"
+_EL_BUILDER = "build_exponential_logarithmic_matrix"
+_EL_CONTRACT = "b3_ch4_exponential_logarithmic_exact_v1"
+
+
+def _el_op(key: str) -> OperationSpec:
+    return _op(
+        key,
+        _EL_BUILDER,
+        payload_adapter=_EL_ADAPTER,
+        validator=_EL_VALIDATOR,
+        supported_answer_types=("expression", "multi_part", "single_choice"),
+        supported_presentation_modes=("short_answer", "single_choice"),
+        required_source_features=("exponent_logarithm",),
+        runtime_contract=_EL_CONTRACT,
+        provided_capabilities=(key,),
+    )
+
+
+from core.domain.exponential_logarithmic_domain import OPS as _EL_OPS  # noqa: E402
+
+register_domain_spec(DomainCapabilitySpec(
+    domain_key="exponential.logarithmic",
+    domain_module="core.domain.exponential_logarithmic_domain",
+    entrypoint="build_exponential_logarithmic_matrix",
+    capabilities=frozenset(_EL_OPS),
+    operations={op: _el_op(op) for op in sorted(_EL_OPS)},
+))
+
+
+# --- Human-reviewed promoted capabilities (data-driven; must stay last so static domains win) ---
+from core.registry.promoted_capability_store import register_promoted_domain_specs  # noqa: E402
+
+register_promoted_domain_specs()

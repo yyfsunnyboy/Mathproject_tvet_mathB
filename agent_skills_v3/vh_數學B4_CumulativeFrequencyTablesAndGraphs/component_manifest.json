@@ -20,8 +20,8 @@
       "status": "verified",
       "problem_type_id": "cumulative_frequency_table_construction",
       "domain_operation": "cumulative_frequency_table_construction",
-      "presentation_mode": "short_answer",
-      "answer_type": "integer",
+      "presentation_mode": "table_fill",
+      "answer_type": "multi_part",
       "source_kind": "quiz",
       "generate_py": "components/src_3831/generate.py"
     },

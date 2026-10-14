@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import uuid
+from pathlib import Path
 from urllib.parse import quote
 
 import pytest
@@ -109,33 +110,45 @@ def test_cartesian_skill_check_uses_quadrant_equivalence() -> None:
 
 @pytest.fixture()
 def logged_client():
-    app = create_app()
-    app.config.update(TESTING=True)
-    with app.app_context():
-        user = User(
-            username=f"quadrant_checker_{uuid.uuid4().hex[:10]}",
-            password_hash="test-hash",
-            role="student",
-        )
-        db.session.add(user)
-        db.session.commit()
-        uid = user.id
-    client = app.test_client()
-    with client.session_transaction() as sess:
-        sess["_user_id"] = str(uid)
-        sess["_fresh"] = True
-    return client
+    import config as _cfg
+
+    db_path = Path("reports") / f"pytest_quadrant_checker_{uuid.uuid4().hex[:8]}.db"
+    previous_uri = _cfg.Config.SQLALCHEMY_DATABASE_URI
+    _cfg.Config.SQLALCHEMY_DATABASE_URI = "sqlite:///" + str(db_path.resolve()).replace("\\", "/")
+    try:
+        app = create_app()
+        app.config.update(TESTING=True)
+        with app.app_context():
+            user = User(
+                username=f"quadrant_checker_{uuid.uuid4().hex[:10]}",
+                password_hash="test-hash",
+                role="student",
+            )
+            db.session.add(user)
+            db.session.commit()
+            uid = user.id
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(uid)
+            sess["_fresh"] = True
+        yield client
+    finally:
+        _cfg.Config.SQLALCHEMY_DATABASE_URI = previous_uri
+        try:
+            db_path.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
-def test_practice_route_quadrant_short_answer_check(logged_client) -> None:
+def test_practice_route_quadrant_choice_check(logged_client) -> None:
     cart_mod = importlib.import_module(f"skills.{SKILL_ID}")
 
     target_seed = None
     for seed in range(80):
         payload = cart_mod.generate(level=1, seed=seed)
-        if payload.get("choices"):
-            continue
-        if str(payload.get("answer", "")).strip() == "第二象限":
+        choices = payload.get("choices") or []
+        answer = str(payload.get("answer", "")).strip()
+        if choices and answer in "ABCD" and choices["ABCD".index(answer)] == "第二象限":
             target_seed = seed
             break
     assert target_seed is not None
@@ -145,12 +158,12 @@ def test_practice_route_quadrant_short_answer_check(logged_client) -> None:
     )
     assert q.status_code == 200
 
-    ok = logged_client.post("/check_answer", json={"answer": "二"}).get_json() or {}
+    ok = logged_client.post("/check_answer", json={"answer": "第二象限"}).get_json() or {}
     assert ok.get("correct") is True
 
     q2 = logged_client.get(
         f"/get_next_question?skill={quote(SKILL_ID)}&level=1&gen_seed={target_seed}"
     )
     assert q2.status_code == 200
-    bad = logged_client.post("/check_answer", json={"answer": "4"}).get_json() or {}
+    bad = logged_client.post("/check_answer", json={"answer": "Z"}).get_json() or {}
     assert bad.get("correct") is False

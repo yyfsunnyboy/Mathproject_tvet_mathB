@@ -4,6 +4,7 @@ from typing import Any
 
 from core.domain.statistics.descriptive_statistics_domain import build_descriptive_statistics_matrix
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
+from core.gencode.generated_answer_contract_alignment import align_generated_answer_to_contract
 
 PRESENTATION_MODE = "short_answer"
 ANSWER_TYPE = "expression"
@@ -35,4 +36,4 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
     if component_id:
         payload["component_id"] = component_id
     payload["seed"] = seed
-    return payload
+    return align_generated_answer_to_contract(payload)

@@ -42,8 +42,8 @@
       "status": "verified",
       "problem_type_id": "polynomial_equality_identity",
       "domain_operation": "polynomial_equality_identity",
-      "presentation_mode": "short_answer",
-      "answer_type": "expression",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
       "source_kind": "test",
       "generate_py": "components/src_4717/generate.py"
     }

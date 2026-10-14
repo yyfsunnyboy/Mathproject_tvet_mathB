@@ -1,0 +1,215 @@
+{
+  "skill_id": "vh_數學B1_AbsoluteValueInequality",
+  "capability_status": "needs_capability",
+  "domain_key": "algebra.absolute_value",
+  "registry_entry": {
+    "fixed_domain_key": "algebra.absolute_value",
+    "domain_module": "core.domain.absolute_value_domain",
+    "entrypoint": "build_absolute_value_matrix",
+    "registry_revision": "2026-09-10-v1.10",
+    "allowed_operations": [
+      "absolute_value_inequality_zero_center_basic",
+      "absolute_value_inequality_linear_expression_basic",
+      "absolute_value_inequality_shifted_basic",
+      "absolute_value_inequality_integer_solution_count_choice"
+    ]
+  },
+  "supported_operations": [
+    "absolute_value_inequality_zero_center_basic",
+    "absolute_value_inequality_linear_expression_basic",
+    "absolute_value_inequality_shifted_basic",
+    "absolute_value_inequality_integer_solution_count_choice"
+  ],
+  "domain_module": "core.domain.absolute_value_domain",
+  "entrypoint": "build_absolute_value_matrix",
+  "registry_revision": "2026-09-10-v1.10",
+  "textbook_example_count": 10,
+  "eligible_example_count": 10,
+  "resolvable_example_count": 0,
+  "unresolved_example_count": 10,
+  "intentional_skip_count": 0,
+  "needs_capability_count": 10,
+  "resolvable_example_ids": [],
+  "unresolved_example_ids": [
+    4400,
+    4402,
+    4403,
+    4404,
+    4405,
+    4406,
+    4407,
+    4409,
+    4413,
+    4499
+  ],
+  "intentional_skip_ids": [],
+  "needs_capability_ids": [
+    4400,
+    4402,
+    4403,
+    4404,
+    4405,
+    4406,
+    4407,
+    4409,
+    4413,
+    4499
+  ],
+  "skip_examples": [],
+  "needs_capability_examples": [
+    {
+      "example_id": 4400,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4402,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4403,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4404,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4405,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4406,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4407,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4409,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4413,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    },
+    {
+      "example_id": 4499,
+      "reason": "phase1_classifier_not_available",
+      "suggested_domain": "",
+      "detected_pattern": ""
+    }
+  ],
+  "missing_layers": [
+    "example_operation_resolution"
+  ],
+  "allow_v3_rebuild": false,
+  "next_action": "stop_for_missing_capability",
+  "wiring_error": "",
+  "example_probes": [
+    {
+      "textbook_example_id": 4400,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4402,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4403,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4404,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4405,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4406,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4407,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4409,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4413,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    },
+    {
+      "textbook_example_id": 4499,
+      "resolvable": false,
+      "reason": "phase1_classifier_not_available",
+      "problem_type_id": "",
+      "classification_source": "",
+      "suggested_domain": ""
+    }
+  ],
+  "ui": {
+    "status_label": "缺少 domain capability",
+    "primary_action_label": "NEEDS_CAPABILITY",
+    "secondary_action_label": "匯出診斷",
+    "tooltip": "Gencode V3會使用既有domain能力重新建置，不會自行建立新API。intentional skip 不阻塞 READY；真正缺少 capability 時會安全停止。"
+  }
+}

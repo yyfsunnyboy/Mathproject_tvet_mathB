@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import io
+import unicodedata
 from pathlib import Path
 from unittest.mock import patch
 
@@ -8,6 +9,7 @@ from werkzeug.datastructures import FileStorage
 
 from core.textbook_importer_v3_storage import (
     resolve_source_directory,
+    resolve_project_textbook_source_pair,
     save_textbook_source_batch,
     upload_textbook_source_batch,
 )
@@ -54,6 +56,44 @@ class TestResolveSourceDirectory:
         with pytest.raises(ValueError) as exc:
             resolve_source_directory(tmp_path, "vocational", "../secret")
         assert exc.value.args[0] == "invalid_volume"
+
+
+class TestResolveProjectTextbookSourcePair:
+    def test_resolves_unicode_normalized_authoritative_pair(self, tmp_path: Path):
+        target = tmp_path / "textbook_import/source/vocational/math_B2"
+        target.mkdir(parents=True)
+        stem = unicodedata.normalize(
+            "NFD", "第一章 1-4 正弦、餘弦函數的圖形-課本"
+        )
+        docx = target / f"{stem}.docx"
+        pdf = target / f"{stem}.PDF"
+        docx.write_bytes(b"docx")
+        pdf.write_bytes(b"pdf")
+        (target / f"{stem}_Latex.docx").write_bytes(b"generated")
+
+        pair = resolve_project_textbook_source_pair(
+            tmp_path,
+            "vocational",
+            "數學B2",
+            "1-4 正弦、餘弦函數的圖形",
+        )
+
+        assert pair == (docx.resolve(), pdf.resolve())
+
+    def test_ambiguous_matching_pairs_fail_closed(self, tmp_path: Path):
+        target = tmp_path / "textbook_import/source/vocational/math_B2"
+        target.mkdir(parents=True)
+        for prefix in ("第一章", "第1章"):
+            stem = f"{prefix} 1-4 正弦、餘弦函數的圖形-課本"
+            (target / f"{stem}.docx").write_bytes(b"docx")
+            (target / f"{stem}.pdf").write_bytes(b"pdf")
+
+        assert resolve_project_textbook_source_pair(
+            tmp_path,
+            "vocational",
+            "數學B2",
+            "1-4 正弦、餘弦函數的圖形",
+        ) is None
 
 
 class TestSourceStorage:

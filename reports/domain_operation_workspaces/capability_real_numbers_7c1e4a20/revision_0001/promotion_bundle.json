@@ -1,0 +1,141 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_real_numbers_7c1e4a20",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "human_reviewer",
+    "approved_revision": 1,
+    "approval_scope": "new domain number_system.real_numbers with solve_rational_unknowns_from_radical_identity and approximate_square_root_by_decimal_search for gh_IrrationalAndRealNumbers only"
+  },
+  "domain_key": "number_system.real_numbers",
+  "package_name": "number_system_real_numbers",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "84eb28522065066077f4abc92800f31e5d4c5cb936f66905ad8ea15e71ad49dc",
+    "real_numbers_adapter.py": "9a39018febe994d116d82d4a7ee74cb0bb0181780b504211d8bcafca258cd15f",
+    "real_numbers_domain.py": "4de28b460088298bf2e6f42349c2d0ab3f91b612f2d1a16a6a14c310bcdac8bf"
+  },
+  "domain_module": "real_numbers_domain",
+  "entrypoint": "build_real_numbers_matrix",
+  "capabilities": [
+    "solve_rational_unknowns_from_radical_identity",
+    "approximate_square_root_by_decimal_search"
+  ],
+  "operations": {
+    "solve_rational_unknowns_from_radical_identity": {
+      "handler": "build_real_numbers_matrix",
+      "payload_adapter": "real_numbers_adapter.adapt_real_numbers_matrix",
+      "runtime_contract": "real_numbers_exact_v1",
+      "validator": "validate_solve_rational_unknowns_from_radical_identity_matrix",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "provided_capabilities": [
+        "solve_rational_unknowns_from_radical_identity"
+      ]
+    },
+    "approximate_square_root_by_decimal_search": {
+      "handler": "build_real_numbers_matrix",
+      "payload_adapter": "real_numbers_adapter.adapt_real_numbers_matrix",
+      "runtime_contract": "real_numbers_exact_v1",
+      "validator": "validate_approximate_square_root_by_decimal_search_matrix",
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "provided_capabilities": [
+        "approximate_square_root_by_decimal_search"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_IrrationalAndRealNumbers": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "solve_rational_unknowns_from_radical_identity",
+        "approximate_square_root_by_decimal_search"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "solve_rational_unknowns_from_radical_identity": [
+      {
+        "seed": 1,
+        "constraints": {
+          "radicand": 2,
+          "coefficients": {
+            "a": {
+              "rational": 3,
+              "radical": 5
+            },
+            "b": {
+              "rational": 2,
+              "radical": -1
+            }
+          },
+          "rhs": {
+            "rational": -1,
+            "radical": 7
+          }
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "radicand": 2,
+          "coefficients": {
+            "a": {
+              "rational": 3,
+              "radical": 2
+            },
+            "b": {
+              "rational": 2,
+              "radical": -1
+            }
+          },
+          "rhs": {
+            "rational": 0,
+            "radical": 7
+          }
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "approximate_square_root_by_decimal_search": [
+      {
+        "seed": 1,
+        "constraints": {
+          "radicand": 3,
+          "places": 2
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "radicand": 2,
+          "places": 3
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ]
+  }
+}

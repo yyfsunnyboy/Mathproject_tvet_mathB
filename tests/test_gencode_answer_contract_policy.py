@@ -173,6 +173,30 @@ def test_phase2_blocks_unsupported_radical_checker():
     assert "checker_contract_missing" in (row.get("blockers") or [])
 
 
+def test_short_answer_with_solution_set_checker_is_supported_and_set_graded():
+    from core.gencode.checker_registry import select_checker_from_answer_contract
+    from core.gencode.runtime_skill_wrapper import check_answer
+
+    ac = {
+        "answer_type": "short_answer",
+        "presentation_mode": "short_answer",
+        "checker": "solution_set_checker",
+        "checker_key": "solution_set_checker",
+        "answer_equivalence": "unordered_solution_set",
+    }
+    cap = validate_answer_contract_capability(ac)
+    assert cap["checker_capability_status"] == "ok"
+    assert validate_answer_contract_capability({**ac, "answer_type": "solution_set"})["checker_capability_status"] == "ok"
+    assert validate_answer_contract_capability({**ac, "answer_type": "drawing"})["checker_capability_status"] == "blocked"
+    assert select_checker_from_answer_contract({"answer_type": "short_answer"})[0] == "expression_equivalence_checker"
+
+    payload = {"answer_type": "short_answer", "answer_contract": ac, "correct_answer": [1, 2, 3, 5]}
+    for accepted in ("(1)(2)(3)(5)", "1,2,3,5", "{1,2,3,5}", "5,3,2,1,1", "3、5、1、2"):
+        assert check_answer(accepted, [1, 2, 3, 5], payload=payload), accepted
+    for rejected in ("1,2,3", "1,2,3,4,5", "1235", "", "(1)(2)(3)(5)(4)"):
+        assert not check_answer(rejected, [1, 2, 3, 5], payload=payload), rejected
+
+
 def test_registry_has_core_checkers():
     assert CHECKER_CAPABILITIES["solution_set_checker"]["runtime_available"]
     assert not CHECKER_CAPABILITIES["radical_equivalence_checker"]["runtime_available"]

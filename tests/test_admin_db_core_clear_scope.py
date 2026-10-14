@@ -305,7 +305,7 @@ def test_orphan_skill_cleanup_only_when_unused(app_ctx):
         assert SkillInfo.query.filter_by(skill_id=keep).count() == 1
 
 
-def test_core_filtered_clear_does_not_require_confirm_core_clear(app_ctx):
+def test_core_filtered_clear_preserves_prompt_templates_and_does_not_require_confirm(app_ctx):
     app, admin_id = app_ctx
     with app.app_context():
         sid = "vh_clear_without_confirm"
@@ -313,8 +313,16 @@ def test_core_filtered_clear_does_not_require_confirm_core_clear(app_ctx):
             _mk_skill(sid),
             _mk_curr(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
             _mk_ex(skill_id=sid, volume="數學B1", chapter="1 坐標系與函數圖形", section="1-1 數線與絕對值"),
+            PromptTemplate(
+                prompt_key=f"filtered_keep_{uuid.uuid4().hex[:6]}",
+                title="t",
+                category="c",
+                content="x",
+                default_content="x",
+            ),
         ])
         db.session.commit()
+        prompts_before = PromptTemplate.query.count()
 
         client = app.test_client()
         _login(client, admin_id)
@@ -334,6 +342,7 @@ def test_core_filtered_clear_does_not_require_confirm_core_clear(app_ctx):
         )
         assert r.status_code == 200
         assert SkillCurriculum.query.filter_by(skill_id=sid).count() == 0
+        assert PromptTemplate.query.count() == prompts_before
 
 
 def test_core_clear_does_not_delete_users_prompts_system_settings(app_ctx):

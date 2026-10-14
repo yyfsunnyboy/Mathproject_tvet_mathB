@@ -76,6 +76,61 @@ def test_status_map_batch_completes_quickly_for_many_skills():
     assert elapsed < 2.0, f"batch status map too slow: {elapsed:.3f}s for {len(skill_ids)} skills"
 
 
+def test_status_map_deduplicates_enrichment_and_preloads_examples():
+    conn = sqlite3.connect(":memory:")
+    conn.execute(
+        """
+        CREATE TABLE textbook_examples (
+            id INTEGER PRIMARY KEY,
+            skill_id TEXT NOT NULL,
+            problem_text TEXT,
+            correct_answer TEXT,
+            detailed_solution TEXT,
+            source_description TEXT,
+            problem_type TEXT,
+            notes TEXT
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE gencode_component_tracker (
+            textbook_example_id INTEGER PRIMARY KEY,
+            skill_id TEXT NOT NULL,
+            component_id TEXT NOT NULL,
+            gencode_status TEXT NOT NULL,
+            induced_spec_payload TEXT,
+            gencode_error_log TEXT,
+            updated_at TEXT
+        )
+        """
+    )
+    conn.execute(
+        "INSERT INTO textbook_examples (id, skill_id, problem_text) VALUES (1, 'skill_a', 'demo')"
+    )
+    conn.commit()
+
+    capability = {
+        "skill_id": "skill_a",
+        "capability_status": "missing",
+        "allow_v3_rebuild": False,
+        "next_action": "start_system_ai_capability_fill",
+        "ui": {},
+    }
+    with mock.patch(
+        "core.gencode.services.v3_skill_capability_preflight_service.evaluate_skill_v3_capability",
+        return_value=capability,
+    ) as mocked:
+        result = build_admin_skills_gencode_status_map(conn, ["skill_a", "skill_a"])
+
+    assert list(result) == ["skill_a"]
+    mocked.assert_called_once()
+    kwargs = mocked.call_args.kwargs
+    assert kwargs["probe_examples"] is True
+    assert [row["id"] for row in kwargs["textbook_rows"]] == [1]
+    assert [row["id"] for row in kwargs["phase1_skill_examples"]] == [1]
+
+
 @pytest.mark.parametrize(
     "audit_variation,should_call_full_view",
     [(False, False), (True, True)],

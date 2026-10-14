@@ -1,0 +1,44 @@
+[
+  {
+    "tag": "3-1",
+    "skill": "vh_數學B2_SubSection_3_1_1",
+    "has_question": true,
+    "has_answer": true,
+    "answer_type": "multi_part",
+    "checker": "multi_part_answer_checker",
+    "visual_kind": "coordinate_plane",
+    "render_required": true,
+    "arrows": 2,
+    "points": 4,
+    "choices": 0,
+    "math_markers": true
+  },
+  {
+    "tag": "3-2",
+    "skill": "vh_數學B2_SubSection_3_2_3",
+    "has_question": true,
+    "has_answer": true,
+    "answer_type": "single_choice",
+    "checker": "choice_label_checker",
+    "visual_kind": null,
+    "render_required": null,
+    "arrows": 0,
+    "points": 0,
+    "choices": 4,
+    "math_markers": true
+  },
+  {
+    "tag": "3-3",
+    "skill": "vh_數學B2_SubSection_3_3_5",
+    "has_question": true,
+    "has_answer": true,
+    "answer_type": "single_choice",
+    "checker": "choice_label_checker",
+    "visual_kind": "coordinate_plane",
+    "render_required": true,
+    "arrows": 3,
+    "points": 5,
+    "choices": 4,
+    "math_markers": true
+  }
+]

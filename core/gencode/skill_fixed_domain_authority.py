@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import sqlite3
@@ -13,6 +14,7 @@ from typing import Any
 from core.registry.domain_operation_registry import (
     get_domain_operations,
     get_domain_spec,
+    get_operation_spec,
 )
 from core.registry.taxonomy_registry import (
     SkillDomainNotRegisteredError,
@@ -376,6 +378,63 @@ def summarize_skill_domain_binding(
     }
 
 
+def _resolve_exact_selected_operation(
+    *,
+    preferred: str = "",
+    extra_data: dict[str, Any] | None = None,
+    problem_type_id: str = "",
+    required_capabilities: list[str] | None = None,
+    allowed_operations: tuple[str, ...] | list[str] | set[str],
+    fixed_domain_key: str,
+) -> str:
+    """Resolve selected_operation by exact registry/whitelist match only.
+
+    Authority for the required operation candidate (first non-empty):
+    preferred → extra selected/domain_operation → induced_spec
+    problem_type_id / required_operation → problem_type_id arg →
+    single required_capability.
+
+    If the candidate is empty, missing from allowed_operations, or absent from
+    the domain operation registry, return "" (unresolved). Never fuzzy-match,
+    never nearest-template, never cross-domain borrow.
+    """
+    extra = dict(extra_data or {})
+    induced = extract_induced_spec_from_extra(extra)
+    caps = list(required_capabilities or [])
+    candidate = ""
+    for raw in (
+        preferred,
+        extra.get("selected_operation"),
+        extra.get("domain_operation"),
+        induced.get("selected_operation"),
+        induced.get("required_operation"),
+        induced.get("problem_type_id"),
+        problem_type_id,
+    ):
+        text = str(raw or "").strip()
+        if text:
+            candidate = text
+            break
+    if not candidate and len(caps) == 1:
+        candidate = str(caps[0] or "").strip()
+    if not candidate:
+        return ""
+
+    allowed = {str(x).strip() for x in (allowed_operations or ()) if str(x).strip()}
+    if candidate not in allowed:
+        return ""
+
+    domain_key = str(fixed_domain_key or "").strip()
+    if not domain_key:
+        return ""
+    try:
+        if get_operation_spec(domain_key, candidate) is None:
+            return ""
+    except Exception:
+        return ""
+    return candidate
+
+
 def _confirmed_binding_result(
     *,
     skill_id: str,
@@ -383,15 +442,23 @@ def _confirmed_binding_result(
     fixed_domain_key: str,
     allowed: tuple[str, ...],
     required_capabilities: list[str],
+    selected_operation: str = "",
 ) -> DomainResolutionResult:
     provider = DOMAIN_PROVIDERS.get(fixed_domain_key) or {}
     prov_caps = _provider_capability_set(provider)
     matched = sorted(set(required_capabilities) & prov_caps)
-    selected = str(
-        routing.get("selected_operation")
-        or routing.get("domain_operation")
-        or ""
-    ).strip()
+    selected = str(selected_operation or "").strip()
+    if not selected:
+        # Legacy skill-level routing may embed a single confirmed operation.
+        routing_op = str(
+            routing.get("selected_operation") or routing.get("domain_operation") or ""
+        ).strip()
+        if routing_op and routing_op in {str(x).strip() for x in allowed}:
+            try:
+                if get_operation_spec(fixed_domain_key, routing_op) is not None:
+                    selected = routing_op
+            except Exception:
+                selected = ""
     return DomainResolutionResult(
         skill_id=skill_id,
         fixed_domain_key=fixed_domain_key,
@@ -458,8 +525,12 @@ def resolve_domain_authority(
     if not required_capabilities and induced_spec:
         required_capabilities = normalize_capability_list(induced_spec.get("required_capabilities"))
 
-    explicit_key = extra_data.get("fixed_domain_key") or extra_data.get("domain_key")
-    if explicit_key:
+    explicit_key = str(extra_data.get("fixed_domain_key") or extra_data.get("domain_key") or "").strip()
+    confirmed = get_confirmed_skill_binding(key)
+    confirmed_key = str((confirmed or {}).get("fixed_domain_key") or "").strip()
+    # Restating the confirmed domain is not an override: the confirmed binding
+    # stays authoritative so evidence carries its revision and capability filter.
+    if explicit_key and explicit_key != confirmed_key:
         override_ctx = resolve_dynamic_fixed_domain_context(
             key,
             original_exc=ValueError("component_override_active"),
@@ -467,13 +538,14 @@ def resolve_domain_authority(
             problem_type_id=problem_type_id,
             extra=extra,
         )
-        op = str(
-            selected_operation
-            or extra_data.get("domain_operation")
-            or extra_data.get("selected_operation")
-            or problem_type_id
-            or ""
-        ).strip()
+        op = _resolve_exact_selected_operation(
+            preferred=str(selected_operation or "").strip(),
+            extra_data=extra_data,
+            problem_type_id=str(problem_type_id or "").strip(),
+            required_capabilities=required_capabilities,
+            allowed_operations=override_ctx.allowed_operations,
+            fixed_domain_key=override_ctx.fixed_domain_key,
+        )
         return DomainResolutionResult(
             skill_id=key,
             fixed_domain_key=override_ctx.fixed_domain_key,
@@ -489,7 +561,6 @@ def resolve_domain_authority(
             curriculum_profile=override_ctx.curriculum_profile,
         )
 
-    confirmed = get_confirmed_skill_binding(key)
     if confirmed:
         fixed_domain_key = get_fixed_domain_key(key)
         allowed = tuple(get_allowed_operations(fixed_domain_key, skill_id=key))
@@ -502,12 +573,21 @@ def resolve_domain_authority(
                 cap for cap in required_capabilities
                 if cap in prov_caps or cap in allowed_ops
             ]
+        selected = _resolve_exact_selected_operation(
+            preferred=str(selected_operation or "").strip(),
+            extra_data=extra_data,
+            problem_type_id=str(problem_type_id or "").strip(),
+            required_capabilities=required_capabilities,
+            allowed_operations=allowed,
+            fixed_domain_key=fixed_domain_key,
+        )
         return _confirmed_binding_result(
             skill_id=key,
             routing=confirmed,
             fixed_domain_key=fixed_domain_key,
             allowed=allowed,
             required_capabilities=required_capabilities,
+            selected_operation=selected,
         )
 
     dynamic_ctx = resolve_dynamic_fixed_domain_context(
@@ -517,13 +597,14 @@ def resolve_domain_authority(
         problem_type_id=problem_type_id,
         extra=extra,
     )
-    op = str(
-        selected_operation
-        or extra_data.get("domain_operation")
-        or extra_data.get("selected_operation")
-        or problem_type_id
-        or ""
-    ).strip()
+    op = _resolve_exact_selected_operation(
+        preferred=str(selected_operation or "").strip(),
+        extra_data=extra_data,
+        problem_type_id=str(problem_type_id or "").strip(),
+        required_capabilities=required_capabilities,
+        allowed_operations=dynamic_ctx.allowed_operations,
+        fixed_domain_key=dynamic_ctx.fixed_domain_key,
+    )
     return _derived_binding_result(
         skill_id=key,
         ctx=dynamic_ctx,
@@ -603,6 +684,9 @@ def normalize_induced_spec_to_resolver_constraints(
             pass
     if answer_contract.get("answer_type"):
         normalized["answer_type"] = str(answer_contract.get("answer_type") or "").strip()
+    generation_constraints = induced_spec.get("generation_constraints")
+    if isinstance(generation_constraints, dict) and generation_constraints:
+        normalized["generation_constraints"] = copy.deepcopy(generation_constraints)
     return normalized
 
 

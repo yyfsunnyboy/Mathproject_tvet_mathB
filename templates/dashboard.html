@@ -97,11 +97,6 @@
             color: #8a5a1f;
             border-color: #e0c87a;
         }
-        .skill-card mjx-container {
-            max-width: 100%;
-            overflow-x: auto;
-        }
-
         /* ── Dashboard Header Row ── */
         .dashboard-header-row {
             display: flex;
@@ -534,7 +529,12 @@
             background: #fffdf9 !important;
             border: 1px solid #dde5d8 !important;
             border-radius: 14px !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             padding: 0 !important;
+            text-align: center;
             box-shadow: 0 2px 8px rgba(60,80,60,0.04) !important;
             transition:
                 background 0.18s ease,
@@ -555,9 +555,15 @@
         }
         .level-card.chapter-card h3 {
             font-size: 13px !important;
+            font-weight: 700 !important;
             color: var(--ink) !important;
-            margin: 0 !important;
+            margin: 0 0 12px !important;
             transition: font-weight 0.18s ease, color 0.18s ease;
+        }
+        .chapter-card__enter {
+            margin: 0;
+            font-size: 12px;
+            color: #5e7a61;
         }
 
         /* ── Categories grid ── */
@@ -591,108 +597,6 @@
             font-size: 1.1em;
         }
 
-        /* ── Skill Grid + Cards ── */
-        .skill-grid {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            gap: 14px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .skill-grid.curriculum-skills {
-            display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
-            width: 100% !important;
-            grid-auto-flow: row !important;
-        }
-        .skill-card {
-            background: #fffdf9;
-            border: 1px solid #dde5d8;
-            border-radius: 18px;
-            box-shadow: 0 2px 10px rgba(60,80,60,0.04);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            box-sizing: border-box;
-            width: 100%;
-            max-width: 100%;
-            transition:
-                transform 0.18s ease,
-                box-shadow 0.18s ease,
-                border-color 0.18s ease,
-                background 0.18s ease;
-        }
-        .skill-card:hover {
-            transform: translateY(-3px);
-            background: linear-gradient(180deg, #fffefb 0%, #f6fbf4 100%);
-            border-color: #89a889;
-            box-shadow: 0 10px 24px rgba(70,100,70,0.10);
-        }
-        .skill-card:hover h3 {
-            font-weight: 700;
-            color: #2d5132;
-        }
-        .skill-card h3 {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.3;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 0;
-            margin-bottom: 6px;
-            color: var(--green-deep);
-            transition: font-weight 0.18s ease, color 0.18s ease;
-        }
-        .skill-card p {
-            font-size: 12.5px;
-            color: #5e6a61;
-            flex-grow: 1;
-            margin-bottom: 8px;
-        }
-        .progress-info {
-            font-size: 12px;
-            color: #5e6a61;
-            margin-bottom: 10px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e6ede2;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 6px;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #7ea37f 0%, #5f7f68 100%);
-            border-radius: 999px;
-            transition: width 0.5s ease;
-        }
-
-        /* btn-practice: 技能卡片 / 章節「開始練習」「單元練習」按鈕 */
-        .btn-practice {
-            display: block;
-            text-align: center;
-            background: #6f946f;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: var(--r-md);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition:
-                background 0.18s ease,
-                transform 0.18s ease;
-            margin-top: auto;
-            border: 1px solid #5a7d5a;
-        }
-        .btn-practice:hover {
-            background: #5f7f68;
-            transform: translateY(-1px);
-        }
-
         /* ── Skill Section Group ── */
         .skill-section-group {
             margin-bottom: 18px;
@@ -723,9 +627,6 @@
         /* ── Responsive ── */
         @media (max-width: 960px) {
             .dashboard-shell { padding: 12px 14px 28px; }
-            .skill-grid, .skill-grid.curriculum-skills {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
             .level-grid.categories-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -736,11 +637,9 @@
         @media (max-width: 640px) {
             .chalkboard-hero { min-height: 100px; padding: 0 16px; }
             .chalkboard-hero-inner h3 { font-size: 16px; }
-            .skill-grid, .skill-grid.curriculum-skills {
-                grid-template-columns: 1fr !important;
-            }
         }
     </style>
+    {% include 'partials/skill_card_styles.html' %}
 </head>
 
 <body>
@@ -763,7 +662,9 @@
         <div class="dashboard-header-row">
             <h2>學習儀表板</h2>
             <div class="curriculum-pills">
-                {% if not hide_curriculum_switch %}
+                {% if session.get('guest_demo') %}
+                <span class="cpill-name cpill-active" aria-label="固定課綱">技術型高中</span>
+                {% elif not hide_curriculum_switch %}
                 {% for c, name in [('junior_high', '國中'), ('general', '普高'), ('vocational', '技高')] %}
                 <div class="curriculum-pill-wrap">
                     <a href="{{ url_for('dashboard', view='curriculum', curriculum=c) }}"
@@ -781,7 +682,6 @@
                 {% endif %}
             </div>
             <div class="header-actions">
-                <a href="{{ url_for('adaptive_review') }}" class="btn-header btn-header-primary">⚡ 自適應複習</a>
                 <a href="{{ url_for('dashboard', view='all') }}"
                    class="btn-header {% if view_mode == 'all' %}btn-header-active{% else %}btn-header-muted{% endif %}">
                     顯示所有
@@ -874,9 +774,26 @@
             </div>
         </div>
         {% endfor %}
+        {% if curriculum == 'vocational' and mock_exam_cards %}
+        <div class="grade-row grade3-mock-exams">
+            <div class="grade-label">
+                <h4>三年級</h4>
+            </div>
+            <div class="level-grid volumes-grid">
+                {% for card in mock_exam_cards %}
+                <a href="{{ url_for('core.vocational_mock_exam', exam_id=card.exam_id) }}"
+                    style="text-decoration: none;">
+                    <div class="level-card volume-card">
+                        <h3>{{ card.label }}</h3>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         {% elif level == 'chapters' %}
         <!-- 顯示章節 -->
-        <p>{{ volume }} - 請選擇章節：</p>
+        <p>{{ volume }}｜選擇章節</p>
         <div class="level-grid chapters-grid">
             {% for ch in chapter_cards %}
             <div class="chapter-container" style="display: flex; flex-direction: column; gap: 5px;">
@@ -884,12 +801,13 @@
                     style="text-decoration: none; flex-grow: 1; display: flex;">
                     <div class="level-card chapter-card" style="width: 100%;">
                         <h3>{{ ch.display }}</h3>
+                        <p class="chapter-card__enter">進入章節</p>
                     </div>
                 </a>
-                <a href="{{ url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='1', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('1') else url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='2', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('2') else url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw) }}"
+                <a href="{{ url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='1', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('1') else url_for('practice.adaptive_practice_page', mode='chapter', curriculum=curriculum, volume=volume, chapter_id='2', learning_mode='teaching', practice_kind='unit_practice') if curriculum == 'vocational' and volume == '數學B4' and ch.display.startswith('2') else url_for('practice.adaptive_practice_page', mode='single', skill_ids=ch.raw, curriculum=curriculum, volume=volume) }}"
                     class="btn-practice"
                     style="background-color: #28a745; text-decoration: none; padding: 8px; font-size: 0.9em;">
-                    單元練習
+                    本章總複習
                 </a>
             </div>
             {% endfor %}
@@ -904,46 +822,7 @@
             <h4>{{ section_group.section }}</h4>
             <div class="skill-grid curriculum-skills">
                 {% for skill in section_group.skills %}
-                <div class="skill-card" style="width: 100%; max-width: 100%; height: 100%;">
-                    <h3>{{ skill.skill_ch_name }}</h3>
-                    <p>{{ skill.description }}</p>
-
-                    <div class="progress-info">
-                        <div class="progress-bar">
-                            <div class="progress-fill"
-                                style="width: {{ (skill.consecutive_correct / skill.consecutive_correct_required * 100) if skill.consecutive_correct_required else 0 }}%">
-                            </div>
-                        </div>
-                        <small>連續答對 {{ skill.consecutive_correct }} / {{ skill.consecutive_correct_required }} 題 →
-                            晉級</small>
-                        <br>
-                        <small>當前等級：{{ skill.current_level }} 級 | 總練習 {{ skill.questions_solved }} 題</small>
-                    </div>
-
-                    {% set is_b4_ch1_tree_diagram = (
-                        curriculum == 'vocational'
-                        and volume == '數學B4'
-                        and (chapter_display|string).startswith('1')
-                        and (
-                            skill.skill_id == 'vh_數學B4_TreeDiagramCounting'
-                            or skill.skill_ch_name == '樹狀圖'
-                            or 'TreeDiagramCounting' in (skill.skill_id|string)
-                        )
-                    ) %}
-                    {% set is_b4_ch1_pascal_triangle = (
-                        curriculum == 'vocational'
-                        and volume == '數學B4'
-                        and (chapter_display|string).startswith('1')
-                        and (
-                            skill.skill_id == 'vh_數學B4_PascalTriangle'
-                            or skill.skill_ch_name == '巴斯卡三角形'
-                            or 'PascalTriangle' in (skill.skill_id|string)
-                        )
-                    ) %}
-                    <a href="{{ url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='tree_diagram_listing', answer_type='handwriting', grading_mode='ai_judged_free_response', variant='early_stopping_game') if is_b4_ch1_tree_diagram else (url_for('practice.practice_query_entry', skill=skill.skill_id, problem_type='pascal_triangle_handwriting', answer_type='handwriting', grading_mode='ai_judged_free_response', pascal_triangle_index=0) if is_b4_ch1_pascal_triangle else url_for('practice.practice', skill_id=skill.skill_id)) }}" class="btn-practice">
-                        開始練習
-                    </a>
-                </div>
+                {% with skill_card=skill %}{% include 'partials/skill_card.html' %}{% endwith %}
                 {% endfor %}
             </div>
         </div>
@@ -968,24 +847,7 @@
         <p>類別：{{ category }} - 請選擇要練習的單元：</p>
         <div class="skill-grid">
             {% for data in dashboard_data %}
-            <div class="skill-card" style="height: 100%;">
-                <h3>{{ data.skill.skill_ch_name }}</h3>
-                <p>{{ data.skill.description }}</p>
-                <div class="progress-info">
-                    <div class="progress-bar">
-                        <div class="progress-fill"
-                            style="width: {{ (data.consecutive_correct / data.skill.consecutive_correct_required * 100) if data.skill.consecutive_correct_required else 0 }}%">
-                        </div>
-                    </div>
-                    <small>連續答對 {{ data.consecutive_correct }} / {{ data.skill.consecutive_correct_required }} 題 →
-                        晉級</small>
-                    <br>
-                    <small>當前等級：{{ data.current_level }} 級 | 總練習 {{ data.questions_solved }} 題</small>
-                </div>
-                <a href="{{ url_for('practice.practice', skill_id=data.skill.skill_id) }}" class="btn-practice">
-                    開始練習
-                </a>
-            </div>
+            {% with skill_card=data %}{% include 'partials/skill_card.html' %}{% endwith %}
             {% endfor %}
         </div>
         {% endif %}
@@ -1012,64 +874,70 @@
     </script>
 
     <script>
-        window.MathJax = window.MathJax || {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
-            },
-            svg: { fontCache: 'global' }
-        };
+        (function () {
+            var refreshUrl = {{ url_for('dashboard_skill_card_mastery') | tojson }};
+            var lastRefreshAt = 0;
 
-        function renderMathInElement(el) {
-            if (!el) return;
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([el]).catch(function (err) {
-                    console.warn('MathJax render error:', err);
+            function updateCard(card, mastery) {
+                Array.from(card.classList).forEach(function (name) {
+                    if (name.indexOf('status-') === 0) card.classList.remove(name);
                 });
+                card.classList.add('status-' + mastery.card_status);
+
+                var status = card.querySelector('[data-mastery-field="status"]');
+                var accuracy = card.querySelector('[data-mastery-field="accuracy"]');
+                var progress = card.querySelector('[data-mastery-field="progress"]');
+                var streak = card.querySelector('[data-mastery-field="streak"]');
+                var attempts = card.querySelector('[data-mastery-field="attempts"]');
+                if (status) status.textContent = mastery.card_status_label;
+                if (accuracy) accuracy.textContent = '熟練度 ' + mastery.recent_accuracy_label;
+                if (progress) progress.style.width = mastery.recent_accuracy + '%';
+                if (streak) {
+                    streak.textContent = mastery.binding_issue
+                        ? '連續答對 ' + mastery.current_streak + ' / 暫無門檻'
+                        : '連續答對 ' + mastery.current_streak + ' / ' + mastery.pass_target + ' 題';
+                }
+                if (attempts) {
+                    attempts.textContent = '最近 ' + mastery.recent_attempt_count
+                        + ' 題 | 累計作答 ' + mastery.attempt_count + ' 題';
+                }
             }
-        }
 
-        function skillCardMathContainer() {
-            return document.querySelector('.skills-grid')
-                || document.querySelector('.skill-grid.curriculum-skills')
-                || document.querySelector('.skill-grid')
-                || document.querySelector('.dashboard-shell')
-                || document.body;
-        }
-
-        function ensureMathJaxThenTypeset() {
-            var container = skillCardMathContainer();
-            if (!container) return;
-
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                renderMathInElement(container);
-                return;
+            function refreshVisibleMastery() {
+                var cards = Array.from(document.querySelectorAll('.skill-card[data-skill-id]'));
+                if (!cards.length) return;
+                var params = new URLSearchParams();
+                cards.forEach(function (card) { params.append('skill_id', card.dataset.skillId); });
+                lastRefreshAt = Date.now();
+                fetch(refreshUrl + '?' + params.toString(), {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(function (response) {
+                        if (!response.ok) throw new Error('mastery refresh failed');
+                        return response.json();
+                    })
+                    .then(function (payload) {
+                        cards.forEach(function (card) {
+                            var mastery = payload.mastery && payload.mastery[card.dataset.skillId];
+                            if (mastery) updateCard(card, mastery);
+                        });
+                    })
+                    .catch(function (error) {
+                        console.warn('Dashboard mastery refresh error:', error);
+                    });
             }
 
-            if (document.querySelector("script[data-dashboard-mathjax-loader='1']")) return;
-
-            var script = document.createElement("script");
-            script.defer = true;
-            script.id = "mathjax-dashboard-loader";
-            script.setAttribute("data-dashboard-mathjax-loader", "1");
-            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js";
-            script.onload = function () {
-                renderMathInElement(container);
-            };
-            document.head.appendChild(script);
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            ensureMathJaxThenTypeset();
-            var container = skillCardMathContainer();
-            if (!container || typeof MutationObserver === 'undefined') return;
-            var observer = new MutationObserver(function () {
-                renderMathInElement(container);
+            window.addEventListener('pageshow', refreshVisibleMastery);
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && Date.now() - lastRefreshAt > 1000) {
+                    refreshVisibleMastery();
+                }
             });
-            observer.observe(container, { childList: true, subtree: true });
-        });
+        })();
     </script>
+
+    {% include 'partials/skill_card_math_renderer.html' %}
 
     </div>
 </body>

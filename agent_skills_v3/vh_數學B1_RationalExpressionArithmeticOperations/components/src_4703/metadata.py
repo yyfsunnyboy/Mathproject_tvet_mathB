@@ -38,7 +38,7 @@ ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
     "module": "core.checkers.structured_text_checker",
 }
 
-GENERATOR_READINESS: Final[str] = "draft"
+GENERATOR_READINESS: Final[str] = "verified"
 
 SEMANTIC_REQUIRED_CONCEPTS: Final[tuple[str, ...]] = (
     

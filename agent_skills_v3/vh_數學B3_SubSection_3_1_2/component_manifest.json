@@ -1,0 +1,205 @@
+{
+  "skill_id": "vh_數學B3_SubSection_3_1_2",
+  "publish_status": "package_ready",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_12042",
+      "textbook_example_id": 12042,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12042/generate.py"
+    },
+    {
+      "component_id": "src_12043",
+      "textbook_example_id": 12043,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12043/generate.py"
+    },
+    {
+      "component_id": "src_12044",
+      "textbook_example_id": 12044,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12044/generate.py"
+    },
+    {
+      "component_id": "src_12045",
+      "textbook_example_id": 12045,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12045/generate.py"
+    },
+    {
+      "component_id": "src_12046",
+      "textbook_example_id": 12046,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12046/generate.py"
+    },
+    {
+      "component_id": "src_12047",
+      "textbook_example_id": 12047,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12047/generate.py"
+    },
+    {
+      "component_id": "src_12055",
+      "textbook_example_id": 12055,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12055/generate.py"
+    },
+    {
+      "component_id": "src_12056",
+      "textbook_example_id": 12056,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12056/generate.py"
+    },
+    {
+      "component_id": "src_12057",
+      "textbook_example_id": 12057,
+      "status": "verified",
+      "problem_type_id": "system_abs_pair",
+      "domain_operation": "system_abs_pair",
+      "presentation_mode": "short_answer",
+      "answer_type": "ordered_pair",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12057/generate.py"
+    },
+    {
+      "component_id": "src_12058",
+      "textbook_example_id": 12058,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12058/generate.py"
+    },
+    {
+      "component_id": "src_12062",
+      "textbook_example_id": 12062,
+      "status": "verified",
+      "problem_type_id": "system_continued_ratio",
+      "domain_operation": "system_continued_ratio",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12062/generate.py"
+    },
+    {
+      "component_id": "src_12063",
+      "textbook_example_id": 12063,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12063/generate.py"
+    },
+    {
+      "component_id": "src_12107",
+      "textbook_example_id": 12107,
+      "status": "verified",
+      "problem_type_id": "system_linear_combo",
+      "domain_operation": "system_linear_combo",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12107/generate.py"
+    },
+    {
+      "component_id": "src_12117",
+      "textbook_example_id": 12117,
+      "status": "verified",
+      "problem_type_id": "system_ordered_pair",
+      "domain_operation": "system_ordered_pair",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12117/generate.py"
+    },
+    {
+      "component_id": "src_12118",
+      "textbook_example_id": 12118,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12118/generate.py"
+    },
+    {
+      "component_id": "src_12119",
+      "textbook_example_id": 12119,
+      "status": "verified",
+      "problem_type_id": "system_word_two",
+      "domain_operation": "system_word_two",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12119/generate.py"
+    },
+    {
+      "component_id": "src_12120",
+      "textbook_example_id": 12120,
+      "status": "verified",
+      "problem_type_id": "system_known_solution",
+      "domain_operation": "system_known_solution",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12120/generate.py"
+    },
+    {
+      "component_id": "src_12121",
+      "textbook_example_id": 12121,
+      "status": "verified",
+      "problem_type_id": "system_dependent_value",
+      "domain_operation": "system_dependent_value",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12121/generate.py"
+    }
+  ]
+}

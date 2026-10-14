@@ -399,6 +399,17 @@ def naming_warning_if_prefix_contract_mismatch(
 QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE = "任意實數/無解/ -1<x<3"
 QUADRATIC_INEQUALITY_SPECIAL_CASE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
 QUADRATIC_INEQUALITY_PARAMETER_RANGE_HINT_EXAMPLE = QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
+VERTEX_FORM_HINT_EXAMPLE = "$2(x-2)^2+3$"
+_VERTEX_FORM_ANSWER_SHAPES = frozenset({
+    "vertex_form_expression",
+    "vertex_form",
+    "complete_square_expression",
+})
+_VERTEX_FORM_PROBLEM_TYPE_MARKERS = (
+    "complete_square",
+    "completing_the_square",
+    "vertex_form_expression",
+)
 _QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
     "quadratic_inequality_interval_solution",
     "quadratic_inequality_parameter_range",
@@ -407,6 +418,31 @@ _QUADRATIC_INEQUALITY_HINT_REASONS = frozenset({
 _PARAMETER_RANGE_HINT_DECOYS = frozenset({"m>1", "k<-2", "m>=1", "k<=-2"})
 _SPECIAL_CASE_LABEL_ANSWERS = frozenset({"無解", "任意实数", "任意實數", "无解"})
 _LINEAR_EQUATION_DEFAULT_HINT = "（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）"
+
+
+def _is_vertex_form_contract(ac: dict[str, Any]) -> bool:
+    """True when the contract expects completing-the-square / vertex-form answers."""
+    shape = str(ac.get("answer_shape") or "").strip().lower()
+    if shape in _VERTEX_FORM_ANSWER_SHAPES:
+        return True
+    semantics = str(ac.get("answer_semantics") or "").strip().lower()
+    if "vertex" in semantics and "form" in semantics:
+        return True
+    pt = str(
+        ac.get("problem_type_id")
+        or ac.get("canonical_base_problem_type_id")
+        or ""
+    ).strip().lower()
+    if any(marker in pt for marker in _VERTEX_FORM_PROBLEM_TYPE_MARKERS):
+        return True
+    stem = ac.get("stem_contract") if isinstance(ac.get("stem_contract"), dict) else {}
+    math_objects = stem.get("required_math_objects") or stem.get("allowed_math_objects") or []
+    if isinstance(math_objects, list):
+        joined = " ".join(str(x) for x in math_objects).lower()
+        if "quadratic_vertex_form" in joined or "completing_the_square" in joined:
+            return True
+    return False
+
 
 
 def _is_linear_equation_contract(ac: dict[str, Any]) -> bool:
@@ -476,6 +512,10 @@ def answer_format_example_for_contract(answer_contract: dict[str, Any] | None) -
     if is_parameter_range:
         return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
 
+    # Completing-the-square / vertex form must not reuse factorization examples.
+    if _is_vertex_form_contract(ac):
+        return VERTEX_FORM_HINT_EXAMPLE
+
     explicit = str(ac.get("answer_format_example") or "").strip()
     if explicit in _SPECIAL_CASE_LABEL_ANSWERS:
         return QUADRATIC_INEQUALITY_UNIFIED_HINT_EXAMPLE
@@ -528,3 +568,73 @@ def build_answer_format_suffix(answer_contract: dict[str, Any] | None) -> str:
     if not example:
         return ""
     return f"（答案範例：{example}）"
+
+
+# Explicit answer-format templates stated in the stem itself:
+#   請用「向左 2、向上 3」的格式作答 / 以「x=h」的形式表示
+#   改寫為 $a(x+m)^2+n$ / 化成頂點式 $a(x-h)^2+k$
+_QUOTED_FORMAT_RE = re.compile(r"[「『]([^」』]{1,40})[」』]\s*的?\s*(?:格式|形式)")
+_MATH_FORMAT_RE = re.compile(
+    r"(?:改寫為|改寫成|寫成|化為|化成|表示為|表示成)[^\s$，。、；]{0,4}\s*\$([^$]{1,40})\$"
+)
+_TEMPLATE_PARAM_RE = re.compile(r"(?<![A-Za-z\\])[a-wA-Z](?![A-Za-z])")
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _format_shape(text: str) -> str:
+    """Structural shape of a format template / example: numbers and template
+    parameters become '#', signs collapse, spacing and TeX grouping vanish."""
+    s = str(text or "").replace("$", "")
+    s = s.replace("{", "").replace("}", "").replace("\\left", "").replace("\\right", "")
+    s = re.sub(r"\s+", "", s)
+    s = re.sub(r"^(?:y|f\(x\))=", "", s)
+    s = s.replace("，", ",").replace("−", "-").replace("-", "+")
+    s = re.sub(r"\d+(?:\.\d+)?", "#", s)
+    s = _TEMPLATE_PARAM_RE.sub("#", s)
+    return s
+
+
+def stem_states_answer_format(question_text: str, example: str) -> bool:
+    """True only when the stem already states an explicit answer format that
+    structurally covers ``example``; anything uncertain returns False."""
+    stem = str(question_text or "")
+    ex = str(example or "").strip()
+    if not stem or not ex:
+        return False
+    ex_shape = _format_shape(ex)
+    if not ex_shape:
+        return False
+    templates = [m.group(1) for m in _QUOTED_FORMAT_RE.finditer(stem)]
+    templates += [m.group(1) for m in _MATH_FORMAT_RE.finditer(stem)]
+    for template in templates:
+        tpl_shape = _format_shape(template)
+        if not tpl_shape:
+            continue
+        if tpl_shape == ex_shape:
+            return True
+        # A word-like example (e.g. 向上) that is a fragment of a fuller stated
+        # format (e.g. 向左 2、向上 3) adds nothing; bare numbers never qualify.
+        if _CJK_RE.search(ex_shape) and len(ex_shape) >= 2 and ex_shape in tpl_shape:
+            return True
+    return False
+
+
+def build_answer_format_suffix_for_stem(
+    answer_contract: dict[str, Any] | None,
+    question_text: str,
+) -> tuple[str, str]:
+    """Return ``(suffix, suppressed_reason)``.
+
+    The contract-shaped example is omitted only when the stem already states
+    a format that covers it; otherwise the suffix from
+    ``build_answer_format_suffix`` is returned unchanged.
+    """
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    if _is_linear_equation_contract(ac):
+        return _build_linear_equation_format_suffix(ac), ""
+    example = answer_format_example_for_contract(ac)
+    if not example:
+        return "", ""
+    if stem_states_answer_format(question_text, example):
+        return "", "stem_states_answer_format"
+    return f"（答案範例：{example}）", ""

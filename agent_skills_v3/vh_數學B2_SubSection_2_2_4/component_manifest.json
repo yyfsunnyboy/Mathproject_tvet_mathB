@@ -1,0 +1,95 @@
+{
+  "skill_id": "vh_數學B2_SubSection_2_2_4",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_11691",
+      "textbook_example_id": 11691,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_sines",
+      "domain_operation": "solve_side_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11691/generate.py"
+    },
+    {
+      "component_id": "src_11692",
+      "textbook_example_id": 11692,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_sines",
+      "domain_operation": "solve_side_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11692/generate.py"
+    },
+    {
+      "component_id": "src_11693",
+      "textbook_example_id": 11693,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11693/generate.py"
+    },
+    {
+      "component_id": "src_11694",
+      "textbook_example_id": 11694,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11694/generate.py"
+    },
+    {
+      "component_id": "src_11702",
+      "textbook_example_id": 11702,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_sines",
+      "domain_operation": "solve_side_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11702/generate.py"
+    },
+    {
+      "component_id": "src_11703",
+      "textbook_example_id": 11703,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11703/generate.py"
+    },
+    {
+      "component_id": "src_11721",
+      "textbook_example_id": 11721,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_cosines",
+      "domain_operation": "solve_side_by_law_of_cosines",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11721/generate.py"
+    },
+    {
+      "component_id": "src_11722",
+      "textbook_example_id": 11722,
+      "status": "verified",
+      "problem_type_id": "solve_side_by_law_of_sines",
+      "domain_operation": "solve_side_by_law_of_sines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11722/generate.py"
+    }
+  ]
+}

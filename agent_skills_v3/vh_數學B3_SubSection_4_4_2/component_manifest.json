@@ -1,0 +1,150 @@
+{
+  "skill_id": "vh_數學B3_SubSection_4_4_2",
+  "publish_status": "package_ready",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_12206",
+      "textbook_example_id": 12206,
+      "status": "verified",
+      "problem_type_id": "log_equation_linear_arg",
+      "domain_operation": "log_equation_linear_arg",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12206/generate.py"
+    },
+    {
+      "component_id": "src_12207",
+      "textbook_example_id": 12207,
+      "status": "verified",
+      "problem_type_id": "log_equation_linear_arg",
+      "domain_operation": "log_equation_linear_arg",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12207/generate.py"
+    },
+    {
+      "component_id": "src_12208",
+      "textbook_example_id": 12208,
+      "status": "verified",
+      "problem_type_id": "log_equation_product_quadratic",
+      "domain_operation": "log_equation_product_quadratic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_example",
+      "generate_py": "components/src_12208/generate.py"
+    },
+    {
+      "component_id": "src_12209",
+      "textbook_example_id": 12209,
+      "status": "verified",
+      "problem_type_id": "log_equation_product_quadratic",
+      "domain_operation": "log_equation_product_quadratic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "in_class_practice",
+      "generate_py": "components/src_12209/generate.py"
+    },
+    {
+      "component_id": "src_12210",
+      "textbook_example_id": 12210,
+      "status": "verified",
+      "problem_type_id": "log_threshold_application_choice",
+      "domain_operation": "log_threshold_application_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "exam_practice",
+      "generate_py": "components/src_12210/generate.py"
+    },
+    {
+      "component_id": "src_12214",
+      "textbook_example_id": 12214,
+      "status": "verified",
+      "problem_type_id": "log_equation_linear_arg",
+      "domain_operation": "log_equation_linear_arg",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12214/generate.py"
+    },
+    {
+      "component_id": "src_12215",
+      "textbook_example_id": 12215,
+      "status": "verified",
+      "problem_type_id": "log_equation_quadratic_arg",
+      "domain_operation": "log_equation_quadratic_arg",
+      "presentation_mode": "short_answer",
+      "answer_type": "multi_part",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12215/generate.py"
+    },
+    {
+      "component_id": "src_12216",
+      "textbook_example_id": 12216,
+      "status": "verified",
+      "problem_type_id": "log_equation_solve_base",
+      "domain_operation": "log_equation_solve_base",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12216/generate.py"
+    },
+    {
+      "component_id": "src_12217",
+      "textbook_example_id": 12217,
+      "status": "verified",
+      "problem_type_id": "log_equation_product_quadratic",
+      "domain_operation": "log_equation_product_quadratic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12217/generate.py"
+    },
+    {
+      "component_id": "src_12218",
+      "textbook_example_id": 12218,
+      "status": "verified",
+      "problem_type_id": "log_equation_product_quadratic",
+      "domain_operation": "log_equation_product_quadratic",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "textbook_exercise",
+      "generate_py": "components/src_12218/generate.py"
+    },
+    {
+      "component_id": "src_12220",
+      "textbook_example_id": 12220,
+      "status": "verified",
+      "problem_type_id": "log_curve_through_points",
+      "domain_operation": "log_curve_through_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "advanced_exercise",
+      "generate_py": "components/src_12220/generate.py"
+    },
+    {
+      "component_id": "src_12262",
+      "textbook_example_id": 12262,
+      "status": "verified",
+      "problem_type_id": "log_equation_linear_arg",
+      "domain_operation": "log_equation_linear_arg",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12262/generate.py"
+    },
+    {
+      "component_id": "src_12263",
+      "textbook_example_id": 12263,
+      "status": "verified",
+      "problem_type_id": "log_equation_product_quadratic",
+      "domain_operation": "log_equation_product_quadratic",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "self_assessment",
+      "generate_py": "components/src_12263/generate.py"
+    }
+  ]
+}

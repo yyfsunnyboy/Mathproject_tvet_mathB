@@ -1,0 +1,47 @@
+{
+  "total_examples": 31,
+  "math_parse_failed": 0,
+  "duplicate_examples": 0,
+  "segmentation_issues": 0,
+  "ordering_issues": 0,
+  "visual_issues": 0,
+  "skill_mapping_issues": 0,
+  "11586_source_order": 18,
+  "11586_display_position": 18,
+  "visual_checks": [
+    {
+      "id": 11557,
+      "label": "例2",
+      "assets": 1,
+      "ok": true
+    },
+    {
+      "id": 11567,
+      "label": "隨堂練習2",
+      "assets": 1,
+      "ok": true
+    },
+    {
+      "id": 11558,
+      "label": "例3",
+      "assets": 1,
+      "ok": true
+    },
+    {
+      "id": 11559,
+      "label": "例4",
+      "assets": 1,
+      "ok": true
+    },
+    {
+      "id": 11561,
+      "label": "例6",
+      "assets": 2,
+      "ok": true
+    }
+  ],
+  "visual_assets_mounted": 10,
+  "backup": "D:\\Python\\Mathproject_tvet_mathB\\reports\\b2_1_2_ingestion_audit\\production_backup_pre_b2_1_2_reimport_20260909_093507.db",
+  "backup_sha256": "9f1e4c78102eb1d53fcbf4cd1d7376aac89d9c6b244eb65426807f65c850c2bd",
+  "production_changed": true
+}

@@ -47,6 +47,31 @@ _MATH_FORMULA_RE = re.compile(
     r"(=|×|\+|\\frac|\\left|\\right|f\(x\)|g\(x\)|\{|\}|\^|→|<-|<=|>=|∴|∵)"
 )
 
+# Section identity: ``4-2`` / ``4-2 圓與直線的關係`` / ``4-2圓與直線的關係``.
+# Negative lookahead excludes concept headings like ``4-2.1 …``.
+_SECTION_IDENTITY_RE = re.compile(
+    r"^\s*(?P<section_code>[0-9０-９]+\s*[-－–—]\s*[0-9０-９]+)(?!\s*\.\s*[0-9０-９])\s*"
+    r"(?P<title>\S.+?)\s*$"
+)
+
+# Exercise / assessment block titles must never become section identity.
+# Align with processor outline-skip tokens and explicit user exclusions.
+_EXERCISE_BLOCK_SECTION_TITLES = frozenset(
+    {
+        "習題",
+        "基礎題",
+        "進階題",
+        "練習題",
+        "自我評量",
+        "挑戰題",
+        "章末評量",
+        "總複習",
+        "隨堂練習",
+        "題組",
+        "統測題組",
+    }
+)
+
 
 def set_concept_heading_log_fn(fn: LogFn | None) -> None:
     global _log_fn
@@ -78,6 +103,74 @@ def section_code_from_concept_code(concept_code: str) -> str:
     return m.group(1) if m else ""
 
 
+AUTHORITY_SOURCE_HEADING_RECOVERED = "source_heading_recovered"
+
+
+def concept_subindex(concept_code: str) -> int | None:
+    match = _CANONICAL_CODE_RE.fullmatch(_normalize_line(concept_code).replace(" ", ""))
+    if not match:
+        return None
+    return int(match.group(3))
+
+
+def canonical_section_code(section_code: str) -> str:
+    text = _normalize_line(section_code).replace(" ", "")
+    match = re.fullmatch(r"(\d+)-(\d+)", text)
+    if not match:
+        return text
+    return f"{int(match.group(1))}-{int(match.group(2))}"
+
+
+def recover_section_local_numbered_heading(
+    hit: dict[str, Any],
+    *,
+    current_section_code: str,
+    accepted_subindexes: list[int],
+    source_heading_raw: str,
+) -> dict[str, Any] | None:
+    """Recover one printed concept code whose section prefix is a local typo.
+
+    The printed line stays in ``source_heading_raw``. Recovery applies only when
+    the printed sub-index is the next heading already established in the current
+    section. The recovered code is not described as the printed source text.
+    """
+    current = canonical_section_code(current_section_code)
+    printed_section = canonical_section_code(str(hit.get("section_code") or ""))
+    if not current or not printed_section or printed_section == current:
+        return None
+    printed_code = _normalize_line(str(hit.get("concept_code") or "")).replace(" ", "")
+    sub = concept_subindex(printed_code)
+    if sub is None:
+        return None
+    expected = (max(accepted_subindexes) + 1) if accepted_subindexes else 1
+    if sub != expected:
+        return None
+    name = str(hit.get("concept_name") or "").strip()
+    if not name:
+        return None
+    parts = re.fullmatch(r"(\d+)-(\d+)", current)
+    if not parts:
+        return None
+    recovered_code = canonical_concept_code_from_parts(*parts.groups(), str(sub))
+    recovered = dict(hit)
+    recovered.update(
+        {
+            "concept_code": recovered_code,
+            "section_code": current,
+            "source_heading_raw": str(source_heading_raw or "").strip(),
+            "recovered_heading": f"{recovered_code}{name}",
+            "recovery_reason": (
+                "section-local numbered heading typo; "
+                f"content and placement belong to {current}"
+            ),
+            "authority_source": AUTHORITY_SOURCE_HEADING_RECOVERED,
+            "printed_concept_code": printed_code,
+            "source_concept_code": printed_code,
+        }
+    )
+    return recovered
+
+
 def pseudo_concept_code(section_code: str, concept_name: str) -> str:
     sec = _normalize_line(section_code)
     name = str(concept_name or "").strip()
@@ -89,6 +182,119 @@ def pseudo_concept_code(section_code: str, concept_name: str) -> str:
 def is_persistable_concept_code(concept_code: str) -> bool:
     code = _normalize_line(concept_code)
     return bool(_CANONICAL_CODE_RE.fullmatch(code))
+
+
+def normalize_section_title(title: str) -> str:
+    """Collapse whitespace / NFKC for section-title identity comparison."""
+    return _normalize_line(title)
+
+
+def canonical_section_code(section_code: str) -> str:
+    """Normalize ``4-2`` / fullwidth digits / dash variants to ``ch-sec``."""
+    raw = _to_ascii_digits(_normalize_line(section_code))
+    raw = raw.replace("－", "-").replace("–", "-").replace("—", "-")
+    raw = re.sub(r"\s+", "", raw)
+    m = re.fullmatch(r"(\d+)-(\d+)", raw)
+    if not m:
+        return ""
+    return f"{int(m.group(1))}-{int(m.group(2))}"
+
+
+def is_exercise_block_section_title(title: str) -> bool:
+    """True when the title is an exercise/assessment block, not a curriculum section."""
+    t = normalize_section_title(title)
+    if not t:
+        return False
+    if t in _EXERCISE_BLOCK_SECTION_TITLES:
+        return True
+    # ``習題基礎題`` / ``1-1習題`` style leftovers after code strip.
+    return any(t == tok or t.startswith(tok) for tok in _EXERCISE_BLOCK_SECTION_TITLES)
+
+
+def parse_mathb_section_heading(
+    line: str,
+    *,
+    expected_section_code: str = "",
+) -> dict[str, Any] | None:
+    """Parse a textbook section identity heading (not concept / not 習題).
+
+    Accepts optional whitespace after the section code:
+    ``4-2 圓與直線的關係``, ``4-2圓與直線的關係``, ``4-2  圓與直線的關係``.
+
+    Rejects concept headings (``4-2.1 …``) and exercise-block titles
+    (``4-2 習題``, ``4-2 基礎題``, …).
+    """
+    raw = str(line or "")
+    norm = _normalize_line(raw)
+    if not norm:
+        return None
+    m = _SECTION_IDENTITY_RE.match(norm)
+    if not m:
+        return None
+    section_code = canonical_section_code(m.group("section_code"))
+    title = normalize_section_title(m.group("title"))
+    if not section_code or not title:
+        return None
+    if is_exercise_block_section_title(title):
+        return None
+    expected = canonical_section_code(expected_section_code) if expected_section_code else ""
+    if expected and section_code != expected:
+        return None
+    return {
+        "is_section_heading": True,
+        "section_code": section_code,
+        "section_title": title,
+        "source_heading_text": raw.strip(),
+        "normalized_identity": f"{section_code}{title}",
+    }
+
+
+def section_identities_match(
+    detected: str | dict[str, Any] | None,
+    authoritative: str | dict[str, Any] | None,
+    *,
+    expected_section_code: str = "",
+) -> bool:
+    """Compare section identity by parsed code + normalized title (not raw strings)."""
+
+    def _as_parts(value: str | dict[str, Any] | None) -> dict[str, str] | None:
+        if value is None:
+            return None
+        if isinstance(value, dict):
+            code = canonical_section_code(
+                str(value.get("section_code") or "")
+            ) or canonical_section_code(
+                str(value.get("source_heading_text") or value.get("section") or "")
+            )
+            title = normalize_section_title(
+                str(value.get("section_title") or value.get("title") or "")
+            )
+            if not title:
+                parsed = parse_mathb_section_heading(
+                    str(value.get("source_heading_text") or value.get("section") or ""),
+                    expected_section_code=expected_section_code,
+                )
+                if parsed:
+                    return {
+                        "section_code": parsed["section_code"],
+                        "section_title": parsed["section_title"],
+                    }
+            if code and title and not is_exercise_block_section_title(title):
+                return {"section_code": code, "section_title": title}
+            return None
+        return parse_mathb_section_heading(
+            str(value),
+            expected_section_code=expected_section_code,
+        )
+
+    left = _as_parts(detected)
+    right = _as_parts(authoritative)
+    if not left or not right:
+        return False
+    return (
+        left["section_code"] == right["section_code"]
+        and left["section_title"] == right["section_title"]
+    )
 
 
 def _reject(line: str, reason: str) -> None:
@@ -178,3 +384,51 @@ def detect_mathb_concept_heading(
         "section_code": section_code,
         "heading_kind": kind,
     }
+
+
+_INLINE_LATEX_RE = re.compile(r"\\\(.+?\\\)|\\\[[^\]]+\\\]", re.DOTALL)
+
+
+def normalize_identity_heading(value: str) -> str:
+    return re.sub(r"\s+", "", _normalize_line(value))
+
+
+def reconcile_inline_formula_heading(
+    line: str,
+    *,
+    current_section_code: str,
+    candidates: list[dict[str, Any]] | None,
+) -> dict[str, Any] | None:
+    """Match one audited numbered heading whose LaTeX title hides an inline formula.
+
+    The concept name stays the original DOCX heading name. A line is accepted
+    only when removing inline LaTeX reproduces that audited name and code.
+    """
+    raw = _normalize_line(line)
+    if not raw or ("\\(" not in raw and "\\[" not in raw):
+        return None
+    stripped = re.sub(r"\s+", "", _INLINE_LATEX_RE.sub("", raw))
+    if not stripped or stripped == re.sub(r"\s+", "", raw):
+        return None
+    hit = detect_mathb_concept_heading(
+        stripped,
+        current_section_code=current_section_code,
+        current_source_scope=SCOPE_SECTION_TEXTBOOK,
+    )
+    if not hit or not hit.get("is_concept_heading") or hit.get("duplicate_merge"):
+        return None
+    if canonical_section_code(str(hit.get("section_code") or "")) != canonical_section_code(
+        current_section_code
+    ):
+        return None
+    code = str(hit.get("concept_code") or "")
+    name = normalize_identity_heading(str(hit.get("concept_name") or ""))
+    matches = [
+        item
+        for item in (candidates or [])
+        if str(item.get("concept_code") or "") == code
+        and normalize_identity_heading(str(item.get("concept_name") or "")) == name
+    ]
+    if len(matches) != 1:
+        return None
+    return hit

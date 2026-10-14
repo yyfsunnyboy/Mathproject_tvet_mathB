@@ -108,7 +108,7 @@ def audit_skill_variation(
     close_conn_later = False
     if conn is None:
         db_path = root_path / "instance" / "kumon_math.db"
-        conn = sqlite3.connect(str(db_path))
+        conn = sqlite3.connect(f"file:{db_path.resolve().as_posix()}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row
         close_conn_later = True
         

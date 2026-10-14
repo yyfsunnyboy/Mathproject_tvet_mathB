@@ -13,7 +13,7 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, url_for, render_template, flash, session, send_file, Response, stream_with_context
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect
+from sqlalchemy import distinct, text, MetaData, Table, select, func, or_, and_, inspect, cast, Integer, case
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 import os
@@ -23,6 +23,7 @@ import threading
 import traceback
 import subprocess
 import sys
+import logging
 from pathlib import Path
 from collections import defaultdict
 import pandas as pd
@@ -30,6 +31,9 @@ import io
 import re
 import importlib
 import json
+
+
+_admin_v3_logger = logging.getLogger(__name__)
 from core.gencode.pipeline_orchestrator import (
     run_gencode_auto_pipeline,
     run_gencode_phase1,
@@ -39,31 +43,99 @@ from core.gencode.pipeline_orchestrator import (
     publish_gencode_draft_skill,
     register_classifier_rulepack_from_draft,
 )
-from core.services.prompt_sync_service import (
-    PromptSyncError,
-    compare_prompt_db_vs_yaml,
-    export_single_prompt_to_yaml,
-    import_single_prompt_from_yaml,
-)
+def _admin_v3_json_safe(
+    value,
+    _seen=None,
+    _path="root",
+    _depth=0,
+):
+    """Recursively make admin V3 payloads JSON serializable.
 
+    Protects against circular references and runaway recursion while keeping
+    legitimate shared references (the same object appearing in two separate
+    branches) untouched.
+    """
+    if _depth > 100:
+        try:
+            logger = current_app.logger
+        except RuntimeError:
+            logger = _admin_v3_logger
+        logger.warning(
+            "[admin_v3_json_safe] max depth exceeded at path=%s type=%s",
+            _path,
+            type(value).__name__,
+        )
+        return "[Max Depth Exceeded]"
 
-def _admin_v3_json_safe(value):
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
+
     if isinstance(value, datetime):
         return value.isoformat()
+
     if isinstance(value, Path):
         return str(value)
+
     if isinstance(value, bytes):
         try:
             return value.decode("utf-8")
         except UnicodeDecodeError:
             return value.hex()
-    if isinstance(value, dict):
-        return {str(k): _admin_v3_json_safe(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple, set)):
-        return [_admin_v3_json_safe(v) for v in value]
-    return str(value)
+
+    if isinstance(value, bytearray):
+        try:
+            return bytes(value).decode("utf-8")
+        except UnicodeDecodeError:
+            return bytes(value).hex()
+
+    if isinstance(value, (dict, list, tuple, set)):
+        if _seen is None:
+            _seen = set()
+
+        obj_id = id(value)
+        if obj_id in _seen:
+            try:
+                logger = current_app.logger
+            except RuntimeError:
+                logger = _admin_v3_logger
+            logger.warning(
+                "[admin_v3_json_safe] circular reference detected "
+                "path=%s type=%s object_id=%s",
+                _path,
+                type(value).__name__,
+                obj_id,
+            )
+            return "[Circular Reference]"
+
+        _seen.add(obj_id)
+        try:
+            if isinstance(value, dict):
+                return {
+                    str(k): _admin_v3_json_safe(
+                        v,
+                        _seen=_seen,
+                        _path=f"{_path}.{k}",
+                        _depth=_depth + 1,
+                    )
+                    for k, v in value.items()
+                }
+
+            return [
+                _admin_v3_json_safe(
+                    item,
+                    _seen=_seen,
+                    _path=f"{_path}[{index}]",
+                    _depth=_depth + 1,
+                )
+                for index, item in enumerate(value)
+            ]
+        finally:
+            _seen.discard(obj_id)
+
+    try:
+        return str(value)
+    except Exception:
+        return f"<{type(value).__name__}>"
 
 
 def _parse_admin_v3_induced_spec_payload(payload_raw):
@@ -179,6 +251,11 @@ def _run_admin_v3_integrity_gate_for_example(
 
 from . import core_bp
 from core.globals import TASK_QUEUES
+from core.general_v1_import_status import (
+    PIPELINE as GENERAL_V1_PIPELINE,
+    get_general_v1_task_snapshot,
+    register_general_v1_task,
+)
 from core import textbook_processor
 from core.textbook_filename_parser import (
     parse_textbook_filename_metadata,
@@ -208,6 +285,7 @@ from core.utils import (
     find_skill_curriculum_entry,
     parse_display_order_value,
 )
+from core.guest_demo import guest_demo_curriculum, guest_demo_skill_filter
 from core.ai_settings import (
     AI_ROLE_KEYS,
     SETTING_AI_CLOUD_MODEL,
@@ -217,7 +295,6 @@ from core.ai_settings import (
     SETTING_GEMINI_API_KEY,
     SETTING_AI_GLOBAL_STRATEGY,
     SETTING_AI_MODEL_ROLES,
-    SETTING_AI_RAG_NAIVE_THRESHOLD,
     apply_ai_runtime_settings,
     get_ai_settings_snapshot,
     get_available_model_presets,
@@ -258,6 +335,16 @@ VOCATIONAL_MATH_B_OUTLINE_PREFIX = "outline_vocational_數學B%"
 CORE_TEXTBOOK_REPORT_TABLES = CORE_TEXTBOOK_FULL_CLEAR_TABLES
 # Backward-compatible alias (older Math-B-only reporting).
 CORE_MATH_B_REPORT_TABLES = CORE_TEXTBOOK_REPORT_TABLES
+
+
+def _scoped_skill_query(query):
+    """Limit a SkillInfo query to the Guest Demo curriculum; real accounts are unchanged."""
+    scope = guest_demo_skill_filter(SkillInfo.skill_id)
+    return query if scope is None else query.filter(scope)
+
+
+def _requested_curriculum(raw):
+    return guest_demo_curriculum() or normalize_curriculum(raw)
 
 
 def _is_outline_skill_id(skill_id):
@@ -371,7 +458,7 @@ def _normalize_core_option_value(raw):
 
 def _collect_core_scope_options(filters=None):
     filters = dict(filters or {})
-    curriculum = normalize_curriculum(_normalize_core_option_value(filters.get("curriculum")))
+    curriculum = _requested_curriculum(_normalize_core_option_value(filters.get("curriculum")))
     grade_raw = _normalize_core_option_value(filters.get("grade"))
     volume = _normalize_core_option_value(filters.get("volume"))
     chapter = _normalize_core_option_value(filters.get("chapter"))
@@ -384,6 +471,8 @@ def _collect_core_scope_options(filters=None):
     for c in distinct_currs:
         if c not in curricula:
             curricula.append(c)
+    if guest_demo_curriculum():
+        curricula = [curriculum]
 
     q_grade = db.session.query(SkillCurriculum.grade)
     if curriculum:
@@ -867,7 +956,8 @@ def _hard_clear_core_data(*, execute: bool = False) -> dict:
     DELETE_CORE implementation:
     - student users / student learning rows / full classes roster
     - full wipe of all core textbook tables (junior_high + general + vocational)
-    Never uses Math-B scoped WHERE. Keeps admin/teacher and system_settings/prompt_templates.
+    Never uses Math-B scoped WHERE. Keeps admin/teacher and system_settings;
+    prompt_templates is cleared because it is restored by core import.
     """
     deleted: dict[str, int] = {name: 0 for name in CORE_TEXTBOOK_REPORT_TABLES}
     plan = _core_clear_plan()
@@ -1083,33 +1173,19 @@ def _vocational_math_b_remaining_check():
         )
     return checks
 
+
+# General-only: trailing file-type label (e.g. 「-課本word檔」→「-課本」); also used by the V3 preview JS.
+GENERAL_SOURCE_PAIR_SUFFIX_PATTERN = r"[\s_\-.]*(?:word\s*檔|pdf\s*檔|word|pdf)$"
+_GENERAL_SOURCE_PAIR_SUFFIX_RE = re.compile(GENERAL_SOURCE_PAIR_SUFFIX_PATTERN, re.IGNORECASE)
+
+
+def general_source_pair_stem(filename) -> str:
+    stem = os.path.splitext(os.path.basename(str(filename or "")))[0].lower()
+    return _GENERAL_SOURCE_PAIR_SUFFIX_RE.sub("", stem) or stem
+
 # ==========================================
 # Background Tasks (??魂????)
 # ==========================================
-
-@core_bp.route('/admin/rag_settings/update', methods=['POST'])
-@login_required
-def admin_update_rag_settings():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json()
-        threshold = float(data.get('threshold', 0.40))
-        target_type = data.get('target_type', 'practice')
-        enable_ai_chat = bool(data.get('enable_ai_chat', True))
-        
-        rag_path = os.path.join(current_app.root_path, '..', 'configs', 'rag_settings.json')
-        os.makedirs(os.path.dirname(rag_path), exist_ok=True)
-        with open(rag_path, 'w', encoding='utf-8') as f:
-            json.dump({'threshold': threshold, 'target_type': target_type, 'enable_ai_chat': enable_ai_chat}, f, ensure_ascii=False)
-            
-        # Update memory
-        current_app.config['ADVANCED_RAG_NAIVE_THRESHOLD'] = threshold
-        current_app.config['ADVANCED_RAG_ENABLE_AI_CHAT'] = enable_ai_chat
-        
-        return jsonify({'success': True})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
 
 def background_processing(file_paths, task_queue, app_context, curriculum_info, skip_code_gen, **kwargs):
     """Background textbook processing worker."""
@@ -1191,8 +1267,12 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
     def _group_docx_with_optional_pdf(paths):
         grouped = []
         by_stem = defaultdict(list)
+        is_general = str((curriculum_info or {}).get("curriculum") or "").strip() == "general"
         for p in paths:
-            stem = os.path.splitext(os.path.basename(str(p or "")))[0].lower()
+            if is_general:
+                stem = general_source_pair_stem(p)
+            else:
+                stem = os.path.splitext(os.path.basename(str(p or "")))[0].lower()
             by_stem[stem].append(p)
         consumed = set()
         for stem, items in by_stem.items():
@@ -1218,9 +1298,12 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
     docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     enable_formula_detailed_report = bool(import_policy.get("enable_formula_detailed_report", False))
     confidence_threshold = float(import_policy.get("auto_fill_confidence_threshold", 0.85) or 0.85)
+    general_status = getattr(task_queue, "general_status", None)
     with app_context:
         try:
             grouped_files = _group_docx_with_optional_pdf(file_paths)
+            if general_status is not None:
+                general_status.start(grouped_files)
             total_files = len(grouped_files)
             task_queue.put(f"INFO: ????隞餃?嚗 {total_files} ??亙雿?..")
 
@@ -1228,14 +1311,23 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                 filename = os.path.basename(file_path)
                 if filename.startswith('~$') or filename.startswith('.'):
                     continue
+                if (
+                    curriculum_info.get('curriculum') == 'general'
+                    and not kwargs.get('outline_only')
+                    and str(file_path).lower().endswith('.pdf')
+                ):
+                    task_queue.put(f"WARN: [{idx}/{total_files}] unpaired PDF skipped (visual source only): {filename}")
+                    continue
 
                 task_queue.put(f"INFO: [{idx}/{total_files}] 甇???: {filename} ...")
                 if optional_pdf_path:
                     task_queue.put(
                         f"INFO: [{idx}/{total_files}] Optional enrich PDF detected and will be used."
                     )
+                if general_status is not None:
+                    general_status.begin_pair(filename, idx)
                 try:
-                    textbook_processor.process_textbook_file(
+                    process_result = textbook_processor.process_textbook_file(
                         file_path, 
                         curriculum_info=curriculum_info, 
                         queue=task_queue, 
@@ -1244,6 +1336,8 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         optional_enrich_pdf_path=optional_pdf_path,
                         **kwargs
                     )
+                    if general_status is not None:
+                        general_status.finish_pair(filename, process_result)
                     if docx_formula_source_mode == "converted_docx_latex":
                         task_queue.put("INFO: docx_formula_source_mode=converted_docx_latex, skipping formula asset OCR/pix2tex postprocess.")
                     elif enable_formula_postprocess:
@@ -1318,14 +1412,20 @@ def background_processing(file_paths, task_queue, app_context, curriculum_info, 
                         except Exception as post_err:
                             task_queue.put(f"WARN: ?砍?敺????仃?? {post_err}")
                 except Exception as e:
+                    if general_status is not None:
+                        general_status.finish_pair(filename, exc=e)
                     task_queue.put(f"ERROR: 瑼? {filename} ??憭望?: {e}")
                 
                 if 'uploads' in file_path and os.path.exists(file_path):
                     try: os.remove(file_path)
                     except: pass
 
+            if general_status is not None:
+                general_status.finish()
             task_queue.put("SUCCESS: ???璆剖???")
         except Exception as e:
+            if general_status is not None:
+                general_status.fail(e)
             task_queue.put(f"ERROR: 隞餃????潛??芷??隤? {str(e)}")
         finally:
             task_queue.put("END_OF_STREAM")
@@ -1381,6 +1481,46 @@ def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, fil
     return True
 
 
+def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code_gen=False,
+                                     outline_only=False, toc_pages=5, import_policy=None,
+                                     track_general_status=False):
+    """Save a V1 upload batch and start the existing V1 background worker."""
+    target_files = []
+    upload_dir = os.path.join(current_app.root_path, 'uploads')
+    os.makedirs(upload_dir, exist_ok=True)
+
+    for upload in upload_files:
+        if not upload or not upload.filename:
+            continue
+        filename = os.path.basename(upload.filename)
+        if not filename.lower().endswith(('.pdf', '.docx', '.doc')):
+            continue
+        path = os.path.join(upload_dir, secure_filename(filename))
+        upload.save(path)
+        target_files.append(path)
+
+    if not target_files:
+        return None
+
+    task_id = str(uuid.uuid4())
+    if track_general_status and str((curriculum_info or {}).get("curriculum") or "") == "general":
+        q = register_general_v1_task(task_id)
+    else:
+        q = queue.Queue()
+    TASK_QUEUES[task_id] = q
+    app = current_app._get_current_object()
+    threading.Thread(
+        target=background_processing,
+        args=(target_files, q, app.app_context(), curriculum_info, skip_code_gen),
+        kwargs={
+            'outline_only': outline_only,
+            'toc_pages': toc_pages,
+            'import_policy': import_policy or {},
+        }
+    ).start()
+    return task_id
+
+
 @core_bp.route('/textbook_importer', methods=['GET', 'POST'])
 @login_required
 def admin_textbook_importer():
@@ -1397,29 +1537,10 @@ def admin_textbook_importer():
             flash("Please configure Gemini API Key before importing.", "danger")
             return redirect(url_for('core.admin_textbook_importer'))
 
-        target_files = []
-        upload_dir = os.path.join(current_app.root_path, 'uploads')
-        os.makedirs(upload_dir, exist_ok=True)
-
         single_file = request.files.get('textbook_pdf')
         batch_files = request.files.getlist('textbook_folder')
-        
-        if single_file and single_file.filename != '':
-            path = os.path.join(upload_dir, secure_filename(single_file.filename))
-            single_file.save(path)
-            target_files.append(path)
-        elif batch_files and len(batch_files) > 0 and batch_files[0].filename != '':
-            for f in batch_files:
-                if f.filename != '' and (f.filename.endswith('.pdf') or f.filename.endswith('.docx')):
-                    path = os.path.join(upload_dir, secure_filename(os.path.basename(f.filename)))
-                    f.save(path)
-                    target_files.append(path)
-
-        if target_files:
-            task_id = str(uuid.uuid4())
-            q = queue.Queue()
-            TASK_QUEUES[task_id] = q
-
+        upload_files = [single_file] if single_file and single_file.filename else batch_files
+        if upload_files:
             curriculum_info = {
                 'curriculum': normalize_curriculum(request.form.get('curriculum')),
                 'publisher': request.form.get('publisher'),
@@ -1465,24 +1586,20 @@ def admin_textbook_importer():
             apply_mathb_import_policy(
                 curriculum_info,
                 import_policy,
-                filenames=[os.path.basename(p) for p in target_files],
+                filenames=[os.path.basename(f.filename) for f in upload_files if f and f.filename],
                 logger=current_app.logger,
             )
-
-            app = current_app._get_current_object()
-            threading.Thread(
-                target=background_processing,
-                args=(target_files, q, app.app_context(), curriculum_info, skip_code),
-                kwargs={
-                    'outline_only': outline_only,
-                    'toc_pages': toc_pages,
-                    'import_policy': import_policy,
-                }
-            ).start()
-
-            return redirect(url_for('core.importer_status', task_id=task_id))
-        else:
-            flash('Only PDF or DOCX files are allowed.', 'warning')
+            task_id = enqueue_v1_textbook_upload_batch(
+                upload_files,
+                curriculum_info,
+                skip_code_gen=skip_code,
+                outline_only=outline_only,
+                toc_pages=toc_pages,
+                import_policy=import_policy,
+            )
+            if task_id:
+                return redirect(url_for('core.importer_status', task_id=task_id))
+        flash('Only PDF or DOCX files are allowed.', 'warning')
 
     return render_template(
         'textbook_importer.html',
@@ -1719,6 +1836,35 @@ def admin_textbook_importer_v3():
     current_app.logger.info(f"[AI KEY] source={key_source or 'none'}")
 
     if request.method == 'POST':
+        scope_values = request.form.getlist('target_source_types')
+        scope_raw = ','.join(str(value or '') for value in scope_values).strip()
+        target_source_types = None
+        if scope_raw:
+            target_source_types = {part.strip() for part in scope_raw.split(',') if part.strip()}
+            allowed_scoped_types = {
+                'textbook_example', 'in_class_practice', 'textbook_exercise',
+                'advanced_exercise',
+                'self_assessment', 'exam_practice'
+            }
+            if not target_source_types or not target_source_types.issubset(allowed_scoped_types):
+                return jsonify({'ok': False, 'error': 'invalid_target_source_types'}), 400
+        elif request.form.get('source_type_scope_present'):
+            return jsonify({'ok': False, 'error': 'invalid_target_source_types'}), 400
+        legacy_insert_missing_only = target_source_types is not None and str(
+            request.form.get('insert_missing_only') or ''
+        ).strip().lower() in {'true', '1', 'on', 'yes'}
+        import_mode = str(request.form.get('import_mode') or '').strip() or (
+            'insert_missing_only' if legacy_insert_missing_only else 'update_existing'
+        )
+        if import_mode not in {'update_existing', 'insert_missing_only', 'replace_section'}:
+            return jsonify({'ok': False, 'error': 'invalid_import_mode'}), 400
+        if target_source_types is None and import_mode != 'update_existing':
+            return jsonify({'ok': False, 'error': 'import_mode_requires_scope'}), 400
+        if import_mode == 'replace_section' and str(request.form.get('replace_confirmed') or '').lower() != 'true':
+            return jsonify({'ok': False, 'error': 'replace_confirmation_required'}), 400
+        scoped_dry_run = target_source_types is not None and str(
+            request.form.get('dry_run', 'true')
+        ).strip().lower() not in {'false', '0', 'no'}
         if not has_gemini_api_key:
             return jsonify({
                 "ok": False,
@@ -1726,9 +1872,48 @@ def admin_textbook_importer_v3():
                 "message": "請先設定 Gemini API Key 後再匯入教材。",
             }), 400
 
+        curriculum = normalize_curriculum(request.form.get('curriculum'))
+        if curriculum == 'general':
+            docx_files = request.files.getlist('textbook_docx[]') or request.files.getlist('textbook_docx')
+            pdf_files = request.files.getlist('textbook_pdf[]') or request.files.getlist('textbook_pdf')
+            curriculum_info = {
+                'curriculum': 'general',
+                'publisher': request.form.get('publisher'),
+                'grade': request.form.get('grade'),
+                'volume': request.form.get('volume'),
+            }
+            task_id = enqueue_v1_textbook_upload_batch(
+                [*docx_files, *pdf_files],
+                curriculum_info,
+                import_policy={
+                    'docx_primary': True,
+                    'pdf_optional_enrich': True,
+                    'docx_formula_source_mode': 'converted_docx_latex',
+                    'formula_postprocess_mode': 'convert_only',
+                },
+                track_general_status=True,
+            )
+            if not task_id:
+                return jsonify({
+                    'ok': False,
+                    'error': 'missing_general_source_files',
+                    'message': '至少需要上傳 DOCX 或 PDF 教材檔案。',
+                }), 400
+            return jsonify({
+                'ok': True,
+                'task_id': task_id,
+                'pipeline_started': True,
+                'import_path': 'v1_general',
+                'pipeline': GENERAL_V1_PIPELINE,
+                'stream_url': url_for('core.importer_stream', task_id=task_id),
+                'status_url': url_for('core.textbook_importer_v3_general_task_status', task_id=task_id),
+            }), 200
+
         docx_files = request.files.getlist('textbook_docx[]')
         if not docx_files or all(not (f and f.filename) for f in docx_files):
             docx_files = request.files.getlist('textbook_docx')
+        if import_mode == 'replace_section' and len([f for f in docx_files if f and f.filename]) != 1:
+            return jsonify({'ok': False, 'error': 'replace_requires_one_section_pair'}), 400
 
         pdf_files = request.files.getlist('textbook_pdf[]')
         if not pdf_files or all(not (f and f.filename) for f in pdf_files):
@@ -1768,7 +1953,9 @@ def admin_textbook_importer_v3():
                 volume=volume_val,
                 publisher=str(request.form.get("publisher") or "longteng"),
                 grade=grade_val,
-                allow_phase4=True,
+                allow_phase4=not scoped_dry_run,
+                target_source_types=target_source_types,
+                import_mode=import_mode,
                 storage_meta=storage,
             )
             payload["task_id"] = task_id
@@ -1782,42 +1969,202 @@ def admin_textbook_importer_v3():
         'textbook_importer_v3.html',
         has_gemini_api_key=has_gemini_api_key,
         ai_settings_url='/admin/ai_prompt_settings',
+        general_source_pair_suffix_pattern=GENERAL_SOURCE_PAIR_SUFFIX_PATTERN,
     )
+
+
+@core_bp.route('/textbook_importer_v3/general_task/<task_id>', methods=['GET'])
+@login_required
+def textbook_importer_v3_general_task_status(task_id):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({'ok': False, 'error': 'forbidden', 'message': '權限不足'}), 403
+    snapshot = get_general_v1_task_snapshot(task_id)
+    if snapshot is None:
+        return jsonify({'ok': False, 'error': 'task_not_found', 'message': '找不到匯入任務（伺服器可能已重新啟動）'}), 404
+    return jsonify(snapshot), 200
 
 
 @core_bp.route('/textbook_importer_v3/task/<task_id>', methods=['GET'])
 @login_required
 def textbook_importer_v3_task_status(task_id):
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+    try:
+        if not (current_user.is_admin or current_user.role == 'teacher'):
+            return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
 
-    state = get_v3_import_task(task_id)
-    if state is None:
-        return jsonify({
-            "ok": False,
-            "error": "task_not_found",
-            "message": "找不到此匯入任務（可能已結束並清除，或尚未建立）。",
+        state = get_v3_import_task(task_id)
+        if state is None:
+            return jsonify({
+                "ok": False,
+                "error": "task_not_found",
+                "message": "找不到此匯入任務（可能已結束並清除，或尚未建立）。",
+                "task_id": task_id,
+            }), 404
+
+        result = state.get("result")
+        ui_result = None
+        if isinstance(result, dict):
+            ui_result = result.get("ui_result") or result
+
+        return jsonify(_admin_v3_json_safe({
+            "ok": True,
             "task_id": task_id,
-        }), 404
+            "status": state.get("status"),
+            "stages": state.get("stages"),
+            "error": state.get("error"),
+            "pair_index": state.get("pair_index"),
+            "pair_total": state.get("pair_total"),
+            "current_pair": state.get("current_pair"),
+            "updated_at": state.get("updated_at"),
+            "result": ui_result,
+            "raw_result": result if isinstance(result, dict) and "pairs" in result else None,
+        })), 200
+    except Exception as exc:
+        current_app.logger.exception(
+            "[textbook_importer_v3_task_status] failed: task_id=%s", task_id
+        )
+        return jsonify({
+            "status": "error",
+            "error": "讀取匯入進度失敗",
+            "details": (
+                f"{type(exc).__name__}: {exc}"
+                if current_app.config.get("DEBUG")
+                else "匯入進度資料處理時發生錯誤，請洽管理員。"
+            ),
+        }), 500
 
-    result = state.get("result")
-    ui_result = None
-    if isinstance(result, dict):
-        ui_result = result.get("ui_result") or result
 
-    return jsonify(_admin_v3_json_safe({
-        "ok": True,
-        "task_id": task_id,
-        "status": state.get("status"),
-        "stages": state.get("stages"),
-        "error": state.get("error"),
-        "pair_index": state.get("pair_index"),
-        "pair_total": state.get("pair_total"),
-        "current_pair": state.get("current_pair"),
-        "updated_at": state.get("updated_at"),
-        "result": ui_result,
-        "raw_result": result if isinstance(result, dict) and "pairs" in result else None,
-    })), 200
+@core_bp.route('/admin/textbook_catalog_v3', methods=['GET', 'POST'])
+@login_required
+def admin_textbook_catalog_v3():
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        if request.method == 'POST':
+            return jsonify({"ok": False, "error": "forbidden", "message": "權限不足"}), 403
+        flash('權限不足', 'error')
+        return redirect(url_for('dashboard'))
+
+    api_key, key_source = resolve_gemini_api_key()
+    has_gemini_api_key = bool(api_key)
+    if request.method == 'POST':
+        if not has_gemini_api_key:
+            return jsonify({
+                "ok": False,
+                "error": "missing_gemini_api_key",
+                "message": "請先設定 Gemini API Key 後再建立目錄結構。",
+            }), 400
+
+        try:
+            from core.textbook_catalog_v3 import (
+                import_catalog_from_pdf_v3,
+                import_catalog_from_pdf_v2_text,
+                apply_catalog_from_token,
+            )
+
+            action = str(request.form.get('action') or 'preview').strip()
+
+            # ── CONFIRM action: token only, no PDF required ──
+            if action == 'confirm':
+                preview_token = str(request.form.get('preview_token') or '').strip()
+                if not preview_token:
+                    return jsonify({
+                        "ok": False,
+                        "error": "missing_preview_token",
+                        "message": "預覽資料已失效，請重新解析目錄。",
+                    }), 400
+                try:
+                    result = apply_catalog_from_token(preview_token, commit=True)
+                except ValueError as exc:
+                    return jsonify({
+                        "ok": False,
+                        "error": "invalid_preview_token",
+                        "message": str(exc),
+                    }), 400
+                return jsonify(_admin_v3_json_safe(result)), 200
+
+            # ── PREVIEW action: PDF required ──
+            pdf_file = request.files.get('catalog_pdf')
+            if not pdf_file or not pdf_file.filename:
+                return jsonify({
+                    "ok": False,
+                    "error": "missing_catalog_pdf",
+                    "message": "請上傳整冊目錄 PDF。",
+                }), 400
+
+            filename = secure_filename(pdf_file.filename)
+            upload_dir = Path(current_app.root_path) / 'instance' / 'catalog_uploads'
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            saved_path = upload_dir / f"{uuid.uuid4().hex}_{filename}"
+            try:
+                pdf_file.save(str(saved_path))
+            except Exception as exc:
+                current_app.logger.exception("[admin_textbook_catalog_v3] save pdf failed")
+                return jsonify({
+                    "ok": False,
+                    "error": "pdf_save_failed",
+                    "message": f"無法儲存 PDF：{exc}",
+                }), 500
+
+            volume = str(request.form.get('volume') or '').strip()
+            if not volume:
+                return jsonify({
+                    "ok": False,
+                    "error": "missing_volume",
+                    "message": "請輸入冊別。",
+                }), 400
+
+            grade_raw = request.form.get('grade', type=str) or ''
+            grade = None
+            if grade_raw.strip():
+                try:
+                    grade = int(grade_raw.strip())
+                except (TypeError, ValueError):
+                    return jsonify({
+                        "ok": False,
+                        "error": "invalid_grade",
+                        "message": "年級必須為整數。",
+                    }), 400
+
+            parse_mode = str(request.form.get('parse_mode') or 'v2_text').strip()
+            curriculum = str(request.form.get('curriculum') or 'vocational').strip()
+
+            if parse_mode == 'vision':
+                result = import_catalog_from_pdf_v3(
+                    str(saved_path),
+                    curriculum=curriculum,
+                    volume=volume,
+                    grade=grade,
+                    dry_run=True,
+                    commit=False,
+                    max_pages=5,
+                )
+            else:
+                # default: v2_text — uses V2 PDF text extraction + Gemini text model
+                result = import_catalog_from_pdf_v2_text(
+                    str(saved_path),
+                    curriculum=curriculum,
+                    volume=volume,
+                    grade=grade,
+                    dry_run=True,
+                    commit=False,
+                    max_pages=5,
+                )
+            return jsonify(_admin_v3_json_safe(result)), 200
+        except Exception as exc:
+            _path = locals().get('saved_path', '<no-pdf>')
+            current_app.logger.exception(
+                "[admin_textbook_catalog_v3] import failed: path=%s", _path
+            )
+            return jsonify({
+                "ok": False,
+                "error": "catalog_import_failed",
+                "message": "建立目錄結構失敗。",
+                "details": str(exc) if current_app.config.get("DEBUG") else None,
+            }), 500
+
+    return render_template(
+        'textbook_catalog_v3.html',
+        has_gemini_api_key=has_gemini_api_key,
+        ai_settings_url='/admin/ai_prompt_settings',
+    )
 
 
 @core_bp.route('/importer/status/<task_id>')
@@ -1863,6 +2210,7 @@ def importer_stream(task_id):
 @core_bp.route('/db_maintenance', methods=['GET', 'POST'])
 @login_required
 def db_maintenance():
+    from core.guest_demo import is_guest_demo
     def sanitize_dataframe_for_excel(df):
         if df is None:
             return pd.DataFrame()
@@ -1888,8 +2236,8 @@ def db_maintenance():
 
     core_scope_form_state = _core_scope_form_state({"scope_mode": "all"})
     core_scope_options = _collect_core_scope_options()
-    last_op = str(session.get("last_db_maintenance_op") or "").strip().lower()
-    import_job_id = session.get("last_import_job_id")
+    last_op = "" if is_guest_demo() else str(session.get("last_db_maintenance_op") or "").strip().lower()
+    import_job_id = None if is_guest_demo() else session.get("last_import_job_id")
     import_job_payload = get_large_result_from_server_store(import_job_id, kind="import") if import_job_id else None
     import_result_missing = bool(import_job_id and import_job_payload is None and last_op == "import")
     import_summary = None
@@ -1898,7 +2246,7 @@ def db_maintenance():
         import_summary = summarize_import_result(stored_result)
     # Only surface import status as "current operation" when the latest op was import.
     show_import_as_current = bool(last_op == "import" and (import_summary or import_result_missing))
-    recent_import_jobs = list_recent_import_jobs(limit=10)
+    recent_import_jobs = [] if is_guest_demo() else list_recent_import_jobs(limit=10)
 
     if request.method == 'POST':
         action = request.form.get('action')
@@ -1951,9 +2299,6 @@ def db_maintenance():
                         if bool(secret_rows.any()):
                             df = pd.DataFrame(redact_system_settings_records(df.to_dict("records")), columns=df.columns)
                             current_app.logger.info("INFO: redacted environment-managed secret settings from export")
-                    for col in df.columns:
-                        if str(df[col].dtype) == "object":
-                            df[col] = df[col].apply(lambda x: re.sub(r'[\x00-\x1f\x7f-\x9f]', '', x) if isinstance(x, str) else x)
                     frames[table] = df
                     current_app.logger.info(f"INFO: exporting {mode} table {table} ({len(df)} rows)")
                 except Exception:
@@ -1983,13 +2328,26 @@ def db_maintenance():
                 return redirect(url_for('core.db_maintenance'))
 
             session["last_db_maintenance_op"] = "export"
-            flash(
+            sanitization = export_summary.get("sanitization", {})
+            if sanitization.get("sanitized_cells"):
+                current_app.logger.warning(
+                    "INFO: export sanitization cells=%s latex_repairs=%s escaped_chars=%s details=%s",
+                    sanitization.get("sanitized_cells"),
+                    sanitization.get("repaired_latex_cells"),
+                    sanitization.get("removed_or_escaped_chars"),
+                    sanitization.get("cells"),
+                )
+            completion_message = (
                 "備份完成："
                 f"{export_summary.get('table_count', len(export_tables))} 張資料表，"
                 f"共 {int(export_summary.get('total_rows', 0)):,} 筆資料，"
-                "完整性驗證通過 ✓",
-                "success",
+                + (
+                    f"已清理 {int(sanitization.get('sanitized_cells', 0))} 個文字儲存格，"
+                    if sanitization.get("sanitized_cells") else ""
+                )
+                + "完整性驗證通過 ✓"
             )
+            flash(completion_message, "success")
             output = io.BytesIO(payload)
             return send_file(
                 output,
@@ -2090,7 +2448,7 @@ def db_maintenance():
                     success_msg = (
                         "DELETE_CORE 完成：已刪除全部國中、普通高中及高職教材資料，"
                         "並刪除所有學生帳號、班級、班級成員與學生學習紀錄；"
-                        "管理員、教師帳號、system_settings、prompt_templates 已保留。"
+                        "管理員、教師帳號與 system_settings 已保留；prompt_templates 已清除，可由核心備份還原。"
                         f" students_deleted={deleted.get('users', 0)},"
                         f" classes={deleted.get('classes', 0)},"
                         f" class_students={deleted.get('class_students', 0)},"
@@ -2178,10 +2536,11 @@ def db_maintenance():
                 all_clean_before = all(int(v or 0) == 0 for v in remaining.values())
                 flash(
                     (
-                        "DELETE_CORE 預覽（刪全部教材＋學生帳號／班級／學生學習紀錄；保留 admin／teacher／settings）："
+                        "DELETE_CORE 預覽（刪全部教材＋學生帳號／班級／學生學習紀錄＋prompt_templates；保留 admin／teacher／system_settings）："
                         f"users(student)={deleted.get('users', 0)}, "
                         f"classes={deleted.get('classes', 0)}, "
                         f"class_students={deleted.get('class_students', 0)}, "
+                        f"prompt_templates={deleted.get('prompt_templates', 0)}, "
                         f"progress={deleted.get('progress', 0)}, "
                         f"quiz_attempts={deleted.get('quiz_attempts', 0)}, "
                         f"student_abilities={deleted.get('student_abilities', 0)}, "
@@ -2546,7 +2905,7 @@ def admin_curriculum():
                            selected_filters=selected,
                            curriculum_map=curriculum_map,
                            grade_map=grade_map,
-                           skills=SkillInfo.query.all())
+                           skills=_scoped_skill_query(SkillInfo.query).all())
 
 @core_bp.route('/curriculum/edit/<int:id>', methods=['POST'])
 @login_required
@@ -2656,70 +3015,6 @@ def admin_skills():
         filters=selected,
     )
 
-    v2_started = _time.time()
-    gencode_status_map = {}
-    root_candidates = [
-        Path(current_app.root_path),
-        Path(current_app.root_path).parent,
-        Path(current_app.root_path).parent.parent,
-    ]
-    project_root = next(
-        (p for p in root_candidates if (p / "skills").exists()),
-        Path(current_app.root_path),
-    )
-    skills_dir = project_root / "skills"
-    drafts_dir = project_root / "reports" / "gencode_closed_loop" / "drafts"
-    for s in skills:
-        sid = str(s["skill_id"])
-        formal_rel = f"skills/{sid}.py"
-        draft_rel = f"reports/gencode_closed_loop/drafts/{sid}.py"
-        formal_abs = skills_dir / f"{sid}.py"
-        draft_abs = drafts_dir / f"{sid}.py"
-        formal_exists = formal_abs.exists()
-        draft_exists = draft_abs.exists()
-        if formal_exists:
-            gencode_status_map[sid] = {
-                "status": "generated",
-                "label": "已產生",
-                "button_label": "重新產生",
-                "formal_exists": True,
-                "draft_exists": draft_exists,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel if draft_exists else "",
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs) if draft_exists else "",
-            }
-        elif draft_exists:
-            gencode_status_map[sid] = {
-                "status": "draft",
-                "label": "草稿中",
-                "button_label": "繼續",
-                "formal_exists": False,
-                "draft_exists": True,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel,
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs),
-            }
-        else:
-            gencode_status_map[sid] = {
-                "status": "missing",
-                "label": "未產生",
-                "button_label": "AI 產生",
-                "formal_exists": False,
-                "draft_exists": False,
-                "formal_path": formal_rel,
-                "draft_path": draft_rel,
-                "formal_abs_path": str(formal_abs),
-                "draft_abs_path": str(draft_abs),
-            }
-    _log_skills_route_phase(
-        "v2_gencode_file_checks",
-        _time.time() - v2_started,
-        count=len(gencode_status_map),
-        filters=selected,
-    )
-
     v3_started = _time.time()
     v3_gencode_status_map = _load_skills_v3_gencode_status_map(
         [str(s["skill_id"]) for s in skills]
@@ -2735,7 +3030,6 @@ def admin_skills():
     response = render_template('admin_skills.html',
                            skills_data=skills_data,
                            skills=skills,
-                           gencode_status_map=gencode_status_map,
                            v3_gencode_status_map=v3_gencode_status_map,
                            filters=filters_data,
                            selected_filters=selected,
@@ -2880,18 +3174,6 @@ def admin_toggle_skill(skill_id):
     db.session.commit()
     flash(f'技能已{"啟用" if skill.is_active else "停用"}。', 'success')
     return redirect(url_for('core.admin_skills'))
-
-@core_bp.route('/skills/<skill_id>/regenerate', methods=['POST'])
-@login_required
-def admin_regenerate_skill_code(skill_id):
-    try:
-        from core.code_generator import auto_generate_skill_code
-        # [?賣? ?綜竣??????綜筐??梁捂??箸?????Architect?潑?踐???????Prompt
-        result = auto_generate_skill_code(skill_id, queue=None, force_architect_refresh=True)
-        success = result[0] if isinstance(result, tuple) else result
-        return jsonify({"success": success, "message": "?賹????" if success else "?剜??"})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
 
 @core_bp.route('/skills/<skill_id>/details', methods=['GET'])
 @login_required
@@ -3138,21 +3420,6 @@ def admin_promote_question():
 
         db.session.commit()
 
-        # 4. ?怨?謒?????
-        try:
-            # [STEP 1] Force Architect to re-analyze examples and update SkillInfo.gemini_prompt
-            print(f"Triggering Architect for {skill_id}...")
-            from core.prompt_architect import generate_v9_spec
-            generate_v9_spec(skill_id, model_tag='cloud_pro')
-
-            # [STEP 2] Now call Coder -> Uses NEW Prompt
-            from core.code_generator import auto_generate_skill_code
-            # Run in background ideally, but here synchronous for feedback
-            auto_generate_skill_code(skill_id, queue=None)
-        except Exception as e:
-            print(f"Auto-generate failed: {e}") 
-            # We don't fail the promotion if generation fails, just log it.
-
         return jsonify({'success': True, 'message': 'Prerequisites updated successfully'})
 
     except Exception as e:
@@ -3188,9 +3455,18 @@ def admin_examples():
     if selected['f_section'] != 'all':
         query = query.filter(SkillCurriculum.section == selected['f_section'])
     
+    anchor_source_order = cast(
+        func.json_extract(TextbookExample.notes, '$.question_anchor.source_order'),
+        Integer,
+    )
     pagination = query.order_by(
-        SkillCurriculum.display_order.asc(), 
-        TextbookExample.id.asc()
+        TextbookExample.source_volume.asc(),
+        TextbookExample.source_chapter.asc(),
+        TextbookExample.source_section.asc(),
+        case((anchor_source_order.is_(None), 1), else_=0),
+        anchor_source_order.asc(),
+        SkillCurriculum.display_order.asc(),
+        TextbookExample.id.asc(),
     ).paginate(page=page, per_page=50, error_out=False)
     page_formula_stats = {
         "total": len(pagination.items),
@@ -3199,6 +3475,8 @@ def admin_examples():
         "with_formula_missing": 0,
         "missing_no_asset": 0,
         "image_placeholder_no_asset": 0,
+        "math_parse_failed_rows": 0,
+        "math_parse_failed_tokens": 0,
     }
     for ex in pagination.items:
         meta = {}
@@ -3218,6 +3496,11 @@ def admin_examples():
         ex._formula_assets = meta.get("formula_assets", []) if isinstance(meta, dict) and isinstance(meta.get("formula_assets"), list) else []
         ex._formula_assets_count = len(ex._formula_assets)
         ptxt = str(getattr(ex, "problem_text", "") or "")
+        diagnostic_text = "\n".join(str(getattr(ex, field, "") or "") for field in (
+            "problem_text", "correct_answer", "detailed_solution"
+        ))
+        parse_failed_tokens = len(re.findall(r"\[MATH_PARSE_FAILED(?:_[^\]]*|:[^\]]*)\]", diagnostic_text))
+        ex._math_parse_failed_tokens = parse_failed_tokens
         ex._has_formula_image_placeholder = bool(re.search(r"\[FORMULA_IMAGE_\d+\]", ptxt))
         ex._has_formula_missing_placeholder = "[FORMULA_MISSING]" in ptxt
         ex._needs_formula_review = bool(meta.get("needs_formula_review")) if isinstance(meta, dict) else False
@@ -3240,6 +3523,9 @@ def admin_examples():
             page_formula_stats["missing_no_asset"] += 1
         if ex._formula_status == "image_placeholder_no_asset":
             page_formula_stats["image_placeholder_no_asset"] += 1
+        if parse_failed_tokens:
+            page_formula_stats["math_parse_failed_rows"] += 1
+            page_formula_stats["math_parse_failed_tokens"] += parse_failed_tokens
 
     gencode_status_map = _load_examples_gencode_status_map(pagination.items)
     
@@ -3261,7 +3547,7 @@ def admin_examples():
                                'senior_high': '普高'
                            },
                            grade_map={str(g):str(g) for g in filters_data['grades']}, 
-                           skills=SkillInfo.query.all(), 
+                           skills=_scoped_skill_query(SkillInfo.query).all(),
                            username=current_user.username)
 
 
@@ -3868,6 +4154,139 @@ def _resolve_admin_v3_publish_roots() -> tuple[str, str]:
     from core.gencode.v3_production_publish_service import resolve_and_validate_v3_publish_roots
     prod_path, stag_path = resolve_and_validate_v3_publish_roots(project_root, staging_root)
     return str(prod_path), str(stag_path)
+
+
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_build', methods=['POST'])
+@login_required
+def admin_run_skill_v3_build(skill_id: str):
+    """One-click V3 build: start/resume async by default; poll status endpoint."""
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    force = bool(payload.get("force") or request.args.get("force") in {"1", "true", "True"})
+    resume = payload.get("resume", True)
+    if isinstance(resume, str):
+        resume = resume.strip().lower() not in {"0", "false", "no"}
+    mode = str(payload.get("mode") or request.args.get("mode") or "auto").strip() or "auto"
+    smoke = bool(payload.get("smoke", True))
+    # Default async for UI; sync=true reserved for tests / maintenance.
+    async_raw = payload.get("async", request.args.get("async", True))
+    if isinstance(async_raw, str):
+        async_mode = async_raw.strip().lower() not in {"0", "false", "no"}
+    else:
+        async_mode = bool(async_raw)
+    sync_raw = payload.get("sync", request.args.get("sync"))
+    if sync_raw is not None:
+        if isinstance(sync_raw, str):
+            async_mode = sync_raw.strip().lower() in {"0", "false", "no"}
+        else:
+            async_mode = not bool(sync_raw)
+
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    if skill_key.startswith("outline_"):
+        return jsonify({
+            "ok": False,
+            "success": False,
+            "error": "outline_skill_not_supported_for_v3_build",
+            "error_code": "OUTLINE_SKILL_BLOCKED",
+            "final_status": "BLOCKED",
+            "message": "outline skill 不可啟動 V3 建立流程",
+        }), 400
+
+    from core.gencode.services.v3_build_orchestrator_service import start_v3_build_job
+    from core.gencode.v3_production_publish_service import (
+        resolve_and_validate_v3_publish_roots,
+        V3PublishRootValidationError,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        try:
+            project_root_raw = str(payload.get("project_root", "") or "").strip()
+            staging_root_raw = str(payload.get("staging_root", "") or "").strip()
+            if not project_root_raw:
+                project_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_PROJECT_ROOT", "") or "").strip()
+            if not staging_root_raw:
+                staging_root_raw = str(current_app.config.get("GENCODE_V3_PUBLISH_STAGING_ROOT", "") or "").strip()
+            project_path, staging_path = resolve_and_validate_v3_publish_roots(project_root_raw, staging_root_raw)
+        except V3PublishRootValidationError as exc:
+            return jsonify({
+                "ok": False,
+                "success": False,
+                "error": exc.error_code,
+                "failed_stage": "publish_root_validation",
+                "previous_production_preserved": True,
+                "details": exc.details,
+            }), 400
+
+        result = start_v3_build_job(
+            raw_conn,
+            skill_key,
+            project_root=str(project_path),
+            staging_root=str(staging_path),
+            mode=mode,
+            force=force,
+            smoke=smoke,
+            resume=bool(resume),
+            async_mode=async_mode,
+            app=current_app._get_current_object(),
+        )
+        if async_mode:
+            return jsonify(result), 202
+        status = str(result.get("status") or "")
+        http_status = 200
+        if status == "needs_capability":
+            http_status = 409
+        elif status == "failed":
+            http_status = 207
+        elif status == "blocked":
+            http_status = 400
+        return jsonify(result), http_status
+    except ValueError as exc:
+        return jsonify({"ok": False, "success": False, "error": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"ok": False, "success": False, "error": str(exc)}), 500
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
+
+
+@core_bp.route('/admin/skills/<skill_id>/gencode_v3_build_status', methods=['GET'])
+@login_required
+def admin_skill_v3_build_status(skill_id: str):
+    if not (current_user.is_admin or current_user.role == 'teacher'):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    skill_key = str(skill_id or "").strip()
+    if not skill_key:
+        return jsonify({"ok": False, "error": "missing_skill_id"}), 400
+    from core.gencode.services.v3_build_orchestrator_service import (
+        STAGE_LABELS,
+        get_orchestrator_job,
+    )
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        job = get_orchestrator_job(raw_conn, skill_key)
+        if not job:
+            return jsonify({"ok": True, "job": None}), 200
+        stage = str(job.get("stage") or "")
+        job["stage_label"] = STAGE_LABELS.get(stage, stage)
+        job["ui_status"] = (
+            "建置中"
+            if job.get("status") == "running"
+            else str(job.get("final_status") or job.get("status") or "").upper()
+        )
+        return jsonify({"ok": True, "job": job}), 200
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
 
 
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_dryrun', methods=['POST'])
@@ -4513,7 +4932,13 @@ def api_get_prerequisites(skill_id):
     try:
         skill = db.session.get(SkillInfo, skill_id)
         if not skill: return jsonify({"success": False, "message": "Skill not found"}), 404
-        data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in skill.prerequisites]
+        prereqs = skill.prerequisites
+        if guest_demo_curriculum():
+            visible = {s.skill_id for s in _scoped_skill_query(SkillInfo.query).filter(
+                SkillInfo.skill_id.in_([p.skill_id for p in prereqs])
+            )}
+            prereqs = [p for p in prereqs if p.skill_id in visible]
+        data = [{'skill_id': p.skill_id, 'skill_ch_name': p.skill_ch_name} for p in prereqs]
         return jsonify({"success": True, "data": data})
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
@@ -4561,7 +4986,7 @@ def api_search_skills():
     term = request.args.get('term', '').strip()
     if not term: return jsonify({"results": []})
     
-    query = db.session.query(SkillInfo).filter(
+    query = _scoped_skill_query(db.session.query(SkillInfo)).filter(
         SkillInfo.is_active.is_(True),
         db.or_(
             SkillInfo.skill_id.like(f'%{term}%'),
@@ -4612,7 +5037,7 @@ def import_curriculum():
 @core_bp.route('/api/get_grades')
 @login_required
 def api_get_grades():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     if not curriculum: return jsonify([])
     aliases = get_curriculum_aliases(curriculum)
     query = db.session.query(distinct(SkillCurriculum.grade)).filter(SkillCurriculum.curriculum.in_(aliases))
@@ -4622,7 +5047,7 @@ def api_get_grades():
 @core_bp.route('/api/get_volumes')
 @login_required
 def api_get_volumes():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     if not curriculum or not grade: return jsonify([])
     try:
@@ -4641,7 +5066,7 @@ def api_get_volumes():
 @core_bp.route('/api/get_chapters')
 @login_required
 def api_get_chapters():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     if not all([curriculum, grade, volume]): return jsonify([])
@@ -4662,7 +5087,7 @@ def api_get_chapters():
 @core_bp.route('/api/get_sections')
 @login_required
 def api_get_sections():
-    curriculum = normalize_curriculum(request.args.get('curriculum'))
+    curriculum = _requested_curriculum(request.args.get('curriculum'))
     grade = request.args.get('grade')
     volume = request.args.get('volume')
     chapter = request.args.get('chapter')
@@ -4770,8 +5195,6 @@ def _generate_model_roles(ai_mode, available_models, cloud_model=None):
             return selected_cloud_preset
         if Config.DEFAULT_CLOUD_MODEL in keys:
             return Config.DEFAULT_CLOUD_MODEL
-        if 'gemini-3.1-flash-lite-preview' in keys:
-            return 'gemini-3.1-flash-lite-preview'
         for k in keys:
             if 'gemini' in k.lower():
                 return k
@@ -5000,91 +5423,6 @@ def reset_prompt_template_content():
         })
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-def _validate_existing_prompt_key(prompt_key: str):
-    if not prompt_key:
-        return None, (jsonify({'success': False, 'message': 'prompt_key is required'}), 400)
-    template = PromptTemplate.query.filter_by(prompt_key=prompt_key).first()
-    if template:
-        return template, None
-    # ?蹓曇???ML ??¯蹎劉 ?垮謓舀蝞?????獢???駁??皝?
-    try:
-        diff = compare_prompt_db_vs_yaml(prompt_key)
-        if diff.get("yaml_exists"):
-            return None, None
-    except Exception:
-        pass
-    return None, (jsonify({'success': False, 'message': f'?曆???prompt_key: {prompt_key}'}), 404)
-
-
-@core_bp.route('/admin/ai_prompt_settings/publish_to_yaml', methods=['POST'])
-@login_required
-def publish_single_prompt_to_yaml():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json(silent=True) or {}
-        prompt_key = str(data.get('prompt_key', '')).strip()
-        _, err = _validate_existing_prompt_key(prompt_key)
-        if err:
-            return err
-        result = export_single_prompt_to_yaml(prompt_key)
-        return jsonify(result)
-    except (PromptSyncError, FileNotFoundError) as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@core_bp.route('/admin/ai_prompt_settings/sync_from_yaml', methods=['POST'])
-@login_required
-def sync_single_prompt_from_yaml():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        data = request.get_json(silent=True) or {}
-        prompt_key = str(data.get('prompt_key', '')).strip()
-        _, err = _validate_existing_prompt_key(prompt_key)
-        if err:
-            return err
-        result = import_single_prompt_from_yaml(prompt_key)
-        return jsonify(result)
-    except (PromptSyncError, FileNotFoundError) as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-@core_bp.route('/admin/ai_prompt_settings/version_check')
-@login_required
-def ai_prompt_version_check():
-    if not (current_user.is_admin or current_user.role == 'teacher'):
-        return jsonify({'success': False, 'message': 'Permission denied'}), 403
-    try:
-        prompt_key = str(request.args.get('prompt_key', '')).strip()
-        if not prompt_key:
-            return jsonify({'success': False, 'message': 'prompt_key is required'}), 400
-        result = compare_prompt_db_vs_yaml(prompt_key)
-        return jsonify({'success': True, **result})
-    except PromptSyncError as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-    except FileNotFoundError:
-        # YAML ?澗???殉朱謓?蹇???200???豯止鼓 yaml_exists=False
-        return jsonify({
-            'success': True,
-            'prompt_key': prompt_key,
-            'db_exists': bool(PromptTemplate.query.filter_by(prompt_key=prompt_key).first()),
-            'yaml_exists': False,
-            'db_updated_at': None,
-            'yaml_updated_at': None,
-            'has_yaml_update': False,
-            'has_db_update': False,
-            'is_different': bool(PromptTemplate.query.filter_by(prompt_key=prompt_key).first()),
-        })
-    except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
@@ -5353,7 +5691,7 @@ def admin_example_v3_preview_generate(id: int):
     from core.gencode.services.v3_component_preview_service import generate_component_preview
 
     try:
-        result = generate_component_preview(example_id, seed=seed)
+        result = generate_component_preview(example_id, seed=seed, persist=False)
         return jsonify(result), 200
     except ValueError as e:
         return jsonify({

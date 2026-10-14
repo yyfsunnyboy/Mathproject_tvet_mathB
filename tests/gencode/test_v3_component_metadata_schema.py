@@ -286,3 +286,46 @@ def test_staging_component_source_sync_includes_production_package(tmp_path: Pat
     assert dest_generate.is_file()
     assert dest_runtime.is_file()
     assert component_id in result["synced_component_ids"]
+
+
+def _write_component(root: Path, skill: str, component_id: str, marker: str) -> None:
+    directory = root / skill / "components" / component_id
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "generate.py").write_text(f"# {marker}\n", encoding="utf-8")
+
+
+def test_staging_component_sync_prefers_staging_over_production(tmp_path: Path):
+    from core.gencode.v3_production_publish_service import _sync_staging_v3_component_sources
+
+    project = tmp_path / "project"
+    staging = tmp_path / "staging"
+    skill = "gh_SyncPriorityProbe"
+    _write_component(staging, skill, "src_1", "staging")
+    _write_component(project / "agent_skills_v3", skill, "src_1", "production")
+    _write_component(project / "agent_skills_v3", skill, "src_2", "production-only")
+    dest = staging / "agent_skills_v3" / skill / "components"
+    _write_component(staging / "agent_skills_v3", skill, "src_1", "stale-previous-attempt")
+
+    result = _sync_staging_v3_component_sources(staging, skill, project_path=project)
+
+    assert (dest / "src_1" / "generate.py").read_text(encoding="utf-8") == "# staging\n"
+    assert (dest / "src_2" / "generate.py").read_text(encoding="utf-8") == "# production-only\n"
+    assert result["synced_component_ids"] == ["src_1", "src_2"]
+
+
+def test_staging_component_sync_skips_empty_staging_dir_and_falls_back_to_production(tmp_path: Path):
+    from core.gencode.v3_production_publish_service import _sync_staging_v3_component_sources
+
+    project = tmp_path / "project"
+    staging = tmp_path / "staging"
+    skill = "gh_SyncPriorityProbe"
+    (staging / skill / "components" / "src_1").mkdir(parents=True)
+    _write_component(staging, skill, "src_2", "staging")
+    _write_component(project / "agent_skills_v3", skill, "src_1", "production")
+
+    result = _sync_staging_v3_component_sources(staging, skill, project_path=project)
+
+    dest = staging / "agent_skills_v3" / skill / "components"
+    assert (dest / "src_1" / "generate.py").read_text(encoding="utf-8") == "# production\n"
+    assert (dest / "src_2" / "generate.py").read_text(encoding="utf-8") == "# staging\n"
+    assert result["synced_component_ids"] == ["src_1", "src_2"]

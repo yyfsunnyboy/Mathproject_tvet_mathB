@@ -1,0 +1,366 @@
+[
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "display_name": "向量定義",
+    "examples": 3,
+    "eligible": 0,
+    "needs_capability": 0,
+    "intentional_skip": 3,
+    "generated": 0,
+    "validated": 0,
+    "published": 0,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_components_and_magnitude"
+    ],
+    "unsupported_families": [
+      "diagram_vector_construction_unsupported"
+    ],
+    "job_id": null,
+    "final_status": "SKIPPED_NO_RESOLVABLE",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "display_name": "向量的加法作圖",
+    "examples": 3,
+    "eligible": 0,
+    "needs_capability": 0,
+    "intentional_skip": 3,
+    "generated": 0,
+    "validated": 0,
+    "published": 0,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_components_and_magnitude"
+    ],
+    "unsupported_families": [
+      "diagram_vector_construction_unsupported"
+    ],
+    "job_id": null,
+    "final_status": "SKIPPED_NO_RESOLVABLE",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "display_name": "向量的減法作圖",
+    "examples": 7,
+    "eligible": 0,
+    "needs_capability": 0,
+    "intentional_skip": 7,
+    "generated": 0,
+    "validated": 0,
+    "published": 0,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_components_and_magnitude"
+    ],
+    "unsupported_families": [
+      "diagram_vector_construction_unsupported"
+    ],
+    "job_id": null,
+    "final_status": "SKIPPED_NO_RESOLVABLE",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "display_name": "向量的實數積作圖",
+    "examples": 14,
+    "eligible": 0,
+    "needs_capability": 0,
+    "intentional_skip": 14,
+    "generated": 0,
+    "validated": 0,
+    "published": 0,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_components_and_magnitude"
+    ],
+    "unsupported_families": [
+      "diagram_vector_construction_unsupported"
+    ],
+    "job_id": null,
+    "final_status": "SKIPPED_NO_RESOLVABLE",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_1",
+    "display_name": "向量的坐標表示法",
+    "examples": 11,
+    "eligible": 10,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 10,
+    "validated": 10,
+    "published": 10,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_components_and_magnitude",
+      "solve_equal_vector_coordinates",
+      "compute_directed_segment_and_magnitude",
+      "solve_parallelogram_fourth_vertex",
+      "compute_triangle_perimeter_from_two_vectors"
+    ],
+    "unsupported_families": [
+      "vector_mixed_unknown_endpoint_unsupported"
+    ],
+    "job_id": "3fbec26cca9241f081bc932602c74576",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_2",
+    "display_name": "向量加減的坐標表示法",
+    "examples": 15,
+    "eligible": 14,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 14,
+    "validated": 14,
+    "published": 14,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_vector_sum_difference",
+      "compute_point_vectors_linear_combination",
+      "compute_triangle_chain_and_perimeter",
+      "solve_parallelogram_fourth_vertex",
+      "compute_vector_linear_combination"
+    ],
+    "unsupported_families": [
+      "vector_chain_closure_mcq_unsupported"
+    ],
+    "job_id": "d4a5c80d21d54cfcbf2f351e0b90595f",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "display_name": "向量實數積的坐標表示法",
+    "examples": 2,
+    "eligible": 0,
+    "needs_capability": 0,
+    "intentional_skip": 2,
+    "generated": 0,
+    "validated": 0,
+    "published": 0,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_scalar_multiple_coordinates",
+      "compute_vector_linear_combination"
+    ],
+    "unsupported_families": [
+      "vector_collinear_ratio_mcq_unsupported",
+      "vector_solve_point_from_combo_unsupported"
+    ],
+    "job_id": null,
+    "final_status": "SKIPPED_NO_RESOLVABLE",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_4",
+    "display_name": "向量實數積的基本性質",
+    "examples": 3,
+    "eligible": 2,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 2,
+    "validated": 2,
+    "published": 2,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_scalar_multiple_coordinates",
+      "compute_vector_linear_combination"
+    ],
+    "unsupported_families": [
+      "vector_solve_unknown_vector_equation_unsupported"
+    ],
+    "job_id": "8295e02396e140b78c8e2191f3b575ba",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_5",
+    "display_name": "向量的平行",
+    "examples": 4,
+    "eligible": 3,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 3,
+    "validated": 3,
+    "published": 3,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "solve_parallel_vector_parameter"
+    ],
+    "unsupported_families": [
+      "vector_parallel_then_magnitude_mcq_unsupported"
+    ],
+    "job_id": "7b4fbf80e3d94c4fb36f637eadaaf5e4",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_6",
+    "display_name": "單位向量",
+    "examples": 5,
+    "eligible": 4,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 4,
+    "validated": 4,
+    "published": 4,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_unit_vector",
+      "compute_scaled_direction_vector"
+    ],
+    "unsupported_families": [
+      "vector_unit_identification_mcq_unsupported"
+    ],
+    "job_id": "5e641b002d814da5b1a98b2b7d19f73f",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "display_name": "向量的夾角",
+    "examples": 4,
+    "eligible": 2,
+    "needs_capability": 0,
+    "intentional_skip": 2,
+    "generated": 2,
+    "validated": 2,
+    "published": 2,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_cosine_of_angle_from_dot"
+    ],
+    "unsupported_families": [
+      "vector_angle_application_narrative_unsupported",
+      "vector_angle_quality_mcq_unsupported"
+    ],
+    "job_id": "170f0cc0f2a54df98ac90b5878cd9fe9",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "display_name": "向量內積的定義",
+    "examples": 5,
+    "eligible": 1,
+    "needs_capability": 0,
+    "intentional_skip": 4,
+    "generated": 1,
+    "validated": 1,
+    "published": 1,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_dot_product_from_magnitudes_angle"
+    ],
+    "unsupported_families": [
+      "vector_dot_identity_multipart_unsupported",
+      "vector_regular_polygon_dot_unsupported"
+    ],
+    "job_id": "f12784955cff40d4961dd9f5a3973209",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "display_name": "向量內積的坐標表示法",
+    "examples": 9,
+    "eligible": 6,
+    "needs_capability": 0,
+    "intentional_skip": 3,
+    "generated": 6,
+    "validated": 6,
+    "published": 6,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_dot_product_coordinates",
+      "compute_cosine_of_angle_from_dot"
+    ],
+    "unsupported_families": [
+      "vector_dot_diagram_plot_unsupported",
+      "vector_dot_midpoint_composite_unsupported",
+      "vector_dot_parameter_equation_mcq_unsupported"
+    ],
+    "job_id": "a3460ae30e0d49049fcd286767c93eb1",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_4",
+    "display_name": "兩向量的垂直",
+    "examples": 4,
+    "eligible": 3,
+    "needs_capability": 0,
+    "intentional_skip": 1,
+    "generated": 3,
+    "validated": 3,
+    "published": 3,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "solve_perpendicular_vector_parameter"
+    ],
+    "unsupported_families": [
+      "vector_perp_composite_expression_unsupported"
+    ],
+    "job_id": "4a2ee621b5d84d69b042ad7a9aa7c10a",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "display_name": "向量內積的性質",
+    "examples": 6,
+    "eligible": 3,
+    "needs_capability": 0,
+    "intentional_skip": 3,
+    "generated": 3,
+    "validated": 3,
+    "published": 3,
+    "failed": 0,
+    "production_preserved": true,
+    "domain_key": "vector.plane",
+    "supported_families": [
+      "compute_dot_product_from_magnitudes_angle"
+    ],
+    "unsupported_families": [
+      "vector_dot_exam_diagram_unsupported",
+      "vector_dot_identity_solve_angle_unsupported",
+      "vector_perp_dot_expand_unsupported"
+    ],
+    "job_id": "14180269902443258dc2803d7098cde5",
+    "final_status": "READY",
+    "preflight_status": "ready"
+  }
+]

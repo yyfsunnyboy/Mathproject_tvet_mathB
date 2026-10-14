@@ -178,6 +178,52 @@ def test_required_vector_with_figure_keyword():
     assert matched[0]["visual_bbox"] is not None
 
 
+def test_required_large_vector_with_figure_keyword():
+    """B2 Ch3-style vector diagrams: prefer compact right-side groups over page frames."""
+    pages = [
+        {
+            "page": 1,
+            "width": 595,
+            "height": 842,
+            "norm_text": normalize_pdf_text("如圖為一正六邊形ABCDEF"),
+            "words": [],
+            "images": [],
+            "drawings": [
+                {"bbox": [86.0, 86.0, 523.0, 485.0], "area": 174876},  # page-ish frame
+                {"bbox": [360.0, 140.0, 520.0, 300.0], "area": 25600},  # right diagram
+            ],
+            "char_count": 40,
+        }
+    ]
+    items = [
+        {
+            "source_description": "例1",
+            "problem_text": "如圖為一正六邊形ABCDEF，若向量AB=a，試求。",
+            "source_order": 1,
+        }
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    matched = assign_question_regions(matched, pages)
+    matched = classify_and_detect_visuals(matched, pages)
+    assert matched[0]["should_mount"] is True
+    assert matched[0]["visual_classification"] == "required"
+    assert matched[0]["visual_bbox"] is not None
+    # Must prefer the compact right diagram, not the half-page frame.
+    assert matched[0]["visual_bbox"][0] >= 300
+
+
+def test_normalize_query_text_strips_latex_commands():
+    from core.textbook_pdf_visual import normalize_query_text
+
+    q = r"如圖，△ABC中，D、E為\({\overline{ AB }}\)的三等分點"
+    n = normalize_query_text(q)
+    assert "三等分點" in n
+    assert "overline" not in n
+    phrases = extract_match_phrases(q, "例6")
+    assert any("三等分點" in p for p in phrases)
+
+
+
 def test_low_confidence_skip():
     pages = [
         {

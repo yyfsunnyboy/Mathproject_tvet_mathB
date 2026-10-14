@@ -6,6 +6,9 @@ configs/prompts/prompt_registry.yaml.bak
 
 # 忽略上傳的檔案 (Word/PDF)
 uploads/
+# Source-fidelity-gated QUESTION_REQUIRED assets are deployment artifacts.
+!static/question_assets/
+!static/question_assets/**
 *.docx
 *.pdf
 /backup/
@@ -17,17 +20,67 @@ reports/gencode_qwen_dryrun/_pytest/
 reports/gencode_capability_candidates/
 reports/ollama_qwen35_json_probe/
 
+# Runtime/load-test artifacts
+reports/runtime_tests/*
+!reports/runtime_tests/*.md
+
 # Gencode / publish 本機診斷與 dryrun 產物（保留檔案，不進版控）
 reports/_inventory_visual_kinds.json
 reports/gencode_qwen_dryrun/_probe_preflight/
-reports/gencode_v3_dryrun/_slope_of_a_line_probe/
-reports/gencode_v3_dryrun/vh_數學B1_SlopeOfALine/
-reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfParallelLines/
-reports/gencode_v3_dryrun/vh_數學B1_PropertiesOfPerpendicularLines/
+reports/gencode_v3_dryrun/
+reports/gencode_v3_publish_staging/
+reports/domain_capability_proposals/
+reports/pytest_tmp/
+reports/b2_*_gencode_audit.json
+reports/b2_*_gencode_v3_build_report.json
+reports/b2_*_v3_reconcile_report.json
+reports/b2_ch2_*dryrun*
+reports/b2_ch2_*runtime_smoke*
+reports/b2_ch2_*acceptance*
+reports/b2_ch2_*audit*
+reports/b2_ch2_*apply*
+reports/b2_ch2_*inventory*
+reports/b2_ch2_outline_rebind_*.json
 runtime/v3_publish_staging/
 scripts/_probe_*.py
 scripts/_repair_slope_of_aline_5.py
 skills/*.py.bak
+
+# 本機一次性診斷腳本 / 暫存目錄（不進版控）
+scratch/_*
+tmp/
+/tmp_*.py
+.pytest_*/
+.tmp_pytest_*/
+.test-tmp*/
+.test_tmp*/
+tmp_test_*/
+
+# Generated pytest workspaces below reports and runtime
+**/pytest_tmp*/
+**/pytest_run*/
+**/pytest_deterministic*/
+**/pytest_auth*/
+**/pytest_handwriting_feedback_fix*/
+**/pytest_practice_streak_ui_fix*/
+**/pytest_v3_status_*/
+
+# 前端依賴與根目錄一次性診斷輸出（勿提交）
+/node_modules/
+/git_diff*.txt
+/git_log*.txt
+/git_status*.txt
+/pytest_out*.txt
+/pytest_output*.txt
+/probe_out*.json
+/probe_err*.txt
+/payload_check*.txt
+/output.txt
+/remote.txt
+/commit_files.txt
+/_pairs.txt
+/old_ai*.html
+/models.zip.*
 
 # 忽略轉檔產生的暫存圖片資料夾
 media/
@@ -48,6 +101,10 @@ static/generated_plots/
 *.db
 *.sqlite
 *.sqlite3
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
 *.xlsx
 *.xls
 instance/

@@ -15,7 +15,7 @@
 =============================================================================
 """
 
-from flask import request, jsonify, render_template, current_app, url_for, session
+from flask import request, jsonify, render_template, current_app, url_for, session, redirect
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
@@ -39,6 +39,19 @@ from core.ai_analyzer import (
     enforce_strict_mode,
 )
 from core.ai_client import call_ai, call_google_model
+from core.ai_conversation_context import add_turn as add_ai_context_turn
+from core.ai_conversation_context import current_teaching_round
+from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
+from core.ai_conversation_context import normalize_suggested_questions
+from core.ai_tutor_disclosure import find_answer_disclosure
+from core.ai_tutor_pedagogy import (
+    TUTOR_PEDAGOGICAL_CONTRACT,
+    classify_tutor_intent,
+    enforce_teaching_round_disclosure,
+    full_solution_allowed,
+    quoted_math_is_unseen,
+    teaching_round_block,
+)
 from core.adaptive.judge import (
     judge_answer_with_feedback,
     _as_symbolic_tolerant,
@@ -49,8 +62,10 @@ from core.adaptive.judge import (
 )
 from core.exam_analyzer import analyze_exam_image, save_analysis_result
 from core.diagnosis_analyzer import perform_weakness_analysis
-from core.rag_engine import rag_search, rag_chat
-from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo
+from models import db, MistakeNotebookEntry, ExamAnalysis, SkillInfo, SkillCurriculum
+from core.mistake_notebook_service import active_review_mistake
+from core.mistake_notebook_answer_display import format_mistake_answer
+from core.utils import format_vocational_b_section_display
 
 
 ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -59,6 +74,66 @@ ALLOWED_EXAM_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def _handwriting_not_recognized_response():
     """缺圖、payload 無效、OCR 無法讀取或運算式不可用時的回應；不呼叫教學用 LLM。"""
     return jsonify({"success": False, "reason": "handwriting_not_recognized"})
+
+
+HANDWRITING_TUTOR_TIMEOUT_SECONDS = 45
+HANDWRITING_TUTOR_UNAVAILABLE_REPLY = "AI 助教這次沒有成功回覆（不是你寫得不好），請再按一次 AI 檢查。"
+
+
+def _handwriting_tutor_unavailable_response(reason):
+    """Model failure is not a recognition failure; nothing is recorded, so a retry is a fresh round."""
+    current_app.logger.warning("[analyze_handwriting] tutor model unavailable reason=%s", reason)
+    return jsonify({
+        "success": False,
+        "ai_unavailable": True,
+        "retryable": True,
+        "reason": "tutor_unavailable",
+        "reply": HANDWRITING_TUTOR_UNAVAILABLE_REPLY,
+        "suggested_questions": [],
+        "follow_up_prompts": [],
+    }), 503
+
+
+def _model_call_failed(response):
+    text = str(getattr(response, "text", "") or "").strip()
+    return not text or text.startswith("Error:")
+
+
+def _finish_handwriting_tutor_result(result, *, question_uid, question_text,
+                                     image_bytes, submission_id, correct_answer="",
+                                     teaching_round=1, answer_items=None):
+    work = str((result.get("handwriting_analysis") or {}).get("recognized_expression") or
+               result.get("recognized_expression") or
+               (result.get("handwriting_analysis") or {}).get("feedback") or "").strip()
+    reply = str(result.get("reply") or "")
+    if not result.get("correct"):
+        reply, redacted = enforce_teaching_round_disclosure(
+            reply, correct_answer=correct_answer, teaching_round=teaching_round,
+            intent="check_work", student_work=work, answer_items=answer_items,
+        )
+        if redacted:
+            current_app.logger.info("[analyze_handwriting] final answer redacted round=%s", teaching_round)
+            result["reply"] = reply
+    result["suggested_questions"] = normalize_suggested_questions(
+        result.get("suggested_questions") or result.get("follow_up_prompts"),
+        question_text=question_text, student_work=work, ai_reply=reply,
+        correct_answer=correct_answer,
+    )
+    result["follow_up_prompts"] = result["suggested_questions"]
+    if question_uid:
+        import hashlib
+        add_ai_context_turn(
+            question_uid, role="student", kind="handwriting_feedback",
+            content=f"辨識式：{work}\n回饋摘要：{reply}", handwriting_summary=work,
+            student_message="檢查目前手寫作答",
+            handwriting_image_reference=hashlib.sha256(image_bytes).hexdigest(),
+            ai_assessment=str(result.get("handwriting_status") or result.get("error_type") or ""),
+            ai_reply=reply, suggested_questions=result["suggested_questions"],
+            submission_id=submission_id,
+            teaching_round=None if result.get("recognition_incomplete") else teaching_round,
+        )
+    result["teaching_round"] = teaching_round
+    return jsonify(result)
 
 
 def _handwriting_expression_from_parsed(parsed):
@@ -99,75 +174,45 @@ def _handwriting_expression_is_usable(expr):
     return len(expr) >= 8
 
 
-def _handwriting_expected_answer(data, state, question_text, question_context=""):
-    """Resolve expected answer with strict priority:
-    0) POST expected_answer
-    1) adaptive runtime current question correct_answer
-    2) POST correct_answer
-    2.5) session correct_answer
-    3) answer parsed from question_context
-    """
-    # 0) POST expected_answer
-    ca = str(data.get("expected_answer") or "").strip()
-    if ca: return ca
+def _resolve_trusted_tutor_question(question_uid):
+    """Resolve a server-issued question only within this owner/session."""
+    uid = str(question_uid or "").strip()
+    if not uid:
+        return None, ("question_uid_required", 400)
 
-    def _extract_from_question_context(ctx):
-        raw = str(ctx or "").strip()
-        if not raw:
-            return ""
-        try:
-            import json as _json
-            obj = _json.loads(raw)
-            if isinstance(obj, dict):
-                for k in ("correct_answer", "expected_answer", "answer"):
-                    v = str(obj.get(k) or "").strip()
-                    if v:
-                        return v
-        except Exception:
-            pass
-        m = re.search(
-            r"(?:正確答案|答案|correct_answer|expected_answer)\s*[:：=]\s*([^\n\r;；]+)",
-            raw,
-            flags=re.IGNORECASE,
+    from core.practice_question_store import STATUS_EXPIRED, get_question_by_uid
+
+    trusted = get_question_by_uid(uid)
+    if trusted:
+        if str(trusted.get("status") or "").strip() == STATUS_EXPIRED:
+            return None, ("question_expired", 409)
+        return trusted, None
+
+    runs = session.get("adaptive_runtime") or {}
+    if isinstance(runs, dict):
+        trusted = next(
+            (
+                dict(row)
+                for row in runs.values()
+                if isinstance(row, dict)
+                and str(row.get("question_uid") or "").strip() == uid
+            ),
+            None,
         )
-        if m:
-            return m.group(1).strip().strip('"').strip("'")
+    if trusted:
+        return trusted, None
+    return None, ("stale_or_unknown_question", 409)
+
+
+def _handwriting_expected_answer(trusted_question):
+    """Return only the answer attached to the server-validated question."""
+    if not isinstance(trusted_question, dict):
         return ""
-
-    sid = str(data.get("session_id") or state.get("session_id") or "").strip()
-    qt = str(question_text or "").strip()
-    store = session.get("adaptive_runtime") or {}
-
-    # 1) session runtime current question correct_answer
-    if isinstance(store, dict):
-        if sid and isinstance(store.get(sid), dict):
-            run = store.get(sid) or {}
-            rq = str(run.get("question_text") or "").strip()
-            ca = str(run.get("correct_answer") or "").strip()
-            if ca and (not qt or not rq or rq == qt):
-                return ca
-        if qt:
-            for _k, run in store.items():
-                if not isinstance(run, dict):
-                    continue
-                rq = str(run.get("question_text") or "").strip()
-                ca = str(run.get("correct_answer") or "").strip()
-                if ca and rq == qt:
-                    return ca
-
-    # 2) POST correct_answer
-    ca = str(data.get("correct_answer") or "").strip()
-    if ca:
-        return ca
-
-    # 2.5) session correct_answer
-    if isinstance(state, dict):
-        ca = str(state.get("correct_answer") or state.get("expected_answer") or "").strip()
-        if ca:
-            return ca
-
-    # 3) question_context answer
-    return _extract_from_question_context(question_context)
+    return str(
+        trusted_question.get("correct_answer")
+        or trusted_question.get("answer")
+        or ""
+    ).strip()
 
 
 def _handwriting_final_answer_candidates(expr):
@@ -848,18 +893,20 @@ def _clean_math_expr(expr: str) -> str:
     cleaned = cleaned.replace(" ", "").replace("\t", "").replace("．", ".").replace("X", "x")
     return cleaned
 
+
 def _handwriting_structured_analysis(recognized_expression, expected_answer, question_text, family_id):
     exp = (expected_answer or "").strip()
     qt = (question_text or "").strip()
     skill_focus = _handwriting_skill_focus(family_id)
     family_label_zh, family_description_zh = _handwriting_family_meta(family_id)
-    
+
     final_expr = _handwriting_pick_final_expression(recognized_expression)
     base = {
         "recognized_expression": recognized_expression,
         "final_expression": final_expr,
         "expected_answer": exp,
         "is_correct": False,
+        "process_correct": False,
         "status": "unknown",
         "main_issue": "",
         "skill_focus": skill_focus,
@@ -871,12 +918,12 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         "step_focus": "",
         "analysis_source": "generic_handwriting_analysis",
     }
-    
+
     if not recognized_expression or str(recognized_expression).strip() == "":
         base["main_issue"] = "系統未能辨識出您的手寫內容，請檢查筆跡是否清晰，或重新書寫一次。"
         base["status"] = "ocr_failed"
         return base
-        
+
     if not exp:
         base["main_issue"] = "目前缺少可對照的標準答案，無法完成穩定批改。"
         base["skill_focus"] = skill_focus or "依題目重點進行化簡與整理"
@@ -896,6 +943,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         if cand_clean and cand_clean == exp_clean:
             base.update({
                 "is_correct": True,
+                "process_correct": True,
                 "status": "correct",
                 "main_issue": "",
                 "skill_focus": skill_focus or "你已掌握本題重點",
@@ -912,6 +960,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
             base.update(
                 {
                     "is_correct": True,
+                    "process_correct": True,
                     "status": "correct",
                     "main_issue": "",
                     "skill_focus": skill_focus or "你已掌握本題重點",
@@ -926,7 +975,7 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
     primary = candidates[0]
     status = "incorrect"
     main_issue = (
-        "這題有錯，請先對照題目關鍵步驟再整理一次。"
+        "最後一行還不是題目要的最後結果；需逐行確認是還沒算完，還是中間有一步要修正。"
     )
     if _handwriting_expr_partially_close(primary, exp):
         status = "partially_correct"
@@ -1005,25 +1054,42 @@ def _handwriting_family_meta(family_id):
     return mapping.get(fid, ("一般題型", "請根據題目內容判斷關鍵步驟與常見錯誤"))
 
 
-_HW_SECOND_STAGE_ERROR_HINT = re.compile(
-    r"(錯誤|有誤|不正確|不對|問題|偏差|少了|多了|漏掉|混淆|沒有對|不一致|不符|差在|"
-    r"哪裡|這一步|這一列|括號|符號|同類項|合併|化簡|分配|係數|次方|展開|去括號|負號|正負|"
-    r"方向正確|大致正確|尚未|需要修正|還沒|還差|不成立|算成|寫成|目前|關鍵小錯|"
-    r"推理|化簡|整理|最後一步|前一步|中間|"
-    r"代表|表示|意思是|也就是|因此|所以|因為|應該是|常見的誤解|這裡其實|這代表比例|比例應該|"
-    r"不是.{0,35}而是)"
+_HW_SECOND_STAGE_CORRECTIVE_LANGUAGE = re.compile(
+    r"(答錯|算錯|寫錯|抄錯|錯誤|有誤|不正確|不對|需要修正|再算|重算|重寫|重新作答|少了|多了|漏掉)"
 )
-_HW_SECOND_STAGE_GUIDANCE = re.compile(
-    r"(請|建議|下一步|試著|不妨|重新|再試|再算|再寫|再檢查|再核對|再確認|對照|核對|確認|"
-    r"逐步|一步一步|逐項|試算|試試|想一下|👉|不妨先|可以先|試著先|先.{0,14}再|"
-    r"可以|接著|然後|先看|先把|再把|檢查一下|想想看|重算|重整|化簡一次)"
+# Wider wording for "names the error" on incorrect work (e.g. 看錯了、請修正常數項、應代入 -5).
+_HW_SECOND_STAGE_NAMES_ERROR = re.compile(
+    r"((?<!沒)(?<!沒有)(?<!不)錯|修正|改成|改為|應該是|應改|應寫|應代入|應為)"
 )
+_HW_SECOND_STAGE_PROBLEM_CUE = re.compile(
+    r"(但|不過|可能|還沒|少了|多了|漏了|不同|對不上|不合|哪一|哪個|是否|還是|要不要)"
+)
+_HW_SECOND_STAGE_ACTION_CUE = re.compile(
+    r"(先|把|從|看看|想想|比較|代回|算算|找找|核對|檢查|試著|代入|計算|寫出|接著|接下來|下一步|再用)"
+)
+_HW_SECOND_STAGE_CONFIRMS_PROGRESS = re.compile(r"(正確|對的|沒有錯|沒錯|算對|都對)")
+_HW_SECOND_STAGE_NEXT_STEP = re.compile(r"(下一步|接著|接下來|然後|再用|再把|代入|公式)")
+
+
+def _handwriting_reply_has_meaningful_question(text: str) -> bool:
+    """Return whether the reply asks a concrete, student-answerable question."""
+    questions = re.findall(r"(?:^|[。！!\n])\s*([^。！？!?\n]*[？?])", str(text or ""))
+    generic = ("懂了嗎", "知道嗎", "明白嗎", "會了嗎", "再想想嗎")
+    return any(len(item.strip(" ？?")) >= 5 and not any(g in item for g in generic) for item in questions)
+
+
+def _handwriting_reply_has_actionable_hint(text: str) -> bool:
+    """Accept natural guidance without requiring labels or prescribed phrases."""
+    value = str(text or "").strip()
+    if _handwriting_reply_has_meaningful_question(value):
+        return True
+    return bool(_HW_SECOND_STAGE_ACTION_CUE.search(value))
 
 
 def _hw_second_stage_reply_suggests_final_answer(text: str, expected: str) -> bool:
     """偵測是否像在公布標準答案（避免暴雷）；允許『你目前算成…』類 framing。"""
     exp = _clean_math_expr(str(expected or ""))
-    if len(exp) < 5:
+    if not exp:
         return False
     compact = _clean_math_expr(str(text or ""))
     if exp not in compact:
@@ -1064,7 +1130,7 @@ def _hw_second_stage_reply_suggests_final_answer(text: str, expected: str) -> bo
         return True
     if student_frame and not any(m in window for m in leak_markers):
         return False
-    if idx + len(exp) >= len(compact) - 2 and len(compact) <= len(exp) + 24:
+    if len(exp) >= 5 and idx + len(exp) >= len(compact) - 2 and len(compact) <= len(exp) + 24:
         return True
     return False
 
@@ -1079,6 +1145,23 @@ def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""
     reject_reasons = []
     non_empty = bool(text)
     exp_ans = str(expected_answer or "").strip()
+
+    if st == "correct":
+        continues_correction = bool(_HW_SECOND_STAGE_CORRECTIVE_LANGUAGE.search(text))
+        ok = non_empty and not continues_correction
+        if not non_empty:
+            reject_reasons.append("empty_reply")
+        if continues_correction:
+            reject_reasons.append("correct_status_continues_correction")
+        return {
+            "compliance_ok": ok,
+            "non_empty_reply": non_empty,
+            "has_error_explanation": True,
+            "has_guidance": True,
+            "gives_final_answer": False,
+            "status": st,
+            "reject_reasons": reject_reasons,
+        }
 
     if st not in ("partially_correct", "incorrect"):
         ok = non_empty
@@ -1095,10 +1178,20 @@ def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""
         }
 
     gives_final = _hw_second_stage_reply_suggests_final_answer(text, exp_ans)
-    has_err = bool(_HW_SECOND_STAGE_ERROR_HINT.search(text)) and len(text) >= 12
-    if (not has_err) and len(text) >= 8 and ("不是" in text and "而是" in text):
-        has_err = True
-    has_guide = bool(_HW_SECOND_STAGE_GUIDANCE.search(text))
+    has_question = _handwriting_reply_has_meaningful_question(text)
+    has_guide = _handwriting_reply_has_actionable_hint(text)
+    # The checker only compares the last line, so "every written step is right,
+    # here is the next formula" is a valid diagnosis of unfinished work.
+    confirms_then_advances = bool(
+        _HW_SECOND_STAGE_CONFIRMS_PROGRESS.search(text) and _HW_SECOND_STAGE_NEXT_STEP.search(text)
+    )
+    has_err = non_empty and (
+        has_question
+        or bool(_HW_SECOND_STAGE_PROBLEM_CUE.search(text))
+        or bool(_HW_SECOND_STAGE_CORRECTIVE_LANGUAGE.search(text))
+        or bool(_HW_SECOND_STAGE_NAMES_ERROR.search(text))
+        or confirms_then_advances
+    )
 
     if not non_empty:
         reject_reasons.append("empty_reply")
@@ -1121,14 +1214,25 @@ def _handwriting_second_stage_compliance_flags(reply, status, expected_answer=""
     }
 
 
+_HW_STAGE_STATUS_MEANING = (
+    "【第一階段判定的意思】status 只比對學生最後一行與標準答案。incorrect／partially_correct 代表最後一行還不是題目要的最後結果："
+    "可能是中間算錯，也可能只是還沒算完。請先逐行驗算【學生作答】：每一行都正確時，reply 第一句要引用並肯定這些正確步驟，"
+    "再寫出下一步要用的公式與代入本題數字的算式；只有驗算出錯的那一行才可說錯。"
+    "【已知核心問題】與【可能錯誤機制】是自動推測，驗算後不成立就忽略，不可照抄成學生的錯誤。"
+)
+
+
 def _handwriting_feedback_second_prompt(
     analysis_result,
     question_text,
     question_context,
     prereq_text,
     family_id,
+    conversation_context="",
+    teaching_round=1,
 ):
     status = str((analysis_result or {}).get("status") or "unknown")
+    round_block = teaching_round_block(teaching_round, "check_work")
     question = (question_text or question_context or "").strip()
     student_expression = (analysis_result or {}).get("recognized_expression") or ""
     expected_answer = (analysis_result or {}).get("expected_answer") or ""
@@ -1137,20 +1241,35 @@ def _handwriting_feedback_second_prompt(
     error_mechanism = (analysis_result or {}).get("error_mechanism") or ""
     import logging
     logger = logging.getLogger(__name__)
-    
+
     json_format_str = (
         "只輸出 JSON（不要 markdown、不要多餘文字），格式固定為："
         "{\"reply\":\"...您的教學回饋放入這裡...\",\"is_process_correct\":true/false,\"correct\":true/false,"
-        "\"next_question\":\"\",\"follow_up_prompts\":[],"
+        "\"next_question\":\"\",\"suggested_questions\":[\"...\",\"...\",\"...\"],"
+        "\"follow_up_prompts\":[\"...\",\"...\",\"...\"],"
         "\"error_type\":\"handwriting_ok|handwriting_partial|handwriting_wrong|handwriting_unknown\"}。"
+        "suggested_questions 必須恰好三題，依目前題目、學生本輪手寫步驟、近期同題對話與本次 reply 動態生成；"
+        "使用簡短學生口吻，不得固定套用問題1／問題2／問題3等標籤，不得洩漏正確答案。"
+        "follow_up_prompts 必須與 suggested_questions 相同。"
     )
-    
+
     try:
         from core.prompts.composer import compose_prompt
+        extra_blocks = [
+            "覆寫：reply 只能引用【學生作答】裡實際出現的文字。"
+            "不要宣稱學生寫了兩個條件，除非那段文字就在學生作答裡。"
+            "不要寫出標準答案，也不要把整題重算完。",
+            _HW_STAGE_STATUS_MEANING,
+            TUTOR_PEDAGOGICAL_CONTRACT,
+            round_block,
+            json_format_str,
+        ]
+        if conversation_context:
+            extra_blocks.insert(0, conversation_context)
         full_prompt, source = compose_prompt(
             base_key=None,
             task_key="handwriting_feedback_prompt",
-            extra_blocks=[json_format_str],
+            extra_blocks=extra_blocks,
             question=question,
             student_expression=student_expression,
             expected_answer=expected_answer,
@@ -1159,13 +1278,13 @@ def _handwriting_feedback_second_prompt(
             error_mechanism=error_mechanism,
             main_issue=main_issue
         )
-        
+
         logger.info(f"[handwriting second stage] prompt_key=handwriting_feedback_prompt source={source} has_expected_answer={bool(expected_answer)} fallback_to_hardcoded=False")
         return full_prompt
     except Exception as e:
         logger.warning(f"[handwriting second stage] render failed, fallback to hardcoded: {e}")
         logger.info(f"[handwriting second stage] prompt_key=handwriting_feedback_prompt source=fallback has_expected_answer={bool(expected_answer)} fallback_to_hardcoded=True")
-        
+
         return (
             "你是國中數學評量系統的批改回饋模組，不是直接把整題算完的答案機。\n\n"
             "你只根據以下資訊撰寫 JSON 內的 reply 欄位（其餘欄位依語意填寫）：\n\n"
@@ -1177,52 +1296,61 @@ def _handwriting_feedback_second_prompt(
             f"錯誤機制：{error_mechanism}\n"
             f"已知錯誤重點：{main_issue}\n\n"
             "請嚴格遵守（輸出僅能是下方指定的 JSON，不要 markdown、不要多餘文字）：\n"
-            "- 若 status 為 partially_correct 或 incorrect：reply 必須指出「一個」最關鍵的具體錯誤或偏差"
-            "（可說是哪一步、哪種觀念或式子哪一段），並給出「一個」可執行的具體下一步"
-            "（例如先如何整理算式、先核對哪一類項），避免空泛只說『再想想』；"
+            "- 先依題目和學生現有書寫選最適合的方法；不可假設固定章節、公式或題型。\n"
+            "- 若 status 為 partially_correct 或 incorrect：reply 只處理第一個錯誤或遺漏；指出錯在哪一行，"
+            "寫出修正後的那一行，最後說明下一步運算。避免只說『再想想』或重講整題；"
             "優先銜接「已知錯誤重點」與錯誤機制。\n"
-            "- 若 status 為 correct：reply 以簡短肯定為主，可鼓勵進入下一題，不須刻意找錯。\n"
+            "- 若 status 為 correct：reply 直接指出學生接下來可做的下一步；不須刻意找錯。\n"
             "- 不要直接寫出或暗示題目的最終數值／最終化簡答案；不要替學生把整題解完。\n"
-            "- 不要規定固定套語或結尾句型（例如不必強迫寫「請再檢查一次」「想一下再試一次」等）。\n"
-            "- 不要限制 reply 行數；語氣簡潔、像老師批改即可；不要聊天。\n\n"
-            + json_format_str
+            "- 若內容看不清楚，reply 直接要求學生把該行寫大一點再試一次；不要猜。\n"
+            "- 回覆依序寫目前問題（或正確處）、修正後那一行（若需要）、下一步；語氣簡潔，不要聊天。\n\n"
+            + (f"\n\n{conversation_context}" if conversation_context else "")
+            + f"\n\n{_HW_STAGE_STATUS_MEANING}\n\n{TUTOR_PEDAGOGICAL_CONTRACT}\n\n{round_block}"
+            + "\n\n" + json_format_str
         )
 
 
 def _handwriting_rule_based_reply(analysis_result):
-    """白板流程用的 rule-based 回饋（含 second-stage 失敗 fallback）：具體提示＋下一步，不直接給答案。"""
+    """白板 second-stage fallback：最多三句白話提示，不直接給答案。"""
+    from core.handwriting_ai_check import RECOGNITION_INCOMPLETE_REPLY
+
     ar = analysis_result or {}
+    if ar.get("recognition_incomplete"):
+        return RECOGNITION_INCOMPLETE_REPLY
     st = ar.get("status")
     mech = str(ar.get("error_mechanism") or "").strip()
-    issue = ERROR_MECHANISM_FEEDBACK.get(
-        mech, str(ar.get("main_issue") or "").strip() or ERROR_MECHANISM_FEEDBACK["unknown"]
-    )
-    action = ERROR_MECHANISM_ACTION_STEP.get(mech, ERROR_MECHANISM_ACTION_STEP["unknown"])
     expr_raw = str(ar.get("recognized_expression") or ar.get("final_expression") or "").strip()
-    expr_show = expr_raw if len(expr_raw) <= 320 else expr_raw[:317] + "…"
-    family_hint = str(ar.get("family_label_zh") or "").strip()
 
     if st == "correct":
-        return "✔ 答案正確！\n👉 進入下一題"
+        return "答對了，你抓到重點了！"
+
+    issue_by_mechanism = {
+        "structure_error": "拆開括號時可能漏了一項。",
+        "sign_error": "有一個正負號需要再想想。",
+        "combine_error": "有兩項可能不能直接合在一起。",
+        "operation_error": "第一步用的算法可能不適合這裡。",
+        "substitution_error": "有一個數可能放錯位置。",
+        "notation_error": "有一個符號還沒把意思說清楚。",
+        "unknown": "你最後一行還不是題目最後要的結果：可能是還沒算完，也可能中間有一步要修正。",
+    }
+    question_by_mechanism = {
+        "structure_error": "括號外的數或負號，要不要分給括號裡的每一項呢？",
+        "sign_error": "這個負號放進括號後，每一項的正負會怎麼變呢？",
+        "combine_error": "這兩項的變數和次方都一樣，真的可以合在一起嗎？",
+        "operation_error": "題目這一步要用加減、乘除，還是哪一個規則呢？",
+        "substitution_error": "把題目中的數一個一個對回去，這個位置應該放哪個數呢？",
+        "notation_error": "這一行的符號，和題目要的意思一致嗎？",
+        "unknown": "對照題目最後要求的量，下一步要用哪個公式或算式把它算出來？",
+    }
+    key = mech if mech in issue_by_mechanism else "unknown"
+    lines = []
     if st == "partially_correct":
-        lines = ["⚠️ 前面的整理大致正確，但還有一個關鍵步驟需要修正"]
-        if expr_show:
-            lines.append(f"你目前辨識到的式子：{expr_show}")
-        lines.append(f"錯誤提示：{issue}")
-        if family_hint:
-            lines.append(f"本題題型重點：{family_hint}")
-        lines.append(f"👉 具體下一步：{action}")
-        return "\n".join(lines)
-    if st == "incorrect":
-        lines = ["✘ 這題的推理或化簡仍有需要調整之處"]
-        if expr_show:
-            lines.append(f"你目前辨識到的式子：{expr_show}")
-        lines.append(f"錯誤提示：{issue}")
-        if family_hint:
-            lines.append(f"本題題型重點：{family_hint}")
-        lines.append(f"👉 具體下一步：{action}")
-        return "\n".join(lines)
-    return "目前我無法穩定判斷你的手寫結果，請確認筆跡清楚或再試一次。"
+        lines.append("你前面的方向是對的。")
+    elif expr_raw:
+        lines.append("你已經把想法寫出來了。")
+    lines.append(issue_by_mechanism[key])
+    lines.append(question_by_mechanism[key])
+    return "\n".join(lines[:3])
 
 
 def _handwriting_issue_is_clear(analysis_result):
@@ -1267,11 +1395,32 @@ def _tutor_extract_structured_analysis(data):
         "status": str(src.get("status") or data.get("status") or "unknown"),
         "main_issue": str(src.get("main_issue") or data.get("main_issue") or ""),
         "issue_tag": str(src.get("issue_tag") or data.get("issue_tag") or ""),
-        "expected_answer": str(src.get("expected_answer") or data.get("expected_answer") or ""),
+        # Expected answers are resolved later from the trusted server question.
+        "expected_answer": "",
         "error_mechanism": str(src.get("error_mechanism") or data.get("error_mechanism") or "unknown"),
         "step_focus": str(src.get("step_focus") or data.get("step_focus") or ""),
         "family_id": str(src.get("family_id") or data.get("family_id") or ""),
         "analysis_source": str(src.get("analysis_source") or data.get("analysis_source") or ""),
+    }
+
+
+def _tutor_authoritative_correct(authoritative_correct, authoritative_status):
+    """Only the checker verdict may select the completed tutor state."""
+    return (
+        authoritative_correct is True
+        or str(authoritative_status or "").strip().lower() == "correct"
+    )
+
+
+def _tutor_correct_response():
+    """Deterministic terminal response; no LLM guardrail may turn it into a prompt."""
+    return {
+        "reply": "答對了，做得很好！",
+        "hint_focus": "",
+        "guided_question": "",
+        "micro_step": "",
+        "follow_up_prompts": [],
+        "forbidden": False,
     }
 
 
@@ -1439,6 +1588,96 @@ def allowed_exam_file(filename):
 
 
 
+_TUTOR_MISSING_WORK_FALLBACK = "目前看不到足夠的計算內容，沒辦法指出是哪一行。"
+
+
+def _asks_where_wrong(text):
+    return "哪裡錯" in str(text or "")
+
+
+def _tutor_cites_unseen_work(reply, student_work):
+    """Quoted student math must occur in the recognized work. This is not a math check."""
+    text = str(reply or "")
+    for marker in ("你寫了", "你寫成", "你寫的是", "你寫的"):
+        start = 0
+        while True:
+            idx = text.find(marker, start)
+            if idx < 0:
+                break
+            fragment = text[idx + len(marker):]
+            for sep in ("。", "\n", "？", "?"):
+                fragment = fragment.split(sep)[0]
+            if quoted_math_is_unseen(fragment, student_work):
+                return True
+            start = idx + len(marker)
+    return False
+
+
+def _tutor_reply_compliance(user_message, reply, correct_answer, student_work, recognition_incomplete,
+                            teaching_round=1):
+    if _asks_where_wrong(user_message) and (
+        recognition_incomplete or not str(student_work or "").strip()
+    ):
+        return "recognition_incomplete"
+    if _tutor_cites_unseen_work(reply, student_work):
+        return "missing_work"
+    if not full_solution_allowed(teaching_round, classify_tutor_intent(user_message)) and \
+            find_answer_disclosure(reply, correct_answer, student_work=student_work).disclosed:
+        return "over_reveal"
+    return "display"
+
+
+def _rewrite_tutor_reply_once(user_message, reply, question_text, correct_answer, student_work, reason,
+                              teaching_round=1):
+    prompt = (
+        "請只重寫 reply，輸出 JSON {\"reply\":\"...\"}。\n"
+        f"原因：{reason}\n"
+        f"題目：{question_text}\n"
+        f"學生已寫（只能引用這裡面實際出現的文字）：{student_work or '（沒有）'}\n"
+        f"學生問題：{user_message}\n"
+        f"不可寫出的標準答案（含任何等價寫法）：{correct_answer}\n"
+        f"原回覆：{reply}\n"
+        f"{teaching_round_block(teaching_round, classify_tutor_intent(user_message))}\n"
+        "若原因是過度透露答案：保留公式、肯定正確步驟與下一步的代入算式，只刪掉最後算出的結果。\n"
+        "若原因是引用了學生沒寫的內容：不要說學生寫了那些內容；老師自己提出的公式或下一步算式可以保留。\n"
+        "不要捏造學生寫過的算式，也不要改成只叫學生再想一想的空泛句子。"
+    )
+    rewritten = get_chat_response(prompt, user_question=user_message, question_context=question_text)
+    if isinstance(rewritten, dict) and not rewritten.get("ai_unavailable"):
+        return str(rewritten.get("reply") or "").strip()
+    return ""
+
+
+def _apply_tutor_disclosure(reply, user_message, question_text, correct_answer, student_work, recognition_incomplete,
+                            teaching_round=1):
+    from core.handwriting_ai_check import RECOGNITION_INCOMPLETE_REPLY
+
+    verdict = _tutor_reply_compliance(
+        user_message, reply, correct_answer, student_work, recognition_incomplete, teaching_round
+    )
+    if verdict == "display":
+        return reply
+    if verdict == "recognition_incomplete":
+        return RECOGNITION_INCOMPLETE_REPLY if recognition_incomplete else _TUTOR_MISSING_WORK_FALLBACK
+    rewritten = _rewrite_tutor_reply_once(
+        user_message, reply, question_text, correct_answer, student_work, verdict, teaching_round
+    )
+    second = _tutor_reply_compliance(
+        user_message, rewritten, correct_answer, student_work, recognition_incomplete, teaching_round
+    )
+    if second == "display" and rewritten:
+        return rewritten
+    if second == "missing_work" or (verdict == "missing_work" and not rewritten):
+        return _TUTOR_MISSING_WORK_FALLBACK
+    if second == "recognition_incomplete":
+        return RECOGNITION_INCOMPLETE_REPLY if recognition_incomplete else _TUTOR_MISSING_WORK_FALLBACK
+    redacted, _changed = enforce_teaching_round_disclosure(
+        rewritten or reply, correct_answer=correct_answer, teaching_round=teaching_round,
+        intent=classify_tutor_intent(user_message), student_work=student_work,
+    )
+    return redacted
+
+
 @practice_bp.route('/chat_ai', methods=['POST'])
 
 
@@ -1487,8 +1726,47 @@ def chat_ai():
 
 
 
-    question_text = data.get('question_text', '')
-    correct_answer = data.get('correct_answer', '').strip()
+    student_answer = str(data.get('student_answer') or '').strip()
+    recognized_steps = data.get("recognized_steps") if isinstance(data.get("recognized_steps"), list) else []
+    from core.handwriting_ai_check import join_recognized_work
+    if recognized_steps:
+        student_answer = join_recognized_work(student_answer, recognized_steps)
+    recognition_incomplete = bool(data.get("recognition_incomplete"))
+    requested_question_uid = str(data.get('question_uid') or '').strip()
+    trusted_question, trust_error = _resolve_trusted_tutor_question(requested_question_uid)
+    if trust_error:
+        error, status_code = trust_error
+        return jsonify({"error": error}), status_code
+    question_text = str(
+        trusted_question.get('question_text')
+        or trusted_question.get('question')
+        or ''
+    )
+    correct_answer = _handwriting_expected_answer(trusted_question)
+    teaching_round = current_teaching_round(requested_question_uid)
+    conversation_context = format_ai_context_for_prompt(requested_question_uid)
+    from core.ai_conversation_context import get_context as get_ai_context
+    stored_handwriting = next((str(turn.get('handwriting_summary') or '')
+                               for turn in reversed(get_ai_context(requested_question_uid))
+                               if turn.get('handwriting_summary')), '')
+    if stored_handwriting:
+        student_answer = stored_handwriting
+    requested_submission_id = str(data.get('handwriting_submission_id') or '').strip()
+    checker_result = session.get('chat_tutor_authoritative_result')
+    if not isinstance(checker_result, dict):
+        checker_result = {}
+    checker_question_uid = str(checker_result.get('question_uid') or '').strip()
+    checker_submission_id = str(checker_result.get('handwriting_submission_id') or '').strip()
+    submission_matches = (
+        not requested_submission_id
+        or requested_submission_id == checker_submission_id
+    )
+    if requested_question_uid and requested_question_uid == checker_question_uid and submission_matches:
+        authoritative_correct = checker_result.get('correct')
+        authoritative_status = str(checker_result.get('status') or 'unknown').strip().lower()
+    else:
+        authoritative_correct = None
+        authoritative_status = 'unknown'
 
 
 
@@ -1496,7 +1774,7 @@ def chat_ai():
 
 
 
-    family_id = (data.get('family_id') or '').strip()
+    family_id = str(trusted_question.get('family_id') or '').strip()
 
 
 
@@ -1504,7 +1782,8 @@ def chat_ai():
 
 
 
-    question_context = (data.get('question_context') or context or '').strip()
+    question_context = str(trusted_question.get('context_string') or question_text).strip()
+    context = question_context
 
 
 
@@ -1512,7 +1791,7 @@ def chat_ai():
 
 
 
-    subskill_nodes = data.get('subskill_nodes') or []
+    subskill_nodes = trusted_question.get('subskill_nodes') or []
 
 
 
@@ -1538,6 +1817,9 @@ def chat_ai():
 
         return jsonify({"reply": "缺少必要參數：question"}), 400
 
+    if not requested_question_uid:
+        return jsonify({"error": "question_uid_required"}), 400
+
 
 
 
@@ -1560,7 +1842,7 @@ def chat_ai():
 
 
 
-    skill_id = current.get("skill")
+    skill_id = (trusted_question or {}).get('skill_id') or (trusted_question or {}).get('skill') or current.get("skill")
 
 
 
@@ -1592,7 +1874,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1602,6 +1884,11 @@ def chat_ai():
 
     full_question_context = question_text if question_text else (current.get("question") or question_context)
     structured_analysis = _tutor_extract_structured_analysis(data)
+    # Structured analysis may describe the student's work, but browser fields
+    # cannot replace the canonical question or expected answer.
+    structured_analysis["expected_answer"] = ""
+    structured_analysis["question_text"] = question_text
+    structured_analysis["family_id"] = family_id
     _raw_ha = data.get("handwriting_analysis") if isinstance(data, dict) else None
     _has_handwriting = isinstance(_raw_ha, dict) and bool(_raw_ha)
     _sa_empty = (
@@ -1639,7 +1926,13 @@ def chat_ai():
         f"expected_answer={structured_analysis.get('expected_answer','')}"
     )
     if structured_summary:
-        full_question_context = f"{full_question_context}\n\n[structured_analysis]\n{structured_summary}"
+        full_question_context = (
+            f"{full_question_context}\n\n"
+            "[structured_analysis：只比對最後一行的自動推測，可能只是還沒算完；須自行逐行驗算後才可指出錯誤]\n"
+            f"{structured_summary}"
+        )
+    if conversation_context:
+        full_question_context = f"{full_question_context}\n\n{conversation_context}"
 
 
 
@@ -1647,7 +1940,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1729,8 +2022,40 @@ def chat_ai():
 
         context=context,
         prereq_skills=prereq_skills,
-        correct_answer=correct_answer
+        correct_answer=correct_answer,
+        student_answer=student_answer,
+        recognition_incomplete=recognition_incomplete,
+        authoritative_correct=authoritative_correct,
+        authoritative_status=authoritative_status,
+        teaching_round=teaching_round,
     )
+
+    # The checker is the sole completion authority. A correct verdict terminates
+    # tutoring before the LLM/compliance pipeline can add questions or more work.
+    if _tutor_authoritative_correct(authoritative_correct, authoritative_status):
+        terminal = _tutor_correct_response()
+        terminal['suggested_questions'] = normalize_suggested_questions(
+            [], question_text=question_text, student_work=student_answer,
+            ai_reply=terminal.get('reply', ''), correct_answer=correct_answer,
+        )
+        terminal['follow_up_prompts'] = terminal['suggested_questions']
+        add_ai_context_turn(
+            requested_question_uid, role="student", kind="chat_message", content=user_question
+        )
+        add_ai_context_turn(
+            requested_question_uid,
+            role="tutor",
+            kind="tutor_reply",
+            content=terminal.get("reply", ""),
+            ai_reply=terminal.get("reply", ""),
+            ai_assessment="correct",
+            suggested_questions=terminal['suggested_questions'],
+            authoritative_correct=True,
+            authoritative_status=authoritative_status,
+            teaching_round=teaching_round,
+        )
+        terminal['teaching_round'] = teaching_round
+        return jsonify(terminal)
 
 
 
@@ -1792,7 +2117,7 @@ def chat_ai():
 
 
 
-    
+
 
 
 
@@ -1834,10 +2159,43 @@ def chat_ai():
 
     )
 
-    # Tutor compliance gate: bounded language layer only.
+    if isinstance(result, dict) and result.get("ai_unavailable"):
+        current_app.logger.warning(
+            "[chat_ai] tutor model unavailable reason=%s", result.get("failure_reason", "")
+        )
+        return jsonify({
+            "success": False,
+            "ai_unavailable": True,
+            "retryable": True,
+            "reply": result.get("reply", ""),
+            "suggested_questions": [],
+            "follow_up_prompts": [],
+        }), 503
+
+    # Preserve a direct student-facing reply.  The older guidance layer only
+    # understood hint_focus/guided_question/micro_step and overwrote every
+    # model reply with the same generic Socratic template.
     structured_analysis = _tutor_extract_structured_analysis(data)
-    
-    if not isinstance(result, dict) or not result:
+    structured_analysis["expected_answer"] = ""
+    structured_analysis["family_id"] = family_id
+    direct_reply = str(result.get("reply") or "").strip() if isinstance(result, dict) else ""
+
+    if direct_reply:
+        result = dict(result)
+        result["reply"] = _apply_tutor_disclosure(
+            direct_reply,
+            user_question,
+            question_text,
+            correct_answer,
+            student_answer,
+            recognition_incomplete,
+            teaching_round,
+        )
+        result.setdefault("hint_focus", "")
+        result.setdefault("guided_question", "")
+        result.setdefault("micro_step", "")
+        result["forbidden"] = False
+    elif not isinstance(result, dict) or not result:
         current_app.logger.info("[chat_ai] tutor output non-compliant; fallback to deterministic guidance")
         guidance = _tutor_deterministic_fallback(structured_analysis)
     else:
@@ -1847,11 +2205,11 @@ def chat_ai():
             "micro_step": str(result.get("micro_step") or "").strip(),
             "forbidden": result.get("forbidden") if "forbidden" in result else False
         }
-        
+
         has_focus = bool(guidance["hint_focus"])
         has_question = bool(guidance["guided_question"])
         has_step = bool(guidance["micro_step"])
-        
+
         if not has_focus and not has_question and not has_step:
             current_app.logger.info("[chat_ai] tutor output non-compliant; fallback to deterministic guidance")
             guidance = _tutor_deterministic_fallback(structured_analysis)
@@ -1864,12 +2222,21 @@ def chat_ai():
                 if not has_question: guidance["guided_question"] = fb["guided_question"]
                 if not has_step: guidance["micro_step"] = fb["micro_step"]
 
-    result = result if isinstance(result, dict) else {}
-    result["hint_focus"] = guidance["hint_focus"]
-    result["guided_question"] = guidance["guided_question"]
-    result["micro_step"] = guidance["micro_step"]
-    result["forbidden"] = False
-    result["reply"] = _tutor_guidance_to_reply(guidance)
+    if not direct_reply:
+        result = result if isinstance(result, dict) else {}
+        result["hint_focus"] = guidance["hint_focus"]
+        result["guided_question"] = guidance["guided_question"]
+        result["micro_step"] = guidance["micro_step"]
+        result["forbidden"] = False
+        result["reply"], _ = enforce_teaching_round_disclosure(
+            _tutor_guidance_to_reply(guidance), correct_answer=correct_answer,
+            teaching_round=teaching_round, intent=classify_tutor_intent(user_question),
+            student_work=student_answer,
+        )
+    add_ai_context_turn(
+        requested_question_uid, role="student", kind="chat_message", content=user_question,
+        student_message=user_question, handwriting_summary=stored_handwriting,
+    )
 
 
 
@@ -2270,6 +2637,21 @@ def chat_ai():
 
 
 
+    result['suggested_questions'] = normalize_suggested_questions(
+        result.get('follow_up_prompts'), question_text=question_text,
+        student_work=student_answer, ai_reply=result.get('reply', ''),
+        correct_answer=correct_answer,
+    )
+    result['follow_up_prompts'] = result['suggested_questions']
+    add_ai_context_turn(
+        requested_question_uid, role="tutor", kind="tutor_reply", content=result.get('reply', ''),
+        ai_reply=result.get('reply', ''), suggested_questions=result['suggested_questions'],
+        ai_assessment=str(structured_analysis.get('status') or 'unknown'),
+        authoritative_correct=authoritative_correct if isinstance(authoritative_correct, bool) else None,
+        authoritative_status=authoritative_status,
+        teaching_round=teaching_round,
+    )
+    result['teaching_round'] = teaching_round
     return jsonify(result)
 
 
@@ -2319,6 +2701,34 @@ def analyze_handwriting():
 
 
     data = request.get_json(silent=True) or {}
+    requested_uid = str(data.get("question_uid") or "").strip()
+    trusted_question, trust_error = _resolve_trusted_tutor_question(requested_uid)
+    if trust_error:
+        error, status_code = trust_error
+        return jsonify({"error": error}), status_code
+    handwriting_submission_id = str(data.get("handwriting_submission_id") or "").strip()
+    teaching_round = current_teaching_round(requested_uid, handwriting_submission_id)
+    authoritative_result = session.get("chat_tutor_authoritative_result")
+    authoritative_result = authoritative_result if isinstance(authoritative_result, dict) else {}
+    if handwriting_submission_id:
+        requested_uid = str(data.get("question_uid") or "").strip()
+        authoritative_uid = str(authoritative_result.get("question_uid") or "").strip()
+        authoritative_submission_id = str(
+            authoritative_result.get("handwriting_submission_id") or ""
+        ).strip()
+        if (
+            not authoritative_submission_id
+            or handwriting_submission_id != authoritative_submission_id
+            or (requested_uid and requested_uid != authoritative_uid)
+        ):
+            return jsonify(
+                {
+                    "success": False,
+                    "stale_handwriting_submission": True,
+                    "handwriting_submission_id": handwriting_submission_id,
+                    "reason": "checker_result_not_for_current_submission",
+                }
+            ), 409
 
 
 
@@ -2355,7 +2765,7 @@ def analyze_handwriting():
 
 
 
-    
+
 
 
 
@@ -2375,9 +2785,23 @@ def analyze_handwriting():
     ai_provider = (data.get('provider') or 'local').strip().lower()
     if ai_provider not in ('local', 'google'):
         ai_provider = 'local'
-    question_text = (data.get('question_text') or state.get('question_text') or state.get('question') or "").strip()
-    question_context = (data.get('question_context') or state.get('question') or "").strip()
-    family_id = (data.get('family_id') or state.get('family_id') or state.get('skill') or "").strip()
+    question_text = str(
+        trusted_question.get('question_text')
+        or trusted_question.get('question')
+        or ""
+    ).strip()
+    question_context = str(
+        trusted_question.get('context_string')
+        or question_text
+    ).strip()
+    expected_answer = _handwriting_expected_answer(trusted_question)
+    family_id = str(
+        trusted_question.get('family_id')
+        or state.get('family_id')
+        or trusted_question.get('skill_id')
+        or trusted_question.get('skill')
+        or ""
+    ).strip()
     skill_labels = {
         'sign_handling': '符號處理',
         'add_sub': '加減運算',
@@ -2409,13 +2833,19 @@ def analyze_handwriting():
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as f:
             f.write(img_data)
             temp_path = f.name
-            
-        problem_type = (data.get('problem_type') or state.get('problem_type') or "").strip()
+
+        problem_type = str(
+            trusted_question.get('problem_type_id')
+            or trusted_question.get('problem_type')
+            or ""
+        ).strip()
         if problem_type == "tree_diagram_listing":
-            expected_paths = data.get('expected_paths') or state.get('expected_paths') or []
-            expected_count = data.get('expected_count') or state.get('expected_count') or len(expected_paths)
-            variant = data.get('variant') or state.get('variant') or ""
-            
+            expected_paths = trusted_question.get('expected_paths')
+            expected_count = trusted_question.get('expected_count')
+            variant = str(trusted_question.get('variant') or "").strip()
+            if not isinstance(expected_paths, list) or not expected_paths or expected_count is None:
+                return jsonify({"error": "trusted_question_rubric_missing"}), 409
+
             prompt = (
                 "You are an AI teacher grading a student's tree diagram or listing answer. "
                 "The student has drawn or written their answer on the provided whiteboard image.\n"
@@ -2430,9 +2860,12 @@ def analyze_handwriting():
                 "- If the image is illegible or has no paths, return status 'needs_review'.\n\n"
                 "Respond in valid JSON with these keys:\n"
                 "  \"status\": \"correct\" | \"partial\" | \"incorrect\" | \"needs_review\",\n"
-                "  \"feedback\": \"Your short explanation to the student\"\n"
+                "  \"feedback\": \"Your short explanation to the student\"\n\n"
+                "The feedback is written in Traditional Chinese and follows this teaching policy; "
+                "unless it allows a full solution, do not list the complete set of expected paths:\n"
+                f"{teaching_round_block(teaching_round, 'check_work')}\n"
             )
-            
+
             if ai_provider == 'google':
                 vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
                 tree_response = call_google_model(
@@ -2452,20 +2885,22 @@ def analyze_handwriting():
                     retry_delay=1,
                     verbose=False,
                 )
+            if _model_call_failed(tree_response):
+                return _handwriting_tutor_unavailable_response("tree_model_failed")
             raw_text = (getattr(tree_response, 'text', '') or '').strip()
             cleaned = re.sub(r'^```json\s*|\s*```$', '', raw_text, flags=re.MULTILINE)
             parsed = clean_and_parse_json(cleaned)
-            
+
             st = parsed.get("status", "needs_review") if isinstance(parsed, dict) else "needs_review"
             feedback = parsed.get("feedback", "無法判讀答案。") if isinstance(parsed, dict) else "無法判讀答案。"
-            
+
             _hw_err = {
                 "correct": "handwriting_ok",
                 "partial": "handwriting_partial",
                 "incorrect": "handwriting_wrong",
                 "needs_review": "handwriting_unknown",
             }
-            
+
             result = {
                 "reply": enforce_strict_mode(feedback),
                 "is_process_correct": st in ("correct", "partial"),
@@ -2478,16 +2913,31 @@ def analyze_handwriting():
                 "handwriting_analysis": {"status": st, "feedback": feedback},
                 "handwriting_status": st,
             }
-            
+
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
-            return jsonify(result)
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer,
+                teaching_round=teaching_round, answer_items=expected_paths,
+            )
         if problem_type == "pascal_triangle_handwriting":
-            variant = str(data.get("variant") or state.get("variant") or "").strip()
-            n_value = data.get("n") if data.get("n") is not None else state.get("n")
-            expected_row = data.get("expected_row") or state.get("expected_row") or []
-            expected_terms = data.get("expected_terms") or state.get("expected_terms") or []
-            expected_expansion = str(data.get("expected_expansion") or state.get("expected_expansion") or "").strip()
+            variant = str(trusted_question.get("variant") or "").strip()
+            n_value = trusted_question.get("n")
+            expected_row = trusted_question.get("expected_row")
+            expected_terms = trusted_question.get("expected_terms")
+            expected_expansion = str(trusted_question.get("expected_expansion") or "").strip()
+            has_row_rubric = isinstance(expected_row, list) and bool(expected_row)
+            has_expansion_rubric = (
+                (isinstance(expected_terms, list) and bool(expected_terms))
+                or bool(expected_expansion)
+            )
+            if not variant or not (has_row_rubric or has_expansion_rubric):
+                return jsonify({"error": "trusted_question_rubric_missing"}), 409
+            expected_row = expected_row if isinstance(expected_row, list) else []
+            expected_terms = expected_terms if isinstance(expected_terms, list) else []
 
             prompt = (
                 "You are an AI math teacher grading a student's handwritten answer about Pascal triangle / binomial expansion.\n"
@@ -2507,7 +2957,10 @@ def analyze_handwriting():
                 "- If student writes only Pascal row numbers without full expansion for binomial variant, usually partial.\n\n"
                 "Return valid JSON with keys:\n"
                 "  \"status\": \"correct\" | \"partial\" | \"incorrect\" | \"needs_review\",\n"
-                "  \"feedback\": \"short Traditional Chinese feedback\""
+                "  \"feedback\": \"short Traditional Chinese feedback\"\n\n"
+                "The feedback follows this teaching policy; unless it allows a full solution, "
+                "do not write out the complete expected row or expansion:\n"
+                f"{teaching_round_block(teaching_round, 'check_work')}"
             )
 
             if ai_provider == 'google':
@@ -2529,6 +2982,8 @@ def analyze_handwriting():
                     retry_delay=1,
                     verbose=False,
                 )
+            if _model_call_failed(pascal_response):
+                return _handwriting_tutor_unavailable_response("pascal_model_failed")
             raw_text = (getattr(pascal_response, 'text', '') or '').strip()
             cleaned = re.sub(r'^```json\s*|\s*```$', '', raw_text, flags=re.MULTILINE)
             parsed = clean_and_parse_json(cleaned)
@@ -2555,11 +3010,53 @@ def analyze_handwriting():
             }
             if temp_path and os.path.exists(temp_path):
                 os.unlink(temp_path)
-            return jsonify(result)
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer or expected_expansion,
+                teaching_round=teaching_round, answer_items=expected_row or expected_terms,
+            )
 
         print("calling handwriting analyzer (recognition then analysis)")
         print("question_text:", question_text)
         print("image length:", len(b64) if b64 else 0)
+        from core.handwriting_ai_check import (
+            RECOGNITION_INCOMPLETE_REPLY,
+            ink_band_count,
+            join_recognized_work,
+            recognition_is_last_line_only,
+        )
+        recognized_steps = data.get("recognized_steps") if isinstance(data.get("recognized_steps"), list) else []
+        supplied_normalized_answer = str(data.get("normalized_answer") or "").strip()
+        student_work = join_recognized_work(supplied_normalized_answer, recognized_steps)
+        if recognition_is_last_line_only(student_work, ink_band_count(img_data)):
+            if temp_path and os.path.exists(temp_path):
+                os.unlink(temp_path)
+            result = {
+                "reply": RECOGNITION_INCOMPLETE_REPLY,
+                "recognition_incomplete": True,
+                "success": True,
+                "correct": False,
+                "is_process_correct": False,
+                "next_question": False,
+                "follow_up_prompts": [],
+                "error_type": "handwriting_unknown",
+                "handwriting_status": "unknown",
+                "handwriting_analysis": {
+                    "status": "unknown",
+                    "recognition_incomplete": True,
+                    "recognized_expression": student_work,
+                },
+                "handwriting_submission_id": handwriting_submission_id,
+            }
+            return _finish_handwriting_tutor_result(
+                result, question_uid=str(data.get("question_uid") or "").strip(),
+                question_text=question_text, image_bytes=img_data,
+                submission_id=handwriting_submission_id,
+                correct_answer=expected_answer,
+                teaching_round=teaching_round,
+            )
         recognition_prompt = (
             "Transcribe all visible handwritten mathematical content from this student whiteboard image. "
             "Return ONLY valid JSON, no markdown, no extra text. "
@@ -2568,7 +3065,9 @@ def analyze_handwriting():
             "If the image is blank, illegible, or has no mathematical writing, set \"expression\" to \"\". "
             "Do not invent symbols or steps that are not clearly visible."
         )
-        if ai_provider == 'google':
+        if student_work:
+            expr = student_work
+        elif ai_provider == 'google':
             vision_cfg = dict(Config.LEGACY_MODEL_ROLES.get('vision_analyzer') or {})
             rec_response = call_google_model(
                 vision_cfg,
@@ -2587,16 +3086,17 @@ def analyze_handwriting():
                 retry_delay=1,
                 verbose=False,
             )
-        rec_raw = (getattr(rec_response, 'text', '') or '').strip()
-        rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
-        rec_parsed = clean_and_parse_json(rec_cleaned)
-        expr = _handwriting_expression_from_parsed(rec_parsed)
+        if not student_work:
+            if _model_call_failed(rec_response):
+                return _handwriting_tutor_unavailable_response("recognition_model_failed")
+            rec_raw = (getattr(rec_response, 'text', '') or '').strip()
+            rec_cleaned = re.sub(r'^```json\s*|\s*```$', '', rec_raw, flags=re.MULTILINE)
+            rec_parsed = clean_and_parse_json(rec_cleaned)
+            expr = _handwriting_expression_from_parsed(rec_parsed)
         if not _handwriting_expression_is_usable(expr):
             current_app.logger.info("analyze_handwriting: no usable expression after recognition pass")
             return _handwriting_not_recognized_response()
 
-        expected_answer = _handwriting_expected_answer(data, state, question_text, question_context)
-        
         current_app.logger.info(
             f"[Handwriting Grade Debug] \n"
             f" - current_question: {question_text}\n"
@@ -2604,10 +3104,28 @@ def analyze_handwriting():
             f" - recognized_expression: {expr}\n"
             f" - final grading input: (expr='{expr}', expected_answer='{expected_answer}', question_text='{question_text}', family_id='{family_id}')"
         )
-        
+
         analysis_result = _handwriting_structured_analysis(
             expr, expected_answer, question_text, family_id
         )
+        if handwriting_submission_id:
+            analysis_result["checker_status"] = str(
+                authoritative_result.get("status") or "unknown"
+            ).strip().lower()
+            if not analysis_result.get("process_correct"):
+                analysis_result["status"] = analysis_result["checker_status"]
+            elif analysis_result["checker_status"] != "correct":
+                analysis_result.update({
+                    "status": "partially_correct",
+                    "is_correct": False,
+                    "issue_tag": "notation_error",
+                    "error_mechanism": "notation_error",
+                    "main_issue": (
+                        "最後一行的數值看起來和標準答案一致，但正式批改沒有通過；"
+                        "可能是答案的寫法（形式、化簡或單位）還不符合題目要求。"
+                    ),
+                })
+            analysis_result["checker_authoritative"] = True
         current_app.logger.info(
             "analyze_handwriting: analysis_source=%s family_id=%s status=%s",
             analysis_result.get("analysis_source"),
@@ -2627,7 +3145,7 @@ def analyze_handwriting():
             is_hw_correct = hw_status == "correct"
             result = {
                 "reply": enforce_strict_mode(reply_text),
-                "is_process_correct": hw_status in ("correct", "partially_correct"),
+                "is_process_correct": bool(analysis_result.get("process_correct")) or hw_status in ("correct", "partially_correct"),
                 "correct": is_hw_correct,
                 # 與 /check_answer 語意對齊：答對時為 True，供前端與 textbox 相同流程判斷
                 "next_question": is_hw_correct,
@@ -2642,7 +3160,13 @@ def analyze_handwriting():
         else:
             current_app.logger.info(f"[analyze_handwriting] routing_to_second_stage status={hw_status}")
             prompt = _handwriting_feedback_second_prompt(
-                analysis_result, question_text, question_context, prereq_text, family_id
+                analysis_result,
+                question_text,
+                question_context,
+                prereq_text,
+                family_id,
+                format_ai_context_for_prompt(str(data.get("question_uid") or "").strip()),
+                teaching_round=teaching_round,
             )
             if ai_provider == 'google':
                 tutor_cfg = dict(Config.MODEL_ROLES.get('architect') or {})
@@ -2653,6 +3177,7 @@ def analyze_handwriting():
                     max_retries=2,
                     retry_delay=1,
                     verbose=False,
+                    timeout=HANDWRITING_TUTOR_TIMEOUT_SECONDS,
                 )
             else:
                 response = call_ai(
@@ -2662,13 +3187,24 @@ def analyze_handwriting():
                     max_retries=2,
                     retry_delay=1,
                     verbose=False,
+                    timeout=HANDWRITING_TUTOR_TIMEOUT_SECONDS,
                 )
+            if _model_call_failed(response):
+                return _handwriting_tutor_unavailable_response("second_stage_model_failed")
             raw_text = (getattr(response, "text", "") or "").strip()
             cleaned = re.sub(r"^```json\s*|\s*```$", "", raw_text, flags=re.MULTILINE)
             parsed = clean_and_parse_json(cleaned)
             reply_stripped = ""
             if isinstance(parsed, dict):
                 reply_stripped = str(parsed.get("reply", "") or "").strip()
+            reply_stripped, _hw_redacted = enforce_teaching_round_disclosure(
+                reply_stripped, correct_answer=expected_answer, teaching_round=teaching_round,
+                intent="check_work", student_work=expr,
+            )
+            if _hw_redacted:
+                current_app.logger.info(
+                    "[handwriting second stage] final answer redacted round=%s", teaching_round
+                )
 
             current_app.logger.info(
                 "[handwriting second stage] raw reply start\n%s\n[handwriting second stage] raw reply end",
@@ -2692,7 +3228,12 @@ def analyze_handwriting():
                 _hw_flags,
             )
 
-            if (not reply_stripped) or (not _hw_ok):
+            if _tutor_cites_unseen_work(reply_stripped, expr):
+                current_app.logger.info(
+                    "[handwriting second stage] rejected: cited text is not in student work"
+                )
+                reply_stripped = _TUTOR_MISSING_WORK_FALLBACK
+            elif (not reply_stripped) or (not _hw_ok):
                 if _hw_flags.get("reject_reasons"):
                     current_app.logger.info(
                         "[handwriting second stage] rejected: %s; using rule-based reply",
@@ -2722,7 +3263,7 @@ def analyze_handwriting():
             result["handwriting_status"] = analysis_result.get("status", "unknown")
             st = analysis_result.get("status")
             result["correct"] = st == "correct"
-            result["is_process_correct"] = st in ("correct", "partially_correct")
+            result["is_process_correct"] = bool(analysis_result.get("process_correct")) or st in ("correct", "partially_correct")
             result["error_type"] = _hw_err.get(st, "handwriting_unknown")
             result["success"] = True
             if result.get("correct"):
@@ -2736,7 +3277,7 @@ def analyze_handwriting():
             print("analyzer result:", result)
     except Exception as analyzer_exc:
         current_app.logger.exception("analyze_handwriting analyzer failed: %s", analyzer_exc)
-        return _handwriting_not_recognized_response()
+        return _handwriting_tutor_unavailable_response("analyzer_exception")
     finally:
         if temp_path and os.path.exists(temp_path):
             os.unlink(temp_path)
@@ -2811,7 +3352,7 @@ def analyze_handwriting():
 
 
 
-            
+
 
 
 
@@ -2875,7 +3416,7 @@ def analyze_handwriting():
 
 
 
-            
+
 
 
 
@@ -2963,7 +3504,7 @@ def analyze_handwriting():
 
 
 
-                
+
 
 
 
@@ -3035,7 +3576,7 @@ def analyze_handwriting():
 
 
 
-    
+
 
 
 
@@ -3051,7 +3592,6 @@ def analyze_handwriting():
 
 
 
-    
 
 
 
@@ -3059,7 +3599,26 @@ def analyze_handwriting():
 
 
 
-    return jsonify(result)
+
+    if handwriting_submission_id:
+        result["handwriting_submission_id"] = handwriting_submission_id
+        result["structured_analysis_from_current_request"] = True
+        result["tutor_authoritative_result"] = authoritative_result
+        current_app.logger.info(
+            "[HANDWRITING SUBMISSION] submission_id=%s question_uid=%s image_sha256=%s "
+            "structured_current=true tutor_authoritative=%r",
+            handwriting_submission_id,
+            str(data.get("question_uid") or ""),
+            str(data.get("handwriting_image_sha256") or ""),
+            result["tutor_authoritative_result"],
+        )
+    return _finish_handwriting_tutor_result(
+        result, question_uid=str(data.get("question_uid") or "").strip(),
+        question_text=question_text, image_bytes=img_data,
+        submission_id=handwriting_submission_id,
+        correct_answer=expected_answer,
+        teaching_round=teaching_round,
+    )
 
 
 
@@ -3180,22 +3739,158 @@ def mistake_notebook():
 
 
 def api_mistake_notebook():
-
-
-
-
-
-
-
-    entries = db.session.query(MistakeNotebookEntry).filter_by(student_id=current_user.id).order_by(MistakeNotebookEntry.created_at.desc()).all()
-
-
-
-
-
-
-
+    """Legacy manual-notebook API retained for existing integrations."""
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
     return jsonify([entry.to_dict() for entry in entries])
+
+
+def _notebook_location(entry):
+    """Prefer the immutable entry snapshot; only legacy blanks consult catalog data."""
+    if entry.volume and entry.chapter and entry.section:
+        return entry.curriculum, entry.volume, entry.chapter, entry.section
+    if entry.skill_id:
+        query = db.session.query(SkillCurriculum).filter_by(skill_id=entry.skill_id)
+        if entry.curriculum:
+            row = query.filter_by(curriculum=entry.curriculum).order_by(
+                SkillCurriculum.display_order, SkillCurriculum.id
+            ).first()
+        else:
+            row = query.order_by(SkillCurriculum.display_order, SkillCurriculum.id).first()
+        if row:
+            return row.curriculum, row.volume, row.chapter, row.section
+    return None, "未分類", "未分類", "未分類"
+
+
+def _notebook_display_location(curriculum, volume, chapter, section):
+    """Apply the same vocational chapter display rule used by student views."""
+    if str(curriculum or "").strip().lower() == "vocational":
+        return volume, format_vocational_b_section_display(chapter, section), section
+    return volume, chapter, section
+
+
+def _notebook_curriculum_display_name(curriculum):
+    """Use the student-facing curriculum label while retaining the raw key."""
+    return "技高" if str(curriculum or "").strip().lower() == "vocational" else curriculum
+
+
+def _active_notebook_tree():
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id, resolved_at=None
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
+    curricula = {}
+    for entry in entries:
+        curriculum, volume, chapter, section = _notebook_location(entry)
+        curriculum = curriculum or "未分類"
+        raw_volume, raw_chapter, raw_section = volume, chapter, section
+        volume, chapter, section = _notebook_display_location(curriculum, volume, chapter, section)
+        skill_name = entry.skill.skill_ch_name if entry.skill else "未分類"
+        leaf_key = "\x1f".join([str(curriculum), str(raw_volume), str(raw_chapter), str(raw_section), str(entry.skill_id or "")])
+        curriculum_node = curricula.setdefault(str(curriculum), {
+            "name": _notebook_curriculum_display_name(curriculum),
+            "latest": entry.created_at,
+            "volumes": {},
+        })
+        curriculum_node["latest"] = max(curriculum_node["latest"], entry.created_at)
+        volume_node = curriculum_node["volumes"].setdefault(str(raw_volume), {"name": volume, "latest": entry.created_at, "chapters": {}})
+        volume_node["latest"] = max(volume_node["latest"], entry.created_at)
+        chapter_node = volume_node["chapters"].setdefault(str(chapter), {"name": chapter, "latest": entry.created_at, "sections": {}})
+        chapter_node["latest"] = max(chapter_node["latest"], entry.created_at)
+        section_node = chapter_node["sections"].setdefault(str(section), {"name": section, "latest": entry.created_at, "skills": {}})
+        section_node["latest"] = max(section_node["latest"], entry.created_at)
+        skill_node = section_node["skills"].setdefault(leaf_key, {
+            "key": leaf_key, "name": skill_name, "skill_id": entry.skill_id, "latest": entry.created_at, "entry_ids": []
+        })
+        skill_node["latest"] = max(skill_node["latest"], entry.created_at)
+        skill_node["entry_ids"].append(entry.id)
+
+    def serialize_skill(node):
+        return {"key": node["key"], "name": node["name"], "skill_id": node["skill_id"], "count": len(node["entry_ids"])}
+    def serialize_section(node):
+        children = sorted(node["skills"].values(), key=lambda item: item["latest"], reverse=True)
+        return {"name": node["name"], "count": sum(len(item["entry_ids"]) for item in children), "skills": [serialize_skill(item) for item in children]}
+    def serialize_chapter(node):
+        children = sorted(node["sections"].values(), key=lambda item: item["latest"], reverse=True)
+        return {"name": node["name"], "count": sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in children), "sections": [serialize_section(item) for item in children]}
+    def serialize_volume(node):
+        chapters = sorted(node["chapters"].values(), key=lambda item: item["latest"], reverse=True)
+        return {
+            "name": node["name"],
+            "count": sum(sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in chapter["sections"].values()) for chapter in chapters),
+            "chapters": [serialize_chapter(item) for item in chapters],
+        }
+    serialized = []
+    for node in sorted(curricula.values(), key=lambda item: item["latest"], reverse=True):
+        volumes = sorted(node["volumes"].values(), key=lambda item: item["latest"], reverse=True)
+        serialized.append({
+            "name": node["name"],
+            "count": sum(sum(sum(sum(len(item["entry_ids"]) for item in section["skills"].values()) for section in chapter["sections"].values()) for chapter in volume["chapters"].values()) for volume in volumes),
+            "volumes": [serialize_volume(item) for item in volumes],
+        })
+    return serialized
+
+
+@core_bp.route('/api/mistake-notebook/tree', methods=['GET'])
+@login_required
+def api_mistake_notebook_tree():
+    return jsonify({"curricula": _active_notebook_tree()})
+
+
+@core_bp.route('/api/mistake-notebook/entries', methods=['GET'])
+@login_required
+def api_mistake_notebook_entries():
+    key = str(request.args.get("key") or "")
+    # Tree payload deliberately does not expose records; re-derive the owned ids
+    # from the canonical active query rather than accepting ids from the browser.
+    parts = key.split("\x1f")
+    if len(parts) != 5:
+        return jsonify({"entries": []})
+    entries = db.session.query(MistakeNotebookEntry).filter_by(
+        student_id=current_user.id, resolved_at=None, skill_id=parts[4] or None
+    ).order_by(MistakeNotebookEntry.created_at.desc()).all()
+    payload = []
+    for entry in entries:
+        curriculum, volume, chapter, section = _notebook_location(entry)
+        if [str(curriculum or "未分類"), str(volume), str(chapter), str(section)] != parts[:4]:
+            continue
+        snapshot = entry.question_data if isinstance(entry.question_data, dict) else {}
+        payload.append({
+            "id": entry.id,
+            "created_at": entry.created_at.strftime('%Y-%m-%d %H:%M'),
+            "question_text": entry.question_text,
+            "question": snapshot,
+            "student_wrong_answer": entry.user_answer,
+            "student_wrong_answer_display": format_mistake_answer(entry.user_answer),
+            "legacy_note": entry.to_dict()["notes"] if entry.notes else None,
+            "review_url": url_for('core.mistake_notebook_review', mistake_id=entry.id),
+        })
+    return jsonify({"entries": payload})
+
+
+@core_bp.route('/mistake-notebook/review/<int:mistake_id>')
+@login_required
+def mistake_notebook_review(mistake_id):
+    entry = active_review_mistake(mistake_id=mistake_id, student_id=current_user.id)
+    if entry is None:
+        return redirect(url_for('core.mistake_notebook'))
+    metadata = entry.generator_metadata if isinstance(entry.generator_metadata, dict) else {}
+    params = {"mistake_id": entry.id}
+    if entry.problem_type_id or metadata.get("problem_type_id") or metadata.get("problem_type"):
+        params["problem_type"] = entry.problem_type_id or metadata.get("problem_type_id") or metadata.get("problem_type")
+    if entry.component_id or metadata.get("component_id"):
+        params["component_id"] = entry.component_id or metadata["component_id"]
+    if entry.variant or metadata.get("variant"):
+        params["variant"] = entry.variant or metadata.get("variant")
+    # A retry deliberately uses a fresh production seed; no notebook-specific
+    # generator is introduced and the original payload remains immutable.
+    retry_seed = uuid.uuid4().int % 10_000_000
+    if str(retry_seed) == str(metadata.get("seed") or ""):
+        retry_seed = (retry_seed + 1) % 10_000_000
+    params["gen_seed"] = retry_seed
+    if metadata.get("difficulty") or metadata.get("current_level"):
+        params["level"] = metadata.get("difficulty") or metadata.get("current_level")
+    return redirect(url_for('practice.practice', skill_id=entry.skill_id, **params))
 
 
 
@@ -3635,7 +4330,7 @@ def upload_mistake_image():
 
 
 
-        
+
 
 
 
@@ -3675,7 +4370,7 @@ def upload_mistake_image():
 
 
 
-        
+
 
 
 
@@ -3772,22 +4467,23 @@ def upload_mistake_image():
 
 
 def student_diagnosis():
+    """Show the authenticated student's teacher-equivalent learning analysis."""
+    from core.teacher_analysis_service import (
+        build_student_analysis_context,
+        parse_time_range,
+    )
 
-
-
-
-
-
-
-    """顯示學生診斷（學習落點）頁面。"""
-
-
-
-
-
-
-
-    return render_template('student_diagnosis.html', username=current_user.username)
+    time_range = parse_time_range(request.args.get("range"))
+    context = build_student_analysis_context(
+        current_user,
+        volume=request.args.get("volume"),
+        chapter=request.args.get("chapter"),
+        skill_unit=request.args.get("skill_unit"),
+        time_range=time_range,
+        unit_order="recent",
+    )
+    context.update({"time_range": time_range, "username": current_user.username})
+    return render_template('student_diagnosis.html', **context)
 
 
 
@@ -3804,268 +4500,3 @@ def student_diagnosis():
 
 
 # ==========================================
-
-
-
-
-
-
-
-# Naive RAG（簡易檢索 + LLM 彙整）
-
-
-
-
-
-
-
-# ==========================================
-
-
-
-
-
-
-
-# RAG 查詢與進階 RAG
-
-
-
-
-
-
-
-# ==========================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@practice_bp.route('/api/rag_search', methods=['POST'])
-
-
-
-
-
-
-
-def api_rag_search():
-
-
-
-
-
-
-
-    """RAG search API."""
-
-
-
-
-
-
-
-    data = request.get_json(silent=True) or {}
-
-
-
-
-
-
-
-    query = (data.get('query') or '').strip()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if not query:
-
-
-
-
-
-
-
-        return jsonify({"results": [], "error": "查詢字串不可為空"}), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    results = rag_search(query, top_k=5)
-
-
-
-
-
-
-
-    return jsonify({"results": results})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@practice_bp.route('/api/rag_chat', methods=['POST'])
-
-
-
-
-
-
-
-def api_rag_chat():
-
-
-
-
-
-
-
-    """RAG + LLM chat API."""
-
-
-
-
-
-
-
-    data = request.get_json(silent=True) or {}
-
-
-
-
-
-
-
-    query = (data.get('query') or '').strip()
-
-
-
-
-
-
-
-    top_skill_id = (data.get('top_skill_id') or '').strip()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if not query or not top_skill_id:
-
-
-
-
-
-
-
-        return jsonify({"reply": "查詢或技能 ID 不可為空"}), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    try:
-        from core.advanced_rag_engine import HAS_ADV_LIBS
-        import logging
-        logger = logging.getLogger(__name__)
-        
-        if HAS_ADV_LIBS:
-            logger.info("[API RAG CHAT] Routing to Advanced RAG Engine.")
-            from core.advanced_rag_engine import adv_rag_search, adv_rag_chat
-            from core.ai_settings import get_effective_model_config
-            
-            cfg = get_effective_model_config(role="tutor")
-            provider = cfg.get("provider", "local")
-            
-            skills = adv_rag_search(query, top_k=3)
-            result = adv_rag_chat(query, retrieved_skills=skills, provider=provider, family_id=top_skill_id)
-            return jsonify(result)
-        else:
-            logger.info("[API RAG CHAT] HAS_ADV_LIBS is False. Routing to Naive RAG.")
-    except Exception as e:
-        import traceback
-        import logging
-        logging.getLogger(__name__).warning(f"Error checking advanced RAG, fallback directly to naive: {e}\n{traceback.format_exc()}")
-
-    result = rag_chat(query, top_skill_id)
-    return jsonify(result)
-
-
-
-
-
-
-
-
-

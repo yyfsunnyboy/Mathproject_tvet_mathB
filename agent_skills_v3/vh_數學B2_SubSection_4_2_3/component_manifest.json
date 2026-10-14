@@ -1,0 +1,95 @@
+{
+  "skill_id": "vh_數學B2_SubSection_4_2_3",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_11859",
+      "textbook_example_id": 11859,
+      "status": "verified",
+      "problem_type_id": "tangent_at_point_on_circle",
+      "domain_operation": "tangent_at_point_on_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11859/generate.py"
+    },
+    {
+      "component_id": "src_11860",
+      "textbook_example_id": 11860,
+      "status": "verified",
+      "problem_type_id": "tangent_at_point_on_circle",
+      "domain_operation": "tangent_at_point_on_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11860/generate.py"
+    },
+    {
+      "component_id": "src_11861",
+      "textbook_example_id": 11861,
+      "status": "verified",
+      "problem_type_id": "tangents_parallel_to_line",
+      "domain_operation": "tangents_parallel_to_line",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11861/generate.py"
+    },
+    {
+      "component_id": "src_11862",
+      "textbook_example_id": 11862,
+      "status": "verified",
+      "problem_type_id": "tangents_perpendicular_to_line",
+      "domain_operation": "tangents_perpendicular_to_line",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11862/generate.py"
+    },
+    {
+      "component_id": "src_11871",
+      "textbook_example_id": 11871,
+      "status": "verified",
+      "problem_type_id": "tangent_at_point_on_circle",
+      "domain_operation": "tangent_at_point_on_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11871/generate.py"
+    },
+    {
+      "component_id": "src_11872",
+      "textbook_example_id": 11872,
+      "status": "verified",
+      "problem_type_id": "tangents_parallel_to_line",
+      "domain_operation": "tangents_parallel_to_line",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11872/generate.py"
+    },
+    {
+      "component_id": "src_11885",
+      "textbook_example_id": 11885,
+      "status": "verified",
+      "problem_type_id": "tangent_at_point_on_circle_mcq",
+      "domain_operation": "tangent_at_point_on_circle_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11885/generate.py"
+    },
+    {
+      "component_id": "src_11895",
+      "textbook_example_id": 11895,
+      "status": "verified",
+      "problem_type_id": "compute_tangents_from_point_quad_area",
+      "domain_operation": "compute_tangents_from_point_quad_area",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11895/generate.py"
+    }
+  ]
+}

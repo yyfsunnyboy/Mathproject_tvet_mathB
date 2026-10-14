@@ -1,0 +1,216 @@
+{
+  "skill_id": "vh_數學B2_SubSection_4_1_2",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 19,
+  "components": [
+    {
+      "component_id": "src_11832",
+      "textbook_example_id": 11832,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_general",
+      "domain_operation": "identify_center_radius_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11832/generate.py"
+    },
+    {
+      "component_id": "src_11833",
+      "textbook_example_id": 11833,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_general",
+      "domain_operation": "identify_center_radius_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11833/generate.py"
+    },
+    {
+      "component_id": "src_11834",
+      "textbook_example_id": 11834,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_general",
+      "domain_operation": "identify_center_radius_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11834/generate.py"
+    },
+    {
+      "component_id": "src_11835",
+      "textbook_example_id": 11835,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_general",
+      "domain_operation": "identify_center_radius_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11835/generate.py"
+    },
+    {
+      "component_id": "src_11836",
+      "textbook_example_id": 11836,
+      "status": "verified",
+      "problem_type_id": "solve_circle_parameter_range",
+      "domain_operation": "solve_circle_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11836/generate.py"
+    },
+    {
+      "component_id": "src_11837",
+      "textbook_example_id": 11837,
+      "status": "verified",
+      "problem_type_id": "solve_circle_parameter_range",
+      "domain_operation": "solve_circle_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11837/generate.py"
+    },
+    {
+      "component_id": "src_11838",
+      "textbook_example_id": 11838,
+      "status": "verified",
+      "problem_type_id": "circle_through_three_points",
+      "domain_operation": "circle_through_three_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11838/generate.py"
+    },
+    {
+      "component_id": "src_11839",
+      "textbook_example_id": 11839,
+      "status": "verified",
+      "problem_type_id": "circle_through_three_points",
+      "domain_operation": "circle_through_three_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11839/generate.py"
+    },
+    {
+      "component_id": "src_11840",
+      "textbook_example_id": 11840,
+      "status": "verified",
+      "problem_type_id": "circle_center_on_axis_area",
+      "domain_operation": "circle_center_on_axis_area",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "example",
+      "generate_py": "components/src_11840/generate.py"
+    },
+    {
+      "component_id": "src_11845",
+      "textbook_example_id": 11845,
+      "status": "verified",
+      "problem_type_id": "identify_center_radius_from_general",
+      "domain_operation": "identify_center_radius_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11845/generate.py"
+    },
+    {
+      "component_id": "src_11846",
+      "textbook_example_id": 11846,
+      "status": "verified",
+      "problem_type_id": "classify_general_circle_graph",
+      "domain_operation": "classify_general_circle_graph",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11846/generate.py"
+    },
+    {
+      "component_id": "src_11847",
+      "textbook_example_id": 11847,
+      "status": "verified",
+      "problem_type_id": "solve_circle_parameter_range",
+      "domain_operation": "solve_circle_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11847/generate.py"
+    },
+    {
+      "component_id": "src_11848",
+      "textbook_example_id": 11848,
+      "status": "verified",
+      "problem_type_id": "circle_through_three_points",
+      "domain_operation": "circle_through_three_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11848/generate.py"
+    },
+    {
+      "component_id": "src_11849",
+      "textbook_example_id": 11849,
+      "status": "verified",
+      "problem_type_id": "translate_and_scale_circle",
+      "domain_operation": "translate_and_scale_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11849/generate.py"
+    },
+    {
+      "component_id": "src_11876",
+      "textbook_example_id": 11876,
+      "status": "verified",
+      "problem_type_id": "evaluate_center_radius_expression",
+      "domain_operation": "evaluate_center_radius_expression",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11876/generate.py"
+    },
+    {
+      "component_id": "src_11888",
+      "textbook_example_id": 11888,
+      "status": "verified",
+      "problem_type_id": "compute_circle_area_from_general",
+      "domain_operation": "compute_circle_area_from_general",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11888/generate.py"
+    },
+    {
+      "component_id": "src_11889",
+      "textbook_example_id": 11889,
+      "status": "verified",
+      "problem_type_id": "identify_circle_from_product_form",
+      "domain_operation": "identify_circle_from_product_form",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "test",
+      "generate_py": "components/src_11889/generate.py"
+    },
+    {
+      "component_id": "src_11892",
+      "textbook_example_id": 11892,
+      "status": "verified",
+      "problem_type_id": "circle_through_three_points",
+      "domain_operation": "circle_through_three_points",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "test",
+      "generate_py": "components/src_11892/generate.py"
+    },
+    {
+      "component_id": "src_11893",
+      "textbook_example_id": 11893,
+      "status": "verified",
+      "problem_type_id": "solve_circle_parameter_range_mcq",
+      "domain_operation": "solve_circle_parameter_range_mcq",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice",
+      "source_kind": "test",
+      "generate_py": "components/src_11893/generate.py"
+    }
+  ]
+}

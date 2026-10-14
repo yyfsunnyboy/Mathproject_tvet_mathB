@@ -6,6 +6,12 @@ import math
 import random
 from typing import Any
 
+from core.gencode.coordinate_math_formatter import (
+    inline_math,
+    overline_segment,
+    point_with_coordinates,
+)
+
 SKILL_ID = "vh_數學B1_MidpointCoordinates"
 
 SOURCE_SPECS: dict[int, dict[str, Any]] = {
@@ -130,6 +136,14 @@ def _distinct_points(rng: random.Random, count: int) -> list[tuple[int, int]]:
 
 def _pair(point: tuple[int, int]) -> str:
     return f"({point[0]},{point[1]})"
+
+
+def _math_point(name: str, point: tuple[int, int]) -> str:
+    return point_with_coordinates(name, point[0], point[1])
+
+
+def _triangle_name(first: str, second: str, third: str) -> str:
+    return inline_math(first + second + third)
 
 
 def _radical(square: int) -> str:
@@ -295,8 +309,9 @@ def generate_source_faithful_payload(
         a = (2 * p[0] - b[0], 2 * p[1] - b[1])
         answers = {"1": _distance_answer(a, b), "2": _distance_answer(p, c)}
         question = (
-            f"若 P 為 A{_pair(a)} 與 B{_pair(b)} 兩點之中點，C{_pair(c)}，試求："
-            "(1) 線段 AB 的長度；(2) P 點與 C 點的距離。"
+            f"若 {inline_math('P')} 為 {_math_point('A', a)} 與 {_math_point('B', b)} 兩點之中點，"
+            f"{_math_point('C', c)}，試求：(1) 線段 {overline_segment('A', 'B')} 的長度；"
+            f"(2) {inline_math('P')} 點與 {inline_math('C')} 點的距離。"
         )
         return _base_payload(
             source_example_id, seed, question, answers,
@@ -308,8 +323,8 @@ def generate_source_faithful_payload(
         a, b, c = _distinct_points(rng, 3)
         d = (a[0] + c[0] - b[0], a[1] + c[1] - b[1])
         question = (
-            f"設 A{_pair(a)}、B{_pair(b)}、C{_pair(c)} 依序為平行四邊形 ABCD "
-            "之三頂點，求 D 點坐標。"
+            f"設 {_math_point('A', a)}、{_math_point('B', b)}、{_math_point('C', c)} "
+            f"依序為平行四邊形 {inline_math('ABCD')} 之三頂點，求 {inline_math('D')} 點坐標。"
         )
         return _base_payload(
             source_example_id, seed, question, _pair(d),
@@ -324,7 +339,10 @@ def generate_source_faithful_payload(
             delta = (1, 2)
         a, b = (p[0] - delta[0], p[1] - delta[1]), (p[0] + delta[0], p[1] + delta[1])
         answer = _distance_answer(p, (0, 0))
-        question = f"若 P 為 A{_pair(a)} 與 B{_pair(b)} 兩點之中點，求 P 點與原點 O 的距離。"
+        question = (
+            f"若 {inline_math('P')} 為 {_math_point('A', a)} 與 {_math_point('B', b)} 兩點之中點，"
+            f"求 {inline_math('P')} 點與原點 {inline_math('O')} 的距離。"
+        )
         return _base_payload(
             source_example_id, seed, question, answer,
             f"先求 P={_pair(p)}，再用距離公式得 OP={answer}。",
@@ -335,7 +353,10 @@ def generate_source_faithful_payload(
         g = _point(rng)
         a, b = _distinct_points(rng, 2)
         c = (3 * g[0] - a[0] - b[0], 3 * g[1] - a[1] - b[1])
-        question = f"設三角形 ABC 的三頂點為 A{_pair(a)}、B{_pair(b)}、C{_pair(c)}，求其重心坐標。"
+        question = (
+            f"設三角形 {_triangle_name('A', 'B', 'C')} 的三頂點為 {_math_point('A', a)}、"
+            f"{_math_point('B', b)}、{_math_point('C', c)}，求其重心坐標。"
+        )
         return _base_payload(
             source_example_id, seed, question, _pair(g),
             f"重心為三頂點坐標平均，G={_pair(g)}。",
@@ -346,8 +367,8 @@ def generate_source_faithful_payload(
         a, b, g = _distinct_points(rng, 3)
         c = (3 * g[0] - a[0] - b[0], 3 * g[1] - a[1] - b[1])
         question = (
-            f"已知 A{_pair(a)}、B{_pair(b)}，且 G{_pair(g)} 為三角形 ABC 的重心，"
-            "求 C 點坐標。"
+            f"已知 {_math_point('A', a)}、{_math_point('B', b)}，且 {_math_point('G', g)} "
+            f"為三角形 {_triangle_name('A', 'B', 'C')} 的重心，求 {inline_math('C')} 點坐標。"
         )
         return _base_payload(
             source_example_id, seed, question, _pair(c),
@@ -369,8 +390,9 @@ def generate_source_faithful_payload(
         )
         choices, label = _scalar_choices(rng, semantic, max(1, square_times_four // 4))
         question = (
-            f"已知三角形 ABC 的三頂點為 A{_pair(a)}、B{_pair(b)}、C{_pair(c)}，"
-            "則 AB 邊上的中線長為何？"
+            f"已知三角形 {_triangle_name('A', 'B', 'C')} 的三頂點為 {_math_point('A', a)}、"
+            f"{_math_point('B', b)}、{_math_point('C', c)}，"
+            f"則 {overline_segment('A', 'B')} 邊上的中線長為何？"
         )
         return _base_payload(
             source_example_id, seed, question, semantic,
@@ -391,8 +413,11 @@ def generate_source_faithful_payload(
         centroid = g
         choices, label = _coordinate_choices(rng, centroid)
         question = (
-            f"設 A{_pair(a)}、B{_pair(b)}、C{_pair(c)} 是三角形 ABC 的三頂點，"
-            "D、E、F 分別為 AB、BC、CA 的中點，則三角形 DEF 的重心坐標為何？"
+            f"設 {_math_point('A', a)}、{_math_point('B', b)}、{_math_point('C', c)} "
+            f"是三角形 {_triangle_name('A', 'B', 'C')} 的三頂點，"
+            f"{inline_math('D')}、{inline_math('E')}、{inline_math('F')} 分別為 "
+            f"{overline_segment('A', 'B')}、{overline_segment('B', 'C')}、{overline_segment('C', 'A')} 的中點，"
+            f"則三角形 {_triangle_name('D', 'E', 'F')} 的重心坐標為何？"
         )
         return _base_payload(
             source_example_id, seed, question, _pair(centroid),

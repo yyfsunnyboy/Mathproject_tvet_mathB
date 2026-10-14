@@ -1,0 +1,40 @@
+{
+  "skill_id": "gh_IrrationalAndRealNumbers",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_12283",
+      "textbook_example_id": 12283,
+      "status": "verified",
+      "problem_type_id": "solve_rational_unknowns_from_radical_identity",
+      "domain_operation": "solve_rational_unknowns_from_radical_identity",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12283/generate.py"
+    },
+    {
+      "component_id": "src_12284",
+      "textbook_example_id": 12284,
+      "status": "verified",
+      "problem_type_id": "solve_rational_unknowns_from_radical_identity",
+      "domain_operation": "solve_rational_unknowns_from_radical_identity",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12284/generate.py"
+    },
+    {
+      "component_id": "src_12285",
+      "textbook_example_id": 12285,
+      "status": "verified",
+      "problem_type_id": "approximate_square_root_by_decimal_search",
+      "domain_operation": "approximate_square_root_by_decimal_search",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12285/generate.py"
+    }
+  ]
+}

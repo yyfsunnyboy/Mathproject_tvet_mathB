@@ -15,6 +15,7 @@ import re
 from sqlalchemy.orm import aliased
 import sys
 import os
+import time
 
 # Windows 主控台常為 cp950：請求流程中的 log 若含 emoji 會 UnicodeEncodeError
 if hasattr(sys.stdout, "reconfigure"):
@@ -55,7 +56,7 @@ from matplotlib import font_manager
 import matplotlib.pyplot as plt
 
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory, abort, g, jsonify
 from werkzeug.utils import safe_join
 from sqlalchemy import inspect, Table, MetaData, text, func
 from sqlalchemy.exc import IntegrityError
@@ -67,16 +68,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from core.routes import core_bp
 from core.ai_analyzer import configure_gemini
 from core.ai_wrapper import resolve_gemini_api_key, mask_api_key, sanitize_secret_text
-from core.rag_engine import init_rag
-from core.advanced_rag_engine import init_adv_rag
-from core.prompts.prompt_loader import bootstrap_prompt_registry
+from core.prompts.bootstrap_templates import bootstrap_prompt_templates
 from core.session_safety import (
     estimate_session_cookie_size,
     trim_session_for_cookie_limit,
     trim_session_to_keep_keys,
 )
+from core.database_runtime import install_sqlite_connection_hardening
 from config import Config
-from models import init_db, User, db, Progress, SkillInfo, SkillCurriculum, SkillPrerequisites
+from models import (
+    Class,
+    ClassStudent,
+    Progress,
+    SkillCurriculum,
+    SkillInfo,
+    SkillPrerequisites,
+    User,
+    db,
+    init_db,
+)
 from core.utils import get_all_active_skills
 
 def _prepare_skill_data_from_record(record):
@@ -102,7 +112,9 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-def create_app():
+def create_app(*, production: bool | None = None):
+    if production is None:
+        production = str(os.environ.get("MATHPROJECT_ENV") or "").strip().lower() == "production"
     app = Flask(__name__, template_folder='templates', static_folder='static')
 
     # --- Matplotlib Font Settings for Chinese Characters ---
@@ -129,7 +141,7 @@ def create_app():
     app.config.update(
         SQLALCHEMY_DATABASE_URI=Config.SQLALCHEMY_DATABASE_URI,
         SQLALCHEMY_TRACK_MODIFICATIONS=Config.SQLALCHEMY_TRACK_MODIFICATIONS,
-        SECRET_KEY=Config.SECRET_KEY,
+        SECRET_KEY=Config.resolve_secret_key(production=production),
         GEMINI_API_KEY=Config.GEMINI_API_KEY,
         GEMINI_MODEL_NAME=Config.GEMINI_MODEL_NAME,
         ENABLE_VISION_OCR_FALLBACK=getattr(Config, "ENABLE_VISION_OCR_FALLBACK", False),
@@ -139,19 +151,10 @@ def create_app():
             "connect_args": {"timeout": 30}  # 增加等待解鎖的時間到 30 秒
         }
     )
-
-    try:
-        import json
-        rag_path = os.path.join(basedir, 'configs', 'rag_settings.json')
-        if os.path.exists(rag_path):
-            with open(rag_path, 'r', encoding='utf-8') as f:
-                rag_data = json.load(f)
-                if 'threshold' in rag_data:
-                    app.config['ADVANCED_RAG_NAIVE_THRESHOLD'] = float(rag_data['threshold'])
-                if 'enable_ai_chat' in rag_data:
-                    app.config['ADVANCED_RAG_ENABLE_AI_CHAT'] = bool(rag_data['enable_ai_chat'])
-    except Exception as e:
-        app.logger.warning(f"Error loading rag_settings.json: {e}")
+    app.config.update(
+        DEBUG=False if production else app.config.get("DEBUG", False),
+        MATHPROJECT_ENV="production" if production else "development",
+    )
 
     # 只有在真的要用 Gemini 時才檢查
     if app.config.get('AI_PROVIDER') == 'gemini' and not app.config.get('GEMINI_API_KEY'):
@@ -160,6 +163,40 @@ def create_app():
     # 初始化擴充套件
     db.init_app(app)
     login_manager.init_app(app)
+
+    @app.before_request
+    def _start_request_timer():
+        g._request_started_at = time.perf_counter()
+
+    @app.after_request
+    def _log_slow_request(response):
+        started_at = getattr(g, "_request_started_at", None)
+        if started_at is not None:
+            elapsed_ms = (time.perf_counter() - started_at) * 1000.0
+            try:
+                threshold_ms = float(os.environ.get("SLOW_REQUEST_THRESHOLD_MS", "2000"))
+            except (TypeError, ValueError):
+                threshold_ms = 2000.0
+            if elapsed_ms >= threshold_ms:
+                app.logger.warning(
+                    "Slow request method=%s path=%s status=%s elapsed_ms=%.1f",
+                    request.method,
+                    request.path,
+                    response.status_code,
+                    elapsed_ms,
+                )
+        return response
+
+    @app.teardown_request
+    def _log_uncaught_request_exception(exc):
+        if exc is not None:
+            app.logger.error(
+                "Uncaught HTTP exception method=%s path=%s type=%s",
+                request.method,
+                request.path,
+                type(exc).__name__,
+                exc_info=(type(exc), exc, exc.__traceback__),
+            )
 
     @app.after_request
     def keep_session_cookie_small(response):
@@ -183,19 +220,26 @@ def create_app():
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
     app.register_blueprint(live_show_bp) # 註冊科展展演用的 blueprint
 
+    from core.guest_demo import install_guest_demo
+    install_guest_demo(app, db)
+
+    from core.attempt_math_display import install_attempt_math_display
+    install_attempt_math_display(app)
+
+    @app.before_request
+    def _question_api_auth_response():
+        # The practice page can be viewed without a login, but its question API
+        # requires one. Keep that boundary while returning JSON to fetch callers.
+        from core.guest_demo import is_guest_demo
+
+        if request.endpoint == "practice.next_question" and not current_user.is_authenticated and not is_guest_demo():
+            return jsonify(error="authentication_required", message="請先登入後再練習。"), 401
+
     # [公開唯讀 Demo 模式] 註冊 demo blueprint：/demo, /demo/practice, /demo/teacher-overview
     # 全部使用固定假資料、無需登入、不提供任何寫入操作，與既有登入/教師權限邏輯完全獨立。
     from core.routes.demo import demo_bp
     app.register_blueprint(demo_bp)
     
-    # [自適應複習 API] 導入並註冊自適應複習模式 blueprint
-    try:
-        from adaptive_review_api import adaptive_review_bp
-        app.register_blueprint(adaptive_review_bp)
-        logger.info("✅ 自適應複習 API 已註冊：/api/adaptive-review")
-    except ImportError as e:
-        logger.warning(f"⚠️ 自適應複習模式未啟用: {e}")
-
     # [模擬學生 API] 註冊模擬學生 blueprint（本地開發用）
     try:
         from Simulated_student.sim_api import sim_bp
@@ -216,6 +260,18 @@ def create_app():
             return redirect(url_for('dashboard'))
         return redirect(url_for('login'))
 
+    @app.route('/healthz')
+    def healthz():
+        try:
+            db.session.execute(text("SELECT 1"))
+            return jsonify({"status": "ok", "app": "alive", "database": "ok"}), 200
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Health check database failure")
+            return jsonify({"status": "unavailable", "app": "alive", "database": "error"}), 503
+        finally:
+            db.session.remove()
+
     @app.route('/uploads/question_assets/<path:filename>')
     def question_asset_file(filename):
         base_dir = os.path.join(app.root_path, 'uploads', 'question_assets')
@@ -229,23 +285,16 @@ def create_app():
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
-            role = request.form.get('role', 'student') # 獲取身分，預設為學生
             
             user = db.session.query(User).filter_by(username=username).first()
 
             if user and check_password_hash(user.password_hash, password):
-                # 檢查身分是否相符
-                if user.role != role:
-                    flash(f'身分錯誤！此帳號為「{user.role}」帳號，請切換身分後再試。', 'warning')
-                    return redirect(url_for('login'))
-
                 login_user(user)
                 
-                # 根據身分導向不同頁面
-                if user.role == 'teacher':
+                # 身分只採用資料庫帳號資料，不信任前端傳入的 role。
+                if user.role == 'teacher' or user.is_admin:
                     return redirect(url_for('teacher_dashboard'))
-                else:
-                    return redirect(url_for('dashboard'))
+                return redirect(url_for('dashboard'))
             flash('帳號或密碼錯誤', 'danger')
         return render_template('login.html')
 
@@ -282,19 +331,36 @@ def create_app():
         flash('已登出', 'info')
         return redirect(url_for('login'))
 
-    @app.route('/adaptive-review')
-    @login_required
-    def adaptive_review():
-        """自適應複習模式入口頁面（簡潔版本）"""
-        return render_template('adaptive_review_simple.html')
-
     @app.route('/teacher_dashboard')
     @login_required
     def teacher_dashboard():
-        if current_user.role != 'teacher':
+        if current_user.role != 'teacher' and not current_user.is_admin:
             flash('權限不足，無法存取教師頁面', 'warning')
             return redirect(url_for('dashboard'))
-        return render_template('teacher_dashboard.html', username=current_user.username)
+
+        classes_query = db.session.query(Class)
+        if not current_user.is_admin:
+            classes_query = classes_query.filter(Class.teacher_id == current_user.id)
+        classes = classes_query.order_by(Class.created_at.desc()).all()
+
+        student_count_query = (
+            db.session.query(func.count(func.distinct(ClassStudent.student_id)))
+            .join(Class, Class.id == ClassStudent.class_id)
+        )
+        if not current_user.is_admin:
+            student_count_query = student_count_query.filter(Class.teacher_id == current_user.id)
+        student_count = student_count_query.scalar() or 0
+
+        return render_template(
+            'teacher_dashboard.html',
+            username=current_user.username,
+            classes=[class_obj.to_dict() for class_obj in classes],
+            class_count=len(classes),
+            student_count=student_count,
+        )
+
+    from core.teacher_analysis_service import to_taipei_time
+    app.add_template_filter(to_taipei_time, 'taipei_time')
 
     @app.route('/teacher/analysis')
     @login_required
@@ -346,7 +412,7 @@ def create_app():
                 "ok": False,
                 "error_type": "api_key_empty",
                 "message": "GEMINI_API_KEY or GOOGLE_API_KEY is not configured in the environment"
-            })
+            }), 400
 
         try:
             from core.ai_settings import normalize_google_model_id
@@ -366,11 +432,15 @@ def create_app():
             app.logger.info(f"[API KEY TEST] testing model: {model_name}")
 
             model = genai.GenerativeModel(model_name)
+            # This is the credential validation boundary: construction alone is
+            # insufficient because the SDK does not contact Google until here.
             _ = model.generate_content("1+1=?")
 
             if submitted_key:
                 from core.env_secrets import update_gemini_api_key
                 update_gemini_api_key(submitted_key)
+                from core.ai_analyzer import invalidate_gemini_client_cache
+                invalidate_gemini_client_cache()
 
             # 測試成功後存入 session
             session["AI_CLOUD_MODEL"] = model_name
@@ -411,29 +481,48 @@ def create_app():
         except Exception as e:
             safe_err = sanitize_secret_text(repr(e), [api_key])
             app.logger.error(f"[API KEY TEST ERROR] model={model_name} err={safe_err}")
-            raw_err = f"{type(e).__name__}: {str(e)}"
+            # The legacy SDK configure call is process-global. If validation of
+            # a replacement failed, restore the currently saved credential.
+            saved_key, _saved_source = resolve_gemini_api_key()
+            if submitted_key and saved_key and saved_key != submitted_key:
+                genai.configure(api_key=saved_key)
+
+            raw_err = f"{type(e).__name__}: {sanitize_secret_text(str(e), [api_key])}"
             raw_err_lower = raw_err.lower()
-            is_model_not_found = (
+            is_invalid_key = (
+                "api_key_invalid" in raw_err_lower
+                or "api key not valid" in raw_err_lower
+                or "invalid api key" in raw_err_lower
+            )
+            is_permission_denied = "permission_denied" in raw_err_lower or "permission denied" in raw_err_lower
+            is_quota_error = (
+                "resource_exhausted" in raw_err_lower
+                or "quota" in raw_err_lower
+                or "429" in raw_err_lower
+            )
+            is_model_error = (
                 "notfound" in raw_err_lower
                 or "not found" in raw_err_lower
                 or "404" in raw_err_lower
                 or "is not supported for generatecontent" in raw_err_lower
             )
-            error_type = "model_not_found" if is_model_not_found else "api_key_invalid"
-            if is_model_not_found:
-                app.logger.warning(
-                    f"[API KEY TEST] model_not_found model={model_name}. "
-                    "Use a supported Gemini model id."
-                )
+            if is_invalid_key:
+                error_type, status, message = "api_key_invalid", 401, "Gemini API Key 無效或已撤銷。"
+            elif is_permission_denied:
+                error_type, status, message = "permission_denied", 403, "Gemini API 權限遭拒，請檢查專案與 API 權限。"
+            elif is_quota_error:
+                error_type, status, message = "quota_exceeded", 429, "Gemini API 配額不足或已達速率限制。"
+            elif is_model_error:
+                error_type, status, message = "model_not_found", 400, "指定的 Gemini 模型不存在或不可用。"
             else:
-                app.logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
+                error_type, status, message = "google_api_error", 502, "Gemini API 驗證失敗，請稍後再試。"
             return jsonify({
                 "success": False,
                 "ok": False,
                 "error_type": error_type,
-                "message": sanitize_secret_text(str(e), [api_key]),
+                "message": message,
                 "model": model_name
-            })
+            }), status
 
     @app.route('/debug/session_key_status')
     def debug_session_key_status():
@@ -502,6 +591,17 @@ def create_app():
             p.skill_id: (p.skill_id, p.consecutive_correct, p.questions_solved, p.current_level)
             for p in progress_records
         }
+
+        def _skill_card_metrics(skill_ids):
+            from core.skill_card_mastery import build_skill_card_mastery
+
+            return build_skill_card_mastery(
+                student_id=current_user.id,
+                skill_ids=skill_ids,
+                current_streak_by_skill={
+                    skill_id: values[1] for skill_id, values in progress_dict.items()
+                },
+            )
         
         if view_mode == 'curriculum':
             from core.utils import get_volumes_by_curriculum, get_chapters_by_curriculum_volume, get_skills_by_volume_chapter
@@ -513,12 +613,16 @@ def create_app():
                 skills_raw = get_skills_by_volume_chapter(volume, chapter)
                 chapter_display = _clean_chapter_display(chapter)
 
+                card_metrics = _skill_card_metrics([s['skill_id'] for s in skills_raw])
+
                 all_skills_with_progress = []
                 for s in skills_raw:
                     prog = progress_dict.get(s['skill_id'], (s['skill_id'], 0, 0, 1))
+                    mastery = card_metrics[s['skill_id']]
                     all_skills_with_progress.append({
                         **s,
-                        'consecutive_correct': prog[1],
+                        **mastery,
+                        'consecutive_correct': mastery['current_streak'],
                         'questions_solved': prog[2],
                         'current_level': prog[3],
                     })
@@ -625,6 +729,11 @@ def create_app():
                                      hide_curriculum_switch=hide_curriculum_switch)
             elif curriculum:
                 volumes = get_volumes_by_curriculum(curriculum)
+                mock_exam_cards = []
+                if curriculum == 'vocational':
+                    from core.vocational_mock_exam_scope import mock_exam_cards as get_mock_exam_cards
+
+                    mock_exam_cards = get_mock_exam_cards()
 
                 # 新增：針對國中冊別的排序邏輯
                 if curriculum == 'junior_high':
@@ -664,6 +773,7 @@ def create_app():
                                      curriculum=curriculum,
                                      volumes=volumes,
                                      grade_map=grade_map,
+                                     mock_exam_cards=mock_exam_cards,
                                      username=current_user.username,
                                      enrolled_classes=enrolled_classes,
                                      hide_curriculum_switch=hide_curriculum_switch)
@@ -672,13 +782,21 @@ def create_app():
 
             if selected_category:
                 skills = db.session.query(SkillInfo).filter_by(is_active=True, category=selected_category).order_by(SkillInfo.order_index).all()
+
+                card_metrics = _skill_card_metrics([skill.skill_id for skill in skills])
                 
                 dashboard_data = []
                 for skill in skills:
                     prog = progress_dict.get(skill.skill_id, (skill.skill_id, 0, 0, 1))
+                    mastery = card_metrics[skill.skill_id]
                     dashboard_data.append({
                         'skill': skill,
-                        'consecutive_correct': prog[1],
+                        'skill_id': skill.skill_id,
+                        'skill_ch_name': skill.skill_ch_name,
+                        'skill_name': skill.skill_ch_name,
+                        'description': skill.description,
+                        **mastery,
+                        'consecutive_correct': mastery['current_streak'],
                         'questions_solved': prog[2],
                         'current_level': prog[3]
                     })
@@ -720,7 +838,27 @@ def create_app():
                                      enrolled_classes=enrolled_classes,
                                      hide_curriculum_switch=hide_curriculum_switch)
 
+    @app.route('/api/dashboard/skill-card-mastery')
+    @login_required
+    def dashboard_skill_card_mastery():
+        """Refresh visible dashboard cards through the shared mastery aggregator."""
+        skill_ids = list(dict.fromkeys(
+            value.strip()
+            for value in request.args.getlist('skill_id')
+            if value and value.strip()
+        ))[:200]
+        from core.skill_card_mastery import build_skill_card_mastery
+
+        return jsonify({
+            'ok': True,
+            'mastery': build_skill_card_mastery(
+                student_id=current_user.id,
+                skill_ids=skill_ids,
+            ),
+        })
+
     with app.app_context():
+        install_sqlite_connection_hardening(db.engine, logger=app.logger)
         init_db(db.engine)
         
         # 確保 PromptTemplate 已經載入，使得 SQLAlchemy 能識別並在 create_all() 中建立這個資料表
@@ -736,34 +874,20 @@ def create_app():
             print("WARNING: No Gemini API Key found. Please set it in /admin/ai_prompt_settings")
 
         try:
-            created_count, updated_count, skipped_count = bootstrap_prompt_registry(update_existing=False)
-            app.logger.info(f"Prompt template bootstrap done. created={created_count}, updated={updated_count}, skipped={skipped_count}")
+            created_count = bootstrap_prompt_templates()
+            app.logger.info(f"Prompt template bootstrap done. created={created_count}")
         except Exception as e:
             app.logger.error(f"Prompt template bootstrap failed: {e}")
-        # 啟用 WAL (Write-Ahead Logging) 模式以提高併發性並減少鎖定
-        try:
-            with db.engine.connect() as conn:
-                # 啟用 WAL 模式，允許讀取和寫入並行
-                conn.execute(text("PRAGMA journal_mode=WAL"))
-                # 設定同步等級為 NORMAL，在 WAL 模式下是安全且高效的選擇
-                conn.execute(text("PRAGMA synchronous=NORMAL"))
-        except Exception as e:
-            app.logger.error(f"Failed to set WAL mode for SQLite: {e}")
-
         if os.environ.get('SEED_DB_ONLY') != '1':
             configure_gemini(
                 api_key=app.config['GEMINI_API_KEY'],
                 model_name=app.config['GEMINI_MODEL_NAME']
             )
-            try:
-                init_rag(app)
-            except Exception as e:
-                app.logger.error(f"RAG initialization failed: {e}")
-                
-            try:
-                init_adv_rag(app)
-            except Exception as e:
-                app.logger.error(f"Advanced RAG initialization failed: {e}")
+        if production:
+            app.logger.info(
+                "MathProject production application initialized debug=%s database=sqlite",
+                app.debug,
+            )
 
     return app
 

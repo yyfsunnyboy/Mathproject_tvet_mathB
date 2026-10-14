@@ -1,0 +1,20 @@
+{
+  "proposal_id": "capability_9ba757fa0bf387dfb2700269",
+  "target_domain": "number_system.rational_numbers",
+  "status": "review_only_not_promoted",
+  "production_publish_allowed": false,
+  "proposed_files_after_human_approval": {
+    "domain_spec": "core/registry/domain_operation_registry.py",
+    "taxonomy_binding": "configs/gencode_taxonomy/k12_component_taxonomy.yaml",
+    "domain_impl": "core/domain/number_system/rational_numbers_domain.py",
+    "adapter": "core/gencode/domain_matrix_adapter.py",
+    "checker_extension": "core/gencode/answer_payload.py",
+    "validator": "core/gencode/validators/answer_contract_validator.py",
+    "tests": "tests/domain/test_rational_numbers_domain.py"
+  },
+  "promotion_prerequisites": [
+    "human approval of a new domain rather than nearest-domain reuse",
+    "source-confirmed answer topology for textbook example 12280",
+    "separate source-fidelity resolution for textbook example 12277"
+  ]
+}

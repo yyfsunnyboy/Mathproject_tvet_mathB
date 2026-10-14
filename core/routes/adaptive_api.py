@@ -3,17 +3,29 @@ from __future__ import annotations
 
 import json
 import re
+import base64
+import hashlib
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
 
 from flask import jsonify, request, session, current_app
 from flask_login import current_user, login_required
 
 from core.adaptive.judge import judge_answer_with_feedback
+from core.ai_conversation_context import add_turn as add_ai_context_turn
+from core.ai_conversation_context import format_for_prompt as format_ai_context_for_prompt
+from core.gencode.answer_grading import build_correct_answer_display
+from core.gencode.choice_math_display import normalize_choice_displays
 from core.handwriting_ai_check import (
+    BLANK_CANVAS_FEEDBACK,
     HandwritingCheckContext,
+    _looks_blank_image,
     build_handwriting_check_response,
 )
+from core.guest_demo import guest_demo_allowed, is_guest_demo
 from . import practice_bp
-from core.adaptive.session_engine import get_rag_hint, submit_and_get_next
+from core.adaptive.session_engine import submit_and_get_next
 from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import (
     ordered_b4_chapter1_skills,
 )
@@ -29,6 +41,7 @@ _MAX_TEXT_LEN = 240
 _MAX_ANSWER_LEN = 80
 _MAX_SUBSKILLS = 6
 _MAX_RECENT_RESULTS = 4
+_MAX_ROUTING_TIMELINE = 12
 _ROUTING_STATE_ALLOWLIST = {
     "mode",
     "current_skill",
@@ -54,6 +67,8 @@ _ROUTING_STATE_ALLOWLIST = {
     "unit_completed",
     "local_remediation_completed",
     "assessment_completed",
+    "routing_summary",
+    "routing_timeline",
 }
 
 
@@ -90,31 +105,208 @@ def _to_int(value: object, default: int = 0) -> int:
 def _runtime_for_ai_handwriting(payload: dict[str, object]) -> dict[str, object]:
     runtime_store = _adaptive_runtime_store()
     session_id = str(payload.get("session_id") or "").strip()
-    if session_id and isinstance(runtime_store.get(session_id), dict):
-        return dict(runtime_store.get(session_id) or {})
     question_uid = str(payload.get("question_uid") or "").strip()
+    if session_id and isinstance(runtime_store.get(session_id), dict):
+        run = runtime_store[session_id]
+        if not question_uid or question_uid == str(run.get("question_uid") or "").strip():
+            return dict(run)
+        return {}
     if question_uid:
+        from core.practice_question_store import get_question_by_uid
+        stored = get_question_by_uid(question_uid)
+        if stored:
+            return stored
         for item in runtime_store.values():
             if isinstance(item, dict) and str(item.get("question_uid") or "").strip() == question_uid:
                 return dict(item)
+        # Compatibility for a server-generated standard question still held in
+        # the signed legacy session. The supplied UID must match exactly; POST
+        # question/answer fields are never used.
+        try:
+            from core.session import get_current
+
+            current = get_current()
+            if (
+                isinstance(current, dict)
+                and str(current.get("question_uid") or "").strip() == question_uid
+            ):
+                return dict(current)
+        except Exception:
+            current_app.logger.exception(
+                "[AI handwriting recognition] current question lookup failed"
+            )
     return {}
 
 
 def _call_ai_handwriting_checker(payload: dict[str, object], ctx: HandwritingCheckContext) -> dict[str, object]:
     from core.ai_analyzer import analyze
-    from core.ai_wrapper import resolve_gemini_api_key
 
+    shared_context = format_ai_context_for_prompt(ctx.question_uid)
+    checker_context = ctx.question_text
+    if shared_context:
+        checker_context = f"{checker_context}\n\n{shared_context}"
     return analyze(
         image_data_url=str(payload.get("image_base64") or payload.get("image_data_url") or ""),
-        context=ctx.question_text,
-        api_key=resolve_gemini_api_key(),
+        context=checker_context,
+        api_key=None,
         prerequisite_skills=[],
         correct_answer=str(ctx.correct_answer or ctx.semantic_answer or ""),
     )
 
 
+RECOGNITION_UNAVAILABLE_FEEDBACK = "AI 辨識這次沒有成功回覆（不是你寫得不好），請再按一次 AI 檢查。"
+_RECOGNITION_FAILURE_PREFIXES = ("Error:", "AI 分析失敗", "AI 回應格式錯誤")
+
+
+def _recognition_model_failed(ai_result: object) -> bool:
+    """The vision wrapper reports failures as text, not exceptions."""
+    if not isinstance(ai_result, dict):
+        return True
+    if any(ai_result.get(key) for key in ("recognized_answer", "normalized_answer", "recognized_steps",
+                                          "recognized_latex", "is_blank")):
+        return False
+    message = str(ai_result.get("reply") or ai_result.get("feedback") or "").strip()
+    return message.startswith(_RECOGNITION_FAILURE_PREFIXES)
+
+
+def _persist_drawing_feedback(ctx: HandwritingCheckContext, response: dict[str, object]) -> None:
+    """Store recognized work and a non-reversible image reference, never image bytes."""
+    feedback = _trim_text(response.get("feedback"), max_len=400)
+    if not ctx.question_uid or not feedback:
+        return
+    verdict = response.get("final_answer_correct")
+    from core.handwriting_ai_check import join_recognized_work
+    work = join_recognized_work(response.get("recognized_answer") or response.get("normalized_answer"),
+                                response.get("recognized_steps"))[:1000]
+    assessment = _trim_text(response.get("error_type") or response.get("mode"), max_len=100)
+    audit = response.get("handwriting_submission_audit") or response.get("submission_audit") or {}
+    image_ref = str(audit.get("image_sha256") or "") if isinstance(audit, dict) else ""
+    add_ai_context_turn(
+        ctx.question_uid,
+        role="student",
+        kind="drawing_feedback",
+        content=f"student_action=drawing_check\nrecognized_work={work}\nfeedback_summary={feedback}",
+        student_message="檢查目前手寫作答",
+        handwriting_summary=work,
+        handwriting_image_reference=image_ref,
+        ai_assessment=assessment,
+        ai_reply=feedback,
+        suggested_questions=response.get("suggested_questions") or [],
+        submission_id=str(response.get("handwriting_submission_id") or ""),
+        authoritative_correct=verdict if isinstance(verdict, bool) else None,
+        authoritative_status=(
+            "correct" if verdict is True else "incorrect" if verdict is False else "unknown"
+        ),
+    )
+
+
+def _debug_save_handwriting_capture(image_data_url: str, metadata: object) -> None:
+    """DEBUG-only snapshot of the exact PNG received for the vision call."""
+    if not current_app.debug:
+        return
+    try:
+        encoded = str(image_data_url or "").split(",", 1)[-1]
+        image_bytes = base64.b64decode(encoded, validate=False)
+        debug_dir = Path(current_app.root_path) / "reports" / "runtime_tests" / "handwriting_debug"
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        (debug_dir / "latest_capture.png").write_bytes(image_bytes)
+        meta = metadata if isinstance(metadata, dict) else {}
+        current_app.logger.info(
+            "[HANDWRITING CAPTURE DEBUG] captured_at=%s server_received_at=%s "
+            "canvas=%s bytes=%s sha256=%s reused_cache=%s stroke_count=%s history_depth=%s",
+            str(meta.get("captured_at") or "unknown"),
+            datetime.now(timezone.utc).isoformat(),
+            str(meta.get("canvas_selector") or "unknown"),
+            len(image_bytes),
+            hashlib.sha256(image_bytes).hexdigest(),
+            bool(meta.get("reused_cache", False)),
+            meta.get("stroke_count"),
+            meta.get("history_depth"),
+        )
+    except Exception:
+        current_app.logger.exception("[HANDWRITING CAPTURE DEBUG] snapshot_failed")
+
+
+def _handwriting_image_sha256(image_data_url: str) -> str:
+    text = str(image_data_url or "")
+    encoded = text.split(",", 1)[-1]
+    try:
+        image_bytes = base64.b64decode(encoded, validate=False)
+    except Exception:
+        image_bytes = text.encode("utf-8")
+    return hashlib.sha256(image_bytes).hexdigest()
+
+
+def _attach_handwriting_submission_audit(
+    response: dict[str, object],
+    *,
+    payload: dict[str, object],
+    ctx: HandwritingCheckContext,
+    image_base64: str,
+    ai_result: dict[str, object] | None,
+    previous_state_cleared: bool,
+) -> dict[str, object]:
+    out = dict(response)
+    submission_id = str(payload.get("handwriting_submission_id") or uuid.uuid4())
+    capture_debug = payload.get("capture_debug") if isinstance(payload.get("capture_debug"), dict) else {}
+    captured_at = str(capture_debug.get("captured_at") or datetime.now(timezone.utc).isoformat())
+    raw = ai_result if isinstance(ai_result, dict) else {}
+    recognized_raw = (
+        raw.get("recognized_answer")
+        if raw.get("recognized_answer") not in (None, "")
+        else raw.get("recognized_expression")
+        or raw.get("expression")
+        or raw.get("recognized_text")
+        or out.get("recognized_answer")
+        or ""
+    )
+    normalized = out.get("normalized_answer")
+    structured = normalized if isinstance(normalized, dict) else {}
+    audit = {
+        "submission_id": submission_id,
+        "question_uid": ctx.question_uid,
+        "image_sha256": _handwriting_image_sha256(image_base64),
+        "capture_timestamp": captured_at,
+        "server_received_at": datetime.now(timezone.utc).isoformat(),
+        "recognized_raw_text": recognized_raw,
+        "normalized_answer": normalized,
+        "structured_answer": structured,
+        "part_1": structured.get("part_1") if isinstance(structured, dict) else None,
+        "part_2": structured.get("part_2") if isinstance(structured, dict) else None,
+        "completion_state": out.get("completion_state"),
+        "checker_input": normalized,
+        "checker_result": out.get("final_answer_correct"),
+        "previous_handwriting_state_reused": False,
+        "previous_authoritative_state_cleared": previous_state_cleared,
+        "structured_analysis_from_current_request": True,
+        "tutor_authoritative_result": session.get("chat_tutor_authoritative_result"),
+    }
+    out["handwriting_submission_id"] = submission_id
+    out["submission_audit"] = audit
+    current_app.logger.info(
+        "[HANDWRITING SUBMISSION] submission_id=%s question_uid=%s image_sha256=%s "
+        "capture_timestamp=%s recognized_raw=%r normalized=%r structured=%r "
+        "part_1=%r part_2=%r completion=%s checker_input=%r checker_result=%r "
+        "previous_reused=false structured_current=true tutor_authoritative=%r",
+        submission_id,
+        ctx.question_uid,
+        audit["image_sha256"],
+        captured_at,
+        recognized_raw,
+        normalized,
+        structured,
+        audit["part_1"],
+        audit["part_2"],
+        audit["completion_state"],
+        audit["checker_input"],
+        audit["checker_result"],
+        audit["tutor_authoritative_result"],
+    )
+    return out
+
+
 @practice_bp.route("/api/practice/ai-check-handwriting", methods=["POST"])
-@login_required
+@guest_demo_allowed
 def ai_check_handwriting():
     payload = request.get_json(silent=True) or {}
     image_base64 = str(
@@ -123,62 +315,155 @@ def ai_check_handwriting():
         or payload.get("handwriting_image")
         or ""
     )
+    _debug_save_handwriting_capture(image_base64, payload.get("capture_debug"))
     runtime = _runtime_for_ai_handwriting(payload)
+    if not runtime or (payload.get("question_uid") and
+                       str(payload["question_uid"]) != str(runtime.get("question_uid") or "")):
+        return jsonify({"error": "stale_or_unknown_question"}), 409
 
     answer_contract = runtime.get("answer_contract")
     if not isinstance(answer_contract, dict):
-        answer_contract = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else {}
+        answer_contract = {}
 
     correct_answer = runtime.get("correct_answer", runtime.get("answer"))
-    if correct_answer in (None, ""):
-        # Backward-compatible fallback for tests and non-adaptive callers. The frontend does not need this.
-        correct_answer = payload.get("correct_answer")
 
     ctx = HandwritingCheckContext(
-        question_uid=str(payload.get("question_uid") or runtime.get("question_uid") or ""),
-        skill_id=str(payload.get("skill_id") or runtime.get("skill_id") or runtime.get("skill") or ""),
-        question_text=str(payload.get("question_text") or runtime.get("question_text") or ""),
-        problem_type_id=str(payload.get("problem_type_id") or runtime.get("problem_type_id") or ""),
-        presentation_mode=str(payload.get("presentation_mode") or runtime.get("presentation_mode") or ""),
-        answer_type=str(payload.get("answer_type") or runtime.get("answer_type") or answer_contract.get("answer_type", "")),
+        question_uid=str(runtime.get("question_uid") or ""),
+        skill_id=str(runtime.get("skill_id") or runtime.get("skill") or ""),
+        question_text=str(runtime.get("question_text") or runtime.get("question") or ""),
+        problem_type_id=str(runtime.get("problem_type_id") or ""),
+        presentation_mode=str(runtime.get("presentation_mode") or ""),
+        answer_type=str(runtime.get("answer_type") or answer_contract.get("answer_type", "")),
         correct_answer=correct_answer,
         semantic_answer=runtime.get("semantic_answer"),
         answer_contract=answer_contract,
         checker=str(runtime.get("checker") or runtime.get("checker_type") or answer_contract.get("checker", "")),
         equivalence=str(runtime.get("equivalence") or runtime.get("equivalence_type") or answer_contract.get("answer_equivalence", "")),
-        choices=list(runtime.get("choices") or payload.get("choices") or []),
+        choices=list(runtime.get("choices") or []),
         rubric=str(runtime.get("rubric") or ""),
     )
+    transient_keys = (
+        "chat_tutor_authoritative_result",
+        "chat_tutor_temporary_state",
+        "handwriting_temporary_analysis",
+    )
+    previous_state_cleared = any(key in session for key in transient_keys)
+    for key in transient_keys:
+        session.pop(key, None)
+    if previous_state_cleared:
+        session.modified = True
 
-    try:
-        ai_result = _call_ai_handwriting_checker(payload, ctx)
-    except Exception as exc:
-        current_app.logger.warning("[AI handwriting check] failed: %s", exc)
-        return jsonify(
+    # Blank canvas short-circuit: never invoke vision when there are no strokes.
+    if _looks_blank_image(image_base64):
+        blank_response = _attach_handwriting_submission_audit(
             {
+                "completion_state": "blank",
                 "mode": "unrecognized",
                 "is_correct": False,
                 "final_answer_correct": None,
                 "process_correct": None,
                 "recognized_answer": "",
+                "normalized_answer": "",
+                "recognized_latex": "",
+                "recognized_steps": [],
+                "first_error_step": None,
+                "error_type": "blank",
+                "feedback": BLANK_CANVAS_FEEDBACK,
+                "confidence": 0.0,
+                "should_record_attempt": False,
+                "is_blank": True,
+                "vision_invoked": False,
+                "image_payload_nonempty": bool(str(image_base64 or "").strip()),
+            },
+            payload=payload,
+            ctx=ctx,
+            image_base64=image_base64,
+            ai_result=None,
+            previous_state_cleared=previous_state_cleared,
+        )
+        if not is_guest_demo():
+            _persist_drawing_feedback(ctx, blank_response)
+        return jsonify(blank_response), 200
+
+    try:
+        ai_result = _call_ai_handwriting_checker(payload, ctx)
+        if _recognition_model_failed(ai_result):
+            raise RuntimeError("recognition model returned no transcription")
+    except Exception as exc:
+        current_app.logger.warning("[AI handwriting check] failed: %s", exc)
+        error_response = _attach_handwriting_submission_audit(
+            {
+                "mode": "unrecognized",
+                "completion_state": "in_progress",
+                "is_correct": False,
+                "final_answer_correct": None,
+                "process_correct": None,
+                "recognized_answer": "",
+                "normalized_answer": "",
                 "recognized_latex": "",
                 "recognized_steps": [],
                 "first_error_step": None,
                 "error_type": "ai_timeout_or_error",
-                "feedback": "目前無法清楚辨識，請重新書寫。",
+                "feedback": RECOGNITION_UNAVAILABLE_FEEDBACK,
+                "ai_unavailable": True,
+                "retryable": True,
                 "confidence": 0.0,
                 "should_record_attempt": False,
-            }
-        ), 200
+                "is_blank": False,
+                "vision_invoked": True,
+            },
+            payload=payload,
+            ctx=ctx,
+            image_base64=image_base64,
+            ai_result=None,
+            previous_state_cleared=previous_state_cleared,
+        )
+        return jsonify(error_response), 503
 
     response = build_handwriting_check_response(
         image_base64=image_base64,
         ctx=ctx,
         ai_result=ai_result,
     )
+    from core.handwriting_ai_check import ink_band_count, join_recognized_work, recognition_is_last_line_only
+    recognized_work = join_recognized_work(
+        response.get("recognized_answer") or response.get("normalized_answer"),
+        response.get("recognized_steps"),
+    )
+    encoded = str(image_base64 or "").split(",", 1)[-1]
+    try:
+        image_bytes = base64.b64decode(encoded, validate=False)
+    except Exception:
+        image_bytes = b""
+    response["recognition_incomplete"] = recognition_is_last_line_only(
+        recognized_work, ink_band_count(image_bytes)
+    )
+    response["image_payload_nonempty"] = True
+    response["vision_invoked"] = True if response.get("vision_invoked") is None else response.get("vision_invoked")
     # Do not leak hidden answer/rubric/checker internals to the browser.
     for forbidden in ("correct_answer", "semantic_answer", "answer_contract", "rubric", "checker"):
         response.pop(forbidden, None)
+    response = _attach_handwriting_submission_audit(
+        response,
+        payload=payload,
+        ctx=ctx,
+        image_base64=image_base64,
+        ai_result=ai_result if isinstance(ai_result, dict) else None,
+        previous_state_cleared=previous_state_cleared,
+    )
+    from core.ai_conversation_context import normalize_suggested_questions
+    from core.handwriting_ai_check import join_recognized_work
+    work = join_recognized_work(response.get("recognized_answer") or response.get("normalized_answer"),
+                                response.get("recognized_steps"))
+    response["reply"] = str(response.get("reply") or response.get("feedback") or "")
+    response["suggested_questions"] = normalize_suggested_questions(
+        response.get("suggested_questions") or response.get("follow_up_prompts"),
+        question_text=ctx.question_text, student_work=work, ai_reply=response["reply"],
+        correct_answer=str(ctx.correct_answer or ""),
+    )
+    response["follow_up_prompts"] = response["suggested_questions"]
+    if not is_guest_demo():
+        _persist_drawing_feedback(ctx, response)
     return jsonify(response), 200
 
 
@@ -250,6 +535,19 @@ def _slim_routing_state(raw: object) -> dict:
             slim[key] = _to_bool_list(value, max_len=_MAX_RECENT_RESULTS)
         elif key == "remediation_mastery":
             slim[key] = _to_float(value, 0.0)
+        elif key == "routing_summary" and isinstance(value, dict):
+            slim[key] = {
+                "total_routing_decisions": _to_int(value.get("total_routing_decisions"), 0),
+                "ppo_routing_decisions": _to_int(value.get("ppo_routing_decisions"), 0),
+                "fallback_routing_decisions": _to_int(value.get("fallback_routing_decisions"), 0),
+                "remediation_entries": _to_int(value.get("remediation_entries"), 0),
+                "successful_returns": _to_int(value.get("successful_returns"), 0),
+                "bridge_completions": _to_int(value.get("bridge_completions"), 0),
+            }
+        elif key == "routing_timeline" and isinstance(value, list):
+            # The browser session is intentionally bounded, but decision history
+            # must survive the next request so aggregate routing remains truthful.
+            slim[key] = [item for item in value if isinstance(item, dict)][-_MAX_ROUTING_TIMELINE:]
     return slim
 
 
@@ -263,6 +561,23 @@ def _slim_subskills(raw: object) -> list[str]:
             out.append(text)
         if len(out) >= _MAX_SUBSKILLS:
             break
+    return out
+
+
+def _handwriting_rubric_fields(question: dict) -> dict:
+    """Keep bounded server-generated rubric fields in adaptive runtime state."""
+    out: dict = {}
+    for field in ("expected_paths", "expected_row", "expected_terms"):
+        value = question.get(field)
+        if isinstance(value, list):
+            out[field] = value[:64]
+    for field, limit in (("variant", 80), ("expected_expansion", 1200)):
+        value = str(question.get(field) or "").strip()
+        if value:
+            out[field] = value[:limit]
+    for field in ("expected_count", "n"):
+        if question.get(field) is not None:
+            out[field] = question.get(field)
     return out
 
 
@@ -290,12 +605,46 @@ def _adaptive_runtime_store() -> dict:
     return store
 
 
-def _response_for_frontend(response: dict) -> dict:
+def _response_for_frontend(response: dict, *, submitted_is_correct: object = None) -> dict:
+    """Expose one stable, browser-safe adaptive API contract.
+
+    Engine branches may finish early (completion, assessment breakpoint) or
+    continue with a question.  This adapter lifts shared state consistently
+    without inventing learning outcomes.
+    """
     sanitized = dict(response)
     q = dict(sanitized.get("new_question_data", {}) or {})
+    if isinstance(q.get("choices"), list):
+        q["choices"] = normalize_choice_displays(q["choices"])
     q.pop("answer", None)
     q.pop("correct_answer", None)
     sanitized["new_question_data"] = q
+    routing_state = sanitized.get("routing_state") if isinstance(sanitized.get("routing_state"), dict) else {}
+    completion_stats = sanitized.get("completion_stats") if isinstance(sanitized.get("completion_stats"), dict) else {}
+    sanitized.setdefault("is_correct", submitted_is_correct if isinstance(submitted_is_correct, bool) else None)
+    sanitized.setdefault("learning_mode", "remediation" if routing_state.get("in_remediation") else "main")
+    sanitized.setdefault("in_remediation", bool(routing_state.get("in_remediation", False)))
+    sanitized.setdefault("return_ready", bool(sanitized.get("return_rule_ready", False)))
+    sanitized.setdefault("return_to_mainline", bool(routing_state.get("return_to_mainline", False)))
+    sanitized.setdefault("route_action", sanitized.get("ppo_route_action"))
+    sanitized.setdefault("ppo_route_action", sanitized.get("route_action"))
+    sanitized.setdefault("routing_summary", routing_state.get("routing_summary", {}))
+    sanitized.setdefault("routing_timeline", routing_state.get("routing_timeline", []))
+    sanitized.setdefault("remediation_review_ready", False)
+    sanitized.setdefault("local_remediation_completed", bool(routing_state.get("local_remediation_completed", False)))
+    sanitized.setdefault("unit_completed", bool(completion_stats.get("unit_completed", sanitized.get("completed", False))))
+    sanitized.setdefault("assessment_completed", bool(completion_stats.get("assessment_completed", False)))
+    sanitized.setdefault("diagnostic_report", None)
+    sanitized.setdefault("stable_breakpoint_detected", str(sanitized.get("assessment_stop_reason") or "") == "stable_breakpoint_detected")
+    for key in (
+        "required_core_families",
+        "covered_core_families",
+        "passed_core_families",
+        "completed_core_families",
+        "used_apr_for_completion",
+    ):
+        if key in completion_stats:
+            sanitized.setdefault(key, completion_stats[key])
     return sanitized
 
 
@@ -515,9 +864,15 @@ def adaptive_submit_and_get_next():
             if response.get("completed"):
                 runtime_store.pop(next_session_id, None)
             else:
-                runtime_store[next_session_id] = build_b4_chap2_chapter_runtime_store_entry(
+                runtime_entry = build_b4_chap2_chapter_runtime_store_entry(
                     response, chap2_step_index
                 )
+                next_question = response.get("new_question_data") or {}
+                runtime_entry["question_uid"] = str(next_question.get("question_uid") or "")
+                runtime_entry["presentation_mode"] = str(next_question.get("presentation_mode") or "")
+                runtime_entry["answer_contract"] = dict(next_question.get("answer_contract") or {})
+                runtime_entry.update(_handwriting_rubric_fields(next_question))
+                runtime_store[next_session_id] = runtime_entry
                 runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)
             session["adaptive_runtime"] = runtime_store
             session.modified = True
@@ -577,6 +932,12 @@ def adaptive_submit_and_get_next():
             payload["routing_state"] = _slim_routing_state(payload.get("routing_state"))
 
         response = submit_and_get_next(payload)
+        if runtime and payload.get("is_correct") is False:
+            display_context = dict(runtime)
+            display_context.setdefault("skill_id", str(payload.get("skill_id") or ""))
+            correct_answer_display = build_correct_answer_display(display_context)
+            if correct_answer_display is not None:
+                response["correct_answer_display"] = correct_answer_display
         if grading_analysis is not None:
             response["grading_analysis"] = grading_analysis
             try:
@@ -593,21 +954,28 @@ def adaptive_submit_and_get_next():
         if response.get("completed"):
             runtime_store.pop(next_session_id, None)
         else:
+            next_question = response["new_question_data"]
             runtime_store[next_session_id] = {
                 "family_id": _trim_text(response.get("target_family_id"), max_len=24),
                 "subskill_nodes": _slim_subskills(response.get("target_subskills")),
+                "question_uid": str(next_question.get("question_uid") or ""),
+                "skill_id": str(next_question.get("skill_id") or payload.get("skill_id") or ""),
+                "problem_type_id": str(next_question.get("problem_type_id") or ""),
+                "presentation_mode": str(next_question.get("presentation_mode") or ""),
                 "correct_answer": _trim_text(
-                    response["new_question_data"].get("correct_answer") or response["new_question_data"].get("answer") or "",
+                    next_question.get("correct_answer") or next_question.get("answer") or "",
                     max_len=_MAX_ANSWER_LEN,
                 ),
                 "question_text": _trim_text(
-                    response["new_question_data"].get("question_text") or response["new_question_data"].get("question") or "",
+                    next_question.get("question_text") or next_question.get("question") or "",
                     max_len=_MAX_TEXT_LEN,
                 ),
-                "choices": list(response["new_question_data"].get("choices") or []),
-                "answer_type": str(response["new_question_data"].get("answer_type") or ""),
-                "checker_type": str(response["new_question_data"].get("checker_type") or ""),
+                "choices": list(next_question.get("choices") or []),
+                "answer_type": str(next_question.get("answer_type") or ""),
+                "checker_type": str(next_question.get("checker_type") or ""),
+                "answer_contract": dict(next_question.get("answer_contract") or {}),
                 "routing_state": _slim_routing_state(response.get("routing_state", {})),
+                **_handwriting_rubric_fields(next_question),
             }
             runtime_store = _prune_runtime_store(runtime_store, current_session_id=next_session_id)
         session["adaptive_runtime"] = runtime_store
@@ -662,223 +1030,4 @@ def adaptive_submit_and_get_next():
     response["demo_route_msg"] = _build_demo_route_msg(response, payload)
     if not str(response.get("demo_route_msg") or "").strip():
         response["demo_route_msg"] = "系統已更新目前學習狀態。"
-    return jsonify(_response_for_frontend(response))
-
-
-@practice_bp.route("/api/adaptive/rag_settings", methods=["GET"])
-@login_required
-def api_adaptive_rag_settings():
-    import os
-    rag_path = os.path.join(current_app.root_path, '..', 'configs', 'rag_settings.json')
-    if os.path.exists(rag_path):
-        try:
-            with open(rag_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                # Sync memory threshold when loading if it differs
-                if 'threshold' in data:
-                    current_app.config['ADVANCED_RAG_NAIVE_THRESHOLD'] = data['threshold']
-                if 'enable_ai_chat' in data:
-                    current_app.config['ADVANCED_RAG_ENABLE_AI_CHAT'] = data['enable_ai_chat']
-                # ensure default if missing
-                if 'enable_ai_chat' not in data:
-                    data['enable_ai_chat'] = True
-                return jsonify(data)
-        except Exception as e:
-            print(f"Error reading rag_settings: {e}")
-            pass
-    return jsonify({
-        'threshold': current_app.config.get('ADVANCED_RAG_NAIVE_THRESHOLD', 0.40),
-        'target_type': 'practice',
-        'enable_ai_chat': current_app.config.get('ADVANCED_RAG_ENABLE_AI_CHAT', True)
-    })
-
-
-@practice_bp.route("/api/adaptive/rag_hint", methods=["GET"])
-@login_required
-def adaptive_rag_hint():
-    nodes = request.args.getlist("subskill_nodes")
-    if not nodes:
-        raw = request.args.get("subskill_nodes", "")
-        nodes = [part.strip() for part in raw.replace(",", ";").split(";") if part.strip()]
-    skill_id = request.args.get("skill_id", "").strip()
-    family_id = request.args.get("family_id", "").strip()
-    question_context = request.args.get("question_context", "").strip()
-    question_text = request.args.get("question_text", "").strip()
-    unit_skill_ids = request.args.getlist("unit_skill_ids")
-    if not unit_skill_ids:
-        raw_unit_skill_ids = request.args.get("unit_skill_ids", "")
-        unit_skill_ids = [part.strip() for part in raw_unit_skill_ids.replace(",", ";").split(";") if part.strip()]
-
-    try:
-        response = get_rag_hint(
-            nodes,
-            skill_id=skill_id,
-            family_id=family_id,
-            question_context=question_context,
-            question_text=question_text,
-            unit_skill_ids=unit_skill_ids,
-        )
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
-    except Exception as exc:
-        return jsonify({"error": f"rag hint failure: {exc}"}), 500
-    return jsonify(response)
-
-
-@practice_bp.route('/api/adaptive/adv_rag_search', methods=['POST'])
-@login_required
-def api_adv_rag_search():
-    """Advanced RAG hybrid search API."""
-    data = request.get_json(silent=True) or {}
-    query = (data.get('query') or '').strip()
-    
-    if not query:
-        return jsonify({"results": [], "error": "請輸入問題"}), 400
-        
-    try:
-        from core.advanced_rag_engine import adv_rag_search
-        results = adv_rag_search(query, top_k=5)
-        return jsonify({"results": results})
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"results": [], "error": str(e)}), 500
-
-
-def _adv_rag_invoke_tutor(prompt: str, provider: str) -> dict:
-    """與 advanced_rag_engine.adv_rag_chat 相同的 LLM 呼叫方式（不重複改 engine）。"""
-    provider = (provider or "local").strip().lower()
-    if provider == "local":
-        from core.ai_client import call_ai
-
-        response = call_ai("tutor", prompt)
-        return {"reply": getattr(response, "text", str(response)), "provider": "local"}
-
-    from core.ai_analyzer import gemini_model
-
-    if not gemini_model:
-        return {"reply": "目前 Google API 助教尚未啟用，請改用本地模型。", "provider": "google"}
-
-    import google.generativeai as genai
-
-    response = gemini_model.generate_content(
-        prompt,
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.4,
-        ),
-    )
-    return {"reply": response.text, "provider": "google"}
-
-
-@practice_bp.route('/api/adaptive/adv_rag_chat', methods=['POST'])
-@login_required
-def api_adv_rag_chat():
-    """RAG + LLM chat API for generating hints/short lessons from retrieved materials."""
-    data = request.get_json(silent=True) or {}
-    query = (data.get('query') or '').strip()
-    question_text = (data.get('question_text') or '').strip()
-    family_id = (data.get('family_id') or '').strip()
-    retrieved_skills = data.get('retrieved_skills') or []
-    # Auto-detect provider from ai_settings when frontend does not explicitly specify
-    _raw_provider = (data.get('provider') or '').strip().lower()
-    if not _raw_provider:
-        try:
-            from core.ai_settings import get_effective_model_config
-            _cfg = get_effective_model_config("tutor")
-            _raw_provider = str(_cfg.get("provider", "local")).strip().lower()
-        except Exception:
-            _raw_provider = 'local'
-    provider = _raw_provider
-    use_rag = data.get('use_rag', True)
-
-    if not query:
-        return jsonify({"reply": "請提供問題"}), 400
-
-    try:
-        if not current_app.config.get('ADVANCED_RAG_ENABLE_AI_CHAT', True):
-            return jsonify({"reply": "目前 AI 助教已由老師關閉"})
-
-        if not use_rag:
-            raw_prompt = query
-            if question_text:
-                raw_prompt = f"以下是學生目前的題目：\n{question_text}\n\n學生的問題：\n{query}"
-            print(f"[RAG PROMPT SELECT] Direct chat without RAG. prompt_key=direct")
-            result = _adv_rag_invoke_tutor(raw_prompt, provider)
-            return jsonify(result)
-
-        is_learning_intent = any(
-            kw in query
-            for kw in (
-                "不會",
-                "不懂",
-                "看不懂",
-                "怎麼算",
-                "怎麼做",
-                "為什麼",
-                "可以教",
-                "教我",
-            )
-        )
-        has_retrieved_skills = bool(retrieved_skills)
-        # 自適應介面的 RAG 助教應與 admin/ai_prompt_settings 的知識庫助教 prompt 同步。
-        # 只要目前已有檢索結果，就優先走 rag_tutor_prompt，避免被 tutor_hint_prompt 壓成單行提示。
-        prompt_key = "rag_tutor_prompt" if has_retrieved_skills else "tutor_hint_prompt"
-
-        print(
-            f"[RAG PROMPT SELECT] intent={'learning' if is_learning_intent else 'hint'} "
-            f"has_retrieved_skills={has_retrieved_skills} prompt={prompt_key}"
-        )
-
-        if prompt_key == "rag_tutor_prompt":
-            from core.prompts.composer import compose_prompt
-            from core.rag_engine import _label_node, _parse_subskill_nodes
-
-            first = retrieved_skills[0]
-            ch_name = (
-                first.get("chinese_name")
-                or first.get("ch_name")
-                or first.get("skill_ch_name")
-                or "（未命名技能）"
-            )
-            fam = first.get("family_name") or ""
-            family_name_block = f"（{fam}）" if fam else ""
-            subs = _parse_subskill_nodes(first.get("subskill_nodes"))
-            subskill_text = "、".join(_label_node(n) for n in subs) if subs else "核心概念"
-            if len(retrieved_skills) > 1:
-                names = [
-                    str(s.get("chinese_name") or s.get("ch_name") or s.get("skill_ch_name") or "").strip()
-                    for s in retrieved_skills[1:6]
-                ]
-                names = [n for n in names if n]
-                if names:
-                    subskill_text = subskill_text + "\n（另含相關檢索：" + "、".join(names) + "）"
-            uq = query
-            if question_text:
-                uq = f"[目前題目]\n{question_text}\n\n{uq}"
-            if family_id:
-                uq = f"[family_id: {family_id}]\n{uq}"
-            prompt, _source = compose_prompt(
-                task_key="rag_tutor_prompt",
-                query=uq,
-                ch_name=ch_name,
-                family_name_block=family_name_block,
-                subskill_text=subskill_text,
-                route_label="Adaptive-AdvRAG",
-            )
-            result = _adv_rag_invoke_tutor(prompt, provider)
-            return jsonify(result)
-
-        from core.advanced_rag_engine import adv_rag_chat
-
-        result = adv_rag_chat(
-            query,
-            retrieved_skills,
-            provider=provider,
-            question_text=question_text,
-            family_id=family_id,
-        )
-        return jsonify(result)
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"reply": f"AI 發生錯誤: {e}"}), 500
+    return jsonify(_response_for_frontend(response, submitted_is_correct=payload.get("is_correct")))

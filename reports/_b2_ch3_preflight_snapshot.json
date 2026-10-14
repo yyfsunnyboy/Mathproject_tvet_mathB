@@ -1,0 +1,274 @@
+[
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 0,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 3,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11731,
+      11732,
+      11806
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 0,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 3,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11733,
+      11734,
+      11745
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 0,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 7,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11735,
+      11736,
+      11737,
+      11738,
+      11746,
+      11747,
+      11816
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 0,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 14,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11739,
+      11740,
+      11741,
+      11742,
+      11743,
+      11744,
+      11748,
+      11749,
+      11750,
+      11751,
+      11752,
+      11753,
+      11817,
+      11818
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_1",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 10,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11775
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_2",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 14,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11821
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 0,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 2,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11784,
+      11820
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_4",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 2,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11823
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_5",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 3,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11809
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_2_6",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 4,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11774
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 2,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 2,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11805,
+      11815
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 1,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 4,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11785,
+      11786,
+      11796,
+      11802
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 6,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 3,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11804,
+      11812,
+      11813
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_4",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 3,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 1,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11814
+    ],
+    "needs_capability_examples": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "capability_status": "ready",
+    "domain_key": "vector.plane",
+    "example_count": null,
+    "resolvable_example_count": 3,
+    "needs_capability_count": 0,
+    "intentional_skip_count": 3,
+    "allow_v3_rebuild": true,
+    "resolvable_ids": null,
+    "needs_capability_ids": [],
+    "intentional_skip_ids": [
+      11795,
+      11801,
+      11803
+    ],
+    "needs_capability_examples": []
+  }
+]

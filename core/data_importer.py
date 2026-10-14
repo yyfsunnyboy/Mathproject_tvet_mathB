@@ -21,6 +21,7 @@ from core.backup.backup_validator import (
     parse_manifest_from_workbook,
 )
 from core.secret_policy import should_skip_system_setting_restore
+from core.models.prompt_template import PromptTemplate
 from models import (
     db,
     User,
@@ -399,6 +400,7 @@ def get_model_mapping():
     mapping["textbook_examples"] = TextbookExample
     mapping["skill_family_bridge"] = SkillFamilyBridge
     mapping["skill_prerequisites"] = SkillPrerequisites
+    mapping["prompt_templates"] = PromptTemplate
 
     return mapping
 

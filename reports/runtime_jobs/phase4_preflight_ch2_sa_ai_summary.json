@@ -1,0 +1,451 @@
+{
+  "db_unchanged": true,
+  "counts": {
+    "NEW_INSERT": 15,
+    "EXISTING_SKIP": 0,
+    "WOULD_UPDATE": 0,
+    "BLOCKED_SKILL": 0,
+    "BLOCKED_AMBIGUOUS": 0
+  },
+  "ready": true,
+  "questions": [
+    {
+      "q": 1,
+      "sec": "2-1",
+      "preview": "已知△ABC中，外接圓面積為\\(9\\pi\\)且\\({\\overline{ BC }} =3\\)，試求\\(sinA\\)之值",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_1",
+        "name": "正弦定理",
+        "reason": "題目涉及外接圓半徑與邊長、對角正弦值的關係，符合正弦定理公式 a/sinA = 2R。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 2,
+      "sec": "2-1",
+      "preview": "已知△ABC中，\\(\\angle A=105{}^\\circ\\)，\\(\\angle B=45{}^\\circ\\)，則\\(",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_1",
+        "name": "正弦定理",
+        "reason": "題目給定三角形兩內角，求邊長比值，適用正弦定理 (a/sinA = b/sinB)。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 3,
+      "sec": "2-1",
+      "preview": "已知△ABC中，a、b、c分別為\\(\\angle A\\)、\\(\\angle B\\)、\\(\\angle C\\)的對邊長，若",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_1",
+        "name": "正弦定理",
+        "reason": "題目給定兩角與一對邊，求另一邊長，符合正弦定理的應用情境。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 4,
+      "sec": "2-1",
+      "preview": "有一塊三角形空地，量得三角形兩邊長分別是3公尺、4公尺，且這兩邊之夾角為\\(60{}^\\circ\\)，試求此三角形之另一",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_2",
+        "name": "餘弦定理",
+        "reason": "題目給定兩邊長及其夾角，求第三邊長，符合餘弦定理的應用情境。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 5,
+      "sec": "2-1",
+      "preview": "接續上題，試求此三角形空地面積為多少平方公尺？ (A)\\(3\\sqrt[] { 3 }\\)",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_2",
+        "name": "餘弦定理",
+        "reason": "題目為三角形面積計算，通常需先利用餘弦定理求出邊長或角度，再運用面積公式求解。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 6,
+      "sec": "2-1",
+      "preview": "已知△ABC中，\\(\\angle A=60{}^\\circ\\)，\\({\\overline{ AB }} =3\\)，\\({",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_1",
+          "skill_name": "正弦定理"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_1_2",
+          "skill_name": "餘弦定理"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_1_2",
+        "name": "餘弦定理",
+        "reason": "題目已知兩邊及其夾角，求第三邊長，應使用餘弦定理。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 7,
+      "sec": "2-2",
+      "preview": "如圖，有一河流寬度為\\({\\overline{ BC }}\\)，若已知\\({\\overline{ AC }} =50\\)",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及直角三角形的邊長關係，利用三角比即可求解，符合直角三角形的測量範疇。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 8,
+      "sec": "2-2",
+      "preview": "小寬在校門口，觀測到學校附近一棟大樓頂部的仰角為60°，已知該大樓高300公尺，則小寬在校門口與該棟大樓的直線距離為",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及仰角與大樓高度，可構成直角三角形，利用三角函數求解距離。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 9,
+      "sec": "2-2",
+      "preview": "小群測量一山峰峰頂的仰角為45°，已知山高300公尺，求小群水平後退多少公尺後，再測量山峰之仰角為30°？ (A)\\(3",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及仰角測量，且透過山高與水平距離的直角三角形關係求解，屬於直角三角形的測量範疇。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 10,
+      "sec": "2-2",
+      "preview": "阿輝參加元旦升旗典禮，若建築物上之旗桿長為20公尺，今阿輝於地面上A處測得建築物頂端的仰角為45°，旗桿頂端的仰角為60",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及仰角測量，且可透過建立直角三角形關係式求解建築物高度，符合直角三角形的測量範疇。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 11,
+      "sec": "2-2",
+      "preview": "如圖，一湖的邊上有A、B兩處，小誠站在C處，測得\\({\\overline{ AC }} =500\\)公尺，\\({\\ove",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_4",
+        "name": "非直角三角形測量",
+        "reason": "題目給定兩邊及其夾角，需利用餘弦定理求解非直角三角形的邊長。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 12,
+      "sec": "2-2",
+      "preview": "如圖，某人欲測得A、C兩點的距離，得資料如下：\\({\\overline{ AB }} =20\\sqrt[] { 6 }\\",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_4",
+        "name": "非直角三角形測量",
+        "reason": "題目涉及非直角三角形的邊長與角度關係，需利用正弦定理求解，故歸類於非直角三角形測量。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 13,
+      "sec": "2-2",
+      "preview": "已知某大樓高度為508公尺。若某人站在此大樓最頂端並測得地面上A點之俯角為30°，則A點距此大樓距離為 (A) 254公",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及大樓高度與地面點的俯角，可構成一個直角三角形，利用三角比求解距離。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 14,
+      "sec": "2-2",
+      "preview": "有一測量員發現：當他從A點測量時，山是在他的東邊偏北60°且山的仰角為45°；若由A點向東直行200公尺到B點測量時，則",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_5",
+        "name": "簡單的立體測量",
+        "reason": "題目涉及山的高度測量，屬於將平面方位角與仰角結合的立體測量問題。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    },
+    {
+      "q": 15,
+      "sec": "2-2",
+      "preview": "一根10公尺長的梯子斜架在圍牆上，若梯子的頂端剛好接在圍牆的最上方，梯子和地面的夾角是50°，如圖，則圍牆的高度介在哪個",
+      "candidates": [
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_1",
+          "skill_name": "測量的名詞與術語"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_2",
+          "skill_name": "求解平面三角測量問題的原則"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_3",
+          "skill_name": "直角三角形的測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_4",
+          "skill_name": "非直角三角形測量"
+        },
+        {
+          "skill_id": "vh_數學B2_SubSection_2_2_5",
+          "skill_name": "簡單的立體測量"
+        }
+      ],
+      "selected": {
+        "id": "vh_數學B2_SubSection_2_2_3",
+        "name": "直角三角形的測量",
+        "reason": "題目涉及梯子、圍牆與地面構成的直角三角形，利用三角函數求解圍牆高度，屬於直角三角形的測量。"
+      },
+      "existing": null,
+      "decision": "NEW_INSERT"
+    }
+  ]
+}

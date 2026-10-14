@@ -1,0 +1,942 @@
+[
+  {
+    "example_id": 11731,
+    "section": "vh_數學B2_SubSection_3_1_1",
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_type": "example",
+    "problem_text_summary": "如圖為一正六邊形ABCDEF，若\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{BC}=\\vec{b}\\)、 \\(\\overrightarrow{CD}=\\vec{c}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)表示下列各向量： (1)\\(\\overrightarrow{AF}\\) (2)\\(\\overrightarrow{AO}\\) (3)\\(\\overrightarrow{DE}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "E",
+    "problem_topology": "express_basis_on_regular_polygon",
+    "required_operations": [
+      "express_named_vectors_in_given_basis"
+    ],
+    "required_diagram_capability": "polygon_hexagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "express_basis_on_regular_polygon",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11732,
+    "section": "vh_數學B2_SubSection_3_1_1",
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖，在平行四邊形ABCD中，若\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AD}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{BA}\\) (2)\\(\\overrightarrow{BC}\\) (3)\\(\\overrightarrow{CD}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "E",
+    "problem_topology": "express_basis_on_parallelogram",
+    "required_operations": [
+      "express_named_vectors_in_given_basis"
+    ],
+    "required_diagram_capability": "parallelogram",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "express_basis_on_parallelogram",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11806,
+    "section": "vh_數學B2_SubSection_3_1_1",
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_type": "self_assessment",
+    "problem_text_summary": "若A、B、C、D為長方形ABCD的四個頂點，如圖所示，則向量\\(\\overrightarrow{AB}\\)與下列何者相等？ (A)\\(\\overrightarrow{CD}\\) (B)\\(\\overrightarrow{BA}\\) (C)\\(\\overrightarrow{CB}\\) (D)\\(\\overrightarrow{DC}\\)。",
+    "answer_type": "mcq",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "C",
+    "problem_topology": "equal_vector_identification_mcq",
+    "required_operations": [
+      "identify_equal_vector_mcq"
+    ],
+    "required_diagram_capability": "rectangle",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "equal_vector_identification_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11733,
+    "section": "vh_數學B2_SubSection_3_1_2",
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_type": "example",
+    "problem_text_summary": "如圖，在四邊形ABCD中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\) (3)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BD}\\ +\\overrightarrow{DA}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "F",
+    "problem_topology": "simplify_vector_path_chain",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "quadrilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_chain",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11734,
+    "section": "vh_數學B2_SubSection_3_1_2",
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖，在正六邊形ABCDEF中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AF}\\ +\\overrightarrow{FE}\\ +\\overrightarrow{ED}\\) (3)\\(\\overrightarrow{AO}\\ +\\overrightarrow{OF}\\ +\\overrightarrow{FA}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "F",
+    "problem_topology": "simplify_vector_path_chain",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "polygon_hexagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_chain",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11745,
+    "section": "vh_數學B2_SubSection_3_1_2",
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，在四邊形ABCD中，試求下列各向量的和： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\) (3)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\ +\\overrightarrow{DA}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "F",
+    "problem_topology": "simplify_vector_path_chain",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "quadrilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_chain",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11735,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "example",
+    "problem_text_summary": "如圖，在四邊形ABCD中， 試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{DC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_difference",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "quadrilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_difference",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11736,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖，在三角形ABC中，試化簡下列各向量： (1)\\(\\overrightarrow{BC}\\ -\\overrightarrow{BA}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{BC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_difference",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "triangle",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_difference",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11737,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "example",
+    "problem_text_summary": "如圖，正五邊形ABCDE中，試求： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AE}\\) (2)\\(\\overrightarrow{CB}\\ -\\overrightarrow{CD}\\ +\\overrightarrow{BA}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_difference",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "polygon_pentagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_difference",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11738,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖，正五邊形ABCDE中，試求： (1)\\(\\overrightarrow{AC}\\ -\\overrightarrow{AD}\\) (2)\\(\\overrightarrow{EA}\\ -\\overrightarrow{EB}\\ +\\overrightarrow{AC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_difference",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "polygon_pentagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_difference",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11746,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，在四邊形ABCD中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{DC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_difference",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "quadrilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_difference",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11747,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，在四邊形ABCD中，試求： (1)\\(\\overrightarrow{BC}\\ -\\overrightarrow{BD}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ -\\overrightarrow{DC}\\ +\\overrightarrow{DA}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "simplify_vector_path_mixed",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "quadrilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "simplify_vector_path_mixed",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11816,
+    "section": "vh_數學B2_SubSection_3_1_3",
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_type": "self_assessment",
+    "problem_text_summary": "如圖，在平行四邊形ABCD中，\\(\\overrightarrow{AB}\\ -\\overrightarrow{AD}=\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "G",
+    "problem_topology": "parallelogram_difference_mcq",
+    "required_operations": [
+      "simplify_vector_path_expression"
+    ],
+    "required_diagram_capability": "parallelogram",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "parallelogram_difference_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11739,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "example",
+    "problem_text_summary": "如圖，在正六邊形ABCDEF中，填入實數完成下列空格： (1)\\(\\overrightarrow{OA}=\\) \\(\\overrightarrow{EF}\\) (2)\\(\\overrightarrow{BC}=\\) \\(\\overrightarrow{AD}\\)或\\(\\overrightarrow{AD}=\\) \\(\\overrightarrow{BC}\\) (3)\\(\\overrightarrow{AD}=\\) \\(\\overrightarrow{CB}\\)或\\(\\overrightarrow{CB}=\\) \\(\\overrightarrow{AD}\\",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "J",
+    "problem_topology": "scalar_relation_fill_on_figure",
+    "required_operations": [
+      "solve_scalar_multiple_relation_fill"
+    ],
+    "required_diagram_capability": "polygon_hexagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "scalar_relation_fill_on_figure",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11740,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖所示，有\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)三個向量， 填入實數完成下列空格： (1)\\(\\vec{a}=\\) \\(\\vec{c}\\) (2)\\(\\vec{b}=\\) \\(\\vec{a}\\) (3)\\(\\vec{c}=\\) \\(\\vec{b}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "J",
+    "problem_topology": "scalar_relation_fill_on_figure",
+    "required_operations": [
+      "solve_scalar_multiple_relation_fill"
+    ],
+    "required_diagram_capability": "free_vectors",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "scalar_relation_fill_on_figure",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11741,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "example",
+    "problem_text_summary": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點，F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{BF}\\)。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "triangle_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11742,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點，F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{CE}\\)。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "triangle_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11743,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "past_exam",
+    "problem_text_summary": "如圖所示，已知文創園區在地圖上是 A 點，公園是B 點，博物館是C 點， 試問哪一個向量\\(\\overrightarrow{PQ}\\)與向量\\(\\overrightarrow{AB}+\\overrightarrow{BC}\\) 最相近（意即方向與大小最接近）？ (A) P：古蹟，Q：老街 (B) P：文化園區，Q：東夜市 (C) P：購物中心，Q：東夜市 (D) P：美術館，Q：文化園區 〔113統測B〕",
+    "answer_type": "mcq",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "F",
+    "problem_topology": "closest_resultant_vector_mcq",
+    "required_operations": [
+      "identify_resultant_path_mcq"
+    ],
+    "required_diagram_capability": "map_points",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "closest_resultant_vector_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11744,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，D、E、F分別為\\({\\overline{ AB }}\\)、\\({\\overline{ BC }}\\)、\\({\\overline{ AC }}\\)三邊的中點，若\\(\\overrightarrow{AD}=\\vec{a}\\)、\\(\\overrightarrow{AF}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{DB}\\) (2)\\(\\overrightarrow{ED}\\) (3)\\(\\overrightarrow{EF}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "triangle_midpoints",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11748,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，已知C、D為線段\\({\\overline{ AB }}\\)的等分點， (1) 設\\(\\overrightarrow{AC}=\\vec{a}\\)，試以\\(\\vec{a}\\)表示\\(\\overrightarrow{AD}\\)與\\(\\overrightarrow{BD}\\)。 (2) 設\\(\\overrightarrow{AB}=\\vec{b}\\)，試以\\(\\vec{b}\\)表示\\(\\overrightarrow{AC}\\)與\\(\\overrightarrow{BC}\\)。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "segment_division",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11749,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，兩向量\\(\\vec{a}\\)、\\(\\vec{b}\\)，試以A為起點畫出 \\(\\frac { 1 } { 3 }\\vec{a}-\\frac { 1 } { 2 }\\vec{b}\\)。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "K",
+    "problem_topology": "draw_linear_combination",
+    "required_operations": [
+      "construct_linear_combination_choice"
+    ],
+    "required_diagram_capability": "free_vectors",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "draw_linear_combination",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11750,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖所示有\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)三個向量，填入實數完成下列空格： (1)\\(\\vec{a}=\\) \\(\\vec{b}\\) (2)\\(\\vec{b}=\\) \\(\\vec{a}\\) (3)\\(\\vec{c}=\\) \\(\\vec{b}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "J",
+    "problem_topology": "scalar_relation_fill_on_figure",
+    "required_operations": [
+      "solve_scalar_multiple_relation_fill"
+    ],
+    "required_diagram_capability": "free_vectors",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "scalar_relation_fill_on_figure",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11751,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點， F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{FD}\\)。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "triangle_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11752,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "advanced",
+    "problem_text_summary": "如圖，△ABC中，D為\\({\\overline{ AC }}\\)的中點，E、F為\\({\\overline{ AB }}\\)的三等分點，令\\(\\overrightarrow{AD}=\\vec{a}\\)、\\(\\overrightarrow{AE}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示： (1)\\(\\overrightarrow{DB}\\) (2)\\(\\overrightarrow{CF}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "triangle_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11753,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "advanced",
+    "problem_text_summary": "如圖，平行四邊形ABCD中，\\({\\overline{ DM }} = {\\overline{ MC }}\\)， \\({\\overline{ BN }} = {\\overline{ NP }} = {\\overline{ PC }}\\)，又\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AD}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{AM}\\) (2)\\(\\overrightarrow{AN}\\) (3)\\(\\o",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_linear_combo",
+    "required_operations": [
+      "express_section_point_vector"
+    ],
+    "required_diagram_capability": "parallelogram_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_linear_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11817,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "self_assessment",
+    "problem_text_summary": "如圖，平行四邊形ABCD中，對角線相交於M，E為\\({\\overline{ AD }}\\)中點，F、G為\\({\\overline{ AB }}\\)的三等分點，若\\(\\overrightarrow{AM}=\\alpha \\overrightarrow{AE}\\ +\\beta \\overrightarrow{AF}\\)，則\\(\\left ( { \\alpha ,\\ \\beta } \\right )=\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "H",
+    "problem_topology": "section_point_coefficient_pair",
+    "required_operations": [
+      "solve_section_coefficient_pair"
+    ],
+    "required_diagram_capability": "parallelogram_sections",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "section_point_coefficient_pair",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11818,
+    "section": "vh_數學B2_SubSection_3_1_4",
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_type": "self_assessment",
+    "problem_text_summary": "若\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)為平面向量，D、E、F、G為坐標平面上的四個點，若\\(\\overrightarrow{DE}=4\\vec{a}\\)、\\(\\overrightarrow{DF}=3\\vec{b}\\ -\\vec{a}\\)、\\(\\overrightarrow{FG}=-\\vec{b}\\ +4\\vec{c}\\)、則\\(\\overrightarrow{GE}=\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "diagram_vector_construction_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "express_from_given_vector_eqs",
+    "required_operations": [
+      "express_linear_combination_from_givens"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "express_from_given_vector_eqs",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11775,
+    "section": "vh_數學B2_SubSection_3_2_1",
+    "skill_id": "vh_數學B2_SubSection_3_2_1",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "(1) 設\\(A\\left ( { 12,\\ 0 } \\right )\\)、\\(B\\left ( { 0,\\ 5 } \\right )\\)為坐標平面上兩點，試求：  ①\\(\\overrightarrow{AB}\\)的坐標表示。 ②\\(\\left | { \\overrightarrow{AB} } \\right |\\) (2) 設\\(A\\left ( { -3,\\ 2 } \\right )\\)、\\(B\\left ( { x,\\ y } \\right )\\)為坐標平面上兩點，且\\(\\overrightarrow{AB}=\\left ( { 4,\\ 0 } \\",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_mixed_unknown_endpoint_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "directed_segment_mixed_multipart",
+    "required_operations": [
+      "compute_directed_segment_mixed_multipart"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "directed_segment_mixed_multipart",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11821,
+    "section": "vh_數學B2_SubSection_3_2_2",
+    "skill_id": "vh_數學B2_SubSection_3_2_2",
+    "source_type": "self_assessment",
+    "problem_text_summary": "設向量\\(\\overrightarrow{PQ}=\\left ( { 2,\\ -2 } \\right )\\)、\\(\\overrightarrow{QR}=\\left ( { 4,\\ -3 } \\right )\\)、\\(\\overrightarrow{RS}=\\left ( { 1,\\ 0 } \\right )\\)，則向量\\(\\overrightarrow{SP}\\)為何？",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_chain_closure_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "chain_closure_mcq",
+    "required_operations": [
+      "compute_chain_closure_vector_mcq"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "chain_closure_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11784,
+    "section": "vh_數學B2_SubSection_3_2_3",
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "source_type": "advanced",
+    "problem_text_summary": "已知平面上四點坐標為\\(A\\left ( { 57,\\ 23 } \\right )\\)、\\(B\\left ( { 7,\\ -2 } \\right )\\)、\\(C\\left ( { 5,\\ 12 } \\right )\\)、\\(D\\left ( { x,\\ y } \\right )\\)。若向量\\(\\overrightarrow{AD}=\\frac { 7 } { 4 }\\overrightarrow{AB}\\ -\\frac { 3 } { 4 }\\overrightarrow{AC}\\)，試求\\(x+y\\)之值。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_solve_point_from_combo_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "solve_point_from_combo",
+    "required_operations": [
+      "solve_point_from_vector_combination"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "solve_point_from_combo",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11820,
+    "section": "vh_數學B2_SubSection_3_2_3",
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知平面上\\(A\\left ( { 1,\\ 2 } \\right )\\)、\\(B\\left ( { 2,\\ -1 } \\right )\\)、\\(C\\left ( { a,\\ b } \\right )\\)三點共線，且\\(\\overrightarrow{AB}=-2\\overrightarrow{AC}\\)，則\\(a-b=\\) (A) −4 (B) 4 (C) −3 (D) 3。",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_collinear_ratio_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "collinear_ratio_mcq",
+    "required_operations": [
+      "solve_collinear_ratio_mcq"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "collinear_ratio_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11823,
+    "section": "vh_數學B2_SubSection_3_2_4",
+    "skill_id": "vh_數學B2_SubSection_3_2_4",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知向量\\(\\vec{a}=\\left ( { 2,\\ -5 } \\right )\\)、\\(\\vec{b}=\\left ( { -2,\\ 6 } \\right )\\)且\\(3\\left ( { \\vec{c}\\ +\\vec{a} } \\right )=4\\left ( { \\vec{c}\\ +\\vec{b} } \\right )\\)，則\\(\\vec{c}=\\) (A)\\(\\left ( { -5,\\ 39 } \\right )\\) (B)\\(\\left ( { -14,\\ 39 } \\right )\\) (C)\\(\\left ( { 5,\\ -39 } ",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_solve_unknown_vector_equation_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "unknown_vector_equation",
+    "required_operations": [
+      "solve_unknown_vector_linear_equation"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "unknown_vector_equation",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11809,
+    "section": "vh_數學B2_SubSection_3_2_5",
+    "skill_id": "vh_數學B2_SubSection_3_2_5",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知\\(\\vec{a}=\\left ( { 6,\\ -12 } \\right )\\)、\\(\\vec{b}=\\left ( { -2,\\ y } \\right )\\)為平面上兩向量，且\\(\\vec{a}\\)與\\(\\vec{b}\\)平行，則\\(\\vec{b}\\)的長度為何？ (A)\\(2\\sqrt[] { 5 }\\) (B)\\(3\\sqrt[] { 5 }\\) (C) 20 (D) 36。",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_parallel_then_magnitude_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "parallel_then_magnitude_mcq",
+    "required_operations": [
+      "solve_parallel_then_magnitude_mcq"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "parallel_then_magnitude_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11774,
+    "section": "vh_數學B2_SubSection_3_2_6",
+    "skill_id": "vh_數學B2_SubSection_3_2_6",
+    "source_type": "past_exam",
+    "problem_text_summary": "下列哪一個向量不是單位向量？ (A)\\(\\left ( { \\frac { 1 } { 3 },\\ \\frac { 2 } { 3 } } \\right )\\) (B)\\(\\left ( { -1,\\ 0 } \\right )\\) (C)\\(\\left ( { \\frac { 3 } { 5 },\\ \\frac { -4 } { 5 } } \\right )\\) (D)\\(\\left ( { cos30{}^\\circ ,\\ sin30{}^\\circ } \\right )\\) 〔111統測B〕",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_unit_identification_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "unit_identification_mcq",
+    "required_operations": [
+      "identify_unit_vector_mcq"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "unit_identification_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11805,
+    "section": "vh_數學B2_SubSection_3_3_1",
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "source_type": "advanced",
+    "problem_text_summary": "接續上題， (1) 試問船在航標處的航向應該修正向左轉多少度？ (2) 想一想，此船為什麼要先到B點再轉向到甲港口，而不是直接以直線航向甲港口呢？",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_angle_application_narrative_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "navigation_angle_followup",
+    "required_operations": [
+      "solve_navigation_heading_correction"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "navigation_angle_followup",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11815,
+    "section": "vh_數學B2_SubSection_3_3_1",
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知平面上兩向量\\(\\vec{a}=\\left ( { 0,\\ 1 } \\right )\\)與\\(\\vec{b}=\\left ( { 2,\\ 3 } \\right )\\)，且\\(\\vec{a}\\ +\\vec{b}\\)與\\(\\vec{a}\\ -\\vec{b}\\)的夾角為\\(\\theta\\)，則下列何者正確？ (A)\\(\\theta\\)為銳角 (B)\\(\\theta\\)為直角 (C)\\(\\theta\\)為鈍角 (D)\\(\\theta\\)為平角。",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_angle_quality_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "angle_quality_mcq",
+    "required_operations": [
+      "classify_angle_quality_from_dot_mcq"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "angle_quality_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11785,
+    "section": "vh_數學B2_SubSection_3_3_2",
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_type": "example",
+    "problem_text_summary": "已知正△ABC的邊長為4，試求： (1)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_regular_polygon_dot_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "regular_polygon_dot",
+    "required_operations": [
+      "compute_regular_polygon_edge_dot"
+    ],
+    "required_diagram_capability": "triangle_equilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "regular_polygon_dot",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11786,
+    "section": "vh_數學B2_SubSection_3_3_2",
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_type": "in_class_practice",
+    "problem_text_summary": "已知正六邊形ABCDEF的邊長為2，試求： (1)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AF}\\) (2)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_regular_polygon_dot_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "regular_polygon_dot",
+    "required_operations": [
+      "compute_regular_polygon_edge_dot"
+    ],
+    "required_diagram_capability": "polygon_hexagon",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "regular_polygon_dot",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11796,
+    "section": "vh_數學B2_SubSection_3_3_2",
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "已知正△ABC的邊長為6，試求： (1) \\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AC}\\) (2) \\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_regular_polygon_dot_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "regular_polygon_dot",
+    "required_operations": [
+      "compute_regular_polygon_edge_dot"
+    ],
+    "required_diagram_capability": "triangle_equilateral",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "regular_polygon_dot",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11802,
+    "section": "vh_數學B2_SubSection_3_3_2",
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "設\\(\\left | { \\vec{a} } \\right |=3\\)、\\(\\left | { \\vec{b} } \\right |=2\\)，且\\(\\vec{a}\\)與\\(\\vec{b}\\)的夾角為60°，試求下列各式之值： (1) \\(\\vec{a}\\ \\centerdot \\ \\vec{a}\\) (2) \\(\\vec{a}\\ \\centerdot \\ \\vec{b}\\) (3) \\(\\left | { 2\\vec{a}\\ -3\\vec{b} } \\right |\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_dot_identity_multipart_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "dot_identity_multipart",
+    "required_operations": [
+      "compute_dot_identity_multipart"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "dot_identity_multipart",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11804,
+    "section": "vh_數學B2_SubSection_3_3_3",
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_type": "advanced",
+    "problem_text_summary": "如圖所示，有一船位於甲港口的東方12公里北方5公里A處，朝著位於甲港口的東方2公里北方3公里B處的航標駛去，到達航標後即修正航向以便直線駛入港口。請將圖（一）以甲港口為直角坐標原點\\(O\\left ( { 0,\\ 0 } \\right )\\)，標示出A與B兩點在圖（二）直角坐標上的位置。 ▲圖（一） ▲圖（二）",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "vector_dot_diagram_plot_unsupported",
+    "mathematical_concept": "K",
+    "problem_topology": "plot_points_on_plane",
+    "required_operations": [
+      "plot_navigation_points_coordinates"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "plot_points_on_plane",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11812,
+    "section": "vh_數學B2_SubSection_3_3_3",
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知坐標平面上某△ABC的三個頂點坐標分別為\\(A\\left ( { 0,\\ 0 } \\right )\\)、\\(B\\left ( { 2,\\ 3 } \\right )\\)、\\(C\\left ( { -4,\\ 1 } \\right )\\)。若D為線段\\({\\overline{ BC }}\\)之中點，則向量\\(\\overrightarrow{AB}\\)與向量\\(\\overrightarrow{AD}\\)的內積為何？ (A) 2 (B) 4 (C) 6 (D) 8。",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_dot_midpoint_composite_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "midpoint_dot_product",
+    "required_operations": [
+      "compute_midpoint_dot_product"
+    ],
+    "required_diagram_capability": "coordinate",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "midpoint_dot_product",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11813,
+    "section": "vh_數學B2_SubSection_3_3_3",
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_type": "self_assessment",
+    "problem_text_summary": "已知k為實數，若向量\\(\\vec{a}=\\left ( { 1,\\ k+1 } \\right )\\)與向量\\(\\vec{b}=\\left ( { 2k,\\ 3 } \\right )\\)的內積為23，則\\(k=\\) (A) −1 (B) 1 (C) 4 (D) 5。",
+    "answer_type": "mcq",
+    "has_visual": false,
+    "current_skip_reason": "vector_dot_parameter_equation_mcq_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "dot_parameter_mcq",
+    "required_operations": [
+      "solve_dot_product_parameter_mcq"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "single_choice_checker",
+    "candidate_reusable_family": "dot_parameter_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11814,
+    "section": "vh_數學B2_SubSection_3_3_4",
+    "skill_id": "vh_數學B2_SubSection_3_3_4",
+    "source_type": "self_assessment",
+    "problem_text_summary": "設\\(\\vec{a}=\\left ( { -1,\\ 2 } \\right )\\)、\\(\\vec{b}=\\left ( { x,\\ 2 } \\right )\\)，若\\(\\vec{a}\\)和\\(\\left ( { \\vec{a}\\ -2\\vec{b} } \\right )\\)垂直，則\\(x=\\)",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_perp_composite_expression_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "perp_composite_param",
+    "required_operations": [
+      "solve_perpendicular_composite_parameter"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "perp_composite_param",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11795,
+    "section": "vh_數學B2_SubSection_3_3_5",
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_type": "past_exam",
+    "problem_text_summary": "如圖所示，以O 為原點的直角坐標系上有四點，由左 至右依序為A、B、C、D，其中A 落在第二象限，B、 C、D 落在第一象限，且直線BC 與直線OD 的交點落 在O、D 兩點之間。已知\\(\\angle AOD>90{}^\\circ\\)， 且\\(\\overrightarrow{BC}\\\\)與 \\(\\overrightarrow{OD}\\\\)的內積為0。若向量\\(\\overrightarrow{OD}\\\\)分別與向量\\(\\overrightarrow{OA}\\\\)、\\(\\overrightarrow{OB}\\\\)、 \\(\\overrightarrow{OC}",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": true,
+    "current_skip_reason": "vector_dot_exam_diagram_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "exam_diagram_dot_sign_mcq",
+    "required_operations": [
+      "classify_dot_sign_from_diagram_mcq"
+    ],
+    "required_diagram_capability": "coordinate_exam",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "exam_diagram_dot_sign_mcq",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11801,
+    "section": "vh_數學B2_SubSection_3_3_5",
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "設\\(\\vec{a}\\)與\\(\\vec{b}\\)為平面上兩互相垂直的向量且\\(\\left | { \\vec{a} } \\right |=3\\)與\\(\\left | { \\vec{b} } \\right |=2\\)，試求 \\(\\left ( { \\vec{a}\\ -2\\vec{b} } \\right )\\ \\centerdot \\ \\left ( { 3\\vec{a}\\ +\\vec{b} } \\right )\\)之值。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_perp_dot_expand_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "perp_dot_expand",
+    "required_operations": [
+      "expand_perpendicular_dot_product"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "perp_dot_expand",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  },
+  {
+    "example_id": 11803,
+    "section": "vh_數學B2_SubSection_3_3_5",
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_type": "exercise_basic",
+    "problem_text_summary": "設\\(\\left | { \\vec{a} } \\right |=1\\)、\\(\\left | { \\vec{b} } \\right |=3\\)，且\\(\\left | { 3\\vec{a}\\ -2\\vec{b} } \\right |=3\\)，試求： (1) \\(\\vec{a}\\ \\centerdot \\ \\vec{b}\\)之值。 (2) \\(\\vec{a}\\)與\\(\\vec{b}\\)的夾角。",
+    "answer_type": "multi_part_or_expression",
+    "has_visual": false,
+    "current_skip_reason": "vector_dot_identity_solve_angle_unsupported",
+    "mathematical_concept": "L",
+    "problem_topology": "angle_from_mag_identity",
+    "required_operations": [
+      "solve_angle_from_magnitude_identity"
+    ],
+    "required_diagram_capability": "none",
+    "required_checker": "expression_or_multi_part",
+    "candidate_reusable_family": "angle_from_mag_identity",
+    "implementation_gap": "resolved",
+    "status": "covered"
+  }
+]

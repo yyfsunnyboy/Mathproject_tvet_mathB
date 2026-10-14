@@ -1,0 +1,22 @@
+[
+  {
+    "skill_id": "vh_數學B2_SubSection_4_1_2",
+    "final_status": "READY",
+    "published": 19,
+    "failed": null,
+    "eligible": 19,
+    "needs_capability": 0,
+    "skip": 0,
+    "errors": []
+  },
+  {
+    "skill_id": "vh_數學B2_SubSection_4_2_3",
+    "final_status": "READY",
+    "published": 8,
+    "failed": null,
+    "eligible": 8,
+    "needs_capability": 0,
+    "skip": 0,
+    "errors": []
+  }
+]

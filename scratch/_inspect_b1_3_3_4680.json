@@ -1,0 +1,17 @@
+{
+  "id": 4680,
+  "skill_id": "vh_數學B1_RationalEquation",
+  "source_curriculum": "vocational",
+  "source_volume": "數學B1",
+  "source_chapter": "3 式的運算",
+  "source_section": "3-3 因式分解與分式",
+  "source_description": "112統測B",
+  "source_paragraph": "分式方程式",
+  "problem_text": "已知多項式$Q\\left( x \\right)=ax+b$，$f\\left( x \\right)=\\left( 2a-b \\right){{x}^{2}}+ax-1$，$g\\left( x \\right)=3{{x}^{2}}+x-1$，且$f\\left( x \\right)=g\\left( x \\right)$。若分式方程式$\\frac{x}{Q(x)}+\\frac{5}{x-2}=\\frac{-1}{(x-2)\\text{ }Q(x)}$的解為$x=c$，則${{a}^{2}}+{{b}^{2}}+{{c}^{2}}=$？ (A)3 (B)10 (C)18 (D)27 〔112統測B〕",
+  "problem_type": "exam_practice",
+  "correct_answer": null,
+  "detailed_solution": "KEY(1) $f\\left( x \\right)=a{{x}^{2}}+bx+c$，$g\\left( x \\right)=k{{x}^{2}}+mx+n$若$f\\left( x \\right)=g\\left( x \\right)$ $a=k$，$b=m$，$c=n$(2) 兩分式的加減：$\\frac{A}{B}\\pm \\frac{C}{D}=\\frac{AD+BC}{BD}$",
+  "difficulty_level": 1,
+  "difficulty_h": 1.0,
+  "notes": null
+}

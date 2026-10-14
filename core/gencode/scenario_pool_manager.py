@@ -4,7 +4,7 @@ import random
 from fractions import Fraction
 from typing import Any, Callable
 
-from core.gencode.answer_format_hint import build_answer_format_suffix
+from core.gencode.answer_format_hint import build_answer_format_suffix_for_stem
 from core.gencode.answer_payload import answer_type_family
 from core.gencode.problem_type_spec import get_answer_contract
 
@@ -175,20 +175,22 @@ def append_answer_format_suffix(
     if not question_text:
         return payload
 
-    suffix_body = build_answer_format_suffix(ac)
-    if not suffix_body:
-        return payload
-
     if "（答案範例：" in question_text:
         import re
 
         question_text = re.sub(r"\n?（答案範例：[^）]*）\s*$", "", question_text).rstrip()
 
-    suffix = f"\n{suffix_body}"
-    question_text = question_text + suffix
+    suffix_body, suppressed_reason = build_answer_format_suffix_for_stem(ac, question_text)
+    metadata = dict(payload.get("metadata") or {})
+    if suppressed_reason:
+        metadata["answer_format_suffix_suppressed"] = suppressed_reason
+        payload["metadata"] = metadata
+    if not suffix_body:
+        return payload
+
+    question_text = question_text + suffix_body
     payload["question_text"] = question_text
     payload["question"] = question_text
-    metadata = dict(payload.get("metadata") or {})
     metadata["answer_format_suffix"] = suffix_body
     payload["metadata"] = metadata
     return payload

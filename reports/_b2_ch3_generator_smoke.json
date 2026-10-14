@@ -1,0 +1,72 @@
+[
+  {
+    "skill": "vh_數學B2_SubSection_3_2_1",
+    "components": 10,
+    "pass": 10,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_2_2",
+    "components": 14,
+    "pass": 14,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_2_4",
+    "components": 2,
+    "pass": 2,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_2_5",
+    "components": 3,
+    "pass": 3,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_2_6",
+    "components": 4,
+    "pass": 4,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_3_1",
+    "components": 2,
+    "pass": 2,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_3_2",
+    "components": 1,
+    "pass": 1,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_3_3",
+    "components": 6,
+    "pass": 6,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_3_4",
+    "components": 3,
+    "pass": 3,
+    "fail": 0,
+    "fails": []
+  },
+  {
+    "skill": "vh_數學B2_SubSection_3_3_5",
+    "components": 3,
+    "pass": 3,
+    "fail": 0,
+    "fails": []
+  }
+]

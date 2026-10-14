@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import os
+import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +15,9 @@ from core.textbook_importer_v3_source import (
     ALLOWED_DOCX_EXT,
     ALLOWED_PDF_EXT,
     build_file_map,
+    classify_textbook_source,
+    get_base_name,
+    is_generated_latex_docx,
     validate_textbook_source_batch,
 )
 
@@ -68,6 +73,71 @@ def resolve_source_directory(project_root: Path, curriculum: str, volume: str) -
     relative = SOURCE_ROOT / CURRICULUM_DIRECTORY_MAP[curriculum_key] / VOLUME_DIRECTORY_MAP[volume_key]
     absolute = Path(project_root) / relative
     return absolute, relative.as_posix()
+
+
+def _normalize_source_name(value: str) -> str:
+    """Normalize source labels without weakening deterministic identity."""
+    normalized = unicodedata.normalize("NFKC", str(value or "")).strip()
+    normalized = re.sub(r"[\u2010-\u2015\u2212]", "-", normalized)
+    return re.sub(r"\s+", " ", normalized).casefold()
+
+
+def resolve_project_textbook_source_pair(
+    project_root: Path,
+    curriculum: str,
+    volume: str,
+    section: str,
+) -> tuple[Path, Path] | None:
+    """Resolve one authoritative project-local DOCX/PDF pair for a section.
+
+    Resolution is confined to the whitelist-mapped
+    ``textbook_import/source/<curriculum>/<book>`` directory.  Both files must
+    share the same Unicode-normalized stem; generated ``_Latex.docx`` files are
+    never authoritative.  Ambiguous matches fail closed.
+    """
+    source_dir, _relative = resolve_source_directory(project_root, curriculum, volume)
+    if not source_dir.is_dir():
+        return None
+
+    section_match = re.search(r"(?<!\d)(\d+)\s*-\s*(\d+)(?!\d)", str(section or ""))
+    if not section_match:
+        return None
+    expected_chapter = int(section_match.group(1))
+    expected_section = int(section_match.group(2))
+    normalized_section = _normalize_source_name(section)
+
+    docx_by_stem: dict[str, list[Path]] = {}
+    pdf_by_stem: dict[str, list[Path]] = {}
+    for path in source_dir.iterdir():
+        if not path.is_file():
+            continue
+        extension = path.suffix.casefold()
+        if extension not in {ALLOWED_DOCX_EXT, ALLOWED_PDF_EXT}:
+            continue
+        if extension == ALLOWED_DOCX_EXT and is_generated_latex_docx(path.name):
+            continue
+        stem = get_base_name(path.name)
+        classification = classify_textbook_source(stem)
+        if (
+            classification.get("type") != "section"
+            or classification.get("chapter") != expected_chapter
+            or classification.get("section") != expected_section
+        ):
+            continue
+        normalized_stem = _normalize_source_name(stem)
+        target = docx_by_stem if extension == ALLOWED_DOCX_EXT else pdf_by_stem
+        target.setdefault(normalized_stem, []).append(path)
+
+    pairs: list[tuple[Path, Path]] = []
+    for stem in sorted(set(docx_by_stem) & set(pdf_by_stem)):
+        docx_files = docx_by_stem[stem]
+        pdf_files = pdf_by_stem[stem]
+        if len(docx_files) != 1 or len(pdf_files) != 1:
+            continue
+        if normalized_section not in stem:
+            continue
+        pairs.append((docx_files[0].resolve(), pdf_files[0].resolve()))
+    return pairs[0] if len(pairs) == 1 else None
 
 
 def _read_upload_bytes(upload: FileStorage) -> bytes:

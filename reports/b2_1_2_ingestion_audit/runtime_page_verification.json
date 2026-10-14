@@ -1,0 +1,94 @@
+{
+  "admin_status": 200,
+  "admin_rendered_ids": [
+    11556,
+    11566,
+    11557,
+    11567,
+    11558,
+    11568,
+    11559,
+    11569,
+    11560,
+    11570,
+    11561,
+    11571,
+    11562,
+    11572,
+    11563,
+    11573,
+    11564,
+    11586,
+    11565,
+    11574,
+    11585,
+    11575,
+    11576,
+    11577,
+    11578,
+    11579,
+    11580,
+    11581,
+    11582,
+    11583,
+    11584
+  ],
+  "admin_11586_position": 18,
+  "admin_ok": true,
+  "student_checks": [
+    {
+      "id": 11557,
+      "status": 200,
+      "assets": 1,
+      "asset_http": [
+        true
+      ],
+      "ok": true
+    },
+    {
+      "id": 11567,
+      "status": 200,
+      "assets": 1,
+      "asset_http": [
+        true
+      ],
+      "ok": true
+    },
+    {
+      "id": 11558,
+      "status": 200,
+      "assets": 1,
+      "asset_http": [
+        true
+      ],
+      "ok": true
+    },
+    {
+      "id": 11559,
+      "status": 200,
+      "assets": 1,
+      "asset_http": [
+        true
+      ],
+      "ok": true
+    },
+    {
+      "id": 11561,
+      "status": 200,
+      "assets": 2,
+      "asset_http": [
+        true,
+        true
+      ],
+      "ok": true
+    },
+    {
+      "id": 11586,
+      "status": 200,
+      "assets": 0,
+      "asset_http": [],
+      "ok": true
+    }
+  ],
+  "runtime_page_check": true
+}

@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "quarantine_name": "B1_3-1_pre_v1_12_rebuild_20260907_232200",
+  "backup_root": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200",
+  "rebuild_manifest": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200/B1_3-1_rebuild_manifest.json",
+  "verification": {
+    "backup_root": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200",
+    "existing_backed_up": 31,
+    "existing_expected": 31,
+    "missing_marked": [
+      "src_4628",
+      "src_4718",
+      "src_4719",
+      "src_4720"
+    ],
+    "missing_count_ok": true,
+    "file_index_count": 135,
+    "dryrun_indexed": 31,
+    "staging_indexed": 31,
+    "tracker_rows_dumped": 1,
+    "sot_skill_hash_before": "2fd6ceee1ec42d579fa4fcae3e69313d17055d2a67572ad9338f6113f3ee57c9",
+    "sot_skill_hash_after": "2fd6ceee1ec42d579fa4fcae3e69313d17055d2a67572ad9338f6113f3ee57c9",
+    "sot_unchanged": true,
+    "production_components_still_present": true,
+    "production_deleted": false,
+    "runtime_still_references_original": true,
+    "wrappers_untouched_in_place": true
+  },
+  "runtime_report": {
+    "runtime_currently_references_old_component": true,
+    "delete_forbidden": true,
+    "atomic_quarantine_mechanism_in_production": false,
+    "action_taken": "COPY_ONLY_BACKUP",
+    "production_components_deleted": false,
+    "skills": [
+      {
+        "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+        "component_ids": [
+          "src_4609",
+          "src_4610",
+          "src_4618",
+          "src_4619",
+          "src_4620",
+          "src_4629",
+          "src_4630",
+          "src_4631",
+          "src_4716"
+        ],
+        "published_wrapper_path": "skills/vh_數學B1_PolynomialBasicConcepts.py",
+        "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/",
+        "runtime_currently_references_old_component": "YES"
+      },
+      {
+        "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+        "component_ids": [
+          "src_4612",
+          "src_4613",
+          "src_4614",
+          "src_4615",
+          "src_4616",
+          "src_4617",
+          "src_4622",
+          "src_4623",
+          "src_4624",
+          "src_4625",
+          "src_4626",
+          "src_4627",
+          "src_4633",
+          "src_4634",
+          "src_4635",
+          "src_4636",
+          "src_4637",
+          "src_4706"
+        ],
+        "published_wrapper_path": "skills/vh_數學B1_PolynomialArithmeticOperations.py",
+        "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/",
+        "runtime_currently_references_old_component": "YES"
+      },
+      {
+        "skill_id": "vh_數學B1_PolynomialEquality",
+        "component_ids": [
+          "src_4611",
+          "src_4621",
+          "src_4632",
+          "src_4717"
+        ],
+        "published_wrapper_path": "skills/vh_數學B1_PolynomialEquality.py",
+        "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/",
+        "runtime_currently_references_old_component": "YES"
+      }
+    ]
+  },
+  "counts": {
+    "examples": 35,
+    "existing_components": 31,
+    "missing_components": 4,
+    "KEEP": 0,
+    "REBUILD": 35,
+    "UNKNOWN": 0
+  }
+}

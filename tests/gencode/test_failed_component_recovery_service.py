@@ -132,7 +132,7 @@ def test_readiness_gates(mem_conn: sqlite3.Connection):
          patch("core.registry.domain_operation_registry.get_domain_spec") as mock_dom_spec, \
          patch("core.registry.domain_operation_registry.get_operation_spec") as mock_op_spec, \
          patch("importlib.import_module", side_effect=selective_import), \
-         patch("inspect.getsource") as mock_source:
+         patch("core.gencode.services.failed_component_recovery_service._has_executable_adapter_route") as mock_adapter_route:
          
         res = MagicMock()
         res.fixed_domain_key = "coordinate_geometry.line_equation"
@@ -153,8 +153,8 @@ def test_readiness_gates(mem_conn: sqlite3.Connection):
         # Module has the handler function
         mock_mod.build_some_cap_matrix = MagicMock()
         
-        # Adapter has the route
-        mock_source.return_value = 'if op == "some_cap":'
+        # Executable adapter route probe succeeds
+        mock_adapter_route.return_value = True
         
         report = recover_failed_components(
             skill_id="vh_數學B1_LinearFunction",
@@ -164,3 +164,4 @@ def test_readiness_gates(mem_conn: sqlite3.Connection):
         
         assert report["per_component_generator_plan"]["src_4401"]["final_readiness"] == "ready_to_rebuild"
         assert len(report["per_component_generator_plan"]["src_4401"]["missing_nodes"]) == 0
+        assert report["per_component_generator_plan"]["src_4401"]["adapter_route"] is True

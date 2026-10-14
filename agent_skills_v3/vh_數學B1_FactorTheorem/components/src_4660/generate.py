@@ -6,10 +6,14 @@ from core.domain.polynomial_domain import build_polynomial_matrix
 from core.gencode.domain_matrix_adapter import convert_domain_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "expression"
+ANSWER_TYPE = "multi_part"
 PROBLEM_TYPE_ID = "factor_theorem_root_factor"
 TEXTBOOK_EXAMPLE_ID = 4660
 DEFAULT_COMPONENT_ID = "src_4660" if TEXTBOOK_EXAMPLE_ID else ""
+
+SOURCE_PROBLEM_TEXT = "設$f\\left( x \\right)=2{{x}^{3}}+3{{x}^{2}}-11x-6$，利用因式定理，判斷下列各式是否為$f\\left( x \\right)$的一次因式？(1) x − 1 (2) 2x + 1."
+
+
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
@@ -28,7 +32,11 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         "fixed_domain_key": "algebra.polynomial",
     }
 
-    constraints = dict({'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_FactorTheorem', 'source_example_id': 4660, 'textbook_example_id': 4660, 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_FactorTheorem', 'source_example_id': 4660, 'textbook_example_id': 4660, 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 4660, 'answer_type': 'expression', 'exact_task_operation': '', 'domain_resolution': {'skill_id': 'vh_數學B1_FactorTheorem', 'fixed_domain_key': 'algebra.polynomial', 'resolution_source': 'confirmed_binding', 'binding_status': 'confirmed', 'required_capabilities': ['factor_theorem_root_factor'], 'matched_capabilities': ['factor_theorem_root_factor'], 'selected_operation': '', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.polynomial_domain', 'entrypoint': 'build_polynomial_matrix', 'allowed_operations': ['factor_theorem_root_factor'], 'curriculum_profile': 'vocational_high_b'}, 'skill_id': 'vh_數學B1_FactorTheorem'})
+    constraints = dict({'v3_induced_spec': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_FactorTheorem', 'source_example_id': 4660, 'textbook_example_id': 4660, 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'phase1_classification': {'classification_status': 'resolved', 'skill_id': 'vh_數學B1_FactorTheorem', 'source_example_id': 4660, 'textbook_example_id': 4660, 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'answer_type': 'expression'}, 'problem_type_id': 'factor_theorem_root_factor', 'required_capabilities': ['factor_theorem_root_factor'], 'classification_source': 'phase1_rule_pack', 'source_hash': 'aa9176b736260d1ca0900389414ccb46', 'presentation_mode': 'short_answer', 'answer_contract': {'answer_type': 'expression', 'checker_key': 'expression_checker', 'equivalence_type': 'algebraic_equivalent'}, 'source_example_id': 4660, 'answer_type': 'expression', 'exact_task_operation': '', 'domain_resolution': {'skill_id': 'vh_數學B1_FactorTheorem', 'fixed_domain_key': 'algebra.polynomial', 'resolution_source': 'confirmed_binding', 'binding_status': 'confirmed', 'required_capabilities': ['factor_theorem_root_factor'], 'matched_capabilities': ['factor_theorem_root_factor'], 'selected_operation': 'factor_theorem_root_factor', 'registry_revision': '2026-06-23-v1.8', 'domain_module': 'core.domain.polynomial_domain', 'entrypoint': 'build_polynomial_matrix', 'allowed_operations': ['factor_theorem_root_factor'], 'curriculum_profile': 'vocational_high_b'}, 'skill_id': 'vh_數學B1_FactorTheorem'})
+
+    constraints["source_problem_text"] = SOURCE_PROBLEM_TEXT
+    constraints["source_question_text"] = SOURCE_PROBLEM_TEXT
+    constraints["presentation_mode"] = PRESENTATION_MODE
     constraints["skill_id"] = "vh_數學B1_FactorTheorem"
 
     matrix = _v3_invoke_domain_entrypoint(
@@ -54,6 +62,33 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         domain_operation="factor_theorem_root_factor",
         seed=seed,
     )
+
+    # v1.12 topology alignment: ensure multi_part answer_contract.parts
+    if isinstance(payload.get("answer"), dict):
+        _ans = payload["answer"]
+        _parts = []
+        for _k, _v in sorted(_ans.items(), key=lambda kv: str(kv[0])):
+            _chk = "integer_checker" if str(_v).strip().lstrip("+-").isdigit() else "expression_checker"
+            _parts.append({
+                "key": str(_k),
+                "label": str(_k),
+                "checker": _chk,
+                "checker_key": _chk,
+                "equivalence_type": "numeric_exact" if _chk == "integer_checker" else "algebraic_equivalent",
+                "expected_answer": _v,
+            })
+        _ac = dict(payload.get("answer_contract") or {})
+        _ac.update({
+            "answer_type": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "equivalence_type": "multi_part_answer",
+            "parts": _parts,
+        })
+        payload["answer_type"] = "multi_part"
+        payload["answer_contract"] = _ac
+        payload["checker"] = "multi_part_answer_checker"
+        payload["checker_key"] = "multi_part_answer_checker"
     if component_id:
         payload["component_id"] = component_id
     payload["seed"] = seed

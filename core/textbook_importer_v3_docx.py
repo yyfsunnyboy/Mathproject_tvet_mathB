@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import io
 import os
+import re
 import zipfile
 from pathlib import Path
 from typing import Any, BinaryIO
@@ -31,6 +32,187 @@ REL_NS = NS["r"]
 W_NS = NS["w"]
 INDEPENDENT_IMAGE_EXTS = {".jpg", ".jpeg", ".png"}
 FORMULA_PREVIEW_EXTS = {".wmf", ".emf"}
+# Only MathType equation OLE objects enter formula conversion. Embedded Word
+# documents (Word.Document.12) and other Office objects must stay out of the
+# MathType / source-fidelity formula gate even when mislabeled near equations.
+MATHTYPE_OLE_PROG_IDS = frozenset({"Equation.DSMT4"})
+
+QUESTION_FIGURE_EVIDENCE = ("下圖中", "依圖", "試用筆連接", "實線為", "虛線為")
+
+
+def extract_question_image_provenance(source) -> list[dict[str, Any]]:
+    """Return independent DOCX images in figure-dependent structural regions."""
+    with zipfile.ZipFile(source) as zf:
+        document = etree.fromstring(zf.read("word/document.xml"))
+        relationships = etree.fromstring(zf.read("word/_rels/document.xml.rels"))
+    rel_targets = {
+        rel.get("Id"): rel.get("Target")
+        for rel in relationships
+        if rel.get("Id") and rel.get("Target")
+    }
+    body = document.find(f".//{{{W_NS}}}body")
+    if body is None:
+        return []
+    independent_index = 0
+    results: list[dict[str, Any]] = []
+    for body_index, element in enumerate(body):
+        evidence_text = "".join(element.itertext()).strip()
+        has_question_evidence = any(cue in evidence_text for cue in QUESTION_FIGURE_EVIDENCE)
+        for blip in element.findall(f".//{{{NS['a']}}}blip"):
+            rel_id = blip.get(f"{{{NS['r']}}}embed")
+            target = str(rel_targets.get(rel_id) or "")
+            if Path(target).suffix.lower() not in INDEPENDENT_IMAGE_EXTS:
+                continue
+            independent_index += 1
+            if not has_question_evidence:
+                continue
+            results.append({
+                "source_image_index": independent_index,
+                "relationship_id": rel_id,
+                "source_image": target,
+                "docx_location": f"word/document.xml:body[{body_index}]",
+                "evidence_text": evidence_text,
+            })
+    return results
+
+
+def extract_docx_skill_headings(source, *, section_code: str, volume: str = "") -> dict[str, Any]:
+    """Read concept headings with inherited Word typography; never persist.
+
+    Numbered ``N-N.N`` headings stay in ``skill_candidates``.  When a section
+    has none of those, contiguous exposition headings such as ``1. 標題`` are
+    returned separately as plain source headings.  They do not receive a
+    printed concept code.
+    """
+    from docx import Document
+    from docx.text.paragraph import Paragraph
+    from core.mathb_concept_heading import (
+        AUTHORITY_SOURCE_HEADING_RECOVERED,
+        concept_subindex,
+        detect_mathb_concept_heading,
+        parse_mathb_section_heading,
+        recover_section_local_numbered_heading,
+    )
+    from core.mathb_plain_source_heading import collect_plain_source_headings
+
+    doc = Document(source)
+    candidates, unresolved, sections = [], [], []
+    plain_paragraphs: list[dict[str, Any]] = []
+    seen = {}
+    accepted_subindexes: list[int] = []
+    expected_code = str(section_code or "").strip()
+    for order, element in enumerate(doc.element.body.iter(f"{{{W_NS}}}p"), 1):
+        p = Paragraph(element, doc)
+        text = p.text.strip()
+        if not text:
+            continue
+        styles = []
+        style = p.style
+        while style is not None and style.style_id not in {s.style_id for s in styles}:
+            styles.append(style)
+            style = style.base_style
+        run = next((r for r in p.runs if r.text.strip()), None)
+        fonts = ([run.font] if run is not None else []) + [s.font for s in styles]
+        def inherited(attr):
+            return next((getattr(f, attr) for f in fonts if getattr(f, attr) is not None), None)
+        size = inherited("size")
+        east = []
+        for node in ([run._element] if run is not None else []) + [s.element for s in styles]:
+            east = node.xpath('./w:rPr/w:rFonts/@w:eastAsia')
+            if east:
+                break
+        evidence = dict(source_heading_text=text, source_order=order,
+                        style=p.style.name, font=east[0] if east else inherited("name"),
+                        latin_font=inherited("name"), size=size.pt if size else None,
+                        bold=inherited("bold"))
+        plain_paragraphs.append(
+            {
+                "text": text,
+                "style": p.style.name,
+                "source_order": order,
+                "font": evidence["font"],
+                "size": evidence["size"],
+                "bold": evidence["bold"],
+            }
+        )
+        section_hit = parse_mathb_section_heading(
+            text, expected_section_code=expected_code
+        )
+        if section_hit:
+            if not sections:
+                sections.append(
+                    dict(
+                        evidence,
+                        section_code=section_hit["section_code"],
+                        section_title=section_hit["section_title"],
+                        normalized_identity=section_hit["normalized_identity"],
+                    )
+                )
+            continue
+        hit = detect_mathb_concept_heading(text, current_section_code=section_code)
+        if not hit or not hit.get("concept_code"):
+            continue
+        # Numbering alone is insufficient: require a paragraph style or emphasis.
+        style_ok = p.style.name != "Normal" or evidence["bold"] or (size and size.pt >= 15)
+        if hit["section_code"] != section_code or not style_ok:
+            recovered = None
+            if hit["section_code"] != section_code and style_ok:
+                recovered = recover_section_local_numbered_heading(
+                    hit,
+                    current_section_code=section_code,
+                    accepted_subindexes=accepted_subindexes,
+                    source_heading_raw=text,
+                )
+            if recovered is None:
+                unresolved.append(evidence)
+                continue
+            hit = recovered
+        code, name = hit["concept_code"], hit["concept_name"]
+        if code in seen:
+            if seen[code] != name:
+                unresolved.append(evidence)
+            continue
+        seen[code] = name
+        sub = concept_subindex(code)
+        if sub is not None:
+            accepted_subindexes.append(sub)
+        row = dict(
+            evidence,
+            concept_code=code,
+            concept_name=name,
+            section_code=section_code,
+            validation="PASS",
+            authority_source=hit.get("authority_source")
+            or "authoritative_numbered_concept_heading",
+            printed_concept_code=hit.get("printed_concept_code", code),
+            source_concept_code=hit.get("source_concept_code", code),
+        )
+        if row["authority_source"] == AUTHORITY_SOURCE_HEADING_RECOVERED:
+            row.update(
+                source_heading_raw=hit.get("source_heading_raw"),
+                recovered_heading=hit.get("recovered_heading"),
+                recovery_reason=hit.get("recovery_reason"),
+            )
+        candidates.append(row)
+    for index, paragraph in enumerate(plain_paragraphs):
+        following = next(
+            (item["text"] for item in plain_paragraphs[index + 1 :] if str(item.get("text") or "").strip()),
+            "",
+        )
+        paragraph["next_text"] = following
+    plain = (
+        {"plain_source_headings": [], "plain_source_heading_count": 0, "plain_source_sequence_ok": None}
+        if candidates or unresolved
+        else collect_plain_source_headings(
+            plain_paragraphs, section_code=expected_code, volume=str(volume or "")
+        )
+    )
+    return dict(section_heading=sections[0] if sections else None,
+                skill_candidates=candidates, candidate_count=len(candidates),
+                unresolved_headings=unresolved, unresolved_heading_count=len(unresolved),
+                plain_source_headings=plain.get("plain_source_headings") or [],
+                plain_source_heading_count=int(plain.get("plain_source_heading_count") or 0),
+                plain_source_sequence_ok=plain.get("plain_source_sequence_ok"))
 
 REFERENCE_SOURCE_REL_DIR = Path("textbook_import") / "source" / "vocational" / "math_B2"
 REFERENCE_BASENAME_FRAGMENT = "第一章 1-1 角度的基本性質-課本"
@@ -257,6 +439,7 @@ class _DocxStructureParser:
             "table_cells": 0,
             "mathtype_ole": 0,
             "mathtype_ole_in_table_cells": 0,
+            "non_mathtype_ole_skipped": 0,
             "ole_embeddings_resolved": 0,
             "ole_cfb_validated": 0,
             "eq_fields": 0,
@@ -480,6 +663,12 @@ class _DocxStructureParser:
             seen_ole_ids.add(ole_key)
 
             prog_id = str(ole_elem.get("ProgID") or "").strip()
+            if prog_id not in MATHTYPE_OLE_PROG_IDS:
+                # Keep non-MathType embedded objects out of formula conversion.
+                self._summary["non_mathtype_ole_skipped"] = (
+                    int(self._summary.get("non_mathtype_ole_skipped") or 0) + 1
+                )
+                continue
             rel_id = ole_elem.get(f"{{{REL_NS}}}id")
             embedding_path, _ = _resolve_relationship_target("word/document.xml", rel_id or "", self.rel_maps)
             preview_rel_id = self._find_preview_image_rel_id(ole_elem)

@@ -43,7 +43,6 @@ from models import db, SkillInfo, SkillCurriculum, TextbookExample
 from core.ai_analyzer import get_model
 from flask import current_app, has_app_context
 import traceback
-from core.code_generator import auto_generate_skill_code
 from core.math_formula_normalizer import (
     detect_suspicious_formula,
     normalize_converted_docx_latex_text,
@@ -74,6 +73,7 @@ from core.utils import normalize_vocational_math_skill_id
 _DOCX_IMPORT_CONTEXT: dict[str, Any] = {}
 
 FORMULA_PLACEHOLDER_RE = re.compile(r"\[FORMULA_IMAGE_\d+\]|\[FORMULA_MISSING\]|\[WORD_EQUATION_UNPARSED\]")
+FORMULA_CONVERSION_FAILED_RE = re.compile(r"\[(?:MATH|EQ)_PARSE_FAILED_\d+\]")
 TEXT_MOJIBAKE_CHARS = "嚗嚙踐□■◆＊"
 TEXT_MOJIBAKE_RE = re.compile("[" + re.escape(TEXT_MOJIBAKE_CHARS) + r"]")
 LATEX_SIGNAL_GUARD_RE = re.compile(r"\\\(|\\\)|\\\[|\\\]|\\(?:frac|sqrt|left|right)\b|[\^_]")
@@ -109,7 +109,7 @@ def _strip_title_brackets(s: str) -> str:
 
 _CH_SA_CH_MARKER_RE = re.compile(r"CH\s*(\d+)\s*自我評量", re.IGNORECASE)
 _CH_SA_ZH_CHAPTER_RE = re.compile(r"第\s*(\d+)\s*章")
-_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)\s+(.+)$")
+_CH_SA_SECTION_HEADING_RE = re.compile(r"^\s*(\d+-\d+)(?!\.\d)\s*(.+)$")
 _CH_SA_QUESTION_LINE_RE = re.compile(r"^\s*(\d{1,2})(?:[\.、\)\t]|\s+)(.+)")
 _CH_SA_PAGE_ONLY_RE = re.compile(r"^\s*\d{2,3}\s*$")
 
@@ -281,9 +281,447 @@ def _scan_chapter_self_assessment_blocks(
     return blocks
 
 
-def scan_docx_title_inventory(extracted_text: str, section_code: str | None = None) -> list[dict[str, Any]]:
+GENERAL_HIGH_LAYOUT = "general_high"
+
+_GH_CHAPTER_HEADING_RE = re.compile(r"^\s*(\d{1,2})\s*([^\d\s，。：:；、.．].{0,20})$")
+_GH_UNIT_EXERCISE_HDR_RE = re.compile(r"^\s*(\d{1,2})\s*習題\s*$")
+_GH_ZONE_HDR_RE = re.compile(
+    r"^\s*(?:[一二三四五六七八九十]+\s*[、.．]\s*)?(觀念澄清|基礎題|進階題|綜合題|自我評量)\s*$"
+)
+_GH_SECTION_HEADING_RE = re.compile(r"^\s*([甲乙丙丁戊己庚辛壬癸])\s+([^\s，。：:；].{0,24})$")
+_GH_SUBSECTION_HEADING_RE = re.compile(r"^\s*[\(（]([一二三四五六七八九十]+)[\)）]\s*([^\s，。：:；].{0,24})$")
+_GH_EXAMPLE_START_RE = re.compile(r"^\s*例題\s*(\d{1,2})(?!\d)\s*(.*)$")
+_GH_PRACTICE_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})?(?!\d)\s*(.*)$")
+_GH_EXERCISE_NUM_RE = re.compile(r"^\s*(\d{1,2})\s*(?:[\.、．\t]|\s+)\s*(.*)$")
+_GH_CONTINUATION_RE = re.compile(r"^\s*(?:[\(（]\s*(?:\d{1,2}|[A-Ea-e])\s*[\)）]|\\\(|\\\[|\$)")
+_GH_SENTENCE_PUNCT_RE = re.compile(r"[，。；！？]")
+
+
+def scan_general_high_layout(
+    extracted_text: str,
+    body_paragraphs: list[str] | None = None,
+) -> dict[str, Any]:
+    """Deterministic scan of a 普高 unit DOCX (converted LaTeX text).
+
+    Layout markers are structural conventions, not book content: unit heading
+    ``N標題``, concept headings ``甲/乙/…``, subsection headings ``(一)/(二)/…``,
+    ``例題N``, unnumbered ``隨堂練習`` (numbered by document order) and the unit
+    exercise block ``N習題`` with zone headers.
+
+    ``body_paragraphs`` are DOCX running-text paragraphs (see
+    ``_is_body_prose_paragraph``); one appearing after an example's solution
+    marker means the exposition has resumed and ends that example.
+    """
+    from core.textbook_solution_boundary import (
+        split_student_stem_at_solution_marker,
+        student_stem_has_solution_residue,
+    )
+
+    body_set = {str(p or "").strip() for p in (body_paragraphs or []) if str(p or "").strip()}
+    lines = [str(ln or "").strip() for ln in str(extracted_text or "").splitlines()]
+    items: list[dict[str, Any]] = []
+    blocks: dict[str, str] = {}
+    solutions: dict[str, str] = {}
+    chapter: dict[str, str] = {}
+    section_heading = ""
+    subsection_heading = ""
+    exercise_code = ""
+    zone = ""
+    practice_ordinal = 0
+    current: dict[str, Any] | None = None
+
+    def _flush() -> None:
+        nonlocal current
+        if not current:
+            return
+        title = current["canonical_title"]
+        body_lines = current["lines"]
+        raw = "\n".join(body_lines).strip()
+        split = split_student_stem_at_solution_marker(raw)
+        if split is not None:
+            stem, solution = split
+            if solution:
+                solutions[title] = solution
+            current["item"]["has_source_solution"] = bool(solution)
+        else:
+            stem = "\n".join(current["stem_lines"]).strip()
+            current["item"]["has_source_solution"] = False
+        stem = clean_problem_leading_title(stem)
+        if stem:
+            blocks[title] = stem
+        current = None
+
+    def _start(kind: str, title: str, number: str, first: str, line_index: int) -> None:
+        nonlocal current
+        _flush()
+        item = {
+            "raw_title": title,
+            "canonical_title": title,
+            "kind": kind,
+            "section_code": exercise_code if kind == "chapter_exercise" else chapter.get("unit", ""),
+            "exercise_block": f"{exercise_code}習題" if kind == "chapter_exercise" else "",
+            "zone": zone if kind == "chapter_exercise" else "",
+            "number": number,
+            "section_heading": "" if kind == "chapter_exercise" else section_heading,
+            "subsection_heading": "" if kind == "chapter_exercise" else subsection_heading,
+            "line_index": line_index,
+            "source_span_preview": first[:120],
+        }
+        items.append(item)
+        first_lines = [first] if first else []
+        current = {
+            "canonical_title": title,
+            "item": item,
+            "lines": list(first_lines),
+            "stem_lines": list(first_lines),
+            "stem_open": True,
+            "kind": kind,
+            "solution_started": bool(first) and student_stem_has_solution_residue(first),
+        }
+
+    for idx, line in enumerate(lines):
+        if not line:
+            continue
+
+        if not chapter and not items and not section_heading:
+            m_ch = _GH_CHAPTER_HEADING_RE.match(line)
+            if m_ch and "習題" not in line and not _GH_SENTENCE_PUNCT_RE.search(line):
+                chapter = {"unit": m_ch.group(1), "title": m_ch.group(2).strip(), "line": line}
+                continue
+
+        m_ex_hdr = _GH_UNIT_EXERCISE_HDR_RE.match(line)
+        if m_ex_hdr:
+            _flush()
+            exercise_code = m_ex_hdr.group(1)
+            zone = "其他"
+            section_heading = ""
+            subsection_heading = ""
+            continue
+
+        if exercise_code:
+            m_zone = _GH_ZONE_HDR_RE.match(line)
+            if m_zone:
+                _flush()
+                zone = m_zone.group(1)
+                continue
+            m_num = _GH_EXERCISE_NUM_RE.match(line)
+            if m_num:
+                n = int(m_num.group(1))
+                _start("chapter_exercise", f"{exercise_code}習題 {zone}{n}", str(n), m_num.group(2).strip(), idx)
+                continue
+        else:
+            m_sec = _GH_SECTION_HEADING_RE.match(line)
+            if m_sec and not _GH_SENTENCE_PUNCT_RE.search(line):
+                _flush()
+                section_heading = f"{m_sec.group(1)} {m_sec.group(2).strip()}"
+                subsection_heading = ""
+                continue
+            m_sub = _GH_SUBSECTION_HEADING_RE.match(line)
+            if m_sub and not _GH_SENTENCE_PUNCT_RE.search(line):
+                _flush()
+                subsection_heading = f"({m_sub.group(1)}){m_sub.group(2).strip()}"
+                continue
+            m_exm = _GH_EXAMPLE_START_RE.match(line)
+            if m_exm:
+                n = int(m_exm.group(1))
+                _start("example", f"例題{n}", str(n), m_exm.group(2).strip(), idx)
+                continue
+            m_pr = _GH_PRACTICE_START_RE.match(line)
+            if m_pr:
+                if m_pr.group(1):
+                    n = int(m_pr.group(1))
+                    practice_ordinal = max(practice_ordinal, n)
+                else:
+                    practice_ordinal += 1
+                    n = practice_ordinal
+                _start("in_class_practice", f"隨堂練習{n}", str(n), m_pr.group(2).strip(), idx)
+                continue
+
+        if current is None:
+            continue
+        if current["kind"] == "example" and current["solution_started"] and line in body_set:
+            _flush()
+            continue
+        current["lines"].append(line)
+        if not current["solution_started"] and student_stem_has_solution_residue(line):
+            current["solution_started"] = True
+        if current["stem_open"]:
+            if not current["stem_lines"] or _GH_CONTINUATION_RE.match(line):
+                current["stem_lines"].append(line)
+            else:
+                current["stem_open"] = False
+                if current["kind"] != "example":
+                    # Narrative after a practice / exercise stem is exposition, not the question.
+                    current["lines"].pop()
+                    _flush()
+
+    _flush()
+    return {
+        "chapter": chapter,
+        "items": items,
+        "blocks": blocks,
+        "solutions": solutions,
+    }
+
+
+_GH_CHAPTER_TITLE_NORMALIZE_RE = re.compile(
+    r"^\s*(?:單元|Unit|第)?\s*(\d{1,2})\s*(?:單元|章)?\s*[\.．、:：]?\s*(.*)$", re.IGNORECASE
+)
+
+
+def normalize_general_high_chapter_section(raw_chapter: str) -> tuple[str, str]:
+    """普高 curriculum naming: chapter ``單元N 標題`` and section ``N.標題``."""
+    raw = str(raw_chapter or "").strip()
+    m = _GH_CHAPTER_TITLE_NORMALIZE_RE.match(raw)
+    if not m:
+        return raw, ""
+    num = int(m.group(1))
+    title = m.group(2).strip()
+    if not title:
+        return f"單元{num}", ""
+    return f"單元{num} {title}", f"{num}.{title}"
+
+
+def _gh_paragraph_key(text: str) -> str:
+    return re.sub(r"[\s\.．、:：]+", "", str(text or ""))
+
+
+def resolve_general_high_existing_skill_id(
+    volume: str,
+    chapter_title: str,
+    concept_paragraph: str,
+    concept_name: str = "",
+) -> str:
+    """Read-only: reuse an existing ``gh_`` skill bound to the same volume/unit/paragraph."""
+    m = _GH_CHAPTER_TITLE_NORMALIZE_RE.match(str(chapter_title or ""))
+    if not m or not volume:
+        return ""
+    unit_num = m.group(1)
+    para_key = _gh_paragraph_key(concept_paragraph)
+    name_key = _gh_paragraph_key(concept_name)
+    if not para_key and not name_key:
+        return ""
+    try:
+        rows = (
+            db.session.query(SkillCurriculum.skill_id, SkillCurriculum.chapter, SkillCurriculum.paragraph)
+            .filter(SkillCurriculum.curriculum == "general", SkillCurriculum.volume == volume)
+            .all()
+        )
+    except Exception:
+        return ""
+    for skill_id, chapter, paragraph in rows:
+        m_row = _GH_CHAPTER_TITLE_NORMALIZE_RE.match(str(chapter or ""))
+        if not m_row or m_row.group(1) != unit_num:
+            continue
+        row_key = _gh_paragraph_key(paragraph)
+        if not row_key:
+            continue
+        if row_key == para_key or (name_key and row_key.endswith(name_key) and len(row_key) - len(name_key) <= 1):
+            return str(skill_id or "")
+    return ""
+
+
+GH_VISUAL_ATTACHED = "VISUAL_ATTACHED"
+GH_VISUAL_REQUIRED_MISSING = "VISUAL_REQUIRED_MISSING"
+GH_VISUAL_UNCERTAIN = "VISUAL_UNCERTAIN"
+GH_NO_VISUAL_REQUIRED = "NO_VISUAL_REQUIRED"
+_GH_ROW_TITLE_SUFFIX_RE = re.compile(r"\s*\[[^\]]*\]\s*$")
+
+
+def classify_general_high_visual_status(notes: dict[str, Any], problem_text: str) -> str:
+    """Visual state of one imported question; DOCX text decides whether a figure is required."""
+    from core.question_image_assets import question_needs_image
+    from core.textbook_pdf_visual import _text_has_strong_figure_cue
+
+    assets = [a for a in (notes.get("image_assets") or []) if isinstance(a, dict) and a.get("path")]
+    if any(
+        str(a.get("visual_status") or "accepted").lower() == "accepted" and not a.get("needs_crop_review")
+        for a in assets
+    ):
+        return GH_VISUAL_ATTACHED
+    if assets:
+        return GH_VISUAL_UNCERTAIN
+    if _text_has_strong_figure_cue(problem_text):
+        return GH_VISUAL_REQUIRED_MISSING
+    if notes.get("visual_required_missing") or question_needs_image(problem_text):
+        return GH_VISUAL_UNCERTAIN
+    return GH_NO_VISUAL_REQUIRED
+
+
+def _apply_general_high_visual_review(notes: dict[str, Any], status: str) -> dict[str, Any]:
+    if status == GH_VISUAL_ATTACHED:
+        if notes.get("visual_required_missing"):
+            notes["visual_required_missing"] = False
+            notes["needs_review"] = bool(notes.get("needs_review_before_visual", False))
+            if notes.get("image_warning") == "missing_docx_image_asset":
+                notes.pop("image_warning", None)
+                notes["image_warning_resolved_by"] = "pdf_visual"
+    elif status in (GH_VISUAL_REQUIRED_MISSING, GH_VISUAL_UNCERTAIN):
+        notes["needs_review"] = True
+    notes["pdf_visual_status"] = status
+    return notes
+
+
+def enrich_general_high_pdf_visuals(
+    *,
+    pdf_path: str,
+    parsed_data: dict,
+    scan: dict[str, Any],
+    curriculum_info: dict,
+    import_policy: dict | None = None,
+    queue=None,
+) -> dict[str, Any]:
+    """Attach paired-PDF visuals to rows of this 普高 import via the shared V3 enrichment.
+
+    DOCX text stays authoritative; only notes.image_assets / visual status are written.
+    ``import_policy["visual_asset_root"]`` overrides the asset project root (dry-run / tests).
+    """
+    from pathlib import Path
+
+    from core.textbook_pdf_visual import (
+        enrich_textbook_examples_with_pdf_visuals,
+        fingerprint_file,
+        parse_notes_dict,
+    )
+    from core.textbook_question_anchor import (
+        build_anchors_from_block_meta,
+        normalize_question_label,
+        question_anchor_notes_payload,
+    )
+
+    policy = dict(import_policy or {})
+    summary: dict[str, Any] = {
+        "ok": False,
+        "status_counts": {},
+        "rows": [],
+        "ambiguous_titles": [],
+        "unanchored_rows": 0,
+        "warnings": [],
+    }
+    pdf = Path(str(pdf_path))
+    if not pdf.is_file():
+        summary["warnings"].append("pdf_missing")
+        return summary
+
+    volume = str(curriculum_info.get("volume") or "")
+    chapter_pairs = []
+    for ch in (parsed_data or {}).get("chapters") or []:
+        if isinstance(ch, dict):
+            pair = normalize_general_high_chapter_section(str(ch.get("chapter_title") or ""))
+            if pair[1]:
+                chapter_pairs.append(pair)
+    unit = (scan.get("chapter") or {})
+    if not chapter_pairs and unit.get("unit"):
+        chapter_pairs.append(normalize_general_high_chapter_section(f"{unit.get('unit')} {unit.get('title')}"))
+    if not chapter_pairs:
+        summary["warnings"].append("chapter_unresolved")
+        return summary
+    chapter_title, section_title = chapter_pairs[0]
+
+    try:
+        block_meta = {}
+        for it in scan.get("items") or []:
+            title = str(it.get("canonical_title") or "")
+            block_meta[title] = {
+                "anchor": title,
+                "problem_text": (scan.get("blocks") or {}).get(title, ""),
+                "source_type": normalize_source_type_by_title({"title": title}),
+            }
+        anchors = build_anchors_from_block_meta(
+            block_meta,
+            {
+                "curriculum": "general",
+                "publisher": curriculum_info.get("publisher") or "",
+                "volume": volume,
+                "chapter_index": unit.get("unit"),
+            },
+        )
+        by_label = {normalize_question_label(str(a.get("question_label") or "")): a for a in anchors}
+
+        rows = TextbookExample.query.filter(
+            TextbookExample.source_curriculum == "general",
+            TextbookExample.source_volume == volume,
+            TextbookExample.source_chapter.in_([p[0] for p in chapter_pairs]),
+        ).all()
+        rows_by_label: dict[str, list] = {}
+        for row in rows:
+            title = _GH_ROW_TITLE_SUFFIX_RE.sub("", str(row.source_description or "")).strip()
+            rows_by_label.setdefault(normalize_question_label(title), []).append(row)
+
+        targets = []
+        for label, group in rows_by_label.items():
+            anchor = by_label.get(label)
+            if anchor is None:
+                summary["unanchored_rows"] += len(group)
+                continue
+            if len(group) > 1:
+                summary["ambiguous_titles"].append(label)
+                continue
+            row = group[0]
+            notes = parse_notes_dict(row.notes)
+            if not isinstance(notes.get("question_anchor"), dict):
+                notes.update(question_anchor_notes_payload(anchor))
+                row.notes = json.dumps(notes, ensure_ascii=False)
+            targets.append(row)
+
+        enrich = enrich_textbook_examples_with_pdf_visuals(
+            pdf_path=pdf,
+            examples=targets,
+            curriculum_info={**curriculum_info, "curriculum": "general", "chapter": chapter_title, "section": section_title},
+            project_root=policy.get("visual_asset_root") or current_app.root_path,
+            debug_dir=policy.get("visual_debug_dir"),
+            write_notes=True,
+            publish_assets=bool(policy.get("visual_publish_assets", False)),
+            assemble_visual_groups=True,
+        )
+        enrich_rows = {r.get("id"): r for r in enrich.get("rows") or []}
+        pdf_sha256 = fingerprint_file(pdf)
+        for row in targets:
+            notes = parse_notes_dict(row.notes)
+            er = enrich_rows.get(row.id) or {}
+            status = classify_general_high_visual_status(notes, str(row.problem_text or ""))
+            notes = _apply_general_high_visual_review(notes, status)
+            notes["pdf_visual_enrichment"] = {
+                "source_pdf": pdf.name,
+                "source_pdf_sha256": pdf_sha256,
+                "result": er.get("status") or "not_scanned",
+                "page": er.get("page"),
+                "classification": er.get("classification"),
+                "visual_reason": er.get("visual_reason"),
+                "visual_bbox": er.get("visual_bbox"),
+                "match_method": er.get("match_method"),
+                "match_score": er.get("match_score"),
+            }
+            row.notes = json.dumps(notes, ensure_ascii=False)
+            summary["status_counts"][status] = summary["status_counts"].get(status, 0) + 1
+            summary["rows"].append({"id": row.id, "title": row.source_description, "status": status, **er})
+        db.session.commit()
+        summary["ok"] = True
+        summary["enrichment"] = {k: v for k, v in enrich.items() if k != "rows"}
+    except Exception as exc:
+        db.session.rollback()
+        summary["warnings"].append(f"enrichment_failed:{type(exc).__name__}: {exc}")
+        current_app.logger.warning(f"[PDF VISUAL] general-high enrichment failed: {exc}")
+
+    if queue is not None:
+        queue.put(
+            f"INFO: [PDF VISUAL] ok={summary['ok']} statuses={summary['status_counts']} "
+            f"ambiguous={len(summary['ambiguous_titles'])} unanchored={summary['unanchored_rows']} "
+            f"warnings={summary['warnings']}"
+        )
+    return summary
+
+
+def scan_docx_title_inventory(
+    extracted_text: str,
+    section_code: str | None = None,
+    *,
+    layout: str = "",
+) -> list[dict[str, Any]]:
     """Deterministic scan of example / practice / chapter exercise / exam titles from DOCX text."""
     text = str(extracted_text or "")
+    if layout == GENERAL_HIGH_LAYOUT:
+        return scan_general_high_layout(text)["items"]
     lines = text.splitlines()
     sa_ctx = detect_chapter_self_assessment_context(text)
     if sa_ctx:
@@ -457,8 +895,11 @@ def scan_converted_docx_question_blocks(
     extracted_text: str,
     *,
     source_scope: str = "",
+    layout: str = "",
 ) -> dict[str, str]:
     """Deterministic per-title question blocks from converted LaTeX DOCX plain text."""
+    if layout == GENERAL_HIGH_LAYOUT:
+        return scan_general_high_layout(extracted_text)["blocks"]
     paragraph_blocks = [
         {"type": "paragraph", "text": str(ln or "").strip()}
         for ln in str(extracted_text or "").splitlines()
@@ -470,8 +911,32 @@ def scan_converted_docx_question_blocks(
 def build_converted_docx_latex_gemini_outline_payload(
     extracted_text: str,
     section_code: str | None = None,
+    *,
+    layout: str = "",
 ) -> str:
     """Compact Gemini input: title inventory + section hints only (no full LaTeX stems)."""
+    if layout == GENERAL_HIGH_LAYOUT:
+        scan = scan_general_high_layout(extracted_text)
+        parts = [
+            "【converted_docx_latex metadata-only — 題目標題清單（請逐題輸出對應 metadata，勿重寫題幹）】",
+        ]
+        chapter = scan.get("chapter") or {}
+        if chapter:
+            parts.append(f"[CHAPTER_HINT] unit={chapter.get('unit')} title={chapter.get('title')}")
+        for it in scan["items"]:
+            line = (
+                f"- canonical_title={it.get('canonical_title')} kind={it.get('kind')} "
+                f"section_heading={it.get('section_heading') or '-'} "
+                f"subsection_heading={it.get('subsection_heading') or '-'} zone={it.get('zone') or '-'}"
+            )
+            if it.get("kind") == "chapter_exercise":
+                preview = re.sub(r"\s+", " ", str(scan["blocks"].get(it.get("canonical_title")) or ""))[:80]
+                if preview:
+                    line += f" stem_preview={preview}"
+            parts.append(line)
+        if not scan["items"]:
+            parts.append("(no titles detected — still output JSON skeleton with empty arrays)")
+        return "\n".join(parts)
     items = scan_docx_title_inventory(extracted_text, section_code=section_code)
     sa_ctx = detect_chapter_self_assessment_context(extracted_text)
     parts = [
@@ -658,9 +1123,11 @@ def hydrate_converted_docx_latex_parsed_data(
     section_code: str | None = None,
     inventory_items: list[dict[str, Any]] | None = None,
     question_blocks: dict[str, str] | None = None,
+    solution_blocks: dict[str, str] | None = None,
 ) -> tuple[dict, int, int]:
     """Fill problem_text from DOCX blocks; normalize empty answer/solution fields."""
     blocks = dict(question_blocks or scan_converted_docx_question_blocks(extracted_text))
+    solutions = dict(solution_blocks or {})
     filled = 0
     if not isinstance(parsed_data, dict):
         return parsed_data, 0, len(blocks)
@@ -738,6 +1205,14 @@ def hydrate_converted_docx_latex_parsed_data(
                             item["detailed_solution"] = ""
                         else:
                             item["detailed_solution"] = str(item.get("detailed_solution") or "")
+                        if not item["detailed_solution"].strip():
+                            source_solution = solutions.get(label) or solutions.get(title)
+                            if source_solution:
+                                item["detailed_solution"] = source_solution
+                                item["solution_from_source"] = True
+                        if FORMULA_CONVERSION_FAILED_RE.search(str(item.get("problem_text") or "")):
+                            item["needs_review"] = True
+                            _append_item_parse_warning(item, "formula_conversion_failed")
     return parsed_data, filled, len(blocks)
 
 
@@ -839,7 +1314,7 @@ def map_returned_import_title(
             "needs_review": True,
         }
 
-    m = re.match(r"^(\d+-\d+)習題(基礎題|進階題|自我評量|其他)(\d+)$", s_compact)
+    m = re.match(r"^(\d+(?:-\d+)?)習題(基礎題|進階題|觀念澄清|綜合題|自我評量|其他)(\d+)$", s_compact)
     if m:
         return {
             "returned_raw": raw,
@@ -1109,17 +1584,17 @@ def resolve_question_bank_section_skill_id(
         if has_app_context():
             current_app.logger.warning(
                 "[QUESTION BANK SKILL ALIGN WARNING] section_code=%s section_title=%s "
-                "reason=fallback_outline fallback_outline_skill_id=%s",
+                "reason=unresolved_leaf hierarchy_outline_skill_id=%s",
                 code,
                 anchor_title,
                 sid,
             )
-        return sid, "fallback_outline"
+        return None, "unresolved_leaf"
 
     if has_app_context():
         current_app.logger.warning(
             "[QUESTION BANK SKILL ALIGN WARNING] section_code=%s section_title=%s "
-            "reason=fallback_outline fallback_outline_skill_id=",
+            "reason=unresolved_leaf hierarchy_outline_skill_id=",
             code,
             anchor_title,
         )
@@ -1143,7 +1618,9 @@ def resolve_question_bank_skill_for_section(
     )
     return {
         "skill_id": sid or "",
-        "needs_review": source in ("fallback_outline", "not_found", "missing_section_code"),
+        "mapping_status": "unresolved_leaf" if not sid else source,
+        "needs_skill_resolution": not bool(sid),
+        "needs_review": source in ("unresolved_leaf", "not_found", "missing_section_code"),
         "source": source,
         "section_code": code,
     }
@@ -1718,6 +2195,7 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
 
     doc = Document(file_path)
     ordered_chunks: list[str] = []
+    body_paragraphs: list[str] = []
     paragraph_count = 0
     table_count = 0
 
@@ -1728,6 +2206,8 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
             paragraph_count += 1
             if text:
                 ordered_chunks.append(text)
+                if _is_body_prose_paragraph(block):
+                    body_paragraphs.append(text)
         elif block.tag.endswith("}tbl"):
             table_count += 1
             tbl = Table(block, doc)
@@ -1741,7 +2221,65 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
     return {1: merged} if merged else {}, {
         "paragraph_count": paragraph_count,
         "table_count": table_count,
+        "body_paragraphs": body_paragraphs,
     }
+
+
+def _is_body_prose_paragraph(p_element) -> bool:
+    """Top-level paragraph laid out as running text: first-line indent, no block indent."""
+    from docx.oxml.ns import qn
+
+    ppr = p_element.find(qn("w:pPr"))
+    ind = ppr.find(qn("w:ind")) if ppr is not None else None
+    if ind is None:
+        return False
+
+    def _num(name: str) -> float:
+        try:
+            return float(ind.get(qn(f"w:{name}")) or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    first_line = max(_num("firstLine"), _num("firstLineChars"))
+    block_indent = max(_num("left"), _num("leftChars"), _num("start"), _num("hanging"), _num("hangingChars"))
+    return first_line > 0 and block_indent <= 0
+
+
+def _docx_has_mathtype_ole(file_path: str) -> bool:
+    try:
+        with zipfile.ZipFile(file_path, "r") as zf:
+            document_xml = zf.read("word/document.xml")
+    except Exception:
+        return False
+    return b"Equation.DSMT4" in document_xml
+
+
+def _extract_docx_with_mathtype_conversion(
+    file_path: str,
+) -> tuple[dict[int, str], dict[str, Any], dict[str, Any] | None]:
+    """Extract DOCX text after the shared MathType OLE / EQ -> LaTeX conversion.
+
+    The source file is never modified; the converted copy lives in a temp dir
+    that is removed after text extraction. Already-converted DOCX (no MathType
+    OLE) is read as-is.
+    """
+    if not _docx_has_mathtype_ole(file_path):
+        content_by_page, doc_meta = extract_converted_latex_docx(file_path)
+        return content_by_page, doc_meta, None
+
+    import shutil
+    import tempfile
+
+    from core.textbook_mathtype_converter import convert_docx_mathtype_to_latex_docx
+
+    temp_dir = tempfile.mkdtemp(prefix="v1_mathtype_")
+    try:
+        latex_path = os.path.join(temp_dir, "converted_Latex.docx")
+        report = convert_docx_mathtype_to_latex_docx(file_path, latex_path)
+        content_by_page, doc_meta = extract_converted_latex_docx(latex_path)
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
+    return content_by_page, doc_meta, report
 
 
 def detect_converted_latex_docx(text: str) -> dict[str, Any]:
@@ -2986,7 +3524,7 @@ def normalize_json_text_before_parse(text):
     return normalized
 
 
-def sanitize_detailed_solution_text(text, max_chars=500):
+def sanitize_detailed_solution_text(text, max_chars=500, *, source_verbatim=False):
     """Sanitize detailed solution text for storage."""
     if text is None:
         return ""
@@ -2994,6 +3532,9 @@ def sanitize_detailed_solution_text(text, max_chars=500):
     cleaned = str(text).strip()
     if not cleaned:
         return ""
+    if source_verbatim:
+        # Deterministic DOCX worked solution: trimming to the last paragraph/tail drops its beginning.
+        return cleaned
 
     banned_phrases = [
         "Let's trace",
@@ -3051,6 +3592,11 @@ def process_textbook_file(
                 queue.put(f"WARN: {message}")
             return {"status": "skipped", "message": message}
         # ======================================================
+
+        if str((curriculum_info or {}).get("curriculum") or "").strip() == "general":
+            import_policy.setdefault("docx_layout", GENERAL_HIGH_LAYOUT)
+            import_policy.setdefault("mathtype_ole_autoconvert", True)
+        docx_layout = str(import_policy.get("docx_layout") or "").strip()
 
         # 步驟 1: 從 Word 檔案中提取內容
         content_by_page = extract_content_from_file(
@@ -3144,6 +3690,7 @@ def process_textbook_file(
             docx_formula_source_mode=docx_formula_source_mode,
         )
         page_analysis_payload = None
+        general_high_scan = None
 
         # 步驟 2: 呼叫 AI 進行分析
         file_meta = parse_textbook_filename_metadata(file_path)
@@ -3182,13 +3729,20 @@ def process_textbook_file(
             volume = str(curriculum_info.get("volume", "") or "unknown").replace(" ", "")
             sc_for_scan = None if section_code == "unknown" else section_code
             import_scope = str(file_meta.get("source_scope") or "section_textbook").strip()
-            inventory_items = scan_docx_title_inventory(extracted_text, section_code=sc_for_scan)
+            inventory_items = scan_docx_title_inventory(extracted_text, section_code=sc_for_scan, layout=docx_layout)
+            if docx_layout == GENERAL_HIGH_LAYOUT:
+                general_high_scan = scan_general_high_layout(
+                    extracted_text,
+                    body_paragraphs=((_DOCX_IMPORT_CONTEXT or {}).get("doc_meta") or {}).get("body_paragraphs"),
+                )
+            solution_blocks = general_high_scan["solutions"] if general_high_scan else None
             if isinstance(_DOCX_IMPORT_CONTEXT, dict):
                 _DOCX_IMPORT_CONTEXT["title_inventory_items"] = inventory_items
                 _DOCX_IMPORT_CONTEXT["source_scope"] = import_scope
                 rescanned = scan_converted_docx_question_blocks(
                     extracted_text,
                     source_scope=import_scope,
+                    layout=docx_layout,
                 )
                 _DOCX_IMPORT_CONTEXT["question_formula_blocks"] = rescanned
             ctx_blocks = (_DOCX_IMPORT_CONTEXT or {}).get("question_formula_blocks", {}) if isinstance(_DOCX_IMPORT_CONTEXT, dict) else {}
@@ -3198,6 +3752,7 @@ def process_textbook_file(
                 section_code=sc_for_scan,
                 inventory_items=inventory_items,
                 question_blocks=ctx_blocks if isinstance(ctx_blocks, dict) else None,
+                solution_blocks=solution_blocks,
             )
             current_app.logger.info(
                 f"[DOCX HYDRATE] filled_problem_text={hydrate_filled} scanned_blocks={hydrate_blocks}"
@@ -3255,6 +3810,18 @@ def process_textbook_file(
             import_policy=import_policy,
             optional_enrich_pdf_path=optional_enrich_pdf_path,
         )
+        if general_high_scan and not outline_only and isinstance(result, dict) and result.get("status") != "error":
+            if optional_enrich_pdf_path and str(optional_enrich_pdf_path).lower().endswith(".pdf"):
+                result["pdf_visual"] = enrich_general_high_pdf_visuals(
+                    pdf_path=optional_enrich_pdf_path,
+                    parsed_data=parsed_data,
+                    scan=general_high_scan,
+                    curriculum_info=curriculum_info,
+                    import_policy=import_policy,
+                    queue=queue,
+                )
+            elif queue is not None:
+                queue.put("INFO: [PDF VISUAL] skipped reason=paired_pdf_missing")
         try:
             temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
             if temp_dir and bool(current_app.config.get("CLEAN_ORPHAN_DOCX_MEDIA", True)):
@@ -3287,29 +3854,9 @@ def process_textbook_file(
         current_app.logger.info(message)
         queue.put(f"INFO: {message}")
 
-        # 步驟 5: 產生對應的技能程式碼 (選用)
-        code_gen_status = "skipped"
-        if skip_code_gen:
-            message = "Skip code generation by request."
-            current_app.logger.info(message)
-            queue.put(f"INFO: {message}")
-        elif processed_skill_ids:
-            queue.put(f"INFO: start code generation for {len(processed_skill_ids)} skills")
-            for idx, skill_id in enumerate(processed_skill_ids):
-                queue.put(f"INFO: [{idx+1}/{len(processed_skill_ids)}] 正在寫入 {skill_id}.py ...")
-                try:
-                    # [修正] 強制 Architect 重新載入最新 Prompt
-                    success, msg = auto_generate_skill_code(skill_id, queue, force_architect_refresh=True)
-                    if success:
-                        queue.put(f"INFO: {skill_id} code generated")
-                    else:
-                        queue.put(f"WARN: {skill_id} code generation failed")
-                except Exception as e:
-                    queue.put(f"ERROR: 技能 {skill_id} 程式碼寫入失敗: {e}")
-                    current_app.logger.error(f"Generate Error {skill_id}: {e}")
-                
-                time.sleep(2) # Rate Limit
-            code_gen_status = f"{len(processed_skill_ids)} generated"
+        # Import only textbook and skill data. V3 capability and components are
+        # created through the existing /skills workflow after import.
+        queue.put("INFO: 教材匯入完成；請於 /skills 建立或補全 V3 出題能力。")
 
         return {
             "status": "success", 
@@ -3321,7 +3868,7 @@ def process_textbook_file(
                         f"新增隨堂練習 {in_class_practice_count} 筆\n"
                         f"練習題需審核 {practice_needs_review_count} 筆\n"
                         f"練習題跳過 {practice_skipped_count} 筆\n"
-                        f"自動產生程式碼 {code_gen_status}")
+                        f"V3 出題能力請至 /skills 建立或補全")
         }
 
     except Exception as e:
@@ -3349,18 +3896,34 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
         queue.put(f"ERROR: {message}")
         return {}
 
+    import_policy = dict(import_policy or {})
+    docx_layout = str(import_policy.get("docx_layout") or "").strip()
     try:
-        content_by_page, doc_meta = extract_converted_latex_docx(file_path)
+        mathtype_report = None
+        if import_policy.get("mathtype_ole_autoconvert"):
+            content_by_page, doc_meta, mathtype_report = _extract_docx_with_mathtype_conversion(file_path)
+            if mathtype_report is not None:
+                queue.put(
+                    "INFO: [MATHTYPE CONVERT] "
+                    f"ole={mathtype_report.get('mathtype_ole', 0)} "
+                    f"converted={mathtype_report.get('converted_ok', 0)} "
+                    f"failed={mathtype_report.get('converted_failed', 0)} "
+                    f"eq_fields={mathtype_report.get('eq_fields', 0)} "
+                    f"eq_converted={mathtype_report.get('eq_converted_ok', 0)}"
+                )
+        else:
+            content_by_page, doc_meta = extract_converted_latex_docx(file_path)
         extracted_text = str((content_by_page or {}).get(1, "") or "")
         detect_meta = detect_converted_latex_docx(extracted_text)
         file_meta = parse_textbook_filename_metadata(file_path)
         source_scope = str(file_meta.get("source_scope") or "section_textbook").strip()
         sa_ctx = detect_chapter_self_assessment_context(extracted_text)
-        if source_scope == "section_textbook":
+        if source_scope == "section_textbook" or docx_layout == GENERAL_HIGH_LAYOUT:
             sa_ctx = None
         question_blocks = scan_converted_docx_question_blocks(
             extracted_text,
             source_scope=source_scope,
+            layout=docx_layout,
         )
         _DOCX_IMPORT_CONTEXT = {
             "docx_formula_source_mode": "converted_docx_latex",
@@ -3376,6 +3939,12 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
             "source_scope": source_scope,
             "chapter_self_assessment_mode": bool(sa_ctx),
             "chapter_self_assessment_prefix": str(sa_ctx.get("title_prefix", "") if sa_ctx else ""),
+            "docx_layout": docx_layout,
+            "mathtype_conversion": (
+                {k: v for k, v in mathtype_report.items() if k not in ("formulas", "eq_field_results", "summary")}
+                if mathtype_report is not None
+                else None
+            ),
         }
         if sa_ctx:
             queue.put(
@@ -3730,6 +4299,37 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
   ]
 }
 """
+    json_example_general_high_metadata_only = """
+{
+  "chapters": [
+    {
+      "chapter_title": "單元N 單元標題",
+      "sections": [
+        {
+          "section_title": "N.單元標題",
+          "concepts": [
+            {
+              "concept_name": "觀念標題",
+              "concept_en_id": "ConceptNameInPascalCase",
+              "concept_paragraph": "甲.觀念標題",
+              "examples": [
+                {"title": "例題1", "source_description": "例題1", "source_type": "textbook_example",
+                 "problem_text": "例題1", "correct_answer": "", "detailed_solution": ""}
+              ],
+              "practice_questions": [
+                {"title": "隨堂練習1", "source_description": "隨堂練習1", "source_type": "in_class_practice",
+                 "problem_text": "隨堂練習1", "correct_answer": "", "detailed_solution": ""},
+                {"title": "N習題 基礎題1", "source_description": "N習題 基礎題1", "source_type": "basic_exercise",
+                 "problem_text": "N習題 基礎題1", "correct_answer": "", "detailed_solution": ""}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
     # ==============================================================================
 
     curriculum = curriculum_info.get('curriculum', '').strip()
@@ -3748,8 +4348,24 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
     docx_formula_source_mode = str(import_policy.get("docx_formula_source_mode", "auto_detect") or "auto_detect").strip()
     section_code = str(import_policy.get("section_code", "") or "").strip() or None
     converted_metadata_only = docx_formula_source_mode == "converted_docx_latex"
+    docx_layout = str(import_policy.get("docx_layout") or "").strip()
+    is_general_high_layout = docx_layout == GENERAL_HIGH_LAYOUT
 
-    if converted_metadata_only and is_vocational_mathb:
+    if converted_metadata_only and is_general_high_layout:
+        base_prompt = (
+            "您是一位台灣普通高中數學教材結構分析專家。本批為 converted_docx_latex 匯入："
+            "題幹與 LaTeX 已由 DOCX 決定性掃描補回。您只需輸出章節結構與每題 metadata，"
+            "禁止重寫完整題幹、答案或詳解。\n"
+            "【普高結構規則（沿用既有普高匯入慣例：單元 -> 觀念 兩層）】\n"
+            "1. chapter_title 依 [CHAPTER_HINT] 標準化為「單元N 標題」；section_title 為「N.標題」。\n"
+            "2. concepts 只對應 section_heading 的「甲/乙/丙/丁…」大標；concept_paragraph 只能是「甲.標題」短標題，"
+            "不可含公式或換行。(一)(二) 等小標、例題、隨堂練習、習題不可當成觀念。\n"
+            "3. 每題放入其 section_heading 對應的觀念；kind=chapter_exercise（N習題）沒有 section_heading，"
+            "必須依 stem_preview 逐題判斷最相關的觀念，不可因位於文件末尾就全部放進最後一個觀念。\n"
+            "4. concept_en_id 為 PascalCase 英文。\n"
+        )
+        queue.put("INFO: use general-high converted_docx_latex metadata-only prompt")
+    elif converted_metadata_only and is_vocational_mathb:
         base_prompt = (
             "您是一位技高數學B教材結構分析專家。本批為 converted_docx_latex 匯入："
             "題幹與 LaTeX 已由 DOCX 決定性掃描補回。您只需輸出章節結構與每題 metadata，"
@@ -3801,12 +4417,15 @@ def call_gemini_for_analysis(content_by_page, curriculum_info, queue, page_analy
             full_content = build_converted_docx_latex_gemini_outline_payload(
                 raw_extracted,
                 section_code=section_code,
+                layout=docx_layout,
             )
             queue.put("INFO: converted_docx_latex metadata-only Gemini payload (title inventory)")
         else:
             full_content = "\n".join([f"--- Page {k} ---\n{v}" for k, v in content_by_page.items()])
 
-    if converted_metadata_only:
+    if converted_metadata_only and is_general_high_layout:
+        json_example = json_example_general_high_metadata_only
+    elif converted_metadata_only:
         json_example = json_example_vh_mathB_metadata_only if is_vocational_mathb else json_example_vh_mathB_metadata_only
     else:
         json_example = json_example_vh_mathB if is_vocational_mathb else "{}"
@@ -4587,6 +5206,9 @@ def normalize_source_type_by_title(item: dict, default_source_type: str = "textb
     elif "進階題" in title:
         normalized = "advanced_exercise"
         reason = "title_contains_advanced_exercise"
+    elif "習題" in title and "觀念澄清" in title:
+        normalized = "chapter_exercise"
+        reason = "title_contains_exercise_zone"
     elif "習題" in title:
         normalized = "textbook_practice"
         reason = "title_contains_practice"
@@ -6132,6 +6754,7 @@ def save_to_database(
         incoming_correct_answer="",
         incoming_detailed_solution="",
         title="",
+        solution_from_source=False,
     ):
         """Merge richer duplicate payload into existing textbook_examples row.
 
@@ -6191,7 +6814,9 @@ def save_to_database(
             reasons.append("correct_answer_incoming_nonblank")
 
         existing_solution = str(getattr(existing_record, "detailed_solution", "") or "").strip()
-        incoming_solution = sanitize_detailed_solution_text(str(incoming_detailed_solution or ""), max_chars=500)
+        incoming_solution = sanitize_detailed_solution_text(
+            str(incoming_detailed_solution or ""), max_chars=500, source_verbatim=solution_from_source
+        )
         if _is_low_value_import_field(existing_solution) and not _is_low_value_import_field(incoming_solution):
             existing_record.detailed_solution = incoming_solution
             changed = True
@@ -6355,12 +6980,15 @@ def save_to_database(
             else:
                 chapter_title = raw_chapter
 
+            general_section_title = ""
             if is_vocational_mathb:
                 # ?擃摮睬蝟餃?嚗?蝙?冽???瑽??
                 if structure_meta and structure_meta.get('chapter_title'):
                     chapter_title = structure_meta['chapter_title']
                 else:
                     chapter_title = raw_chapter
+            elif curriculum == 'general':
+                chapter_title, general_section_title = normalize_general_high_chapter_section(raw_chapter)
             elif match:
                 clean_title = re.sub(r'^(\u55ae\u5143|Unit|\u7b2c)?\s*\d+\s*(\u55ae\u5143|\u7ae0)?\s*', '', raw_chapter).strip()
                 chapter_title = f"第{chapter_num}章 {clean_title}" if clean_title else f"第{chapter_num}章"
@@ -6387,6 +7015,8 @@ def save_to_database(
             
             for section_data in sections:
                 section_title = section_data.get('section_title', '') or ''
+                if curriculum == 'general' and general_section_title:
+                    section_title = general_section_title
                 
                 # [V2.2] 引入結構大綱映射
                 if structure_meta and structure_meta.get('section_title'):
@@ -6430,6 +7060,12 @@ def save_to_database(
                     clean_en_id = re.sub(r'[^a-zA-Z0-9]', '', concept_en_id)
                     if clean_en_id == "DispersionAndLinearTransformation":
                         clean_en_id = "DispersionMeasures"
+                    if curriculum == 'general' and not outline_only:
+                        existing_gh_skill_id = resolve_general_high_existing_skill_id(
+                            volume, chapter_title, concept_paragraph, concept_name
+                        )
+                        if existing_gh_skill_id.startswith(prefix):
+                            clean_en_id = existing_gh_skill_id[len(prefix):]
                     order_index = concept_order
                     skip_skill_creation = is_non_skill_bucket(concept_name, clean_en_id)
 
@@ -6822,6 +7458,7 @@ def save_to_database(
                                 incoming_correct_answer=db_answer,
                                 incoming_detailed_solution=db_solution,
                                 title=example_title,
+                                solution_from_source=bool(ex.get('solution_from_source')),
                             )
                             if changed or skill_migrated:
                                 updated_duplicates += 1
@@ -6852,7 +7489,9 @@ def save_to_database(
                             problem_text=db_problem_text,
                             problem_type=(structure_meta.get('type') if structure_meta and structure_meta.get('type') else ex.get('problem_type', source_type or 'calculation')),
                             correct_answer=db_answer,
-                            detailed_solution=sanitize_detailed_solution_text(db_solution, max_chars=500),
+                            detailed_solution=sanitize_detailed_solution_text(
+                                db_solution, max_chars=500, source_verbatim=bool(ex.get('solution_from_source'))
+                            ),
                             difficulty_level=difficulty_level
                         )
                         chapter_rel_dir, _, chapter_id, section_id = build_question_assets_dir(
@@ -6932,7 +7571,17 @@ def save_to_database(
                             current_app.logger.info(
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={example_title} source_type={source_type} reason={reason}"
                             )
+                        image_review = bool(
+                            (_DOCX_IMPORT_CONTEXT or {}).get("docx_layout") == GENERAL_HIGH_LAYOUT
+                            and isinstance(image_meta, dict)
+                            and image_meta.get("has_image")
+                            and not image_meta.get("image_assets")
+                        )
                         math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
+                        if image_review:
+                            math_meta["needs_review_before_visual"] = bool(math_meta.get("needs_review"))
+                            math_meta["visual_required_missing"] = True
+                            math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",
@@ -7224,6 +7873,7 @@ def save_to_database(
                                 incoming_correct_answer=practice_answer,
                                 incoming_detailed_solution=practice_solution,
                                 title=practice_title,
+                                solution_from_source=bool(practice.get('solution_from_source')),
                             )
                             if changed:
                                 updated_duplicates += 1
@@ -7258,7 +7908,9 @@ def save_to_database(
                             problem_text=practice_problem,
                             problem_type=practice.get('problem_type', 'in_class_practice'),
                             correct_answer=practice_answer,
-                            detailed_solution=sanitize_detailed_solution_text(practice_solution, max_chars=500),
+                            detailed_solution=sanitize_detailed_solution_text(
+                                practice_solution, max_chars=500, source_verbatim=bool(practice.get('solution_from_source'))
+                            ),
                             difficulty_level=difficulty_level
                         )
                         chapter_rel_dir, _, chapter_id, section_id = build_question_assets_dir(
@@ -7338,7 +7990,17 @@ def save_to_database(
                             current_app.logger.info(
                                 f"[DOCX IMAGE DEBUG] missing_image_candidate title={practice_title} source_type={source_type} reason={reason}"
                             )
+                        image_review = bool(
+                            (_DOCX_IMPORT_CONTEXT or {}).get("docx_layout") == GENERAL_HIGH_LAYOUT
+                            and isinstance(image_meta, dict)
+                            and image_meta.get("has_image")
+                            and not image_meta.get("image_assets")
+                        )
                         math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
+                        if image_review:
+                            math_meta["needs_review_before_visual"] = bool(math_meta.get("needs_review"))
+                            math_meta["visual_required_missing"] = True
+                            math_meta["needs_review"] = True
                         for k in (
                             "needs_formula_review",
                             "formula_missing",

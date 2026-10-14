@@ -363,6 +363,12 @@ def generate_for_skill(
                 problem_type_spec=problem_type_spec,
             )
             if format_errors:
+                # Table/chart stem without renderable data: retry another sample
+                # instead of hard-failing the whole skill page.
+                if format_errors == ["stem_references_table_but_missing"]:
+                    raise RetryableSamplingError(
+                        f"generator_format_unsafe:{','.join(format_errors)}"
+                    )
                 raise RuntimeError(f"generator_format_unsafe:{','.join(format_errors)}")
 
             # ── Semantic validation (retryable choices_duplicate) ───
@@ -417,6 +423,26 @@ def _resolve_answer_contract(
             if spec:
                 return get_answer_contract(spec)
     return {}
+
+
+def _normalized_text_equivalent(user_answer: Any, correct_answer: Any) -> bool:
+    """True text-label comparison only. Not used for math expressions."""
+    ua = str(user_answer or "").strip()
+    ca = str(correct_answer or "").strip()
+    if not ua or not ca:
+        return False
+    compact_u = re.sub(r"\s+", "", ua).casefold()
+    compact_c = re.sub(r"\s+", "", ca).casefold()
+    return compact_u == compact_c
+
+
+def _looks_like_math_answer(value: Any) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return False
+    if re.fullmatch(r"[A-Da-d]", text):
+        return False
+    return bool(re.search(r"[\d=+\-*/^√\\xXyY()]", text))
 
 
 def check_answer(
@@ -509,7 +535,11 @@ def check_answer(
         )
         return bool(result.get("is_correct"))
 
-    if checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
+    if (
+        checker in {"multi_part_answer_checker", "table_fill_checker", "multi_blank_checker"}
+        or family == "multi_part"
+        or equiv == "multi_part_answer"
+    ):
         from core.checkers.multi_part_answer_checker import check_multi_part_answer
 
         result = check_multi_part_answer(
@@ -519,6 +549,22 @@ def check_answer(
             payload=payload,
         )
         return bool(result.get("overall_correct"))
+
+    if checker == "rational_between_bounds_checker" or equiv == "strict_between_bounds":
+        from core.checkers.rational_between_bounds_checker import check_rational_between_bounds_answer
+
+        result = check_rational_between_bounds_answer(user_answer, answer_contract=ac)
+        if result.get("system_error"):
+            raise RuntimeError(str(result.get("reason") or "grading system error"))
+        return bool(result.get("correct"))
+
+    if checker == "simplest_fraction_checker" or equiv == "simplest_fraction_exact":
+        from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
+
+        result = check_simplest_fraction_answer(user_answer, correct_answer, answer_contract=ac)
+        if result.get("system_error"):
+            raise RuntimeError(str(result.get("reason") or "grading system error"))
+        return bool(result.get("correct"))
 
     if (
         checker == "choice_label_checker"
@@ -563,7 +609,7 @@ def check_answer(
     ):
         from core.checkers.solution_set_checker import check_solution_set_answer
 
-        return check_solution_set_answer(user_answer, correct_answer)
+        return check_solution_set_answer(user_answer, correct_answer, answer_contract=ac)
 
     if checker == "interval_checker" or family == "interval":
         from core.checkers.interval_checker import check_interval_answer
@@ -581,21 +627,41 @@ def check_answer(
             return quadrant_result
         return str(user_answer or "").strip() == str(correct_answer or "").strip()
 
+    expression_checkers = {
+        "expression_equivalence_checker",
+        "expression_checker",
+    }
     expression_equivs = {
         "expression_equivalence",
         "math_expression_equivalence",
         "radical_equivalence",
+        "algebraic_equivalent",
+        "factorized_form",
+        "required_factorized_form",
+    }
+    equation_checkers = {
+        "equation_checker",
+        "linear_equation_equivalent_checker",
+    }
+    equation_equivs = {
+        "equation_equivalent",
+        "linear_equation_equivalent",
     }
     if (
-        checker == "expression_equivalence_checker"
+        checker in expression_checkers
         or family == "numeric_or_radical"
         or equiv in expression_equivs
     ):
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
 
-        return check_expression_equivalence_answer(user_answer, correct_answer)
+        return check_expression_equivalence_answer(
+            user_answer,
+            correct_answer,
+            answer_contract=ac,
+            payload=base,
+        )
 
-    if checker in {"integer_checker", "numeric_checker", "rational_checker", "decimal_tolerance_checker"}:
+    if checker in {"integer_checker", "numeric_checker", "rational_checker", "fraction_checker", "decimal_tolerance_checker", "percentage_checker"}:
         numeric_result = grade_numeric_contract_answer(
             user_answer,
             correct_answer,
@@ -608,10 +674,58 @@ def check_answer(
             return False
         return bool(numeric_result.get("correct"))
 
-    if checker == "linear_equation_equivalent_checker" or equiv == "linear_equation_equivalent":
-        from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer
+    if checker in equation_checkers or family == "linear_equation" or equiv in equation_equivs:
+        from core.checkers.expression_equivalence_checker import check_equation_equivalence_answer
 
-        return check_linear_equation_equivalent_answer(user_answer, correct_answer)
+        return check_equation_equivalence_answer(user_answer, correct_answer)
+
+    if checker in {"text_short_checker", "text_checker"} or family == "short_answer":
+        math_equivs = expression_equivs | equation_equivs | {
+            "numeric_equivalence",
+            "numeric_equal",
+            "numeric_exact",
+            "rational_equivalent",
+            "fraction_equal",
+        }
+        math_types = {
+            "expression",
+            "numeric",
+            "integer",
+            "decimal",
+            "fraction",
+            "rational",
+            "equation",
+            "numeric_or_radical",
+        }
+        if family in {"numeric_or_radical", "numeric", "linear_equation"} or equiv in math_equivs or str(ac.get("answer_type") or "").strip() in math_types:
+            from core.checkers.expression_equivalence_checker import (
+                check_equation_equivalence_answer,
+                check_expression_equivalence_answer,
+            )
+
+            if family == "linear_equation" or equiv in equation_equivs:
+                return check_equation_equivalence_answer(user_answer, correct_answer)
+            if family == "numeric" or checker in {"integer_checker", "numeric_checker", "rational_checker"}:
+                numeric_result = grade_numeric_contract_answer(user_answer, correct_answer, ac, checker=checker or "numeric_checker")
+                if numeric_result.get("system_error"):
+                    raise RuntimeError(str(numeric_result.get("result") or "grading system error"))
+                return bool(numeric_result.get("correct"))
+            return check_expression_equivalence_answer(
+                user_answer,
+                correct_answer,
+                answer_contract=ac,
+                payload=base,
+            )
+        from core.checkers.expression_equivalence_checker import _assignment_lists_equivalent
+        from core.checkers.translation_description_checker import check_translation_description_answer
+
+        assignment_verdict = _assignment_lists_equivalent(user_answer, correct_answer)
+        if assignment_verdict is not None:
+            return assignment_verdict
+        translation_verdict = check_translation_description_answer(user_answer, correct_answer)
+        if translation_verdict is not None:
+            return translation_verdict
+        return _normalized_text_equivalent(user_answer, correct_answer)
 
     quadrant_result = check_quadrant_answer(user_answer, correct_answer)
     if quadrant_result is not None:
@@ -621,13 +735,21 @@ def check_answer(
         return False
     if isinstance(user_answer, bool) or isinstance(correct_answer, bool):
         return False
-    ua = str(user_answer).strip().upper()
-    ca = str(correct_answer).strip().upper()
-    if not ua or not ca:
-        return False
-    if ua[:1] in {"A", "B", "C", "D"} and ca[:1] in {"A", "B", "C", "D"}:
-        return ua[:1] == ca[:1]
-    return ua == ca
+    if _looks_like_math_answer(user_answer) and _looks_like_math_answer(correct_answer):
+        from core.checkers.expression_equivalence_checker import (
+            check_equation_equivalence_answer,
+            check_expression_equivalence_answer,
+        )
+
+        if "=" in str(user_answer) and "=" in str(correct_answer):
+            return check_equation_equivalence_answer(user_answer, correct_answer)
+        return check_expression_equivalence_answer(
+            user_answer,
+            correct_answer,
+            answer_contract=ac,
+            payload=base,
+        )
+    return _normalized_text_equivalent(user_answer, correct_answer)
 
 
 def _purge_stale_v3_runtime_modules(skill_id: str, init_path: Path) -> None:
@@ -695,6 +817,9 @@ def dispatch_generate(
         router_kwargs["problem_type_id"] = effective_problem_type_id
     payload = generate_fn(level=level, seed=seed, **router_kwargs)
     if isinstance(payload, dict):
+        # The production facade owns the skill identity. Individual component
+        # generators may omit it, but every outward payload must carry it.
+        payload.setdefault("skill_id", skill_id)
         selected_component_id = str(payload.get("component_id") or "")
         selected_problem_type_id = str(payload.get("problem_type_id") or "")
         selected_index = -1

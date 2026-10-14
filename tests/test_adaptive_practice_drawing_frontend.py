@@ -83,7 +83,7 @@ def test_standard_practice_drawing_ai_check_uses_check_answer_before_handwriting
     assert "contract.checker_key === 'free_response_drawing_checker'" in guard_body
     assert "contract.answer_type === 'drawing'" in guard_body
     assert "contract.answer_shape === 'drawing'" in guard_body
-    assert "Boolean(q.expected_drawing_spec)" in guard_body
+    assert "Boolean(cq.expected_drawing_spec)" in guard_body
     assert "fetch('/check_answer'" in helper_body
     assert "composite_image_data_url" in payload_body
     assert "student_strokes_image_data_url" in payload_body
@@ -138,11 +138,33 @@ def test_ui_contract_dispatch_logic_and_guards():
         assert "ai_check_required" in source
         assert "canvas_required" in source
 
-    # Verify guards in AI button click handlers
-    assert "ui.ai_check_required !== true" in adaptive
-    assert "ui.ai_check_required !== true" in standard
+    # ai_check_required === false means "optional": any handwriting surface keeps AI check available,
+    # and an unavailable check explains itself instead of returning silently.
+    for source in (adaptive, standard):
+        assert "AI check blocked by ui_contract" not in source
+        assert "ui.ai_check_required === true" in source
+        assert "ui.handwriting_enabled !== false && ui.canvas_required !== false" in source
+    assert "!uiContract.aiCheckAvailable" in _function_body(standard, "setupAIButton")
+    assert "resolveDrawingUiContract(question).aiCheckAvailable" in _async_function_body(adaptive, "analyzeHandwriting")
 
     # Verify expected_answer removal from handwriting analysis payload in standard template
     ai_body = _function_body(standard, "setupAIButton")
     assert "expected_answer" not in ai_body
     assert "correct_answer" not in ai_body
+
+
+def test_tutor_suggestion_renderers_limit_to_three_and_handwriting_uses_them():
+    adaptive = TEMPLATE.read_text(encoding="utf-8")
+    standard = STANDARD_TEMPLATE.read_text(encoding="utf-8")
+
+    adaptive_renderer = _function_body(adaptive, "renderTutorSuggestedQuestions")
+    standard_renderer = _function_body(standard, "showDynamicSuggestions")
+    standard_handwriting = _async_function_body(standard, "submitHandwritingAsAnswer")
+    adaptive_handwriting = _async_function_body(adaptive, "analyzeHandwriting")
+
+    assert ".slice(0, 3)" in adaptive_renderer
+    assert ".slice(0, 3)" in standard_renderer
+    assert "feedback.suggested_questions || feedback.follow_up_prompts" in standard_handwriting
+    assert "feedback.suggested_questions || feedback.follow_up_prompts" in adaptive_handwriting
+    assert "handwritingTransientState.submissionId !== submission.submissionId" in standard_handwriting
+    assert "state.handwritingTransient?.submissionId !== submission.submissionId" in adaptive_handwriting

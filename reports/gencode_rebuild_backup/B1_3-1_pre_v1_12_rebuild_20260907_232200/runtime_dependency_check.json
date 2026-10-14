@@ -1,0 +1,64 @@
+{
+  "runtime_currently_references_old_component": true,
+  "delete_forbidden": true,
+  "atomic_quarantine_mechanism_in_production": false,
+  "action_taken": "COPY_ONLY_BACKUP",
+  "production_components_deleted": false,
+  "skills": [
+    {
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "component_ids": [
+        "src_4609",
+        "src_4610",
+        "src_4618",
+        "src_4619",
+        "src_4620",
+        "src_4629",
+        "src_4630",
+        "src_4631",
+        "src_4716"
+      ],
+      "published_wrapper_path": "skills/vh_數學B1_PolynomialBasicConcepts.py",
+      "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialBasicConcepts/",
+      "runtime_currently_references_old_component": "YES"
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "component_ids": [
+        "src_4612",
+        "src_4613",
+        "src_4614",
+        "src_4615",
+        "src_4616",
+        "src_4617",
+        "src_4622",
+        "src_4623",
+        "src_4624",
+        "src_4625",
+        "src_4626",
+        "src_4627",
+        "src_4633",
+        "src_4634",
+        "src_4635",
+        "src_4636",
+        "src_4637",
+        "src_4706"
+      ],
+      "published_wrapper_path": "skills/vh_數學B1_PolynomialArithmeticOperations.py",
+      "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialArithmeticOperations/",
+      "runtime_currently_references_old_component": "YES"
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "component_ids": [
+        "src_4611",
+        "src_4621",
+        "src_4632",
+        "src_4717"
+      ],
+      "published_wrapper_path": "skills/vh_數學B1_PolynomialEquality.py",
+      "v3_package_path": "agent_skills_v3/vh_數學B1_PolynomialEquality/",
+      "runtime_currently_references_old_component": "YES"
+    }
+  ]
+}

@@ -9,8 +9,9 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 MAX_INPUT_LEN = 200
-_SAFE_CHARS = re.compile(r"^[0-9a-zA-Z+\-*/^().,_\s\\{}$√]+$")
+_SAFE_CHARS = re.compile(r"^[0-9a-zA-Z+\-*/^=().,_\s\\{}$√]+$")
 
+_FRAC_LATEX = re.compile(r"\\?frac\s*\{([^{}]+)\}\{([^{}]+)\}", re.IGNORECASE)
 _SQRT_LATEX_BRACE = re.compile(r"\\sqrt\s*\{([^{}]+)\}", re.IGNORECASE)
 _SQRT_LATEX_PAREN = re.compile(r"\\sqrt\s*\(([^()]+)\)", re.IGNORECASE)
 _SQRT_LATEX_DIGIT = re.compile(r"\\sqrt\s*([0-9]+(?:\.[0-9]+)?)", re.IGNORECASE)
@@ -19,26 +20,63 @@ _SQRT_UNICODE_DIGIT = re.compile(r"√([0-9]+(?:\.[0-9]+)?)")
 _SQRT_ASCII_BRACE = re.compile(r"sqrt\s*\{([^{}]+)\}", re.IGNORECASE)
 _IMPLICIT_COEF = re.compile(r"(\d)\s*sqrt", re.IGNORECASE)
 _IMPLICIT_AFTER_PAREN = re.compile(r"\)\s*sqrt", re.IGNORECASE)
+_DEGREE_MARK = r"(?:°|∘|\^\s*\{?\s*\\circ\s*\}?)"
+_TRIG_DEGREE_PAREN = re.compile(
+    r"(sin|cos|tan|cot|sec|csc)\s*\(\s*(-?\d+(?:\.\d+)?)\s*" + _DEGREE_MARK + r"\s*\)", re.IGNORECASE
+)
+_TRIG_DEGREE_BARE = re.compile(
+    r"(sin|cos|tan|cot|sec|csc)\s*(-?\d+(?:\.\d+)?)\s*" + _DEGREE_MARK, re.IGNORECASE
+)
 
 
 def normalize_math_expression(text: object) -> str:
     """Normalize LaTeX / ascii / unicode radical forms to sympy-friendly text."""
-    s = unicodedata.normalize("NFKC", str(text or "").strip())
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = unicodedata.normalize("NFKC", latex_to_plain(text))
     if not s:
         return ""
-    s = s.replace("$", "").replace("−", "-").replace("×", "*").replace("·", "*")
+    # Degree marks are dropped below (degree-valued answers); trig arguments in
+    # degrees must become radians first or `tan20°` would mean tan(20 rad).
+    s = _TRIG_DEGREE_PAREN.sub(r"\1((\2)*pi/180)", s)
+    s = _TRIG_DEGREE_BARE.sub(r"\1((\2)*pi/180)", s)
+    s = (
+        s.replace("$", "")
+        .replace("−", "-")
+        .replace("－", "-")
+        .replace("×", "*")
+        .replace("·", "*")
+        .replace("（", "(")
+        .replace("）", ")")
+        .replace("＝", "=")
+        .replace("，", ",")
+        .replace("π", "pi")
+        .replace("𝜋", "pi")
+        .replace("°", "")
+        .replace("∘", "")
+        .replace("{}^\\circ", "")
+        .replace("^\\circ", "")
+        .replace("^{\\circ}", "")
+    )
+    if s.endswith("度"):
+        s = s[:-1]
     for _ in range(3):
+        s = _FRAC_LATEX.sub(r"((\1)/(\2))", s)
         s = _SQRT_LATEX_BRACE.sub(r"sqrt(\1)", s)
         s = _SQRT_LATEX_PAREN.sub(r"sqrt(\1)", s)
         s = _SQRT_LATEX_DIGIT.sub(r"sqrt(\1)", s)
         s = _SQRT_UNICODE.sub(r"sqrt(\1)", s)
         s = _SQRT_UNICODE_DIGIT.sub(r"sqrt(\1)", s)
         s = _SQRT_ASCII_BRACE.sub(r"sqrt(\1)", s)
+    s = s.replace("{", "(").replace("}", ")")
     s = s.replace("\\", "")
     s = _IMPLICIT_COEF.sub(r"\1*sqrt", s)
     s = _IMPLICIT_AFTER_PAREN.sub(r")*sqrt", s)
     s = re.sub(r"\s+", "", s)
-    return s.lower()
+    s = s.lower()
+    s = re.sub(r"(\d)pi", r"\1*pi", s)
+    s = re.sub(r"pi(\d)", r"pi*\1", s)
+    return s
 
 
 def _looks_safe(text: str) -> bool:
@@ -93,7 +131,317 @@ def _numeric_equal(lhs: Any, rhs: Any, *, tol: float = 1e-9) -> bool:
         return False
 
 
-def check_expression_equivalence_debug(user_answer: object, correct_answer: object) -> dict[str, Any]:
+_FULLY_FACTORIZED_FORMS = frozenset({"fully_factorized", "completely_factorized"})
+_FACTORIZED_FORMS = frozenset(
+    {"factorized", "factored", "factorization", "factored_expression", "factorized_expression"}
+    | _FULLY_FACTORIZED_FORMS
+)
+_FACTORIZED_EQUIVS = frozenset({"factorized_form", "required_factorized_form"})
+_PI_FORMS = frozenset({"pi_expression", "radian_pi", "contains_pi", "pi_form"})
+_SIMPLIFIED_TRIG_FORMS = frozenset({"simplified_trig", "fundamental_trig_simplified"})
+_EXPANDED_FORMS = frozenset({"expanded", "expanded_polynomial"})
+_SIMPLEST_RADICAL_FORMS = frozenset({"simplest_radical", "simplified_radical"})
+
+
+def contract_requires_pi_form(
+    answer_contract: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+) -> bool:
+    """AST-based π required-form is contract-driven, not a string substring test."""
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    pl = payload if isinstance(payload, dict) else {}
+    required = str(ac.get("required_form") or pl.get("required_form") or "").strip().lower()
+    if required in _PI_FORMS:
+        return True
+    shape = str(ac.get("answer_shape") or pl.get("answer_shape") or "").strip().lower()
+    return shape in _PI_FORMS
+
+
+def contract_requires_factorized_form(
+    answer_contract: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+) -> bool:
+    """Required-form is contract-driven, not skill/example specific."""
+    ac = answer_contract if isinstance(answer_contract, dict) else {}
+    pl = payload if isinstance(payload, dict) else {}
+    required = str(ac.get("required_form") or pl.get("required_form") or "").strip().lower()
+    if required in _FACTORIZED_FORMS:
+        return True
+    shape = str(ac.get("answer_shape") or pl.get("answer_shape") or "").strip().lower()
+    if shape in _FACTORIZED_FORMS:
+        return True
+    equiv = str(
+        ac.get("answer_equivalence")
+        or ac.get("equivalence_type")
+        or pl.get("equivalence")
+        or pl.get("equivalence_type")
+        or ""
+    ).strip().lower()
+    if equiv in _FACTORIZED_EQUIVS:
+        return True
+    problem_type = str(
+        ac.get("problem_type_id") or pl.get("problem_type_id") or ""
+    ).strip().lower()
+    return "factoring" in problem_type or "factorization" in problem_type
+
+
+_ASSIGNMENT_JOINERS = re.compile(r"\s*(?:且|、|;|；|\band\b)\s*", re.IGNORECASE)
+_VALUE_LIST_SEPARATORS = ("或", ",", "、", ";")
+_SAME_VAR_PREFIX = re.compile(r"^([A-Za-z])\s*=\s*(.+)$")
+
+
+def _split_value_list(text: object) -> tuple[list[str], set[str]] | None:
+    """Split a multi-valued answer (`1 或 21`, `[-9, 3]`, `x=±13`) into value strings.
+
+    Returns None for single values and for lists naming different variables
+    (those are assignment lists, handled separately).
+    """
+    from core.checkers.inequality_solution_checker import _split_top_level
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = latex_to_plain(text)
+    s = re.sub(r"(?i)\s+or\s+", " 或 ", s).strip()
+    if len(s) >= 2 and s[0] == "[" and s[-1] == "]":
+        s = s[1:-1].strip()
+    parts = _split_top_level(s, _VALUE_LIST_SEPARATORS) or ([s] if s else [])
+    values: list[str] = []
+    names: set[str] = set()
+    for part in parts:
+        part = part.strip()
+        m = _SAME_VAR_PREFIX.match(part)
+        if m:
+            names.add(m.group(1).lower())
+            part = m.group(2).strip()
+        if "=" in part or not part:
+            return None
+        if part.count("±") == 1:
+            head, tail = part.split("±")
+            head, tail = head.strip(), tail.strip()
+            if not tail:
+                return None
+            values.extend([f"{head}+({tail})", f"{head}-({tail})"] if head else [tail, f"-({tail})"])
+        else:
+            values.append(part)
+    if len(values) < 2 or len(names) > 1:
+        return None
+    return values, names
+
+
+def _value_list_equivalent(user_answer: object, correct_answer: object) -> bool | None:
+    """Unordered multiset comparison for multi-valued answers; None if not a value list."""
+    correct = _split_value_list(correct_answer)
+    if correct is None:
+        return None
+    user = _split_value_list(user_answer)
+    if user is None:
+        return False
+    user_vals, user_names = user
+    correct_vals, correct_names = correct
+    if user_names and correct_names and user_names != correct_names:
+        return False
+    if len(user_vals) != len(correct_vals):
+        return False
+    from sympy import simplify
+
+    try:
+        user_exprs = [_parse_sympy(v) for v in user_vals]
+        remaining = [_parse_sympy(v) for v in correct_vals]
+    except Exception:
+        return None
+    for expr in user_exprs:
+        for idx, target in enumerate(remaining):
+            if simplify(expr - target) == 0 or _numeric_equal(expr, target):
+                remaining.pop(idx)
+                break
+        else:
+            return False
+    return True
+
+
+def _assignment_lists_equivalent(user_answer: object, correct_answer: object) -> bool | None:
+    """Compare comma-separated assignments like a=-1,b=-3 without string identity.
+
+    Returns True/False when both sides look like assignment lists; None otherwise.
+    """
+    def _parse_map(text: str) -> dict[str, Any] | None:
+        joined = _ASSIGNMENT_JOINERS.sub(",", str(text or ""))
+        norm = normalize_math_expression(joined)
+        if "," not in norm or "=" not in norm:
+            return None
+        mapping: dict[str, Any] = {}
+        for chunk in norm.split(","):
+            if "=" not in chunk:
+                return None
+            key, raw_val = chunk.split("=", 1)
+            if not re.fullmatch(r"[a-z]+", key) or not raw_val or key in mapping:
+                return None
+            mapping[key] = _parse_sympy(raw_val)
+        return mapping or None
+
+    try:
+        user_map = _parse_map(str(user_answer or ""))
+        correct_map = _parse_map(str(correct_answer or ""))
+    except Exception:
+        return None
+    if user_map is None or correct_map is None:
+        return None
+    if set(user_map) != set(correct_map):
+        return False
+    from sympy import simplify
+
+    for key, value in user_map.items():
+        if simplify(value - correct_map[key]) != 0 and not _numeric_equal(value, correct_map[key]):
+            return False
+    return True
+
+
+def _has_pi_symbol(expr: Any) -> bool:
+    """True when the parsed expression contains sympy.pi (AST), not a 'pi' substring."""
+    try:
+        from sympy import pi as sympy_pi
+
+        return bool(getattr(expr, "has", lambda _x: False)(sympy_pi))
+    except Exception:
+        return False
+
+
+def _is_factorized_expression(expr: Any) -> bool:
+    """True when the parsed expression is already a product of non-constant factors."""
+    try:
+        if expr is None:
+            return False
+        if not getattr(expr, "free_symbols", None):
+            return True
+        if expr.is_Mul:
+            nonconst = [arg for arg in expr.args if getattr(arg, "free_symbols", None)]
+            if len(nonconst) >= 2:
+                return True
+            return any(getattr(arg, "is_Pow", False) and arg.exp != 1 for arg in nonconst)
+        if expr.is_Pow and expr.exp != 1:
+            return True
+        if expr.is_Add:
+            try:
+                from sympy import degree, Poly
+
+                symbols = list(expr.free_symbols)
+                if len(symbols) == 1:
+                    return int(degree(Poly(expr, symbols[0]))) <= 1
+            except Exception:
+                return False
+            return False
+        return False
+    except Exception:
+        return False
+
+
+def _is_fully_factorized_expression(expr: Any) -> bool:
+    """Factorized and every non-constant factor is irreducible over the rationals."""
+    if not _is_factorized_expression(expr):
+        return False
+    try:
+        from sympy import Mul, factor_list
+
+        for factor in Mul.make_args(expr):
+            base = factor.base if factor.is_Pow else factor
+            if not base.free_symbols:
+                continue
+            _, factors = factor_list(base)
+            if len(factors) != 1 or factors[0][1] != 1:
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def _is_expanded_answer(user_raw: str, evaluated: Any) -> bool:
+    """Written form has no product or power of a sum and its like terms are combined."""
+    try:
+        from sympy import Add, expand, preorder_traversal
+
+        tree = _parse_sympy_unevaluated(user_raw)
+        if any(
+            (node.is_Mul or node.is_Pow) and any(arg.is_Add for arg in node.args)
+            for node in preorder_traversal(tree)
+        ):
+            return False
+        return len(Add.make_args(tree)) == len(Add.make_args(expand(evaluated)))
+    except Exception:
+        return False
+
+
+def _parse_sympy_unevaluated(text: str) -> Any:
+    """Parse without automatic simplification, so the written form is preserved."""
+    from sympy import sqrt, sympify
+    from sympy.core.parameters import evaluate
+    from sympy.parsing.sympy_parser import (
+        convert_xor,
+        implicit_multiplication_application,
+        parse_expr,
+        standard_transformations,
+    )
+
+    norm = normalize_math_expression(text)
+    if not norm or not _looks_safe(norm):
+        raise ValueError("unsafe_or_empty_expression")
+    transformations = standard_transformations + (convert_xor, implicit_multiplication_application)
+    with evaluate(False):
+        return parse_expr(
+            norm,
+            local_dict={"sqrt": sqrt, "pi": sympify("pi")},
+            transformations=transformations,
+            evaluate=False,
+        )
+
+
+def _is_simplest_radical_answer(user_raw: str, evaluated: Any) -> bool:
+    """Written form has squarefree integer radicands, no radical denominators,
+    no unexpanded products of sums, and like terms already combined."""
+    try:
+        from sympy import Add, Rational, factorint, preorder_traversal
+
+        tree = _parse_sympy_unevaluated(user_raw)
+        if len(Add.make_args(tree)) != len(Add.make_args(evaluated)):
+            return False
+        for node in preorder_traversal(tree):
+            if not (node.is_Mul or node.is_Pow):
+                continue
+            if any(arg.is_Add for arg in node.args):
+                return False
+            if not node.is_Pow:
+                continue
+            base, exponent = node.args
+            if isinstance(exponent, Rational) and exponent.q == 2:
+                if not (base.is_Integer and base > 1 and all(e == 1 for e in factorint(int(base)).values())):
+                    return False
+            elif exponent.is_negative and any(
+                sub.is_Pow and isinstance(sub.args[1], Rational) and sub.args[1].q == 2
+                for sub in preorder_traversal(base)
+            ):
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def _is_simplified_trig_expression(expr: Any) -> bool:
+    """AST/structural check that a trig expression is already simplified."""
+    try:
+        from sympy import trigsimp
+
+        simplified = trigsimp(expr, method="fu")
+        return bool(expr == simplified)
+    except Exception:
+        return False
+
+
+def check_expression_equivalence_debug(
+    user_answer: object,
+    correct_answer: object,
+    *,
+    answer_contract: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+    require_factorized: bool | None = None,
+) -> dict[str, Any]:
     ua_raw = str(user_answer or "").strip()
     ca_raw = str(correct_answer or "").strip()
     out: dict[str, Any] = {
@@ -102,17 +450,59 @@ def check_expression_equivalence_debug(user_answer: object, correct_answer: obje
         "normalized_correct_expression": "",
         "parser_error": "",
         "simplify_result": "",
+        "error_code": "",
+        "required_form_failed": False,
     }
     if not ua_raw or not ca_raw:
         out["parser_error"] = "empty_answer"
+        out["error_code"] = "ANSWER_PARSE_FAILED"
+        return out
+
+    # Vector-valued oracles: accept keyboard-friendly forms before generic math parse.
+    from core.checkers.vector_answer_normalization import try_check_vector_answer
+
+    vector_debug = try_check_vector_answer(
+        ua_raw,
+        ca_raw,
+        answer_contract=answer_contract,
+        payload=payload,
+    )
+    if vector_debug is not None:
+        out.update({k: v for k, v in vector_debug.items() if k != "correct"})
+        out["correct"] = bool(vector_debug.get("correct"))
+        if vector_debug.get("format_hint"):
+            out["format_hint"] = vector_debug.get("format_hint")
         return out
 
     out["normalized_user_expression"] = normalize_math_expression(ua_raw)
     out["normalized_correct_expression"] = normalize_math_expression(ca_raw)
+    need_form = (
+        require_factorized
+        if require_factorized is not None
+        else contract_requires_factorized_form(answer_contract, payload)
+    )
+    need_pi_form = contract_requires_pi_form(answer_contract, payload)
+    required_form = str(
+        (answer_contract or {}).get("required_form")
+        or (payload or {}).get("required_form")
+        or ""
+    ).strip().lower()
+    need_simplified_trig = required_form in _SIMPLIFIED_TRIG_FORMS
 
-    if ua_raw == ca_raw or out["normalized_user_expression"] == out["normalized_correct_expression"]:
+    assign_eq = _assignment_lists_equivalent(ua_raw, ca_raw)
+    if assign_eq is True:
         out["correct"] = True
-        out["simplify_result"] = "normalized_string_equal"
+        out["simplify_result"] = "assignment_list_equivalent"
+        return out
+    if assign_eq is False:
+        out["correct"] = False
+        out["simplify_result"] = "assignment_list_mismatch"
+        return out
+
+    list_eq = _value_list_equivalent(ua_raw, ca_raw)
+    if list_eq is not None:
+        out["correct"] = list_eq
+        out["simplify_result"] = "value_list_equivalent" if list_eq else "value_list_mismatch"
         return out
 
     try:
@@ -122,26 +512,125 @@ def check_expression_equivalence_debug(user_answer: object, correct_answer: obje
 
         diff = simplify(user_expr - correct_expr)
         out["simplify_result"] = str(diff)
-        if diff == 0:
-            out["correct"] = True
+        algebraically_equal = diff == 0 or _numeric_equal(user_expr, correct_expr)
+        if not algebraically_equal:
+            out["correct"] = False
             return out
-        if _numeric_equal(user_expr, correct_expr):
-            out["correct"] = True
-            out["simplify_result"] = f"numeric_equal:{out['simplify_result']}"
+        if need_form and not _is_factorized_expression(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
             return out
+        if need_pi_form and not _has_pi_symbol(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        if need_simplified_trig and not _is_simplified_trig_expression(user_expr):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        if (
+            (required_form in _FULLY_FACTORIZED_FORMS and not _is_fully_factorized_expression(user_expr))
+            or (required_form in _EXPANDED_FORMS and not _is_expanded_answer(ua_raw, user_expr))
+            or (required_form in _SIMPLEST_RADICAL_FORMS and not _is_simplest_radical_answer(ua_raw, user_expr))
+        ):
+            out["correct"] = False
+            out["required_form_failed"] = True
+            out["simplify_result"] = "required_form_failed"
+            return out
+        out["correct"] = True
+        return out
+    except Exception as ex:
+        if out["normalized_user_expression"] == out["normalized_correct_expression"]:
+            out["correct"] = True
+            out["simplify_result"] = "normalized_identity"
+            return out
+        out["parser_error"] = str(ex)
+        out["error_code"] = "ANSWER_PARSE_FAILED"
         out["correct"] = False
+        return out
+
+
+def check_expression_equivalence_answer(
+    user_answer: object,
+    correct_answer: object,
+    *,
+    answer_contract: dict[str, Any] | None = None,
+    payload: dict[str, Any] | None = None,
+    require_factorized: bool | None = None,
+) -> bool:
+    return bool(
+        check_expression_equivalence_debug(
+            user_answer,
+            correct_answer,
+            answer_contract=answer_contract,
+            payload=payload,
+            require_factorized=require_factorized,
+        ).get("correct")
+    )
+
+
+def check_equation_equivalence_debug(
+    user_answer: object,
+    correct_answer: object,
+) -> dict[str, Any]:
+    """Equation equivalence: same solution set / constant-multiple of (lhs-rhs)."""
+    out: dict[str, Any] = {
+        "correct": False,
+        "normalized_user_expression": "",
+        "normalized_correct_expression": "",
+        "parser_error": "",
+        "simplify_result": "",
+        "error_code": "",
+    }
+    ua_raw = str(user_answer or "").strip()
+    ca_raw = str(correct_answer or "").strip()
+    if not ua_raw or not ca_raw:
+        out["parser_error"] = "empty_answer"
+        out["error_code"] = "ANSWER_PARSE_FAILED"
+        return out
+    out["normalized_user_expression"] = normalize_math_expression(ua_raw)
+    out["normalized_correct_expression"] = normalize_math_expression(ca_raw)
+    if "=" not in out["normalized_user_expression"] or "=" not in out["normalized_correct_expression"]:
+        out["parser_error"] = "not_an_equation"
+        out["error_code"] = "ANSWER_PARSE_FAILED"
+        return out
+
+    try:
+        from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer
+
+        if check_linear_equation_equivalent_answer(user_answer, correct_answer):
+            out["correct"] = True
+            out["simplify_result"] = "linear_equation_equivalent"
+            return out
+    except Exception:
+        pass
+
+    try:
+        from sympy import simplify
+
+        def _diff_poly(text: str) -> Any:
+            left, right = normalize_math_expression(text).split("=", 1)
+            return _parse_sympy(left) - _parse_sympy(right)
+
+        user_diff = _diff_poly(ua_raw)
+        correct_diff = _diff_poly(ca_raw)
+        if simplify(correct_diff) == 0:
+            out["correct"] = bool(simplify(user_diff) == 0)
+            out["simplify_result"] = "identity_equation"
+            return out
+        ratio = simplify(user_diff / correct_diff)
+        out["simplify_result"] = str(ratio)
+        out["correct"] = bool(getattr(ratio, "is_number", False) and ratio != 0)
         return out
     except Exception as ex:
         out["parser_error"] = str(ex)
-        try:
-            u_num = float(out["normalized_user_expression"])
-            c_num = float(out["normalized_correct_expression"])
-            out["correct"] = math.isclose(u_num, c_num, rel_tol=1e-9, abs_tol=1e-9)
-            out["simplify_result"] = "float_fallback"
-        except Exception:
-            out["correct"] = False
+        out["error_code"] = "ANSWER_PARSE_FAILED"
+        out["correct"] = False
         return out
 
 
-def check_expression_equivalence_answer(user_answer: object, correct_answer: object) -> bool:
-    return bool(check_expression_equivalence_debug(user_answer, correct_answer).get("correct"))
+def check_equation_equivalence_answer(user_answer: object, correct_answer: object) -> bool:
+    return bool(check_equation_equivalence_debug(user_answer, correct_answer).get("correct"))

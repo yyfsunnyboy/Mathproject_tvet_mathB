@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>B2 Ch3 Math Typography Fixture</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <link rel="stylesheet" href="/static/css/practice_math_typography.css?v=practice-math-typo-1" />
+  <style>
+    body { font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; font-size: 18px; padding: 24px; background: #ffffff; color: #1f2937; }
+    .sample { margin-bottom: 28px; border-bottom: 1px solid #ddd; padding-bottom: 16px; }
+    .label { color: #666; font-size: 13px; margin-bottom: 6px; }
+    .practice-math-surface { color: #1f2937; }
+    mjx-container { color: #1f2937; }
+  </style>
+</head>
+<body>
+  <h1>B2 Ch3 Inline Math Typography Fixture</h1>
+
+  <div class="sample">
+    <div class="label">3-1 stem</div>
+    <div id="s31" class="practice-math-surface">
+      如圖，已知基底向量，試以基底表示：$\overrightarrow{BA}$、$\overrightarrow{BC}$。
+    </div>
+  </div>
+
+  <div class="sample">
+    <div class="label">3-2 stem</div>
+    <div id="s32" class="practice-math-surface">
+      在坐標平面上，設 $\vec{a}=\left( -1,\ -4 \right)$，試求：(1) $\vec{a}$ 的 $x$ 分量與 $y$ 分量；(2) $\left|\vec{a}\right|$。
+    </div>
+  </div>
+
+  <div class="sample">
+    <div class="label">3-3 stem</div>
+    <div id="s33" class="practice-math-surface">
+      已知 $\vec{a}=\left( -1,\ -4 \right)$、$\vec{b}=\left( 0,\ 4 \right)$，試求 $\cos\theta$，其中 $\theta$ 為兩向量夾角。另見分數 $\frac{3}{4}$ 與 $\vec{a}\cdot\vec{b}$。
+    </div>
+  </div>
+
+  <pre id="audit"></pre>
+  <script>
+    function auditSurface(id) {
+      const root = document.getElementById(id);
+      const nodes = Array.from(root.querySelectorAll('mjx-container:not([display="true"])'));
+      return nodes.map((node, i) => {
+        const cs = getComputedStyle(node);
+        const inlineVA = node.style.verticalAlign || '';
+        return {
+          id, i,
+          renderer: node.getAttribute('jax') || 'mjx',
+          wrapper: root.className,
+          fontSize: cs.fontSize,
+          lineHeight: cs.lineHeight,
+          verticalAlignComputed: cs.verticalAlign,
+          verticalAlignInline: inlineVA,
+          display: cs.display,
+          forcedMiddle: cs.verticalAlign === 'middle' && !inlineVA
+        };
+      });
+    }
+    function run() {
+      const rows = [...auditSurface('s31'), ...auditSurface('s32'), ...auditSurface('s33')];
+      const fontSizes = new Set(rows.map(r => r.fontSize));
+      const forcedMiddle = rows.filter(r => r.forcedMiddle);
+      const report = {
+        ok: fontSizes.size === 1 && forcedMiddle.length === 0 && rows.every(r => r.display === 'inline'),
+        fontSizes: [...fontSizes],
+        forcedMiddleCount: forcedMiddle.length,
+        rows
+      };
+      document.getElementById('audit').textContent = JSON.stringify(report, null, 2);
+      document.title = report.ok ? 'TYPO_PASS' : 'TYPO_FAIL';
+    }
+    function waitMathJax() {
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise().then(run).catch(err => {
+          document.getElementById('audit').textContent = String(err);
+        });
+      } else {
+        setTimeout(waitMathJax, 100);
+      }
+    }
+    waitMathJax();
+  </script>
+</body>
+</html>

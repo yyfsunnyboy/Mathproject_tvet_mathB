@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from core.gencode.v3_error_codes import CHOICE_CONTRACT_INCOMPLETE
@@ -10,7 +11,212 @@ from core.gencode.choice_math_display import format_choice_math_display
 
 MIN_SINGLE_CHOICE_COUNT = 2
 MAX_SINGLE_CHOICE_COUNT = 8
+VOCATIONAL_MC_CHOICE_COUNT = 4
 _VALID_CHOICE_CHECKERS = frozenset({"choice_label_checker"})
+_TECHNICAL_SUFFIX_RE = re.compile(r"_+\d+$")
+_LATEX_FRAC_RE = re.compile(r"(-?)\\frac\{(-?\d+)\}\{(-?\d+)\}")
+_LATEX_SQRT_RE = re.compile(r"\\sqrt\{([^}]+)\}")
+
+
+def plainify_math_token(token: str) -> str:
+    """Convert common classroom LaTeX tokens into sympy-friendly plain text."""
+    text = str(token or "").strip()
+    if not text:
+        return text
+    text = text.replace(r"\,", "").replace(r"\ ", "").replace(" ", "")
+    text = text.replace(r"\left", "").replace(r"\right", "")
+    text = _LATEX_FRAC_RE.sub(r"(\1\2)/(\3)", text)
+    text = _LATEX_SQRT_RE.sub(r"sqrt(\1)", text)
+    text = text.replace(r"\sqrt", "sqrt")
+    return text
+
+
+# Vocabulary returned by infer_choice_answer_shape. Declared shapes outside it (for example
+# presentation labels such as "single_choice") can never equal an inferred shape.
+CHOICE_SEMANTIC_SHAPES = frozenset({
+    "empty", "area_or_pi", "equation", "number", "coordinate",
+    "classification", "interval_or_param", "expression",
+})
+
+
+def infer_choice_answer_shape(text: Any) -> str:
+    """Classify a choice into a coarse semantic answer shape for MCQ gating."""
+    raw = str(text or "").strip()
+    if not raw:
+        return "empty"
+    cleaned = raw.replace("$", "").replace(r"\(", "").replace(r"\)", "").strip()
+    cleaned_cf = cleaned.casefold()
+    if "π" in cleaned or r"\pi" in cleaned or re.search(r"(?<![a-z])pi(?![a-z])", cleaned_cf):
+        return "area_or_pi"
+    if "=" in cleaned and re.search(r"[xy]", cleaned_cf):
+        return "equation"
+    if re.fullmatch(r"[+-]?\d+(?:\.\d+)?", cleaned.replace(" ", "")):
+        return "number"
+    if re.search(r"[\(\[]\s*[^,]+,\s*[^)\]]+\s*[\)\]]", cleaned):
+        return "coordinate"
+    # Classification labels / intervals / short Chinese answers.
+    if re.search(r"[\u4e00-\u9fff]", cleaned) or cleaned_cf in {
+        "相離", "相切", "相交", "圓內", "圓外", "圓上",
+    }:
+        return "classification"
+    if any(tok in cleaned for tok in ("<", ">", "≤", "≥", r"\le", r"\ge", "k")):
+        return "interval_or_param"
+    return "expression"
+
+
+def validate_choice_answer_shapes(payload: dict[str, Any]) -> list[str]:
+    """Reject MCQ packs whose distractors do not share the correct answer shape."""
+    choices = normalize_canonical_choices(payload.get("choices"))
+    if len(choices) < 2:
+        return []
+    contract = _answer_contract(payload)
+    declared = (
+        payload.get("expected_answer_shape"),
+        contract.get("answer_shape") if isinstance(contract, dict) else "",
+        payload.get("choice_answer_shape"),
+    )
+    expected = next(
+        (str(s).strip() for s in declared if str(s or "").strip() in CHOICE_SEMANTIC_SHAPES),
+        "",
+    )
+    semantic = str(
+        payload.get("semantic_answer")
+        or payload.get("canonical_answer")
+        or payload.get("display_answer")
+        or ""
+    ).strip()
+    # Prefer explicit metadata; else infer from semantic / correct choice text.
+    if not expected:
+        if semantic and semantic.upper() not in {"A", "B", "C", "D"}:
+            expected = infer_choice_answer_shape(semantic)
+        else:
+            answer = _resolve_answer(payload)
+            for choice in choices:
+                if _answer_matches_choice(answer, choice):
+                    expected = infer_choice_answer_shape(choice.get("value") or choice.get("text"))
+                    break
+    if not expected or expected in {"empty", "expression"}:
+        # Soft: still compare pairwise consistency when correct shape is known-ish.
+        shapes = [infer_choice_answer_shape(c.get("value") or c.get("text")) for c in choices]
+        if len(set(shapes)) > 1 and {"equation", "area_or_pi"} <= set(shapes):
+            return ["vocational_choice_shape_mismatch"]
+        if len(set(shapes)) > 1 and "equation" in shapes and any(
+            s in {"number", "area_or_pi", "classification", "coordinate"} for s in shapes
+        ):
+            return ["vocational_choice_shape_mismatch"]
+        return []
+    errors: list[str] = []
+    for choice in choices:
+        shape = infer_choice_answer_shape(choice.get("value") or choice.get("text"))
+        if shape != expected and not (
+            expected == "area_or_pi" and shape in {"area_or_pi", "number"}
+        ):
+            # Allow number/area cross-fill for π-free numeric areas.
+            if expected == "number" and shape == "area_or_pi":
+                continue
+            # Exact constants (radicals, fractions) are numbers too, e.g. 1 vs √3.
+            if {expected, shape} == {"number", "expression"} and _is_numeric_constant(
+                choice.get("value") or choice.get("text")
+            ):
+                continue
+            errors.append("vocational_choice_shape_mismatch")
+            break
+    return errors
+
+
+_NUMERIC_CONSTANT_RE = re.compile(r"^[0-9+\-*/().\s]*$")
+
+
+def _is_numeric_constant(text: Any) -> bool:
+    plain = plainify_math_token(str(text or "").replace("$", "").replace(r"\(", "").replace(r"\)", ""))
+    plain = re.sub(r"\\d?frac", "", plain).replace("\\", "")
+    plain = plain.replace("{", "(").replace("}", ")").replace("√", "sqrt")
+    return bool(plain) and bool(_NUMERIC_CONSTANT_RE.match(plain.replace("sqrt", "")))
+
+
+def choice_semantic_key(text: Any) -> str:
+    """Normalize choice text for semantic uniqueness (coordinates / plain strings)."""
+    raw = str(text or "").strip()
+    if not raw:
+        return ""
+    cleaned = _TECHNICAL_SUFFIX_RE.sub("", raw).strip().strip("$").strip()
+    cleaned = cleaned.replace(r"\left", "").replace(r"\right", "")
+    cleaned = cleaned.replace(r"\,", "").replace(r"\ ", " ")
+    # Circle equations: equivalent algebraic forms share one semantic key.
+    try:
+        if "=" in cleaned and ("x" in cleaned.casefold() or "y" in cleaned.casefold()):
+            from core.domain.circle_plane_domain import circle_semantic_key
+
+            key = circle_semantic_key(cleaned)
+            if key and key.startswith("D="):
+                return key
+    except Exception:
+        pass
+    try:
+        from core.domain.vector_plane_domain import format_pair
+
+        m = re.search(
+            r"[\(\[]\s*([^,]+)\s*,\s*([^)\]]+)\s*[\)\]]",
+            cleaned.replace("$", ""),
+        )
+        if m:
+            return format_pair(plainify_math_token(m.group(1)), plainify_math_token(m.group(2)))
+    except Exception:
+        pass
+    return re.sub(r"\s+", "", cleaned).casefold()
+
+
+def has_technical_choice_suffix(text: Any) -> bool:
+    return bool(_TECHNICAL_SUFFIX_RE.search(str(text or "").strip().rstrip("$")))
+
+
+def is_vocational_choice(payload: dict[str, Any], skill_id: str = "") -> bool:
+    """Use curriculum metadata first, with legacy vh_ skill IDs as fallback."""
+    meta = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+    facts = payload.get("validation_facts") if isinstance(payload.get("validation_facts"), dict) else {}
+    profile = str(payload.get("curriculum_profile") or facts.get("curriculum_profile") or meta.get("curriculum_profile") or "").lower()
+    if profile:
+        return profile.startswith("vocational")
+    return str(skill_id or payload.get("skill_id") or "").startswith("vh_")
+
+
+def validate_vocational_multiple_choice(payload: dict[str, Any], skill_id: str = "") -> list[str]:
+    """Strict generator/build validation; runtime repair is a separate path."""
+    choice_type = str(payload.get("answer_type") or payload.get("question_type") or "").lower()
+    checker = str(payload.get("checker") or payload.get("checker_type") or "").lower()
+    if not is_vocational_choice(payload, skill_id) or not (
+        requires_choice_contract(payload)
+        or choice_type in {"choice", "single_choice", "multiple_choice"}
+        or "choice" in checker
+    ):
+        return []
+    choices = normalize_canonical_choices(payload.get("choices"))
+    errors = []
+    if len(choices) != VOCATIONAL_MC_CHOICE_COUNT:
+        errors.append("vocational_choice_count")
+    if [c["label"] for c in choices] != list("ABCD"):
+        errors.append("vocational_choice_labels")
+    values = [c["value"].strip().casefold() for c in choices]
+    if any(not value or value in {"?", "...", "待補"} for value in values):
+        errors.append("vocational_choice_blank_or_placeholder")
+    if any(has_technical_choice_suffix(c.get("text") or c.get("value") or "") for c in choices):
+        errors.append("vocational_choice_technical_suffix")
+    semantic_keys = [choice_semantic_key(c.get("value") or c.get("text") or "") for c in choices]
+    if any(not key for key in semantic_keys) or len(set(semantic_keys)) != len(semantic_keys):
+        errors.append("vocational_choice_semantic_duplicate")
+    if len(set(values)) != len(values):
+        errors.append("vocational_choice_duplicate")
+    answer = _resolve_answer(payload)
+    if sum(_answer_matches_choice(answer, c) for c in choices) != 1:
+        errors.append("vocational_answer_mapping")
+    # Exactly one choice may match the expected semantic answer.
+    expected = str(payload.get("canonical_answer") or payload.get("semantic_answer") or "")
+    if expected:
+        matches = sum(1 for c in choices if choice_semantic_key(c.get("value") or c.get("text")) == choice_semantic_key(expected))
+        if matches > 1:
+            errors.append("vocational_multi_correct")
+    errors.extend(validate_choice_answer_shapes(payload))
+    return errors
 
 
 def _payload_dict(payload: dict[str, Any] | None) -> dict[str, Any]:
@@ -176,6 +382,8 @@ def validate_choice_contract(payload: dict[str, Any]) -> dict[str, Any]:
                 blockers.append(f"{CHOICE_CONTRACT_INCOMPLETE}:answer_not_in_choices")
             elif len(matches) > 1:
                 blockers.append(f"{CHOICE_CONTRACT_INCOMPLETE}:ambiguous_answer_mapping")
+
+    blockers.extend(f"{CHOICE_CONTRACT_INCOMPLETE}:{error}" for error in validate_vocational_multiple_choice(p))
 
     question_text = str(p.get("question_text") or p.get("question") or "")
     if normalized:

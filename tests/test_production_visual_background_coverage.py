@@ -105,10 +105,15 @@ def _slim_payload_for_strategy(payload: dict) -> dict:
 
 def _load_payload(skill_id: str, component_id: str) -> dict:
     if component_id == "src_4520":
-        from tests.domain.test_slope_of_a_line_domain import _build
+        from core.domain.coordinate_geometry.line_equation_domain import build_line_equation_matrix
         from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
-        matrix = _build("classify_and_compare_figure_slopes", seed=4)
+        matrix = build_line_equation_matrix(
+            seed=4,
+            line_type="classify_and_compare_figure_slopes",
+            curriculum_profile="vocational_high_b",
+            difficulty_profile="easy",
+        )
         return convert_line_equation_matrix_to_question_payload(
             matrix,
             presentation_mode="short_answer",

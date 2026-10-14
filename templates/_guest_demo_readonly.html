@@ -1,0 +1,29 @@
+{# Guest Demo: read-only, vocational curriculum only. The server enforces both; this only hides the controls. #}
+{% if session.get('guest_demo') is true %}
+<style>
+    .btn-add, .btn-edit, .btn-delete, .btn-toggle, .btn-remove, [data-demo-write],
+    form[method="POST"], form[method="post"] {
+        display: none !important;
+    }
+</style>
+<div class="guest-demo-readonly-notice" role="status" data-guest-demo-warning
+    style="max-width: 1400px; margin: 20px auto 0; padding: 12px 20px; border-radius: 6px; background: #fff4e5; color: #8a4b00; border: 1px solid #ffd8a8;">
+    展示模式：僅開放技術型高中課綱，新增、編輯、刪除功能已停用。
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const WRITE_CONTROLS = '.btn-add, .btn-edit, .btn-delete, .btn-toggle, .btn-remove, [data-demo-write], [data-v3-action]';
+        const deny = (event) => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            alert('此為展示頁面，請登入後再行操作。');
+        };
+        document.addEventListener('submit', (event) => {
+            if (String(event.target.method || '').toLowerCase() === 'post') deny(event);
+        }, true);
+        document.addEventListener('click', (event) => {
+            if (event.target.closest && event.target.closest(WRITE_CONTROLS)) deny(event);
+        }, true);
+    });
+</script>
+{% endif %}

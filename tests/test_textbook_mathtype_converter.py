@@ -14,9 +14,10 @@ from docx.text.paragraph import Paragraph
 from lxml import etree
 
 from core.mtef import MTEF, equation_native_to_latex, mtef_bytes_to_latex
-from core.mtef.record import MtAST, MtChar, MtLine, MtTmpl, RecordType, SelectorType
+from core.mtef.record import MtAST, MtChar, MtLine, MtMatrix, MtTmpl, RecordType, SelectorType
 from core.textbook_importer_v3_docx import find_reference_docx_in_storage
 from core.textbook_mathtype_converter import (
+    _is_embedded_ooxml_package,
     convert_docx_mathtype_to_latex_docx,
     convert_eq_instruction_to_latex,
     wrap_latex_for_v2,
@@ -62,6 +63,15 @@ def test_wrap_latex_for_v2_uses_inline_delimiters():
     assert wrap_latex_for_v2("  ") == ""
 
 
+def test_embedded_ooxml_is_not_misclassified_as_mtef():
+    package = io.BytesIO()
+    with zipfile.ZipFile(package, "w") as zf:
+        zf.writestr("[Content_Types].xml", "<Types/>")
+        zf.writestr("word/document.xml", "<w:document/>")
+    assert _is_embedded_ooxml_package(package.getvalue())
+    assert not _is_embedded_ooxml_package(b"not-a-zip-or-ole")
+
+
 def test_simple_token_and_operators():
     latex = _render_ast([_ast_line([_ast_char(ord("1")), _ast_char(ord("+")), _ast_char(ord("2"))])])
     assert "1" in latex and "+" in latex and "2" in latex
@@ -104,6 +114,60 @@ def test_sqrt_template():
     node.children = [_ast_line([_ast_char(ord("2"))]), _ast_line([])]
     latex = _render_ast([_ast_line([node])])
     assert r"\sqrt" in latex
+
+
+def test_box_template_preserves_content():
+    tmpl = MtTmpl()
+    tmpl.selector = SelectorType.tmBOX
+    tmpl.variation = 0x001E
+    node = MtAST(RecordType.TMPL, tmpl, None)
+    node.children = [_ast_line([_ast_char(ord("4"))])]
+    latex = _render_ast([_ast_line([node])])
+    assert r"\boxed{ 4 }" in latex
+
+
+def test_matrix_renderer_preserves_first_cell_and_all_rows():
+    matrix = MtMatrix()
+    matrix.rows = 2
+    matrix.cols = 2
+    node = MtAST(RecordType.MATRIX, matrix, None)
+    node.children = [
+        _ast_line([_ast_char(ord("1"))]),
+        _ast_line([_ast_char(ord("2"))]),
+        _ast_line([_ast_char(ord("3"))]),
+        _ast_line([_ast_char(ord("4"))]),
+    ]
+    latex = _render_ast([_ast_line([node])])
+    assert r"\begin{array}{cc}" in latex
+    assert "1 & 2" in latex
+    assert r"3 & 4" in latex
+
+
+def test_matrix_record_consumes_partition_bytes_before_object_list():
+    # MTEF header followed by a 1x1 matrix.  The two zero bytes after rows
+    # and cols are packed row/column partition styles, not END records.
+    body = bytes(
+        [
+            5, 0, 0, 0, 0, 0, 0,  # MTEF header + empty app + inline
+            RecordType.LINE, 0,
+            RecordType.MATRIX, 0, 1, 1, 1, 1, 1, 0, 0,
+            RecordType.LINE, 0,
+            RecordType.CHAR, 0, 128 + 8, ord("x"), 0,
+            RecordType.END,
+            RecordType.END,
+            RecordType.END,
+        ]
+    )
+    eqn = MTEF()
+    eqn.reader = io.BytesIO(body)
+    eqn.readRecord()
+    eqn.makeAST()
+    assert eqn.Valid
+    assert "x" in eqn.Translate()
+    matrix_nodes = [node for node in eqn.nodes if node.tag == RecordType.MATRIX]
+    assert len(matrix_nodes) == 1
+    assert matrix_nodes[0].value.row_parts == b"\x00"
+    assert matrix_nodes[0].value.col_parts == b"\x00"
 
 
 def test_greek_and_degree_char_maps():
@@ -288,3 +352,46 @@ def test_existing_v2_style_extractor_can_read_output(tmp_path: Path):
     assert r"\(" in joined
     assert r"\frac" in joined or r"\pi" in joined or r"\overline" in joined
     assert "MATH_PARSE_FAILED" in joined or report["converted_failed"] == 0
+
+
+def test_b2_1_1_font_style_records_preserve_formulas_and_text(tmp_path: Path):
+    source = (PROJECT_ROOT / "textbook_import/source/vocational/math_B2"
+              / "第一章 1-1 角度的基本性質-課本.docx")
+    if not source.is_file():
+        pytest.skip("reference B2 1-1 DOCX missing")
+    output = tmp_path / "B2_1_1_Latex.docx"
+    report = convert_docx_mathtype_to_latex_docx(source, output)
+    formulas = {f["formula_index"]: f for f in report["formulas"]}
+    assert report["mathtype_ole"] == report["converted_ok"] == 142
+    assert report["converted_failed"] == 0
+    assert report["original_unchanged"]
+    for index in (32, 37, 38, 129, 131, 18, 19, 75):
+        assert formulas[index]["status"] == "ok"
+        assert formulas[index]["latex"]
+    # Original WMF previews confirm these are real formulas, not empty layout.
+    assert formulas[18]["latex"] == r"\(2\pi =360{}^\circ\)"
+    assert formulas[19]["latex"] == r"\(\pi =180{}^\circ\)"
+    assert formulas[75]["latex"] == r"\(=\)"
+    with zipfile.ZipFile(source) as src, zipfile.ZipFile(output) as out:
+        original = etree.fromstring(src.read("word/document.xml"))
+        converted = etree.fromstring(out.read("word/document.xml"))
+        assert b"MATH_PARSE_FAILED" not in out.read("word/document.xml")
+        # Every existing text node survives, in order, including adjacent text.
+        remaining = iter(converted.iter(f"{{{W_NS}}}t"))
+        for node in original.iter(f"{{{W_NS}}}t"):
+            assert any(candidate.text == node.text for candidate in remaining)
+
+
+def test_b2_1_3_horizontal_brace_formula_is_recovered(tmp_path: Path):
+    source = next((PROJECT_ROOT / "textbook_import/source/vocational/math_B2").glob(
+        "*1-3*課本.docx"))
+    output = tmp_path / "B2_1_3_Latex.docx"
+    report = convert_docx_mathtype_to_latex_docx(source, output)
+    formulas = {f["formula_index"]: f for f in report["formulas"]}
+    assert report["mathtype_ole"] == report["converted_ok"] == 322
+    assert report["converted_failed"] == 0
+    assert formulas[276]["status"] == "ok"
+    assert r"\underbrace" in formulas[276]["latex"]
+    assert "正弦、餘弦互換" in formulas[276]["latex"]
+    with zipfile.ZipFile(output) as converted:
+        assert b"MATH_PARSE_FAILED" not in converted.read("word/document.xml")

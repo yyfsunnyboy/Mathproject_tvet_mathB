@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 import time
 import uuid
 from typing import Any
 
-from flask import current_app, session
+from flask import current_app, has_request_context, session
 
 try:
     from flask_login import current_user
@@ -18,9 +19,11 @@ except Exception:  # pragma: no cover
 
 # owner_key -> question_uid -> payload
 _STORE: dict[str, dict[str, dict[str, Any]]] = {}
+_STORE_LOCK = threading.RLock()
 _MAX_RECENT_QUESTIONS = 3
 _COOKIE_TARGET_BYTES = 3500
 _PRACTICE_SESSION_TTL_SECONDS = 1800
+AI_CONVERSATION_MAX_TURNS = 12
 
 STATUS_GENERATED = "generated"
 STATUS_ANSWERED = "answered"
@@ -32,6 +35,7 @@ PRACTICE_AUTH_SESSION_KEYS: frozenset[str] = frozenset(
         "_fresh",
         "_id",
         "_user_id",
+        "guest_demo",
         "_remember",
         "_remember_seconds",
         "csrf_token",
@@ -94,6 +98,7 @@ PRACTICE_QUERY_SESSION_KEYS: frozenset[str] = frozenset(
 PRACTICE_MINIMAL_STATE_KEYS: frozenset[str] = frozenset(
     {
         "_practice_owner_sid",
+        "_practice_session_sid",
         "current_skill_id",
         "current_question_uid",
         "current_problem_type_id",
@@ -154,7 +159,11 @@ PRACTICE_PRUNE_SESSION_KEYS: frozenset[str] = (
 def get_practice_owner_key() -> str:
     try:
         if current_user is not None and getattr(current_user, "is_authenticated", False):
-            return f"user:{current_user.id}"
+            # Anonymous/Guest principals have no database identity.  Read the
+            # id only after Flask-Login has positively authenticated the user.
+            user_id = getattr(current_user, "id", None)
+            if user_id is not None:
+                return f"user:{user_id}"
     except Exception:
         pass
     sid = str(session.get("_practice_owner_sid", "")).strip()
@@ -162,6 +171,14 @@ def get_practice_owner_key() -> str:
         sid = str(uuid.uuid4())
         session["_practice_owner_sid"] = sid
     return f"sid:{sid}"
+
+
+def get_practice_session_key() -> str:
+    sid = str(session.get("_practice_session_sid") or "").strip()
+    if not sid:
+        sid = str(uuid.uuid4())
+        session["_practice_session_sid"] = sid
+    return sid
 
 
 def question_text_hash(question_text: str) -> str:
@@ -175,12 +192,14 @@ def _slim_choices(choices: Any) -> list[dict[str, str]]:
     out: list[dict[str, str]] = []
     for idx, ch in enumerate(choices[:8]):
         if isinstance(ch, dict):
-            out.append(
-                {
-                    "label": str(ch.get("label", chr(ord("A") + idx))).strip(),
-                    "text": str(ch.get("text", ch.get("value", ""))).strip()[:200],
-                }
-            )
+            row = {
+                "label": str(ch.get("label", chr(ord("A") + idx))).strip(),
+                "text": str(ch.get("text", ch.get("value", ""))).strip()[:200],
+            }
+            value = ch.get("value")
+            if value is not None and str(value).strip():
+                row["value"] = str(value).strip()[:200]
+            out.append(row)
         else:
             out.append({"label": chr(ord("A") + idx), "text": str(ch)[:200]})
     return out
@@ -200,10 +219,11 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         )
         if k in meta
     }
-    return {
+    stored = {
         "skill": str(skill_id).strip(),
         "skill_id": str(skill_id).strip(),
         "question_uid": str(question_uid).strip(),
+        "practice_session": get_practice_session_key() if has_request_context() else "",
         "question_text_hash": str(data.get("question_text_hash", "")).strip()
         or question_text_hash(str(data.get("question_text", data.get("question", "")))),
         "problem_type_id": str(data.get("problem_type_id", data.get("problem_type", ""))).strip(),
@@ -231,7 +251,37 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         "stored_at": time.time(),
         "status": str(data.get("status", STATUS_GENERATED)).strip() or STATUS_GENERATED,
         "grade_result": None,
+        "chapter_review_run_id": str(data.get("chapter_review_run_id") or "").strip(),
+        "chapter_review_type_key": str(data.get("chapter_review_type_key") or "").strip(),
     }
+    # Server-issued rubric fields used by the shared handwriting route. Keep
+    # these bounded so special question types never need to trust POST values.
+    for field in ("expected_paths", "expected_row", "expected_terms"):
+        value = data.get(field)
+        if isinstance(value, list):
+            bounded: list[Any] = []
+            for item in value[:64]:
+                if isinstance(item, dict):
+                    bounded.append({
+                        str(key)[:80]: (
+                            scalar if isinstance((scalar := item[key]), (bool, int, float))
+                            else str(scalar).strip()[:200]
+                        )
+                        for key in list(item)[:16]
+                    })
+                elif isinstance(item, (bool, int, float)):
+                    bounded.append(item)
+                else:
+                    bounded.append(str(item).strip()[:200])
+            stored[field] = bounded
+    for field, limit in (("variant", 80), ("expected_expansion", 1200)):
+        value = str(data.get(field) or "").strip()
+        if value:
+            stored[field] = value[:limit]
+    for field in ("expected_count", "n"):
+        if data.get(field) is not None:
+            stored[field] = data.get(field)
+    return stored
 
 
 def attach_question_identity(payload: dict[str, Any], *, skill_id: str) -> dict[str, Any]:
@@ -331,6 +381,7 @@ def _clear_practice_cookie_state() -> list[str]:
         "practice_ref",
         "practice_session_touched_at",
         "practice_session_pruned_at",
+        "_practice_session_sid",
     ):
         if key in session:
             session.pop(key, None)
@@ -420,15 +471,85 @@ def get_question_by_uid(
     if not uid:
         return None
     key = str(owner_key or get_practice_owner_key()).strip()
-    row = (_STORE.get(key) or {}).get(uid)
-    if not isinstance(row, dict):
-        return None
-    expected_skill = str(skill_id or "").strip()
-    if expected_skill:
-        stored_skill = str(row.get("skill_id", row.get("skill", ""))).strip()
-        if stored_skill and stored_skill != expected_skill:
+    with _STORE_LOCK:
+        row = (_STORE.get(key) or {}).get(uid)
+        if not isinstance(row, dict):
             return None
-    return dict(row)
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return None
+        expected_skill = str(skill_id or "").strip()
+        if expected_skill:
+            stored_skill = str(row.get("skill_id", row.get("skill", ""))).strip()
+            if stored_skill and stored_skill != expected_skill:
+                return None
+        return dict(row)
+
+
+def get_question_conversation_context(question_uid: str) -> list[dict[str, Any]]:
+    """Return the bounded AI conversation context for one stored question."""
+    uid = str(question_uid or "").strip()
+    if not uid:
+        return []
+    with _STORE_LOCK:
+        row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+        if not isinstance(row, dict):
+            return []
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return []
+        turns = row.get("ai_conversation_context")
+        if not isinstance(turns, list):
+            return []
+        return [dict(turn) for turn in turns[-AI_CONVERSATION_MAX_TURNS:] if isinstance(turn, dict)]
+
+
+def append_question_conversation_turn(question_uid: str, turn: dict[str, Any]) -> bool:
+    """Append one safe conversational turn without changing grading state."""
+    uid = str(question_uid or "").strip()
+    if not uid or not isinstance(turn, dict):
+        return False
+    safe_turn = {
+        "role": str(turn.get("role") or "").strip()[:24],
+        "kind": str(turn.get("kind") or "").strip()[:40],
+        "content": str(turn.get("content") or "").strip()[:1200],
+        "at": time.time(),
+    }
+    for field, limit in (("student_message", 600), ("handwriting_summary", 1200),
+                         ("handwriting_image_reference", 100), ("ai_assessment", 600),
+                         ("ai_reply", 1200)):
+        if turn.get(field):
+            safe_turn[field] = str(turn[field]).strip()[:limit]
+    if isinstance(turn.get("suggested_questions"), list):
+        safe_turn["suggested_questions"] = [str(item).strip()[:160]
+                                             for item in turn["suggested_questions"][:3]]
+    submission_id = str(turn.get("submission_id") or "").strip()[:100]
+    if submission_id:
+        safe_turn["submission_id"] = submission_id
+    if "authoritative_correct" in turn:
+        value = turn.get("authoritative_correct")
+        safe_turn["authoritative_correct"] = value if isinstance(value, bool) else None
+    if turn.get("authoritative_status"):
+        safe_turn["authoritative_status"] = str(turn.get("authoritative_status"))[:32]
+    teaching_round = turn.get("teaching_round")
+    if isinstance(teaching_round, int) and not isinstance(teaching_round, bool) and teaching_round > 0:
+        safe_turn["teaching_round"] = min(teaching_round, 99)
+    with _STORE_LOCK:
+        row = (_STORE.get(get_practice_owner_key()) or {}).get(uid)
+        if not isinstance(row, dict):
+            return False
+        if row.get("practice_session") and row["practice_session"] != get_practice_session_key():
+            return False
+        turns = row.get("ai_conversation_context")
+        if not isinstance(turns, list):
+            turns = []
+        if submission_id and any(
+            existing.get("submission_id") == submission_id
+            and existing.get("kind") == safe_turn["kind"]
+            for existing in turns
+        ):
+            return False
+        turns.append(safe_turn)
+        row["ai_conversation_context"] = turns[-AI_CONVERSATION_MAX_TURNS:]
+        return True
 
 
 def clear_practice_cache_for_owner(owner_key: str | None = None) -> None:
@@ -509,6 +630,7 @@ def clear_practice_state() -> None:
         "current_answer",
         "recent_question_uids",
         "practice_ref",
+        "_practice_session_sid",
         "current_data",
         *PRACTICE_DISPLAY_SESSION_KEYS,
     ):
@@ -562,7 +684,12 @@ def load_current_question(ref: dict[str, Any] | None = None) -> dict[str, Any]:
     return {}
 
 
-def mark_question_answered(question_uid: str, grade_result: dict[str, Any]) -> None:
+def mark_question_answered(
+    question_uid: str,
+    grade_result: dict[str, Any],
+    *,
+    handwriting_submission_id: str = "",
+) -> None:
     uid = str(question_uid or "").strip()
     if not uid:
         return
@@ -570,12 +697,21 @@ def mark_question_answered(question_uid: str, grade_result: dict[str, Any]) -> N
     row = (_STORE.get(owner_key) or {}).get(uid)
     if not isinstance(row, dict):
         return
-    row["status"] = STATUS_ANSWERED
-    row["grade_result"] = {
+    cached_result = {
         "correct": bool(grade_result.get("correct", False)),
         "result": str(grade_result.get("result", "")),
         "answered_at": time.time(),
     }
+    submission_id = str(handwriting_submission_id or "").strip()
+    if submission_id:
+        cached_result["handwriting_submission_id"] = submission_id
+        handwriting_results = row.get("handwriting_grade_results")
+        if not isinstance(handwriting_results, dict):
+            handwriting_results = {}
+            row["handwriting_grade_results"] = handwriting_results
+        handwriting_results[submission_id] = cached_result
+    row["status"] = STATUS_ANSWERED
+    row["grade_result"] = cached_result
 
 
 def estimate_session_cookie_bytes() -> int:
@@ -612,13 +748,18 @@ def duplicate_submission_response(
     question_uid: str,
     grade_result: dict[str, Any],
 ) -> dict[str, Any]:
-    return {
+    response = {
         "correct": bool(grade_result.get("correct", False)),
         "duplicate_submission": True,
         "question_uid": str(question_uid),
         "result": str(grade_result.get("result", "")),
         "message": "此題已批改過。",
     }
+    submission_id = str(grade_result.get("handwriting_submission_id") or "").strip()
+    if submission_id:
+        response["handwriting_submission_id"] = submission_id
+        response["checker_result"] = "correct" if response["correct"] else "incorrect"
+    return response
 
 
 def _log_stale(reason: str, **fields: Any) -> None:
@@ -636,6 +777,7 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
     req = body if isinstance(body, dict) else {}
     req_skill = str(req.get("skill_id", "")).strip()
     req_uid = str(req.get("question_uid", "")).strip()
+    req_submission_id = str(req.get("handwriting_submission_id", "")).strip()
     session_skill = str(session.get("current_skill_id", "")).strip()
 
     if not req_uid:
@@ -670,14 +812,27 @@ def resolve_check_context(body: dict[str, Any] | None) -> tuple[dict[str, Any] |
         return None, question_expired_response()
 
     if status == STATUS_ANSWERED:
-        cached = payload.get("grade_result")
-        if isinstance(cached, dict):
-            return None, duplicate_submission_response(req_uid, cached)
-        _log_stale("answered_without_cache", uid=req_uid)
-        return None, duplicate_submission_response(
-            req_uid,
-            {"correct": False, "result": "此題已批改過。"},
-        )
+        if req_submission_id:
+            handwriting_results = payload.get("handwriting_grade_results")
+            cached_submission = (
+                handwriting_results.get(req_submission_id)
+                if isinstance(handwriting_results, dict)
+                else None
+            )
+            if isinstance(cached_submission, dict):
+                return None, duplicate_submission_response(req_uid, cached_submission)
+            # A new handwriting submission for the same question is a new
+            # grading event, even when a previous submission was incorrect or
+            # correct.  Continue with the preserved question contract.
+        else:
+            cached = payload.get("grade_result")
+            if isinstance(cached, dict):
+                return None, duplicate_submission_response(req_uid, cached)
+            _log_stale("answered_without_cache", uid=req_uid)
+            return None, duplicate_submission_response(
+                req_uid,
+                {"correct": False, "result": "此題已批改過。"},
+            )
 
     payload_skill = str(payload.get("skill_id", payload.get("skill", ""))).strip()
     if not req_skill:

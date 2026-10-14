@@ -3685,12 +3685,16 @@ def build_graph_intercepts_and_linear_equation_matrix(
         equation = f"f(x)={expression}"
         graph_kind = "horizontal" if slope == 0 else "oblique"
 
-    canonical_answer = {
+    all_answers = {
         "x_intercept": _plain(x_intercept) if x_intercept is not None else None,
         "y_intercept": _plain(y_intercept) if y_intercept is not None else None,
         "function_equation": equation if graph_kind != "vertical" else None,
         "line_equation": equation,
     }
+    requested = ["x_intercept", "y_intercept", "function_equation"]
+    if graph_kind == "vertical":
+        requested = ["x_intercept", "y_intercept", "line_equation"]
+    canonical_answer = {key: all_answers[key] for key in requested}
     points: list[list[str]] = []
     if x_intercept is not None:
         points.append([_plain(x_intercept), "0"])
@@ -3720,9 +3724,6 @@ def build_graph_intercepts_and_linear_equation_matrix(
         },
         "points": points,
     }
-    requested = ["x_intercept", "y_intercept", "function_equation"]
-    if graph_kind == "vertical":
-        requested = ["x_intercept", "y_intercept", "line_equation"]
 
     return {
         "givens": {
@@ -3952,8 +3953,8 @@ def build_graph_based_linear_application_inverse_matrix(
     known_output = slope * target_input + intercept
     return {
         "question": (
-            f"某方案的輸入量 x 與總費用 y 關係為 $y={slope}x+{intercept}$，"
-            f"其圖形如下。若總費用為 {known_output}，求輸入量 x。"
+            f"某方案的輸入量 $x$ 與總費用 $y$ 關係為 $y={slope}x+{intercept}$，"
+            f"其圖形如下。若總費用為 {known_output}，求輸入量 $x$。"
         ),
         "givens": {
             "slope": slope,
@@ -4167,7 +4168,7 @@ def build_linear_graph_feasibility_choice_matrix(
     return {
         "question": (
             f"下列何者不可能是函數族 $f(x)=ax{required_intercept:+d}$"
-            "（a≠0）的圖形？"
+            "（$a\\ne 0$）的圖形？"
         ),
         "givens": {"graph_condition": graph_condition},
         "answer": {"correct_label": correct_label},

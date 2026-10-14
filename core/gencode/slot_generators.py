@@ -2837,9 +2837,6 @@ def _reinforce_slot_question_text(
     additions: list[str] = []
     if missing:
         additions.append(f"解題時請運用{'、'.join(missing)}。")
-    if len(" ".join([question_text, *additions]).strip()) <= 30:
-        focus = "、".join(concepts) or "題目中的數學條件"
-        additions.append(f"請根據已知條件，運用{focus}完成計算，並寫出完整答案。")
     if additions:
         question_text = " ".join([question_text, *additions]).strip()
     payload["question_text"] = question_text

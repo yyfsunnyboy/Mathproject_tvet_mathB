@@ -334,7 +334,7 @@ def test_v3_regenerate_auto_flow_success_returns_verified(
         },
     )
 
-    with flask_app.app_context():
+    with flask_app.test_request_context(method="POST", json={}):
         response, status = _unwrapped(admin_route.admin_example_v3_regenerate)(1001)
 
     payload = response.get_json()
@@ -390,7 +390,7 @@ def test_v3_regenerate_auto_flow_failure_writes_failed_tracker(
         lambda *args, **kwargs: saved.append(kwargs) or kwargs,
     )
 
-    with flask_app.app_context():
+    with flask_app.test_request_context(method="POST", json={}):
         response, status = _unwrapped(admin_route.admin_example_v3_regenerate)(1002)
 
     payload = response.get_json()

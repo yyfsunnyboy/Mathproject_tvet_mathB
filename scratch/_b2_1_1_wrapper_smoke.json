@@ -1,0 +1,71 @@
+[
+  {
+    "skill": "vh_數學B2_AngleMeasurementAndConversion",
+    "keys": [
+      "src_11606",
+      "src_11616"
+    ],
+    "expected": [
+      "src_11606",
+      "src_11616"
+    ],
+    "extra": [],
+    "missing": [],
+    "blocked_hit": [],
+    "hits": {
+      "src_11606": 20,
+      "src_11616": 20
+    },
+    "smoke": "40/40",
+    "errors": [],
+    "required_form": {
+      "equiv_no_star": true,
+      "decimal_rejected": true
+    },
+    "has_local_check": true
+  },
+  {
+    "skill": "vh_數學B2_ArcLengthAndAreaOfSector",
+    "keys": [
+      "src_11608",
+      "src_11610"
+    ],
+    "expected": [
+      "src_11608",
+      "src_11610"
+    ],
+    "extra": [],
+    "missing": [],
+    "blocked_hit": [],
+    "hits": {
+      "src_11608": 20,
+      "src_11610": 20
+    },
+    "smoke": "40/40",
+    "errors": [],
+    "required_form": null,
+    "has_local_check": true
+  },
+  {
+    "skill": "vh_數學B2_CoterminalAngles",
+    "keys": [
+      "src_11611",
+      "src_11613"
+    ],
+    "expected": [
+      "src_11611",
+      "src_11613"
+    ],
+    "extra": [],
+    "missing": [],
+    "blocked_hit": [],
+    "hits": {
+      "src_11611": 20,
+      "src_11613": 20
+    },
+    "smoke": "40/40",
+    "errors": [],
+    "required_form": null,
+    "has_local_check": true
+  }
+]

@@ -3,6 +3,8 @@ from __future__ import annotations
 from fractions import Fraction
 from typing import Any
 
+from core.checkers.expression_equivalence_checker import contract_requires_factorized_form
+
 
 SUPPORTED_PART_CHECKERS = frozenset(
     {
@@ -12,13 +14,25 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "fraction_checker",
         "expression_checker",
         "expression_equivalence_checker",
+        "equation_checker",
         "linear_equation_equivalent_checker",
         "choice_label_checker",
         "decimal_tolerance_checker",
+        "repeating_decimal_checker",
+        "simplest_fraction_checker",
+        "rational_between_bounds_checker",
+        "solution_set_checker",
+        "text_short_checker",
+        "text_checker",
+        "ordered_inequality_checker",
+        "inequality_solution_checker",
+        "interval_checker",
+        "quadrant_checker",
+        "classification_checker",
     }
 )
 
-_UNDEFINED_SLOPE_TOKENS = frozenset({"無", "不存在", "斜率不存在", "m不存在"})
+_UNDEFINED_SLOPE_TOKENS = frozenset({"無", "不存在", "斜率不存在", "m不存在", "undefined", "Undefined", "UNDEFINED"})
 _CLASS_SLOPE_TOKENS = frozenset({"m>0", "m<0", "m=0", "m不存在", "m1>m2", "m1<m2"})
 
 
@@ -49,11 +63,22 @@ def _normalize_scalar(value: Any) -> str:
     return str(value).strip()
 
 
-def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
+def _exact_part_number(value: Any) -> Fraction | None:
+    from core.checkers.math_input_normalization import latex_to_plain, parse_exact_number
+
+    # A handwritten degree answer commonly includes the semantic unit mark
+    # even when the generated numeric contract stores only the coefficient.
+    text = latex_to_plain(value).replace("°", "")
     try:
-        student_frac = Fraction(str(student).strip())
-        expected_frac = Fraction(str(expected).strip())
-    except Exception:
+        return Fraction(text.strip())
+    except (ValueError, ZeroDivisionError):
+        return parse_exact_number(text)
+
+
+def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
+    student_frac = _exact_part_number(student)
+    expected_frac = _exact_part_number(expected)
+    if student_frac is None or expected_frac is None:
         return False
     return student_frac == expected_frac
 
@@ -84,24 +109,99 @@ def _check_part(
         if res.get("system_error"):
             raise RuntimeError(str(res.get("result") or "grading system error"))
         return bool(res.get("correct"))
-    if checker_key in {"numeric_checker", "integer_checker"} or equiv == "numeric_exact":
+    if checker_key == "repeating_decimal_checker" or equiv == "decimal_expansion_exact":
+        from core.checkers.repeating_decimal_checker import check_decimal_expansion_answer
+
+        res = check_decimal_expansion_answer(student_answer, expected_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key == "simplest_fraction_checker" or equiv == "simplest_fraction_exact":
+        from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
+
+        res = check_simplest_fraction_answer(student_answer, expected_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key == "rational_between_bounds_checker" or equiv == "strict_between_bounds":
+        from core.checkers.rational_between_bounds_checker import check_rational_between_bounds_answer
+
+        res = check_rational_between_bounds_answer(student_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key in {"numeric_checker", "integer_checker"} or equiv in {"numeric_exact", "numeric_equivalence", "numeric_equal"}:
         return _check_numeric_equivalent(student_answer, expected_answer)
-    if checker_key in {"rational_checker", "fraction_checker"} or equiv == "rational_equivalent":
+    if checker_key in {"rational_checker", "fraction_checker"} or equiv in {"rational_equivalent", "fraction_equal"}:
         return _check_numeric_equivalent(student_answer, expected_answer)
-    if checker_key in {"expression_checker", "expression_equivalence_checker"} or equiv == "algebraic_equivalent":
+    if checker_key in {"expression_checker", "expression_equivalence_checker"} or equiv in {
+        "algebraic_equivalent",
+        "expression_equivalence",
+        "factorized_form",
+        "required_factorized_form",
+    }:
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+        from core.gencode.inequality_solution_routing import (
+            _has_strong_set_evidence,
+            looks_like_relational_solution_text,
+        )
 
-        return check_expression_equivalence_answer(student_answer, expected_answer)
-    if checker_key == "linear_equation_equivalent_checker" or equiv == "linear_equation_equivalent":
-        from core.checkers.linear_equation_equivalent_checker import check_linear_equation_equivalent_answer
+        if looks_like_relational_solution_text(expected_answer) and _has_strong_set_evidence(expected_answer):
+            from core.checkers.inequality_solution_checker import check_inequality_solution_answer
 
-        return check_linear_equation_equivalent_answer(student_answer, expected_answer)
+            verdict = check_inequality_solution_answer(student_answer, expected_answer)
+            if verdict is not None:
+                return bool(verdict)
+        return check_expression_equivalence_answer(
+            student_answer,
+            expected_answer,
+            answer_contract=part,
+        )
+    if checker_key in {"equation_checker", "linear_equation_equivalent_checker"} or equiv in {
+        "equation_equivalent",
+        "linear_equation_equivalent",
+    }:
+        from core.checkers.expression_equivalence_checker import check_equation_equivalence_answer
+
+        return check_equation_equivalence_answer(student_answer, expected_answer)
     if checker_key == "choice_label_checker" or equiv == "choice_label":
         from core.checkers.choice_label_checker import check_choice_label
 
         choices = part.get("choices") if isinstance(part.get("choices"), list) else []
         return bool(check_choice_label(student_answer, expected_answer, choices))
-    return _normalize_scalar(student_answer) == _normalize_scalar(expected_answer)
+    if checker_key == "solution_set_checker" or equiv == "unordered_solution_set":
+        from core.checkers.solution_set_checker import check_solution_set_answer
+
+        return check_solution_set_answer(student_answer, expected_answer, answer_contract=part)
+    if checker_key in {"quadrant_checker", "classification_checker"}:
+        from core.checkers.quadrant_checker import check_quadrant_answer
+
+        quadrant_verdict = check_quadrant_answer(student_answer, expected_answer)
+        if quadrant_verdict is not None:
+            return quadrant_verdict
+        return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
+    if checker_key in {"text_short_checker", "text_checker"}:
+        from core.checkers.translation_description_checker import check_translation_description_answer
+
+        translation_verdict = check_translation_description_answer(student_answer, expected_answer)
+        if translation_verdict is not None:
+            return translation_verdict
+        return _normalize_scalar(student_answer).replace(" ", "") == _normalize_scalar(expected_answer).replace(" ", "")
+    if checker_key == "ordered_inequality_checker" or equiv == "ordered_inequality":
+        from core.checkers.ordered_inequality_checker import check_ordered_inequality_answer
+        return check_ordered_inequality_answer(student_answer, expected_answer)
+    if checker_key in {"inequality_solution_checker", "interval_checker"} or equiv in {
+        "interval_equivalence",
+        "inequality_solution",
+    }:
+        from core.checkers.inequality_solution_checker import check_inequality_solution_answer
+        verdict = check_inequality_solution_answer(student_answer, expected_answer)
+        return bool(verdict)
+    from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+
+    if check_expression_equivalence_answer(student_answer, expected_answer, answer_contract=part):
+        return True
+    return False
 
 
 def check_multi_part_answer(
@@ -142,10 +242,17 @@ def check_multi_part_answer(
     for index, raw_part in enumerate(parts):
         if not isinstance(raw_part, dict):
             continue
-        key = _part_key(raw_part, index)
-        label = str(raw_part.get("label") or key).strip()
-        checker = str(raw_part.get("checker") or raw_part.get("checker_key") or "").strip()
-        equivalence = str(raw_part.get("equivalence_type") or raw_part.get("answer_equivalence") or "").strip()
+        part_contract = dict(raw_part)
+        if contract_requires_factorized_form(ac, payload) and not part_contract.get("required_form"):
+            part_contract["required_form"] = "factorized"
+            part_contract.setdefault(
+                "problem_type_id",
+                ac.get("problem_type_id") or (payload or {}).get("problem_type_id"),
+            )
+        key = _part_key(part_contract, index)
+        label = str(part_contract.get("label") or key).strip()
+        checker = str(part_contract.get("checker") or part_contract.get("checker_key") or "").strip()
+        equivalence = str(part_contract.get("equivalence_type") or part_contract.get("answer_equivalence") or "").strip()
         expected = raw_part.get("expected_answer")
         if expected is None:
             expected = _value_for_part(correct_answer, key, index)
@@ -154,11 +261,23 @@ def check_multi_part_answer(
         missing = student is None or _normalize_scalar(student) == ""
         supported = checker in SUPPORTED_PART_CHECKERS or equivalence in {
             "numeric_exact",
+            "numeric_equivalence",
             "rational_equivalent",
+            "fraction_equal",
             "algebraic_equivalent",
+            "expression_equivalence",
+            "factorized_form",
+            "equation_equivalent",
             "linear_equation_equivalent",
             "choice_label",
             "decimal_tolerance",
+            "decimal_expansion_exact",
+            "simplest_fraction_exact",
+            "strict_between_bounds",
+            "unordered_solution_set",
+            "ordered_inequality",
+            "interval_equivalence",
+            "inequality_solution",
         }
         correct = False
         reason = ""
@@ -172,7 +291,7 @@ def check_multi_part_answer(
                 expected_answer=expected,
                 checker=checker,
                 equivalence_type=equivalence,
-                part=raw_part,
+                part=part_contract,
             )
             reason = "correct" if correct else "incorrect"
 

@@ -1,0 +1,23 @@
+{
+  "backup_root": "reports/gencode_rebuild_backup/B1_3-1_pre_v1_12_rebuild_20260907_232200",
+  "existing_backed_up": 31,
+  "existing_expected": 31,
+  "missing_marked": [
+    "src_4628",
+    "src_4718",
+    "src_4719",
+    "src_4720"
+  ],
+  "missing_count_ok": true,
+  "file_index_count": 135,
+  "dryrun_indexed": 31,
+  "staging_indexed": 31,
+  "tracker_rows_dumped": 1,
+  "sot_skill_hash_before": "2fd6ceee1ec42d579fa4fcae3e69313d17055d2a67572ad9338f6113f3ee57c9",
+  "sot_skill_hash_after": "2fd6ceee1ec42d579fa4fcae3e69313d17055d2a67572ad9338f6113f3ee57c9",
+  "sot_unchanged": true,
+  "production_components_still_present": true,
+  "production_deleted": false,
+  "runtime_still_references_original": true,
+  "wrappers_untouched_in_place": true
+}

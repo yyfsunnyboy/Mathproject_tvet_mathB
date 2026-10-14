@@ -1,0 +1,333 @@
+[
+  {
+    "component_id": "src_4646",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "設$x-1$為$f(x)=3x^{3}-kx^{2} - 4x + 4$之因式，試求$k$之值。",
+      "answer": "3",
+      "display_answer": "3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4647",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "已知$x^2-5x+6$為$f(x)=a x^{3} + 12x^{2}+bx + 12$的因式，試求$a$、$b$之值。",
+      "answer": {
+        "part_1": "-2",
+        "part_2": "-22"
+      },
+      "display_answer": "-2；-22",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4648",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "已知$f(x)$為二次多項式函數，滿足$f(1)=f(3)=0$，且$f(-4)=-35$，試求$f(x)$。",
+      "answer": "-x^2+4x-3",
+      "display_answer": "-x^2+4x-3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4649",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "已知$f(x)=x^{2}+ax + 3$，以$x-2$除之所得餘式為$-3$，則$f(x+1)$除以$x-1$的餘式為何？",
+      "answer": "-3",
+      "display_answer": "-3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4650",
+    "verify_count": 1,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "設$f(x)=x^{3} - 5x^{2} + 8x - 4$，利用因式定理，判斷下列各式是否為$f(x)$的一次因式？(1) $x-4$ (2) $2x + 1$",
+      "answer": {
+        "part_1": "否",
+        "part_2": "否"
+      },
+      "display_answer": "否；否",
+      "choices": []
+    },
+    "first_verify": {
+      "seed": 86,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "設$f(x)=2x^{2} - 2x - 12$，利用因式定理，判斷下列各式是否為$f(x)$的一次因式？(1) $x+4$ (2) $x+1$",
+      "answer": {
+        "part_1": "否",
+        "part_2": "否"
+      },
+      "display_answer": "否；否",
+      "choices": [],
+      "poly_hit": true
+    },
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4651",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "設$x-1$為$f(x)=3x^{3}-kx^{2} - 4x + 4$之因式，試求$k$之值。",
+      "answer": "3",
+      "display_answer": "3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4652",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "已知$x^2-5x+6$為$f(x)=a x^{3} + 12x^{2}+bx + 12$的因式，試求$a$、$b$之值。",
+      "answer": {
+        "part_1": "-2",
+        "part_2": "-22"
+      },
+      "display_answer": "-2；-22",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4653",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "已知$f(x)$為二次多項式函數，滿足$f(1)=f(3)=0$，且$f(-4)=-35$，試求$f(x)$。",
+      "answer": "-x^2+4x-3",
+      "display_answer": "-x^2+4x-3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4654",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "已知兩多項式$f(x)$與$g(x)$除以$3x-1$的餘式分別為$1$與$-1$，試求$\\left[f(x)\\right]^{10}+\\left[g(x)\\right]^{10}$除以$x-\\frac{1}{3}$的餘式。",
+      "answer": "2",
+      "display_answer": "2",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4655",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "question": "已知多項式$f(x)$除以$(x-3)(x-5)$的餘式為$ax - 3$。若$x-5$為$f(x)$的因式，則$f(3)=$？",
+      "answer": "B",
+      "display_answer": "-6/5",
+      "choices": [
+        "-1",
+        "-6/5",
+        "-7/5",
+        "-11/5"
+      ]
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4660",
+    "verify_count": 1,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "設$f(x)=x^{3} - 5x^{2} + 8x - 4$，利用因式定理，判斷下列各式是否為$f(x)$的一次因式？(1) $x-4$ (2) $2x + 1$",
+      "answer": {
+        "part_1": "否",
+        "part_2": "否"
+      },
+      "display_answer": "否；否",
+      "choices": []
+    },
+    "first_verify": {
+      "seed": 86,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "設$f(x)=2x^{2} - 2x - 12$，利用因式定理，判斷下列各式是否為$f(x)$的一次因式？(1) $x+4$ (2) $x+1$",
+      "answer": {
+        "part_1": "否",
+        "part_2": "否"
+      },
+      "display_answer": "否；否",
+      "choices": [],
+      "poly_hit": true
+    },
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4661",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "設$3x - 1$為$f(x)=3x^{3}-kx^{2} + x + 2$之因式，試求$k$之值。",
+      "answer": "22",
+      "display_answer": "22",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4662",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question": "已知$x^2-5x+6$為$f(x)=a x^{3} + 12x^{2}+bx + 12$的因式，試求$a$、$b$之值。",
+      "answer": {
+        "part_1": "-2",
+        "part_2": "-22"
+      },
+      "display_answer": "-2；-22",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4663",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "expression",
+      "presentation_mode": "short_answer",
+      "question": "已知$f(x)$為二次多項式函數，滿足$f(1)=f(3)=0$，且$f(-4)=-35$，試求$f(x)$。",
+      "answer": "-x^2+4x-3",
+      "display_answer": "-x^2+4x-3",
+      "choices": []
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4710",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "question": "設$x-1$為$f(x)=3x^{3}-kx^{2} - 4x + 4$之因式，則$k$之值為？",
+      "answer": "B",
+      "display_answer": "3",
+      "choices": [
+        "-2",
+        "3",
+        "11",
+        "-4"
+      ]
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4711",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "question": "若多項式$f(x)=ax^{2}(x-1)+2x(x-1) + 2(x-1)$被$x-2$除盡，則$a$之值為？",
+      "answer": "B",
+      "display_answer": "-3/2",
+      "choices": [
+        "-1",
+        "-3/2",
+        "-2",
+        "0"
+      ]
+    },
+    "first_verify": null,
+    "first_suffix": null
+  },
+  {
+    "component_id": "src_4712",
+    "verify_count": 0,
+    "suffix_count": 0,
+    "sample0": {
+      "seed": 0,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "question": "若$x^2-5x+6$是$a x^{3} + 12x^{2}+bx + 12$的因式，則$a+b$之值為？",
+      "answer": "B",
+      "display_answer": "-24",
+      "choices": [
+        "-16",
+        "-24",
+        "-26",
+        "-18"
+      ]
+    },
+    "first_verify": null,
+    "first_suffix": null
+  }
+]

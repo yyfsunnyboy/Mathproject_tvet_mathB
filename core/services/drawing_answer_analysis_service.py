@@ -190,6 +190,8 @@ def build_drawing_analysis_prompt(
     context: dict[str, Any] | None = None,
 ) -> str:
     drawing_type = str(expected_drawing_spec.get("drawing_type") or "").strip()
+    if drawing_type == "line_graph":
+        return build_line_graph_analysis_prompt(expected_drawing_spec)
     schema = {
         "drawing_detected": True,
         "recognized_type": drawing_type,
@@ -245,6 +247,65 @@ def build_drawing_analysis_prompt(
     )
 
 
+def build_line_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> str:
+    """Feature-extraction prompt for straight-line graphs.
+
+    The expected equation / points are deliberately withheld so the analyzer
+    reports what the student drew; correctness is decided by evaluate_line_graph.
+    """
+    axis = expected_drawing_spec.get("axis_range")
+    axis = axis if isinstance(axis, dict) else {}
+    schema = {
+        "drawing_detected": True,
+        "recognized_type": "line_graph",
+        "required_elements": {"x_axis": True, "y_axis": True, "function_line": True},
+        "line": {
+            "detected": True,
+            "is_straight": True,
+            "orientation": "horizontal | vertical | oblique",
+            "points_on_line": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+            "slope": None,
+            "y_intercept": None,
+            "x_value_if_vertical": None,
+            "spans_graph_width": True,
+            "label_text": "",
+        },
+        "missing_features": [],
+        "incorrect_features": [],
+        "confidence": 0.0,
+        "feedback": "",
+    }
+    return (
+        "You are a strict math graph-reading analyzer. The image is a student's answer drawn on a "
+        "cartesian coordinate canvas. The pale grid, the printed x/y axes and the tick numbers are the "
+        "system-provided background; the student's pen strokes are darker or colored.\n\n"
+        "Task: report, as numbers, where the student's main straight line lies. Do not judge correctness "
+        "and do not guess what the question wants; report only what is actually drawn.\n\n"
+        "Coordinate system: "
+        f"x from {axis.get('x_min', '?')} to {axis.get('x_max', '?')}, "
+        f"y from {axis.get('y_min', '?')} to {axis.get('y_max', '?')}. "
+        "Grid lines are at integer units and the printed axes cross at (0,0). Read coordinates from the "
+        "printed tick numbers.\n\n"
+        "Rules:\n"
+        "- Printed axes count as present: set required_elements.x_axis / y_axis true when the axes are "
+        "visible, whether printed or drawn by the student.\n"
+        "- line.detected / required_elements.function_line is true only when the student drew a long "
+        "straight (or nearly straight) stroke that is not just retracing a printed axis. Arrowheads, short "
+        "ticks, text, equation labels, isolated dots, and strokes that retrace the axes are not the function line.\n"
+        "- If the student only wrote text or dots without a line, set line.detected=false.\n"
+        "- If the main stroke is clearly curved or zig-zag, set line.is_straight=false.\n"
+        "- points_on_line: three points ON the student's line, spread along its length (near both ends and "
+        "the middle), as [x, y] in graph units with 0.1 precision, read from the grid.\n"
+        "- For a vertical line also give x_value_if_vertical; slope / y_intercept are your reading of the "
+        "drawn line (null when vertical).\n"
+        "- label_text: transcribe any equation text the student wrote; it is not the line itself.\n"
+        "- Ignore small wobble, stroke thickness and slight hand tilt.\n"
+        "- If positions cannot be read reliably, lower confidence instead of guessing.\n\n"
+        "Return JSON only, exactly in this shape:\n"
+        f"{json.dumps(schema, ensure_ascii=False, indent=2)}"
+    )
+
+
 def parse_analyzer_json(raw_text: Any) -> dict[str, Any] | None:
     text = str(getattr(raw_text, "text", raw_text) or "").strip()
     if not text:
@@ -268,6 +329,9 @@ def validate_analyzer_response(value: dict[str, Any], *, drawing_type: str) -> t
     errors: list[str] = []
     out = dict(value)
     recognized_type = str(out.get("recognized_type") or "").strip()
+    if drawing_type == "line_graph" and recognized_type.lower() in LINE_GRAPH_TYPE_ALIASES:
+        recognized_type = "line_graph"
+        out["recognized_type"] = recognized_type
     if recognized_type and recognized_type not in SUPPORTED_DRAWING_TYPES:
         errors.append("recognized_type_unsupported")
     if recognized_type and recognized_type != drawing_type:
@@ -408,51 +472,214 @@ def evaluate_not_implemented(recognized_features: dict[str, Any], expected_drawi
     return _result("analysis_unavailable", None, feedback="drawing_evaluator_not_implemented", system_error=True)
 
 
+LINE_GRAPH_TYPE_ALIASES = frozenset(
+    {
+        "line_graph",
+        "function_graph",
+        "linear_function",
+        "linear_function_graph",
+        "constant_function",
+        "line",
+        "straight_line",
+        "linear_graph",
+        "horizontal_line",
+        "vertical_line",
+    }
+)
+
+# Distances are in graph units (one grid cell = 1).  Between accept and reject
+# the verdict is None (low confidence), never a guessed pass.
+LINE_GRAPH_EVALUATION_THRESHOLDS = {
+    "confidence_min": 0.60,
+    "point_accept": 0.40,
+    "point_reject": 0.80,
+    "slope_accept_abs": 0.12,
+    "slope_accept_rel": 0.12,
+    "slope_reject_abs": 0.30,
+    "slope_reject_rel": 0.30,
+    "intercept_accept": 0.45,
+    "intercept_reject": 0.90,
+    "min_point_span": 2.0,
+}
+
+_LINE_GRAPH_CORRECT_FEEDBACK = "圖形作答正確，所畫直線的位置與斜率都符合題目。"
+
+
+def _float_or_none(value: Any) -> float | None:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number == number and abs(number) != float("inf") else None
+
+
+def _as_points(raw: Any) -> list[tuple[float, float]]:
+    points: list[tuple[float, float]] = []
+    if not isinstance(raw, (list, tuple)):
+        return points
+    for item in raw:
+        if isinstance(item, dict):
+            x, y = _float_or_none(item.get("x")), _float_or_none(item.get("y"))
+        elif isinstance(item, (list, tuple)) and len(item) >= 2:
+            x, y = _float_or_none(item[0]), _float_or_none(item[1])
+        else:
+            continue
+        if x is not None and y is not None:
+            points.append((x, y))
+    return points
+
+
+def _line_through(p: tuple[float, float], q: tuple[float, float]) -> dict[str, Any] | None:
+    (x1, y1), (x2, y2) = p, q
+    if abs(x2 - x1) < 1e-9 and abs(y2 - y1) < 1e-9:
+        return None
+    if abs(x2 - x1) < 1e-9:
+        return {"vertical": True, "x": x1}
+    slope = (y2 - y1) / (x2 - x1)
+    return {"vertical": False, "m": slope, "b": y1 - slope * x1}
+
+
+def _expected_line_geometry(spec: dict[str, Any]) -> dict[str, Any] | None:
+    expected_line = spec.get("expected_line") if isinstance(spec.get("expected_line"), dict) else {}
+    points = _as_points(expected_line.get("points"))
+    if len(points) >= 2:
+        geometry = _line_through(points[0], points[-1])
+        if geometry is not None:
+            return geometry
+    slope, intercept = _float_or_none(spec.get("slope")), _float_or_none(spec.get("y_intercept"))
+    if slope is not None and intercept is not None:
+        return {"vertical": False, "m": slope, "b": intercept}
+    return None
+
+
+def _distance_to_line(point: tuple[float, float], geometry: dict[str, Any]) -> float:
+    x, y = point
+    if geometry["vertical"]:
+        return abs(x - geometry["x"])
+    m, b = geometry["m"], geometry["b"]
+    return abs(m * x - y + b) / (m * m + 1) ** 0.5
+
+
+def _drawn_line_geometry(line: dict[str, Any]) -> tuple[dict[str, Any] | None, list[tuple[float, float]]]:
+    """Geometry of the drawn line: from the farthest pair of read points, else reported parameters."""
+    points = _as_points(line.get("points_on_line"))
+    best: tuple[float, tuple[float, float], tuple[float, float]] | None = None
+    for i, p in enumerate(points):
+        for q in points[i + 1 :]:
+            span = ((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2) ** 0.5
+            if best is None or span > best[0]:
+                best = (span, p, q)
+    if best is not None and best[0] >= LINE_GRAPH_EVALUATION_THRESHOLDS["min_point_span"]:
+        return _line_through(best[1], best[2]), points
+    x_vertical = _float_or_none(line.get("x_value_if_vertical"))
+    if str(line.get("orientation") or "").strip().lower() == "vertical" and x_vertical is not None:
+        return {"vertical": True, "x": x_vertical}, []
+    slope, intercept = _float_or_none(line.get("slope")), _float_or_none(line.get("y_intercept"))
+    if slope is not None and intercept is not None:
+        return {"vertical": False, "m": slope, "b": intercept}, []
+    if x_vertical is not None:
+        return {"vertical": True, "x": x_vertical}, []
+    return None, []
+
+
+def _compare_line_geometry(
+    drawn: dict[str, Any],
+    expected: dict[str, Any],
+    points: list[tuple[float, float]],
+) -> tuple[bool | None, list[str]]:
+    th = LINE_GRAPH_EVALUATION_THRESHOLDS
+    if points:
+        worst = max(_distance_to_line(p, expected) for p in points)
+        if worst > th["point_reject"]:
+            return False, ["line_position"]
+        position_ok = worst <= th["point_accept"]
+    else:
+        position_ok = True
+    if expected["vertical"] or drawn["vertical"]:
+        if expected["vertical"] and drawn["vertical"]:
+            gap = abs(drawn["x"] - expected["x"])
+            if gap > th["point_reject"]:
+                return False, ["line_position"]
+            return (True, []) if gap <= th["point_accept"] and position_ok else (None, [])
+
+        def _inverse_slope(geometry: dict[str, Any]) -> float:
+            if geometry["vertical"]:
+                return 0.0
+            return float("inf") if geometry["m"] == 0 else 1.0 / geometry["m"]
+
+        inverse_gap = abs(_inverse_slope(drawn) - _inverse_slope(expected))
+        if inverse_gap > th["slope_reject_abs"]:
+            return False, ["line_slope"]
+        if inverse_gap <= th["slope_accept_abs"] and points and position_ok:
+            return True, []
+        return None, []
+    slope_gap = abs(drawn["m"] - expected["m"])
+    intercept_gap = abs(drawn["b"] - expected["b"])
+    scale = abs(expected["m"])
+    if slope_gap > max(th["slope_reject_abs"], th["slope_reject_rel"] * scale):
+        return False, ["line_slope"]
+    if intercept_gap > th["intercept_reject"]:
+        return False, ["line_intercept"]
+    slope_ok = slope_gap <= max(th["slope_accept_abs"], th["slope_accept_rel"] * scale)
+    intercept_ok = intercept_gap <= th["intercept_accept"] or (points and position_ok)
+    if slope_ok and intercept_ok and position_ok:
+        return True, []
+    return None, []
+
+
 def evaluate_line_graph(
     recognized_features: dict[str, Any],
     expected_drawing_spec: dict[str, Any],
 ) -> dict[str, Any]:
+    th = LINE_GRAPH_EVALUATION_THRESHOLDS
     required = recognized_features.get("required_elements")
     required = required if isinstance(required, dict) else {}
     line = recognized_features.get("line")
     line = line if isinstance(line, dict) else {}
-    tolerance = expected_drawing_spec.get("tolerance")
-    tolerance = tolerance if isinstance(tolerance, dict) else {}
-    missing = [
-        element
-        for element in expected_drawing_spec.get("required_elements", [])
-        if not required.get(element)
-    ]
+    confidence = _clamp01(_float_or_none(recognized_features.get("confidence")) or 0.0)
+    axes_on_canvas = isinstance(expected_drawing_spec.get("axis_range"), dict)
+
+    missing: list[str] = []
+    for element in expected_drawing_spec.get("required_elements", []):
+        if element == "function_line":
+            continue
+        if element in {"x_axis", "y_axis"} and axes_on_canvas:
+            continue
+        if not required.get(element):
+            missing.append(str(element))
     if not line.get("detected"):
         missing.append("function_line")
+
     incorrect: list[str] = []
-    try:
-        slope_error = abs(
-            float(line.get("slope")) - float(expected_drawing_spec["slope"])
-        )
-        intercept_error = abs(
-            float(line.get("y_intercept"))
-            - float(expected_drawing_spec["y_intercept"])
-        )
-        if slope_error > float(tolerance.get("slope", 0.08)):
-            incorrect.append("slope")
-        if intercept_error > float(tolerance.get("y_intercept", 0.35)):
-            incorrect.append("y_intercept")
-    except (TypeError, ValueError, KeyError):
-        incorrect.append("line_parameters")
-    if line and not line.get("spans_graph_width", False):
-        incorrect.append("line_extent")
-    is_correct = not missing and not incorrect
+    verdict: bool | None
+    expected = _expected_line_geometry(expected_drawing_spec)
+    if missing:
+        verdict = False
+    elif line.get("is_straight") is False:
+        verdict = False
+        incorrect.append("line_shape")
+    elif expected is None:
+        return _result("missing_spec", None, feedback="本題圖形批改設定尚未完成，這次不計入答錯。", system_error=True)
+    else:
+        drawn, points = _drawn_line_geometry(line)
+        if drawn is None:
+            verdict = None
+        else:
+            verdict, reasons = _compare_line_geometry(drawn, expected, points)
+            incorrect.extend(reasons)
+
+    if confidence < th["confidence_min"]:
+        verdict = None
+    status = "success" if verdict is not None else "low_confidence"
+    score = 1.0 if verdict is True else (0.0 if verdict is False else 0.5)
     return {
-        "status": "success",
-        "is_correct": is_correct,
-        "score": 1.0 if is_correct else 0.0,
-        "confidence": _clamp01(
-            float(recognized_features.get("confidence", 1.0) or 0.0)
-        ),
+        "status": status,
+        "is_correct": verdict,
+        "score": score,
+        "confidence": confidence,
         "missing_features": sorted(set(missing)),
         "incorrect_features": sorted(set(incorrect)),
-        "feedback": _build_feedback(is_correct, missing, incorrect),
+        "feedback": _build_feedback(verdict, missing, incorrect, correct_text=_LINE_GRAPH_CORRECT_FEEDBACK),
     }
 
 
@@ -570,6 +797,11 @@ DRAWING_FEATURE_LABELS = {
     "y_axis": "縱軸",
     "category_labels": "組別標籤",
     "data_points": "資料點",
+    "function_line": "函數圖形（直線）",
+    "line_position": "直線位置",
+    "line_slope": "直線斜率",
+    "line_intercept": "y 截距",
+    "line_shape": "圖形應為直線",
 }
 
 
@@ -590,9 +822,15 @@ def translate_drawing_features(features: list[str]) -> list[str]:
     return deduped
 
 
-def _build_feedback(is_correct: bool | None, missing: list[str], incorrect: list[str]) -> str:
+def _build_feedback(
+    is_correct: bool | None,
+    missing: list[str],
+    incorrect: list[str],
+    *,
+    correct_text: str = "圖形作答正確，直方圖與折線圖的主要元素和數值都符合題目。",
+) -> str:
     if is_correct is True:
-        return "圖形作答正確，直方圖與折線圖的主要元素和數值都符合題目。"
+        return correct_text
     if is_correct is None:
         return "圖形分析信心不足，這不是作答錯誤。"
     

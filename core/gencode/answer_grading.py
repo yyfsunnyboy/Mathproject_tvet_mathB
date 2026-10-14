@@ -67,6 +67,8 @@ def validate_answer_input(user_answer: Any, answer_contract: dict[str, Any] | No
         "correct": False,
         "status": "parse_error",
         "error_code": "ANSWER_PARSE_FAILED",
+        "invalid_input": True,
+        "result": "invalid input",
         "message": "答案格式不正確",
     }
     if user_answer is None:
@@ -119,6 +121,8 @@ _CONTRACT_CHECKERS = frozenset(
         "quadrant_checker",
         "classification_checker",
         "expression_equivalence_checker",
+        "expression_checker",
+        "equation_checker",
         "choice_label_checker",
         "coordinate_pair_checker",
         "linear_equation_equivalent_checker",
@@ -169,6 +173,9 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
         "math_expression_equivalence",
         "expression_equivalence",
         "radical_equivalence",
+        "algebraic_equivalent",
+        "equation_equivalent",
+        "factorized_form",
         "coordinate_pair_equivalence",
         "linear_equation_equivalent",
         "multi_part_answer",
@@ -210,6 +217,99 @@ def format_correct_answer_display(correct_answer: Any, current: dict[str, Any]) 
     if isinstance(correct_answer, (list, tuple, set)):
         return " 或 ".join(str(x) for x in correct_answer)
     return str(correct_answer)
+
+
+def build_correct_answer_display(current: dict[str, Any]) -> dict[str, Any] | None:
+    """Build the student-safe, post-submit canonical-answer presentation contract.
+
+    This intentionally exposes presentation values only. Checker configuration,
+    oracle provenance, and other internal contract metadata are not returned.
+    """
+    skill_id = str(current.get("skill", current.get("skill_id", ""))).strip()
+    ctx = refresh_runtime_question_session(current, skill_id=skill_id)
+    ac = resolve_answer_contract_for_runtime(ctx, skill_id=skill_id)
+    ac = ac if isinstance(ac, dict) else {}
+    answer_type = str(ac.get("answer_type") or ctx.get("answer_type") or "short_answer").strip().lower()
+    canonical = ac.get("canonical_answer")
+    if canonical is None:
+        canonical = ctx.get("correct_answer", ctx.get("answer"))
+
+    if answer_type == "drawing":
+        reference = ac.get("reference") or ac.get("reference_answer") or ac.get("expected_drawing_spec")
+        rubric = ac.get("rubric") or ac.get("grading_rubric")
+        if reference is None and rubric is None:
+            return None
+        return {"answer_type": "drawing", "reference": reference, "rubric": rubric}
+
+    if answer_type in {"multi_part", "table_fill"} or isinstance(ac.get("parts"), list):
+        values = canonical if isinstance(canonical, dict) else {}
+        items: list[dict[str, str]] = []
+        for index, part in enumerate(ac.get("parts") or []):
+            if not isinstance(part, dict):
+                continue
+            key = str(part.get("key") or part.get("field_key") or index + 1)
+            value = part.get("canonical_answer", part.get("expected_answer", values.get(key)))
+            if value is None:
+                continue
+            items.append({"key": key, "label": str(part.get("label") or key), "value": str(value)})
+        if not items and isinstance(canonical, dict):
+            items = [{"key": str(k), "label": str(k), "value": str(v)} for k, v in canonical.items()]
+        if not items:
+            return None
+        return {"answer_type": answer_type, "items": items}
+
+    if answer_type in {"single_choice", "choice"}:
+        choices = ctx.get("choices") or ctx.get("options") or []
+        raw = str(canonical or "").strip()
+        label = raw.upper() if len(raw) == 1 and raw.isalpha() else ""
+        option_text = ""
+        for index, choice in enumerate(choices if isinstance(choices, list) else []):
+            choice_label = chr(65 + index)
+            if isinstance(choice, dict):
+                choice_label = str(choice.get("label") or choice_label).strip()
+                choice_value = str(choice.get("value") or choice.get("text") or choice.get("content") or "").strip()
+            else:
+                choice_value = str(choice).strip()
+            if raw in {choice_label, choice_value} or label == choice_label.upper():
+                label, option_text = choice_label, choice_value
+                break
+        if not option_text and raw:
+            option_text = raw
+        if not label and option_text:
+            for index, choice in enumerate(choices if isinstance(choices, list) else []):
+                text = str(choice.get("text") or choice.get("content") or choice.get("value") or "") if isinstance(choice, dict) else str(choice)
+                if text.strip() == option_text:
+                    label = chr(65 + index)
+                    break
+        return {"answer_type": "single_choice", "label": label, "option_text": option_text}
+
+    if canonical is None:
+        return None
+    return {"answer_type": answer_type or "short_answer", "value": format_correct_answer_display(canonical, ctx)}
+
+
+def attach_correct_answer_feedback(result: dict[str, Any], current: dict[str, Any]) -> dict[str, Any]:
+    """Attach canonical feedback only after an unsuccessful submit verdict."""
+    out = dict(result)
+    is_correct = out.get("all_correct", out.get("correct", out.get("is_correct")))
+    out.setdefault("all_correct", is_correct is True)
+    if is_correct is True or out.get("system_error") or out.get("state_lost"):
+        return out
+    display = build_correct_answer_display(current)
+    if display is not None:
+        out["correct_answer_display"] = display
+    required_form_failed = bool(out.get("required_form_failed"))
+    if required_form_failed:
+        out["mathematically_equivalent"] = True
+        out["required_form_valid"] = False
+        out["required_form_feedback"] = "數值/數學內容可能正確，但答案格式不符合要求。"
+        hint = ""
+        ac = resolve_answer_contract_for_runtime(current, skill_id=str(current.get("skill_id") or current.get("skill") or ""))
+        if isinstance(ac, dict):
+            hint = str(ac.get("required_form_hint") or ac.get("format_hint") or ac.get("required_form") or "").strip()
+        if hint:
+            out["required_form_hint"] = hint
+    return out
 
 
 def log_check_answer_debug(
@@ -377,15 +477,49 @@ def grade_answer_for_current_question(
     elif (
         not interval_checker_locked
         and (
-            checker == "expression_equivalence_checker"
+            checker in {"expression_equivalence_checker", "expression_checker"}
             or str(ac.get("answer_type", payload.get("answer_type", "")))
             in {"numeric_or_radical", "math_expression", "radical_number", "expression"}
         )
+        and checker not in {"equation_checker", "linear_equation_equivalent_checker"}
     ):
         from core.checkers.expression_equivalence_checker import check_expression_equivalence_debug
 
-        expr_debug = check_expression_equivalence_debug(user_answer, correct_answer)
+        expr_debug = check_expression_equivalence_debug(
+            user_answer,
+            correct_answer,
+            answer_contract=ac if isinstance(ac, dict) else None,
+            payload=payload,
+        )
+        if expr_debug.get("error_code") == "ANSWER_PARSE_FAILED" or expr_debug.get("parser_error"):
+            hint = str(expr_debug.get("format_hint") or "").strip()
+            message = "答案格式不正確"
+            if hint:
+                message = f"{message}。{hint}"
+            return normalize_grading_result({
+                "correct": False,
+                "invalid_input": True,
+                "error_code": "ANSWER_PARSE_FAILED",
+                "result": message,
+                "message": message,
+                "parser_error": expr_debug.get("parser_error"),
+                "format_hint": hint or None,
+            })
         is_correct = bool(expr_debug.get("correct"))
+    elif checker in {"equation_checker", "linear_equation_equivalent_checker"} or family == "linear_equation" or equiv in {"equation_equivalent", "linear_equation_equivalent"}:
+        from core.checkers.expression_equivalence_checker import check_equation_equivalence_debug
+
+        eq_debug = check_equation_equivalence_debug(user_answer, correct_answer)
+        expr_debug = eq_debug
+        if eq_debug.get("error_code") == "ANSWER_PARSE_FAILED" or eq_debug.get("parser_error"):
+            return normalize_grading_result({
+                "correct": False,
+                "invalid_input": True,
+                "error_code": "ANSWER_PARSE_FAILED",
+                "result": "答案格式不正確",
+                "parser_error": eq_debug.get("parser_error"),
+            })
+        is_correct = bool(eq_debug.get("correct"))
     elif checker == "multi_part_answer_checker" or family == "multi_part" or equiv == "multi_part_answer":
         from core.checkers.multi_part_answer_checker import check_multi_part_answer
         from core.gencode.table_question_contract import normalize_table_student_answer
@@ -525,7 +659,10 @@ def grade_answer_for_current_question(
         extra=expr_debug,
     )
     display = format_correct_answer_display(correct_answer, payload)
-    return normalize_grading_result({
+    final_result = normalize_grading_result({
         "correct": is_correct,
         "result": "答對了！" if is_correct else f"答錯了，正確答案是 {display}",
     })
+    if expr_debug:
+        final_result["required_form_failed"] = bool(expr_debug.get("required_form_failed"))
+    return final_result

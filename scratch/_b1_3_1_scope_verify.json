@@ -1,0 +1,270 @@
+{
+  "expected_count": 35,
+  "found_count": 35,
+  "missing_from_db": [],
+  "extra_in_three_skills": [],
+  "missing_in_three_skills": [],
+  "skill_all_count": 35,
+  "tracker_count": 1,
+  "tracker_cols": [
+    "id",
+    "textbook_example_id",
+    "skill_id",
+    "component_id",
+    "gencode_status",
+    "induced_spec_payload",
+    "gencode_error_log",
+    "created_at",
+    "updated_at"
+  ],
+  "rows": [
+    {
+      "id": 4609,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 1",
+      "preview": "設$f\\left( x \\right)=4{{x}^{2}}-5{{x}^{3}"
+    },
+    {
+      "id": 4610,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 2",
+      "preview": "(1) 設多項式$f\\left( x \\right)=\\left( a-2 \\r"
+    },
+    {
+      "id": 4611,
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 3",
+      "preview": "設多項式$f\\left( x \\right)=\\left( a-2 \\right"
+    },
+    {
+      "id": 4612,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 4",
+      "preview": "已知$f\\left( x \\right)=3{{x}^{3}}+4{{x}^{2"
+    },
+    {
+      "id": 4613,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 5",
+      "preview": "已知多項式$f\\left( x \\right)=2{{x}^{3}}-{{x}^"
+    },
+    {
+      "id": 4614,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 6",
+      "preview": "試求$\\left( {{x}^{3}}+3{{x}^{2}}+4x-1 \\rig"
+    },
+    {
+      "id": 4615,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 7",
+      "preview": "設$f\\left( x \\right)=6{{x}^{3}}-{{x}^{2}}"
+    },
+    {
+      "id": 4616,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_exercise",
+      "source_description": "3-1習題 基礎題 8",
+      "preview": "利用綜合除法：(1) 試求多項式${{x}^{3}}-4{{x}^{2}}+2x"
+    },
+    {
+      "id": 4617,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "advanced_exercise",
+      "source_description": "3-1習題 進階題 10",
+      "preview": "設多項式$2{{x}^{3}}+3{{x}^{2}}-4x+5=a{{\\left"
+    },
+    {
+      "id": 4618,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "textbook_example",
+      "source_description": "例1",
+      "preview": "已知$f\\left( x \\right)=2{{x}^{2}}+{{x}^{3}"
+    },
+    {
+      "id": 4619,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "textbook_example",
+      "source_description": "例2",
+      "preview": "多項式$f\\left( x \\right)=\\left( a-2 \\right)"
+    },
+    {
+      "id": 4620,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "textbook_example",
+      "source_description": "例3",
+      "preview": "設$f\\left( x \\right)=\\left( a+2 \\right){{"
+    },
+    {
+      "id": 4621,
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "problem_type": "textbook_example",
+      "source_description": "例4",
+      "preview": "已知多項式$f\\left( x \\right)=a{{x}^{2}}+4x+b$"
+    },
+    {
+      "id": 4622,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_example",
+      "source_description": "例5",
+      "preview": "已知$f\\left( x \\right)={{x}^{3}}+3x+1$，$g\\"
+    },
+    {
+      "id": 4623,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_example",
+      "source_description": "例6",
+      "preview": "試求多項式$f\\left( x \\right)=3{{x}^{2}}-x+4$與"
+    },
+    {
+      "id": 4624,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_example",
+      "source_description": "例7",
+      "preview": "已知多項式$f\\left( x \\right)=2{{x}^{4}}-5{{x}"
+    },
+    {
+      "id": 4625,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_example",
+      "source_description": "例8",
+      "preview": "試求$2{{x}^{3}}+{{x}^{2}}-7$除以${{x}^{2}}+x"
+    },
+    {
+      "id": 4626,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "textbook_example",
+      "source_description": "例9",
+      "preview": "試利用綜合除法，求多項式$f\\left( x \\right)=2{{x}^{3}"
+    },
+    {
+      "id": 4627,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "advanced_exercise",
+      "source_description": "3-1習題 進階題 9",
+      "preview": "設${{x}^{2}}+x+1$除$2{{x}^{3}}+3{{x}^{2}}+"
+    },
+    {
+      "id": 4628,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "exam_practice",
+      "source_description": "110統測B",
+      "preview": "已知$f\\left( x \\right)={{x}^{\\text{ }2}}+b"
+    },
+    {
+      "id": 4629,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習1",
+      "preview": "已知$f\\left( x \\right)=-5{{x}^{2}}+{{x}^{3"
+    },
+    {
+      "id": 4630,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習2",
+      "preview": "多項式$f\\left( x \\right)=\\left( 2a+2 \\right"
+    },
+    {
+      "id": 4631,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習3",
+      "preview": "設$g\\left( x \\right)=\\left( a+1 \\right){{"
+    },
+    {
+      "id": 4632,
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習4",
+      "preview": "已知多項式$f\\left( x \\right)=3{{x}^{3}}-2a{{x"
+    },
+    {
+      "id": 4633,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習5",
+      "preview": "已知$f\\left( x \\right)=3{{x}^{3}}+2{{x}^{2"
+    },
+    {
+      "id": 4634,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習6",
+      "preview": "試求多項式$f\\left( x \\right)=3x+5$與$g\\left( x"
+    },
+    {
+      "id": 4635,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習7",
+      "preview": "已知多項式$f\\left( x \\right)={{x}^{5}}-3{{x}^"
+    },
+    {
+      "id": 4636,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習8",
+      "preview": "試求$3{{x}^{3}}-2{{x}^{2}}-5x+3$除以${{x}^{2"
+    },
+    {
+      "id": 4637,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "in_class_practice",
+      "source_description": "隨堂練習9",
+      "preview": "試利用綜合除法，求多項式$f\\left( x \\right)={{x}^{2}}"
+    },
+    {
+      "id": 4706,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題3",
+      "preview": "$\\left( 3{{x}^{3}}-2{{x}^{2}}+2x-5 \\righ"
+    },
+    {
+      "id": 4716,
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題2",
+      "preview": "設$f\\left( x \\right)$為四次多項式，$g\\left( x \\r"
+    },
+    {
+      "id": 4717,
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題4",
+      "preview": "設${{x}^{6}}-3{{x}^{5}}+12{{x}^{4}}-19{{x"
+    },
+    {
+      "id": 4718,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題5",
+      "preview": "多項式${{x}^{4}}-3{{x}^{3}}+{{x}^{2}}+x+1$除"
+    },
+    {
+      "id": 4719,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題6",
+      "preview": "已知a、b為實數，若${{x}^{3}}+a{{x}^{2}}+bx-6$可被$"
+    },
+    {
+      "id": 4720,
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "problem_type": "self_assessment",
+      "source_description": "CH1自我評量 題7",
+      "preview": "設$f\\left( x \\right)$為多項式，且$4{{x}^{3}}+x+"
+    }
+  ],
+  "scope_match": true,
+  "ids_equal_ordered": true,
+  "ids_equal_set": true
+}

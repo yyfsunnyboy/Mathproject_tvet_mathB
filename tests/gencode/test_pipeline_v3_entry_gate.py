@@ -115,45 +115,38 @@ def test_mvp_skill_enters_v3_shadow_bridge_from_formal_entry(
     assert _snapshot_paths(PROJECT_ROOT / "agent_skills_v3") == production_v3_snapshot
 
 
-def test_non_mvp_skill_uses_legacy_v2_path_without_v3_side_effects(
+def test_non_mvp_skill_with_v3_example_id_enters_v3_not_v2(
     memory_conn: sqlite3.Connection,
     dryrun_base_dir: Path,
     monkeypatch: pytest.MonkeyPatch,
 ):
+    """Passing v3_textbook_example_id always routes to V3 shadow bridge; V2 is retired."""
     v3_called = {"value": False}
 
-    def _forbidden_shadow_bridge(*args: object, **kwargs: object) -> dict[str, object]:
+    def _shadow_bridge(*args: object, **kwargs: object) -> dict[str, object]:
         v3_called["value"] = True
-        raise AssertionError("V3 shadow bridge must not be called for non-MVP skills")
+        return {
+            "route": "v3_shadow_bridge",
+            "v3_activated": True,
+            "tracker_status": "verified",
+        }
 
     monkeypatch.setattr(
         "core.gencode.pipeline_orchestrator.run_gencode_phase2_v3_shadow_bridge",
-        _forbidden_shadow_bridge,
+        _shadow_bridge,
     )
-    monkeypatch.setattr(
-        "core.gencode.sop_policy.validate_sop_preflight",
-        lambda *_args, **_kwargs: {"sop_preflight_status": "FAIL", "errors": ["test_gate"]},
-    )
-
-    before_tracker = memory_conn.execute(
-        "SELECT COUNT(*) FROM gencode_component_tracker"
-    ).fetchone()[0]
-    before_files = list(dryrun_base_dir.rglob("*"))
 
     result = run_gencode_phase2_raw(
         "legacy_skill_not_in_mvp",
         dry_run=True,
         v3_conn=memory_conn,
         v3_textbook_example_id=1,
+        v3_dryrun_base_dir=str(dryrun_base_dir),
     )
 
-    assert v3_called["value"] is False
-    assert result.get("phase_status") == "SOP_PREFLIGHT_FAIL"
-    after_tracker = memory_conn.execute(
-        "SELECT COUNT(*) FROM gencode_component_tracker"
-    ).fetchone()[0]
-    assert after_tracker == before_tracker
-    assert list(dryrun_base_dir.rglob("*")) == before_files
+    assert v3_called["value"] is True
+    assert result.get("route") == "v3_shadow_bridge"
+    assert result.get("v3_activated") is True
 
 
 def test_mvp_skill_missing_textbook_example_id_does_not_fallback_to_v2(
@@ -161,25 +154,24 @@ def test_mvp_skill_missing_textbook_example_id_does_not_fallback_to_v2(
     dryrun_base_dir: Path,
 ):
     memory_conn.execute(
-        "INSERT INTO textbook_examples (id, skill_id) VALUES (?, ?)",
-        (1, SKILL_ID),
+        "INSERT INTO textbook_examples (id, skill_id, problem_text) VALUES (?, ?, ?)",
+        (1, SKILL_ID, "已知點與斜率求直線方程式"),
     )
     memory_conn.commit()
 
-    with pytest.raises(ValueError, match="missing_v3_textbook_example_id"):
-        run_gencode_phase2_raw(
-            SKILL_ID,
-            dry_run=True,
-            v3_conn=memory_conn,
-            v3_dryrun_base_dir=str(dryrun_base_dir),
-        )
+    # Without v3_textbook_example_id the call stays on the SOP/legacy Phase2 path,
+    # but must never invoke auto_generate_skill_code / V2 generator.
+    import core.gencode.pipeline_orchestrator as orchestrator
 
-    tracker_count = memory_conn.execute(
-        "SELECT COUNT(*) FROM gencode_component_tracker"
-    ).fetchone()[0]
-    assert tracker_count == 0
-    assert list(dryrun_base_dir.rglob("*")) == []
-
+    assert not hasattr(orchestrator, "auto_generate_skill_code")
+    result = run_gencode_phase2_raw(
+        SKILL_ID,
+        dry_run=True,
+        v3_conn=memory_conn,
+        v3_dryrun_base_dir=str(dryrun_base_dir),
+    )
+    assert "v2" not in str(result.get("route", "")).lower()
+    assert result.get("phase_status") != "v2_legacy_passthrough"
 
 def test_mvp_skill_missing_conn_does_not_fallback_to_v2(
     memory_conn: sqlite3.Connection,

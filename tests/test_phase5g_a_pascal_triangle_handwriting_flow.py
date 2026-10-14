@@ -91,11 +91,14 @@ def test_pascal_analyze_handwriting_branch_no_500(monkeypatch) -> None:
         "/get_next_question?skill=vh_數學B4_PascalTriangle&problem_type=pascal_triangle_handwriting&pascal_triangle_index=0"
     )
     assert q_resp.status_code == 200
+    issued = q_resp.get_json()
+    prompts: list[str] = []
 
     class _R:
         text = '{"status":"needs_review","feedback":"手寫不清楚，請重寫。"}'
 
     def _fake_call_ai(*args, **kwargs):
+        prompts.append(str(kwargs.get("prompt") or (args[1] if len(args) > 1 else "")))
         return _R()
 
     monkeypatch.setattr("core.routes.analysis.call_ai", _fake_call_ai)
@@ -107,15 +110,25 @@ def test_pascal_analyze_handwriting_branch_no_500(monkeypatch) -> None:
     resp = client.post(
         "/analyze_handwriting",
         json={
+            "question_uid": issued["question_uid"],
             "problem_type": "pascal_triangle_handwriting",
             "image_data_url": f"data:image/png;base64,{tiny_png}",
-            "question_text": q_resp.get_json()["new_question_text"],
+            "question_text": "偽造題目",
+            "variant": "tampered_variant",
+            "expected_row": [999],
+            "expected_terms": [{"coefficient": 999}],
+            "expected_expansion": "tampered expansion",
         },
     )
     assert resp.status_code == 200
     body = resp.get_json()
     assert body["success"] is True
     assert body["handwriting_status"] in {"needs_review", "partial", "incorrect", "correct"}
+    assert issued["new_question_text"] in prompts[0]
+    assert str(issued["expected_row"]) in prompts[0]
+    assert "偽造題目" not in prompts[0]
+    assert "tampered" not in prompts[0]
+    assert "999" not in prompts[0]
 
 
 def test_dashboard_pascal_card_links_to_practice_not_free_response() -> None:

@@ -1,0 +1,472 @@
+[
+  {
+    "example_id": 11731,
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_description": "例1",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖為一正六邊形ABCDEF，若\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{BC}=\\vec{b}\\)、 \\(\\overrightarrow{CD}=\\vec{c}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)表示下列各向量： (1)\\(\\overrightarrow{AF}\\) (2)\\(\\overrightarrow{AO}\\) (3)\\(\\overrightarrow{DE}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11732,
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_description": "隨堂練習1",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在平行四邊形ABCD中，若\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AD}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{BA}\\) (2)\\(\\overrightarrow{BC}\\) (3)\\(\\overrightarrow{CD}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11806,
+    "skill_id": "vh_數學B2_SubSection_3_1_1",
+    "source_description": "CH3自我評量 題1",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "若A、B、C、D為長方形ABCD的四個頂點，如圖所示，則向量\\(\\overrightarrow{AB}\\)與下列何者相等？ (A)\\(\\overrightarrow{CD}\\) (B)\\(\\overrightarrow{BA}\\) (C)\\(\\overrightarrow{CB}\\) (D)\\(\\overrightarrow{DC}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11733,
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_description": "例2",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在四邊形ABCD中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\) (3)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BD}\\ +\\overrightarrow{DA}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11734,
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_description": "隨堂練習2",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在正六邊形ABCDEF中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AF}\\ +\\overrightarrow{FE}\\ +\\overrightarrow{ED}\\) (3)\\(\\overrightarrow{AO}\\ +\\overrightarrow{OF}\\ +\\overrightarrow{FA}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11745,
+    "skill_id": "vh_數學B2_SubSection_3_1_2",
+    "source_description": "3-1習題 基礎題 2",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在四邊形ABCD中，試求下列各向量的和： (1)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\) (3)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ +\\overrightarrow{CD}\\ +\\overrightarrow{DA}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11735,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "例3",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在四邊形ABCD中， 試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{DC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11736,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "隨堂練習3",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在三角形ABC中，試化簡下列各向量： (1)\\(\\overrightarrow{BC}\\ -\\overrightarrow{BA}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{BC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11737,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "例4",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，正五邊形ABCDE中，試求： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AE}\\) (2)\\(\\overrightarrow{CB}\\ -\\overrightarrow{CD}\\ +\\overrightarrow{BA}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11738,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "隨堂練習4",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，正五邊形ABCDE中，試求： (1)\\(\\overrightarrow{AC}\\ -\\overrightarrow{AD}\\) (2)\\(\\overrightarrow{EA}\\ -\\overrightarrow{EB}\\ +\\overrightarrow{AC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11746,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "3-1習題 基礎題 3",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在四邊形ABCD中，試化簡下列各向量： (1)\\(\\overrightarrow{AB}\\ -\\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AC}\\ -\\overrightarrow{DC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11747,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "3-1習題 基礎題 4",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在四邊形ABCD中，試求： (1)\\(\\overrightarrow{BC}\\ -\\overrightarrow{BD}\\) (2)\\(\\overrightarrow{AB}\\ +\\overrightarrow{BC}\\ -\\overrightarrow{DC}\\ +\\overrightarrow{DA}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11816,
+    "skill_id": "vh_數學B2_SubSection_3_1_3",
+    "source_description": "CH3自我評量 題2",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在平行四邊形ABCD中，\\(\\overrightarrow{AB}\\ -\\overrightarrow{AD}=\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11739,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "例5",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，在正六邊形ABCDEF中，填入實數完成下列空格： (1)\\(\\overrightarrow{OA}=\\) \\(\\overrightarrow{EF}\\) (2)\\(\\overrightarrow{BC}=\\) \\(\\overrightarrow{AD}\\)或\\(\\overrightarrow{AD}=\\) \\(\\overrightarrow{BC}\\) (3)\\(\\overrightarrow{AD}=\\) \\(\\overrightarrow{CB}\\)或\\(\\overrightarrow{CB}=\\) \\(\\overrightarrow{AD}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11740,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "隨堂練習5",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖所示，有\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)三個向量， 填入實數完成下列空格： (1)\\(\\vec{a}=\\) \\(\\vec{c}\\) (2)\\(\\vec{b}=\\) \\(\\vec{a}\\) (3)\\(\\vec{c}=\\) \\(\\vec{b}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11741,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "例6",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點，F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{BF}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11742,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "隨堂練習6",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點，F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{CE}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11743,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "113統測B",
+    "problem_type_db": "exam_practice",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖所示，已知文創園區在地圖上是 A 點，公園是B 點，博物館是C 點， 試問哪一個向量\\(\\overrightarrow{PQ}\\)與向量\\(\\overrightarrow{AB}+\\overrightarrow{BC}\\) 最相近（意即方向與大小最接近）？ (A) P：古蹟，Q：老街 (B) P：文化園區，Q：東夜市 (C) P：購物中心，Q：東夜市 (D) P：美術館，Q：文化園區 〔113統測B〕",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11744,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 基礎題 1",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，D、E、F分別為\\({\\overline{ AB }}\\)、\\({\\overline{ BC }}\\)、\\({\\overline{ AC }}\\)三邊的中點，若\\(\\overrightarrow{AD}=\\vec{a}\\)、\\(\\overrightarrow{AF}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{DB}\\) (2)\\(\\overrightarrow{ED}\\) (3)\\(\\overrightarrow{EF}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11748,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 基礎題 5",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，已知C、D為線段\\({\\overline{ AB }}\\)的等分點， (1) 設\\(\\overrightarrow{AC}=\\vec{a}\\)，試以\\(\\vec{a}\\)表示\\(\\overrightarrow{AD}\\)與\\(\\overrightarrow{BD}\\)。 (2) 設\\(\\overrightarrow{AB}=\\vec{b}\\)，試以\\(\\vec{b}\\)表示\\(\\overrightarrow{AC}\\)與\\(\\overrightarrow{BC}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11749,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 基礎題 6",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，兩向量\\(\\vec{a}\\)、\\(\\vec{b}\\)，試以A為起點畫出 \\(\\frac { 1 } { 3 }\\vec{a}-\\frac { 1 } { 2 }\\vec{b}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11750,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 基礎題 7",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖所示有\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)三個向量，填入實數完成下列空格： (1)\\(\\vec{a}=\\) \\(\\vec{b}\\) (2)\\(\\vec{b}=\\) \\(\\vec{a}\\) (3)\\(\\vec{c}=\\) \\(\\vec{b}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11751,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 基礎題 8",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，△ABC中，D、E為\\({\\overline{ AB }}\\)的三等分點， F為\\({\\overline{ AC }}\\)的中點，令\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AC}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示\\(\\overrightarrow{FD}\\)。",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11752,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 進階題 9",
+    "problem_type_db": "advanced_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，△ABC中，D為\\({\\overline{ AC }}\\)的中點，E、F為\\({\\overline{ AB }}\\)的三等分點，令\\(\\overrightarrow{AD}=\\vec{a}\\)、\\(\\overrightarrow{AE}=\\vec{b}\\)，試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示： (1)\\(\\overrightarrow{DB}\\) (2)\\(\\overrightarrow{CF}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11753,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "3-1習題 進階題 10",
+    "problem_type_db": "advanced_exercise",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，平行四邊形ABCD中，\\({\\overline{ DM }} = {\\overline{ MC }}\\)， \\({\\overline{ BN }} = {\\overline{ NP }} = {\\overline{ PC }}\\)，又\\(\\overrightarrow{AB}=\\vec{a}\\)、\\(\\overrightarrow{AD}=\\vec{b}\\)， 試以\\(\\vec{a}\\)、\\(\\vec{b}\\)表示下列各向量： (1)\\(\\overrightarrow{AM}\\) (2)\\(\\overrightarrow{AN}\\) (3)\\(\\overrightarrow{MN}\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11817,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "CH3自我評量 題3",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "如圖，平行四邊形ABCD中，對角線相交於M，E為\\({\\overline{ AD }}\\)中點，F、G為\\({\\overline{ AB }}\\)的三等分點，若\\(\\overrightarrow{AM}=\\alpha \\overrightarrow{AE}\\ +\\beta \\overrightarrow{AF}\\)，則\\(\\left ( { \\alpha ,\\ \\beta } \\right )=\\)",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11818,
+    "skill_id": "vh_數學B2_SubSection_3_1_4",
+    "source_description": "CH3自我評量 題4",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "diagram_vector_construction_unsupported",
+    "preview": "若\\(\\vec{a}\\)、\\(\\vec{b}\\)、\\(\\vec{c}\\)為平面向量，D、E、F、G為坐標平面上的四個點，若\\(\\overrightarrow{DE}=4\\vec{a}\\)、\\(\\overrightarrow{DF}=3\\vec{b}\\ -\\vec{a}\\)、\\(\\overrightarrow{FG}=-\\vec{b}\\ +4\\vec{c}\\)、則\\(\\overrightarrow{GE}=\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11775,
+    "skill_id": "vh_數學B2_SubSection_3_2_1",
+    "source_description": "3-2習題 基礎題 1",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "vector_mixed_unknown_endpoint_unsupported",
+    "preview": "(1) 設\\(A\\left ( { 12,\\ 0 } \\right )\\)、\\(B\\left ( { 0,\\ 5 } \\right )\\)為坐標平面上兩點，試求：  ①\\(\\overrightarrow{AB}\\)的坐標表示。 ②\\(\\left | { \\overrightarrow{AB} } \\right |\\) (2) 設\\(A\\left ( { -3,\\ 2 } \\right )\\)、\\(B\\left ( { x,\\ y } \\right )\\)為坐標平面上兩點，且\\(\\overrightarrow{AB}=\\left ( { 4,\\ 0 } \\right )\\)，試求B點坐標。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11821,
+    "skill_id": "vh_數學B2_SubSection_3_2_2",
+    "source_description": "CH3自我評量 題7",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_chain_closure_mcq_unsupported",
+    "preview": "設向量\\(\\overrightarrow{PQ}=\\left ( { 2,\\ -2 } \\right )\\)、\\(\\overrightarrow{QR}=\\left ( { 4,\\ -3 } \\right )\\)、\\(\\overrightarrow{RS}=\\left ( { 1,\\ 0 } \\right )\\)，則向量\\(\\overrightarrow{SP}\\)為何？",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11784,
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "source_description": "3-2習題 進階題 10",
+    "problem_type_db": "advanced_exercise",
+    "skip_reason": "vector_solve_point_from_combo_unsupported",
+    "preview": "已知平面上四點坐標為\\(A\\left ( { 57,\\ 23 } \\right )\\)、\\(B\\left ( { 7,\\ -2 } \\right )\\)、\\(C\\left ( { 5,\\ 12 } \\right )\\)、\\(D\\left ( { x,\\ y } \\right )\\)。若向量\\(\\overrightarrow{AD}=\\frac { 7 } { 4 }\\overrightarrow{AB}\\ -\\frac { 3 } { 4 }\\overrightarrow{AC}\\)，試求\\(x+y\\)之值。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11820,
+    "skill_id": "vh_數學B2_SubSection_3_2_3",
+    "source_description": "CH3自我評量 題6",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_collinear_ratio_mcq_unsupported",
+    "preview": "已知平面上\\(A\\left ( { 1,\\ 2 } \\right )\\)、\\(B\\left ( { 2,\\ -1 } \\right )\\)、\\(C\\left ( { a,\\ b } \\right )\\)三點共線，且\\(\\overrightarrow{AB}=-2\\overrightarrow{AC}\\)，則\\(a-b=\\) (A) −4 (B) 4 (C) −3 (D) 3。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11823,
+    "skill_id": "vh_數學B2_SubSection_3_2_4",
+    "source_description": "CH3自我評量 題9",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_solve_unknown_vector_equation_unsupported",
+    "preview": "已知向量\\(\\vec{a}=\\left ( { 2,\\ -5 } \\right )\\)、\\(\\vec{b}=\\left ( { -2,\\ 6 } \\right )\\)且\\(3\\left ( { \\vec{c}\\ +\\vec{a} } \\right )=4\\left ( { \\vec{c}\\ +\\vec{b} } \\right )\\)，則\\(\\vec{c}=\\) (A)\\(\\left ( { -5,\\ 39 } \\right )\\) (B)\\(\\left ( { -14,\\ 39 } \\right )\\) (C)\\(\\left ( { 5,\\ -39 } \\right )\\) (D)\\(\\left ( { 14,\\ -39 } \\right )\\)。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11809,
+    "skill_id": "vh_數學B2_SubSection_3_2_5",
+    "source_description": "CH3自我評量 題12",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_parallel_then_magnitude_mcq_unsupported",
+    "preview": "已知\\(\\vec{a}=\\left ( { 6,\\ -12 } \\right )\\)、\\(\\vec{b}=\\left ( { -2,\\ y } \\right )\\)為平面上兩向量，且\\(\\vec{a}\\)與\\(\\vec{b}\\)平行，則\\(\\vec{b}\\)的長度為何？ (A)\\(2\\sqrt[] { 5 }\\) (B)\\(3\\sqrt[] { 5 }\\) (C) 20 (D) 36。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11774,
+    "skill_id": "vh_數學B2_SubSection_3_2_6",
+    "source_description": "111統測B",
+    "problem_type_db": "exam_practice",
+    "skip_reason": "vector_unit_identification_mcq_unsupported",
+    "preview": "下列哪一個向量不是單位向量？ (A)\\(\\left ( { \\frac { 1 } { 3 },\\ \\frac { 2 } { 3 } } \\right )\\) (B)\\(\\left ( { -1,\\ 0 } \\right )\\) (C)\\(\\left ( { \\frac { 3 } { 5 },\\ \\frac { -4 } { 5 } } \\right )\\) (D)\\(\\left ( { cos30{}^\\circ ,\\ sin30{}^\\circ } \\right )\\) 〔111統測B〕",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11805,
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "source_description": "3-3習題 進階題 10",
+    "problem_type_db": "advanced_exercise",
+    "skip_reason": "vector_angle_application_narrative_unsupported",
+    "preview": "接續上題， (1) 試問船在航標處的航向應該修正向左轉多少度？ (2) 想一想，此船為什麼要先到B點再轉向到甲港口，而不是直接以直線航向甲港口呢？",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11815,
+    "skill_id": "vh_數學B2_SubSection_3_3_1",
+    "source_description": "CH3自我評量 題18",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_angle_quality_mcq_unsupported",
+    "preview": "已知平面上兩向量\\(\\vec{a}=\\left ( { 0,\\ 1 } \\right )\\)與\\(\\vec{b}=\\left ( { 2,\\ 3 } \\right )\\)，且\\(\\vec{a}\\ +\\vec{b}\\)與\\(\\vec{a}\\ -\\vec{b}\\)的夾角為\\(\\theta\\)，則下列何者正確？ (A)\\(\\theta\\)為銳角 (B)\\(\\theta\\)為直角 (C)\\(\\theta\\)為鈍角 (D)\\(\\theta\\)為平角。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11785,
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_description": "例1",
+    "problem_type_db": "textbook_example",
+    "skip_reason": "vector_regular_polygon_dot_unsupported",
+    "preview": "已知正△ABC的邊長為4，試求： (1)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AC}\\) (2)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11786,
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_description": "隨堂練習1",
+    "problem_type_db": "in_class_practice",
+    "skip_reason": "vector_regular_polygon_dot_unsupported",
+    "preview": "已知正六邊形ABCDEF的邊長為2，試求： (1)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AF}\\) (2)\\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11796,
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_description": "3-3習題 基礎題 1",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "vector_regular_polygon_dot_unsupported",
+    "preview": "已知正△ABC的邊長為6，試求： (1) \\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{AC}\\) (2) \\(\\overrightarrow{AB}\\ \\centerdot \\ \\overrightarrow{BC}\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11802,
+    "skill_id": "vh_數學B2_SubSection_3_3_2",
+    "source_description": "3-3習題 基礎題 7",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "vector_dot_identity_multipart_unsupported",
+    "preview": "設\\(\\left | { \\vec{a} } \\right |=3\\)、\\(\\left | { \\vec{b} } \\right |=2\\)，且\\(\\vec{a}\\)與\\(\\vec{b}\\)的夾角為60°，試求下列各式之值： (1) \\(\\vec{a}\\ \\centerdot \\ \\vec{a}\\) (2) \\(\\vec{a}\\ \\centerdot \\ \\vec{b}\\) (3) \\(\\left | { 2\\vec{a}\\ -3\\vec{b} } \\right |\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11804,
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_description": "3-3習題 進階題 9",
+    "problem_type_db": "advanced_exercise",
+    "skip_reason": "vector_dot_diagram_plot_unsupported",
+    "preview": "如圖所示，有一船位於甲港口的東方12公里北方5公里A處，朝著位於甲港口的東方2公里北方3公里B處的航標駛去，到達航標後即修正航向以便直線駛入港口。請將圖（一）以甲港口為直角坐標原點\\(O\\left ( { 0,\\ 0 } \\right )\\)，標示出A與B兩點在圖（二）直角坐標上的位置。 ▲圖（一） ▲圖（二）",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11812,
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_description": "CH3自我評量 題15",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_dot_midpoint_composite_unsupported",
+    "preview": "已知坐標平面上某△ABC的三個頂點坐標分別為\\(A\\left ( { 0,\\ 0 } \\right )\\)、\\(B\\left ( { 2,\\ 3 } \\right )\\)、\\(C\\left ( { -4,\\ 1 } \\right )\\)。若D為線段\\({\\overline{ BC }}\\)之中點，則向量\\(\\overrightarrow{AB}\\)與向量\\(\\overrightarrow{AD}\\)的內積為何？ (A) 2 (B) 4 (C) 6 (D) 8。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11813,
+    "skill_id": "vh_數學B2_SubSection_3_3_3",
+    "source_description": "CH3自我評量 題16",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_dot_parameter_equation_mcq_unsupported",
+    "preview": "已知k為實數，若向量\\(\\vec{a}=\\left ( { 1,\\ k+1 } \\right )\\)與向量\\(\\vec{b}=\\left ( { 2k,\\ 3 } \\right )\\)的內積為23，則\\(k=\\) (A) −1 (B) 1 (C) 4 (D) 5。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11814,
+    "skill_id": "vh_數學B2_SubSection_3_3_4",
+    "source_description": "CH3自我評量 題17",
+    "problem_type_db": "self_assessment",
+    "skip_reason": "vector_perp_composite_expression_unsupported",
+    "preview": "設\\(\\vec{a}=\\left ( { -1,\\ 2 } \\right )\\)、\\(\\vec{b}=\\left ( { x,\\ 2 } \\right )\\)，若\\(\\vec{a}\\)和\\(\\left ( { \\vec{a}\\ -2\\vec{b} } \\right )\\)垂直，則\\(x=\\)",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11795,
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_description": "108統測B",
+    "problem_type_db": "exam_practice",
+    "skip_reason": "vector_dot_exam_diagram_unsupported",
+    "preview": "如圖所示，以O 為原點的直角坐標系上有四點，由左 至右依序為A、B、C、D，其中A 落在第二象限，B、 C、D 落在第一象限，且直線BC 與直線OD 的交點落 在O、D 兩點之間。已知\\(\\angle AOD>90{}^\\circ\\)， 且\\(\\overrightarrow{BC}\\\\)與 \\(\\overrightarrow{OD}\\\\)的內積為0。若向量\\(\\overrightarrow{OD}\\\\)分別與向量\\(\\overrightarrow{OA}\\\\)、\\(\\overrightarrow{OB}\\\\)、 \\(\\overrightarrow{OC}\\\\)及\\(\\overrightarrow{OD}\\\\)求內積，依次得到a、b、c 及d 四個數值， 則下列何者正確？ \\(b>a>c>d\\",
+    "answer_preview": "",
+    "has_figure_cue": true
+  },
+  {
+    "example_id": 11801,
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_description": "3-3習題 基礎題 6",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "vector_perp_dot_expand_unsupported",
+    "preview": "設\\(\\vec{a}\\)與\\(\\vec{b}\\)為平面上兩互相垂直的向量且\\(\\left | { \\vec{a} } \\right |=3\\)與\\(\\left | { \\vec{b} } \\right |=2\\)，試求 \\(\\left ( { \\vec{a}\\ -2\\vec{b} } \\right )\\ \\centerdot \\ \\left ( { 3\\vec{a}\\ +\\vec{b} } \\right )\\)之值。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  },
+  {
+    "example_id": 11803,
+    "skill_id": "vh_數學B2_SubSection_3_3_5",
+    "source_description": "3-3習題 基礎題 8",
+    "problem_type_db": "textbook_exercise",
+    "skip_reason": "vector_dot_identity_solve_angle_unsupported",
+    "preview": "設\\(\\left | { \\vec{a} } \\right |=1\\)、\\(\\left | { \\vec{b} } \\right |=3\\)，且\\(\\left | { 3\\vec{a}\\ -2\\vec{b} } \\right |=3\\)，試求： (1) \\(\\vec{a}\\ \\centerdot \\ \\vec{b}\\)之值。 (2) \\(\\vec{a}\\)與\\(\\vec{b}\\)的夾角。",
+    "answer_preview": "",
+    "has_figure_cue": false
+  }
+]

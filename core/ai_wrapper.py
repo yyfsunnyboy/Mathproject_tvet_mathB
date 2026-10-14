@@ -17,6 +17,7 @@ import re
 import requests
 import json
 import logging
+import hashlib
 from flask import current_app, has_app_context, has_request_context, session
 from config import Config
 from core.ai_settings import get_ai_settings_snapshot, get_effective_model_config
@@ -45,6 +46,21 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def _load_image_copy(image_path):
+    """Load a vision image into memory before handing it to an AI SDK.
+
+    Pillow keeps the source file handle open until the image is loaded and
+    closed.  That is especially visible on Windows, where deleting the
+    temporary PNG immediately after a model call raises WinError 32.  Passing
+    a detached copy keeps the temporary-file lifetime owned by the caller.
+    """
+    from PIL import Image
+
+    with Image.open(image_path) as source:
+        source.load()
+        return source.copy()
+
+
 def mask_api_key(api_key):
     """Mask API key for safe logging/UI display."""
     key = str(api_key or "").strip()
@@ -71,7 +87,15 @@ def sanitize_secret_text(text, secrets):
     cleaned = str(text or "")
     for secret in secrets:
         if secret:
-            cleaned = cleaned.replace(secret, mask_api_key(secret) or "***")
+            last4 = str(secret).strip()[-4:]
+            cleaned = cleaned.replace(str(secret), f"***{last4}" if last4 else "***")
+    # Google errors may echo a credential in a URL even when the caller did not
+    # retain the exact submitted value. Never let query credentials reach logs/UI.
+    cleaned = re.sub(
+        r"(?i)([?&](?:key|api_key)=)([^&\s'\"<>]+)",
+        lambda match: f"{match.group(1)}***{match.group(2)[-4:]}",
+        cleaned,
+    )
     return cleaned
 
 
@@ -510,6 +534,7 @@ class GoogleAIClient:
     負責與 Google Generative AI 服務進行通訊 (需連網)。
     """
     def __init__(self, model_name, temperature=0.7, **kwargs):
+        self.role = str(kwargs.pop("role", "default") or "default")
         # 1. Config & API Key
         # Try multiple sources: kwargs > session > Config > environment variable
         api_key = kwargs.get('api_key')
@@ -521,8 +546,6 @@ class GoogleAIClient:
             raise ValueError("找不到 Gemini API Key，請先到 AI 後台設定頁輸入並儲存。")
         if not _looks_like_gemini_key(api_key):
             logger.warning("WARNING: Gemini API Key may be invalid or revoked.")
-        logger.info(f"[AI KEY] source={api_key_source}")
-        logger.info(f"[AI MODEL] provider=google model={model_name}")
         self.api_key = str(api_key).strip()
 
         # 2. Model Parameters
@@ -574,7 +597,26 @@ class GoogleAIClient:
         else:
             raise ImportError("Critical Error: Neither 'google.genai' (New) nor 'google.generativeai' (Old) SDK is installed.")
 
+        key_fingerprint = hashlib.sha256(self.api_key.encode("utf-8")).hexdigest()[:12]
+        client_impl = "google.genai.Client" if self.is_new_sdk else "google.generativeai.GenerativeModel"
+        logger.info(
+            "[AI RUNTIME] role=%s provider=google model=%s credential_source=%s "
+            "key_fingerprint=sha256:%s last4=%s client_impl=%s",
+            self.role,
+            self.model_name,
+            api_key_source,
+            key_fingerprint,
+            self.api_key[-4:],
+            client_impl,
+        )
+
     def generate_content(self, prompt, image_path=None):
+        # Load outside the provider try/except. Image errors must propagate
+        # instead of becoming a MockResponse, and the source file must already
+        # be closed before any later temp-file cleanup.
+        detached_image = None
+        if image_path and os.path.exists(image_path):
+            detached_image = _load_image_copy(image_path)
         try:
             # [DEBUG] Print input config to verify parameter passing
             # print(f"[DEBUG] GoogleAIClient.generate_content called. MaxTokens={self.max_tokens}")
@@ -632,13 +674,8 @@ class GoogleAIClient:
                 
                 # Prepare Contents (Handle Vision)
                 contents = [prompt]
-                if image_path and os.path.exists(image_path):
-                    try:
-                        from PIL import Image
-                        img = Image.open(image_path)
-                        contents.append(img)
-                    except Exception as e:
-                        logger.error(f"Failed to load image for Gemini: {e}")
+                if detached_image is not None:
+                    contents.append(detached_image)
                 
                 # Call Generate
                 import time
@@ -695,10 +732,8 @@ class GoogleAIClient:
                 start_time = time.perf_counter()
                 
                 # [Legacy Path] Handle Vision
-                if image_path and os.path.exists(image_path):
-                    import PIL.Image
-                    img = PIL.Image.open(image_path)
-                    response = self.model.generate_content([prompt, img], generation_config=config, **kwargs)
+                if detached_image is not None:
+                    response = self.model.generate_content([prompt, detached_image], generation_config=config, **kwargs)
                 else:
                     response = self.model.generate_content(prompt, generation_config=config, **kwargs)
                 end_time = time.perf_counter()
@@ -752,19 +787,17 @@ def get_ai_client(role='default'):
     # 2. 智慧派發 (Smart Dispatch)
     if provider in ('google', 'gemini'):
         try:
-            return GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
+            return GoogleAIClient(
+                model_name,
+                temperature,
+                max_tokens=max_tokens,
+                safety_settings=safety_settings,
+                role=role,
+            )
         except ValueError as e:
-            ai_mode = "unknown"
-            try:
-                ai_mode = str(get_ai_settings_snapshot().get("ai_global_strategy", "unknown"))
-            except Exception:
-                pass
-            if ai_mode == "cloud_first":
-                raise RuntimeError(str(e))
-            logger.warning(f"Google AI Client init failed ({e}). fallback=local mode={ai_mode}")
-            fb_config = Config.MODEL_ROLES.get('default', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}))
-            fb_model = fb_config.get('model', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b'))
-            return LocalAIClient(fb_model, temperature, max_tokens=max_tokens, extra_body=extra_body)
+            # A Gemini request must fail as Gemini; never silently change
+            # providers or models during initialization.
+            raise RuntimeError(str(e)) from e
     elif provider == 'local':
         return LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
     else:

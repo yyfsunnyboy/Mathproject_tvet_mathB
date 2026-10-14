@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B3_SubSection_1_1_3",
+  "publish_status": "package_ready_candidate",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_11904",
+      "textbook_example_id": 11904,
+      "status": "verified",
+      "problem_type_id": "arithmetic_mean_solve",
+      "domain_operation": "arithmetic_mean_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11904/generate.py"
+    },
+    {
+      "component_id": "src_11905",
+      "textbook_example_id": 11905,
+      "status": "verified",
+      "problem_type_id": "arithmetic_mean_solve",
+      "domain_operation": "arithmetic_mean_solve",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_11905/generate.py"
+    }
+  ]
+}

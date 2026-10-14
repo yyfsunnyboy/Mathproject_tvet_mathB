@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_11561",
+      "textbook_example_id": 11561,
+      "status": "verified",
+      "problem_type_id": "evaluate_trig_decimal",
+      "domain_operation": "evaluate_trig_decimal",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_11561/generate.py"
+    },
+    {
+      "component_id": "src_11571",
+      "textbook_example_id": 11571,
+      "status": "verified",
+      "problem_type_id": "evaluate_trig_decimal",
+      "domain_operation": "evaluate_trig_decimal",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "exercise",
+      "generate_py": "components/src_11571/generate.py"
+    }
+  ]
+}

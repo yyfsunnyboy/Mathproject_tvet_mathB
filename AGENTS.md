@@ -95,3 +95,9 @@ These are legacy artifacts and must not be reintroduced into runtime routing pat
 3. Verify with focused checks.
 4. Report touched files and runtime impact clearly.
 
+## 15) Vocational Practice Runtime
+修改 vocational practice / generator runtime 前，先閱讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
+
+## 16) Shared AI Tutor
+所有已支援 AI Tutor 的新舊 Skill 必須沿用 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 的共用多輪對話契約；不得在單一 Skill 或模板另建不相容的 conversation service。
+
