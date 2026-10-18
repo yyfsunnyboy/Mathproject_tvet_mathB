@@ -14,7 +14,7 @@ from docx.text.paragraph import Paragraph
 from lxml import etree
 
 from core.mtef import MTEF, equation_native_to_latex, mtef_bytes_to_latex
-from core.mtef.record import MtAST, MtChar, MtLine, MtMatrix, MtTmpl, RecordType, SelectorType
+from core.mtef.record import MtAST, MtChar, MtLine, MtMatrix, MtPile, MtTmpl, RecordType, SelectorType
 from core.textbook_importer_v3_docx import find_reference_docx_in_storage
 from core.textbook_mathtype_converter import (
     _is_embedded_ooxml_package,
@@ -141,6 +141,23 @@ def test_matrix_renderer_preserves_first_cell_and_all_rows():
     assert r"\begin{array}{cc}" in latex
     assert "1 & 2" in latex
     assert r"3 & 4" in latex
+
+
+def test_brace_pile_keeps_row_separator_between_relations():
+    pile = MtAST(RecordType.PILE, MtPile(), None)
+    pile.children = [
+        _ast_line([_ast_char(ord("x")), _ast_char(ord("<")), _ast_char(ord("3"))]),
+        _ast_line([_ast_char(ord("y")), _ast_char(ord(">")), _ast_char(ord("4"))]),
+    ]
+    tmpl = MtTmpl()
+    tmpl.selector = SelectorType.tmBRACE
+    brace = MtAST(RecordType.TMPL, tmpl, None)
+    brace.children = [_ast_line([pile]), _ast_line([_ast_char(ord("{"))])]
+    latex = _render_ast([_ast_line([brace])])
+    body = latex.split(r"\begin{array}{l}", 1)[1].split(r"\end{array}", 1)[0]
+    first, second = body.split(r"\\")
+    assert "x" in first and "3" in first and "y" not in first
+    assert "y" in second and "4" in second
 
 
 def test_matrix_record_consumes_partition_bytes_before_object_list():

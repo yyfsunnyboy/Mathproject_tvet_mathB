@@ -29,6 +29,8 @@ from collections import defaultdict
 import pandas as pd
 import io
 import re
+import hashlib
+import shutil
 import importlib
 import json
 
@@ -1481,6 +1483,27 @@ def apply_mathb_import_policy(curriculum_info: dict, import_policy: dict, *, fil
     return True
 
 
+def retain_textbook_upload_source(saved_path, original_filename, curriculum_info):
+    """Keep a copy of the uploaded source; ``background_processing`` deletes files under uploads/."""
+    try:
+        with open(saved_path, "rb") as fh:
+            digest = hashlib.sha256(fh.read()).hexdigest()
+        info = curriculum_info or {}
+        safe_part = lambda v: re.sub(r'[<>:"/\\|?*\x00-\x1f]+', "_", str(v or "").strip()) or "unknown"
+        retain_dir = os.path.join(
+            current_app.root_path, "textbook_import", "uploaded_sources",
+            safe_part(info.get("curriculum")), safe_part(info.get("volume")),
+        )
+        os.makedirs(retain_dir, exist_ok=True)
+        dst = os.path.join(retain_dir, f"{digest[:12]}_{safe_part(original_filename)}")
+        if not os.path.exists(dst):
+            shutil.copy2(saved_path, dst)
+        return dst
+    except Exception as exc:
+        current_app.logger.warning(f"[UPLOAD SOURCE] retain failed for {original_filename}: {exc}")
+        return None
+
+
 def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code_gen=False,
                                      outline_only=False, toc_pages=5, import_policy=None,
                                      track_general_status=False):
@@ -1488,19 +1511,24 @@ def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code
     target_files = []
     upload_dir = os.path.join(current_app.root_path, 'uploads')
     os.makedirs(upload_dir, exist_ok=True)
+    import_policy = dict(import_policy or {})
+    original_names = dict(import_policy.get("source_original_filenames") or {})
 
     for upload in upload_files:
         if not upload or not upload.filename:
             continue
-        filename = os.path.basename(upload.filename)
+        filename = os.path.basename(upload.filename.replace("\\", "/"))
         if not filename.lower().endswith(('.pdf', '.docx', '.doc')):
             continue
         path = os.path.join(upload_dir, secure_filename(filename))
         upload.save(path)
+        retain_textbook_upload_source(path, filename, curriculum_info)
+        original_names[path] = filename
         target_files.append(path)
 
     if not target_files:
         return None
+    import_policy["source_original_filenames"] = original_names
 
     task_id = str(uuid.uuid4())
     if track_general_status and str((curriculum_info or {}).get("curriculum") or "") == "general":

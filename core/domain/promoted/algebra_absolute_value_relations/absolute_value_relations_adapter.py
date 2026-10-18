@@ -91,7 +91,10 @@ def system_text(system: dict[str, Any]) -> str:
         second = system["relations"][1]
         return (f"${side_latex(first['lhs'])}{_OP_LATEX[first['op']]}{side_latex(first['rhs'])}"
                 f"{_OP_LATEX[second['op']]}{side_latex(second['rhs'])}$")
-    return " 且 ".join(f"${relation_latex(r)}$" for r in system["relations"])
+    if len(system["relations"]) > 1:
+        rows = "\\\\".join(relation_latex(r) for r in system["relations"])
+        return f"$\\left\\{{\\begin{{array}}{{l}}{rows}\\end{{array}}\\right.$"
+    return f"${relation_latex(first)}$"
 
 
 def _bound_latex(value: Any) -> str:
@@ -131,7 +134,7 @@ def intervals_plain(raw: list[list[Any]]) -> str:
 def inequality_text(raw: list[list[Any]], variable: str = "x", *, decimal: bool = False) -> str:
     if not raw:
         return "無解"
-    le, lt = "\\le ", "<"
+    le, lt, ge, gt = "\\le ", "<", "\\ge ", ">"
     pieces = []
     for lo, hi, lc, hc in parse_intervals(raw):
         if lo == hi:
@@ -141,17 +144,24 @@ def inequality_text(raw: list[list[Any]], variable: str = "x", *, decimal: bool 
         elif lo == NEG_INF:
             pieces.append(f"{variable}{le if hc else lt}{number_text(hi, decimal=decimal)}")
         elif hi == POS_INF:
-            pieces.append(f"{variable}{'\\ge ' if lc else '>'}{number_text(lo, decimal=decimal)}")
+            pieces.append(f"{variable}{ge if lc else gt}{number_text(lo, decimal=decimal)}")
         else:
             pieces.append(f"{number_text(lo, decimal=decimal)}{le if lc else lt}{variable}"
                           f"{le if hc else lt}{number_text(hi, decimal=decimal)}")
     return " 或 ".join(f"${p}$" for p in pieces)
 
 
-def weighted_latex(weights: list[int]) -> str:
-    p, q = weights
-    numerator = ("a" if p == 1 else f"{p}a") + "+" + ("b" if q == 1 else f"{q}b")
-    return f"\\frac{{{numerator}}}{{{p + q}}}"
+def weighted_latex(weights: list[Any]) -> str:
+    p, q = (parse_exact_rational(w) for w in weights)
+    if p.denominator == 1 and q.denominator == 1:
+        numerator = ("a" if p == 1 else f"{p}a") + "+" + ("b" if q == 1 else f"{q}b")
+        return f"\\frac{{{numerator}}}{{{p + q}}}"
+    lam, mu = p / (p + q), q / (p + q)
+    return ("a" if lam == 1 else f"{rational_latex(lam)}a") + "+" + ("b" if mu == 1 else f"{rational_latex(mu)}b")
+
+
+def _order_text(order: str) -> str:
+    return "$a<b$" if order == "a<b" else "$a>b$"
 
 
 # --- contracts -------------------------------------------------------------------
@@ -277,18 +287,18 @@ def _division_points(matrix: dict[str, Any]) -> dict[str, Any]:
             m, n = part["ratio"]
             ask = f"求 ${variable}$ 的值。" if variable else f"求 ${label}$ 的坐標。"
             if part["find"] == "internal":
-                second = f"\\overline{{{label}B}}"
+                second = f"\\overline{{B{label}}}"
                 who = f"點 ${label}({variable})$ " if variable else f" ${label}$ 點"
                 where = "在 $\\overline{AB}$ 上" if part["position"] == "on_segment" else "在 $A$、$B$ 之間"
                 lead = f"已知{who}{where}，且 "
                 formula = f"\\frac{{{n}\\times{_paren(a)}+{m}\\times{_paren(b)}}}{{{m}+{n}}}"
-                reason = f"${label}$ 在 $\\overline{{AB}}$ 上且 $\\overline{{A{label}}}:\\overline{{{label}B}}={m}:{n}$"
+                reason = f"${label}$ 在 $\\overline{{AB}}$ 上且 $\\overline{{A{label}}}:{second}={m}:{n}$"
             else:
                 second = f"\\overline{{B{label}}}" if part["segment_order"] == "BQ" else f"\\overline{{{label}B}}"
                 who = f"一點 ${label}({variable})$" if variable else f"一點 ${label}$"
                 lead = f"已知 $\\overline{{AB}}$ 外{who} 滿足 "
                 formula = f"\\frac{{{m}\\times{_paren(b)}-{n}\\times{_paren(a)}}}{{{m}-{n}}}"
-                reason = f"${label}$ 在 $\\overline{{AB}}$ 外且 $\\overline{{A{label}}}:\\overline{{{label}B}}={m}:{n}$"
+                reason = f"${label}$ 在 $\\overline{{AB}}$ 外且 $\\overline{{A{label}}}:{second}={m}:{n}$"
             if part["ratio_style"] == "colon":
                 ratio = f"$\\overline{{A{label}}}:{second}={m}:{n}$"
             else:
@@ -322,9 +332,9 @@ def _solve_absolute_value_equations(matrix: dict[str, Any]) -> dict[str, Any]:
     if len(parts) == 1:
         body = f"${relation_latex(equations[0])}$"
         if givens["prompt"] == "find_real_x":
-            question = f"已知x為實數且 {body}，求x之值。"
+            question = f"已知 $x$ 為實數且 {body}，求 $x$ 之值。"
             if givens["state_solution_count"]:
-                question += f"（x有{_COUNT_WORDS.get(len(results[0]['solutions']), len(results[0]['solutions']))}解）"
+                question += f"（$x$ 有{_COUNT_WORDS.get(len(results[0]['solutions']), len(results[0]['solutions']))}解）"
         else:
             question = f"解方程式 {body}。"
         return _single_payload(matrix, question=question, part=parts[0],
@@ -369,16 +379,16 @@ def _recover_absolute_value_parameters(matrix: dict[str, Any]) -> dict[str, Any]
     givens, answer = matrix["givens"], matrix["answer"]
     names, target, prompt = givens["parameters"], givens["target"], givens["prompt"]
     relations = [_template_latex(r) for r in givens["relations"]]
-    joined_names = ", ".join(names)
+    joined_names = "、".join(f"${name}$" for name in names)
     decimal = prompt in ("body_temperature", "pregnancy_weeks")
     if prompt == "body_temperature":
         (_, low, _, _), (high, _, _, _) = target
         question = (f"人體體溫超過{number_text(high, decimal=True)}度稱為發燒，低於{number_text(low, decimal=True)}度稱為失溫。"
-                    f"已知人體體溫為x度且發燒或失溫的體溫範圍恰可用 ${relations[0]}$ 來表示，求{joined_names}的值。")
+                    f"已知人體體溫為 $x$ 度且發燒或失溫的體溫範圍恰可用 ${relations[0]}$ 來表示，求{joined_names}的值。")
     elif prompt == "pregnancy_weeks":
         low, high, _, _ = target[0]
         question = (f"懷孕的正常生產週數為{number_text(low, decimal=True)}至{number_text(high, decimal=True)}週。"
-                    f"已知一孕婦生產週數為x週，其正常生產週數的範圍恰可表示為 ${relations[0]}$，求{joined_names}的值。")
+                    f"已知一孕婦生產週數為 $x$ 週，其正常生產週數的範圍恰可表示為 ${relations[0]}$，求{joined_names}的值。")
     elif prompt == "system":
         system = "\\begin{cases}" + "\\\\".join(relations) + "\\end{cases}"
         question = f"已知不等式 ${system}$ 的解為 {inequality_text(target)}，求{joined_names}的值。"
@@ -405,9 +415,23 @@ def statement_text(statement: dict[str, Any]) -> str:
         return (f"數線上 $A({number_text(a)})$ 與 $B({number_text(b)})$ 的距離為 "
                 f"$\\left|{_paren(u)}{operator}{_paren(v)}\\right|$。")
     if kind == "weighted_point_order":
-        return (f"若 $a<b$，則 ${weighted_latex(statement['left'])}{_OP_LATEX[statement['op']]}"
-                f"{weighted_latex(statement['right'])}$。")
+        return (f"若 {_order_text(statement.get('order', 'a<b'))}，則 ${weighted_latex(statement['left'])}"
+                f"{_OP_LATEX[statement['op']]}{weighted_latex(statement['right'])}$。")
+    if kind == "symbolic_distance":
+        t = statement["parameter"]
+        a, b = (form_latex(statement["points"][k], variable=t) for k in ("A", "B"))
+        claim = form_latex(statement["claim"]["form"], variable=t)
+        claim = f"\\left|{claim}\\right|" if statement["claim"]["abs"] else claim
+        condition = statement.get("condition")
+        lead = f"若 ${t}{_OP_LATEX[condition['op']]}{number_text(condition['value'])}$，則" if condition else ""
+        return f"{lead}數線上 $A({a})$ 與 $B({b})$ 的距離為 ${claim}$。"
     return f"不等式 ${relation_latex(statement['left'])}$ 與 ${relation_latex(statement['right'])}$ 的解相同。"
+
+
+def _difference_latex(statement: dict[str, Any], detail: dict[str, Any]) -> str:
+    slope, constant = detail["difference"]
+    form = [[c, d] for c, d in ((slope, 1), (constant, 0)) if parse_exact_rational(c) != 0]
+    return form_latex(form, variable=statement["parameter"]) if form else "0"
 
 
 def _statement_reason(statement: dict[str, Any], detail: dict[str, Any]) -> str:
@@ -415,8 +439,17 @@ def _statement_reason(statement: dict[str, Any], detail: dict[str, Any]) -> str:
     if kind == "distance_expression":
         return f"所寫式子的值為 ${number_text(detail['claimed'])}$，兩點距離為 ${number_text(detail['actual'])}$"
     if kind == "weighted_point_order":
+        order = statement.get("order", "a<b")
+        near = "$b$" if order == "a<b" else "$a$"
         return (f"兩數分別位於 $a$ 到 $b$ 的 ${number_text(detail['left_position'])}$ 與 "
-                f"${number_text(detail['right_position'])}$ 處（$a<b$），比較其位置")
+                f"${number_text(detail['right_position'])}$ 處（{_order_text(order)}，越靠近 {near} 越大），比較其位置")
+    if kind == "symbolic_distance":
+        t = statement["parameter"]
+        a, b = (form_latex(statement["points"][k], variable=t) for k in ("A", "B"))
+        distance = f"\\left|({a})-({b})\\right|=\\left|{_difference_latex(statement, detail)}\\right|"
+        if detail["counterexample"] is None:
+            return f"兩點距離為 ${distance}$，與所寫式子在題設範圍內恆相等"
+        return f"兩點距離為 ${distance}$，取 ${t}={number_text(detail['counterexample'])}$ 時與所寫式子不相等"
     return f"兩不等式的解分別為 ${intervals_latex(detail['left'])}$ 與 ${intervals_latex(detail['right'])}$"
 
 
@@ -445,16 +478,57 @@ def _select_extreme_weighted_point(matrix: dict[str, Any]) -> dict[str, Any]:
     givens, answer = matrix["givens"], matrix["answer"]
     word = "最大" if givens["extreme"] == "max" else "最小"
     texts = [weighted_latex(w) for w in givens["options"]]
-    choices = [{"label": str(i), "value": t} for i, t in enumerate(texts, start=1)]
-    question = f"設 $a<b$，下列各數中何者{word}？" + " ".join(f"({i}) ${t}$" for i, t in enumerate(texts, start=1))
-    chosen = answer["choice"]
-    positions = "、".join(f"({i}) ${number_text(t)}$" for i, t in enumerate(answer["positions"], start=1))
+    labels = [chr(ord("A") + i) for i in range(len(texts))]
+    choices = [{"label": label, "text": t, "value": t} for label, t in zip(labels, texts)]
+    order = givens.get("order", "a<b")
+    question = f"設 {_order_text(order)}，下列各數中何者{word}？"
+    chosen = labels[answer["choice"] - 1]
+    positions = "、".join(f"({label}) ${number_text(t)}$" for label, t in zip(labels, answer["positions"]))
+    near = "$b$" if order == "a<b" else "$a$"
     steps = [
-        "$\\frac{pa+qb}{p+q}$ 位於 $a$ 到 $b$ 之間，且越靠近 $b$ 越大；其位置為 $a$ 起算全長的 $\\frac{q}{p+q}$。",
+        f"$\\frac{{pa+qb}}{{p+q}}$ 位於 $a$ 到 $b$ 之間，其位置為 $a$ 起算全長的 $\\frac{{q}}{{p+q}}$；"
+        f"因 {_order_text(order)}，越靠近 {near} 越大。",
         f"各選項的位置分別為 {positions}，故{word}者為 ({chosen})。",
     ]
-    return _choice_payload(matrix, question=question, choices=choices, answer=texts[chosen - 1],
-                           display_answer=f"({chosen}) ${texts[chosen - 1]}$", explanation_steps=steps)
+    return _choice_payload(matrix, question=question, choices=choices, answer=chosen,
+                           display_answer=f"({chosen}) ${texts[answer['choice'] - 1]}$", explanation_steps=steps)
+
+
+_TOLERANCE_TEXT = {
+    "standard_weight_male": ("男性", "80", "0.7"),
+    "standard_weight_female": ("女性", "70", "0.6"),
+}
+
+
+def _solve_tolerance_range_application(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    who, offset, factor = _TOLERANCE_TEXT[givens["profile"]]
+    height, percent = givens["height"], givens["tolerance_percent"]
+    model, values = answer["model_value"], answer["values"]
+    low, high, _, _ = answer["range"][0]
+    question = (
+        f"世界衛生組織規範{who}標準體重的公式為\n"
+        f"$\\text{{標準體重}}_{{(\\mathrm{{kg}})}}=\\left(\\text{{身高}}_{{(\\mathrm{{cm}})}}-{offset}\\right)\\times {factor}$。\n"
+        "根據此規範回答下列各題：\n"
+        f"(1) 身高 ${height}$ 公分的{who}，其標準體重為多少公斤？\n"
+        f"(2) 標準體重增減 ${percent}\\%$ 為正常體重的範圍，已知一位身高為 ${height}$ 公分的{who}體重為 $x$ 公斤，"
+        "其正常體重的範圍恰可表示成 $\\left|x-a\\right|\\le b$，求 $a$、$b$ 的值。"
+    )
+    parts = [
+        _part(1, model, *_RATIONAL),
+        {**_part(2, values["a"], *_RATIONAL), "key": "a", "label": "(2) a"},
+        {**_part(3, values["b"], *_RATIONAL), "key": "b", "label": "(2) b"},
+    ]
+    w, a, b = (number_text(v, decimal=True) for v in (model, values["a"], values["b"]))
+    lo, hi = number_text(low, decimal=True), number_text(high, decimal=True)
+    steps = [
+        f"(1) 標準體重 $=({height}-{offset})\\times {factor}={w}$（公斤）。",
+        f"(2) 正常體重為 ${w}\\times(1-{percent}\\%)\\le x\\le {w}\\times(1+{percent}\\%)$，即 ${lo}\\le x\\le {hi}$。",
+        f"$\\left|x-a\\right|\\le b$ 的解為 $a-b\\le x\\le a+b$，比較端點得 $a={a}$，$b={b}$。",
+    ]
+    return _parts_payload(matrix, question=question, parts=parts,
+                          display_answer=f"(1) ${w}$ 公斤　(2) $a={a}$，$b={b}$",
+                          explanation_steps=steps, shape="tolerance_range_application")
 
 
 _PAYLOAD_BUILDERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
@@ -464,6 +538,8 @@ _PAYLOAD_BUILDERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
     "recover_absolute_value_parameters": _recover_absolute_value_parameters,
     "evaluate_absolute_value_statements": _evaluate_absolute_value_statements,
     "select_extreme_weighted_point": _select_extreme_weighted_point,
+    "evaluate_number_line_statements": _evaluate_absolute_value_statements,
+    "solve_tolerance_range_application": _solve_tolerance_range_application,
 }
 
 

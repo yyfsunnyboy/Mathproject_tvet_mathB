@@ -14,6 +14,7 @@ from core.gencode.answer_payload import (
     resolve_answer_contract_for_runtime,
 )
 from core.gencode.problem_type_spec import get_answer_contract, load_problem_type_spec
+from core.gencode.question_quality_gate import inequality_answer_latex_display
 from core.gencode.runtime_skill_wrapper import check_answer
 
 logger = logging.getLogger(__name__)
@@ -202,6 +203,9 @@ def should_use_contract_aware_grading(current: dict[str, Any]) -> bool:
 def format_correct_answer_display(correct_answer: Any, current: dict[str, Any]) -> str:
     skill_id = str(current.get("skill", current.get("skill_id", ""))).strip()
     ctx = refresh_runtime_question_session(current, skill_id=skill_id)
+    relational = inequality_answer_latex_display(ctx, correct_answer)
+    if relational:
+        return relational
     display = ctx.get("display_answer")
     if display:
         return str(display)
@@ -251,7 +255,8 @@ def build_correct_answer_display(current: dict[str, Any]) -> dict[str, Any] | No
             value = part.get("canonical_answer", part.get("expected_answer", values.get(key)))
             if value is None:
                 continue
-            items.append({"key": key, "label": str(part.get("label") or key), "value": str(value)})
+            shown = inequality_answer_latex_display(ctx, value, part) or str(value)
+            items.append({"key": key, "label": str(part.get("label") or key), "value": shown})
         if not items and isinstance(canonical, dict):
             items = [{"key": str(k), "label": str(k), "value": str(v)} for k, v in canonical.items()]
         if not items:

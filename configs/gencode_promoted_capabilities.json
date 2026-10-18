@@ -1,15 +1,17 @@
 {
   "domains": {
     "algebra.absolute_value_relations": {
-      "approved_by": "human_reviewer",
-      "bundle_sha256": "2e84b9cc07e43122a40323f9ab3c6ab4645d0e056d64a8aabd5b64199b4b1ca3",
+      "approved_by": "project_owner (explicit written approval in Cursor chat; recorded by agent on the owner's instruction)",
+      "bundle_sha256": "b9f112486766a3dd45bb9fb421fc0725ddba201aa98d1adbdafb04a64d669865",
       "capabilities": [
         "evaluate_absolute_value_statements",
         "evaluate_number_line_division_points",
+        "evaluate_number_line_statements",
         "recover_absolute_value_parameters",
         "select_extreme_weighted_point",
         "solve_absolute_value_equations",
-        "solve_absolute_value_inequalities"
+        "solve_absolute_value_inequalities",
+        "solve_tolerance_range_application"
       ],
       "domain_module": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_domain",
       "entrypoint": "build_absolute_value_relations_matrix",
@@ -55,6 +57,27 @@
             "short_answer"
           ],
           "validator": "validate_evaluate_number_line_division_points_matrix"
+        },
+        "evaluate_number_line_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "evaluate_number_line_statements"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "single_choice",
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_number_line_statements_matrix"
         },
         "recover_absolute_value_parameters": {
           "checker_keys": [
@@ -134,18 +157,37 @@
             "short_answer"
           ],
           "validator": "validate_solve_absolute_value_inequalities_matrix"
+        },
+        "solve_tolerance_range_application": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_absolute_value_relations_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_absolute_value_relations.absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+          "provided_capabilities": [
+            "solve_tolerance_range_application"
+          ],
+          "runtime_contract": "absolute_value_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_tolerance_range_application_matrix"
         }
       },
       "package_files": {
         "__init__.py": "37384a3067ddbc7e74106f2de65e985cbfa4ad34a82cb139298b125bccf60012",
-        "absolute_value_relations_adapter.py": "33d28c063de8317c624e41d6706723adda46103495a139b47e26a06cbf5070f7",
-        "absolute_value_relations_domain.py": "b16d71929e1432ff66a1f25c94440b1d8a5772e14898df23f7320f0d195ad18a"
+        "absolute_value_relations_adapter.py": "f9aba77a3c9e51f5d6c09c90360db2d133a0810a72eb9532eefccd7e957dff27",
+        "absolute_value_relations_domain.py": "f0a00f20006b6696566f62b5ba23f7b7ef38b201d2686588cb6f349b03d87908"
       },
       "package_import": "core.domain.promoted.algebra_absolute_value_relations",
       "package_name": "algebra_absolute_value_relations",
       "proposal_id": "capability_absolute_value_relations_7c3d2e91",
-      "proposal_revision": 1,
-      "registry_revision": "promoted-2e84b9cc07e4",
+      "proposal_revision": 3,
+      "registry_revision": "promoted-b9f112486766",
       "skill_bindings": {
         "gh_LinearEquationsWithAbsoluteValue": {
           "allowed_operations": [
@@ -155,18 +197,18 @@
         },
         "gh_LinearInequalitiesWithAbsoluteValue": {
           "allowed_operations": [
-            "evaluate_number_line_division_points",
-            "solve_absolute_value_equations",
             "solve_absolute_value_inequalities",
             "recover_absolute_value_parameters",
             "evaluate_absolute_value_statements",
-            "select_extreme_weighted_point"
+            "solve_tolerance_range_application"
           ],
           "default_curriculum_profile": "general_high"
         },
         "gh_PointDivisionFormulaOnNumberLine": {
           "allowed_operations": [
-            "evaluate_number_line_division_points"
+            "evaluate_number_line_division_points",
+            "evaluate_number_line_statements",
+            "select_extreme_weighted_point"
           ],
           "default_curriculum_profile": "general_high"
         }

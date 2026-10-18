@@ -74,6 +74,124 @@ def test_scan_general_high_layout_splits_solution_and_stops_practice_at_narrativ
     assert "(1)" in scan["blocks"]["3習題 觀念澄清1"]
 
 
+UNIT2_LIKE_TEXT = "\n".join(
+    [
+        "2絕對值",
+        "甲 數線上的分點公式",
+        "例題8",
+        "人體體溫超過38度稱為發燒。",
+        "\\(\\o\\ac(■,解)\\)\t依題意可知 \\(x>38\\)。",
+        "隨堂練習",
+        "世界衛生組織規範男性標準體重的公式為",
+        "\\(標準體重=(身高-80)\\times 0.7\\)。",
+        "根據此規範回答下列各題：",
+        "(1)身高180公分的男性，其標準體重為多少公斤？",
+        "(2)已知 \\(|x-a|\\le b\\)，求a, b的值。",
+        "例題8 的解法，除了利用代數解法直接求解外，也可以透過幾何的解法求解：",
+        "2習題",
+        "觀念澄清",
+        "下列敘述對的打「○」，錯的打「×」。",
+        "(1)數線上 \\(A(a)\\) 與 \\(B(-4)\\) 的距離為 \\(a+4\\)。",
+        "(2)若 \\(a<b\\)，則 \\(\\frac{2a+b}{3}>\\frac{a+2b}{3}\\)。",
+        "(3)\\(|x-1|\\le 3\\) 與 \\(|1-x|\\le 3\\) 的解相同。",
+        "一、基礎題",
+        "1.設數線上兩點 \\(A(5)\\)、\\(B(12)\\)。",
+    ]
+)
+
+
+def test_example_back_reference_is_not_a_new_example():
+    scan = tp.scan_general_high_layout(UNIT2_LIKE_TEXT)
+    titles = [it["canonical_title"] for it in scan["items"]]
+    assert titles.count("例題8") == 1
+    assert "的解法" not in scan["blocks"]["例題8"]
+
+
+def test_practice_lead_in_before_subquestions_stays_in_stem():
+    stem = tp.scan_general_high_layout(UNIT2_LIKE_TEXT)["blocks"]["隨堂練習1"]
+    assert "根據此規範回答下列各題" in stem
+    assert "(1)身高180公分" in stem and "(2)已知" in stem
+    assert "的解法" not in stem
+
+
+def test_exposition_after_practice_subquestions_is_not_a_lead_in():
+    text = "\n".join([
+        "隨堂練習",
+        "將下列各小數化成最簡分數：",
+        "(1) 0.732。　　(2) 0.58。",
+        "仿照例題2的方式，每個有限小數都可以化成有理數的形式。事實上，",
+        "(1)任意有理數都可化成整數、有限小數或循環小數。",
+        "(2)整數、有限小數與循環小數都是有理數。",
+    ])
+    stem = tp.scan_general_high_layout(text)["blocks"]["隨堂練習1"]
+    assert stem.endswith("(2) 0.58。")
+    assert "仿照" not in stem and "任意有理數" not in stem
+
+
+@pytest.mark.parametrize(
+    "pages, expected",
+    [
+        ([7, None, None, 7], {1: 7, 2: 7}),
+        ([7, None, 8], {}),
+        ([None, 3], {}),
+        ([3, None], {}),
+        ([2, 3], {}),
+    ],
+)
+def test_unmatched_pdf_page_inferred_only_between_same_page_neighbors(pages, expected):
+    assert tp.interpolate_unmatched_pdf_pages(pages) == expected
+
+
+def test_unnumbered_concept_check_items_share_instruction():
+    scan = tp.scan_general_high_layout(UNIT2_LIKE_TEXT)
+    titles = [it["canonical_title"] for it in scan["items"]]
+    assert titles == [
+        "例題8", "隨堂練習1",
+        "2習題 觀念澄清1", "2習題 觀念澄清2", "2習題 觀念澄清3",
+        "2習題 基礎題1",
+    ]
+    first = scan["blocks"]["2習題 觀念澄清1"]
+    assert first.startswith("下列敘述對的打「○」，錯的打「×」。")
+    assert "B(-4)" in first and "a<b" not in first
+    assert "|1-x|" in scan["blocks"]["2習題 觀念澄清3"]
+
+
+@pytest.mark.parametrize("line", ["(　)1.數線上兩點的距離。", "□ 1 數線上兩點的距離。", "（ ）(1)數線上兩點的距離。"])
+def test_boxed_concept_check_item_starts_item(line):
+    text = "\n".join(["2習題", "觀念澄清", line, "一、基礎題", "1.求值。"])
+    scan = tp.scan_general_high_layout(text)
+    assert [it["canonical_title"] for it in scan["items"]] == ["2習題 觀念澄清1", "2習題 基礎題1"]
+    assert scan["blocks"]["2習題 觀念澄清1"].endswith("數線上兩點的距離。")
+
+
+@pytest.mark.parametrize(
+    "text, needs_image",
+    [
+        ("設數線上兩點 \\(A\\left ( { 5 } \\right )\\)、\\(B\\left ( { 12 } \\right )\\)。求AB的長。", False),
+        ("設 A(12), B(-6) 為數線上兩點，求P的坐標。", False),
+        ("請寫出數線上 P 點的座標。", True),
+        ("如右圖，數線上 A(3)，求 P 點坐標。", True),
+    ],
+)
+def test_number_line_points_given_in_text_need_no_figure(text, needs_image):
+    assert tp.classify_image_dependency(text)["needs_image"] is needs_image
+
+
+def test_source_file_provenance_records_original_name_and_sha256(tmp_path):
+    import hashlib
+
+    src = tmp_path / "02-.docx"
+    src.write_bytes(b"docx-bytes")
+    prov = tp.source_file_provenance(str(src), "02-絕對值-word.docx")
+    assert prov == {
+        "filename": "02-.docx",
+        "original_filename": "02-絕對值-word.docx",
+        "size_bytes": 10,
+        "sha256": hashlib.sha256(b"docx-bytes").hexdigest(),
+    }
+    assert tp.source_file_provenance(str(tmp_path / "missing.docx")) is None
+
+
 SOLUTION_THEN_PROSE_TEXT = "\n".join(
     [
         "3函數",
@@ -459,6 +577,101 @@ def _seed_general_rows(db, rows):
         created[title] = te
     db.session.commit()
     return created
+
+
+_UNIT2_MAP = [{
+    "id": "t_unit2",
+    "curriculum": "general",
+    "volume": "數學1",
+    "chapter": "單元2 絕對值",
+    "titles": {"例題1": "gh_PointDivisionFormulaOnNumberLine", "2習題 進階題7": "gh_LinearEquationsWithAbsoluteValue"},
+}]
+
+
+def _seed_unit_rows(db, chapter, rows, skills):
+    from models import SkillCurriculum, SkillInfo, TextbookExample
+
+    for sid in skills:
+        if not db.session.get(SkillInfo, sid):
+            db.session.add(SkillInfo(skill_id=sid, skill_en_name=sid, skill_ch_name=sid, description="t", gemini_prompt="t"))
+            db.session.add(SkillCurriculum(skill_id=sid, curriculum="general", grade=10, volume="數學1", chapter=chapter, section="s",
+                                           paragraph=f"乙.{sid}_para"))
+    created = {}
+    for title, skill in rows:
+        te = TextbookExample(skill_id=skill, source_curriculum="general", source_volume="數學1", source_chapter=chapter,
+                             source_section="s", source_paragraph=f"{skill}_para", source_description=f"{title} [t]",
+                             problem_text="p", notes="{}")
+        db.session.add(te)
+        created[title] = te
+    db.session.commit()
+    return {t: te.id for t, te in created.items()}
+
+
+def test_source_skill_map_overrides_ai_skill_only_in_mapped_unit(admin_app):
+    import json
+
+    from models import TextbookExample, db
+
+    eq, ineq, pd = "gh_LinearEquationsWithAbsoluteValue", "gh_LinearInequalitiesWithAbsoluteValue", "gh_PointDivisionFormulaOnNumberLine"
+    ids = _seed_unit_rows(db, "單元2 絕對值", [("例題1", pd), ("2習題 進階題7", ineq), ("例題9", ineq)], [eq, ineq, pd])
+    other = _seed_unit_rows(db, "單元1 實數", [("2習題 進階題7", "gh_other")], ["gh_other"])
+
+    summary = tp.apply_general_high_source_skill_map(
+        parsed_data={"chapters": [{"chapter_title": "單元2 絕對值"}]},
+        scan={"chapter": {}},
+        curriculum_info={"curriculum": "general", "volume": "數學1"},
+        maps=_UNIT2_MAP,
+    )
+
+    assert summary["applied"] is True
+    assert summary["changed"] == [{"title": "2習題 進階題7", "from": ineq, "to": eq}]
+    assert summary["unmapped"] == ["例題9"]
+    row7 = db.session.get(TextbookExample, ids["2習題 進階題7"])
+    assert row7.skill_id == eq
+    assert row7.source_paragraph == f"{eq}_para"
+    assert json.loads(row7.notes)["skill_binding"] == {
+        "source": "general_high_source_skill_map", "map_id": "t_unit2",
+        "ai_skill_id": ineq, "ai_source_paragraph": f"{ineq}_para",
+    }
+    assert db.session.get(TextbookExample, ids["例題1"]).source_paragraph == f"{pd}_para"
+    assert json.loads(db.session.get(TextbookExample, ids["例題9"]).notes)["needs_review"] is True
+    assert db.session.get(TextbookExample, other["2習題 進階題7"]).skill_id == "gh_other"
+
+
+def test_source_skill_map_rejects_skill_not_bound_to_chapter(admin_app):
+    from models import TextbookExample, db
+
+    ids = _seed_unit_rows(db, "單元2 絕對值", [("例題1", "gh_x")], ["gh_x"])
+    bad_map = [dict(_UNIT2_MAP[0], titles={"例題1": "gh_PointDivisionFormulaOnNumberLine"})]
+    summary = tp.apply_general_high_source_skill_map(
+        parsed_data={"chapters": [{"chapter_title": "單元2 絕對值"}]},
+        scan={"chapter": {}},
+        curriculum_info={"curriculum": "general", "volume": "數學1"},
+        maps=bad_map,
+    )
+    assert summary["applied"] is False and summary["error"].startswith("skills_not_in_chapter")
+    assert db.session.get(TextbookExample, ids["例題1"]).skill_id == "gh_x"
+
+
+@pytest.mark.parametrize(
+    "curriculum, volume, chapter",
+    [("vocational", "數學1", "單元2 絕對值"), ("general", "數學2", "單元2 絕對值"), ("general", "數學1", "單元1 實數")],
+)
+def test_source_skill_map_scope_is_exact(curriculum, volume, chapter):
+    assert tp.find_general_high_source_skill_map(curriculum, volume, chapter, _UNIT2_MAP) is None
+
+
+def test_repository_unit2_source_skill_map_counts():
+    entry = tp.find_general_high_source_skill_map("general", "數學1", "單元2 絕對值")
+    counts = {}
+    for sid in entry["titles"].values():
+        counts[sid] = counts.get(sid, 0) + 1
+    assert len(entry["titles"]) == 28
+    assert counts == {
+        "gh_PointDivisionFormulaOnNumberLine": 8,
+        "gh_LinearEquationsWithAbsoluteValue": 6,
+        "gh_LinearInequalitiesWithAbsoluteValue": 14,
+    }
 
 
 def _fake_shared_enrichment(seen, attach_titles):

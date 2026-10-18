@@ -1,0 +1,161 @@
+{
+  "skill_id": "gh_LinearInequalitiesWithAbsoluteValue",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_1033",
+      "textbook_example_id": 1033,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1033/generate.py"
+    },
+    {
+      "component_id": "src_1034",
+      "textbook_example_id": 1034,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_1034/generate.py"
+    },
+    {
+      "component_id": "src_1035",
+      "textbook_example_id": 1035,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1035/generate.py"
+    },
+    {
+      "component_id": "src_1036",
+      "textbook_example_id": 1036,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality_solution",
+      "source_kind": "example",
+      "generate_py": "components/src_1036/generate.py"
+    },
+    {
+      "component_id": "src_1037",
+      "textbook_example_id": 1037,
+      "status": "verified",
+      "problem_type_id": "recover_absolute_value_parameters",
+      "domain_operation": "recover_absolute_value_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1037/generate.py"
+    },
+    {
+      "component_id": "src_1040",
+      "textbook_example_id": 1040,
+      "status": "verified",
+      "problem_type_id": "evaluate_absolute_value_statements",
+      "domain_operation": "evaluate_absolute_value_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_1040/generate.py"
+    },
+    {
+      "component_id": "src_1044",
+      "textbook_example_id": 1044,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1044/generate.py"
+    },
+    {
+      "component_id": "src_1045",
+      "textbook_example_id": 1045,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1045/generate.py"
+    },
+    {
+      "component_id": "src_1046",
+      "textbook_example_id": 1046,
+      "status": "verified",
+      "problem_type_id": "recover_absolute_value_parameters",
+      "domain_operation": "recover_absolute_value_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1046/generate.py"
+    },
+    {
+      "component_id": "src_1048",
+      "textbook_example_id": 1048,
+      "status": "verified",
+      "problem_type_id": "recover_absolute_value_parameters",
+      "domain_operation": "recover_absolute_value_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1048/generate.py"
+    },
+    {
+      "component_id": "src_1049",
+      "textbook_example_id": 1049,
+      "status": "verified",
+      "problem_type_id": "recover_absolute_value_parameters",
+      "domain_operation": "recover_absolute_value_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1049/generate.py"
+    },
+    {
+      "component_id": "src_12331",
+      "textbook_example_id": 12331,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12331/generate.py"
+    },
+    {
+      "component_id": "src_12332",
+      "textbook_example_id": 12332,
+      "status": "verified",
+      "problem_type_id": "solve_absolute_value_inequalities",
+      "domain_operation": "solve_absolute_value_inequalities",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality_solution",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12332/generate.py"
+    },
+    {
+      "component_id": "src_12333",
+      "textbook_example_id": 12333,
+      "status": "verified",
+      "problem_type_id": "solve_tolerance_range_application",
+      "domain_operation": "solve_tolerance_range_application",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12333/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "skill_id": "gh_PointDivisionFormulaOnNumberLine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 6,
+  "components": [
+    {
+      "component_id": "src_1027",
+      "textbook_example_id": 1027,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_line_division_points",
+      "domain_operation": "evaluate_number_line_division_points",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1027/generate.py"
+    },
+    {
+      "component_id": "src_1028",
+      "textbook_example_id": 1028,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_line_division_points",
+      "domain_operation": "evaluate_number_line_division_points",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_1028/generate.py"
+    },
+    {
+      "component_id": "src_1038",
+      "textbook_example_id": 1038,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_line_statements",
+      "domain_operation": "evaluate_number_line_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_1038/generate.py"
+    },
+    {
+      "component_id": "src_1039",
+      "textbook_example_id": 1039,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_line_statements",
+      "domain_operation": "evaluate_number_line_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_1039/generate.py"
+    },
+    {
+      "component_id": "src_1041",
+      "textbook_example_id": 1041,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_line_division_points",
+      "domain_operation": "evaluate_number_line_division_points",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_1041/generate.py"
+    },
+    {
+      "component_id": "src_1042",
+      "textbook_example_id": 1042,
+      "status": "verified",
+      "problem_type_id": "select_extreme_weighted_point",
+      "domain_operation": "select_extreme_weighted_point",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_1042/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,1076 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_absolute_value_relations_7c3d2e91",
+  "proposal_revision": 4,
+  "review": {
+    "status": "pending_human_review",
+    "approved_by": "",
+    "approved_revision": null,
+    "approval_scope": "revision 4 of algebra.absolute_value_relations (revision 3 unchanged for its eight operations: the same constraints give the same matrix and the same payload). Domain: new operation place_weighted_points_on_number_line (textbook 例題2 / 隨堂練習2): labelled points (p·a+q·b)/(p+q) with positive integer weights on AB, a<b; answer = exact relative position t=q/(p+q) of each point plus the ascending order; points must be at least 1/6 of AB apart (more than twice the 1/20 grading tolerance). Adapter: multi_part payload, part (1) input_kind number_line_placement graded by number_line_placement_checker (per-point tolerance 1/20 of AB, no pixel comparison), part (2) ordered_inequality_checker; both parts required. Skill bindings: PointDivision gains place_weighted_points_on_number_line. Requires runtime: core/checkers/number_line_placement_checker.py registered in checker_registry and multi_part_answer_checker, plus the practice-page number-line widget."
+  },
+  "domain_key": "algebra.absolute_value_relations",
+  "package_name": "algebra_absolute_value_relations",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "37384a3067ddbc7e74106f2de65e985cbfa4ad34a82cb139298b125bccf60012",
+    "absolute_value_relations_adapter.py": "b56e0caec56565e482657cd42e0ca39f3f9b87f02a5966b4af1a2c6dc6eb3e8d",
+    "absolute_value_relations_domain.py": "0886444aeec8dac0267514b4f2571695f189ef39861a23885ca5fe35eebb7801"
+  },
+  "domain_module": "absolute_value_relations_domain",
+  "entrypoint": "build_absolute_value_relations_matrix",
+  "capabilities": [
+    "evaluate_number_line_division_points",
+    "solve_absolute_value_equations",
+    "solve_absolute_value_inequalities",
+    "recover_absolute_value_parameters",
+    "evaluate_absolute_value_statements",
+    "select_extreme_weighted_point",
+    "evaluate_number_line_statements",
+    "solve_tolerance_range_application",
+    "place_weighted_points_on_number_line"
+  ],
+  "operations": {
+    "evaluate_number_line_division_points": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_evaluate_number_line_division_points_matrix",
+      "provided_capabilities": [
+        "evaluate_number_line_division_points"
+      ]
+    },
+    "solve_absolute_value_equations": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_solve_absolute_value_equations_matrix",
+      "provided_capabilities": [
+        "solve_absolute_value_equations"
+      ]
+    },
+    "solve_absolute_value_inequalities": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "inequality_solution_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part",
+        "inequality_solution"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "validator": "validate_solve_absolute_value_inequalities_matrix",
+      "provided_capabilities": [
+        "solve_absolute_value_inequalities"
+      ]
+    },
+    "recover_absolute_value_parameters": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_recover_absolute_value_parameters_matrix",
+      "provided_capabilities": [
+        "recover_absolute_value_parameters"
+      ]
+    },
+    "evaluate_absolute_value_statements": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "supported_answer_types": [
+        "single_choice",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "single_choice",
+        "multiple_inputs"
+      ],
+      "validator": "validate_evaluate_absolute_value_statements_matrix",
+      "provided_capabilities": [
+        "evaluate_absolute_value_statements"
+      ]
+    },
+    "select_extreme_weighted_point": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "validator": "validate_select_extreme_weighted_point_matrix",
+      "provided_capabilities": [
+        "select_extreme_weighted_point"
+      ]
+    },
+    "evaluate_number_line_statements": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "supported_answer_types": [
+        "single_choice",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "single_choice",
+        "multiple_inputs"
+      ],
+      "validator": "validate_evaluate_number_line_statements_matrix",
+      "provided_capabilities": [
+        "evaluate_number_line_statements"
+      ]
+    },
+    "solve_tolerance_range_application": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_solve_tolerance_range_application_matrix",
+      "provided_capabilities": [
+        "solve_tolerance_range_application"
+      ]
+    },
+    "place_weighted_points_on_number_line": {
+      "handler": "build_absolute_value_relations_matrix",
+      "payload_adapter": "absolute_value_relations_adapter.adapt_absolute_value_relations_matrix",
+      "runtime_contract": "absolute_value_relations_exact_v1",
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "number_line_placement_checker",
+        "ordered_inequality_checker"
+      ],
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_place_weighted_points_on_number_line_matrix",
+      "provided_capabilities": [
+        "place_weighted_points_on_number_line"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_PointDivisionFormulaOnNumberLine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_number_line_division_points",
+        "evaluate_number_line_statements",
+        "select_extreme_weighted_point",
+        "place_weighted_points_on_number_line"
+      ]
+    },
+    "gh_LinearEquationsWithAbsoluteValue": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "solve_absolute_value_equations"
+      ]
+    },
+    "gh_LinearInequalitiesWithAbsoluteValue": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "solve_absolute_value_inequalities",
+        "recover_absolute_value_parameters",
+        "evaluate_absolute_value_statements",
+        "solve_tolerance_range_application"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "evaluate_number_line_division_points": [
+      {
+        "seed": 1,
+        "constraints": {
+          "points": {
+            "A": -3,
+            "B": 12
+          },
+          "intro": "points_first",
+          "parts": [
+            {
+              "find": "internal",
+              "label": "P",
+              "variable": "x",
+              "ratio": [
+                3,
+                2
+              ],
+              "ratio_style": "colon",
+              "position": "on_segment"
+            },
+            {
+              "find": "external",
+              "label": "Q",
+              "variable": "y",
+              "ratio": [
+                3,
+                5
+              ],
+              "ratio_style": "colon",
+              "segment_order": "BQ"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 2,
+        "constraints": {
+          "points": {
+            "A": 12,
+            "B": -4
+          },
+          "intro": "line_first",
+          "parts": [
+            {
+              "find": "internal",
+              "label": "P",
+              "ratio": [
+                2,
+                1
+              ],
+              "ratio_style": "multiple",
+              "position": "between"
+            },
+            {
+              "find": "external",
+              "label": "Q",
+              "ratio": [
+                7,
+                1
+              ],
+              "ratio_style": "colon",
+              "segment_order": "BQ"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "solve_absolute_value_equations": [
+      {
+        "seed": 3,
+        "constraints": {
+          "equations": [
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      -1,
+                      0
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      2,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      -1,
+                      1
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      4,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      -3,
+                      0
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      5,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 4,
+        "constraints": {
+          "equations": [
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      1,
+                      0
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      3,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      1,
+                      0
+                    ],
+                    [
+                      -1,
+                      1
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      3,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      1,
+                      0
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      2,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 21,
+        "constraints": {
+          "equations": [
+            {
+              "lhs": [
+                {
+                  "abs": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      3,
+                      0
+                    ]
+                  ]
+                },
+                {
+                  "poly": [
+                    [
+                      -2,
+                      1
+                    ]
+                  ]
+                }
+              ],
+              "op": "=",
+              "rhs": [
+                {
+                  "poly": [
+                    [
+                      0,
+                      0
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "solve_absolute_value_inequalities": [
+      {
+        "seed": 6,
+        "constraints": {
+          "systems": [
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          1,
+                          1
+                        ],
+                        [
+                          -1,
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": "<=",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          2,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          3,
+                          0
+                        ],
+                        [
+                          -1,
+                          1
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": ">",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          2,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          2,
+                          1
+                        ],
+                        [
+                          -1,
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": "<",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          5,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {
+          "systems": [
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          1,
+                          1
+                        ],
+                        [
+                          2,
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": ">",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          1,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          -1,
+                          1
+                        ],
+                        [
+                          -2,
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": "<=",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          4,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "lhs": [
+                    {
+                      "abs": [
+                        [
+                          3,
+                          1
+                        ],
+                        [
+                          1,
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "op": ">",
+                  "rhs": [
+                    {
+                      "poly": [
+                        [
+                          2,
+                          0
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "recover_absolute_value_parameters": [
+      {
+        "seed": 10,
+        "constraints": {
+          "relations": [
+            {
+              "inner": [
+                [
+                  1,
+                  1
+                ],
+                [
+                  {
+                    "param": "a",
+                    "sign": -1
+                  },
+                  0
+                ]
+              ],
+              "op": ">",
+              "bound": {
+                "param": "b"
+              }
+            }
+          ],
+          "parameters": [
+            "a",
+            "b"
+          ],
+          "prompt": "body_temperature",
+          "target": [
+            [
+              "-oo",
+              "35",
+              false,
+              false
+            ],
+            [
+              "38",
+              "oo",
+              false,
+              false
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 19,
+        "constraints": {
+          "relations": [
+            {
+              "inner": [
+                [
+                  1,
+                  1
+                ],
+                [
+                  {
+                    "param": "a",
+                    "sign": -1
+                  },
+                  0
+                ]
+              ],
+              "op": "<=",
+              "bound": {
+                "param": "b"
+              }
+            }
+          ],
+          "parameters": [
+            "a",
+            "b"
+          ],
+          "prompt": "pregnancy_weeks",
+          "target": [
+            [
+              37,
+              41,
+              true,
+              true
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_absolute_value_statements": [
+      {
+        "seed": 11,
+        "constraints": {
+          "statements": [
+            {
+              "kind": "distance_expression",
+              "points": {
+                "A": -3,
+                "B": 1
+              },
+              "claim": [
+                -3,
+                "-",
+                1
+              ]
+            }
+          ],
+          "item_labels": [
+            "(1)"
+          ]
+        }
+      },
+      {
+        "seed": 12,
+        "constraints": {
+          "statements": [
+            {
+              "kind": "weighted_point_order",
+              "left": [
+                1,
+                2
+              ],
+              "op": ">",
+              "right": [
+                2,
+                1
+              ]
+            }
+          ],
+          "item_labels": [
+            "(2)"
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "select_extreme_weighted_point": [
+      {
+        "seed": 15,
+        "constraints": {
+          "options": [
+            [
+              3,
+              1
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "extreme": "max"
+        }
+      },
+      {
+        "seed": 22,
+        "constraints": {
+          "options": [
+            [
+              4,
+              1
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "extreme": "max",
+          "order": "a>b"
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "evaluate_number_line_statements": [
+      {
+        "seed": 23,
+        "constraints": {
+          "statements": [
+            {
+              "kind": "symbolic_distance",
+              "parameter": "a",
+              "points": {
+                "A": [
+                  [
+                    1,
+                    1
+                  ]
+                ],
+                "B": -4
+              },
+              "claim": {
+                "abs": true,
+                "form": [
+                  [
+                    1,
+                    1
+                  ],
+                  [
+                    4,
+                    0
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 24,
+        "constraints": {
+          "statements": [
+            {
+              "kind": "weighted_point_order",
+              "left": [
+                2,
+                1
+              ],
+              "op": ">",
+              "right": [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "solve_tolerance_range_application": [
+      {
+        "seed": 25,
+        "constraints": {
+          "profile": "standard_weight_male",
+          "height": 180,
+          "tolerance_percent": 10
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ],
+    "place_weighted_points_on_number_line": [
+      {
+        "seed": 0,
+        "constraints": {
+          "points": [
+            {
+              "label": "P",
+              "weights": [
+                1,
+                3
+              ]
+            },
+            {
+              "label": "Q",
+              "weights": [
+                1,
+                1
+              ]
+            },
+            {
+              "label": "R",
+              "weights": [
+                3,
+                1
+              ]
+            }
+          ],
+          "notation": "coordinate"
+        }
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "points": [
+            {
+              "label": "P",
+              "weights": [
+                1,
+                1
+              ]
+            },
+            {
+              "label": "Q",
+              "weights": [
+                1,
+                5
+              ]
+            },
+            {
+              "label": "R",
+              "weights": [
+                2,
+                1
+              ]
+            }
+          ],
+          "notation": "equals"
+        }
+      },
+      {
+        "seed": 7,
+        "constraints": {}
+      }
+    ]
+  }
+}

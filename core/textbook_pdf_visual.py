@@ -323,6 +323,7 @@ def match_questions_to_pdf(
     results: list[dict[str, Any]] = []
     last_page = 0
     last_y = -1.0
+    last_longest = ""
     figure_assignments = _ordered_figure_cue_assignments(items, pages)
 
     for idx, item in enumerate(items):
@@ -343,6 +344,7 @@ def match_questions_to_pdf(
         if best is not None:
             score, page_no, y, hits, method = best
             last_page, last_y = page_no, y
+            last_longest = hits[0] if hits else ""
             results.append(
                 {
                     **item,
@@ -382,6 +384,16 @@ def match_questions_to_pdf(
                 method = "shared_phrase+order"
             if last_page and page["page"] < last_page - 1:
                 score -= 0.35
+            elif (
+                longest == last_longest and last_page
+                and page["page"] == last_page and abs(y - last_y) <= 2
+            ):
+                # The previous question already anchored on this occurrence (例題 and
+                # 隨堂練習 often share wording such as "在右圖中分別標出…").
+                later = [yy for yy in find_phrase_ys(page, longest) if yy > last_y + 2]
+                if not later:
+                    continue
+                y = later[0]
             elif last_page and page["page"] == last_page and y + 6 < last_y:
                 if y < last_y - 20:
                     score -= 0.12
@@ -390,8 +402,10 @@ def match_questions_to_pdf(
             cand = (score, page["page"], float(y), hits[:5], method)
             if best is None or cand[0] > best[0]:
                 best = cand
-            elif best is not None and cand[0] == best[0]:
-                if last_page and abs(cand[1] - last_page) < abs(best[1] - last_page):
+            elif best is not None and cand[0] == best[0] and last_page:
+                # Equal evidence: nearest page wins, and going forward beats going back.
+                order_key = lambda c: (abs(c[1] - last_page), c[1] < last_page)
+                if order_key(cand) < order_key(best):
                     best = cand
 
         if best is None:
@@ -430,6 +444,7 @@ def match_questions_to_pdf(
 
         score, page_no, y, hits, method = best
         last_page, last_y = page_no, y
+        last_longest = hits[0] if hits else ""
         results.append(
             {
                 **item,

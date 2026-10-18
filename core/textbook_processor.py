@@ -290,9 +290,18 @@ _GH_ZONE_HDR_RE = re.compile(
 )
 _GH_SECTION_HEADING_RE = re.compile(r"^\s*([甲乙丙丁戊己庚辛壬癸])\s+([^\s，。：:；].{0,24})$")
 _GH_SUBSECTION_HEADING_RE = re.compile(r"^\s*[\(（]([一二三四五六七八九十]+)[\)）]\s*([^\s，。：:；].{0,24})$")
-_GH_EXAMPLE_START_RE = re.compile(r"^\s*例題\s*(\d{1,2})(?!\d)\s*(.*)$")
+# "例題8 的解法…" / "例題3 中…" are exposition referring back to an example, not a new one.
+_GH_EXAMPLE_START_RE = re.compile(r"^\s*例題\s*(\d{1,2})(?!\d)(?!\s*[的中之裡])\s*(.*)$")
 _GH_PRACTICE_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})?(?!\d)\s*(.*)$")
 _GH_EXERCISE_NUM_RE = re.compile(r"^\s*(\d{1,2})\s*(?:[\.、．\t]|\s+)\s*(.*)$")
+# 觀念澄清 true/false items are numbered "(1)" and/or carry an answer box before the number:
+# "(　)1.", "□ 1", "（ ）(1)" or a private-use box glyph from the publisher font.
+_GH_CONCEPT_BOX = r"(?:[\(（][\s\u3000_]*[\)）]|[□☐☑☒■◻◽○◯\ue000-\uf8ff])"
+_GH_CONCEPT_ITEM_RE = re.compile(
+    rf"^\s*(?:{_GH_CONCEPT_BOX}\s*)*[\(（]\s*(\d{{1,2}})\s*[\)）]\s*(.*)$"
+    rf"|^\s*(?:{_GH_CONCEPT_BOX}\s*)+(\d{{1,2}})(?!\d)\s*[\.、．]?\s*(.*)$"
+)
+_GH_SUBITEM_START_RE = re.compile(r"^\s*[\(（]\s*\d{1,2}\s*[\)）]")
 _GH_CONTINUATION_RE = re.compile(r"^\s*(?:[\(（]\s*(?:\d{1,2}|[A-Ea-e])\s*[\)）]|\\\(|\\\[|\$)")
 _GH_SENTENCE_PUNCT_RE = re.compile(r"[，。；！？]")
 
@@ -327,6 +336,7 @@ def scan_general_high_layout(
     subsection_heading = ""
     exercise_code = ""
     zone = ""
+    zone_lead = ""
     practice_ordinal = 0
     current: dict[str, Any] | None = None
 
@@ -403,11 +413,28 @@ def scan_general_high_layout(
             if m_zone:
                 _flush()
                 zone = m_zone.group(1)
+                zone_lead = ""
                 continue
             m_num = _GH_EXERCISE_NUM_RE.match(line)
             if m_num:
                 n = int(m_num.group(1))
                 _start("chapter_exercise", f"{exercise_code}習題 {zone}{n}", str(n), m_num.group(2).strip(), idx)
+                continue
+            m_concept = _GH_CONCEPT_ITEM_RE.match(line) if zone == "觀念澄清" else None
+            # "(1)" under a numbered item ("1.下列敘述…") is a sub-question of that item.
+            if m_concept and m_concept.group(1) and current is not None and not current.get("concept_item"):
+                m_concept = None
+            if m_concept:
+                n = int(m_concept.group(1) or m_concept.group(3))
+                first = (m_concept.group(2) if m_concept.group(1) else m_concept.group(4)) or ""
+                if zone_lead:
+                    first = f"{zone_lead}\n{first.strip()}"
+                _start("chapter_exercise", f"{exercise_code}習題 {zone}{n}", str(n), first.strip(), idx)
+                current["concept_item"] = True
+                continue
+            if zone == "觀念澄清" and current is None:
+                # Unnumbered instruction ("下列敘述對的打「○」，錯的打「×」。") shared by every item.
+                zone_lead = line
                 continue
         else:
             m_sec = _GH_SECTION_HEADING_RE.match(line)
@@ -446,7 +473,13 @@ def scan_general_high_layout(
         if not current["solution_started"] and student_stem_has_solution_residue(line):
             current["solution_started"] = True
         if current["stem_open"]:
-            if not current["stem_lines"] or _GH_CONTINUATION_RE.match(line):
+            next_line = next((ln for ln in lines[idx + 1:] if ln), "")
+            # A lead-in such as "根據此規範回答下列各題：" belongs to the stem when sub-questions follow;
+            # once the stem already has sub-questions, such a line is exposition that restarts numbering.
+            leads_into_subitems = bool(_GH_SUBITEM_START_RE.match(next_line)) and not any(
+                _GH_SUBITEM_START_RE.match(s) for s in current["stem_lines"]
+            )
+            if not current["stem_lines"] or _GH_CONTINUATION_RE.match(line) or leads_into_subitems:
                 current["stem_lines"].append(line)
             else:
                 current["stem_open"] = False
@@ -560,6 +593,131 @@ def _apply_general_high_visual_review(notes: dict[str, Any], status: str) -> dic
         notes["needs_review"] = True
     notes["pdf_visual_status"] = status
     return notes
+
+
+GH_SOURCE_SKILL_MAP_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs", "general_high_source_skill_map.json"
+)
+
+
+def load_general_high_source_skill_maps(path: str | None = None) -> list[dict[str, Any]]:
+    try:
+        with open(path or GH_SOURCE_SKILL_MAP_PATH, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError):
+        return []
+    return [m for m in (data.get("maps") or []) if isinstance(m, dict) and isinstance(m.get("titles"), dict)]
+
+
+def find_general_high_source_skill_map(
+    curriculum: str, volume: str, chapter: str, maps: list[dict[str, Any]] | None = None
+) -> dict[str, Any] | None:
+    if str(curriculum or "") != "general":
+        return None
+    for entry in load_general_high_source_skill_maps() if maps is None else maps:
+        if (
+            entry.get("curriculum") == "general"
+            and entry.get("volume") == str(volume or "")
+            and entry.get("chapter") == str(chapter or "")
+        ):
+            return entry
+    return None
+
+
+def apply_general_high_source_skill_map(
+    *,
+    parsed_data: dict,
+    scan: dict[str, Any],
+    curriculum_info: dict,
+    queue=None,
+    maps: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Overwrite AI-chosen skill_id with the teacher-confirmed source map of this exact 普高 chapter.
+
+    A mapped skill must be bound to the same curriculum/volume/chapter in ``skill_curriculum``.
+    Rows of a mapped chapter whose title is not in the map are flagged for review.
+    """
+    summary: dict[str, Any] = {"applied": False, "map_id": None, "changed": [], "unmapped": [], "missing": []}
+    if str(curriculum_info.get("curriculum") or "") != "general":
+        return summary
+    volume = str(curriculum_info.get("volume") or "")
+    chapters = []
+    for ch in (parsed_data or {}).get("chapters") or []:
+        if isinstance(ch, dict):
+            chapters.append(normalize_general_high_chapter_section(str(ch.get("chapter_title") or ""))[0])
+    unit = scan.get("chapter") or {}
+    if unit.get("unit"):
+        chapters.append(normalize_general_high_chapter_section(f"{unit.get('unit')} {unit.get('title')}")[0])
+
+    for chapter in dict.fromkeys(c for c in chapters if c):
+        entry = find_general_high_source_skill_map("general", volume, chapter, maps)
+        if entry is None:
+            continue
+        allowed = {
+            sid: re.sub(r"^\s*[甲乙丙丁戊己庚辛壬癸]\s*[\.．、]\s*", "", str(para or "")).strip()
+            for sid, para in db.session.query(SkillCurriculum.skill_id, SkillCurriculum.paragraph).filter(
+                SkillCurriculum.curriculum == "general",
+                SkillCurriculum.volume == volume,
+                SkillCurriculum.chapter == chapter,
+            )
+        }
+        bad = sorted({s for s in entry["titles"].values() if s not in allowed})
+        if bad:
+            summary["error"] = f"skills_not_in_chapter:{bad}"
+            break
+        rows = TextbookExample.query.filter(
+            TextbookExample.source_curriculum == "general",
+            TextbookExample.source_volume == volume,
+            TextbookExample.source_chapter == chapter,
+        ).all()
+        seen = set()
+        for row in rows:
+            title = _GH_ROW_TITLE_SUFFIX_RE.sub("", str(row.source_description or "")).strip()
+            notes = json.loads(row.notes) if row.notes else {}
+            skill = entry["titles"].get(title)
+            if skill is None:
+                notes["needs_review"] = True
+                notes["skill_binding"] = {"source": "unmapped_in_source_skill_map", "map_id": entry.get("id")}
+                summary["unmapped"].append(title)
+            else:
+                seen.add(title)
+                notes["skill_binding"] = {
+                    "source": "general_high_source_skill_map",
+                    "map_id": entry.get("id"),
+                    "ai_skill_id": row.skill_id,
+                }
+                if row.skill_id != skill:
+                    summary["changed"].append({"title": title, "from": row.skill_id, "to": skill})
+                    notes["skill_binding"]["ai_source_paragraph"] = row.source_paragraph
+                    row.skill_id = skill
+                    if allowed[skill]:
+                        row.source_paragraph = allowed[skill]
+            row.notes = json.dumps(notes, ensure_ascii=False)
+        summary["missing"] = sorted(set(entry["titles"]) - seen)
+        summary["map_id"] = entry.get("id")
+        summary["applied"] = True
+        db.session.commit()
+        break
+
+    if queue is not None and (summary["applied"] or summary.get("error")):
+        queue.put(
+            f"INFO: [SOURCE SKILL MAP] map={summary['map_id']} changed={len(summary['changed'])} "
+            f"unmapped={summary['unmapped']} missing={summary['missing']} error={summary.get('error')}"
+        )
+    return summary
+
+
+def interpolate_unmatched_pdf_pages(pages: list[int | None]) -> dict[int, int]:
+    """Source-ordered PDF pages; an unmatched item between two matches on the same page is on that page."""
+    out: dict[int, int] = {}
+    for i, page in enumerate(pages):
+        if page is not None:
+            continue
+        prev = next((pages[j] for j in range(i - 1, -1, -1) if pages[j] is not None), None)
+        nxt = next((pages[j] for j in range(i + 1, len(pages)) if pages[j] is not None), None)
+        if prev is not None and prev == nxt:
+            out[i] = prev
+    return out
 
 
 def enrich_general_high_pdf_visuals(
@@ -676,9 +834,20 @@ def enrich_general_high_pdf_visuals(
         )
         enrich_rows = {r.get("id"): r for r in enrich.get("rows") or []}
         pdf_sha256 = fingerprint_file(pdf)
+        ordered = sorted(
+            targets,
+            key=lambda r: int((parse_notes_dict(r.notes).get("question_anchor") or {}).get("source_order") or 10**9),
+        )
+        inferred_pages = interpolate_unmatched_pdf_pages(
+            [(enrich_rows.get(r.id) or {}).get("page") for r in ordered]
+        )
+        inferred_by_id = {r.id: inferred_pages[i] for i, r in enumerate(ordered) if i in inferred_pages}
         for row in targets:
             notes = parse_notes_dict(row.notes)
-            er = enrich_rows.get(row.id) or {}
+            er = dict(enrich_rows.get(row.id) or {})
+            if er.get("page") is None and row.id in inferred_by_id:
+                er["page"] = inferred_by_id[row.id]
+                er["page_source"] = "between_same_page_neighbors"
             status = classify_general_high_visual_status(notes, str(row.problem_text or ""))
             notes = _apply_general_high_visual_review(notes, status)
             notes["pdf_visual_enrichment"] = {
@@ -686,6 +855,7 @@ def enrich_general_high_pdf_visuals(
                 "source_pdf_sha256": pdf_sha256,
                 "result": er.get("status") or "not_scanned",
                 "page": er.get("page"),
+                "page_source": er.get("page_source") or ("pdf_text_match" if er.get("page") else None),
                 "classification": er.get("classification"),
                 "visual_reason": er.get("visual_reason"),
                 "visual_bbox": er.get("visual_bbox"),
@@ -1039,6 +1209,7 @@ _DIAGRAM_REQUIRED_RE = re.compile(
     r"填入圖中|判斷圖形|觀察圖|如右圖|如左圖|如下圖|如上圖|附圖|"
     r"線段\s*AB\s*如圖|著色|路線圖|棋盤式街道圖|樹狀圖|圓環|示意圖|題圖"
 )
+_NUMBER_LINE_POINT_COORD_RE = re.compile(r"[A-Z]\s*(?:\\left\s*)?[\(（]\s*\{?\s*-?\s*[0-9a-z]")
 _DIAGRAM_DEPENDENCY_PHRASE_RE = re.compile(
     r"如圖|下圖|上圖|右圖|左圖|依圖|根據圖|由圖可知|圖中|圖形中|如圖所示|"
     r"如右圖|如左圖|如下圖|如上圖|附圖"
@@ -1064,7 +1235,11 @@ def classify_image_dependency(
     hint = str(image_hint or "").strip()
     combined = "\n".join(p for p in (q, cap, hint) if p)
 
-    if _DIAGRAM_REQUIRED_RE.search(combined):
+    diagram_cues = {m.group(0) for m in _DIAGRAM_REQUIRED_RE.finditer(combined)}
+    if diagram_cues == {"數線上"} and _NUMBER_LINE_POINT_COORD_RE.search(q):
+        # "設數線上兩點 A(5)、B(12)" defines the points in text; no figure is required.
+        diagram_cues = set()
+    if diagram_cues:
         return {
             "needs_image": True,
             "image_role": "required_diagram",
@@ -3811,6 +3986,12 @@ def process_textbook_file(
             optional_enrich_pdf_path=optional_enrich_pdf_path,
         )
         if general_high_scan and not outline_only and isinstance(result, dict) and result.get("status") != "error":
+            result["source_skill_map"] = apply_general_high_source_skill_map(
+                parsed_data=parsed_data,
+                scan=general_high_scan,
+                curriculum_info=curriculum_info,
+                queue=queue,
+            )
             if optional_enrich_pdf_path and str(optional_enrich_pdf_path).lower().endswith(".pdf"):
                 result["pdf_visual"] = enrich_general_high_pdf_visuals(
                     pdf_path=optional_enrich_pdf_path,
@@ -5867,6 +6048,23 @@ def import_outline_structure_only(parsed_data, curriculum_info, queue, source_fi
         raise e
 
 
+def source_file_provenance(path, original_filename: str = "") -> dict[str, Any] | None:
+    """Filename / size / sha256 of an import source, captured before the upload is cleaned up."""
+    p = str(path or "").strip()
+    if not p or not os.path.isfile(p):
+        return None
+    digest = hashlib.sha256()
+    with open(p, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {
+        "filename": os.path.basename(p),
+        "original_filename": str(original_filename or "") or os.path.basename(p),
+        "size_bytes": os.path.getsize(p),
+        "sha256": digest.hexdigest(),
+    }
+
+
 def save_to_database(
     parsed_data,
     curriculum_info,
@@ -5919,6 +6117,13 @@ def save_to_database(
     formula_asset_persist_cache: dict[str, str] = {}
     is_pdf_source = str(source_file_path or "").lower().endswith(".pdf")
     is_docx_source = str(source_file_path or "").lower().endswith((".docx", ".doc"))
+    original_names = dict(import_policy.get("source_original_filenames") or {})
+    source_provenance = {
+        "primary": source_file_provenance(source_file_path, original_names.get(str(source_file_path or ""), "")),
+        "optional_enrich_pdf": source_file_provenance(
+            optional_enrich_pdf_path, original_names.get(str(optional_enrich_pdf_path or ""), "")
+        ),
+    }
     converted_latex_import = (
         str(import_policy.get("docx_formula_source_mode", "") or "").strip() == "converted_docx_latex"
         or bool((_DOCX_IMPORT_CONTEXT or {}).get("formula_assets_extraction_skipped"))
@@ -6703,6 +6908,7 @@ def save_to_database(
             "review_required_by_confidence": bool(review_required),
             "import_source_priority": "docx_primary",
             "optional_enrich_pdf_path": optional_enrich_pdf_path or "",
+            "source_provenance": source_provenance,
             "rollback_metadata": {
                 "preserved": bool(import_policy.get("preserve_rollback_metadata", True)),
                 "policy": {
@@ -6857,13 +7063,11 @@ def save_to_database(
         return []
 
     def _find_existing_duplicate_by_dedupe(curriculum, volume, chapter, section, title, dedupe_hash):
+        # A bare title match is not identity: legacy rows and other source files in the
+        # same section reuse titles such as "例題1", so only content-hash matches merge.
         target_title = str(title or "").strip()
         target_hash = str(dedupe_hash or "").strip().lower()
         if not target_hash:
-            for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
-                sd = str(getattr(row, "source_description", "") or "")
-                if _extract_title_from_source_description(sd) == target_title:
-                    return row
             return None
         for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
             sd = str(getattr(row, "source_description", "") or "")
@@ -6875,10 +7079,6 @@ def save_to_database(
         for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
             sd = str(getattr(row, "source_description", "") or "")
             if _extract_dedupe_from_source_description(sd) == target_hash:
-                return row
-        for row in _iter_scope_existing_rows(curriculum, volume, chapter, section):
-            sd = str(getattr(row, "source_description", "") or "")
-            if _extract_title_from_source_description(sd) == target_title:
                 return row
         return None
 
@@ -7906,7 +8106,7 @@ def save_to_database(
                             source_paragraph=concept_name,
                             source_description=source_description,
                             problem_text=practice_problem,
-                            problem_type=practice.get('problem_type', 'in_class_practice'),
+                            problem_type=practice.get('problem_type') or source_type or 'in_class_practice',
                             correct_answer=practice_answer,
                             detailed_solution=sanitize_detailed_solution_text(
                                 practice_solution, max_chars=500, source_verbatim=bool(practice.get('solution_from_source'))

@@ -3772,7 +3772,8 @@ def _notebook_display_location(curriculum, volume, chapter, section):
 
 def _notebook_curriculum_display_name(curriculum):
     """Use the student-facing curriculum label while retaining the raw key."""
-    return "技高" if str(curriculum or "").strip().lower() == "vocational" else curriculum
+    labels = {"vocational": "技高", "general": "普高"}
+    return labels.get(str(curriculum or "").strip().lower(), curriculum)
 
 
 def _active_notebook_tree():

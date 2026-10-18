@@ -1250,7 +1250,7 @@ class MTEF:
 
                 # 多个line字符串数据以 \\ 分割
                 if idx > 0:
-                    buf + " \\\\ "
+                    buf += " \\\\ "
 
                 buf += _latex
                 idx += 1

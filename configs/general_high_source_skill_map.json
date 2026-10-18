@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "description": "Teacher-confirmed skill binding for 普高 source items. Applied after import only to the exact curriculum/volume/chapter scope of each entry; titles are DOCX canonical titles.",
+  "maps": [
+    {
+      "id": "general_數學1_單元2_絕對值_v1",
+      "curriculum": "general",
+      "volume": "數學1",
+      "chapter": "單元2 絕對值",
+      "confirmed_by": "user_confirmation_2026-10-18_stage1_replacement",
+      "titles": {
+        "例題1": "gh_PointDivisionFormulaOnNumberLine",
+        "例題2": "gh_PointDivisionFormulaOnNumberLine",
+        "隨堂練習1": "gh_PointDivisionFormulaOnNumberLine",
+        "隨堂練習2": "gh_PointDivisionFormulaOnNumberLine",
+        "2習題 基礎題1": "gh_PointDivisionFormulaOnNumberLine",
+        "2習題 基礎題2": "gh_PointDivisionFormulaOnNumberLine",
+        "2習題 觀念澄清1": "gh_PointDivisionFormulaOnNumberLine",
+        "2習題 觀念澄清2": "gh_PointDivisionFormulaOnNumberLine",
+        "例題3": "gh_LinearEquationsWithAbsoluteValue",
+        "例題4": "gh_LinearEquationsWithAbsoluteValue",
+        "隨堂練習3": "gh_LinearEquationsWithAbsoluteValue",
+        "隨堂練習4": "gh_LinearEquationsWithAbsoluteValue",
+        "2習題 基礎題3": "gh_LinearEquationsWithAbsoluteValue",
+        "2習題 進階題7": "gh_LinearEquationsWithAbsoluteValue",
+        "例題5": "gh_LinearInequalitiesWithAbsoluteValue",
+        "例題6": "gh_LinearInequalitiesWithAbsoluteValue",
+        "例題7": "gh_LinearInequalitiesWithAbsoluteValue",
+        "例題8": "gh_LinearInequalitiesWithAbsoluteValue",
+        "隨堂練習5": "gh_LinearInequalitiesWithAbsoluteValue",
+        "隨堂練習6": "gh_LinearInequalitiesWithAbsoluteValue",
+        "隨堂練習7": "gh_LinearInequalitiesWithAbsoluteValue",
+        "隨堂練習8": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 基礎題4": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 基礎題5": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 基礎題6": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 進階題8": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 進階題9": "gh_LinearInequalitiesWithAbsoluteValue",
+        "2習題 觀念澄清3": "gh_LinearInequalitiesWithAbsoluteValue"
+      }
+    }
+  ]
+}

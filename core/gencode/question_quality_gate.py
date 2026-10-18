@@ -467,6 +467,125 @@ def solution_set_to_natural_text(solution: Any, variable: str = "x") -> str | No
     return " 或 ".join(rendered) if rendered else None
 
 
+def _latex_endpoint(value: Any) -> str | None:
+    from sympy import Integer, Rational, latex
+
+    if isinstance(value, Integer):
+        return str(int(value))
+    if isinstance(value, Rational):
+        sign = "-" if value < 0 else ""
+        return f"{sign}\\frac{{{abs(value.p)}}}{{{value.q}}}"
+    if getattr(value, "free_symbols", None) or not getattr(value, "is_real", False) or not getattr(value, "is_finite", False):
+        return None
+    return latex(value)
+
+
+def solution_set_to_latex_display(solution: Any, variable: str = "x") -> str | None:
+    """Render a SymPy real solution set as `$x \\le -12$ 或 $x \\ge 6$` for MathJax.
+
+    Presentation only: the set itself (endpoints and open/closed ends) comes
+    from the parsed structure, never from rewriting the interval string.
+    """
+    from sympy import FiniteSet, Interval, S, Union, oo
+
+    if solution == S.Reals:
+        return "全體實數"
+    if solution == S.EmptySet:
+        return "無解"
+    pieces = list(solution.args) if isinstance(solution, Union) else [solution]
+
+    def _key(item: Any) -> float:
+        inf = item.inf
+        if inf == -oo:
+            return -1e300
+        if inf == oo:
+            return 1e300
+        return float(inf)
+
+    rendered: list[str] = []
+    for piece in sorted(pieces, key=_key):
+        if isinstance(piece, FiniteSet):
+            for value in sorted(piece, key=float):
+                text = _latex_endpoint(value)
+                if text is None:
+                    return None
+                rendered.append(f"${variable}={text}$")
+            continue
+        if not isinstance(piece, Interval):
+            return None
+        low, high = piece.start, piece.end
+        low_op = "<" if piece.left_open else "\\le"
+        high_op = "<" if piece.right_open else "\\le"
+        if low == -oo and high == oo:
+            return "全體實數"
+        if low == -oo:
+            text = _latex_endpoint(high)
+            if text is None:
+                return None
+            rendered.append(f"${variable} {high_op} {text}$")
+        elif high == oo:
+            text = _latex_endpoint(low)
+            if text is None:
+                return None
+            lower_bound_op = ">" if piece.left_open else "\\ge"
+            rendered.append(f"${variable} {lower_bound_op} {text}$")
+        else:
+            lo_text, hi_text = _latex_endpoint(low), _latex_endpoint(high)
+            if lo_text is None or hi_text is None:
+                return None
+            rendered.append(f"${lo_text} {low_op} {variable} {high_op} {hi_text}$")
+    return " 或 ".join(rendered) if rendered else None
+
+
+_INEQUALITY_PART_CHECKERS = frozenset({"inequality_solution_checker", "interval_checker"})
+_INEQUALITY_PART_EQUIVALENCES = frozenset(
+    {"interval_set", "interval_equivalence", "inequality_solution_equivalence"}
+)
+
+
+def _is_inequality_part(part: dict[str, Any]) -> bool:
+    from core.gencode.answer_payload import answer_type_family
+
+    checker = str(part.get("checker") or part.get("checker_key") or "").strip()
+    equivalence = str(part.get("answer_equivalence") or part.get("equivalence_type") or "").strip()
+    return (
+        checker in _INEQUALITY_PART_CHECKERS
+        or equivalence in _INEQUALITY_PART_EQUIVALENCES
+        or answer_type_family(str(part.get("answer_type") or "")) == "interval"
+    )
+
+
+def inequality_answer_latex_display(
+    payload: dict[str, Any],
+    value: Any,
+    part: dict[str, Any] | None = None,
+) -> str | None:
+    """Post-submit relational display of an inequality answer, or None to keep the default.
+
+    Applies to single-answer inequality payloads and to inequality parts of a
+    multi-part contract. Questions that ask for interval notation keep it.
+    """
+    if _is_choice_payload(payload) or teaches_interval_notation(payload):
+        return None
+    if isinstance(value, (dict, list, tuple)) or value is None:
+        return None
+    if part is not None:
+        part_form = f"{part.get('required_form') or ''} {part.get('required_form_hint') or ''}"
+        if _INTERVAL_TEACHING_RE.search(part_form) or not _is_inequality_part(part):
+            return None
+    elif not is_inequality_solution_payload(payload):
+        return None
+    text = str(value)
+    if not (_INTERVAL_NOTATION_RE.search(text) or _RELATIONAL_RE.search(text)):
+        return None
+    from core.checkers.inequality_solution_checker import parse_real_solution_set
+
+    solution = parse_real_solution_set(text)
+    if solution is None:
+        return None
+    return solution_set_to_latex_display(solution, _solution_variable(payload))
+
+
 def is_inequality_solution_payload(payload: dict[str, Any]) -> bool:
     """True only for real-solution-set answers graded as inequalities.
 

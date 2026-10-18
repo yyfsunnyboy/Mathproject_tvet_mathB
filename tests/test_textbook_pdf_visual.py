@@ -75,6 +75,44 @@ def test_match_questions_to_pdf_basic():
     assert matched[0]["match_score"] >= 0.9
 
 
+def _text_page(page_no: int, text: str, y: float) -> dict:
+    norm = normalize_pdf_text(text)
+    return {
+        "page": page_no,
+        "width": 500,
+        "height": 700,
+        "norm_text": norm,
+        "words": [(80.0, y, 400.0, y + 12.0, norm)] if norm else [],
+        "images": [],
+        "drawings": [],
+        "char_count": 40,
+    }
+
+
+def test_shared_phrase_consumed_by_previous_question_moves_to_next_page():
+    shared = "在右圖中分別標出P,Q,R三點所在的位置"
+    pages = [_text_page(1, "前言", 100), _text_page(2, shared, 300), _text_page(3, shared, 150)]
+    items = [
+        {"source_description": "例題2", "problem_text": shared, "source_order": 1},
+        {"source_description": "隨堂練習2", "problem_text": shared, "source_order": 2},
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[0]["pdf_match"]["page"] == 2
+    assert matched[1]["pdf_match"]["page"] == 3
+
+
+def test_equal_shared_evidence_prefers_forward_page():
+    shared = "解下列各不等式並寫出解集合"
+    pages = [_text_page(1, shared, 200), _text_page(2, "林媽媽製作了一個半徑為16公分的圓形披薩", 200),
+             _text_page(3, shared, 200)]
+    items = [
+        {"source_description": "例1", "problem_text": "林媽媽製作了一個半徑為16公分的圓形披薩", "source_order": 1},
+        {"source_description": "例2", "problem_text": shared, "source_order": 2},
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[1]["pdf_match"]["page"] == 3
+
+
 def test_no_visual_when_text_only():
     pages = [
         {

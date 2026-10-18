@@ -11,10 +11,12 @@ Structured inputs
 -----------------
 linear form  ``[[coefficient, degree], ...]`` in written order, degree 0 or 1
              (``[[2, 0], [-1, 1]]`` is 2-x)
-side         ``[{"abs": form, "coef": k?} | {"poly": form}, ...]`` meaning Σ k·|form| + Σ form
+side         ``[{"abs": form, "coef": k?} | {"poly": form}, ...]`` meaning Σ k·|form| + Σ form;
+             a whole side may be the constant 0, written ``[{"poly": [[0, 0]]}]``
 relation     ``{"lhs": side, "op": "=" | "<" | "<=" | ">" | ">=", "rhs": side}``
 interval     ``[low, high, low_closed, high_closed]`` with ``"-oo"`` / ``"oo"`` for unbounded ends
-weighted point ``[p, q]`` meaning (p·a + q·b)/(p + q) for a < b
+weighted point ``[p, q]`` (positive rational weights) meaning (p·a + q·b)/(p + q); a < b unless the
+             item states ``"order": "a>b"``
 """
 
 from __future__ import annotations
@@ -68,9 +70,22 @@ def form_coefficients(form: list[list[Any]]) -> tuple[Fraction, Fraction]:
     return slope, constant
 
 
+ZERO_SIDE: list[dict[str, Any]] = [{"poly": [["0", 0]]}]
+
+
+def _is_zero_side(raw: Any) -> bool:
+    if not (isinstance(raw, list) and len(raw) == 1 and isinstance(raw[0], dict) and set(raw[0]) == {"poly"}):
+        return False
+    form = raw[0]["poly"]
+    return (isinstance(form, list) and len(form) == 1 and isinstance(form[0], (list, tuple)) and len(form[0]) == 2
+            and form[0][1] == 0 and parse_exact_rational(form[0][0]) == 0)
+
+
 def _side(raw: Any) -> list[dict[str, Any]]:
     if not isinstance(raw, list) or not raw or len(raw) > _MAX_TERMS:
         raise ValueError("relation side must be a non-empty list of terms")
+    if _is_zero_side(raw):
+        return [{"poly": [list(item) for item in ZERO_SIDE[0]["poly"]]}]
     out: list[dict[str, Any]] = []
     for term in raw:
         if not isinstance(term, dict):
@@ -93,7 +108,10 @@ def _side(raw: Any) -> list[dict[str, Any]]:
 def _relation(raw: Any, *, ops: tuple[str, ...] = RELATION_OPS) -> dict[str, Any]:
     if not isinstance(raw, dict) or raw.get("op") not in ops:
         raise ValueError(f"relation op must be one of {ops}")
-    return {"lhs": _side(raw["lhs"]), "op": raw["op"], "rhs": _side(raw["rhs"])}
+    lhs, rhs = _side(raw["lhs"]), _side(raw["rhs"])
+    if lhs == ZERO_SIDE and rhs == ZERO_SIDE:
+        raise ValueError("relation sides must not both be 0")
+    return {"lhs": lhs, "op": raw["op"], "rhs": rhs}
 
 
 def side_value(side: list[dict[str, Any]], x: Fraction) -> Fraction:
@@ -408,9 +426,63 @@ def recover_absolute_value_parameters(
 # --- statements and weighted points ----------------------------------------------
 
 def weighted_position(weights: list[Any]) -> Fraction:
-    """Position t of (p·a + q·b)/(p+q) = a + t(b - a); a larger t is a larger number when a < b."""
+    """Position t of (p·a + q·b)/(p+q) = a + t(b - a), measured from a towards b."""
     p, q = (parse_exact_rational(w) for w in weights)
     return q / (p + q)
+
+
+def _order_sign(order: str) -> int:
+    """+1 when a < b (a larger position is a larger number), -1 when a > b."""
+    return 1 if order == "a<b" else -1
+
+
+def _symbolic_distance(statement: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+    """Exact identity check of |A(t) - B(t)| against the claimed expression on the stated range of t.
+
+    Both sides are piecewise linear in t; they agree on the range iff they agree at every
+    break point inside it and at two distinct points of every linear piece.
+    """
+    slope_a, const_a = form_coefficients(statement["points"]["A"])
+    slope_b, const_b = form_coefficients(statement["points"]["B"])
+    d_slope, d_const = slope_a - slope_b, const_a - const_b
+    c_slope, c_const = form_coefficients(statement["claim"]["form"])
+    claim_abs = statement["claim"]["abs"]
+    condition = statement.get("condition")
+
+    def distance(t: Fraction) -> Fraction:
+        return abs(d_slope * t + d_const)
+
+    def claimed(t: Fraction) -> Fraction:
+        value = c_slope * t + c_const
+        return abs(value) if claim_abs else value
+
+    def allowed(t: Fraction) -> bool:
+        return condition is None or _holds(condition["op"], t - parse_exact_rational(condition["value"]))
+
+    cuts: set[Fraction] = set()
+    if d_slope:
+        cuts.add(-d_const / d_slope)
+    if claim_abs and c_slope:
+        cuts.add(-c_const / c_slope)
+    if condition is not None:
+        cuts.add(parse_exact_rational(condition["value"]))
+    ordered = sorted(cuts)
+    probes = list(ordered)
+    edges = [None, *ordered, None]
+    for left, right in zip(edges, edges[1:]):
+        if left is None and right is None:
+            probes += [Fraction(0), Fraction(1)]
+        elif left is None:
+            probes += [right - 1, right - 2]
+        elif right is None:
+            probes += [left + 1, left + 2]
+        else:
+            probes += [left + (right - left) / 3, left + 2 * (right - left) / 3]
+    counterexample = next((t for t in probes if allowed(t) and distance(t) != claimed(t)), None)
+    return counterexample is None, {
+        "difference": [canonical_rational(d_slope), canonical_rational(d_const)],
+        "counterexample": None if counterexample is None else canonical_rational(counterexample),
+    }
 
 
 def evaluate_absolute_value_statements(statements: list[dict[str, Any]]) -> dict[str, Any]:
@@ -426,8 +498,12 @@ def evaluate_absolute_value_statements(statements: list[dict[str, Any]]) -> dict
             details.append({"claimed": canonical_rational(claimed), "actual": canonical_rational(actual)})
         elif kind == "weighted_point_order":
             left, right = weighted_position(statement["left"]), weighted_position(statement["right"])
-            truths.append(_holds(statement["op"], left - right))
+            truths.append(_holds(statement["op"], _order_sign(statement.get("order", "a<b")) * (left - right)))
             details.append({"left_position": canonical_rational(left), "right_position": canonical_rational(right)})
+        elif kind == "symbolic_distance":
+            truth, detail = _symbolic_distance(statement)
+            truths.append(truth)
+            details.append(detail)
         else:
             left, right = solve_relation(statement["left"]), solve_relation(statement["right"])
             truths.append(left == right)
@@ -435,12 +511,38 @@ def evaluate_absolute_value_statements(statements: list[dict[str, Any]]) -> dict
     return {"truth_values": truths, "details": details}
 
 
-def select_extreme_weighted_point(options: list[list[Any]], extreme: str) -> dict[str, Any]:
+def select_extreme_weighted_point(options: list[list[Any]], extreme: str, order: str = "a<b") -> dict[str, Any]:
     positions = [weighted_position(w) for w in options]
-    best = max(positions) if extreme == "max" else min(positions)
-    if positions.count(best) != 1:
+    signed = [_order_sign(order) * t for t in positions]
+    best = max(signed) if extreme == "max" else min(signed)
+    if signed.count(best) != 1:
         raise ValueError("extreme_weighted_point_not_unique")
-    return {"choice": positions.index(best) + 1, "positions": [canonical_rational(t) for t in positions]}
+    return {"choice": signed.index(best) + 1, "positions": [canonical_rational(t) for t in positions]}
+
+
+# --- tolerance-range applications ------------------------------------------------
+
+TOLERANCE_PROFILES: dict[str, dict[str, Any]] = {
+    "standard_weight_male": {"offset": 80, "factor": Fraction(7, 10), "height_range": (160, 190)},
+    "standard_weight_female": {"offset": 70, "factor": Fraction(3, 5), "height_range": (150, 180)},
+}
+TOLERANCE_PERCENTS = (5, 10, 15, 20)
+_TOLERANCE_TEMPLATE = [{"inner": [["1", 1], [{"param": "a", "sign": -1}, 0]], "op": "<=", "bound": {"param": "b"}}]
+
+
+def solve_tolerance_range_application(profile: str, height: int, tolerance_percent: int) -> dict[str, Any]:
+    """Model value W = (height - offset)·factor; the normal range W(1 ± p%) recovered as |x - a| <= b."""
+    spec = TOLERANCE_PROFILES[profile]
+    model = (Fraction(height) - spec["offset"]) * spec["factor"]
+    rate = Fraction(tolerance_percent, 100)
+    target = [[canonical_rational(model * (1 - rate)), canonical_rational(model * (1 + rate)), True, True]]
+    recovered = recover_absolute_value_parameters(_TOLERANCE_TEMPLATE, ["a", "b"], target)
+    return {
+        "model_value": canonical_rational(model),
+        "range": target,
+        "values": recovered["values"],
+        "relations": recovered["relations"],
+    }
 
 
 # --- givens (constraints or seeded defaults) -------------------------------------
@@ -449,6 +551,33 @@ def _positive_int(value: Any, name: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
         raise ValueError(f"{name} must be a positive integer")
     return value
+
+
+def _weight(value: Any) -> Any:
+    """Positive rational weight: integers stay integers, other values become canonical strings."""
+    if isinstance(value, bool):
+        raise ValueError("weight must be a positive rational")
+    if isinstance(value, int):
+        return _positive_int(value, "weight")
+    exact = parse_exact_rational(value)
+    if exact <= 0:
+        raise ValueError("weight must be a positive rational")
+    return canonical_rational(exact)
+
+
+def _weights(raw: Any) -> list[Any]:
+    if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+        raise ValueError("weighted point needs two weights")
+    return [_weight(w) for w in raw]
+
+
+def _order(raw: dict[str, Any], out: dict[str, Any]) -> dict[str, Any]:
+    order = raw.get("order", "a<b")
+    if order not in ("a<b", "a>b"):
+        raise ValueError("order must be a<b or a>b")
+    if order != "a<b":
+        out["order"] = order
+    return out
 
 
 def _division_givens(constraints: dict[str, Any], rng: random.Random) -> dict[str, Any]:
@@ -624,25 +753,99 @@ def _statement(raw: Any) -> dict[str, Any]:
     if kind == "weighted_point_order":
         if raw.get("op") not in RELATION_OPS:
             raise ValueError("unsupported comparison")
-        left = [_positive_int(w, "weight") for w in raw["left"]]
-        right = [_positive_int(w, "weight") for w in raw["right"]]
-        return {"kind": kind, "left": left, "op": raw["op"], "right": right}
+        return _order(raw, {"kind": kind, "left": _weights(raw["left"]), "op": raw["op"], "right": _weights(raw["right"])})
+    if kind == "symbolic_distance":
+        return _symbolic_distance_statement(raw)
     if kind == "same_solution_set":
         return {"kind": kind, "left": _relation_for_statement(raw["left"]), "right": _relation_for_statement(raw["right"])}
     raise ValueError(f"unsupported statement kind: {kind}")
 
 
-def _statement_givens(constraints: dict[str, Any], rng: random.Random) -> dict[str, Any]:
-    statements = constraints.get("statements")
-    if statements is None:
-        a, b = rng.sample(range(-9, 10), 2)
-        statements = [{"kind": "distance_expression", "points": {"A": a, "B": b}, "claim": [a, rng.choice("-+"), b]}]
-    if not isinstance(statements, list) or not 1 <= len(statements) <= _MAX_PARTS:
-        raise ValueError("statements must be a list of 1..4 items")
-    labels = constraints.get("item_labels") or []
-    if not isinstance(labels, list) or (labels and len(labels) != len(statements)):
-        raise ValueError("item_labels must match statements")
-    return {"statements": [_statement(s) for s in statements], "item_labels": [str(x) for x in labels]}
+_PARAMETER_NAMES = tuple("abcdkmnpqrst")
+
+
+def _param_form(raw: Any) -> list[list[Any]]:
+    """Linear form in the statement parameter; a plain number is a constant, and the constant 0 is allowed."""
+    if isinstance(raw, list):
+        if len(raw) == 1 and isinstance(raw[0], (list, tuple)) and raw[0][1] == 0 and parse_exact_rational(raw[0][0]) == 0:
+            return [["0", 0]]
+        return _form(raw)
+    value = parse_exact_rational(raw)
+    return [[canonical_rational(value), 0]]
+
+
+def _symbolic_distance_statement(raw: dict[str, Any]) -> dict[str, Any]:
+    parameter = raw.get("parameter")
+    if parameter not in _PARAMETER_NAMES:
+        raise ValueError("parameter must be a single letter name")
+    points = raw.get("points")
+    if not isinstance(points, dict) or set(points) != {"A", "B"}:
+        raise ValueError("symbolic_distance needs points A and B")
+    a_form, b_form = _param_form(points["A"]), _param_form(points["B"])
+    if form_coefficients(a_form)[0] == 0 and form_coefficients(b_form)[0] == 0:
+        raise ValueError("symbolic_distance needs a point depending on the parameter")
+    if form_coefficients(a_form) == form_coefficients(b_form):
+        raise ValueError("points must be distinct expressions")
+    claim = raw.get("claim")
+    if not isinstance(claim, dict) or not isinstance(claim.get("abs"), bool):
+        raise ValueError("claim must give abs flag and form")
+    out: dict[str, Any] = {
+        "kind": "symbolic_distance",
+        "parameter": parameter,
+        "points": {"A": a_form, "B": b_form},
+        "claim": {"abs": claim["abs"], "form": _form(claim["form"])},
+    }
+    condition = raw.get("condition")
+    if condition is not None:
+        if not isinstance(condition, dict) or condition.get("op") not in INEQUALITY_OPS:
+            raise ValueError("condition op must be an inequality")
+        out["condition"] = {"op": condition["op"], "value": canonical_rational(parse_exact_rational(condition["value"]))}
+    return out
+
+
+_ALL_STATEMENT_KINDS = ("distance_expression", "weighted_point_order", "symbolic_distance", "same_solution_set")
+NUMBER_LINE_STATEMENT_KINDS = ("distance_expression", "weighted_point_order", "symbolic_distance")
+
+
+def _seeded_number_line_statement(rng: random.Random) -> dict[str, Any]:
+    if rng.random() < 0.5:
+        c = rng.choice([n for n in range(-9, 10) if n])
+        claim = rng.choice([[[1, 1], [-c, 0]], [[1, 1], [c, 0]], [[-c, 0], [1, 1]]])
+        return {"kind": "symbolic_distance", "parameter": "a", "points": {"A": [[1, 1]], "B": c},
+                "claim": {"abs": True, "form": claim}}
+    pool = [[p, q] for p in range(1, 5) for q in range(1, 5)]
+    while True:
+        left, right = rng.sample(pool, 2)
+        if weighted_position(left) != weighted_position(right):
+            break
+    return {"kind": "weighted_point_order", "left": left, "op": rng.choice([">", "<"]), "right": right,
+            "order": rng.choice(["a<b", "a>b"])}
+
+
+def _statements_givens_for(kinds: tuple[str, ...], seeded: Callable[[random.Random], dict[str, Any]]):
+    def make(constraints: dict[str, Any], rng: random.Random) -> dict[str, Any]:
+        statements = constraints.get("statements")
+        if statements is None:
+            statements = [seeded(rng)]
+        if not isinstance(statements, list) or not 1 <= len(statements) <= _MAX_PARTS:
+            raise ValueError("statements must be a list of 1..4 items")
+        if any(not isinstance(s, dict) or s.get("kind") not in kinds for s in statements):
+            raise ValueError(f"statement kinds must be among {kinds}")
+        labels = constraints.get("item_labels") or []
+        if not isinstance(labels, list) or (labels and len(labels) != len(statements)):
+            raise ValueError("item_labels must match statements")
+        return {"statements": [_statement(s) for s in statements], "item_labels": [str(x) for x in labels]}
+
+    return make
+
+
+def _seeded_distance_statement(rng: random.Random) -> dict[str, Any]:
+    a, b = rng.sample(range(-9, 10), 2)
+    return {"kind": "distance_expression", "points": {"A": a, "B": b}, "claim": [a, rng.choice("-+"), b]}
+
+
+_statement_givens = _statements_givens_for(_ALL_STATEMENT_KINDS, _seeded_distance_statement)
+_number_line_statement_givens = _statements_givens_for(NUMBER_LINE_STATEMENT_KINDS, _seeded_number_line_statement)
 
 
 def _choice_givens(constraints: dict[str, Any], rng: random.Random) -> dict[str, Any]:
@@ -659,7 +862,26 @@ def _choice_givens(constraints: dict[str, Any], rng: random.Random) -> dict[str,
     extreme = constraints.get("extreme", "max")
     if extreme not in ("max", "min"):
         raise ValueError("extreme must be max or min")
-    return {"options": [[_positive_int(w, "weight") for w in o] for o in options], "extreme": extreme}
+    return _order(constraints, {"options": [_weights(o) for o in options], "extreme": extreme})
+
+
+def _tolerance_givens(constraints: dict[str, Any], rng: random.Random) -> dict[str, Any]:
+    profile = constraints.get("profile")
+    if profile is None:
+        profile = rng.choice(sorted(TOLERANCE_PROFILES))
+        low, high = TOLERANCE_PROFILES[profile]["height_range"]
+        constraints = {"profile": profile, "height": rng.randrange(low, high + 1, 5),
+                       "tolerance_percent": rng.choice([10, 20])}
+    if profile not in TOLERANCE_PROFILES:
+        raise ValueError(f"unsupported tolerance profile: {profile}")
+    height = _positive_int(constraints.get("height"), "height")
+    low, high = TOLERANCE_PROFILES[profile]["height_range"]
+    if not low <= height <= high:
+        raise ValueError(f"height must lie in {low}..{high}")
+    tolerance = constraints.get("tolerance_percent")
+    if tolerance not in TOLERANCE_PERCENTS or isinstance(tolerance, bool):
+        raise ValueError(f"tolerance_percent must be one of {TOLERANCE_PERCENTS}")
+    return {"profile": profile, "height": height, "tolerance_percent": tolerance}
 
 
 _OPERATIONS: dict[str, tuple[Callable[..., dict[str, Any]], Callable[[dict[str, Any]], dict[str, Any]]]] = {
@@ -672,7 +894,16 @@ _OPERATIONS: dict[str, tuple[Callable[..., dict[str, Any]], Callable[[dict[str, 
         _recovery_givens, lambda g: recover_absolute_value_parameters(g["relations"], g["parameters"], g["target"]),
     ),
     "evaluate_absolute_value_statements": (_statement_givens, lambda g: evaluate_absolute_value_statements(g["statements"])),
-    "select_extreme_weighted_point": (_choice_givens, lambda g: select_extreme_weighted_point(g["options"], g["extreme"])),
+    "select_extreme_weighted_point": (
+        _choice_givens, lambda g: select_extreme_weighted_point(g["options"], g["extreme"], g.get("order", "a<b")),
+    ),
+    "evaluate_number_line_statements": (
+        _number_line_statement_givens, lambda g: evaluate_absolute_value_statements(g["statements"]),
+    ),
+    "solve_tolerance_range_application": (
+        _tolerance_givens,
+        lambda g: solve_tolerance_range_application(g["profile"], g["height"], g["tolerance_percent"]),
+    ),
 }
 OPERATIONS = tuple(_OPERATIONS)
 
@@ -770,21 +1001,68 @@ def validate_recover_absolute_value_parameters_matrix(givens: dict[str, Any], an
     return set(answer["values"]) == set(givens["parameters"]) and _set_matches_relations(answer["relations"], givens["target"])
 
 
-@_validator("evaluate_absolute_value_statements")
-def validate_evaluate_absolute_value_statements_matrix(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+def _concrete_ends(order: str) -> tuple[Fraction, Fraction]:
+    return (Fraction(-3), Fraction(5)) if order == "a<b" else (Fraction(5), Fraction(-3))
+
+
+def _weighted_value(weights: list[Any], a: Fraction, b: Fraction) -> Fraction:
+    p, q = (parse_exact_rational(w) for w in weights)
+    return (p * a + q * b) / (p + q)
+
+
+def _statements_consistent(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
     for statement, truth in zip(givens["statements"], answer["truth_values"]):
         if statement["kind"] == "weighted_point_order":
-            a, b = Fraction(0), Fraction(1)
-            left = (statement["left"][0] * a + statement["left"][1] * b) / sum(statement["left"])
-            right = (statement["right"][0] * a + statement["right"][1] * b) / sum(statement["right"])
+            a, b = _concrete_ends(statement.get("order", "a<b"))
+            left, right = _weighted_value(statement["left"], a, b), _weighted_value(statement["right"], a, b)
             if _holds(statement["op"], left - right) != truth:
+                return False
+        elif statement["kind"] == "symbolic_distance":
+            a_slope, a_const = form_coefficients(statement["points"]["A"])
+            b_slope, b_const = form_coefficients(statement["points"]["B"])
+            c_slope, c_const = form_coefficients(statement["claim"]["form"])
+            condition = statement.get("condition")
+            grid = [Fraction(n, 4) for n in range(-80, 81)]
+            if condition is not None:
+                grid = [t for t in grid if _holds(condition["op"], t - parse_exact_rational(condition["value"]))]
+            agrees = all(
+                abs((a_slope - b_slope) * t + a_const - b_const)
+                == (abs(c_slope * t + c_const) if statement["claim"]["abs"] else c_slope * t + c_const)
+                for t in grid
+            )
+            if grid and agrees != truth:
                 return False
     return len(answer["truth_values"]) == len(givens["statements"])
 
 
+@_validator("evaluate_absolute_value_statements")
+def validate_evaluate_absolute_value_statements_matrix(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    return _statements_consistent(givens, answer)
+
+
+@_validator("evaluate_number_line_statements")
+def validate_evaluate_number_line_statements_matrix(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    return all(s["kind"] in NUMBER_LINE_STATEMENT_KINDS for s in givens["statements"]) and _statements_consistent(givens, answer)
+
+
 @_validator("select_extreme_weighted_point")
 def validate_select_extreme_weighted_point_matrix(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
-    a, b = Fraction(-3), Fraction(5)
-    values = [(p * a + q * b) / (p + q) for p, q in givens["options"]]
+    a, b = _concrete_ends(givens.get("order", "a<b"))
+    values = [_weighted_value(w, a, b) for w in givens["options"]]
     best = max(values) if givens["extreme"] == "max" else min(values)
     return values.index(best) + 1 == answer["choice"] and values.count(best) == 1
+
+
+@_validator("solve_tolerance_range_application")
+def validate_solve_tolerance_range_application_matrix(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    spec = TOLERANCE_PROFILES[givens["profile"]]
+    model = (givens["height"] - spec["offset"]) * spec["factor"]
+    a, b = parse_exact_rational(answer["values"]["a"]), parse_exact_rational(answer["values"]["b"])
+    rate = Fraction(givens["tolerance_percent"], 100)
+    return (
+        parse_exact_rational(answer["model_value"]) == model
+        and model > 0
+        and a == model
+        and b == model * rate
+        and _set_matches_relations(answer["relations"], answer["range"])
+    )

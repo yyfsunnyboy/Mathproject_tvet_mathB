@@ -953,6 +953,9 @@ def _classify_examples_with_rulepack(
                 block_reason = str(explicit.get("block_reason") or "").strip()
                 if block_reason:
                     topology_match["block_reason"] = block_reason
+                needs_capability = str(explicit.get("needs_capability") or "").strip()
+                if needs_capability:
+                    topology_match["needs_capability"] = needs_capability
         from core.gencode.source_topology_rules import classify_source_topology
 
         if not chosen:
@@ -4890,6 +4893,23 @@ def _resolve_phase1_problem_type_from_row(row: dict[str, Any]) -> str:
     return ""
 
 
+def _rulepack_operation_binding_gap(skill_id: str, problem_type_id: str) -> str:
+    """Non-empty when a rule pack resolves to an operation of the skill's fixed domain
+    that the skill binding does not allow (the build would reject it as not allowed)."""
+    try:
+        from core.registry.taxonomy_registry import get_allowed_operations, get_confirmed_skill_binding
+
+        binding = get_confirmed_skill_binding(skill_id)
+        if not binding:
+            return ""
+        domain_ops = set(get_allowed_operations(str(binding.get("fixed_domain_key") or "")))
+    except Exception:
+        return ""
+    if problem_type_id in domain_ops and problem_type_id not in set(binding.get("allowed_operations") or ()):
+        return f"domain_operation_not_bound_to_skill:{problem_type_id}"
+    return ""
+
+
 def _skill_has_python_classifier(skill_id: str) -> bool:
     """Return True when a dedicated (non-fallback) Python classifier exists for skill_id."""
     try:
@@ -4956,6 +4976,24 @@ def run_v3_no_llm_phase1_for_example(
             problem_type_id = str(entry.get("problem_type_id") or entry.get("subskill_id") or "").strip()
             if not problem_type_id or problem_type_id.lower() in _NON_MATHEMATICAL_SOURCE_TYPES:
                 continue
+            capability_gap = str(entry.get("needs_capability") or "").strip() or _rulepack_operation_binding_gap(
+                skill_key, problem_type_id
+            )
+            if capability_gap:
+                return {
+                    "classification_status": "unresolved",
+                    "classification_status_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+                    "skill_id": skill_key,
+                    "source_example_id": example_id,
+                    "textbook_example_id": example_id,
+                    "source_hash": source_hash,
+                    "problem_type_id": problem_type_id,
+                    "required_capabilities": [problem_type_id],
+                    "classification_source": "phase1_rule_pack_needs_capability",
+                    "presentation_mode": presentation_mode,
+                    "answer_contract": {},
+                    "reason": f"NEEDS_CAPABILITY:{capability_gap}",
+                }
             runtime_candidate = entry.get("runtime_candidate")
             requires_human = bool(entry.get("requires_human_action"))
             if runtime_candidate is False or requires_human or str(entry.get("runtime_category") or "") == "manual_review":

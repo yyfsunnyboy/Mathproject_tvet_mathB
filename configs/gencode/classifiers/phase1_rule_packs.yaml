@@ -2512,8 +2512,6 @@ skills:
   - example_id: 11825
     matched_problem_type_id: compute_dot_product_from_magnitudes_angle
   source_policy: *id001
-
-
 - skill_id: vh_數學B2_SubSection_4_1_1
   skill_ch_name: B2 Ch4 1
   classifier_source: human_confirmed
@@ -3131,3 +3129,263 @@ skills:
   - example_id: 11894
     matched_problem_type_id: compute_tangent_segment_length_mcq
   source_policy: *id001
+- skill_id: gh_PointDivisionFormulaOnNumberLine
+  skill_ch_name: 數線上的分點公式
+  classifier_source: source_skill_map_confirmed
+  classifier_basis:
+    skill_binding: configs/general_high_source_skill_map.json#general_數學1_單元2_絕對值_v1
+    problem_type_mapping: stage2_v3_matrix on capability revision_0003 (register only
+      after revision_0003 promotion)
+    domain_key: algebra.absolute_value_relations
+  problem_types:
+  - problem_type_id: evaluate_number_line_division_points
+    display_name: 數線上的距離與分點
+    checker: multi_part_answer_checker
+    equivalence: rational_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - evaluate_number_line_division_points
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    runtime_category: deterministic_expression
+    notes: algebra.absolute_value_relations::evaluate_number_line_division_points
+  - problem_type_id: evaluate_number_line_statements
+    display_name: 數線距離與分點觀念是非判斷
+    checker: choice_label_checker
+    equivalence: choice_label_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - evaluate_number_line_statements
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+    notes: algebra.absolute_value_relations::evaluate_number_line_statements
+  - problem_type_id: select_extreme_weighted_point
+    display_name: 加權分點大小比較選擇
+    checker: choice_label_checker
+    equivalence: choice_label_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - select_extreme_weighted_point
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+    notes: algebra.absolute_value_relations::select_extreme_weighted_point
+  - problem_type_id: number_line_weighted_point_drawing
+    display_name: 數線作圖標點與三數排序（暫緩）
+    checker: manual_review_checker
+    equivalence: manual_review_or_ai_judged
+    runtime_candidate: false
+    requires_human_action: true
+    required_domain_capabilities: []
+    answer_type: manual_review
+    presentation_mode: drawing
+    runtime_category: manual_review
+    notes: number-line drawing is not gradable by any registered checker; intentionally
+      skipped
+  classification_rules: []
+  source_examples:
+  - example_id: 1027
+    title: 例題1
+    matched_problem_type_id: evaluate_number_line_division_points
+  - example_id: 1028
+    title: 隨堂練習1
+    matched_problem_type_id: evaluate_number_line_division_points
+  - example_id: 1029
+    title: 例題2
+    matched_problem_type_id: number_line_weighted_point_drawing
+    block_reason: 'DEFERRED_NUMBER_LINE_DRAWING: (1) 在右圖標出 P、Q、R：數線作圖無判分能力；(2) 三個加權點排序：無排序作答型別/operation'
+  - example_id: 1038
+    title: 2習題 觀念澄清1
+    matched_problem_type_id: evaluate_number_line_statements
+  - example_id: 1039
+    title: 2習題 觀念澄清2
+    matched_problem_type_id: evaluate_number_line_statements
+  - example_id: 1041
+    title: 2習題 基礎題1
+    matched_problem_type_id: evaluate_number_line_division_points
+  - example_id: 1042
+    title: 2習題 基礎題2
+    matched_problem_type_id: select_extreme_weighted_point
+  - example_id: 12323
+    title: 隨堂練習2
+    matched_problem_type_id: number_line_weighted_point_drawing
+    block_reason: 'DEFERRED_NUMBER_LINE_DRAWING: 同例題2：(1) 數線作圖；(2) 三數排序'
+  source_policy:
+    source_count_threshold_for_split: 4
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+    unlisted_example_policy: fallback_to_first_problem_type
+- skill_id: gh_LinearEquationsWithAbsoluteValue
+  skill_ch_name: 含絕對值的一次方程式
+  classifier_source: source_skill_map_confirmed
+  classifier_basis:
+    skill_binding: configs/general_high_source_skill_map.json#general_數學1_單元2_絕對值_v1
+    problem_type_mapping: stage2_v3_matrix on capability revision_0003 (register only
+      after revision_0003 promotion)
+    domain_key: algebra.absolute_value_relations
+  problem_types:
+  - problem_type_id: solve_absolute_value_equations
+    display_name: 含絕對值的一次方程式求解
+    checker: multi_part_answer_checker
+    equivalence: solution_set_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_absolute_value_equations
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    runtime_category: deterministic_expression
+    notes: algebra.absolute_value_relations::solve_absolute_value_equations
+  classification_rules: []
+  source_examples:
+  - example_id: 1030
+    title: 例題3
+    matched_problem_type_id: solve_absolute_value_equations
+  - example_id: 1031
+    title: 隨堂練習3
+    matched_problem_type_id: solve_absolute_value_equations
+  - example_id: 1032
+    title: 例題4
+    matched_problem_type_id: solve_absolute_value_equations
+  - example_id: 1043
+    title: 2習題 基礎題3
+    matched_problem_type_id: solve_absolute_value_equations
+  - example_id: 1047
+    title: 2習題 進階題7
+    matched_problem_type_id: solve_absolute_value_equations
+  - example_id: 12327
+    title: 隨堂練習4
+    matched_problem_type_id: solve_absolute_value_equations
+  source_policy:
+    source_count_threshold_for_split: 4
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: true
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+    unlisted_example_policy: fallback_to_first_problem_type
+- skill_id: gh_LinearInequalitiesWithAbsoluteValue
+  skill_ch_name: 含絕對值的一次不等式
+  classifier_source: source_skill_map_confirmed
+  classifier_basis:
+    skill_binding: configs/general_high_source_skill_map.json#general_數學1_單元2_絕對值_v1
+    problem_type_mapping: stage2_v3_matrix on capability revision_0003 (register only
+      after revision_0003 promotion)
+    domain_key: algebra.absolute_value_relations
+  problem_types:
+  - problem_type_id: solve_absolute_value_inequalities
+    display_name: 含絕對值的一次不等式求解
+    checker: multi_part_answer_checker
+    equivalence: interval_set_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_absolute_value_inequalities
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    runtime_category: deterministic_expression
+    notes: algebra.absolute_value_relations::solve_absolute_value_inequalities
+  - problem_type_id: recover_absolute_value_parameters
+    display_name: 由解集合還原絕對值參數
+    checker: multi_part_answer_checker
+    equivalence: rational_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - recover_absolute_value_parameters
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    runtime_category: deterministic_expression
+    notes: algebra.absolute_value_relations::recover_absolute_value_parameters
+  - problem_type_id: evaluate_absolute_value_statements
+    display_name: 絕對值觀念是非判斷
+    checker: choice_label_checker
+    equivalence: choice_label_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - evaluate_absolute_value_statements
+    answer_type: single_choice
+    presentation_mode: single_choice
+    runtime_category: deterministic_choice
+    notes: algebra.absolute_value_relations::evaluate_absolute_value_statements
+  - problem_type_id: solve_tolerance_range_application
+    display_name: 容許誤差範圍應用（標準體重）
+    checker: multi_part_answer_checker
+    equivalence: rational_exact
+    runtime_candidate: true
+    requires_human_action: false
+    required_domain_capabilities:
+    - solve_tolerance_range_application
+    answer_type: multi_part
+    presentation_mode: multiple_inputs
+    runtime_category: deterministic_expression
+    notes: algebra.absolute_value_relations::solve_tolerance_range_application
+  classification_rules: []
+  source_examples:
+  - example_id: 1033
+    title: 例題5
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1034
+    title: 隨堂練習5
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1035
+    title: 例題6
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1036
+    title: 例題7
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1037
+    title: 例題8
+    matched_problem_type_id: recover_absolute_value_parameters
+  - example_id: 1040
+    title: 2習題 觀念澄清3
+    matched_problem_type_id: evaluate_absolute_value_statements
+  - example_id: 1044
+    title: 2習題 基礎題4
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1045
+    title: 2習題 基礎題5
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 1046
+    title: 2習題 基礎題6
+    matched_problem_type_id: recover_absolute_value_parameters
+  - example_id: 1048
+    title: 2習題 進階題8
+    matched_problem_type_id: recover_absolute_value_parameters
+  - example_id: 1049
+    title: 2習題 進階題9
+    matched_problem_type_id: recover_absolute_value_parameters
+  - example_id: 12331
+    title: 隨堂練習6
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 12332
+    title: 隨堂練習7
+    matched_problem_type_id: solve_absolute_value_inequalities
+  - example_id: 12333
+    title: 隨堂練習8
+    matched_problem_type_id: solve_tolerance_range_application
+  source_policy:
+    source_count_threshold_for_split: 4
+    small_skill_merge_allowed: true
+    min_source_examples: 1
+    allow_single_problem_type: true
+    allow_skill_default_problem_type: false
+    default_problem_type_used: false
+    single_primary_problem_type: false
+    split_only_when_checker_or_answer_contract_differs: true
+    do_not_create_student_subskills: true
+    unlisted_example_policy: fallback_to_first_problem_type
