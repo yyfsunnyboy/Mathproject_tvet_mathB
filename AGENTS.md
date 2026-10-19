@@ -1,103 +1,63 @@
-# Codex Project Guardrails
+# Codex / Cursor 專案指引（v1.16-Lean）
 
-This file defines the mandatory rules for Codex-driven changes in this repository.
-All future patches must comply with this document.
+## 1. 預設工作模式
+- **最小必要執行**：先讀本檔，再按任務選讀相關 SOP 章節；禁止起手全文讀取所有 SOP。
+- 先定位 3–5 個相關檔案；不得無理由掃描整個 Repository。
+- 已有 Root Cause 時直接做最小修復；不要重複分析、重做已完成的工作或衍生下一輪任務。
+- 工具重複失敗兩次後停止該操作並報告；已通過的測試不得無理由重跑。
 
-## 1) Three-Layer Architecture (Do Not Collapse)
-- `progression` (textbook sequence): controls family progression and prerequisite intent.
-- `routing` (PPO): controls policy action and skill/subskill routing.
-- `remediation` (RAG): controls diagnostic hints and bridge candidate retrieval.
+## 2. 路徑與選讀入口
+- 專案根目錄以 `git rev-parse --show-toplevel` 確認，不依賴固定磁碟路徑。
+- 日常 Gencode V3 唯一主要 SOP：`docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md`。
+- 欄位、Answer Contract、Checker、Gate：同目錄 `SOP_Gencode_AgentSkillV3_Specification.md` 對應章節，為規範權威。
+- 時序、狀態與 publish/recovery：同目錄 `SOP_Gencode_AgentSkillV3_PipelineFlow.md` 對應章節，為流程權威。
+- 數學等價與 required form：`docs/系統SOP/數學答案檢核原則_v1.12_20260908.md`。
+- 已知債：同目錄 `KnownIssues_TechnicalDebt.md`；Complete Master SOP 僅供歷史與案例查考，非預設必讀。
+- 修改 vocational practice / generator runtime 前讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
+- 已支援 AI Tutor 的 Skill 遵循 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 共用多輪契約，不另建不相容服務。
 
-These layers are separate responsibilities. Do not refactor them into one flow.
+## 3. 安全邊界
+- 正式 DB、教材與資產：先確認來源、備份／transaction 與 dry-run Gate；不得把 DB 有紀錄當 Stage 1 封板。
+- 不自行啟動多個 Flask、Terminal 或瀏覽器；不任意重啟 Flask 5000/5001、停止 Cloudflare 或改動正式服務。
+- 發布只在既有必要 Gate 通過後執行；Token 節約不得犧牲數學正確性、資料完整性或部署安全。
+- 一般 Bug 跑局部測試；正式 Gencode 發布必須保留 Specification、PipelineFlow 規定的全部必要 Gate。
 
-## 2) Fixed Skill Structure
-- Official arithmetic skills in this scope:
-  - `jh_數學1上_FourArithmeticOperationsOfIntegers`
-  - `jh_數學1上_FourArithmeticOperationsOfNumbers`
-  - `jh_數學2上_FourArithmeticOperationsOfPolynomial`
-- Do not add new standalone skills for exponent content.
-- Explicitly forbidden as new runtime skills:
-  - `jh_數學1上_IntegerExponentiation`
-  - `jh_數學1上_PowerOfNumbers`
+## 3.1 Impact-Based Testing（MUST）
+- 先界定直接影響、使用現有測試、先跑最小單元；失敗只追案例與直接依賴，證實共用契約受影響才擴大。
+- 純 Markdown：檢查連結、引用、`git diff --check`；單一 UI/CSS：對應頁面與受影響互動。
+- 單一 Generator：該元件出題、答案與必要回歸；Domain Function：該函式及已知直接依賴的 Generator。
+- Shared Checker：受影響答案類型的等價與錯答；教材匯入：本次範圍的完整性、來源與資料保護。
+- 正式 Stage 1 封板、Capability Promotion、Gencode Publish：執行正式契約的必要 Gate，優先採用仍有效證據。
+- 正式契約若要求更廣測試不得縮減，須簡述原因；不因單一修補自動全域 pytest、全技能 seed sweep 或完整瀏覽器巡檢。
+- 相同測試 PASS 後，無新相關修改不得重跑；輸出只保留 PASS/FAIL 與失敗原因，不貼大量日誌。
 
-## 3) Family / Subskill Definition Rules
-- Family definitions must stay in canonical catalog sources.
-- Subskills must be consistent across:
-  - source catalog
-  - family-subskill map
-  - config catalog json
-  - UI map json
-- Use `skill_id:family_id` as the canonical addressing key.
+## 4. 三層架構
+- `progression` 控制教材順序與先備意圖；`routing`（PPO）控制政策動作與 skill/subskill 路由。
+- `remediation`（RAG）控制診斷提示與 bridge 候選；三層職責不得合併或在例行修補中重設。
 
-## 4) Generator Rules
-- Family-to-generator mapping must be explicit and type-correct.
-- Do not map a family to an unrelated question type.
-- Any family addition/update requires verifying micro-generator coverage.
-- Avoid placeholder/fallback-only output for production family mappings.
+## 5. 固定 Skill 與 family
+- 正式算術 Skill：`jh_數學1上_FourArithmeticOperationsOfIntegers`、`jh_數學1上_FourArithmeticOperationsOfNumbers`、`jh_數學2上_FourArithmeticOperationsOfPolynomial`。
+- 不新增指數獨立 Skill；`jh_數學1上_IntegerExponentiation`、`jh_數學1上_PowerOfNumbers` 為 legacy，不得重回 runtime routing。
+- family 定義留在 canonical catalog；source、family-subskill map、config catalog JSON、UI map JSON 必須一致。
+- family-to-generator mapping 必須明確且題型正確；增修 family 須驗證 micro-generator coverage，不得用 placeholder/fallback-only 作正式映射。
 
-## 5) Remediation Rules
-- Polynomial remediation bridges should prioritize prerequisite coverage through:
-  - numbers-side exponent laws
-  - integer-side sign/power interpretation
-- Keep bridge direction coherent: polynomial -> numbers -> integers (as needed by diagnosis).
+## 6. 補救與 fallback
+- 多項式補救先經 numbers-side 指數律，再依診斷接 integers-side 符號／乘方解釋；方向為 polynomial → numbers → integers。
+- Power-like fallback 至少含 `signed_power_interpretation`、`same_base_multiplication_rule`、`power_of_power_rule`、`product_power_distribution`。
 
-## 6) Required Power-Like Fallback Candidates
-- The power-like fallback candidate set must include at least:
-  - `signed_power_interpretation`
-  - `same_base_multiplication_rule`
-  - `power_of_power_rule`
-  - `product_power_distribution`
+## 7. 評量與診斷
+- 標準分基線 `100`；未覆蓋的必要 family 貢獻 `0`；核心 family 集由 configured assessment gate 固定。
+- 診斷報告至少含 `score`、`APR`、`family_results`、`strengths`、`weaknesses`。
 
-## 7) Assessment Rules
-- Standard score baseline: `100`.
-- Uncovered required families count as `0` contribution.
-- Core family set must be fixed by configured assessment gate.
+## 8. Catalog 變更
+- catalog source 修改後執行 `python scripts/generate_skill_breakpoint_maps.py`。
+- 核對 `configs/skill_breakpoint_catalog.json` 與 `configs/skill_breakpoint_ui_map.json`。
 
-## 8) Diagnostic Report Minimum Fields
-- `score`
-- `APR`
-- `family_results`
-- `strengths`
-- `weaknesses`
+## 9. RAG 身份
+- canonical addressing 與 Chroma/bridge identity 均為 `skill_id:family_id`；不得假設全域 `family_id` 唯一。
 
-## 9) RAG Identity Rules
-- Chroma/bridge identity must be `skill_id:family_id`.
-- Do not rely on global `family_id` uniqueness.
-
-## 10) Catalog Regeneration Rule
-- After catalog-source edits, run:
-  - `python scripts/generate_skill_breakpoint_maps.py`
-- Then verify `configs/skill_breakpoint_catalog.json` and `configs/skill_breakpoint_ui_map.json`.
-
-## 11) Legacy Skill Handling
-- `jh_數學1上_IntegerExponentiation`
-- `jh_數學1上_PowerOfNumbers`
-
-These are legacy artifacts and must not be reintroduced into runtime routing paths.
-
-## 12) Hard Constraints
-- Do not redesign PPO/routing/progression architecture in routine patches.
-- Do not add new skills for this exponent integration.
-- Do not use global-family shortcuts that break `skill_id:family_id` identity.
-- Do not perform broad refactors when a minimal patch is sufficient.
-
-## 13) Safe Change Zone
-- Preferred safe edit areas:
-  - docs and prompt templates
-  - catalog source rows and generated maps
-  - minimal mapping/fallback candidate additions
-  - explicit legacy isolation notes
-- Avoid invasive changes outside the requested scope.
-
-## 14) Codex Workflow (Mandatory)
-1. Audit first (consistency and impact).
-2. Patch second (minimal, scoped, reversible).
-3. Verify with focused checks.
-4. Report touched files and runtime impact clearly.
-
-## 15) Vocational Practice Runtime
-修改 vocational practice / generator runtime 前，先閱讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
-
-## 16) Shared AI Tutor
-所有已支援 AI Tutor 的新舊 Skill 必須沿用 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 的共用多輪對話契約；不得在單一 Skill 或模板另建不相容的 conversation service。
-
+## 10. 完成與停止
+- 先盤點一致性與影響，再最小、可逆修改，最後做與風險相稱的聚焦驗證。
+- 只報告修改檔案、runtime 影響、必要驗證與未解問題；必要 Gate 通過且驗收完成即結案。
+- 不做寬泛重構、不重複已通過 Gate、不自動展開後續單元。
+- 問題修復、直接測試與必要回歸 PASS、無直接 blocker 時立即停止；只回報修改範圍、測試及理由、PASS/FAIL、相關 blocker。

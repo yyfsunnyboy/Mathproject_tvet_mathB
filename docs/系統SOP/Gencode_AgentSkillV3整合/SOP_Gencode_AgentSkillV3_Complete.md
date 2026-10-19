@@ -2,7 +2,7 @@
 
 > **版本**：v1.15-Master  
 > **建立日期**：2026-09-11  
-> **文件定位**：本文件為 AI Agent、自動化管線與工程師進入 Gencode × AgentSkillV3 體系的第一閱讀入口與唯一端到端完整執行手冊。本手冊將既有規範權威、流程權威、檢核原則與已封板實證案例整合成可直接執行的 Master SOP。
+> **文件狀態（v1.16-Lean）**：歷史整合手冊，保留案例與版本追溯；不再是日常第一閱讀入口。日常執行先讀 [SOP_Gencode_V3_Lean.md](./SOP_Gencode_V3_Lean.md)，詳細契約仍以 Specification 與 PipelineFlow 為權威。
 
 ---
 
@@ -42,7 +42,7 @@
 ## 0. Document Purpose / Authority Map
 
 ### 0.1 文件定位
-本文件（`SOP_Gencode_AgentSkillV3_Complete.md`）整合既有各獨立規範與實務紀錄，作為日常開發、除錯、生成、審核與封板的單一完整行動手冊。任何參與本系統之工程師或 AI Agent，皆須以本手冊作為第一行動指南。
+本文件（`SOP_Gencode_AgentSkillV3_Complete.md`）保留既有規範與實務紀錄供歷史查考；日常唯一主要 SOP 為 [SOP_Gencode_V3_Lean.md](./SOP_Gencode_V3_Lean.md)。本文件若與 Specification 或 PipelineFlow 不同，以後兩者的正式契約為準。
 
 ### 0.2 權威層級與衝突裁決 (Authority Hierarchy)
 當不同文件之間出現描述差異或衝突時，**嚴禁自行融合或猜測**，必須嚴格依照以下優先權判定：
@@ -1390,9 +1390,9 @@ AI Agent 或開發者在宣告任務完成前，必須逐一自我檢核：
 
 ## 25. Quick Start for Agents (Agent 極速開工手冊)
 
-AI Agent 進入任務時，請依循以下 26 步完整順序；不得跳過 Stage 1 直接進 Gencode：
+以下 26 步為歷史完整清單，非每次任務的預設必讀或必跑項目；日常依 [Lean SOP](./SOP_Gencode_V3_Lean.md) 選讀相關步驟。新來源的 Stage 1 仍須封板後才能進 Gencode：
 
-1. **READ AUTHORITIES**：先讀 Master SOP；欄位/契約/Gate 查 Specification，時序/lifecycle/recovery 查 PipelineFlow。
+1. **READ AUTHORITIES**：先讀 `AGENTS.md` 與 Lean SOP 相關節；欄位/契約/Gate 查 Specification，時序/lifecycle/recovery 查 PipelineFlow。
 2. **LOCATE LOCAL SOURCES**：尋找 project-local 原始 DOCX/PDF 與 audit/source copy；排除 `*_Latex.docx`、converter/temporary/staging/failed artifacts。
 3. **SOURCE PROVENANCE**：比較 filename、size、hash、mtime、provenance；原始 source 與 conversion output 並存時明確排除後者，local 不存在才用 Drive/external fallback；identity 不確定即 FAIL。
 4. **DOCX STRUCTURAL PARSE**：保留 paragraphs、runs、styles、typography、tables、anchors 與 source order。
