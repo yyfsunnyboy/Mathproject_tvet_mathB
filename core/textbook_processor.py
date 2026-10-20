@@ -631,6 +631,7 @@ def apply_general_high_source_skill_map(
     curriculum_info: dict,
     queue=None,
     maps: list[dict[str, Any]] | None = None,
+    defer_commit: bool = False,
 ) -> dict[str, Any]:
     """Overwrite AI-chosen skill_id with the teacher-confirmed source map of this exact 普高 chapter.
 
@@ -696,7 +697,10 @@ def apply_general_high_source_skill_map(
         summary["missing"] = sorted(set(entry["titles"]) - seen)
         summary["map_id"] = entry.get("id")
         summary["applied"] = True
-        db.session.commit()
+        if defer_commit:
+            db.session.flush()
+        else:
+            db.session.commit()
         break
 
     if queue is not None and (summary["applied"] or summary.get("error")):
@@ -865,11 +869,16 @@ def enrich_general_high_pdf_visuals(
             row.notes = json.dumps(notes, ensure_ascii=False)
             summary["status_counts"][status] = summary["status_counts"].get(status, 0) + 1
             summary["rows"].append({"id": row.id, "title": row.source_description, "status": status, **er})
-        db.session.commit()
+        if policy.get("general_replacement"):
+            db.session.flush()
+        else:
+            db.session.commit()
         summary["ok"] = True
         summary["enrichment"] = {k: v for k, v in enrich.items() if k != "rows"}
     except Exception as exc:
         db.session.rollback()
+        if policy.get("general_replacement"):
+            raise
         summary["warnings"].append(f"enrichment_failed:{type(exc).__name__}: {exc}")
         current_app.logger.warning(f"[PDF VISUAL] general-high enrichment failed: {exc}")
 
@@ -3942,6 +3951,11 @@ def process_textbook_file(
                 section_code=section_code,
                 inventory_items=inventory_items,
             )
+            if import_policy.get("general_replacement") and (
+                inv.get("missing_titles_count") or
+                len(expected_titles) != int(import_policy["general_replacement"]["preview"]["question_count"])
+            ):
+                raise ValueError("general_replacement_source_inventory_mismatch")
             allow_partial_import = bool(import_policy.get("allow_partial_import", False))
             write_aborted = False
             report_name = f"{volume}_{section_code}_title_inventory_report.md"
@@ -3975,6 +3989,8 @@ def process_textbook_file(
                 queue.put(f"INFO: [IMPORT INVENTORY GUARD] missing_titles_count={inv.get('missing_titles_count', 0)}")
                 queue.put(f"INFO: [IMPORT INVENTORY GUARD] report_path={report_path}")
 
+        if import_policy.get("general_replacement") and not general_high_scan:
+            raise ValueError("general_replacement_source_scan_missing")
         result = save_to_database(
             parsed_data,
             curriculum_info,
@@ -3985,13 +4001,26 @@ def process_textbook_file(
             import_policy=import_policy,
             optional_enrich_pdf_path=optional_enrich_pdf_path,
         )
+        if import_policy.get("general_replacement") and not result:
+            raise ValueError("general_replacement_database_write_failed")
+        if import_policy.get("general_replacement"):
+            preview = import_policy["general_replacement"]["preview"]
+            actual = TextbookExample.query.filter_by(
+                source_curriculum="general", source_volume=preview["volume"],
+                source_chapter=preview["chapter"],
+            ).count()
+            if actual != preview["question_count"]:
+                raise ValueError(f"general_replacement_new_count_mismatch:{actual}")
         if general_high_scan and not outline_only and isinstance(result, dict) and result.get("status") != "error":
             result["source_skill_map"] = apply_general_high_source_skill_map(
                 parsed_data=parsed_data,
                 scan=general_high_scan,
                 curriculum_info=curriculum_info,
                 queue=queue,
+                defer_commit=bool(import_policy.get("general_replacement")),
             )
+            if import_policy.get("general_replacement") and result["source_skill_map"].get("error"):
+                raise ValueError(result["source_skill_map"]["error"])
             if optional_enrich_pdf_path and str(optional_enrich_pdf_path).lower().endswith(".pdf"):
                 result["pdf_visual"] = enrich_general_high_pdf_visuals(
                     pdf_path=optional_enrich_pdf_path,
@@ -4001,6 +4030,8 @@ def process_textbook_file(
                     import_policy=import_policy,
                     queue=queue,
                 )
+                if import_policy.get("general_replacement") and not result["pdf_visual"].get("ok"):
+                    raise ValueError("general_replacement_pdf_enrichment_failed")
             elif queue is not None:
                 queue.put("INFO: [PDF VISUAL] skipped reason=paired_pdf_missing")
         try:
@@ -4039,6 +4070,13 @@ def process_textbook_file(
         # created through the existing /skills workflow after import.
         queue.put("INFO: 教材匯入完成；請於 /skills 建立或補全 V3 出題能力。")
 
+        if import_policy.get("general_replacement"):
+            from core.general_textbook_replacement import cleanup_stale_chapter_skill_bindings
+
+            db.session.flush()
+            stale_removed = cleanup_stale_chapter_skill_bindings(db.session, import_policy["general_replacement"])
+            queue.put(f"INFO: [GENERAL REPLACE] stale_unit_skill_bindings_removed={stale_removed}")
+            db.session.commit()
         return {
             "status": "success", 
             "message": (f"教材分析與匯入成功。\n"
@@ -4053,6 +4091,8 @@ def process_textbook_file(
         }
 
     except Exception as e:
+        if (import_policy or {}).get("general_replacement"):
+            db.session.rollback()
         current_app.logger.error(f"解析教材內容時發生錯誤: {e}")
         import traceback
         traceback.print_exc()
@@ -5319,6 +5359,8 @@ _NON_SKILL_BUCKET_NAMES = frozenset({
     "觀念整理",
 })
 
+_SOURCE_TYPE_LABELS = frozenset({"例題", "例", "隨堂練習", "習題", "自我評量"})
+
 _NON_SKILL_BUCKET_EN_IDS = frozenset({
     "chapterintroduction",
     "exercises",
@@ -5346,6 +5388,10 @@ def is_non_skill_bucket(concept_name: str, clean_en_id: str) -> bool:
     en_id = re.sub(r"[^a-zA-Z0-9]", "", (clean_en_id or "")).lower()
 
     if name in _NON_SKILL_BUCKET_NAMES or name_compact in _NON_SKILL_BUCKET_NAMES:
+        return True
+    # Zone-prefixed layout labels such as 「戊.習題」「3習題」 are source types, never skills.
+    layout = re.sub(r"^(?:[甲乙丙丁戊己庚辛壬癸]|\d+(?:-\d+)?)\s*[.．、]?\s*", "", name_compact)
+    if layout in _NON_SKILL_BUCKET_NAMES or layout in _SOURCE_TYPE_LABELS:
         return True
     return en_id in _NON_SKILL_BUCKET_EN_IDS
 
@@ -6124,6 +6170,11 @@ def save_to_database(
             optional_enrich_pdf_path, original_names.get(str(optional_enrich_pdf_path or ""), "")
         ),
     }
+    retained_sources = dict(import_policy.get("retained_source_provenance") or {})
+    for key, path in (("primary", source_file_path), ("optional_enrich_pdf", optional_enrich_pdf_path)):
+        retained = retained_sources.get(str(path or ""))
+        if retained and source_provenance[key] and retained["sha256"] == source_provenance[key]["sha256"]:
+            source_provenance[key].update(retained)
     converted_latex_import = (
         str(import_policy.get("docx_formula_source_mode", "") or "").strip() == "converted_docx_latex"
         or bool((_DOCX_IMPORT_CONTEXT or {}).get("formula_assets_extraction_skipped"))
@@ -7159,6 +7210,14 @@ def save_to_database(
         current_app.logger.info(" -> 開始寫入資料庫...")
         queue.put("INFO: -> 開始寫入資料庫...")
         chapters = parsed_data.get('chapters', [])
+        replacement = import_policy.get("general_replacement")
+        if replacement:
+            from pathlib import Path
+            from core.general_textbook_replacement import replace_old_rows_in_session
+            if not Path(replacement["backup_path"]).is_file():
+                raise ValueError("general_replacement_backup_missing")
+            deleted = replace_old_rows_in_session(db.session, TextbookExample, replacement, curriculum_info, parsed_data)
+            queue.put(f"INFO: [GENERAL REPLACE] old_rows_deleted_in_pending_transaction={deleted}")
         
         for chapter_data in chapters:
             raw_chapter = chapter_data.get('chapter_title', '未知章節').strip()
@@ -8248,7 +8307,10 @@ def save_to_database(
                         current_app.logger.info(saved_msg)
                         queue.put(f"INFO: {saved_msg}")
 
-        db.session.commit()
+        if import_policy.get("general_replacement"):
+            db.session.flush()
+        else:
+            db.session.commit()
         if is_docx_source:
             ctx = _DOCX_IMPORT_CONTEXT or {}
             current_app.logger.info(f"[DOCX MODE] docx_formula_source_mode={ctx.get('docx_formula_source_mode', 'auto_detect')}")
@@ -8321,6 +8383,8 @@ def save_to_database(
         tb = traceback.format_exc()
         current_app.logger.error(f"寫入資料庫中斷: {e}\n{tb}")
         queue.put(f"ERROR: 寫入資料庫中斷: {e}")
+        if import_policy.get("general_replacement"):
+            raise
         return {}
 
 

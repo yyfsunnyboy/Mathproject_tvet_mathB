@@ -1837,14 +1837,15 @@
                 return formData;
             }
 
-            function submitSourceUpload(overwriteExisting) {
+            function submitSourceUpload(overwriteExisting, generalReplacementToken, generalReplacementDeclined) {
                 var validation = validateSourcePairs();
                 if (!validation.allComplete || validation.hasChapterMismatch) {
                     alert('請確保所有教材組皆已完成 DOCX 與 PDF 配對，且章節標記一致。');
                     return;
                 }
 
-                var replaceSelected = document.getElementById('modeReplace').checked;
+                var isGeneral = curriculumSelect && curriculumSelect.value === 'general';
+                var replaceSelected = !isGeneral && document.getElementById('modeReplace').checked;
                 if (replaceSelected) {
                     if (validation.completePairs.length !== 1 || validation.completePairs[0].classification.type !== 'section') {
                         alert('重新匯入模式一次只能選擇一個可辨識的小節教材。');
@@ -1866,6 +1867,9 @@
 
                 var formData = buildUploadFormData(validation.completePairs, !!overwriteExisting);
                 if (replaceSelected) formData.set('replace_confirmed', 'true');
+                if (isGeneral) formData.set('import_mode', 'update_existing');
+                if (generalReplacementToken) formData.set('general_replacement_token', generalReplacementToken);
+                if (generalReplacementDeclined) formData.set('general_replacement_declined', 'true');
 
                 fetch(form.action, {
                     method: 'POST',
@@ -1886,6 +1890,28 @@
                         if (!result.ok || !result.data || !result.data.ok) {
                             hideProcessingPanel();
                             setImportButtonState();
+                            if (result.data && result.data.error === 'general_replacement_confirmation_required') {
+                                var scope = result.data.replacement || {};
+                                var message = '是否要清空目前單元的舊教材？
+' +
+                                    '學制：普高
+冊別：' + (scope.volume || '') + '
+單元：' + (scope.chapter || '') + '
+' +
+                                    '現有題目數量：' + (scope.old_count || 0) + ' 題
+' +
+                                    '無效 Skill 綁定：' + (scope.stale_binding_count || 0) + ' 個
+' +
+                                    '新版來源題數：' + (scope.incoming_count || 0) + '
+
+' +
+                                    '按「確定」＝是：先備份 DB，再以新版取代此單元舊題。
+' +
+                                    '按「取消」＝否：保留舊教材，維持原有匯入行為。';
+                                if (window.confirm(message)) submitSourceUpload(overwriteExisting, result.data.replacement_token);
+                                else submitSourceUpload(overwriteExisting, null, true);
+                                return;
+                            }
                             if (result.data &&
                                 result.data.error === 'source_file_already_exists' &&
                                 result.data.requires_confirmation &&

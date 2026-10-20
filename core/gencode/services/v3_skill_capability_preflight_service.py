@@ -199,6 +199,45 @@ def _check_domain_wiring(skill_id: str) -> dict[str, Any]:
     }
 
 
+def _verified_publishable_component(conn: sqlite3.Connection, skill_id: str, example_id: int) -> dict[str, str] | None:
+    """Tracker-verified component that passes the same publish blockers as Phase 3, or None."""
+    import json
+
+    from core.gencode.services.v3_publish_eligibility import component_publish_blockers
+
+    try:
+        row = conn.execute(
+            "SELECT gencode_status, induced_spec_payload FROM gencode_component_tracker "
+            "WHERE skill_id = ? AND textbook_example_id = ?",
+            (skill_id, int(example_id)),
+        ).fetchone()
+    except Exception:
+        return None
+    if row is None:
+        return None
+    status = row[0]
+    raw = row[1]
+    if str(status or "").strip() != "verified":
+        return None
+    try:
+        spec = json.loads(raw) if isinstance(raw, str) and raw.strip() else (raw if isinstance(raw, dict) else {})
+    except Exception:
+        return None
+    if not isinstance(spec, dict) or spec.get("integrity_gate_passed") is not True:
+        return None
+    if component_publish_blockers(
+        skill_id=skill_id, component_skill_id=skill_id, component_status="verified", spec=spec
+    ):
+        return None
+    operation = str(spec.get("domain_operation") or spec.get("problem_type_id") or "").strip()
+    if not operation:
+        return None
+    return {
+        "problem_type_id": str(spec.get("problem_type_id") or operation),
+        "fixed_domain_key": str(spec.get("fixed_domain_key") or ""),
+    }
+
+
 def _probe_example_resolvable(
     *,
     skill_id: str,
@@ -227,6 +266,21 @@ def _probe_example_resolvable(
     status = str(induced.get("classification_status") or "").strip()
     problem_type_id = str(induced.get("problem_type_id") or "").strip()
     ok = status == "resolved" and bool(problem_type_id)
+    if not ok:
+        published = _verified_publishable_component(conn, skill_id, example_id)
+        if published is not None:
+            # The no-LLM classifier has no rule for this example, but a tracker-verified,
+            # publish-eligible component already resolves it.  Keep the classifier diagnostic.
+            return {
+                "textbook_example_id": example_id,
+                "resolvable": True,
+                "reason": "",
+                "problem_type_id": published["problem_type_id"],
+                "classification_source": "verified_component",
+                "suggested_domain": published["fixed_domain_key"],
+                "classifier_resolvable": False,
+                "classifier_reason": str(induced.get("reason") or status or "unresolved"),
+            }
     return {
         "textbook_example_id": example_id,
         "resolvable": ok,

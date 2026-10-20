@@ -141,6 +141,30 @@ _PI_FORMS = frozenset({"pi_expression", "radian_pi", "contains_pi", "pi_form"})
 _SIMPLIFIED_TRIG_FORMS = frozenset({"simplified_trig", "fundamental_trig_simplified"})
 _EXPANDED_FORMS = frozenset({"expanded", "expanded_polynomial"})
 _SIMPLEST_RADICAL_FORMS = frozenset({"simplest_radical", "simplified_radical"})
+_RADICAL_NOTATION_FORMS = frozenset({"radical_notation", "radical_form"})
+
+
+def _is_radical_notation_answer(user_raw: str) -> bool:
+    """Written with radical signs only: no fractional/decimal exponent such as ``3^{1/2}``."""
+    text = str(user_raw or "")
+    for match in re.finditer(r"\^|\*\*", text):
+        rest = text[match.end():].lstrip()
+        if rest.startswith("{"):
+            depth, end = 0, 0
+            for i, ch in enumerate(rest):
+                depth += (ch == "{") - (ch == "}")
+                if depth == 0:
+                    end = i
+                    break
+            exponent = rest[1:end] if end else rest[1:]
+        elif rest.startswith("("):
+            end = rest.find(")")
+            exponent = rest[1:end] if end > 0 else rest[1:]
+        else:
+            exponent = re.match(r"[-+]?[\w.\\]*", rest).group(0)
+        if re.search(r"[/.]|\\frac|\\sqrt|sqrt", exponent):
+            return False
+    return True
 
 
 def contract_requires_pi_form(
@@ -535,6 +559,7 @@ def check_expression_equivalence_debug(
             (required_form in _FULLY_FACTORIZED_FORMS and not _is_fully_factorized_expression(user_expr))
             or (required_form in _EXPANDED_FORMS and not _is_expanded_answer(ua_raw, user_expr))
             or (required_form in _SIMPLEST_RADICAL_FORMS and not _is_simplest_radical_answer(ua_raw, user_expr))
+            or (required_form in _RADICAL_NOTATION_FORMS and not _is_radical_notation_answer(ua_raw))
         ):
             out["correct"] = False
             out["required_form_failed"] = True

@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_IntegerExponentsAndLaws",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12343",
+      "textbook_example_id": 12343,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12343/generate.py"
+    },
+    {
+      "component_id": "src_12344",
+      "textbook_example_id": 12344,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12344/generate.py"
+    },
+    {
+      "component_id": "src_12345",
+      "textbook_example_id": 12345,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12345/generate.py"
+    },
+    {
+      "component_id": "src_12346",
+      "textbook_example_id": 12346,
+      "status": "verified",
+      "problem_type_id": "evaluate_power_law_model",
+      "domain_operation": "evaluate_power_law_model",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12346/generate.py"
+    },
+    {
+      "component_id": "src_12347",
+      "textbook_example_id": 12347,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12347/generate.py"
+    },
+    {
+      "component_id": "src_12348",
+      "textbook_example_id": 12348,
+      "status": "verified",
+      "problem_type_id": "solve_exponent_blank_equations",
+      "domain_operation": "solve_exponent_blank_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12348/generate.py"
+    },
+    {
+      "component_id": "src_12349",
+      "textbook_example_id": 12349,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12349/generate.py"
+    },
+    {
+      "component_id": "src_12350",
+      "textbook_example_id": 12350,
+      "status": "verified",
+      "problem_type_id": "evaluate_power_law_model",
+      "domain_operation": "evaluate_power_law_model",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12350/generate.py"
+    }
+  ]
+}

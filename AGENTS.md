@@ -18,6 +18,11 @@
 
 ## 3. 安全邊界
 - 正式 DB、教材與資產：先確認來源、備份／transaction 與 dry-run Gate；不得把 DB 有紀錄當 Stage 1 封板。
+- 網頁 V3 原始教材以匯入來源紀錄和 `textbook_import/uploaded_sources/{curriculum}/{volume}/` 永久檔為權威；Stage 1 先解析紀錄並驗證完整 SHA-256，不得假設檔案必在 `textbook_import/source/`。
+- 普高教材建置期間，同單元重新匯入預設取代舊版；確認來源與範圍、備份及安全交易後，同時清理該單元舊題與無效 `skill_curriculum` 綁定，不累積過時教材；Stage 1 封板仍是進入 Gencode V3 的必要條件。
+- 例題、隨堂練習、習題（含「戊.習題」）是教材來源類型，不得自動建立成 Skill（含 `gh_Exercises`）；無法可靠判定數學 Skill 時標記待確認。
+- 已驗證且仍有效的 Domain Function 應重用，不隨教材版本刪除。
+- 清理範圍僅限 curriculum + volume + chapter，不得只依 `skill_id` 或 ID 範圍；須保護關聯、備份並可回滾。
 - 不自行啟動多個 Flask、Terminal 或瀏覽器；不任意重啟 Flask 5000/5001、停止 Cloudflare 或改動正式服務。
 - 發布只在既有必要 Gate 通過後執行；Token 節約不得犧牲數學正確性、資料完整性或部署安全。
 - 一般 Bug 跑局部測試；正式 Gencode 發布必須保留 Specification、PipelineFlow 規定的全部必要 Gate。

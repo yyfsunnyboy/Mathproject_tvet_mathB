@@ -45,9 +45,12 @@
 
 1. 原始 DOCX 是教材文字、題目結構與順序的主要權威；配對 PDF 是圖形與視覺資訊的權威。
 2. 先查 project-local 原始 DOCX／PDF 及其 provenance，再考慮外部來源。
+   網頁 V3 依 DB 匯入來源紀錄定位 `textbook_import/uploaded_sources/{curriculum}/{volume}/` 的永久檔，驗證完整 SHA-256；`textbook_import/source/` 為既有人工來源，不是網頁上傳的唯一預設位置。舊紀錄無永久路徑時，只能在相同學制／冊別內以完整雜湊唯一比對，不能猜檔名或混用版本。
 3. 記錄來源 identity、hash／size、版本與對應學制、冊別、章節、Skill。
+   網頁上傳的同內容重傳重用永久檔；同名異內容保留不同雜湊版本，不覆蓋。匯入前保存狀態僅為待匯入，不代表 Stage 1 PASS；來源版本變更須重驗受影響 Gate。
 4. `*_Latex.docx`、converter output、temporary／staging／failed artifact 只能當中間產物。
 5. 原始檔與轉換檔並存時，明確排除後者；來源不能唯一確認則 Gate FAIL。
+   來源紀錄可驗證且永久檔存在時，不得因人工來源目錄缺檔判為來源缺失；真正缺檔或雜湊不符才回報來源缺失／驗證失敗。
 
 ### 2.2 結構與數學保真
 
@@ -69,6 +72,9 @@
 6. 封板記錄 authoritative source、Gate 證據與版本；Stage 1 未封板不得依舊 DB 開始新 Generator。
 7. 中斷或失敗先查 transaction 與已寫入範圍，不把 half-import 宣稱完成。
 8. 重匯入須明確界定 write scope 並保護正式 DB、既有有效教材與學生作答紀錄；不可用全域清空代替局部修復。
+   普高教材建置期間，同單元網頁重新匯入預設取代舊版：先核對來源、顯示範圍並確認，備份後在新版寫入的同一交易清理舊題與該單元無效 `skill_curriculum` 綁定（不刪 Skill 與 Domain Function）；多份來源範圍不明或有作答關聯時停止。匯入成功仍須獨立通過 Stage 1 封板。
+   例題、隨堂練習、習題（含「戊.習題」）只是來源類型，不得自動建立 Skill；無法可靠判定數學 Skill 時標記待確認。已驗證且仍有效的 Domain Function 重用，不隨教材版本刪除。
+   教材管理列表依題目自身 `source_volume`／`source_chapter` 歸屬，共用 Skill（如 `gh_Exercises`）不得造成跨單元顯示；清理範圍不得以 Skill 名稱或 ID 範圍界定。匯入確認視窗選「否」＝保留舊題、維持原匯入行為。
 9. **WARNING**：DB 已有教材只證明曾寫入，不證明 authoritative source 已驗證；Stage 1 PASS 前不得正式進 Stage 2。
 
 ## 3. Stage 2：Gencode V3 Generator

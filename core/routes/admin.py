@@ -1510,9 +1510,12 @@ def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code
     """Save a V1 upload batch and start the existing V1 background worker."""
     target_files = []
     upload_dir = os.path.join(current_app.root_path, 'uploads')
+    if track_general_status:
+        upload_dir = os.path.join(upload_dir, uuid.uuid4().hex)
     os.makedirs(upload_dir, exist_ok=True)
     import_policy = dict(import_policy or {})
     original_names = dict(import_policy.get("source_original_filenames") or {})
+    uploaded_pairs = []
 
     for upload in upload_files:
         if not upload or not upload.filename:
@@ -1522,12 +1525,34 @@ def enqueue_v1_textbook_upload_batch(upload_files, curriculum_info, *, skip_code
             continue
         path = os.path.join(upload_dir, secure_filename(filename))
         upload.save(path)
-        retain_textbook_upload_source(path, filename, curriculum_info)
+        if track_general_status:
+            uploaded_pairs.append((Path(path), filename))
+        else:
+            retain_textbook_upload_source(path, filename, curriculum_info)
         original_names[path] = filename
         target_files.append(path)
 
     if not target_files:
         return None
+    if track_general_status:
+        from core.textbook_uploaded_sources import retain_uploaded_pair
+        try:
+            by_stem = defaultdict(list)
+            for source, original in uploaded_pairs:
+                by_stem[general_source_pair_stem(original)].append((source, original))
+            retained = {}
+            for pair in by_stem.values():
+                records = retain_uploaded_pair(
+                    Path(current_app.root_path), pair,
+                    str(curriculum_info.get("curriculum") or ""),
+                    str(curriculum_info.get("volume") or ""),
+                )
+                retained.update({str(path): records[path.suffix.lower().lstrip(".")] for path, _ in pair})
+        except Exception:
+            for path in target_files:
+                Path(path).unlink(missing_ok=True)
+            raise
+        import_policy["retained_source_provenance"] = retained
     import_policy["source_original_filenames"] = original_names
 
     task_id = str(uuid.uuid4())
@@ -1904,6 +1929,73 @@ def admin_textbook_importer_v3():
         if curriculum == 'general':
             docx_files = request.files.getlist('textbook_docx[]') or request.files.getlist('textbook_docx')
             pdf_files = request.files.getlist('textbook_pdf[]') or request.files.getlist('textbook_pdf')
+            docx_files = [f for f in docx_files if f and f.filename]
+            pdf_files = [f for f in pdf_files if f and f.filename]
+            if not docx_files or len(docx_files) != len(pdf_files):
+                return jsonify({'ok': False, 'error': 'general_docx_pdf_pair_required'}), 400
+            from itsdangerous import URLSafeSerializer, BadSignature
+            from core.general_textbook_replacement import inspect_general_pair, backup_sqlite_database
+            pdf_by_stem = {general_source_pair_stem(f.filename): f for f in pdf_files}
+            if len(pdf_by_stem) != len(pdf_files):
+                return jsonify({'ok': False, 'error': 'general_duplicate_source_stem'}), 400
+            try:
+                previews = [inspect_general_pair(f, pdf_by_stem[general_source_pair_stem(f.filename)],
+                                                 str(request.form.get('volume') or '').strip()) for f in docx_files]
+            except Exception as exc:
+                return jsonify({'ok': False, 'error': 'general_source_preflight_failed', 'message': str(exc)}), 400
+            if len({p['chapter'] for p in previews}) != len(previews):
+                return jsonify({'ok': False, 'error': 'general_multi_source_same_unit_requires_manual_scope'}), 409
+            scopes = []
+            for preview in previews:
+                rows = TextbookExample.query.filter_by(
+                    source_curriculum='general', source_volume=preview['volume'],
+                    source_chapter=preview['chapter'],
+                ).order_by(TextbookExample.id).all()
+                scopes.append({'preview': preview, 'old_ids': [r.id for r in rows]})
+            declined = str(request.form.get('general_replacement_declined') or '').lower() == 'true'
+            replacing = [] if declined else [s for s in scopes if s['old_ids']]
+            if replacing and len(scopes) > 1:
+                return jsonify({'ok': False, 'error': 'general_multi_unit_replacement_requires_separate_uploads'}), 409
+            serializer = URLSafeSerializer(current_app.secret_key, salt='general-v3-replacement')
+            replacement_policy = None
+            if replacing:
+                item = replacing[0]
+                old_rows = TextbookExample.query.filter(TextbookExample.id.in_(item['old_ids'])).all()
+                from core.general_textbook_replacement import (
+                    validate_replacement_scope, scope_fingerprint, stale_chapter_skill_bindings,
+                )
+                try:
+                    validate_replacement_scope(sorted(old_rows, key=lambda r: r.id),
+                                               expected_ids=item['old_ids'], incoming_sha256=item['preview']['docx_sha256'])
+                except ValueError as exc:
+                    return jsonify({'ok': False, 'error': str(exc)}), 409
+                token_data = {'preview': item['preview'], 'old_ids': item['old_ids'],
+                              'old_rows_fingerprint': scope_fingerprint(sorted(old_rows, key=lambda r: r.id))}
+                supplied = str(request.form.get('general_replacement_token') or '')
+                try:
+                    confirmed = serializer.loads(supplied) == token_data if supplied else False
+                except BadSignature:
+                    confirmed = False
+                if not confirmed:
+                    return jsonify({'ok': False, 'error': 'general_replacement_confirmation_required',
+                                    'requires_confirmation': True, 'replacement': {
+                                        'curriculum': 'general', 'volume': item['preview']['volume'],
+                                        'chapter': item['preview']['chapter'],
+                                        'old_count': len(item['old_ids']),
+                                        'old_ids': item['old_ids'],
+                                        'stale_binding_count': len(stale_chapter_skill_bindings(
+                                            db.session, item['preview']['volume'], item['preview']['chapter'])),
+                                        'incoming_count': item['preview']['question_count'],
+                                    }, 'replacement_token': serializer.dumps(token_data)}), 409
+                backend = db.engine.url.get_backend_name()
+                if backend != 'sqlite':
+                    return jsonify({'ok': False, 'error': 'general_replacement_sqlite_required'}), 409
+                backup_path = Path(current_app.root_path) / 'backups' / f"general_{uuid.uuid4().hex}_pre_replace.db"
+                try:
+                    backup_sqlite_database(Path(db.engine.url.database), backup_path)
+                except Exception as exc:
+                    return jsonify({'ok': False, 'error': 'general_replacement_backup_failed', 'message': str(exc)}), 500
+                replacement_policy = {**token_data, 'backup_path': str(backup_path)}
             curriculum_info = {
                 'curriculum': 'general',
                 'publisher': request.form.get('publisher'),
@@ -1918,6 +2010,7 @@ def admin_textbook_importer_v3():
                     'pdf_optional_enrich': True,
                     'docx_formula_source_mode': 'converted_docx_latex',
                     'formula_postprocess_mode': 'convert_only',
+                    'general_replacement': replacement_policy,
                 },
                 track_general_status=True,
             )
@@ -3469,7 +3562,22 @@ def admin_examples():
     page = request.args.get('page', 1, type=int)
     
     # ?梁??????SkillCurriculum ????堆撰隤?????
-    query = db.session.query(TextbookExample).outerjoin(SkillInfo, TextbookExample.skill_id == SkillInfo.skill_id).join(SkillCurriculum, TextbookExample.skill_id == SkillCurriculum.skill_id)
+    query = db.session.query(TextbookExample).outerjoin(SkillInfo, TextbookExample.skill_id == SkillInfo.skill_id).join(
+        SkillCurriculum,
+        and_(
+            TextbookExample.skill_id == SkillCurriculum.skill_id,
+            # 普高共用 Skill（如 gh_Exercises）有多筆課綱列；以題目自身來源冊別／單元鎖定歸屬，避免跨單元顯示。
+            or_(
+                func.coalesce(TextbookExample.source_curriculum, '') != 'general',
+                and_(
+                    or_(func.coalesce(TextbookExample.source_volume, '') == '',
+                        TextbookExample.source_volume == SkillCurriculum.volume),
+                    or_(func.coalesce(TextbookExample.source_chapter, '') == '',
+                        TextbookExample.source_chapter == SkillCurriculum.chapter),
+                ),
+            ),
+        ),
+    )
     
     if selected['f_curriculum'] != 'all': 
         aliases = get_curriculum_aliases(selected['f_curriculum'])

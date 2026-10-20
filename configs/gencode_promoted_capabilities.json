@@ -214,6 +214,424 @@
         }
       }
     },
+    "algebra.exponent_laws": {
+      "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-20)",
+      "bundle_sha256": "5514a63f9240bc418e60122efb143310e5c767ac5c8d58eaaefc546e961ed0e9",
+      "capabilities": [
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_power_law_model",
+        "evaluate_repeated_folding",
+        "evaluate_scale_energy_ratio",
+        "express_rational_powers_as_radicals",
+        "select_nearest_model_value",
+        "simplify_exponent_expressions",
+        "solve_cooling_coefficient",
+        "solve_cooling_initial_temperature",
+        "solve_exponent_blank_equations",
+        "solve_half_life_model",
+        "solve_linear_unknowns_from_exponential_table",
+        "solve_metabolic_scaling"
+      ],
+      "domain_module": "core.domain.promoted.algebra_exponent_laws.exponent_laws_domain",
+      "entrypoint": "build_exponent_laws_matrix",
+      "operations": {
+        "evaluate_conditional_exponent_values": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_conditional_exponent_values"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational",
+            "numeric_or_radical",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_conditional_exponent_values_matrix"
+        },
+        "evaluate_exponent_statement_truth": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_exponent_statement_truth"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "single_choice",
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_exponent_statement_truth_matrix"
+        },
+        "evaluate_power_law_model": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_power_law_model"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_power_law_model_matrix"
+        },
+        "evaluate_repeated_folding": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_repeated_folding"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_repeated_folding_matrix"
+        },
+        "evaluate_scale_energy_ratio": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_scale_energy_ratio"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_scale_energy_ratio_matrix"
+        },
+        "express_rational_powers_as_radicals": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "express_rational_powers_as_radicals"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_express_rational_powers_as_radicals_matrix"
+        },
+        "select_nearest_model_value": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "select_nearest_model_value"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_select_nearest_model_value_matrix"
+        },
+        "simplify_exponent_expressions": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "simplify_exponent_expressions"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational",
+            "numeric_or_radical",
+            "expression",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "multiple_inputs"
+          ],
+          "validator": "validate_simplify_exponent_expressions_matrix"
+        },
+        "solve_cooling_coefficient": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_cooling_coefficient"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_cooling_coefficient_matrix"
+        },
+        "solve_cooling_initial_temperature": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_cooling_initial_temperature"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_cooling_initial_temperature_matrix"
+        },
+        "solve_exponent_blank_equations": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_exponent_blank_equations"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_exponent_blank_equations_matrix"
+        },
+        "solve_half_life_model": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_half_life_model"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_half_life_model_matrix"
+        },
+        "solve_linear_unknowns_from_exponential_table": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_linear_unknowns_from_exponential_table"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_linear_unknowns_from_exponential_table_matrix"
+        },
+        "solve_metabolic_scaling": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_metabolic_scaling"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_metabolic_scaling_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "exponent_laws_adapter.py": "d394164ca9155eb97dc1fa8ad6e2c344e964f443dfda695e7e0de7d9e11dc8f1",
+        "exponent_laws_domain.py": "54c5514d4d64020179f918da86ec6dbd1e8d7de83f87024845b4303dd00cd7a9",
+        "expr_tree.py": "7882576ded48ecd2c1f40ce65683a934a7729908dafbcca073ad5b9597d1b99d"
+      },
+      "package_import": "core.domain.promoted.algebra_exponent_laws",
+      "package_name": "algebra_exponent_laws",
+      "proposal_id": "capability_exponent_laws_4b7e1c93",
+      "proposal_revision": 2,
+      "registry_revision": "promoted-5514a63f9240",
+      "skill_bindings": {
+        "gh_IntegerExponentsAndLaws": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PositiveIntegerExponentsAndLaws": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_RationalExponentsAndLaws": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_RealExponentsAndLaws": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "algebra.multiplication_formulas": {
       "approved_by": "human_reviewer",
       "bundle_sha256": "39c0ccae9af0901dc37b80bd1c51776d29890f104513b32825b9bf1cf31ae98e",

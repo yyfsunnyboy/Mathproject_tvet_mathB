@@ -113,6 +113,19 @@ def test_route_forwards_vocational_ui_payload(monkeypatch):
 
 def test_v3_general_reuses_v1_dispatch_without_v3_pipeline(monkeypatch):
     captured = []
+    import core.general_textbook_replacement as replacement
+    monkeypatch.setattr(replacement, "inspect_general_pair", lambda *_args: {
+        "curriculum": "general", "volume": "數學1", "chapter": "單元1 實數",
+        "question_count": 1, "docx_sha256": "a" * 64, "pdf_sha256": "b" * 64,
+    })
+    class _EmptyQuery:
+        def filter_by(self, **_kwargs): return self
+        def order_by(self, *_args): return self
+        def all(self): return []
+    class _Example:
+        id = 0
+        query = _EmptyQuery()
+    monkeypatch.setattr(admin, "TextbookExample", _Example)
     monkeypatch.setattr(admin, "current_user", SimpleNamespace(is_admin=True, role="teacher"))
     monkeypatch.setattr(admin, "resolve_gemini_api_key", lambda: ("test-key", "test"))
     monkeypatch.setattr(

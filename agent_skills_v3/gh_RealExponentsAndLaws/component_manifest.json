@@ -1,0 +1,117 @@
+{
+  "skill_id": "gh_RealExponentsAndLaws",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_12367",
+      "textbook_example_id": 12367,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12367/generate.py"
+    },
+    {
+      "component_id": "src_12368",
+      "textbook_example_id": 12368,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12368/generate.py"
+    },
+    {
+      "component_id": "src_12369",
+      "textbook_example_id": 12369,
+      "status": "verified",
+      "problem_type_id": "solve_cooling_coefficient",
+      "domain_operation": "solve_cooling_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12369/generate.py"
+    },
+    {
+      "component_id": "src_12370",
+      "textbook_example_id": 12370,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12370/generate.py"
+    },
+    {
+      "component_id": "src_12371",
+      "textbook_example_id": 12371,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12371/generate.py"
+    },
+    {
+      "component_id": "src_12372",
+      "textbook_example_id": 12372,
+      "status": "verified",
+      "problem_type_id": "solve_cooling_initial_temperature",
+      "domain_operation": "solve_cooling_initial_temperature",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12372/generate.py"
+    },
+    {
+      "component_id": "src_12373",
+      "textbook_example_id": 12373,
+      "status": "verified",
+      "problem_type_id": "solve_linear_unknowns_from_exponential_table",
+      "domain_operation": "solve_linear_unknowns_from_exponential_table",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12373/generate.py"
+    },
+    {
+      "component_id": "src_12374",
+      "textbook_example_id": 12374,
+      "status": "verified",
+      "problem_type_id": "select_nearest_model_value",
+      "domain_operation": "select_nearest_model_value",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12374/generate.py"
+    },
+    {
+      "component_id": "src_12375",
+      "textbook_example_id": 12375,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12375/generate.py"
+    },
+    {
+      "component_id": "src_12376",
+      "textbook_example_id": 12376,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12376/generate.py"
+    }
+  ]
+}

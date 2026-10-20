@@ -1,0 +1,183 @@
+{
+  "skill_id": "gh_RationalExponentsAndLaws",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 16,
+  "components": [
+    {
+      "component_id": "src_12351",
+      "textbook_example_id": 12351,
+      "status": "verified",
+      "problem_type_id": "express_rational_powers_as_radicals",
+      "domain_operation": "express_rational_powers_as_radicals",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12351/generate.py"
+    },
+    {
+      "component_id": "src_12352",
+      "textbook_example_id": 12352,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12352/generate.py"
+    },
+    {
+      "component_id": "src_12353",
+      "textbook_example_id": 12353,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12353/generate.py"
+    },
+    {
+      "component_id": "src_12354",
+      "textbook_example_id": 12354,
+      "status": "verified",
+      "problem_type_id": "solve_metabolic_scaling",
+      "domain_operation": "solve_metabolic_scaling",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12354/generate.py"
+    },
+    {
+      "component_id": "src_12355",
+      "textbook_example_id": 12355,
+      "status": "verified",
+      "problem_type_id": "express_rational_powers_as_radicals",
+      "domain_operation": "express_rational_powers_as_radicals",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12355/generate.py"
+    },
+    {
+      "component_id": "src_12356",
+      "textbook_example_id": 12356,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12356/generate.py"
+    },
+    {
+      "component_id": "src_12357",
+      "textbook_example_id": 12357,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12357/generate.py"
+    },
+    {
+      "component_id": "src_12358",
+      "textbook_example_id": 12358,
+      "status": "verified",
+      "problem_type_id": "solve_half_life_model",
+      "domain_operation": "solve_half_life_model",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12358/generate.py"
+    },
+    {
+      "component_id": "src_12359",
+      "textbook_example_id": 12359,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12359/generate.py"
+    },
+    {
+      "component_id": "src_12360",
+      "textbook_example_id": 12360,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12360/generate.py"
+    },
+    {
+      "component_id": "src_12361",
+      "textbook_example_id": 12361,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12361/generate.py"
+    },
+    {
+      "component_id": "src_12362",
+      "textbook_example_id": 12362,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12362/generate.py"
+    },
+    {
+      "component_id": "src_12363",
+      "textbook_example_id": 12363,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12363/generate.py"
+    },
+    {
+      "component_id": "src_12364",
+      "textbook_example_id": 12364,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12364/generate.py"
+    },
+    {
+      "component_id": "src_12365",
+      "textbook_example_id": 12365,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12365/generate.py"
+    },
+    {
+      "component_id": "src_12366",
+      "textbook_example_id": 12366,
+      "status": "verified",
+      "problem_type_id": "evaluate_scale_energy_ratio",
+      "domain_operation": "evaluate_scale_energy_ratio",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12366/generate.py"
+    }
+  ]
+}

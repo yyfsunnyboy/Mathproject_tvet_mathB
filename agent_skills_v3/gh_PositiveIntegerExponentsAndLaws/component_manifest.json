@@ -1,0 +1,51 @@
+{
+  "skill_id": "gh_PositiveIntegerExponentsAndLaws",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_12339",
+      "textbook_example_id": 12339,
+      "status": "verified",
+      "problem_type_id": "simplify_exponent_expressions",
+      "domain_operation": "simplify_exponent_expressions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12339/generate.py"
+    },
+    {
+      "component_id": "src_12340",
+      "textbook_example_id": 12340,
+      "status": "verified",
+      "problem_type_id": "evaluate_repeated_folding",
+      "domain_operation": "evaluate_repeated_folding",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12340/generate.py"
+    },
+    {
+      "component_id": "src_12341",
+      "textbook_example_id": 12341,
+      "status": "verified",
+      "problem_type_id": "solve_exponent_blank_equations",
+      "domain_operation": "solve_exponent_blank_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12341/generate.py"
+    },
+    {
+      "component_id": "src_12342",
+      "textbook_example_id": 12342,
+      "status": "verified",
+      "problem_type_id": "select_nearest_model_value",
+      "domain_operation": "select_nearest_model_value",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12342/generate.py"
+    }
+  ]
+}
