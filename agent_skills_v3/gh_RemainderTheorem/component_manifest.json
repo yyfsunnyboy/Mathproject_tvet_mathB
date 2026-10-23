@@ -1,7 +1,7 @@
 {
   "skill_id": "gh_RemainderTheorem",
   "publish_status": "production_manifest_compiled",
-  "component_count": 13,
+  "component_count": 15,
   "components": [
     {
       "component_id": "src_12518",
@@ -13,6 +13,28 @@
       "answer_type": "choice_label",
       "source_kind": "example",
       "generate_py": "components/src_12518/generate.py"
+    },
+    {
+      "component_id": "src_12525",
+      "textbook_example_id": 12525,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12525/generate.py"
+    },
+    {
+      "component_id": "src_12536",
+      "textbook_example_id": 12536,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12536/generate.py"
     },
     {
       "component_id": "src_12538",

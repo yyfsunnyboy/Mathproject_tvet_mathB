@@ -52,6 +52,11 @@ if "--only" in sys.argv:  # targeted re-verification, e.g. --only 12555 (quarant
     ONLY = {int(x) for x in sys.argv[sys.argv.index("--only") + 1].split(",")}
     assert ONLY <= set(COMPONENTS), ONLY
 ONLY_SKILLS = sorted({SKILLS[COMPONENTS[c][0]] for c in ONLY})
+# --from-skill <skill>: the components were previously published under another skill (rebind); that skill is
+# quarantined from and republished as well.
+FROM_SKILL = sys.argv[sys.argv.index("--from-skill") + 1] if "--from-skill" in sys.argv else None
+if FROM_SKILL:
+    ONLY_SKILLS = sorted(set(ONLY_SKILLS) | {FROM_SKILL})
 
 
 def _write(step: str, payload) -> None:
@@ -134,6 +139,8 @@ def quarantine() -> None:
     for cid in sorted(ONLY):
         skill = SKILLS[COMPONENTS[cid][0]]
         _move(DRYRUN / skill / "components" / f"src_{cid}", target, moved)
+        if FROM_SKILL:
+            _move(DRYRUN / FROM_SKILL / "components" / f"src_{cid}", target, moved)
     _write("quarantine", {"quarantine_dir": str(target), "moved": moved})
 
 

@@ -82,7 +82,7 @@ def test_nothing_is_deferred_and_all_43_rows_are_covered():
     assert DEFERRED == {}
     assert set(COMPONENTS) == set(range(12517, 12560))
     counts = {key: sum(1 for spec in COMPONENTS.values() if spec[0] == key) for key in SKILLS}
-    assert counts == {"basic": 1, "arith": 18, "remainder": 13, "factor": 11}
+    assert counts == {"basic": 1, "arith": 16, "remainder": 15, "factor": 11}
 
 
 def test_skill_bindings_follow_the_formal_database():

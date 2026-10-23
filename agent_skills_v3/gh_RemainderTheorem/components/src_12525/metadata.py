@@ -1,11 +1,11 @@
 from __future__ import annotations
 from typing import Final
 
-COMPONENT_ID: Final[str] = "src_12536"
-SKILL_ID: Final[str] = "gh_ArithmeticOperationsOfPolynomials"
-SOURCE_REF: Final[str] = "src_12536"
+COMPONENT_ID: Final[str] = "src_12525"
+SKILL_ID: Final[str] = "gh_RemainderTheorem"
+SOURCE_REF: Final[str] = "src_12525"
 SOURCE_KIND: Final[str] = "example"
-TEXTBOOK_EXAMPLE_ID: Final[int] = 12536
+TEXTBOOK_EXAMPLE_ID: Final[int] = 12525
 IS_REQUIRED_CORE: Final[bool] = False
 
 ORDER_WEIGHT: Final[int] = 10
@@ -17,25 +17,25 @@ LINE_TYPE: Final[str] = "evaluate_polynomial_values"
 TARGET_TASK: Final[str] = "evaluate_polynomial_values"
 TEMPLATE_SLOT: Final[str] = "evaluate_polynomial_values"
 PROBLEM_TYPE_ID: Final[str] = "evaluate_polynomial_values"
-PRESENTATION_MODE: Final[str] = "short_answer"
-RESPONSE_MODE: Final[str] = "short_answer"
-INTERACTION_TYPE: Final[str] = "short_answer"
-ANSWER_VALUE_TYPE: Final[str] = "rational"
-ANSWER_TYPE: Final[str] = "rational"
-LEGACY_ANSWER_TYPE: Final[str] = "rational"
+PRESENTATION_MODE: Final[str] = "multiple_inputs"
+RESPONSE_MODE: Final[str] = "multiple_inputs"
+INTERACTION_TYPE: Final[str] = "multiple_inputs"
+ANSWER_VALUE_TYPE: Final[str] = "expression"
+ANSWER_TYPE: Final[str] = "expression"
+LEGACY_ANSWER_TYPE: Final[str] = "expression"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.promoted.algebra_polynomial_division.polynomial_division_domain.build_polynomial_division_matrix",
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "rational_checker",
-    "equivalence_type": "rational_equivalent",
-    "response_mode": "short_answer",
-    "interaction_type": "short_answer",
-    "answer_value_type": "rational",
-    "answer_type": "rational",
-    "module": "core.checkers.structured_text_checker",
+    "checker_key": "multi_part_answer_checker",
+    "equivalence_type": "multi_part_answer",
+    "response_mode": "multiple_inputs",
+    "interaction_type": "multiple_inputs",
+    "answer_value_type": "expression",
+    "answer_type": "expression",
+    "module": "core.checkers.multi_part_answer_checker",
 }
 
 GENERATOR_READINESS: Final[str] = "draft"

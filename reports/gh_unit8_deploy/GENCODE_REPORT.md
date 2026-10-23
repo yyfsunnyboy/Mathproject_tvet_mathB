@@ -35,3 +35,12 @@
 ## Runtime 注意
 
 Skill 綁定在程序 import registry 時讀取一次；執行中的 Flask 需重啟後才有 Unit 8 綁定（重啟前 Unit 8 題目以 `domain_binding_mismatch` 拒絕出題，不錯判、不寫 tracker）。網站實機驗收待重啟後進行。
+
+## Skill 改綁修復（2026-10-23，owner 核准）
+
+12525（例題6）與 12536（基礎題6）由 `gh_ArithmeticOperationsOfPolynomials` 改為 `gh_RemainderTheorem`（`source_paragraph`＝餘式定理，`notes.skill_binding` 留稽核）。Stage 1 匯入把標題「丙 餘式定理」之後的例題6 歸到前一節；12536 與例題7 同型。
+
+- 最終題數：Basic 1／Arithmetic 16／Remainder 15／Factor 11＝43，皆 published、tracker 43/43 verified、manifest 與 specs 一致。
+- Domain Bundle、Checker、Promotion 未動（`evaluate_polynomial_values` 本來就在 Remainder 的允許清單）。其餘 41 題 Generator 檔案 SHA 不變；僅兩題元件改到 Remainder，兩個 Skill 的 wrapper／manifest／`__init__.py` 更新。
+- 備份：DB `instance/backups/kumon_math_before_gh_unit8_rebind_20261023_210047.db`；部署備份 `backups/unit8_polynomial_division/20261023_210103/`，隔離的舊產物在 `…/20261023_210104/quarantine/`。
+- 需重啟 Flask 後才會載入新的 Skill 綁定。
