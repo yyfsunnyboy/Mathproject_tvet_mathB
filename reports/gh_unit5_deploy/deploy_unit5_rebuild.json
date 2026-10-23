@@ -1,0 +1,26 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12428": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_series",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12447": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_with_lattice_count",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "failures": []
+  }
+ }
+}

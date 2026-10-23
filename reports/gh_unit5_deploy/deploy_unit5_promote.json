@@ -1,0 +1,115 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "analytic_geometry.line_equations",
+ "registry_revision": "promoted-c89270ccd2a3",
+ "bundle_sha256": "c89270ccd2a376e8f070ba2e8a3edb52f06fcad5175b7063b04751757c2c298f",
+ "allowed_operations": [
+  "compute_line_distances",
+  "evaluate_line_statement_truth",
+  "evaluate_slope_sign_statements",
+  "fill_line_property_table",
+  "graph_inequality_series",
+  "graph_inequality_system",
+  "graph_inequality_with_lattice_count",
+  "rank_line_slopes",
+  "read_region_signs_from_figure",
+  "select_points_same_side",
+  "slope_of_line_from_equation",
+  "solve_axis_triangle_area_line",
+  "solve_line_constructions",
+  "solve_line_equations",
+  "solve_line_parameters",
+  "solve_parallel_line_family",
+  "solve_rectangle_perpendicular_diagonals",
+  "solve_region_coefficients_from_figure",
+  "solve_translation_parameter",
+  "solve_triangle_region_system",
+  "solve_window_decorative_lines",
+  "translate_line_equation"
+ ],
+ "skill_bindings": {
+  "gh_DistanceFromPointToLine": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "compute_line_distances",
+    "evaluate_line_statement_truth",
+    "solve_line_parameters",
+    "solve_parallel_line_family",
+    "solve_window_decorative_lines"
+   ]
+  },
+  "gh_EquationOfALine": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "evaluate_line_statement_truth",
+    "fill_line_property_table",
+    "slope_of_line_from_equation",
+    "solve_axis_triangle_area_line",
+    "solve_line_equations"
+   ]
+  },
+  "gh_LineSlope": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "evaluate_slope_sign_statements",
+    "rank_line_slopes"
+   ]
+  },
+  "gh_LinearInequalityInTwoVariables": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "evaluate_line_statement_truth",
+    "graph_inequality_series",
+    "graph_inequality_system",
+    "graph_inequality_with_lattice_count",
+    "read_region_signs_from_figure",
+    "select_points_same_side",
+    "solve_region_coefficients_from_figure",
+    "solve_triangle_region_system"
+   ]
+  },
+  "gh_ParallelAndPerpendicularLines": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "evaluate_line_statement_truth",
+    "solve_line_constructions",
+    "solve_line_equations",
+    "solve_line_parameters",
+    "solve_rectangle_perpendicular_diagonals"
+   ]
+  },
+  "gh_TranslationOfALine": {
+   "fixed_domain_key": "analytic_geometry.line_equations",
+   "allowed_operations": [
+    "solve_translation_parameter",
+    "translate_line_equation"
+   ]
+  }
+ },
+ "operations_executed": {
+  "compute_line_distances": 3,
+  "evaluate_line_statement_truth": 5,
+  "evaluate_slope_sign_statements": 1,
+  "fill_line_property_table": 1,
+  "graph_inequality_series": 1,
+  "graph_inequality_system": 4,
+  "graph_inequality_with_lattice_count": 1,
+  "rank_line_slopes": 2,
+  "read_region_signs_from_figure": 1,
+  "select_points_same_side": 1,
+  "slope_of_line_from_equation": 1,
+  "solve_axis_triangle_area_line": 1,
+  "solve_line_constructions": 6,
+  "solve_line_equations": 6,
+  "solve_line_parameters": 3,
+  "solve_parallel_line_family": 1,
+  "solve_rectangle_perpendicular_diagonals": 1,
+  "solve_region_coefficients_from_figure": 1,
+  "solve_translation_parameter": 1,
+  "solve_triangle_region_system": 1,
+  "solve_window_decorative_lines": 2,
+  "translate_line_equation": 2
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\analytic_geometry_lines"
+}

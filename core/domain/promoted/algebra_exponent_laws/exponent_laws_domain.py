@@ -309,6 +309,8 @@ def _model_value(model: str, givens: dict[str, Any]) -> mp.mpf:
         return mp.mpf(t.numerator) / t.denominator * mp.power(2, int(givens["fold_count"])) / 100
     if model == "tsunami":
         return mp.sqrt(10 * mp.mpf(str(givens["depth_m"])))
+    if model == "benford":
+        return 100 * mp.log10(1 + 1 / mp.mpf(str(givens["leading_digit"])))
     raise ValueError(f"unknown_model:{model}")
 
 
@@ -614,6 +616,232 @@ def _check_solve_linear_unknowns_from_exponential_table(givens: dict[str, Any], 
     return all(numeric_close(a + bt * mp.power(base, n_of[k["label"]]), mp.mpf(str(k["distance"])), "1e-30") for k in givens["known"])
 
 
+# --- 15. evaluate_scientific_notation_expression -----------------------------------------
+
+def _scientific_parts(value: Fraction, sig: int) -> tuple[str, int]:
+    """Exact half-up rounding of ``value`` to ``sig`` significant digits: (mantissa text, exponent)."""
+    if value <= 0 or sig < 1:
+        raise ValueError("positive_value_and_significant_digits_required")
+    exponent = 0
+    while value >= 10 ** (exponent + 1):
+        exponent += 1
+    while value < 10 ** exponent:
+        exponent -= 1
+    scaled = value / Fraction(10) ** exponent * 10 ** (sig - 1)
+    rounded = int(scaled + Fraction(1, 2))
+    if rounded >= 10 ** sig:
+        rounded //= 10
+        exponent += 1
+    digits = str(rounded)
+    return (digits[0] + ("." + digits[1:] if sig > 1 else ""), exponent)
+
+
+def _item_value(item: dict[str, Any]) -> Fraction:
+    if item["kind"] == "value":
+        return Fraction(item["value"])
+    exact = exact_simplify(to_sympy(item["tree"]))
+    if not exact.is_Rational:
+        raise ValueError("expression_not_rational")
+    return Fraction(int(exact.p), int(exact.q))
+
+
+def evaluate_scientific_notation_expression(items: list[dict[str, Any]], **text: Any) -> dict[str, Any]:
+    values = []
+    for item in items:
+        value, sig = _item_value(item), int(item["sig"])
+        mantissa, exponent = _scientific_parts(value, sig)
+        values.append({
+            "kind": "expression",
+            "canonical": f"{mantissa}\\times 10^{{{exponent}}}",
+            "display": f"{mantissa}\\times 10^{{{exponent}}}",
+            "mantissa": mantissa, "exponent": exponent, "sig": sig,
+            "exact": f"{value.numerator}/{value.denominator}",
+        })
+    return {"values": values}
+
+
+def _check_evaluate_scientific_notation_expression(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    for item, record in zip(givens["items"], answer["values"]):
+        if item["kind"] == "value":
+            truth = mp.mpf(str(item["value"]))
+        else:
+            truth = to_mpmath(item["tree"])
+        sig = int(item["sig"])
+        approx = mp.mpf(record["mantissa"]) * mp.power(10, int(record["exponent"]))
+        half_unit = mp.mpf("0.5") * mp.power(10, int(record["exponent"]) - sig + 1)
+        if not (1 <= mp.mpf(record["mantissa"]) < 10) or len(record["mantissa"].replace(".", "")) != sig:
+            return False
+        if abs(approx - truth) > half_unit * (1 + mp.mpf("1e-30")):
+            return False
+        if int(mp.floor(mp.log10(truth))) not in (int(record["exponent"]), int(record["exponent"]) - 1):
+            return False
+    return len(answer["values"]) == len(givens["items"])
+
+
+# --- 16. evaluate_number_property_statements ---------------------------------------------
+
+def _number_value(number: dict[str, Any]) -> Fraction | None:
+    if "mantissa" in number:
+        return Fraction(number["mantissa"]) * Fraction(10) ** int(number["exponent"])
+    if "decimal" in number:
+        return Fraction(number["decimal"])
+    return None
+
+
+def _property_truth(number: dict[str, Any], statement: dict[str, Any]) -> bool:
+    kind, claim = statement["kind"], statement["claim"]
+    value = _number_value(number)
+    if kind == "is_scientific_notation":
+        return (1 <= Fraction(number["mantissa"]) < 10) == bool(claim)
+    if kind == "digit_count":
+        if value is None or value.denominator != 1:
+            raise ValueError("integer_value_required")
+        return len(str(int(value))) == int(claim)
+    if kind == "zero_count":
+        if value is None or value.denominator != 1:
+            raise ValueError("integer_value_required")
+        return str(int(value)).count("0") == int(claim)
+    if kind == "greater_than_power":
+        return value is not None and value > Fraction(10) ** int(claim)
+    if kind == "significant_digits":
+        literal = str(number["decimal"]).lstrip("+-")
+        if "." not in literal:
+            raise ValueError("decimal_point_required")
+        return len(literal.replace(".", "").lstrip("0")) == int(claim)
+    if kind == "integer_part_digits":
+        if "ten_power" in number:
+            return int(mp.floor(mp.mpf(str(number["ten_power"])))) + 1 == int(claim)
+        if value is None:
+            raise ValueError("value_required")
+        return len(str(int(value))) == int(claim)
+    raise ValueError(f"unknown_property_kind:{kind}")
+
+
+def evaluate_number_property_statements(number: dict[str, Any], statements: list[dict[str, Any]], **text: Any) -> dict[str, Any]:
+    return {"truth_values": [bool(_property_truth(number, s)) for s in statements]}
+
+
+def _check_evaluate_number_property_statements(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    number = givens["number"]
+    for statement, truth in zip(givens["statements"], answer["truth_values"]):
+        kind, claim = statement["kind"], statement["claim"]
+        if "mantissa" in number:
+            v = mp.mpf(str(number["mantissa"])) * mp.power(10, int(number["exponent"]))
+        elif "decimal" in number:
+            v = mp.mpf(str(number["decimal"]))
+        else:
+            v = mp.power(10, mp.mpf(str(number["ten_power"])))
+        if kind == "is_scientific_notation":
+            independent = (1 <= mp.mpf(str(number["mantissa"])) < 10) == bool(claim)
+        elif kind == "digit_count" or kind == "integer_part_digits":
+            independent = int(mp.floor(mp.log10(v))) + 1 == int(claim)
+        elif kind == "zero_count":
+            independent = str(int(v + mp.mpf("0.5"))).count("0") == int(claim)
+        elif kind == "greater_than_power":
+            independent = v > mp.power(10, int(claim))
+        else:  # significant_digits
+            literal = str(number["decimal"]).lstrip("+-").replace(".", "").lstrip("0")
+            independent = len(literal) == int(claim)
+        if independent != truth:
+            return False
+    return len(answer["truth_values"]) == len(givens["statements"])
+
+
+# --- 17. evaluate_common_logarithm_items ------------------------------------------------
+
+def evaluate_common_logarithm_items(stem: str, items: list[dict[str, Any]], **text: Any) -> dict[str, Any]:
+    values = []
+    for item in items:
+        if item["kind"] == "as_power_of_ten":
+            value = Fraction(item["value"])
+            if value <= 0:
+                raise ValueError("positive_value_required")
+            canonical = f"10^{{\\log {frac_text(value)}}}"
+            values.append({"kind": "expression", "canonical": canonical, "display": canonical,
+                           "numeric": mp_text(mp.mpf(value.numerator) / value.denominator)})
+        else:
+            exact = exact_simplify(to_sympy(item["tree"]))
+            if not exact.is_Rational:
+                raise ValueError("expression_not_rational")
+            fr_ = Fraction(int(exact.p), int(exact.q))
+            values.append({"kind": "rational", "canonical": frac_text(fr_), "display": frac_text(fr_) if fr_.denominator == 1 or "/" not in frac_text(fr_) else display_latex(exact),
+                           "numeric": mp_text(mp.mpf(fr_.numerator) / fr_.denominator)})
+    return {"values": values}
+
+
+def _check_evaluate_common_logarithm_items(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    for item, record in zip(givens["items"], answer["values"]):
+        if item["kind"] == "as_power_of_ten":
+            v = mp.mpf(str(item["value"]))
+            if not numeric_close(mp.power(10, mp.log10(v)), v, "1e-35") or "\\log" not in record["canonical"]:
+                return False
+        elif not numeric_close(record["numeric"], to_mpmath(item["tree"]), "1e-30"):
+            return False
+    return len(answer["values"]) == len(givens["items"])
+
+
+# --- 18. approximate_common_logarithm ------------------------------------------------------
+
+def approximate_common_logarithm(value: str, decimals: int, **text: Any) -> dict[str, Any]:
+    v, d = Fraction(value), int(decimals)
+    if v <= 0:
+        raise ValueError("positive_value_required")
+    exact = mp.log10(mp.mpf(v.numerator) / v.denominator)
+    shifted = exact * mp.power(10, d)
+    if abs(shifted - mp.floor(shifted) - mp.mpf("0.5")) < mp.mpf("1e-6"):
+        raise ValueError("rounding_boundary_too_close")
+    rounded = Decimal(mp_text(exact, 40)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP)
+    return {"values": [{"kind": "rational", "canonical": format(rounded, "f")}], "rounded": format(rounded, "f"),
+            "exact": mp_text(exact, 30)}
+
+
+def _check_approximate_common_logarithm(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    v = mp.mpf(str(givens["value"]))
+    approx = mp.mpf(answer["rounded"])
+    exact = mp.log10(v)
+    return numeric_close(exact, answer["exact"], "1e-25") and abs(exact - approx) <= mp.mpf("0.5") * mp.power(10, -int(givens["decimals"]))
+
+
+# --- 19. count_digits_of_integer_power -------------------------------------------------------
+
+def count_digits_of_integer_power(base: int, exponent: int, offset: int = 0, **text: Any) -> dict[str, Any]:
+    n = int(base) ** int(exponent) + int(offset)
+    if n < 1:
+        raise ValueError("positive_integer_required")
+    digits = len(str(n))
+    return {"values": [{"kind": "rational", "canonical": str(digits)}], "digits": digits}
+
+
+def _check_count_digits_of_integer_power(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    offset = int(givens.get("offset", 0))
+    log_value = mp.log10(mp.power(int(givens["base"]), int(givens["exponent"])) + offset)
+    return int(mp.floor(log_value)) + 1 == answer["digits"]
+
+
+# --- 20. solve_power_of_ten_exponent ------------------------------------------------------------
+
+def solve_power_of_ten_exponent(base: int, exponent: int | None = None, decimals: int = 0, tower_n: int | None = None, **text: Any) -> dict[str, Any]:
+    e = 2 ** int(tower_n) if tower_n is not None else int(exponent)
+    exact = mp.mpf(e) * mp.log10(int(base))
+    d = int(decimals)
+    shifted = exact * mp.power(10, d)
+    if abs(shifted - mp.floor(shifted) - mp.mpf("0.5")) < mp.mpf("1e-6"):
+        raise ValueError("rounding_boundary_too_close")
+    rounded = Decimal(mp_text(exact, 40)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP)
+    return {"values": [{"kind": "rational", "canonical": format(rounded, "f")}], "rounded": format(rounded, "f"),
+            "exact": mp_text(exact, 30), "exponent_used": e}
+
+
+def _check_solve_power_of_ten_exponent(givens: dict[str, Any], answer: dict[str, Any]) -> bool:
+    e = 2 ** int(givens["tower_n"]) if givens.get("tower_n") is not None else int(givens["exponent"])
+    k = mp.mpf(answer["exact"])
+    return (
+        answer["exponent_used"] == e
+        and numeric_close(mp.power(10, k), mp.power(int(givens["base"]), e), "1e-20")
+        and abs(k - mp.mpf(answer["rounded"])) <= mp.mpf("0.5") * mp.power(10, -int(givens.get("decimals", 0)))
+    )
+
+
 # --- operation table ----------------------------------------------------------------
 
 _OPERATIONS: dict[str, tuple[Callable[..., dict[str, Any]], Callable[[dict[str, Any], dict[str, Any]], bool], tuple[str, ...]]] = {
@@ -631,6 +859,12 @@ _OPERATIONS: dict[str, tuple[Callable[..., dict[str, Any]], Callable[[dict[str, 
     "express_rational_powers_as_radicals": (express_rational_powers_as_radicals, _check_express_rational_powers_as_radicals, ("conversions",)),
     "solve_cooling_initial_temperature": (solve_cooling_initial_temperature, _check_solve_cooling_initial_temperature, ("ambient", "measured", "minutes", "decay_base")),
     "solve_linear_unknowns_from_exponential_table": (solve_linear_unknowns_from_exponential_table, _check_solve_linear_unknowns_from_exponential_table, ("table", "known", "base")),
+    "evaluate_scientific_notation_expression": (evaluate_scientific_notation_expression, _check_evaluate_scientific_notation_expression, ("items",)),
+    "evaluate_number_property_statements": (evaluate_number_property_statements, _check_evaluate_number_property_statements, ("number", "statements")),
+    "evaluate_common_logarithm_items": (evaluate_common_logarithm_items, _check_evaluate_common_logarithm_items, ("stem", "items")),
+    "approximate_common_logarithm": (approximate_common_logarithm, _check_approximate_common_logarithm, ("value", "decimals")),
+    "count_digits_of_integer_power": (count_digits_of_integer_power, _check_count_digits_of_integer_power, ("base", "exponent")),
+    "solve_power_of_ten_exponent": (solve_power_of_ten_exponent, _check_solve_power_of_ten_exponent, ("base",)),
 }
 OPERATIONS = tuple(_OPERATIONS)
 

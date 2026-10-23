@@ -28,6 +28,12 @@ _SUPPORT = {
     "express_rational_powers_as_radicals": (["multi_part"], ["multiple_inputs"]),
     "solve_cooling_initial_temperature": (["rational"], ["short_answer"]),
     "solve_linear_unknowns_from_exponential_table": (["multi_part"], ["multiple_inputs"]),
+    "evaluate_scientific_notation_expression": (["multi_part", "expression"], ["multiple_inputs", "short_answer"]),
+    "evaluate_number_property_statements": (["single_choice", "multi_part"], ["single_choice", "multiple_inputs"]),
+    "evaluate_common_logarithm_items": (["multi_part", "rational", "expression"], ["multiple_inputs", "short_answer"]),
+    "approximate_common_logarithm": (["rational"], ["short_answer"]),
+    "count_digits_of_integer_power": (["rational"], ["short_answer"]),
+    "solve_power_of_ten_exponent": (["rational"], ["short_answer"]),
 }
 
 

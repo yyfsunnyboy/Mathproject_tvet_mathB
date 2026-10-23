@@ -1,0 +1,238 @@
+{
+  "skill_id": "gh_JudgingTheRelationshipOfCircleAndLine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 21,
+  "components": [
+    {
+      "component_id": "src_12481",
+      "textbook_example_id": 12481,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12481/generate.py"
+    },
+    {
+      "component_id": "src_12482",
+      "textbook_example_id": 12482,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12482/generate.py"
+    },
+    {
+      "component_id": "src_12483",
+      "textbook_example_id": 12483,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12483/generate.py"
+    },
+    {
+      "component_id": "src_12484",
+      "textbook_example_id": 12484,
+      "status": "verified",
+      "problem_type_id": "solve_chord_and_distance",
+      "domain_operation": "solve_chord_and_distance",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12484/generate.py"
+    },
+    {
+      "component_id": "src_12485",
+      "textbook_example_id": 12485,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12485/generate.py"
+    },
+    {
+      "component_id": "src_12486",
+      "textbook_example_id": 12486,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12486/generate.py"
+    },
+    {
+      "component_id": "src_12487",
+      "textbook_example_id": 12487,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12487/generate.py"
+    },
+    {
+      "component_id": "src_12488",
+      "textbook_example_id": 12488,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12488/generate.py"
+    },
+    {
+      "component_id": "src_12489",
+      "textbook_example_id": 12489,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12489/generate.py"
+    },
+    {
+      "component_id": "src_12490",
+      "textbook_example_id": 12490,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12490/generate.py"
+    },
+    {
+      "component_id": "src_12491",
+      "textbook_example_id": 12491,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_line_statement_truth",
+      "domain_operation": "evaluate_circle_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12491/generate.py"
+    },
+    {
+      "component_id": "src_12492",
+      "textbook_example_id": 12492,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_line_statement_truth",
+      "domain_operation": "evaluate_circle_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12492/generate.py"
+    },
+    {
+      "component_id": "src_12493",
+      "textbook_example_id": 12493,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_line_statement_truth",
+      "domain_operation": "evaluate_circle_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12493/generate.py"
+    },
+    {
+      "component_id": "src_12494",
+      "textbook_example_id": 12494,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_line_statement_truth",
+      "domain_operation": "evaluate_circle_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12494/generate.py"
+    },
+    {
+      "component_id": "src_12495",
+      "textbook_example_id": 12495,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12495/generate.py"
+    },
+    {
+      "component_id": "src_12496",
+      "textbook_example_id": 12496,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "example",
+      "generate_py": "components/src_12496/generate.py"
+    },
+    {
+      "component_id": "src_12497",
+      "textbook_example_id": 12497,
+      "status": "verified",
+      "problem_type_id": "classify_circle_line_relations",
+      "domain_operation": "classify_circle_line_relations",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12497/generate.py"
+    },
+    {
+      "component_id": "src_12498",
+      "textbook_example_id": 12498,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12498/generate.py"
+    },
+    {
+      "component_id": "src_12499",
+      "textbook_example_id": 12499,
+      "status": "verified",
+      "problem_type_id": "solve_chord_and_distance",
+      "domain_operation": "solve_chord_and_distance",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12499/generate.py"
+    },
+    {
+      "component_id": "src_12513",
+      "textbook_example_id": 12513,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12513/generate.py"
+    },
+    {
+      "component_id": "src_12515",
+      "textbook_example_id": 12515,
+      "status": "verified",
+      "problem_type_id": "solve_chord_and_distance",
+      "domain_operation": "solve_chord_and_distance",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12515/generate.py"
+    }
+  ]
+}

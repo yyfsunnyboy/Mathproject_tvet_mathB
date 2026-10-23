@@ -1,0 +1,22 @@
+{
+ "gh_JudgingTheRelationshipOfCircleAndLine": {
+  "status": "production_published",
+  "component_count": 21,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 15,
+  "static_count": 0
+ },
+ "gh_TangentLinesOfACircle": {
+  "status": "production_published",
+  "component_count": 15,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 14,
+  "static_count": 0
+ }
+}

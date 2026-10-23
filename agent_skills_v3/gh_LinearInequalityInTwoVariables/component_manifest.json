@@ -1,0 +1,128 @@
+{
+  "skill_id": "gh_LinearInequalityInTwoVariables",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_12425",
+      "textbook_example_id": 12425,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_system",
+      "domain_operation": "graph_inequality_system",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12425/generate.py"
+    },
+    {
+      "component_id": "src_12426",
+      "textbook_example_id": 12426,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_system",
+      "domain_operation": "graph_inequality_system",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12426/generate.py"
+    },
+    {
+      "component_id": "src_12427",
+      "textbook_example_id": 12427,
+      "status": "verified",
+      "problem_type_id": "solve_triangle_region_system",
+      "domain_operation": "solve_triangle_region_system",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12427/generate.py"
+    },
+    {
+      "component_id": "src_12428",
+      "textbook_example_id": 12428,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_series",
+      "domain_operation": "graph_inequality_series",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12428/generate.py"
+    },
+    {
+      "component_id": "src_12429",
+      "textbook_example_id": 12429,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_system",
+      "domain_operation": "graph_inequality_system",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12429/generate.py"
+    },
+    {
+      "component_id": "src_12430",
+      "textbook_example_id": 12430,
+      "status": "verified",
+      "problem_type_id": "read_region_signs_from_figure",
+      "domain_operation": "read_region_signs_from_figure",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12430/generate.py"
+    },
+    {
+      "component_id": "src_12435",
+      "textbook_example_id": 12435,
+      "status": "verified",
+      "problem_type_id": "evaluate_line_statement_truth",
+      "domain_operation": "evaluate_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12435/generate.py"
+    },
+    {
+      "component_id": "src_12441",
+      "textbook_example_id": 12441,
+      "status": "verified",
+      "problem_type_id": "select_points_same_side",
+      "domain_operation": "select_points_same_side",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12441/generate.py"
+    },
+    {
+      "component_id": "src_12442",
+      "textbook_example_id": 12442,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_system",
+      "domain_operation": "graph_inequality_system",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12442/generate.py"
+    },
+    {
+      "component_id": "src_12443",
+      "textbook_example_id": 12443,
+      "status": "verified",
+      "problem_type_id": "solve_region_coefficients_from_figure",
+      "domain_operation": "solve_region_coefficients_from_figure",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12443/generate.py"
+    },
+    {
+      "component_id": "src_12447",
+      "textbook_example_id": 12447,
+      "status": "verified",
+      "problem_type_id": "graph_inequality_with_lattice_count",
+      "domain_operation": "graph_inequality_with_lattice_count",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12447/generate.py"
+    }
+  ]
+}

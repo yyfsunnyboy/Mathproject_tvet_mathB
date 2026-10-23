@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_PointAndCircleRelationship",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12464",
+      "textbook_example_id": 12464,
+      "status": "verified",
+      "problem_type_id": "classify_points_against_circle",
+      "domain_operation": "classify_points_against_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12464/generate.py"
+    },
+    {
+      "component_id": "src_12465",
+      "textbook_example_id": 12465,
+      "status": "verified",
+      "problem_type_id": "solve_circle_point_distances",
+      "domain_operation": "solve_circle_point_distances",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12465/generate.py"
+    },
+    {
+      "component_id": "src_12466",
+      "textbook_example_id": 12466,
+      "status": "verified",
+      "problem_type_id": "solve_mohr_circles",
+      "domain_operation": "solve_mohr_circles",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12466/generate.py"
+    },
+    {
+      "component_id": "src_12467",
+      "textbook_example_id": 12467,
+      "status": "verified",
+      "problem_type_id": "solve_point_position_parameter_range",
+      "domain_operation": "solve_point_position_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12467/generate.py"
+    },
+    {
+      "component_id": "src_12468",
+      "textbook_example_id": 12468,
+      "status": "verified",
+      "problem_type_id": "solve_circle_point_distances",
+      "domain_operation": "solve_circle_point_distances",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12468/generate.py"
+    },
+    {
+      "component_id": "src_12469",
+      "textbook_example_id": 12469,
+      "status": "verified",
+      "problem_type_id": "write_circle_equations",
+      "domain_operation": "write_circle_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12469/generate.py"
+    },
+    {
+      "component_id": "src_12473",
+      "textbook_example_id": 12473,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_statement_truth",
+      "domain_operation": "evaluate_circle_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12473/generate.py"
+    },
+    {
+      "component_id": "src_12477",
+      "textbook_example_id": 12477,
+      "status": "verified",
+      "problem_type_id": "solve_circle_point_distances",
+      "domain_operation": "solve_circle_point_distances",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12477/generate.py"
+    },
+    {
+      "component_id": "src_12478",
+      "textbook_example_id": 12478,
+      "status": "verified",
+      "problem_type_id": "solve_storm_entry_time",
+      "domain_operation": "solve_storm_entry_time",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12478/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "analytic_geometry.circle_line_relations",
+ "registry_revision": "promoted-fee773daa80d",
+ "bundle_sha256": "fee773daa80dd13a3dd1a6665386238b89c5ea948dfcf40fc9213dd80fca00da",
+ "allowed_operations": [
+  "classify_circle_line_relations",
+  "evaluate_circle_line_statement_truth",
+  "solve_chord_and_distance",
+  "solve_circle_from_tangent_point",
+  "solve_circle_line_parameter",
+  "solve_circle_tangent_scenarios",
+  "write_circle_tangent_lines"
+ ],
+ "skill_bindings": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": {
+   "fixed_domain_key": "analytic_geometry.circle_line_relations",
+   "allowed_operations": [
+    "classify_circle_line_relations",
+    "evaluate_circle_line_statement_truth",
+    "solve_chord_and_distance",
+    "solve_circle_line_parameter",
+    "write_circle_tangent_lines"
+   ]
+  },
+  "gh_TangentLinesOfACircle": {
+   "fixed_domain_key": "analytic_geometry.circle_line_relations",
+   "allowed_operations": [
+    "evaluate_circle_line_statement_truth",
+    "solve_circle_from_tangent_point",
+    "solve_circle_line_parameter",
+    "solve_circle_tangent_scenarios",
+    "write_circle_tangent_lines"
+   ]
+  }
+ },
+ "operations_executed": {
+  "classify_circle_line_relations": 6,
+  "evaluate_circle_line_statement_truth": 5,
+  "solve_chord_and_distance": 3,
+  "solve_circle_from_tangent_point": 1,
+  "solve_circle_line_parameter": 8,
+  "solve_circle_tangent_scenarios": 4,
+  "write_circle_tangent_lines": 9
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\analytic_geometry_circle_lines"
+}

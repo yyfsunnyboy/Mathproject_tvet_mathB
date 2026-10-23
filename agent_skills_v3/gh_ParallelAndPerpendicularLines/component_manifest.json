@@ -1,0 +1,139 @@
+{
+  "skill_id": "gh_ParallelAndPerpendicularLines",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 12,
+  "components": [
+    {
+      "component_id": "src_12413",
+      "textbook_example_id": 12413,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12413/generate.py"
+    },
+    {
+      "component_id": "src_12414",
+      "textbook_example_id": 12414,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12414/generate.py"
+    },
+    {
+      "component_id": "src_12415",
+      "textbook_example_id": 12415,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_12415/generate.py"
+    },
+    {
+      "component_id": "src_12416",
+      "textbook_example_id": 12416,
+      "status": "verified",
+      "problem_type_id": "solve_line_parameters",
+      "domain_operation": "solve_line_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12416/generate.py"
+    },
+    {
+      "component_id": "src_12417",
+      "textbook_example_id": 12417,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12417/generate.py"
+    },
+    {
+      "component_id": "src_12418",
+      "textbook_example_id": 12418,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12418/generate.py"
+    },
+    {
+      "component_id": "src_12431",
+      "textbook_example_id": 12431,
+      "status": "verified",
+      "problem_type_id": "evaluate_line_statement_truth",
+      "domain_operation": "evaluate_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12431/generate.py"
+    },
+    {
+      "component_id": "src_12433",
+      "textbook_example_id": 12433,
+      "status": "verified",
+      "problem_type_id": "evaluate_line_statement_truth",
+      "domain_operation": "evaluate_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12433/generate.py"
+    },
+    {
+      "component_id": "src_12439",
+      "textbook_example_id": 12439,
+      "status": "verified",
+      "problem_type_id": "solve_line_parameters",
+      "domain_operation": "solve_line_parameters",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12439/generate.py"
+    },
+    {
+      "component_id": "src_12440",
+      "textbook_example_id": 12440,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12440/generate.py"
+    },
+    {
+      "component_id": "src_12444",
+      "textbook_example_id": 12444,
+      "status": "verified",
+      "problem_type_id": "solve_rectangle_perpendicular_diagonals",
+      "domain_operation": "solve_rectangle_perpendicular_diagonals",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12444/generate.py"
+    },
+    {
+      "component_id": "src_12446",
+      "textbook_example_id": 12446,
+      "status": "verified",
+      "problem_type_id": "solve_line_constructions",
+      "domain_operation": "solve_line_constructions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12446/generate.py"
+    }
+  ]
+}

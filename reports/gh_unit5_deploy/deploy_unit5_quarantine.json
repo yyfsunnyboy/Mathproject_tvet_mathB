@@ -1,0 +1,13 @@
+{
+ "quarantine_dir": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\unit5_line_equations\\20261023_120324\\quarantine",
+ "moved": [
+  {
+   "from": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\gh_LinearInequalityInTwoVariables\\components\\src_12428",
+   "to": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\unit5_line_equations\\20261023_120324\\quarantine\\reports\\gencode_v3_dryrun\\gh_LinearInequalityInTwoVariables\\components\\src_12428"
+  },
+  {
+   "from": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\gh_LinearInequalityInTwoVariables\\components\\src_12447",
+   "to": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\unit5_line_equations\\20261023_120324\\quarantine\\reports\\gencode_v3_dryrun\\gh_LinearInequalityInTwoVariables\\components\\src_12447"
+  }
+ ]
+}

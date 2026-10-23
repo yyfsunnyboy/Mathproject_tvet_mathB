@@ -1,0 +1,923 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_analytic_geometry_circle_lines_43bb486a",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "project_owner",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: new domain analytic_geometry.circle_line_relations (7 operations) for 普高數學1 Unit 7 (圓與直線的關係), bound to gh_JudgingTheRelationshipOfCircleAndLine (21 rows) and gh_TangentLinesOfACircle (15 rows) per the formal DB; reuses the promoted exact circle_geometry helpers of analytic_geometry.circle_equations, the line_geometry / figures helpers of analytic_geometry.line_equations and the shared checkers (no checker or runtime change)",
+    "approval_note": "chat approval 2026-10-23 16:01 of bundle sha256 72cb405d646c6ad27d13df5f400bcceb7ab09ea0a800e64d06083fbaf0dc0c2a"
+  },
+  "domain_key": "analytic_geometry.circle_line_relations",
+  "package_name": "analytic_geometry_circle_lines",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "circle_line_adapter.py": "fee20ad0792d851e21be300a7a515abd0e064fdfde161e1bdb010b49a1019012",
+    "circle_line_domain.py": "8819150b9eab3e6f927fed930a1f94737920d254ba9f7dd50742d0fd361925c6",
+    "circle_line_geometry.py": "b04f2e3ecbeb47efe24ed363afa44bb2b7924c290a552635e9bd8094fc17276d"
+  },
+  "domain_module": "circle_line_domain",
+  "entrypoint": "build_circle_line_relations_matrix",
+  "capabilities": [
+    "classify_circle_line_relations",
+    "evaluate_circle_line_statement_truth",
+    "solve_chord_and_distance",
+    "solve_circle_from_tangent_point",
+    "solve_circle_line_parameter",
+    "solve_circle_tangent_scenarios",
+    "write_circle_tangent_lines"
+  ],
+  "operations": {
+    "classify_circle_line_relations": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "multi_part",
+        "short_answer",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "coordinate_pair_checker",
+        "multi_part_answer_checker",
+        "text_short_checker"
+      ],
+      "validator": "validate_classify_circle_line_relations_matrix",
+      "provided_capabilities": [
+        "classify_circle_line_relations"
+      ]
+    },
+    "evaluate_circle_line_statement_truth": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_evaluate_circle_line_statement_truth_matrix",
+      "provided_capabilities": [
+        "evaluate_circle_line_statement_truth"
+      ]
+    },
+    "solve_chord_and_distance": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "equation",
+        "multi_part",
+        "numeric_or_radical"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_equivalence_checker",
+        "linear_equation_equivalent_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_chord_and_distance_matrix",
+      "provided_capabilities": [
+        "solve_chord_and_distance"
+      ]
+    },
+    "solve_circle_from_tangent_point": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_solve_circle_from_tangent_point_matrix",
+      "provided_capabilities": [
+        "solve_circle_from_tangent_point"
+      ]
+    },
+    "solve_circle_line_parameter": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "inequality",
+        "multi_part",
+        "rational",
+        "short_answer",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "inequality_solution_checker",
+        "linear_relation_set_checker",
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_solve_circle_line_parameter_matrix",
+      "provided_capabilities": [
+        "solve_circle_line_parameter"
+      ]
+    },
+    "solve_circle_tangent_scenarios": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "equation",
+        "multi_part",
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "coordinate_pair_checker",
+        "equation_checker",
+        "expression_equivalence_checker",
+        "linear_equation_equivalent_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_solve_circle_tangent_scenarios_matrix",
+      "provided_capabilities": [
+        "solve_circle_tangent_scenarios"
+      ]
+    },
+    "write_circle_tangent_lines": {
+      "handler": "build_circle_line_relations_matrix",
+      "payload_adapter": "circle_line_adapter.adapt_circle_line_relations_matrix",
+      "runtime_contract": "circle_line_relations_exact_v1",
+      "supported_answer_types": [
+        "equation",
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "linear_equation_equivalent_checker",
+        "linear_relation_set_checker"
+      ],
+      "validator": "validate_write_circle_tangent_lines_matrix",
+      "provided_capabilities": [
+        "write_circle_tangent_lines"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_JudgingTheRelationshipOfCircleAndLine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "classify_circle_line_relations",
+        "evaluate_circle_line_statement_truth",
+        "solve_chord_and_distance",
+        "solve_circle_line_parameter",
+        "write_circle_tangent_lines"
+      ]
+    },
+    "gh_TangentLinesOfACircle": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_circle_line_statement_truth",
+        "solve_circle_from_tangent_point",
+        "solve_circle_line_parameter",
+        "solve_circle_tangent_scenarios",
+        "write_circle_tangent_lines"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "classify_circle_line_relations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              0,
+              0
+            ],
+            "r2": 5
+          },
+          "lines": [
+            [
+              1,
+              -1,
+              1
+            ]
+          ],
+          "ask_points": true,
+          "style": "given_pair"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              -2
+            ],
+            "r2": 9
+          },
+          "lines": [
+            [
+              12,
+              5,
+              11
+            ],
+            [
+              4,
+              -3,
+              5
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              0,
+              1
+            ],
+            "r2": 8
+          },
+          "lines": [
+            [
+              1,
+              1,
+              -5
+            ],
+            [
+              1,
+              1,
+              -6
+            ]
+          ],
+          "ask_points": true
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              2,
+              3
+            ],
+            "r2": 16
+          },
+          "lines": [
+            [
+              3,
+              4,
+              7
+            ]
+          ],
+          "show_r": true
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              -1,
+              0
+            ],
+            "r2": 20
+          },
+          "lines": [
+            [
+              3,
+              1,
+              -7
+            ]
+          ],
+          "ask_points": true,
+          "line_form": "rhs"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              -2
+            ],
+            "r2": 13
+          },
+          "lines": [
+            [
+              2,
+              3,
+              -10
+            ]
+          ],
+          "style": "three_cases"
+        }
+      }
+    ],
+    "evaluate_circle_line_statement_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "line_through_point_on_circle_is_tangent"
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "disjoint_distance_bound",
+            "r2": 25,
+            "bound": 5
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "tangent_to_both_axes",
+            "center": [
+              2,
+              -2
+            ],
+            "r2": 4
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "tangent_slope_exists",
+            "slope": 100
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "two_tangents_through_point",
+            "center": [
+              0,
+              0
+            ],
+            "r2": 1,
+            "point": [
+              1,
+              3
+            ]
+          }
+        }
+      }
+    ],
+    "solve_chord_and_distance": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              2,
+              3
+            ],
+            "r2": 25
+          },
+          "line": [
+            3,
+            -4,
+            21
+          ],
+          "asks": [
+            "chord"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              0,
+              3
+            ],
+            "r2": 5
+          },
+          "line": [
+            5,
+            -12,
+            -3
+          ],
+          "asks": [
+            "max_distance",
+            "min_distance"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              2
+            ],
+            "r2": 9
+          },
+          "point": [
+            2,
+            4
+          ],
+          "asks": [
+            "shortest_chord",
+            "shortest_chord_line"
+          ]
+        }
+      }
+    ],
+    "solve_circle_from_tangent_point": [
+      {
+        "seed": 1,
+        "constraints": {
+          "d": -4,
+          "point": [
+            -1,
+            3
+          ],
+          "tangent": [
+            3,
+            -4,
+            15
+          ],
+          "names": [
+            "m",
+            "n"
+          ]
+        }
+      }
+    ],
+    "solve_circle_line_parameter": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 1,
+            "e": [
+              0,
+              1
+            ],
+            "f": 2
+          },
+          "line": {
+            "a": 1,
+            "b": -1,
+            "c": 0
+          },
+          "asks": [
+            {
+              "condition": "tangent",
+              "output": "set"
+            }
+          ],
+          "line_form": "rhs"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              2
+            ],
+            "r2": 9
+          },
+          "line": {
+            "a": 3,
+            "b": 4,
+            "c": [
+              0,
+              1
+            ]
+          },
+          "asks": [
+            {
+              "condition": "tangent",
+              "output": "set"
+            },
+            {
+              "condition": "tangent",
+              "output": "lines"
+            },
+            {
+              "condition": "secant",
+              "output": "region"
+            }
+          ],
+          "two_solution_hint": true
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 2,
+            "e": 0,
+            "f": [
+              0,
+              1
+            ]
+          },
+          "line": {
+            "a": 1,
+            "b": 1,
+            "c": 0
+          },
+          "asks": [
+            {
+              "condition": "disjoint",
+              "output": "region"
+            }
+          ],
+          "line_form": "rhs"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              -1,
+              2
+            ],
+            "r2": 169
+          },
+          "line": {
+            "a": 3,
+            "b": 4,
+            "c": [
+              0,
+              1
+            ]
+          },
+          "asks": [
+            {
+              "condition": "chord",
+              "chord": 24,
+              "output": "set"
+            }
+          ],
+          "show_r": true
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 0,
+            "e": -4,
+            "f": [
+              0,
+              1
+            ]
+          },
+          "line": {
+            "a": 1,
+            "b": -2,
+            "c": 0
+          },
+          "asks": [
+            {
+              "condition": "intersect",
+              "output": "region"
+            }
+          ],
+          "line_form": "rhs"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 2,
+            "e": 0,
+            "f": [
+              0,
+              1
+            ]
+          },
+          "line": {
+            "a": 15,
+            "b": -8,
+            "c": -2
+          },
+          "asks": [
+            {
+              "condition": "chord",
+              "chord": 4,
+              "output": "set"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              -1,
+              0
+            ],
+            "r2": 2
+          },
+          "line": {
+            "a": [
+              0,
+              1
+            ],
+            "b": -1,
+            "c": -3
+          },
+          "asks": [
+            {
+              "condition": "tangent",
+              "output": "set"
+            }
+          ],
+          "param": "m",
+          "line_form": "slope"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              0,
+              2
+            ],
+            "r2": 4
+          },
+          "line": {
+            "a": 1,
+            "b": -1,
+            "c": [
+              0,
+              1
+            ]
+          },
+          "asks": [
+            {
+              "condition": "quarter_arcs",
+              "output": "ordered"
+            }
+          ],
+          "param": "m",
+          "line_form": "slope",
+          "names": [
+            "m",
+            "n"
+          ]
+        }
+      }
+    ],
+    "solve_circle_tangent_scenarios": [
+      {
+        "seed": 1,
+        "constraints": {
+          "scenario": "building_view",
+          "center_y": 6,
+          "point": [
+            6,
+            10
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "scenario": "building_dimensions",
+          "center_y": 6,
+          "point": [
+            6,
+            10
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "scenario": "light_shadow",
+          "circle": {
+            "center": [
+              0,
+              3
+            ],
+            "r2": 5
+          },
+          "light": [
+            1,
+            6
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "scenario": "badge",
+          "width": 4,
+          "r2": 2,
+          "center_height": 3,
+          "od": 1
+        }
+      }
+    ],
+    "write_circle_tangent_lines": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              3,
+              -4
+            ],
+            "r2": 10
+          },
+          "kind": "with_slope",
+          "slope": 3
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              -1,
+              2
+            ],
+            "r2": 25
+          },
+          "kind": "through_point",
+          "point": [
+            3,
+            5
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              2
+            ],
+            "r2": 8
+          },
+          "kind": "through_point",
+          "point": [
+            5,
+            2
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              0,
+              0
+            ],
+            "r2": 4
+          },
+          "kind": "through_point",
+          "point": [
+            2,
+            6
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 6,
+            "e": 0,
+            "f": 4
+          },
+          "kind": "through_point",
+          "point": [
+            2,
+            0
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              -1,
+              0
+            ],
+            "r2": 1
+          },
+          "kind": "through_point",
+          "point": [
+            0,
+            2
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": 0,
+            "e": 2,
+            "f": -12
+          },
+          "kind": "parallel_to",
+          "parallel_to": [
+            2,
+            3,
+            0
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              2,
+              -1
+            ],
+            "r2": 10
+          },
+          "kind": "through_point",
+          "point": [
+            3,
+            -4
+          ],
+          "wording": "plain"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              1,
+              2
+            ],
+            "r2": 1
+          },
+          "kind": "through_point",
+          "point": [
+            6,
+            3
+          ],
+          "wording": "neutral"
+        }
+      }
+    ]
+  },
+  "deferred_components": {}
+}

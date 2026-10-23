@@ -1,0 +1,17 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12482": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

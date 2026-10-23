@@ -1,0 +1,1012 @@
+{
+  "run_at": "20261023_152617",
+  "db": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "backup": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_before_unit7_stage1_fix_20261023_152617.db",
+  "backup_integrity": "ok",
+  "source_pdf": "textbook_import\\uploaded_sources\\general\\數學1\\961d7ea54896_單元07-圓與直線的關係.pdf",
+  "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+  "crops": {
+    "12503": {
+      "page": 12,
+      "bbox": [
+        328.0,
+        464.0,
+        452.0,
+        597.0
+      ],
+      "asset": {
+        "asset_type": "pdf_visual_crop",
+        "asset_slot": "pdf_visual_01",
+        "source": "pdf",
+        "path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+        "display_path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+        "page_index": 11,
+        "source_page": 12,
+        "bbox": [
+          328.0,
+          464.0,
+          452.0,
+          597.0
+        ],
+        "needs_crop_review": false,
+        "needs_image_conversion": false,
+        "reason": "figure_keyword_and_compact_visual_in_region",
+        "image_description": "required",
+        "visual_type": "diagram",
+        "visual_classification": "required",
+        "visual_status": "accepted",
+        "visual_review_reasons": [],
+        "match_method": "manual_bbox_verified",
+        "match_score": 1.0,
+        "question_anchor": "general_1_section_example_009_017",
+        "width": 353,
+        "height": 377,
+        "file_size": 21855,
+        "sha256": "1497702d75b48d25e4a7d9062e630efae6ef8bedaef827c5525ad0026672986d",
+        "dpi": 200
+      }
+    },
+    "12514": {
+      "page": 17,
+      "bbox": [
+        396.0,
+        502.0,
+        530.0,
+        611.0
+      ],
+      "asset": {
+        "asset_type": "pdf_visual_crop",
+        "asset_slot": "pdf_visual_01",
+        "source": "pdf",
+        "path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/advanced_exercise_7習題_進階題11_source_typeadvanced_exercise_dedupee35144bd109e0fc0_general__fig1.png",
+        "display_path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/advanced_exercise_7習題_進階題11_source_typeadvanced_exercise_dedupee35144bd109e0fc0_general__fig1.png",
+        "page_index": 16,
+        "source_page": 17,
+        "bbox": [
+          396.0,
+          502.0,
+          530.0,
+          611.0
+        ],
+        "needs_crop_review": false,
+        "needs_image_conversion": false,
+        "reason": "figure_keyword_and_compact_visual_in_region",
+        "image_description": "required",
+        "visual_type": "diagram",
+        "visual_classification": "required",
+        "visual_status": "accepted",
+        "visual_review_reasons": [],
+        "match_method": "manual_bbox_verified",
+        "match_score": 1.0,
+        "question_anchor": "general_1_section_advanced_exercise_011_034",
+        "width": 380,
+        "height": 311,
+        "file_size": 11337,
+        "sha256": "4486c57346d179fe3fc56cb115b24e3ad3d4cb1f61912c2d8ded2662b96bf1e4",
+        "dpi": 200
+      }
+    }
+  },
+  "changed_ids": [
+    12503,
+    12507,
+    12513,
+    12514,
+    12515
+  ],
+  "unchanged_ids_count": 31,
+  "rows": {
+    "12503": {
+      "before": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "has_image": true,
+          "image_assets": [],
+          "image_warning": "missing_docx_image_asset",
+          "needs_review": true,
+          "image_role": "required_diagram",
+          "image_dependency_reason": "diagram_reference_or_chart_type_in_stem",
+          "math_format": "standard_latex",
+          "raw_problem_backup": "如圖(a)，圓弧形大廈從正面看過去，其輪廓由圓弧形與一段底座組成。圖(b)為某一圓弧形大廈的輪廓畫在坐標平面上之設計圖，其中\\(M(0,6)\\)為圓心，弦\\({\\overline{ AB }}\\)為圓弧形大廈的底座。\n已知從x軸正向上一點Q仰望圖(b)的圓弧形大廈所能看到的最高點為\\(P(6,10)\\)，試回答下列問題：\n(1)直線\\(PQ\\)斜率為＿＿＿＿＿＿＿。\n(2)試求直線PQ的方程式。\n(3)試求Q點的坐標。",
+          "math_warnings": [],
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "needs_review_before_visual": false,
+          "visual_required_missing": true,
+          "question_anchor": {
+            "anchor_id": "general_1_section_example_009_017",
+            "anchor_key": "general|longteng|1|7|section|example|9|17",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "example",
+            "question_number": "9",
+            "source_order": 17,
+            "block_index": 16,
+            "occurrence_index": 1,
+            "question_label": "例9",
+            "source_type": "textbook_example",
+            "text_fingerprint": "81f5ddd4eb448eee4def9ee7080e01e0070304c6f145e76b555a3d478c31adf0"
+          },
+          "pdf_visual_status": "VISUAL_REQUIRED_MISSING",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 12,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "figure_keyword_and_compact_visual_in_region|low_mapping_confidence",
+            "visual_bbox": [
+              333.1151123046875,
+              491.00103759765625,
+              435.1777038574219,
+              574.0670166015625
+            ],
+            "match_method": "unique_phrase+order",
+            "match_score": 0.99
+          }
+        }
+      },
+      "after": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "has_image": true,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+              "display_path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+              "page_index": 11,
+              "source_page": 12,
+              "bbox": [
+                328.0,
+                464.0,
+                452.0,
+                597.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "visual_status": "accepted",
+              "visual_review_reasons": [],
+              "match_method": "manual_bbox_verified",
+              "match_score": 1.0,
+              "question_anchor": "general_1_section_example_009_017",
+              "width": 353,
+              "height": 377,
+              "file_size": 21855,
+              "sha256": "1497702d75b48d25e4a7d9062e630efae6ef8bedaef827c5525ad0026672986d",
+              "dpi": 200
+            }
+          ],
+          "needs_review": false,
+          "image_role": "required_diagram",
+          "image_dependency_reason": "diagram_reference_or_chart_type_in_stem",
+          "math_format": "standard_latex",
+          "raw_problem_backup": "如圖(a)，圓弧形大廈從正面看過去，其輪廓由圓弧形與一段底座組成。圖(b)為某一圓弧形大廈的輪廓畫在坐標平面上之設計圖，其中\\(M(0,6)\\)為圓心，弦\\({\\overline{ AB }}\\)為圓弧形大廈的底座。\n已知從x軸正向上一點Q仰望圖(b)的圓弧形大廈所能看到的最高點為\\(P(6,10)\\)，試回答下列問題：\n(1)直線\\(PQ\\)斜率為＿＿＿＿＿＿＿。\n(2)試求直線PQ的方程式。\n(3)試求Q點的坐標。",
+          "math_warnings": [],
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "needs_review_before_visual": false,
+          "visual_required_missing": false,
+          "question_anchor": {
+            "anchor_id": "general_1_section_example_009_017",
+            "anchor_key": "general|longteng|1|7|section|example|9|17",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "example",
+            "question_number": "9",
+            "source_order": 17,
+            "block_index": 16,
+            "occurrence_index": 1,
+            "question_label": "例9",
+            "source_type": "textbook_example",
+            "text_fingerprint": "81f5ddd4eb448eee4def9ee7080e01e0070304c6f145e76b555a3d478c31adf0"
+          },
+          "pdf_visual_status": "VISUAL_ATTACHED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "mounted",
+            "page": 12,
+            "page_source": "manual_visual_verification",
+            "classification": "required",
+            "visual_reason": "figure_keyword_and_compact_visual_in_region|low_mapping_confidence",
+            "visual_bbox": [
+              328.0,
+              464.0,
+              452.0,
+              597.0
+            ],
+            "match_method": "manual_bbox_verified",
+            "match_score": 1.0
+          },
+          "needs_image_review": false,
+          "visual_status": "accepted",
+          "image_warning_resolved_by": "pdf_visual"
+        }
+      }
+    },
+    "12507": {
+      "before": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "image_role": "decorative_context",
+          "image_dependency_reason": "figure_word_without_diagram_dependency_and_self_contained_stem",
+          "needs_image": false,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "承例題，試回答下列問題：\n(1)圖(b)中圓弧形大廈的半徑為____________。\n(2)試求圖(b)中圓弧形大廈所在的圓方程式。\n(3)試求底座\\({\\overline{ AB }}\\)的長度。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_in_class_practice_009_018",
+            "anchor_key": "general|longteng|1|7|section|in_class_practice|9|18",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "in_class_practice",
+            "question_number": "9",
+            "source_order": 18,
+            "block_index": 17,
+            "occurrence_index": 1,
+            "question_label": "隨堂練習9",
+            "source_type": "in_class_practice",
+            "text_fingerprint": "d07e2ee92a892c7c8f764096a67345614e9cbd4bb28ae16c4eb085396544fae2"
+          },
+          "pdf_visual_status": "NO_VISUAL_REQUIRED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 13,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "text_and_formula_only|low_mapping_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.99
+          }
+        }
+      },
+      "after": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "image_role": "required_diagram",
+          "image_dependency_reason": "figure_word_without_diagram_dependency_and_self_contained_stem",
+          "needs_image": true,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "承例題，試回答下列問題：\n(1)圖(b)中圓弧形大廈的半徑為____________。\n(2)試求圖(b)中圓弧形大廈所在的圓方程式。\n(3)試求底座\\({\\overline{ AB }}\\)的長度。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_in_class_practice_009_018",
+            "anchor_key": "general|longteng|1|7|section|in_class_practice|9|18",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "in_class_practice",
+            "question_number": "9",
+            "source_order": 18,
+            "block_index": 17,
+            "occurrence_index": 1,
+            "question_label": "隨堂練習9",
+            "source_type": "in_class_practice",
+            "text_fingerprint": "d07e2ee92a892c7c8f764096a67345614e9cbd4bb28ae16c4eb085396544fae2"
+          },
+          "pdf_visual_status": "VISUAL_ATTACHED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 13,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "text_and_formula_only|low_mapping_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.99
+          },
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+              "display_path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/textbook_example_例9_source_typetextbook_example_dedupeb633873f20f46676_general__fig1.png",
+              "page_index": 11,
+              "source_page": 12,
+              "bbox": [
+                328.0,
+                464.0,
+                452.0,
+                597.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "visual_status": "accepted",
+              "visual_review_reasons": [],
+              "match_method": "manual_bbox_verified",
+              "match_score": 1.0,
+              "question_anchor": "general_1_section_example_009_017",
+              "width": 353,
+              "height": 377,
+              "file_size": 21855,
+              "sha256": "1497702d75b48d25e4a7d9062e630efae6ef8bedaef827c5525ad0026672986d",
+              "dpi": 200,
+              "shared_from_textbook_example_id": 12503,
+              "shared_from_anchor": "general_1_section_example_009_017"
+            }
+          ],
+          "has_image": true,
+          "needs_image_review": false,
+          "visual_status": "accepted"
+        }
+      }
+    },
+    "12513": {
+      "before": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "image_role": "unknown",
+          "image_dependency_reason": "no_diagram_dependency_detected",
+          "needs_image": false,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "已知兩平行線\\(y=x+m\\)與\\(y=x+n\\)將圓\\(C:x ^ { 2 } +\\left ( { y-2 } \\right ) ^ { 2 } =4\\)的圓周四等分，其中\\(m>n\\)，求實數m, n的值。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_010_033",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|10|33",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "10",
+            "source_order": 33,
+            "block_index": 32,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題10",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "9e0b80e036ebb14afb041a842f0dd1545ce65039dae7e37d421f5d32450da62b"
+          },
+          "pdf_visual_status": "NO_VISUAL_REQUIRED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 17,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "low_match_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.84
+          }
+        }
+      },
+      "after": {
+        "skill_id": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "source_paragraph": "圓與直線關係的判定",
+        "notes": {
+          "image_role": "unknown",
+          "image_dependency_reason": "no_diagram_dependency_detected",
+          "needs_image": false,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "已知兩平行線\\(y=x+m\\)與\\(y=x+n\\)將圓\\(C:x ^ { 2 } +\\left ( { y-2 } \\right ) ^ { 2 } =4\\)的圓周四等分，其中\\(m>n\\)，求實數m, n的值。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_010_033",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|10|33",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "10",
+            "source_order": 33,
+            "block_index": 32,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題10",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "9e0b80e036ebb14afb041a842f0dd1545ce65039dae7e37d421f5d32450da62b"
+          },
+          "pdf_visual_status": "NO_VISUAL_REQUIRED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 17,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "low_match_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.84
+          }
+        }
+      }
+    },
+    "12514": {
+      "before": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "has_image": true,
+          "image_assets": [],
+          "image_warning": "missing_docx_image_asset",
+          "needs_review": true,
+          "image_role": "required_diagram",
+          "image_dependency_reason": "diagram_reference_or_chart_type_in_stem",
+          "math_format": "standard_latex",
+          "raw_problem_backup": "在坐標平面上\\(A\\left ( { 1,\\ 6 } \\right )\\)處有一光源，將圓\\(x ^ { 2 } +\\left ( { y-3 } \\right ) ^ { 2 } =5\\)投射到x軸上，如右圖所示，求其在x軸上的影子\\({\\overline{ PQ }}\\)長。",
+          "math_warnings": [],
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "needs_review_before_visual": false,
+          "visual_required_missing": true,
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_011_034",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|11|34",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "11",
+            "source_order": 34,
+            "block_index": 33,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題11",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "924f15a0ac6e89f7275f6bb944fbdeb64bb00ffaeee9de3ee911c54298eae34c"
+          },
+          "pdf_visual_status": "VISUAL_REQUIRED_MISSING",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 17,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "figure_keyword_and_compact_visual_in_region|low_mapping_confidence|overspan_multi_question",
+            "visual_bbox": [
+              0.0,
+              736.5810546875,
+              609.4486083984375,
+              745.7006225585938
+            ],
+            "match_method": "shared_phrase+order",
+            "match_score": 0.82
+          }
+        }
+      },
+      "after": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "has_image": true,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/advanced_exercise_7習題_進階題11_source_typeadvanced_exercise_dedupee35144bd109e0fc0_general__fig1.png",
+              "display_path": "uploads/question_assets/general/longteng/數學1/ch_unknown_單元7_圓與直線的關係/sec_unknown_7圓與直線的關係/advanced_exercise_7習題_進階題11_source_typeadvanced_exercise_dedupee35144bd109e0fc0_general__fig1.png",
+              "page_index": 16,
+              "source_page": 17,
+              "bbox": [
+                396.0,
+                502.0,
+                530.0,
+                611.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "visual_status": "accepted",
+              "visual_review_reasons": [],
+              "match_method": "manual_bbox_verified",
+              "match_score": 1.0,
+              "question_anchor": "general_1_section_advanced_exercise_011_034",
+              "width": 380,
+              "height": 311,
+              "file_size": 11337,
+              "sha256": "4486c57346d179fe3fc56cb115b24e3ad3d4cb1f61912c2d8ded2662b96bf1e4",
+              "dpi": 200
+            }
+          ],
+          "needs_review": false,
+          "image_role": "required_diagram",
+          "image_dependency_reason": "diagram_reference_or_chart_type_in_stem",
+          "math_format": "standard_latex",
+          "raw_problem_backup": "在坐標平面上\\(A\\left ( { 1,\\ 6 } \\right )\\)處有一光源，將圓\\(x ^ { 2 } +\\left ( { y-3 } \\right ) ^ { 2 } =5\\)投射到x軸上，如右圖所示，求其在x軸上的影子\\({\\overline{ PQ }}\\)長。",
+          "math_warnings": [],
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "needs_review_before_visual": false,
+          "visual_required_missing": false,
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_011_034",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|11|34",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "11",
+            "source_order": 34,
+            "block_index": 33,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題11",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "924f15a0ac6e89f7275f6bb944fbdeb64bb00ffaeee9de3ee911c54298eae34c"
+          },
+          "pdf_visual_status": "VISUAL_ATTACHED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "mounted",
+            "page": 17,
+            "page_source": "manual_visual_verification",
+            "classification": "required",
+            "visual_reason": "figure_keyword_and_compact_visual_in_region|low_mapping_confidence|overspan_multi_question",
+            "visual_bbox": [
+              396.0,
+              502.0,
+              530.0,
+              611.0
+            ],
+            "match_method": "manual_bbox_verified",
+            "match_score": 1.0
+          },
+          "needs_image_review": false,
+          "visual_status": "accepted",
+          "image_warning_resolved_by": "pdf_visual"
+        }
+      }
+    },
+    "12515": {
+      "before": {
+        "skill_id": "gh_TangentLinesOfACircle",
+        "source_paragraph": "圓的切線",
+        "notes": {
+          "image_role": "unknown",
+          "image_dependency_reason": "no_diagram_dependency_detected",
+          "needs_image": false,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "已知圓\\(C:\\left ( { x-1 } \\right ) ^ { 2 } +\\left ( { y-2 } \\right ) ^ { 2 } =9\\)，且過圓C內一點\\(P\\left ( { 2,\\ 4 } \\right )\\)的所有弦中，最短的弦為\\({\\overline{ AB }}\\)。\n(1)求\\({\\overline{ AB }}\\)的長。\n(2)求直線AB的方程式。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_012_035",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|12|35",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "12",
+            "source_order": 35,
+            "block_index": 34,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題12",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "27560c54820441554363222a37d232eebce24376ec0fa6df413a08d32a530372"
+          },
+          "pdf_visual_status": "NO_VISUAL_REQUIRED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 18,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "text_and_formula_only|low_mapping_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.92
+          }
+        }
+      },
+      "after": {
+        "skill_id": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "source_paragraph": "圓與直線關係的判定",
+        "notes": {
+          "image_role": "unknown",
+          "image_dependency_reason": "no_diagram_dependency_detected",
+          "needs_image": false,
+          "math_format": "standard_latex",
+          "raw_problem_backup": "已知圓\\(C:\\left ( { x-1 } \\right ) ^ { 2 } +\\left ( { y-2 } \\right ) ^ { 2 } =9\\)，且過圓C內一點\\(P\\left ( { 2,\\ 4 } \\right )\\)的所有弦中，最短的弦為\\({\\overline{ AB }}\\)。\n(1)求\\({\\overline{ AB }}\\)的長。\n(2)求直線AB的方程式。",
+          "math_warnings": [],
+          "needs_review": false,
+          "import_confidence": 0.9,
+          "auto_fill_threshold": 0.85,
+          "auto_fill_applied": true,
+          "review_required_by_confidence": false,
+          "import_source_priority": "docx_primary",
+          "optional_enrich_pdf_path": "C:\\Projects\\Mathproject_tvet_mathB\\uploads\\3216d60456cc4126b52405e8d0d127c9\\07-.pdf",
+          "source_provenance": {
+            "primary": {
+              "filename": "07-.docx",
+              "original_filename": "單元07-圓與直線的關係.docx",
+              "size_bytes": 1158239,
+              "sha256": "26f445460376a8fc63adad94d3af00ef10238c7b2172340ce2a5068e5a23a328",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/26f445460376_單元07-圓與直線的關係.docx"
+            },
+            "optional_enrich_pdf": {
+              "filename": "07-.pdf",
+              "original_filename": "單元07-圓與直線的關係.pdf",
+              "size_bytes": 3994759,
+              "sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+              "stored_path": "textbook_import/uploaded_sources/general/數學1/961d7ea54896_單元07-圓與直線的關係.pdf"
+            }
+          },
+          "rollback_metadata": {
+            "preserved": true,
+            "policy": {
+              "execution_arch": "native",
+              "docx_primary": true,
+              "pdf_optional_enrich": true,
+              "auto_post_ocr_ai": true,
+              "auto_backfill_high_confidence": true,
+              "review_low_confidence": true
+            }
+          },
+          "question_anchor": {
+            "anchor_id": "general_1_section_advanced_exercise_012_035",
+            "anchor_key": "general|longteng|1|7|section|advanced_exercise|12|35",
+            "curriculum": "general",
+            "publisher": "longteng",
+            "volume": "數學1",
+            "chapter": "7",
+            "section": "",
+            "question_type": "advanced_exercise",
+            "question_number": "12",
+            "source_order": 35,
+            "block_index": 34,
+            "occurrence_index": 1,
+            "question_label": "7習題 進階題12",
+            "source_type": "advanced_exercise",
+            "text_fingerprint": "27560c54820441554363222a37d232eebce24376ec0fa6df413a08d32a530372"
+          },
+          "pdf_visual_status": "NO_VISUAL_REQUIRED",
+          "pdf_visual_enrichment": {
+            "source_pdf": "07-.pdf",
+            "source_pdf_sha256": "961d7ea548967983bab63fb7e0ac64486160159d337c5a347652312d8089f0cb",
+            "result": "skipped_low_confidence",
+            "page": 18,
+            "page_source": "pdf_text_match",
+            "classification": "skipped_low_confidence",
+            "visual_reason": "text_and_formula_only|low_mapping_confidence",
+            "visual_bbox": null,
+            "match_method": "unique_phrase+order",
+            "match_score": 0.92
+          }
+        }
+      }
+    }
+  }
+}

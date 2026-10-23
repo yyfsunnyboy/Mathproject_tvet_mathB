@@ -216,13 +216,18 @@
     },
     "algebra.exponent_laws": {
       "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-20)",
-      "bundle_sha256": "5514a63f9240bc418e60122efb143310e5c767ac5c8d58eaaefc546e961ed0e9",
+      "bundle_sha256": "ef4f77cf759875dd4853642a7cc170df8fb5465a3cd66a6ccf32e3fad95d0830",
       "capabilities": [
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "evaluate_common_logarithm_items",
         "evaluate_conditional_exponent_values",
         "evaluate_exponent_statement_truth",
+        "evaluate_number_property_statements",
         "evaluate_power_law_model",
         "evaluate_repeated_folding",
         "evaluate_scale_energy_ratio",
+        "evaluate_scientific_notation_expression",
         "express_rational_powers_as_radicals",
         "select_nearest_model_value",
         "simplify_exponent_expressions",
@@ -231,11 +236,78 @@
         "solve_exponent_blank_equations",
         "solve_half_life_model",
         "solve_linear_unknowns_from_exponential_table",
-        "solve_metabolic_scaling"
+        "solve_metabolic_scaling",
+        "solve_power_of_ten_exponent"
       ],
       "domain_module": "core.domain.promoted.algebra_exponent_laws.exponent_laws_domain",
       "entrypoint": "build_exponent_laws_matrix",
       "operations": {
+        "approximate_common_logarithm": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "approximate_common_logarithm"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_approximate_common_logarithm_matrix"
+        },
+        "count_digits_of_integer_power": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "count_digits_of_integer_power"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_count_digits_of_integer_power_matrix"
+        },
+        "evaluate_common_logarithm_items": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_common_logarithm_items"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_common_logarithm_items_matrix"
+        },
         "evaluate_conditional_exponent_values": {
           "checker_keys": [
             "rational_checker",
@@ -282,6 +354,29 @@
             "multiple_inputs"
           ],
           "validator": "validate_evaluate_exponent_statement_truth_matrix"
+        },
+        "evaluate_number_property_statements": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_number_property_statements"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "single_choice",
+            "multiple_inputs"
+          ],
+          "validator": "validate_evaluate_number_property_statements_matrix"
         },
         "evaluate_power_law_model": {
           "checker_keys": [
@@ -345,6 +440,29 @@
             "multiple_inputs"
           ],
           "validator": "validate_evaluate_scale_energy_ratio_matrix"
+        },
+        "evaluate_scientific_notation_expression": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "evaluate_scientific_notation_expression"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_scientific_notation_expression_matrix"
         },
         "express_rational_powers_as_radicals": {
           "checker_keys": [
@@ -540,20 +658,66 @@
             "multiple_inputs"
           ],
           "validator": "validate_solve_metabolic_scaling_matrix"
+        },
+        "solve_power_of_ten_exponent": {
+          "checker_keys": [
+            "rational_checker",
+            "expression_equivalence_checker",
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_exponent_laws_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_exponent_laws.exponent_laws_adapter.adapt_exponent_laws_matrix",
+          "provided_capabilities": [
+            "solve_power_of_ten_exponent"
+          ],
+          "runtime_contract": "exponent_laws_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_power_of_ten_exponent_matrix"
         }
       },
       "package_files": {
         "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "exponent_laws_adapter.py": "d394164ca9155eb97dc1fa8ad6e2c344e964f443dfda695e7e0de7d9e11dc8f1",
-        "exponent_laws_domain.py": "54c5514d4d64020179f918da86ec6dbd1e8d7de83f87024845b4303dd00cd7a9",
-        "expr_tree.py": "7882576ded48ecd2c1f40ce65683a934a7729908dafbcca073ad5b9597d1b99d"
+        "exponent_laws_adapter.py": "c02d8467d7178f9d71c786cb9940279c45d34106b4b7686ec61b56860e5f4133",
+        "exponent_laws_domain.py": "e209948b072233e542db38560148dc57cd09b27e820e0fbb3a7fe055c5fe9dac",
+        "expr_tree.py": "763ac080c71c22b3baeb282e3d4dd44792e84bc87c7d95cd6da2e65e05ec8421"
       },
       "package_import": "core.domain.promoted.algebra_exponent_laws",
       "package_name": "algebra_exponent_laws",
       "proposal_id": "capability_exponent_laws_4b7e1c93",
-      "proposal_revision": 2,
-      "registry_revision": "promoted-5514a63f9240",
+      "proposal_revision": 3,
+      "registry_revision": "promoted-ef4f77cf7598",
       "skill_bindings": {
+        "gh_CommonLogarithms": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
         "gh_IntegerExponentsAndLaws": {
           "allowed_operations": [
             "simplify_exponent_expressions",
@@ -569,7 +733,13 @@
             "solve_cooling_coefficient",
             "express_rational_powers_as_radicals",
             "solve_cooling_initial_temperature",
-            "solve_linear_unknowns_from_exponential_table"
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
           ],
           "default_curriculum_profile": "general_high"
         },
@@ -588,7 +758,13 @@
             "solve_cooling_coefficient",
             "express_rational_powers_as_radicals",
             "solve_cooling_initial_temperature",
-            "solve_linear_unknowns_from_exponential_table"
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
           ],
           "default_curriculum_profile": "general_high"
         },
@@ -607,7 +783,13 @@
             "solve_cooling_coefficient",
             "express_rational_powers_as_radicals",
             "solve_cooling_initial_temperature",
-            "solve_linear_unknowns_from_exponential_table"
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
           ],
           "default_curriculum_profile": "general_high"
         },
@@ -626,7 +808,38 @@
             "solve_cooling_coefficient",
             "express_rational_powers_as_radicals",
             "solve_cooling_initial_temperature",
-            "solve_linear_unknowns_from_exponential_table"
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_ScientificNotationAndItsOperations": {
+          "allowed_operations": [
+            "simplify_exponent_expressions",
+            "solve_exponent_blank_equations",
+            "evaluate_conditional_exponent_values",
+            "evaluate_exponent_statement_truth",
+            "evaluate_repeated_folding",
+            "select_nearest_model_value",
+            "evaluate_power_law_model",
+            "solve_metabolic_scaling",
+            "solve_half_life_model",
+            "evaluate_scale_energy_ratio",
+            "solve_cooling_coefficient",
+            "express_rational_powers_as_radicals",
+            "solve_cooling_initial_temperature",
+            "solve_linear_unknowns_from_exponential_table",
+            "evaluate_scientific_notation_expression",
+            "evaluate_number_property_statements",
+            "evaluate_common_logarithm_items",
+            "approximate_common_logarithm",
+            "count_digits_of_integer_power",
+            "solve_power_of_ten_exponent"
           ],
           "default_curriculum_profile": "general_high"
         }
@@ -960,6 +1173,983 @@
             "evaluate_time_dilation_relations",
             "optimize_by_am_gm",
             "nearest_integer_from_radical_relation"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "analytic_geometry.circle_equations": {
+      "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-23; reviewed bundle sha256 c9ed3154c16920b41d775e6c0144cdb646b6aa73cbb383a8639b9426811675f6)",
+      "bundle_sha256": "c27fac060f711ad16b65180750ecb9ec4f59f1b190c0b41a5049a6dc058ce05e",
+      "capabilities": [
+        "analyze_general_circle",
+        "classify_points_against_circle",
+        "evaluate_circle_statement_truth",
+        "solve_circle_point_distances",
+        "solve_circular_arch_height",
+        "solve_distance_ratio_locus",
+        "solve_mohr_circles",
+        "solve_point_position_parameter_range",
+        "solve_storm_entry_time",
+        "write_circle_equations"
+      ],
+      "domain_module": "core.domain.promoted.analytic_geometry_circles.circle_equations_domain",
+      "entrypoint": "build_circle_equations_matrix",
+      "operations": {
+        "analyze_general_circle": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "analyze_general_circle"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_analyze_general_circle_matrix"
+        },
+        "classify_points_against_circle": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "classify_points_against_circle"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_classify_points_against_circle_matrix"
+        },
+        "evaluate_circle_statement_truth": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "evaluate_circle_statement_truth"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_evaluate_circle_statement_truth_matrix"
+        },
+        "solve_circle_point_distances": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_circle_point_distances"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_circle_point_distances_matrix"
+        },
+        "solve_circular_arch_height": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_circular_arch_height"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_circular_arch_height_matrix"
+        },
+        "solve_distance_ratio_locus": {
+          "checker_keys": [
+            "equation_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_distance_ratio_locus"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_distance_ratio_locus_matrix"
+        },
+        "solve_mohr_circles": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_mohr_circles"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_mohr_circles_matrix"
+        },
+        "solve_point_position_parameter_range": {
+          "checker_keys": [
+            "inequality_solution_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_point_position_parameter_range"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "inequality"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_point_position_parameter_range_matrix"
+        },
+        "solve_storm_entry_time": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "solve_storm_entry_time"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_solve_storm_entry_time_matrix"
+        },
+        "write_circle_equations": {
+          "checker_keys": [
+            "equation_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circles.circle_equations_adapter.adapt_circle_equations_matrix",
+          "provided_capabilities": [
+            "write_circle_equations"
+          ],
+          "runtime_contract": "circle_equations_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_write_circle_equations_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "circle_equations_adapter.py": "dd681d1d24e692e89d96140980726898f4940cdc2e80003d24d79a03512e94a1",
+        "circle_equations_domain.py": "54228ea7e06f256d2076f5e61dedf9fab53e4668598adebb1e9d61d1d926da57",
+        "circle_geometry.py": "b848685f38731085f4ac0445d67e0a2d6fd108e0d3a149048bccc878e88dee6a"
+      },
+      "package_import": "core.domain.promoted.analytic_geometry_circles",
+      "package_name": "analytic_geometry_circles",
+      "proposal_id": "capability_analytic_geometry_circles_5c7b9e24",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-c27fac060f71",
+      "skill_bindings": {
+        "gh_GeneralFormOfACircle": {
+          "allowed_operations": [
+            "analyze_general_circle",
+            "evaluate_circle_statement_truth",
+            "solve_distance_ratio_locus"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PointAndCircleRelationship": {
+          "allowed_operations": [
+            "classify_points_against_circle",
+            "evaluate_circle_statement_truth",
+            "solve_circle_point_distances",
+            "solve_mohr_circles",
+            "solve_point_position_parameter_range",
+            "solve_storm_entry_time",
+            "write_circle_equations"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_StandardFormOfACircle": {
+          "allowed_operations": [
+            "evaluate_circle_statement_truth",
+            "solve_circular_arch_height",
+            "write_circle_equations"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "analytic_geometry.circle_line_relations": {
+      "approved_by": "project_owner",
+      "bundle_sha256": "fee773daa80dd13a3dd1a6665386238b89c5ea948dfcf40fc9213dd80fca00da",
+      "capabilities": [
+        "classify_circle_line_relations",
+        "evaluate_circle_line_statement_truth",
+        "solve_chord_and_distance",
+        "solve_circle_from_tangent_point",
+        "solve_circle_line_parameter",
+        "solve_circle_tangent_scenarios",
+        "write_circle_tangent_lines"
+      ],
+      "domain_module": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_domain",
+      "entrypoint": "build_circle_line_relations_matrix",
+      "operations": {
+        "classify_circle_line_relations": {
+          "checker_keys": [
+            "choice_label_checker",
+            "coordinate_pair_checker",
+            "multi_part_answer_checker",
+            "text_short_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "classify_circle_line_relations"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "multi_part",
+            "short_answer",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "single_choice"
+          ],
+          "validator": "validate_classify_circle_line_relations_matrix"
+        },
+        "evaluate_circle_line_statement_truth": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "evaluate_circle_line_statement_truth"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_evaluate_circle_line_statement_truth_matrix"
+        },
+        "solve_chord_and_distance": {
+          "checker_keys": [
+            "expression_equivalence_checker",
+            "linear_equation_equivalent_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "solve_chord_and_distance"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "multi_part",
+            "numeric_or_radical"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_chord_and_distance_matrix"
+        },
+        "solve_circle_from_tangent_point": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "solve_circle_from_tangent_point"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_circle_from_tangent_point_matrix"
+        },
+        "solve_circle_line_parameter": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "linear_relation_set_checker",
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "solve_circle_line_parameter"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part",
+            "rational",
+            "short_answer",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_circle_line_parameter_matrix"
+        },
+        "solve_circle_tangent_scenarios": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "equation_checker",
+            "expression_equivalence_checker",
+            "linear_equation_equivalent_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "solve_circle_tangent_scenarios"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "equation",
+            "multi_part",
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_circle_tangent_scenarios_matrix"
+        },
+        "write_circle_tangent_lines": {
+          "checker_keys": [
+            "linear_equation_equivalent_checker",
+            "linear_relation_set_checker"
+          ],
+          "handler": "build_circle_line_relations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_circle_lines.circle_line_adapter.adapt_circle_line_relations_matrix",
+          "provided_capabilities": [
+            "write_circle_tangent_lines"
+          ],
+          "runtime_contract": "circle_line_relations_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_write_circle_tangent_lines_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "circle_line_adapter.py": "fee20ad0792d851e21be300a7a515abd0e064fdfde161e1bdb010b49a1019012",
+        "circle_line_domain.py": "8819150b9eab3e6f927fed930a1f94737920d254ba9f7dd50742d0fd361925c6",
+        "circle_line_geometry.py": "b04f2e3ecbeb47efe24ed363afa44bb2b7924c290a552635e9bd8094fc17276d"
+      },
+      "package_import": "core.domain.promoted.analytic_geometry_circle_lines",
+      "package_name": "analytic_geometry_circle_lines",
+      "proposal_id": "capability_analytic_geometry_circle_lines_43bb486a",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-fee773daa80d",
+      "skill_bindings": {
+        "gh_JudgingTheRelationshipOfCircleAndLine": {
+          "allowed_operations": [
+            "classify_circle_line_relations",
+            "evaluate_circle_line_statement_truth",
+            "solve_chord_and_distance",
+            "solve_circle_line_parameter",
+            "write_circle_tangent_lines"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_TangentLinesOfACircle": {
+          "allowed_operations": [
+            "evaluate_circle_line_statement_truth",
+            "solve_circle_from_tangent_point",
+            "solve_circle_line_parameter",
+            "solve_circle_tangent_scenarios",
+            "write_circle_tangent_lines"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "analytic_geometry.line_equations": {
+      "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-23; reviewed bundle sha256 06ccd656d366f333c8c3382ef307cf732563736b0f9071136629ba40f9a22a5e)",
+      "bundle_sha256": "c89270ccd2a376e8f070ba2e8a3edb52f06fcad5175b7063b04751757c2c298f",
+      "capabilities": [
+        "compute_line_distances",
+        "evaluate_line_statement_truth",
+        "evaluate_slope_sign_statements",
+        "fill_line_property_table",
+        "graph_inequality_series",
+        "graph_inequality_system",
+        "graph_inequality_with_lattice_count",
+        "rank_line_slopes",
+        "read_region_signs_from_figure",
+        "select_points_same_side",
+        "slope_of_line_from_equation",
+        "solve_axis_triangle_area_line",
+        "solve_line_constructions",
+        "solve_line_equations",
+        "solve_line_parameters",
+        "solve_parallel_line_family",
+        "solve_rectangle_perpendicular_diagonals",
+        "solve_region_coefficients_from_figure",
+        "solve_translation_parameter",
+        "solve_triangle_region_system",
+        "solve_window_decorative_lines",
+        "translate_line_equation"
+      ],
+      "domain_module": "core.domain.promoted.analytic_geometry_lines.line_equations_domain",
+      "entrypoint": "build_line_equations_matrix",
+      "operations": {
+        "compute_line_distances": {
+          "checker_keys": [
+            "expression_equivalence_checker",
+            "rational_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "compute_line_distances"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_compute_line_distances_matrix"
+        },
+        "evaluate_line_statement_truth": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "evaluate_line_statement_truth"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_evaluate_line_statement_truth_matrix"
+        },
+        "evaluate_slope_sign_statements": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "evaluate_slope_sign_statements"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_slope_sign_statements_matrix"
+        },
+        "fill_line_property_table": {
+          "checker_keys": [
+            "table_fill_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "fill_line_property_table"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "table_fill"
+          ],
+          "supported_presentation_modes": [
+            "table_fill"
+          ],
+          "validator": "validate_fill_line_property_table_matrix"
+        },
+        "graph_inequality_series": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "graph_inequality_series"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_graph_inequality_series_matrix"
+        },
+        "graph_inequality_system": {
+          "checker_keys": [
+            "free_response_drawing_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "graph_inequality_system"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "drawing"
+          ],
+          "supported_presentation_modes": [
+            "canvas"
+          ],
+          "validator": "validate_graph_inequality_system_matrix"
+        },
+        "graph_inequality_with_lattice_count": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "graph_inequality_with_lattice_count"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_graph_inequality_with_lattice_count_matrix"
+        },
+        "rank_line_slopes": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "ordered_inequality_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "rank_line_slopes"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_rank_line_slopes_matrix"
+        },
+        "read_region_signs_from_figure": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "read_region_signs_from_figure"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_read_region_signs_from_figure_matrix"
+        },
+        "select_points_same_side": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "select_points_same_side"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_select_points_same_side_matrix"
+        },
+        "slope_of_line_from_equation": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "slope_of_line_from_equation"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_slope_of_line_from_equation_matrix"
+        },
+        "solve_axis_triangle_area_line": {
+          "checker_keys": [
+            "linear_relation_set_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_axis_triangle_area_line"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "short_answer"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_axis_triangle_area_line_matrix"
+        },
+        "solve_line_constructions": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_line_constructions"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_line_constructions_matrix"
+        },
+        "solve_line_equations": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_line_equations"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_line_equations_matrix"
+        },
+        "solve_line_parameters": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_line_parameters"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_line_parameters_matrix"
+        },
+        "solve_parallel_line_family": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_parallel_line_family"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_parallel_line_family_matrix"
+        },
+        "solve_rectangle_perpendicular_diagonals": {
+          "checker_keys": [
+            "expression_equivalence_checker",
+            "rational_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_rectangle_perpendicular_diagonals"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_rectangle_perpendicular_diagonals_matrix"
+        },
+        "solve_region_coefficients_from_figure": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_region_coefficients_from_figure"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_region_coefficients_from_figure_matrix"
+        },
+        "solve_translation_parameter": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_translation_parameter"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_translation_parameter_matrix"
+        },
+        "solve_triangle_region_system": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_triangle_region_system"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_triangle_region_system_matrix"
+        },
+        "solve_window_decorative_lines": {
+          "checker_keys": [
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "solve_window_decorative_lines"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_window_decorative_lines_matrix"
+        },
+        "translate_line_equation": {
+          "checker_keys": [
+            "linear_equation_equivalent_checker"
+          ],
+          "handler": "build_line_equations_matrix",
+          "payload_adapter": "core.domain.promoted.analytic_geometry_lines.line_equations_adapter.adapt_line_equations_matrix",
+          "provided_capabilities": [
+            "translate_line_equation"
+          ],
+          "runtime_contract": "line_equations_exact_v1",
+          "supported_answer_types": [
+            "equation"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_translate_line_equation_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "figures.py": "034317008d2c6c6ff01a46a5442415b262583983f718f452ac4982a611147e10",
+        "line_equations_adapter.py": "e6aed65fa8880cfe2660344f213d24d46155e316cf90510b5203d2ff285c1444",
+        "line_equations_domain.py": "897d7ddfef5ddc2c1d6733f54242fa25dfba32825c06bf06f3c690eeb178d23b",
+        "line_geometry.py": "b57c812db671fe8ad05aa9f23815f8dff74f57d1499ed127ffd00fa5644650c2"
+      },
+      "package_import": "core.domain.promoted.analytic_geometry_lines",
+      "package_name": "analytic_geometry_lines",
+      "proposal_id": "capability_analytic_geometry_lines_8a2f6d15",
+      "proposal_revision": 2,
+      "registry_revision": "promoted-c89270ccd2a3",
+      "skill_bindings": {
+        "gh_DistanceFromPointToLine": {
+          "allowed_operations": [
+            "compute_line_distances",
+            "evaluate_line_statement_truth",
+            "solve_line_parameters",
+            "solve_parallel_line_family",
+            "solve_window_decorative_lines"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_EquationOfALine": {
+          "allowed_operations": [
+            "evaluate_line_statement_truth",
+            "fill_line_property_table",
+            "slope_of_line_from_equation",
+            "solve_axis_triangle_area_line",
+            "solve_line_equations"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_LineSlope": {
+          "allowed_operations": [
+            "evaluate_slope_sign_statements",
+            "rank_line_slopes"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_LinearInequalityInTwoVariables": {
+          "allowed_operations": [
+            "evaluate_line_statement_truth",
+            "graph_inequality_series",
+            "graph_inequality_system",
+            "graph_inequality_with_lattice_count",
+            "read_region_signs_from_figure",
+            "select_points_same_side",
+            "solve_region_coefficients_from_figure",
+            "solve_triangle_region_system"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_ParallelAndPerpendicularLines": {
+          "allowed_operations": [
+            "evaluate_line_statement_truth",
+            "solve_line_constructions",
+            "solve_line_equations",
+            "solve_line_parameters",
+            "solve_rectangle_perpendicular_diagonals"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_TranslationOfALine": {
+          "allowed_operations": [
+            "solve_translation_parameter",
+            "translate_line_equation"
           ],
           "default_curriculum_profile": "general_high"
         }

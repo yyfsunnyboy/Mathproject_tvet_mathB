@@ -1,0 +1,11 @@
+{
+ "gh_LinearInequalityInTwoVariables": {
+  "status": "production_published",
+  "component_count": 11,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 2
+ }
+}

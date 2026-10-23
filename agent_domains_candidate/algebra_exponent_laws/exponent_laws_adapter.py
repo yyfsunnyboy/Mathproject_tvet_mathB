@@ -240,6 +240,13 @@ def _select_nearest_model_value(matrix: dict[str, Any]) -> dict[str, Any]:
             f"問：對摺 ${givens['fold_count']}$ 次後，紙張厚度最接近下列哪一個選項？"
         )
         unit = "公尺"
+    elif givens["model"] == "benford":
+        question = (
+            "根據班佛法則，在某銀行裡，帳戶存款數最高位數字是 $a$ 的人數占所有人數的比例為 "
+            "$x=\\log\\left(1+\\frac{1}{a}\\right)$。"
+            f"求當 $a={givens['leading_digit']}$ 時，$x$ 的值最接近下列哪個選項？"
+        )
+        unit = "%"
     else:
         question = (
             "海嘯是一種有強大破壞力的海浪，其速度 $V$（公尺／秒）的公式為\n"
@@ -444,7 +451,157 @@ def _solve_linear_unknowns_from_exponential_table(matrix: dict[str, Any]) -> dic
         shape="linear_unknown_pair")
 
 
+def _sci_part(index: int, record: dict[str, Any]) -> dict[str, Any]:
+    return _part(index, record["canonical"], "expression_equivalence_checker", "math_expression_equivalence", "expression",
+                 required_form="scientific_notation", significant_digits=record["sig"])
+
+
+def _evaluate_scientific_notation_expression(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    items, records = givens["items"], answer["values"]
+    texts = []
+    for item in items:
+        if item.get("prompt"):
+            texts.append(item["prompt"])
+        elif item["kind"] == "expr" and item.get("show_expr", True):
+            texts.append(f"${to_latex(item['tree'])}$")
+        else:
+            texts.append("")
+    shown = [t for t in texts if t]
+    stem = givens.get("stem", "")
+    steps = [f"取 ${rec['sig']}$ 位有效數字，得 ${rec['display']}$。" for rec in records]
+    display = "，".join(f"({i}) ${r['display']}$" if len(records) > 1 else f"${r['display']}$"
+                      for i, r in enumerate(records, start=1))
+    if len(records) == 1:
+        question = stem + (shown[0] if shown else "")
+        return _single_payload(matrix, question=question, part=_sci_part(1, records[0]), display_answer=display,
+                               explanation_steps=steps, shape="scientific_notation_values")
+    question = stem + ("\n" + _numbered(shown) if shown else "")
+    return _parts_payload(matrix, question=question, parts=[_sci_part(i, r) for i, r in enumerate(records, start=1)],
+                          display_answer=display, explanation_steps=steps, shape="scientific_notation_values")
+
+
+_TEN_POWER_WORDS = {4: "1萬", 8: "1億", 12: "1兆"}
+
+
+def _property_text(number: dict[str, Any], statement: dict[str, Any]) -> str:
+    kind, claim = statement["kind"], statement["claim"]
+    if kind == "is_scientific_notation":
+        return "以上為科學記號表示法。"
+    if kind == "digit_count":
+        return f"此數為 ${claim}$ 位數。"
+    if kind == "zero_count":
+        return f"此數共有 ${claim}$ 個0。"
+    if kind == "greater_than_power":
+        return f"此數大於 {_TEN_POWER_WORDS.get(int(claim), f'$10^{{{claim}}}$')}。"
+    if kind == "significant_digits":
+        return f"${number['decimal']}$ 的有效位數是 ${claim}$。"
+    return f"$10^{{{number['ten_power']}}}$ 的整數部分為 ${claim}$ 位數。"
+
+
+def _evaluate_number_property_statements(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    number, statements = givens["number"], givens["statements"]
+    marks = ["○" if t else "×" for t in answer["truth_values"]]
+    texts = [_property_text(number, s) for s in statements]
+    intro = f"關於 ${number['mantissa']}\\times 10^{{{number['exponent']}}}$，" if "mantissa" in number else ""
+    header = intro + "下列敘述對的打「○」，錯的打「×」。"
+    steps = [f"{t} 判斷為「{m}」。" for t, m in zip(texts, marks)]
+    if len(texts) == 1:
+        return _choice_payload(matrix, question=f"{header}\n{texts[0]}", choices=TRUE_FALSE_CHOICES, answer=marks[0],
+                               display_answer=marks[0], explanation_steps=steps)
+    parts = [_part(i, m, "choice_label_checker", "choice_label", "single_choice",
+                   choices=[dict(c) for c in TRUE_FALSE_CHOICES]) for i, m in enumerate(marks, start=1)]
+    return _parts_payload(matrix, question=header + "\n" + _numbered(texts), parts=parts,
+                          display_answer="　".join(f"({i}) {m}" for i, m in enumerate(marks, start=1)),
+                          explanation_steps=steps, shape="statement_truth_parts")
+
+
+def _evaluate_common_logarithm_items(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    stem, items, records = givens.get("stem", ""), givens["items"], answer["values"]
+    texts, parts = [], []
+    for i, (item, rec) in enumerate(zip(items, records), start=1):
+        if item["kind"] == "as_power_of_ten":
+            texts.append(item.get("prompt") or f"利用常用對數將 ${item['value']}$ 表為「$10$ 的次方」的形式。")
+            parts.append(_part(i, rec["canonical"], *_EXPRESSION))
+        else:
+            tex = to_latex(item["tree"])
+            texts.append(item.get("prompt") or (f"${tex}$" if stem else f"求 ${tex}$ 的值。"))
+            extra = {"allow_decimal": True, "required_form": "decimal"} if "." in rec["canonical"] else {}
+            parts.append(_part(i, rec["canonical"], *_RATIONAL, **extra))
+    steps = [f"({i}) 答案為 ${r['display']}$。" for i, r in enumerate(records, start=1)]
+    display = "，".join(f"({i}) ${r['display']}$" for i, r in enumerate(records, start=1))
+    question = (stem + "\n" if stem else "") + (_numbered(texts) if len(texts) > 1 else texts[0])
+    if len(parts) == 1:
+        return _single_payload(matrix, question=question, part=parts[0], display_answer=display,
+                               explanation_steps=steps, shape="common_logarithm_values")
+    return _parts_payload(matrix, question=question, parts=parts, display_answer=display, explanation_steps=steps,
+                          shape="common_logarithm_values")
+
+
+def _approximate_common_logarithm(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    record = answer["values"][0]
+    part = {**_value_part(1, record), "decimal_places": int(givens["decimals"])}
+    return _single_payload(
+        matrix, question=f"求 $\\log {givens['value']}$ 的值（四捨五入到小數點以下第 ${givens['decimals']}$ 位）。",
+        part=part, display_answer=f"$\\log {givens['value']}\\approx {record['canonical']}$",
+        explanation_steps=[f"$\\log {givens['value']}\\approx {float(answer['exact']):.6f}$，四捨五入得 ${record['canonical']}$。"],
+        shape="decimal_logarithm")
+
+
+def _count_digits_of_integer_power(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    offset = int(givens.get("offset", 0))
+    number = f"{givens['base']}^{{{givens['exponent']}}}" + (f"{offset:+d}" if offset else "")
+    if givens.get("style") == "lucas":
+        question = f"盧卡斯證明了 ${number}$ 為質數，問：此質數是幾位數？"
+    else:
+        question = f"已知 ${number}$ 是質數，求此質數的位數。"
+    record = answer["values"][0]
+    return _single_payload(
+        matrix, question=question, part=_value_part(1, record), display_answer=f"${record['canonical']}$ 位數",
+        explanation_steps=[f"${number}$ 的常用對數約為 ${float(mp_log10_text(givens))}$，整數部分加 $1$ 即為位數 ${record['canonical']}$。"],
+        shape="digit_count")
+
+
+def mp_log10_text(givens: dict[str, Any]) -> str:
+    import mpmath as mp
+
+    value = mp.power(int(givens["base"]), int(givens["exponent"])) + int(givens.get("offset", 0))
+    return mp.nstr(mp.log10(value), 12)
+
+
+def _solve_power_of_ten_exponent(matrix: dict[str, Any]) -> dict[str, Any]:
+    givens, answer = matrix["givens"], matrix["answer"]
+    decimals = int(givens.get("decimals", 0))
+    place = "整數位" if decimals == 0 else f"小數點後第{ {1: '一', 2: '二', 3: '三'}.get(decimals, decimals) }位"
+    if givens.get("tower_n") is not None:
+        n = int(givens["tower_n"])
+        question = (
+            "2019年谷歌的量子AI實驗室負責人尼文提出了未來的量子電腦會依循著「尼文定律」：經過 $1,2,3,\\ldots,n$ 個週期後，"
+            "其運算速度會變成原來的 $2^{2^{1}}=2^{2}$、$2^{2^{2}}=2^{4}$、$2^{2^{3}}=2^{8}$, …, $2^{2^{n}}$ 倍。"
+            f"設某台量子電腦經過 ${n}$ 個週期後，其運算速度變為原來的 $b$ 倍，且 $b=10^{{k}}$，求 $k$ 的值。（四捨五入到{place}）"
+        )
+    else:
+        question = f"設 ${givens['base']}^{{{givens['exponent']}}}=10^{{k}}$，求 $k$ 的值。（四捨五入到{place}）"
+    record = answer["values"][0]
+    part = _value_part(1, record)
+    part["decimal_places"] = decimals
+    return _single_payload(
+        matrix, question=question, part=part, display_answer=f"$k\\approx {record['canonical']}$",
+        explanation_steps=[f"$k={answer['exponent_used']}\\log {givens['base']}\\approx {float(answer['exact']):.4f}$，四捨五入得 ${record['canonical']}$。"],
+        shape="decimal_exponent")
+
+
 _PAYLOAD_BUILDERS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
+    "evaluate_scientific_notation_expression": _evaluate_scientific_notation_expression,
+    "evaluate_number_property_statements": _evaluate_number_property_statements,
+    "evaluate_common_logarithm_items": _evaluate_common_logarithm_items,
+    "approximate_common_logarithm": _approximate_common_logarithm,
+    "count_digits_of_integer_power": _count_digits_of_integer_power,
+    "solve_power_of_ten_exponent": _solve_power_of_ten_exponent,
     "express_rational_powers_as_radicals": _express_rational_powers_as_radicals,
     "solve_cooling_initial_temperature": _solve_cooling_initial_temperature,
     "solve_linear_unknowns_from_exponential_table": _solve_linear_unknowns_from_exponential_table,

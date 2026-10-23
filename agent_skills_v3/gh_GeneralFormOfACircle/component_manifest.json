@@ -1,0 +1,161 @@
+{
+  "skill_id": "gh_GeneralFormOfACircle",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 14,
+  "components": [
+    {
+      "component_id": "src_12453",
+      "textbook_example_id": 12453,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12453/generate.py"
+    },
+    {
+      "component_id": "src_12454",
+      "textbook_example_id": 12454,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12454/generate.py"
+    },
+    {
+      "component_id": "src_12455",
+      "textbook_example_id": 12455,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "example",
+      "generate_py": "components/src_12455/generate.py"
+    },
+    {
+      "component_id": "src_12456",
+      "textbook_example_id": 12456,
+      "status": "verified",
+      "problem_type_id": "solve_distance_ratio_locus",
+      "domain_operation": "solve_distance_ratio_locus",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "example",
+      "generate_py": "components/src_12456/generate.py"
+    },
+    {
+      "component_id": "src_12457",
+      "textbook_example_id": 12457,
+      "status": "verified",
+      "problem_type_id": "solve_distance_ratio_locus",
+      "domain_operation": "solve_distance_ratio_locus",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12457/generate.py"
+    },
+    {
+      "component_id": "src_12458",
+      "textbook_example_id": 12458,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12458/generate.py"
+    },
+    {
+      "component_id": "src_12459",
+      "textbook_example_id": 12459,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12459/generate.py"
+    },
+    {
+      "component_id": "src_12460",
+      "textbook_example_id": 12460,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12460/generate.py"
+    },
+    {
+      "component_id": "src_12461",
+      "textbook_example_id": 12461,
+      "status": "verified",
+      "problem_type_id": "solve_distance_ratio_locus",
+      "domain_operation": "solve_distance_ratio_locus",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12461/generate.py"
+    },
+    {
+      "component_id": "src_12462",
+      "textbook_example_id": 12462,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12462/generate.py"
+    },
+    {
+      "component_id": "src_12463",
+      "textbook_example_id": 12463,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "short_answer",
+      "answer_type": "inequality",
+      "source_kind": "example",
+      "generate_py": "components/src_12463/generate.py"
+    },
+    {
+      "component_id": "src_12471",
+      "textbook_example_id": 12471,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_statement_truth",
+      "domain_operation": "evaluate_circle_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12471/generate.py"
+    },
+    {
+      "component_id": "src_12472",
+      "textbook_example_id": 12472,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_statement_truth",
+      "domain_operation": "evaluate_circle_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12472/generate.py"
+    },
+    {
+      "component_id": "src_12475",
+      "textbook_example_id": 12475,
+      "status": "verified",
+      "problem_type_id": "analyze_general_circle",
+      "domain_operation": "analyze_general_circle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12475/generate.py"
+    }
+  ]
+}

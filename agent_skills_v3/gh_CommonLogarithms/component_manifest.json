@@ -1,0 +1,205 @@
+{
+  "skill_id": "gh_CommonLogarithms",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_12385",
+      "textbook_example_id": 12385,
+      "status": "verified",
+      "problem_type_id": "evaluate_common_logarithm_items",
+      "domain_operation": "evaluate_common_logarithm_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12385/generate.py"
+    },
+    {
+      "component_id": "src_12386",
+      "textbook_example_id": 12386,
+      "status": "verified",
+      "problem_type_id": "evaluate_common_logarithm_items",
+      "domain_operation": "evaluate_common_logarithm_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12386/generate.py"
+    },
+    {
+      "component_id": "src_12387",
+      "textbook_example_id": 12387,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12387/generate.py"
+    },
+    {
+      "component_id": "src_12388",
+      "textbook_example_id": 12388,
+      "status": "verified",
+      "problem_type_id": "approximate_common_logarithm",
+      "domain_operation": "approximate_common_logarithm",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12388/generate.py"
+    },
+    {
+      "component_id": "src_12389",
+      "textbook_example_id": 12389,
+      "status": "verified",
+      "problem_type_id": "count_digits_of_integer_power",
+      "domain_operation": "count_digits_of_integer_power",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12389/generate.py"
+    },
+    {
+      "component_id": "src_12390",
+      "textbook_example_id": 12390,
+      "status": "verified",
+      "problem_type_id": "evaluate_common_logarithm_items",
+      "domain_operation": "evaluate_common_logarithm_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12390/generate.py"
+    },
+    {
+      "component_id": "src_12391",
+      "textbook_example_id": 12391,
+      "status": "verified",
+      "problem_type_id": "evaluate_common_logarithm_items",
+      "domain_operation": "evaluate_common_logarithm_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12391/generate.py"
+    },
+    {
+      "component_id": "src_12392",
+      "textbook_example_id": 12392,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12392/generate.py"
+    },
+    {
+      "component_id": "src_12393",
+      "textbook_example_id": 12393,
+      "status": "verified",
+      "problem_type_id": "count_digits_of_integer_power",
+      "domain_operation": "count_digits_of_integer_power",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12393/generate.py"
+    },
+    {
+      "component_id": "src_12394",
+      "textbook_example_id": 12394,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_property_statements",
+      "domain_operation": "evaluate_number_property_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12394/generate.py"
+    },
+    {
+      "component_id": "src_12395",
+      "textbook_example_id": 12395,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12395/generate.py"
+    },
+    {
+      "component_id": "src_12396",
+      "textbook_example_id": 12396,
+      "status": "verified",
+      "problem_type_id": "evaluate_exponent_statement_truth",
+      "domain_operation": "evaluate_exponent_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12396/generate.py"
+    },
+    {
+      "component_id": "src_12397",
+      "textbook_example_id": 12397,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_property_statements",
+      "domain_operation": "evaluate_number_property_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12397/generate.py"
+    },
+    {
+      "component_id": "src_12398",
+      "textbook_example_id": 12398,
+      "status": "verified",
+      "problem_type_id": "evaluate_common_logarithm_items",
+      "domain_operation": "evaluate_common_logarithm_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12398/generate.py"
+    },
+    {
+      "component_id": "src_12399",
+      "textbook_example_id": 12399,
+      "status": "verified",
+      "problem_type_id": "evaluate_conditional_exponent_values",
+      "domain_operation": "evaluate_conditional_exponent_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12399/generate.py"
+    },
+    {
+      "component_id": "src_12400",
+      "textbook_example_id": 12400,
+      "status": "verified",
+      "problem_type_id": "solve_power_of_ten_exponent",
+      "domain_operation": "solve_power_of_ten_exponent",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12400/generate.py"
+    },
+    {
+      "component_id": "src_12401",
+      "textbook_example_id": 12401,
+      "status": "verified",
+      "problem_type_id": "solve_power_of_ten_exponent",
+      "domain_operation": "solve_power_of_ten_exponent",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12401/generate.py"
+    },
+    {
+      "component_id": "src_12402",
+      "textbook_example_id": 12402,
+      "status": "verified",
+      "problem_type_id": "select_nearest_model_value",
+      "domain_operation": "select_nearest_model_value",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12402/generate.py"
+    }
+  ]
+}

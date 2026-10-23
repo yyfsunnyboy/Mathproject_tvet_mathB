@@ -1,0 +1,1006 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_analytic_geometry_circles_5c7b9e24",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-23; reviewed bundle sha256 c9ed3154c16920b41d775e6c0144cdb646b6aa73cbb383a8639b9426811675f6)",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: new domain analytic_geometry.circle_equations (10 operations) for 普高數學1 Unit 6 (圓方程式), bound to gh_StandardFormOfACircle, gh_GeneralFormOfACircle, gh_PointAndCircleRelationship; reuses the promoted exact line_geometry / figures helpers of analytic_geometry.line_equations and the shared checkers (no checker or runtime change)"
+  },
+  "domain_key": "analytic_geometry.circle_equations",
+  "package_name": "analytic_geometry_circles",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "circle_equations_adapter.py": "dd681d1d24e692e89d96140980726898f4940cdc2e80003d24d79a03512e94a1",
+    "circle_equations_domain.py": "54228ea7e06f256d2076f5e61dedf9fab53e4668598adebb1e9d61d1d926da57",
+    "circle_geometry.py": "b848685f38731085f4ac0445d67e0a2d6fd108e0d3a149048bccc878e88dee6a"
+  },
+  "domain_module": "circle_equations_domain",
+  "entrypoint": "build_circle_equations_matrix",
+  "capabilities": [
+    "analyze_general_circle",
+    "classify_points_against_circle",
+    "evaluate_circle_statement_truth",
+    "solve_circle_point_distances",
+    "solve_circular_arch_height",
+    "solve_distance_ratio_locus",
+    "solve_mohr_circles",
+    "solve_point_position_parameter_range",
+    "solve_storm_entry_time",
+    "write_circle_equations"
+  ],
+  "operations": {
+    "analyze_general_circle": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "inequality",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "inequality_solution_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_analyze_general_circle_matrix",
+      "provided_capabilities": [
+        "analyze_general_circle"
+      ]
+    },
+    "classify_points_against_circle": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_classify_points_against_circle_matrix",
+      "provided_capabilities": [
+        "classify_points_against_circle"
+      ]
+    },
+    "evaluate_circle_statement_truth": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_evaluate_circle_statement_truth_matrix",
+      "provided_capabilities": [
+        "evaluate_circle_statement_truth"
+      ]
+    },
+    "solve_circle_point_distances": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_circle_point_distances_matrix",
+      "provided_capabilities": [
+        "solve_circle_point_distances"
+      ]
+    },
+    "solve_circular_arch_height": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_solve_circular_arch_height_matrix",
+      "provided_capabilities": [
+        "solve_circular_arch_height"
+      ]
+    },
+    "solve_distance_ratio_locus": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "equation",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "equation_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_distance_ratio_locus_matrix",
+      "provided_capabilities": [
+        "solve_distance_ratio_locus"
+      ]
+    },
+    "solve_mohr_circles": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_mohr_circles_matrix",
+      "provided_capabilities": [
+        "solve_mohr_circles"
+      ]
+    },
+    "solve_point_position_parameter_range": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "inequality"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "inequality_solution_checker"
+      ],
+      "validator": "validate_solve_point_position_parameter_range_matrix",
+      "provided_capabilities": [
+        "solve_point_position_parameter_range"
+      ]
+    },
+    "solve_storm_entry_time": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_solve_storm_entry_time_matrix",
+      "provided_capabilities": [
+        "solve_storm_entry_time"
+      ]
+    },
+    "write_circle_equations": {
+      "handler": "build_circle_equations_matrix",
+      "payload_adapter": "circle_equations_adapter.adapt_circle_equations_matrix",
+      "runtime_contract": "circle_equations_exact_v1",
+      "supported_answer_types": [
+        "equation",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "equation_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_write_circle_equations_matrix",
+      "provided_capabilities": [
+        "write_circle_equations"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_GeneralFormOfACircle": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "analyze_general_circle",
+        "evaluate_circle_statement_truth",
+        "solve_distance_ratio_locus"
+      ]
+    },
+    "gh_PointAndCircleRelationship": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "classify_points_against_circle",
+        "evaluate_circle_statement_truth",
+        "solve_circle_point_distances",
+        "solve_mohr_circles",
+        "solve_point_position_parameter_range",
+        "solve_storm_entry_time",
+        "write_circle_equations"
+      ]
+    },
+    "gh_StandardFormOfACircle": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_circle_statement_truth",
+        "solve_circular_arch_height",
+        "write_circle_equations"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "analyze_general_circle": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "center_radius",
+              "d": "-2",
+              "e": "6",
+              "f": "6"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "將下列方程式化成 $\\left(x-h\\right)^{2}+\\left(y-k\\right)^{2}=\\ell$ 的形式，並說明它所表示的圖形。",
+          "items": [
+            {
+              "kind": "standard_and_classify",
+              "d": "2",
+              "e": "-4",
+              "f": "5"
+            },
+            {
+              "kind": "standard_and_classify",
+              "d": "2",
+              "e": "-4",
+              "f": "10"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "param_range",
+              "d": -4,
+              "e": 2,
+              "f1": 1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "param_from_radius",
+              "d": -4,
+              "e": 2,
+              "f1": 1,
+              "r2": 9
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "試判斷下列方程式所代表的圖形：",
+          "items": [
+            {
+              "kind": "classify",
+              "d": "-4",
+              "e": "6",
+              "f": "-12"
+            },
+            {
+              "kind": "classify",
+              "d": "-4",
+              "e": "6",
+              "f": "13"
+            },
+            {
+              "kind": "classify",
+              "d": "-4",
+              "e": "6",
+              "f": "17"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "param_radius_center",
+              "d": 2,
+              "e1": -2,
+              "f1": 2,
+              "r2": 9
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "coefficients_from_center",
+              "h": 1,
+              "k": -3,
+              "f": -6
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "param_range",
+              "d": 2,
+              "e": 2,
+              "f0": 7,
+              "f1": -1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各圓的圓心和半徑：",
+          "items": [
+            {
+              "kind": "center_radius",
+              "form": "root",
+              "h": 1,
+              "k": 0,
+              "rhs": 2
+            },
+            {
+              "kind": "center_radius",
+              "d": "0",
+              "e": "-4",
+              "f": "3"
+            },
+            {
+              "kind": "center_radius",
+              "a": 9,
+              "d": "-6",
+              "e": "0",
+              "f": "-35"
+            }
+          ]
+        }
+      }
+    ],
+    "classify_points_against_circle": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              "2",
+              "-3"
+            ],
+            "r2": "25"
+          },
+          "points": [
+            [
+              6,
+              0
+            ],
+            [
+              -2,
+              -1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "names": [
+            "P",
+            "Q",
+            "R"
+          ]
+        }
+      }
+    ],
+    "evaluate_circle_statement_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "center_quadrant",
+            "center": [
+              2,
+              -3
+            ],
+            "r2": 2,
+            "claimed": 2
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "is_circle",
+            "d": 0,
+            "e": 0,
+            "f": 5
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "may_be_point",
+            "d": -2,
+            "e": 4,
+            "f1": 1
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "origin_inside",
+            "center": [
+              1,
+              2
+            ],
+            "r2": 2
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "area_equals",
+            "r2": 2,
+            "claimed_coef": 2,
+            "with_pi": true
+          }
+        }
+      }
+    ],
+    "solve_circle_point_distances": [
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": "4",
+            "e": "-2",
+            "f": "4"
+          },
+          "point": [
+            2,
+            4
+          ],
+          "asks": [
+            "max",
+            "min"
+          ],
+          "point_name": "P"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "d": "-6",
+            "e": "-8",
+            "f": "-11"
+          },
+          "point": [
+            0,
+            0
+          ],
+          "asks": [
+            "max",
+            "min"
+          ],
+          "point_name": "原點"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "circle": {
+            "center": [
+              "0",
+              "2"
+            ],
+            "r2": "9"
+          },
+          "point": [
+            3,
+            -2
+          ],
+          "asks": [
+            "relation",
+            "min"
+          ],
+          "point_name": "A"
+        }
+      }
+    ],
+    "solve_circular_arch_height": [
+      {
+        "seed": 1,
+        "constraints": {
+          "width": 3,
+          "height": "9/2",
+          "post_offset": "3/2"
+        }
+      }
+    ],
+    "solve_distance_ratio_locus": [
+      {
+        "seed": 1,
+        "constraints": {
+          "a": [
+            0,
+            0
+          ],
+          "b": [
+            6,
+            0
+          ],
+          "ratio": [
+            2,
+            1
+          ],
+          "asks": [
+            "equation"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "scenario": "garbage",
+          "a": [
+            0,
+            0
+          ],
+          "b": [
+            16,
+            0
+          ],
+          "weights": [
+            3,
+            5
+          ],
+          "half": "upper",
+          "asks": [
+            "ratio_p",
+            "ratio_q",
+            "shape",
+            "center",
+            "radius"
+          ],
+          "figure": {
+            "points": [
+              {
+                "p": [
+                  0,
+                  0
+                ],
+                "label": "A"
+              },
+              {
+                "p": [
+                  16,
+                  0
+                ],
+                "label": "B"
+              }
+            ],
+            "segments": [
+              [
+                0,
+                1
+              ]
+            ],
+            "pad": 2,
+            "extent": [
+              [
+                8,
+                8
+              ]
+            ]
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "a": [
+            0,
+            0
+          ],
+          "b": [
+            6,
+            0
+          ],
+          "ratio": [
+            1,
+            2
+          ],
+          "asks": [
+            "equation"
+          ]
+        }
+      }
+    ],
+    "solve_mohr_circles": [
+      {
+        "seed": 1,
+        "constraints": {
+          "options": [
+            {
+              "d": 0,
+              "e": -6,
+              "f": -16,
+              "latex": "x^{2}+\\left(y-3\\right)^{2}=5^{2}",
+              "text": "x^2+(y-3)^2=5^2"
+            },
+            {
+              "d": 2,
+              "e": -6,
+              "f": -15,
+              "latex": "\\left(x+1\\right)^{2}+\\left(y-3\\right)^{2}=5^{2}",
+              "text": "(x+1)^2+(y-3)^2=5^2"
+            },
+            {
+              "d": 2,
+              "e": 0,
+              "f": -5,
+              "latex": "x^{2}+y^{2}+2x-5=0",
+              "text": "x^2+y^2+2x-5=0"
+            },
+            {
+              "d": -2,
+              "e": 0,
+              "f": 5,
+              "latex": "x^{2}+y^{2}-2x+5=0",
+              "text": "x^2+y^2-2x+5=0"
+            }
+          ],
+          "diameter": {
+            "a": [
+              1,
+              2
+            ],
+            "b": [
+              5,
+              -2
+            ]
+          },
+          "nested": [
+            {
+              "d": -12,
+              "e": 0,
+              "f": 11
+            },
+            {
+              "d": -6,
+              "e": 0,
+              "f": 5
+            },
+            {
+              "d": -16,
+              "e": 0,
+              "f": 55
+            }
+          ]
+        }
+      }
+    ],
+    "solve_point_position_parameter_range": [
+      {
+        "seed": 1,
+        "constraints": {
+          "inside": [
+            [
+              1,
+              -2
+            ]
+          ],
+          "outside": [
+            [
+              -3,
+              3
+            ]
+          ],
+          "names": {
+            "inside": [
+              "P"
+            ],
+            "outside": [
+              "Q"
+            ]
+          }
+        }
+      }
+    ],
+    "solve_storm_entry_time": [
+      {
+        "seed": 1,
+        "constraints": {
+          "start_hour": 15,
+          "distance": 460,
+          "radius": 80,
+          "speed": 25,
+          "options": [
+            18,
+            23,
+            30,
+            35
+          ]
+        }
+      }
+    ],
+    "write_circle_equations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各圓的方程式：",
+          "items": [
+            {
+              "kind": "center_radius",
+              "center": [
+                2,
+                -3
+              ],
+              "r2": 16
+            },
+            {
+              "kind": "center_point",
+              "center": [
+                2,
+                -3
+              ],
+              "point": [
+                5,
+                1
+              ],
+              "names": {
+                "center": "M",
+                "point": "A"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "diameter",
+              "a": [
+                -2,
+                3
+              ],
+              "b": [
+                6,
+                -3
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "center_radius",
+              "center": [
+                -1,
+                0
+              ],
+              "r2": 5
+            },
+            {
+              "kind": "origin_circle_k",
+              "x_sqrt": 3,
+              "point": [
+                0,
+                -1
+              ],
+              "names": {
+                "point": "A"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "diameter_param_k",
+              "center": [
+                4,
+                1
+              ],
+              "a": [
+                2,
+                3
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "axis_center_through_point_radius",
+              "point": [
+                7,
+                3
+              ],
+              "r": 5
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求符合下列條件的圓方程式：",
+          "items": [
+            {
+              "kind": "diameter",
+              "a": [
+                2,
+                -3
+              ],
+              "b": [
+                -4,
+                1
+              ],
+              "names": {
+                "a": "A",
+                "b": "B"
+              }
+            },
+            {
+              "kind": "concentric_through",
+              "ref": {
+                "d": 2,
+                "e": -4,
+                "f": -1
+              },
+              "point": [
+                3,
+                5
+              ]
+            },
+            {
+              "kind": "axis_center_through_points",
+              "points": [
+                [
+                  1,
+                  4
+                ],
+                [
+                  0,
+                  3
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "已知 $A\\left(5,\\ 10\\right)$、$B\\left(6,\\ 9\\right)$、$C\\left(-2,\\ 3\\right)$，",
+          "items": [
+            {
+              "kind": "perp_bisector",
+              "p": [
+                5,
+                10
+              ],
+              "q": [
+                6,
+                9
+              ],
+              "names": {
+                "p": "A",
+                "q": "B"
+              }
+            },
+            {
+              "kind": "perp_bisector",
+              "p": [
+                6,
+                9
+              ],
+              "q": [
+                -2,
+                3
+              ],
+              "names": {
+                "p": "B",
+                "q": "C"
+              }
+            },
+            {
+              "kind": "circumcircle",
+              "a": [
+                5,
+                10
+              ],
+              "b": [
+                6,
+                9
+              ],
+              "c": [
+                -2,
+                3
+              ],
+              "names": {
+                "a": "A",
+                "b": "B",
+                "c": "C"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "deferred_components": {}
+}

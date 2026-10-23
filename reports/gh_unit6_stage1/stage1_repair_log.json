@@ -1,0 +1,94 @@
+[
+ {
+  "id": 12457,
+  "fix": "image",
+  "page": 8,
+  "sha256": "fd814eff129990ae2fe3e91e6bda88079c6f24b3226685b31ccd0838b66c90d1",
+  "why": "missing figure (compass, A/B garbage stations on the road, incinerator P)"
+ },
+ {
+  "id": 12466,
+  "fix": "image",
+  "page": 12,
+  "sha256": "41e30189b01d9149affe39032161e7b970a1221a7ede1e10122bb964aebeb729",
+  "why": "recrop: original crop was 600x1338 and covered the stem/options instead of the Mohr-circle figure"
+ },
+ {
+  "id": 12478,
+  "fix": "image",
+  "page": 15,
+  "sha256": "a69f39134214abd7543cf2368ec517ca0fb3cfb8f96031aaf650a11584b482c3",
+  "why": "missing news-report box (typhoon centre 460 km south of Kinmen, storm radius 80 km, speed 25 km/h)"
+ },
+ {
+  "id": 12480,
+  "fix": "image",
+  "page": 16,
+  "sha256": "0fd49d92924b0fe1cdb2bdb990c4e17666be12420e01b04617ba2a50f57a9feb",
+  "why": "missing figure (arch with Q, A, P, B, R and the two posts)"
+ },
+ {
+  "id": 12478,
+  "fix": "stem restored from PDF p.15 news box (460 km, radius 80 km, 25 km/h)"
+ },
+ {
+  "id": 12474,
+  "fix": "Symbol pi (DOCX w:sym F070) restored: area is 2pi; PDF p.14 confirms"
+ },
+ {
+  "id": 12466,
+  "fix": "solution (1)-(3) restored from PDF p.12-13"
+ },
+ {
+  "id": 12467,
+  "fix": "linked_example 例題10->例題8"
+ },
+ {
+  "id": 12468,
+  "fix": "linked_example 例題8->例題9"
+ },
+ {
+  "id": 12469,
+  "fix": "linked_example 例題9->例題10"
+ },
+ {
+  "id": 12470,
+  "fix": "rebind",
+  "to": "gh_StandardFormOfACircle"
+ },
+ {
+  "id": 12471,
+  "fix": "rebind",
+  "to": "gh_GeneralFormOfACircle"
+ },
+ {
+  "id": 12472,
+  "fix": "rebind",
+  "to": "gh_GeneralFormOfACircle"
+ },
+ {
+  "id": 12474,
+  "fix": "rebind",
+  "to": "gh_StandardFormOfACircle"
+ },
+ {
+  "id": 12475,
+  "fix": "rebind",
+  "to": "gh_GeneralFormOfACircle"
+ },
+ {
+  "id": 12476,
+  "fix": "rebind",
+  "to": "gh_StandardFormOfACircle"
+ },
+ {
+  "id": 12479,
+  "fix": "rebind",
+  "to": "gh_StandardFormOfACircle"
+ },
+ {
+  "id": 12480,
+  "fix": "rebind",
+  "to": "gh_StandardFormOfACircle"
+ }
+]

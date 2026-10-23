@@ -1,0 +1,2068 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_analytic_geometry_lines_8a2f6d15",
+  "proposal_revision": 2,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-23; reviewed bundle sha256 06ccd656d366f333c8c3382ef307cf732563736b0f9071136629ba40f9a22a5e)",
+    "approved_revision": 2,
+    "approval_scope": "revision 2: adds operations graph_inequality_series (12428) and graph_inequality_with_lattice_count (12447) to analytic_geometry.line_equations (existing 20 operations unchanged); multi_part answers may now contain independent drawing parts"
+  },
+  "domain_key": "analytic_geometry.line_equations",
+  "package_name": "analytic_geometry_lines",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "figures.py": "034317008d2c6c6ff01a46a5442415b262583983f718f452ac4982a611147e10",
+    "line_equations_adapter.py": "e6aed65fa8880cfe2660344f213d24d46155e316cf90510b5203d2ff285c1444",
+    "line_equations_domain.py": "897d7ddfef5ddc2c1d6733f54242fa25dfba32825c06bf06f3c690eeb178d23b",
+    "line_geometry.py": "b57c812db671fe8ad05aa9f23815f8dff74f57d1499ed127ffd00fa5644650c2"
+  },
+  "domain_module": "line_equations_domain",
+  "entrypoint": "build_line_equations_matrix",
+  "capabilities": [
+    "compute_line_distances",
+    "evaluate_line_statement_truth",
+    "evaluate_slope_sign_statements",
+    "fill_line_property_table",
+    "graph_inequality_series",
+    "graph_inequality_system",
+    "graph_inequality_with_lattice_count",
+    "rank_line_slopes",
+    "read_region_signs_from_figure",
+    "select_points_same_side",
+    "slope_of_line_from_equation",
+    "solve_axis_triangle_area_line",
+    "solve_line_constructions",
+    "solve_line_equations",
+    "solve_line_parameters",
+    "solve_parallel_line_family",
+    "solve_rectangle_perpendicular_diagonals",
+    "solve_region_coefficients_from_figure",
+    "solve_translation_parameter",
+    "solve_triangle_region_system",
+    "solve_window_decorative_lines",
+    "translate_line_equation"
+  ],
+  "operations": {
+    "compute_line_distances": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_equivalence_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_compute_line_distances_matrix",
+      "provided_capabilities": [
+        "compute_line_distances"
+      ]
+    },
+    "evaluate_line_statement_truth": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_evaluate_line_statement_truth_matrix",
+      "provided_capabilities": [
+        "evaluate_line_statement_truth"
+      ]
+    },
+    "evaluate_slope_sign_statements": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "validator": "validate_evaluate_slope_sign_statements_matrix",
+      "provided_capabilities": [
+        "evaluate_slope_sign_statements"
+      ]
+    },
+    "fill_line_property_table": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "table_fill"
+      ],
+      "supported_presentation_modes": [
+        "table_fill"
+      ],
+      "checker_keys": [
+        "table_fill_checker"
+      ],
+      "validator": "validate_fill_line_property_table_matrix",
+      "provided_capabilities": [
+        "fill_line_property_table"
+      ]
+    },
+    "graph_inequality_series": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_graph_inequality_series_matrix",
+      "provided_capabilities": [
+        "graph_inequality_series"
+      ]
+    },
+    "graph_inequality_system": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "drawing"
+      ],
+      "supported_presentation_modes": [
+        "canvas"
+      ],
+      "checker_keys": [
+        "free_response_drawing_checker"
+      ],
+      "validator": "validate_graph_inequality_system_matrix",
+      "provided_capabilities": [
+        "graph_inequality_system"
+      ]
+    },
+    "graph_inequality_with_lattice_count": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_graph_inequality_with_lattice_count_matrix",
+      "provided_capabilities": [
+        "graph_inequality_with_lattice_count"
+      ]
+    },
+    "rank_line_slopes": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "ordered_inequality_checker"
+      ],
+      "validator": "validate_rank_line_slopes_matrix",
+      "provided_capabilities": [
+        "rank_line_slopes"
+      ]
+    },
+    "read_region_signs_from_figure": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "validator": "validate_read_region_signs_from_figure_matrix",
+      "provided_capabilities": [
+        "read_region_signs_from_figure"
+      ]
+    },
+    "select_points_same_side": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "validator": "validate_select_points_same_side_matrix",
+      "provided_capabilities": [
+        "select_points_same_side"
+      ]
+    },
+    "slope_of_line_from_equation": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_slope_of_line_from_equation_matrix",
+      "provided_capabilities": [
+        "slope_of_line_from_equation"
+      ]
+    },
+    "solve_axis_triangle_area_line": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "short_answer"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "linear_relation_set_checker"
+      ],
+      "validator": "validate_solve_axis_triangle_area_line_matrix",
+      "provided_capabilities": [
+        "solve_axis_triangle_area_line"
+      ]
+    },
+    "solve_line_constructions": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "coordinate_pair_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_line_constructions_matrix",
+      "provided_capabilities": [
+        "solve_line_constructions"
+      ]
+    },
+    "solve_line_equations": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_line_equations_matrix",
+      "provided_capabilities": [
+        "solve_line_equations"
+      ]
+    },
+    "solve_line_parameters": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_solve_line_parameters_matrix",
+      "provided_capabilities": [
+        "solve_line_parameters"
+      ]
+    },
+    "solve_parallel_line_family": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_parallel_line_family_matrix",
+      "provided_capabilities": [
+        "solve_parallel_line_family"
+      ]
+    },
+    "solve_rectangle_perpendicular_diagonals": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_equivalence_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_solve_rectangle_perpendicular_diagonals_matrix",
+      "provided_capabilities": [
+        "solve_rectangle_perpendicular_diagonals"
+      ]
+    },
+    "solve_region_coefficients_from_figure": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_region_coefficients_from_figure_matrix",
+      "provided_capabilities": [
+        "solve_region_coefficients_from_figure"
+      ]
+    },
+    "solve_translation_parameter": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_solve_translation_parameter_matrix",
+      "provided_capabilities": [
+        "solve_translation_parameter"
+      ]
+    },
+    "solve_triangle_region_system": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_triangle_region_system_matrix",
+      "provided_capabilities": [
+        "solve_triangle_region_system"
+      ]
+    },
+    "solve_window_decorative_lines": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_window_decorative_lines_matrix",
+      "provided_capabilities": [
+        "solve_window_decorative_lines"
+      ]
+    },
+    "translate_line_equation": {
+      "handler": "build_line_equations_matrix",
+      "payload_adapter": "line_equations_adapter.adapt_line_equations_matrix",
+      "runtime_contract": "line_equations_exact_v1",
+      "supported_answer_types": [
+        "equation"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "linear_equation_equivalent_checker"
+      ],
+      "validator": "validate_translate_line_equation_matrix",
+      "provided_capabilities": [
+        "translate_line_equation"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_DistanceFromPointToLine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "compute_line_distances",
+        "evaluate_line_statement_truth",
+        "solve_line_parameters",
+        "solve_parallel_line_family",
+        "solve_window_decorative_lines"
+      ]
+    },
+    "gh_EquationOfALine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_line_statement_truth",
+        "fill_line_property_table",
+        "slope_of_line_from_equation",
+        "solve_axis_triangle_area_line",
+        "solve_line_equations"
+      ]
+    },
+    "gh_LineSlope": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_slope_sign_statements",
+        "rank_line_slopes"
+      ]
+    },
+    "gh_LinearInequalityInTwoVariables": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_line_statement_truth",
+        "graph_inequality_series",
+        "graph_inequality_system",
+        "graph_inequality_with_lattice_count",
+        "read_region_signs_from_figure",
+        "select_points_same_side",
+        "solve_region_coefficients_from_figure",
+        "solve_triangle_region_system"
+      ]
+    },
+    "gh_ParallelAndPerpendicularLines": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_line_statement_truth",
+        "solve_line_constructions",
+        "solve_line_equations",
+        "solve_line_parameters",
+        "solve_rectangle_perpendicular_diagonals"
+      ]
+    },
+    "gh_TranslationOfALine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "solve_translation_parameter",
+        "translate_line_equation"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "compute_line_distances": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "point_to_line",
+              "p": [
+                3,
+                1
+              ],
+              "name": "P",
+              "line": [
+                3,
+                -4,
+                5
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "parallel_lines",
+              "l1": [
+                3,
+                4,
+                11
+              ],
+              "l2": [
+                6,
+                8,
+                -9
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "parallel_lines",
+              "l1": [
+                1,
+                -2,
+                3
+              ],
+              "l2": [
+                "1/2",
+                "-1",
+                "-1"
+              ],
+              "l1_display": "x-2y+3=0",
+              "l2_display": "\\frac{x}{2}-y=1"
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_line_statement_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "shape_equal_slopes",
+            "shape": "rectangle"
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "y_intercept_of_line_through_point",
+            "through_y": -2,
+            "claimed": 2
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "perpendicular_by_coefficients",
+            "l1": [
+              1,
+              2,
+              3
+            ],
+            "l2": [
+              1,
+              -2,
+              3
+            ]
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "parallel_at_distance_count",
+            "line": [
+              1,
+              2,
+              -5
+            ],
+            "distance": 5,
+            "claimed_count": 2
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "opposite_sides",
+            "line": [
+              1,
+              1,
+              1
+            ],
+            "a": [
+              1,
+              2
+            ],
+            "b": [
+              2,
+              -1
+            ]
+          }
+        }
+      }
+    ],
+    "evaluate_slope_sign_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "points": {
+            "A": [
+              1,
+              2
+            ],
+            "B": [
+              4,
+              0
+            ],
+            "C": [
+              5,
+              3
+            ]
+          },
+          "segments": [
+            [
+              "A",
+              "B"
+            ],
+            [
+              "B",
+              "C"
+            ],
+            [
+              "A",
+              "C"
+            ]
+          ],
+          "statements": [
+            {
+              "kind": "sign",
+              "index": 1,
+              "op": ">"
+            },
+            {
+              "kind": "sign",
+              "index": 2,
+              "op": ">"
+            },
+            {
+              "kind": "product",
+              "op": ">"
+            },
+            {
+              "kind": "sum",
+              "op": ">"
+            },
+            {
+              "kind": "chain",
+              "order": [
+                3,
+                2,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "fill_line_property_table": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "在下列的表格中填入適當的答案：",
+          "rows": [
+            {
+              "given": "equation",
+              "line": [
+                2,
+                1,
+                -4
+              ]
+            },
+            {
+              "given": "slope_y_intercept",
+              "m": "3",
+              "b": -2
+            },
+            {
+              "given": "slope_x_intercept",
+              "m": "-2",
+              "a": 3
+            }
+          ]
+        }
+      }
+    ],
+    "graph_inequality_series": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "relations": [
+                {
+                  "coefficients": [
+                    3,
+                    -2,
+                    6
+                  ],
+                  "op": ">="
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "coefficients": [
+                    1,
+                    2,
+                    0
+                  ],
+                  "op": ">="
+                }
+              ]
+            },
+            {
+              "relations": [
+                {
+                  "coefficients": [
+                    1,
+                    0,
+                    -2
+                  ],
+                  "op": ">="
+                }
+              ]
+            }
+          ],
+          "view": [
+            -6,
+            6,
+            -6,
+            6
+          ]
+        }
+      }
+    ],
+    "graph_inequality_system": [
+      {
+        "seed": 1,
+        "constraints": {
+          "relations": [
+            {
+              "coefficients": [
+                2,
+                -1,
+                4
+              ],
+              "op": ">"
+            }
+          ],
+          "view": [
+            -6,
+            6,
+            -6,
+            6
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "relations": [
+            {
+              "coefficients": [
+                1,
+                -1,
+                -3
+              ],
+              "op": "<="
+            },
+            {
+              "coefficients": [
+                2,
+                1,
+                -2
+              ],
+              "op": ">"
+            }
+          ],
+          "view": [
+            -6,
+            6,
+            -6,
+            6
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "relations": [
+            {
+              "coefficients": [
+                1,
+                2,
+                -4
+              ],
+              "op": "<"
+            },
+            {
+              "coefficients": [
+                2,
+                1,
+                -2
+              ],
+              "op": ">"
+            }
+          ],
+          "view": [
+            -6,
+            6,
+            -6,
+            6
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "relations": [
+            {
+              "coefficients": [
+                2,
+                1,
+                -4
+              ],
+              "op": "<=",
+              "text": "2x+y\\le 4"
+            },
+            {
+              "coefficients": [
+                2,
+                1,
+                2
+              ],
+              "op": ">",
+              "text": "2x+y>-2"
+            }
+          ],
+          "view": [
+            -6,
+            6,
+            -6,
+            6
+          ]
+        }
+      }
+    ],
+    "graph_inequality_with_lattice_count": [
+      {
+        "seed": 1,
+        "constraints": {
+          "relations": [
+            {
+              "coefficients": [
+                2,
+                1,
+                -6
+              ],
+              "op": "<="
+            },
+            {
+              "coefficients": [
+                1,
+                1,
+                -2
+              ],
+              "op": ">="
+            },
+            {
+              "coefficients": [
+                1,
+                0,
+                0
+              ],
+              "op": ">="
+            },
+            {
+              "coefficients": [
+                0,
+                1,
+                0
+              ],
+              "op": ">="
+            }
+          ],
+          "view": [
+            -3,
+            8,
+            -3,
+            8
+          ]
+        }
+      }
+    ],
+    "rank_line_slopes": [
+      {
+        "seed": 1,
+        "constraints": {
+          "pivot": {
+            "name": "A",
+            "p": [
+              1,
+              1
+            ]
+          },
+          "lines": [
+            {
+              "index": 1,
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                2,
+                2
+              ]
+            },
+            {
+              "index": 2,
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                3,
+                2
+              ]
+            },
+            {
+              "index": 3,
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                3,
+                1
+              ]
+            },
+            {
+              "index": 4,
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                3,
+                0
+              ]
+            },
+            {
+              "index": 5,
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                2,
+                0
+              ]
+            }
+          ],
+          "ask": "slopes_and_order"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "lines": [
+            {
+              "index": 1,
+              "p": [
+                0,
+                1
+              ],
+              "q": [
+                3,
+                2
+              ]
+            },
+            {
+              "index": 2,
+              "p": [
+                0,
+                3
+              ],
+              "q": [
+                3,
+                1
+              ]
+            },
+            {
+              "index": 3,
+              "p": [
+                0,
+                -1
+              ],
+              "q": [
+                2,
+                2
+              ]
+            },
+            {
+              "index": 4,
+              "p": [
+                0,
+                4
+              ],
+              "q": [
+                1,
+                1
+              ]
+            }
+          ],
+          "ask": "order_only"
+        }
+      }
+    ],
+    "read_region_signs_from_figure": [
+      {
+        "seed": 1,
+        "constraints": {
+          "lines": [
+            {
+              "line": [
+                3,
+                4,
+                -12
+              ]
+            },
+            {
+              "line": [
+                2,
+                -1,
+                2
+              ]
+            }
+          ],
+          "view": [
+            -5,
+            5,
+            -5,
+            5
+          ],
+          "statements": [
+            {
+              "coef": "a",
+              "op": ">"
+            },
+            {
+              "coef": "b",
+              "op": ">"
+            },
+            {
+              "coef": "c",
+              "op": ">"
+            },
+            {
+              "coef": "d",
+              "op": ">"
+            }
+          ]
+        }
+      }
+    ],
+    "select_points_same_side": [
+      {
+        "seed": 1,
+        "constraints": {
+          "line": [
+            2,
+            -3,
+            4
+          ],
+          "line_display": "2x-3y=-4",
+          "reference": [
+            0,
+            0
+          ],
+          "reference_name": "原點",
+          "points": [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              3,
+              2
+            ]
+          ]
+        }
+      }
+    ],
+    "slope_of_line_from_equation": [
+      {
+        "seed": 1,
+        "constraints": {
+          "line": [
+            3,
+            -2,
+            -5
+          ],
+          "name": "L",
+          "line_display": "3x-2y-5=0"
+        }
+      }
+    ],
+    "solve_axis_triangle_area_line": [
+      {
+        "seed": 1,
+        "constraints": {
+          "point": [
+            4,
+            1
+          ],
+          "area": 1
+        }
+      }
+    ],
+    "solve_line_constructions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "由A, B, C三個里決議將電信基地台設置在與三個里等距離的位置。今將此區域設定成一個坐標平面，三個里的坐標分別為 $A\\left(5,\\ 7\\right)$、$B\\left(1,\\ 1\\right)$、$C\\left(7,\\ 1\\right)$。回答下列問題：",
+          "items": [
+            {
+              "kind": "perp_bisector",
+              "p": [
+                5,
+                7
+              ],
+              "q": [
+                1,
+                1
+              ],
+              "names": {
+                "p": "A",
+                "q": "B"
+              }
+            },
+            {
+              "kind": "perp_bisector",
+              "p": [
+                1,
+                1
+              ],
+              "q": [
+                7,
+                1
+              ],
+              "names": {
+                "p": "B",
+                "q": "C"
+              }
+            },
+            {
+              "kind": "intersect_items",
+              "a": 0,
+              "b": 1,
+              "prompt": "該電信基地台的坐標為何？"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "reflect_point",
+              "p": [
+                3,
+                1
+              ],
+              "line": [
+                1,
+                -1,
+                0
+              ],
+              "line_display": "x-y=0",
+              "names": {
+                "p": "A"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "如圖，在筆直道路上有學校 $S$ 及小鎮 $A$，而小鎮 $B$ 不在此道路上。為了要在這條道路上蓋一家超級市場，使其與 $A$, $B$ 兩小鎮等距離，將此區域設定成一個坐標平面，學校與二個小鎮的坐標分別為 $S\\left(-1,\\ 1\\right)$、$A\\left(9,\\ 3\\right)$、$B\\left(3,\\ 7\\right)$。回答下列問題：",
+          "items": [
+            {
+              "kind": "line_through",
+              "p": [
+                -1,
+                1
+              ],
+              "q": [
+                9,
+                3
+              ],
+              "names": {
+                "p": "S",
+                "q": "A"
+              }
+            },
+            {
+              "kind": "perp_bisector",
+              "p": [
+                9,
+                3
+              ],
+              "q": [
+                3,
+                7
+              ],
+              "names": {
+                "p": "A",
+                "q": "B"
+              }
+            },
+            {
+              "kind": "intersect_items",
+              "a": 0,
+              "b": 1,
+              "prompt": "該超級市場的坐標為何？"
+            }
+          ],
+          "figure": {
+            "points": [
+              {
+                "name": "S",
+                "p": [
+                  -1,
+                  1
+                ],
+                "label": "S(-1,1)"
+              },
+              {
+                "name": "A",
+                "p": [
+                  9,
+                  3
+                ],
+                "label": "A(9,3)"
+              },
+              {
+                "name": "B",
+                "p": [
+                  3,
+                  7
+                ],
+                "label": "B(3,7)"
+              }
+            ],
+            "lines": [
+              {
+                "through": [
+                  "S",
+                  "A"
+                ]
+              }
+            ],
+            "pad": 2
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "reflect_point",
+              "p": [
+                2,
+                4
+              ],
+              "line": [
+                1,
+                1,
+                0
+              ],
+              "line_display": "x+y=0",
+              "names": {
+                "p": "A"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "設 $A\\left(-1,\\ 5\\right)$、$B\\left(7,\\ 1\\right)$、$C\\left(5,\\ -3\\right)$。",
+          "items": [
+            {
+              "kind": "circumcenter",
+              "pts": [
+                [
+                  -1,
+                  5
+                ],
+                [
+                  7,
+                  1
+                ],
+                [
+                  5,
+                  -3
+                ]
+              ],
+              "prompt": "求△ABC的外心坐標。（外心為三中垂線的交點）"
+            },
+            {
+              "kind": "orthocenter",
+              "pts": [
+                [
+                  -1,
+                  5
+                ],
+                [
+                  7,
+                  1
+                ],
+                [
+                  5,
+                  -3
+                ]
+              ],
+              "prompt": "求△ABC的垂心坐標。（垂心為三高的交點）"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "將電腦螢幕視為坐標平面，在網路虛擬戰爭遊戲中，彈藥補給車在 $x$ 軸上移動，某士兵從堡壘 $A\\left(2,\\ 3\\right)$ 的位置出發，需先到補給車補充彈藥後，再移動至堡壘 $B\\left(6,\\ 9\\right)$ 的位置換防。已知該士兵以最短的距離完成換防任務，回答下列問題：",
+          "items": [
+            {
+              "kind": "shortest_path_point_on_axis",
+              "a": [
+                2,
+                3
+              ],
+              "b": [
+                6,
+                9
+              ],
+              "prompt": "求該士兵補充彈藥時，補給車所在位置的坐標。"
+            },
+            {
+              "kind": "shortest_path_length",
+              "a": [
+                2,
+                3
+              ],
+              "b": [
+                6,
+                9
+              ],
+              "prompt": "求該士兵移動的最短距離。"
+            }
+          ],
+          "figure": {
+            "points": [
+              {
+                "name": "A",
+                "p": [
+                  2,
+                  3
+                ],
+                "label": "A"
+              },
+              {
+                "name": "B",
+                "p": [
+                  6,
+                  9
+                ],
+                "label": "B"
+              }
+            ],
+            "lines": [],
+            "general_lines": [
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "pad": 2
+          }
+        }
+      }
+    ],
+    "solve_line_equations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各直線的方程式：",
+          "items": [
+            {
+              "kind": "point_slope",
+              "p": [
+                -2,
+                1
+              ],
+              "m": "-3"
+            },
+            {
+              "kind": "two_points",
+              "p": [
+                1,
+                2
+              ],
+              "q": [
+                4,
+                1
+              ],
+              "names": {
+                "p": "A",
+                "q": "B"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各直線的方程式：",
+          "items": [
+            {
+              "kind": "slope_y_intercept",
+              "m": "-2",
+              "b": 3
+            },
+            {
+              "kind": "intercepts",
+              "a": 4,
+              "b": -3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各直線的方程式：",
+          "items": [
+            {
+              "kind": "point_slope",
+              "p": [
+                2,
+                -1
+              ],
+              "m": "2/3"
+            },
+            {
+              "kind": "two_points",
+              "p": [
+                3,
+                -2
+              ],
+              "q": [
+                1,
+                5
+              ],
+              "names": {
+                "p": "A",
+                "q": "B"
+              }
+            },
+            {
+              "kind": "vertical_through",
+              "p": [
+                2,
+                5
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各直線的方程式：",
+          "items": [
+            {
+              "kind": "slope_y_intercept",
+              "m": "2",
+              "b": -5
+            },
+            {
+              "kind": "intercepts",
+              "a": -2,
+              "b": -3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "給定點 $A\\left(3,\\ 1\\right)$ 及直線 $L:x+2y+4=0$。",
+          "items": [
+            {
+              "kind": "parallel_through",
+              "p": [
+                3,
+                1
+              ],
+              "line": [
+                1,
+                2,
+                4
+              ],
+              "names": {
+                "label": "L_{1}",
+                "through": "A",
+                "ref": "L"
+              }
+            },
+            {
+              "kind": "perpendicular_through",
+              "p": [
+                3,
+                1
+              ],
+              "line": [
+                1,
+                2,
+                4
+              ],
+              "names": {
+                "label": "L_{2}",
+                "through": "A",
+                "ref": "L"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "求下列各直線方程式：",
+          "items": [
+            {
+              "kind": "two_points",
+              "p": [
+                -1,
+                2
+              ],
+              "q": [
+                0,
+                3
+              ]
+            },
+            {
+              "kind": "point_slope",
+              "p": [
+                0,
+                3
+              ],
+              "m": "-4"
+            },
+            {
+              "kind": "intercepts",
+              "a": -3,
+              "b": 5
+            },
+            {
+              "kind": "perpendicular_through",
+              "p": [
+                2,
+                3
+              ],
+              "line": [
+                5,
+                -2,
+                -1
+              ],
+              "line_display": "5x-2y=1"
+            },
+            {
+              "kind": "parallel_through_intersection",
+              "l1": [
+                1,
+                2,
+                -3
+              ],
+              "l2": [
+                2,
+                -1,
+                -1
+              ],
+              "line": [
+                2,
+                -3,
+                -7
+              ],
+              "l1_display": "x+2y=3",
+              "l2_display": "2x-y=1",
+              "line_display": "2x-3y=7"
+            }
+          ]
+        }
+      }
+    ],
+    "solve_line_parameters": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "如圖，已知點 $A\\left(2,\\ 1\\right)$ 在直線 $L:ax+y+c=0$ 上，點 $B\\left(5,\\ 3\\right)$ 為 $L$ 外一點，使得 $\\overline{AB}\\bot L$，求 $a,\\ c$ 的值。",
+          "unknowns": [
+            "a",
+            "c"
+          ],
+          "lines": {
+            "L": [
+              "a",
+              "1",
+              "c"
+            ]
+          },
+          "conditions": [
+            {
+              "kind": "on_line",
+              "point": [
+                2,
+                1
+              ],
+              "line": "L"
+            },
+            {
+              "kind": "perpendicular_to_segment",
+              "p": [
+                2,
+                1
+              ],
+              "q": [
+                5,
+                3
+              ],
+              "line": "L"
+            }
+          ],
+          "targets": [
+            {
+              "name": "a",
+              "expr": "a"
+            },
+            {
+              "name": "c",
+              "expr": "c"
+            }
+          ],
+          "figure": {
+            "points": [
+              {
+                "name": "A",
+                "p": [
+                  2,
+                  1
+                ],
+                "label": "A"
+              },
+              {
+                "name": "B",
+                "p": [
+                  5,
+                  3
+                ],
+                "label": "B"
+              },
+              {
+                "name": "Q",
+                "p": [
+                  4,
+                  -2
+                ],
+                "label": ""
+              }
+            ],
+            "lines": [
+              {
+                "through": [
+                  "A",
+                  "Q"
+                ],
+                "label": "L"
+              },
+              {
+                "through": [
+                  "A",
+                  "B"
+                ],
+                "extend": false
+              }
+            ],
+            "pad": 2,
+            "hide_unlabeled": true
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "已知點 $P\\left(-2,\\ 1\\right)$ 到直線 $L:12x-5y+k=0$ 的距離為 $2$，求 $k$ 的值。",
+          "unknowns": [
+            "k"
+          ],
+          "lines": {
+            "L": [
+              "12",
+              "-5",
+              "k"
+            ]
+          },
+          "conditions": [
+            {
+              "kind": "point_line_distance",
+              "point": [
+                -2,
+                1
+              ],
+              "line": "L",
+              "distance": "2"
+            }
+          ],
+          "targets": [
+            {
+              "name": "k",
+              "expr": "k"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "已知兩直線 $L_1:ax+3y=12$ 與 $L_2:6x+by=c$ 互相垂直於點 $\\left(3,\\ 2\\right)$，求 $a+b+c$ 的值。",
+          "unknowns": [
+            "a",
+            "b",
+            "c"
+          ],
+          "lines": {
+            "L1": [
+              "a",
+              "3",
+              "-12"
+            ],
+            "L2": [
+              "6",
+              "b",
+              "-c"
+            ]
+          },
+          "conditions": [
+            {
+              "kind": "on_line",
+              "point": [
+                3,
+                2
+              ],
+              "line": "L1"
+            },
+            {
+              "kind": "on_line",
+              "point": [
+                3,
+                2
+              ],
+              "line": "L2"
+            },
+            {
+              "kind": "perpendicular",
+              "l1": "L1",
+              "l2": "L2"
+            }
+          ],
+          "targets": [
+            {
+              "name": "a+b+c",
+              "expr": "a+b+c"
+            }
+          ]
+        }
+      }
+    ],
+    "solve_parallel_line_family": [
+      {
+        "seed": 1,
+        "constraints": {
+          "a_point": [
+            4,
+            0
+          ],
+          "b_point": [
+            0,
+            3
+          ],
+          "p_point": [
+            35,
+            43
+          ],
+          "spacing": 3
+        }
+      }
+    ],
+    "solve_rectangle_perpendicular_diagonals": [
+      {
+        "seed": 1,
+        "constraints": {
+          "ab": 2,
+          "bf": 2
+        }
+      }
+    ],
+    "solve_region_coefficients_from_figure": [
+      {
+        "seed": 1,
+        "constraints": {
+          "a_point": [
+            2,
+            6
+          ],
+          "b_point": [
+            5,
+            0
+          ],
+          "bound": 5
+        }
+      }
+    ],
+    "solve_translation_parameter": [
+      {
+        "seed": 1,
+        "constraints": {
+          "line": [
+            3,
+            4,
+            1
+          ],
+          "result_line": [
+            3,
+            4,
+            -14
+          ],
+          "axis": "right"
+        }
+      }
+    ],
+    "solve_triangle_region_system": [
+      {
+        "seed": 1,
+        "constraints": {
+          "vertices": {
+            "A": [
+              3,
+              0
+            ],
+            "B": [
+              1,
+              4
+            ],
+            "C": [
+              0,
+              1
+            ]
+          },
+          "choice_points": [
+            {
+              "point": [
+                3,
+                0
+              ],
+              "text": "A(3,0)"
+            },
+            {
+              "point": [
+                1,
+                4
+              ],
+              "text": "B(1,4)"
+            },
+            {
+              "point": [
+                0,
+                1
+              ],
+              "text": "C(0,1)"
+            },
+            {
+              "point": [
+                0,
+                0
+              ],
+              "text": "O(0,0)"
+            },
+            {
+              "point": [
+                1,
+                1
+              ],
+              "text": "(1,1)"
+            }
+          ],
+          "family_point": [
+            0,
+            1
+          ]
+        }
+      }
+    ],
+    "solve_window_decorative_lines": [
+      {
+        "seed": 1,
+        "constraints": {
+          "width": 34,
+          "height": 44,
+          "edge_point": [
+            34,
+            5
+          ],
+          "delta_c": 6,
+          "asks": [
+            "l1_equation",
+            "l2_equation"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "width": 34,
+          "height": 44,
+          "edge_point": [
+            34,
+            5
+          ],
+          "delta_c": 6,
+          "asks": [
+            "distance_origin_l1",
+            "line_count"
+          ]
+        }
+      }
+    ],
+    "translate_line_equation": [
+      {
+        "seed": 1,
+        "constraints": {
+          "line": [
+            2,
+            3,
+            6
+          ],
+          "dx": -1,
+          "dy": 2,
+          "direction": "forward",
+          "first": "x"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "line": [
+            3,
+            -4,
+            0
+          ],
+          "dx": 3,
+          "dy": -2,
+          "direction": "inverse",
+          "first": "x"
+        }
+      }
+    ]
+  },
+  "deferred_components": {}
+}

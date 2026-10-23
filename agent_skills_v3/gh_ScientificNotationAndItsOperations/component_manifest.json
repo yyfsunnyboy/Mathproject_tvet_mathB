@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_ScientificNotationAndItsOperations",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12377",
+      "textbook_example_id": 12377,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12377/generate.py"
+    },
+    {
+      "component_id": "src_12378",
+      "textbook_example_id": 12378,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12378/generate.py"
+    },
+    {
+      "component_id": "src_12379",
+      "textbook_example_id": 12379,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12379/generate.py"
+    },
+    {
+      "component_id": "src_12380",
+      "textbook_example_id": 12380,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12380/generate.py"
+    },
+    {
+      "component_id": "src_12381",
+      "textbook_example_id": 12381,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12381/generate.py"
+    },
+    {
+      "component_id": "src_12382",
+      "textbook_example_id": 12382,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12382/generate.py"
+    },
+    {
+      "component_id": "src_12383",
+      "textbook_example_id": 12383,
+      "status": "verified",
+      "problem_type_id": "evaluate_scientific_notation_expression",
+      "domain_operation": "evaluate_scientific_notation_expression",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12383/generate.py"
+    },
+    {
+      "component_id": "src_12384",
+      "textbook_example_id": 12384,
+      "status": "verified",
+      "problem_type_id": "evaluate_number_property_statements",
+      "domain_operation": "evaluate_number_property_statements",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12384/generate.py"
+    }
+  ]
+}

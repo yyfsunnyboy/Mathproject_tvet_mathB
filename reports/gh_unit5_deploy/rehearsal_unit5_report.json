@@ -1,0 +1,1090 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_unit5_rehearsal\\run",
+ "promotion": {
+  "domain_key": "analytic_geometry.line_equations",
+  "registry_revision": "promoted-8761242b23d9",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12403": {
+   "skill": "gh_LineSlope",
+   "operation": "rank_line_slopes",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LineSlope",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c6487a58c3f0e754fa47338f9f11ea2e757778d05c6d76703efe70304c7af9a5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12404": {
+   "skill": "gh_LineSlope",
+   "operation": "evaluate_slope_sign_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LineSlope",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c3196b71a87f44498ab7648e0ac27ef0bb31556aaf7ded354fe1c9e0bed62817",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12405": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "453288e4684b9a89bddc2c5be63359d4591e7af7d2d3cd3f62b74e77fb5d5539",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12406": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "40cc171bcc63dd82833296ea606eed6c56fef89894ee83a1567ee4329813fca1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12407": {
+   "skill": "gh_EquationOfALine",
+   "operation": "slope_of_line_from_equation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cabc857a591bb33156b049c32fc31bc40e9ac43cbe7e2f56fb86555e3082084b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12408": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1f425720e36ff5bb25e5127938be4061b03381db45bb850347370c2a97b30ad3",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12409": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b913cb7719dd6951af6f7e35852ba3241768fa2a88f3b10390f9d0ca603c26ac",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12410": {
+   "skill": "gh_EquationOfALine",
+   "operation": "fill_line_property_table",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "accbfbef3ed73f5fc3931fc25c6c888ffa92805301290b78bde3449c4e54af1c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12411": {
+   "skill": "gh_TranslationOfALine",
+   "operation": "translate_line_equation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TranslationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "907c075534e33ca4aec2ed96f7aa8d3cb6d3ab48e4d8d56891b8feed8cab439e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12412": {
+   "skill": "gh_TranslationOfALine",
+   "operation": "translate_line_equation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TranslationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "42b57b1ae087f3c0d333629d9004c9dbf8fa0109b617340b5183bf2faed27607",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12413": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8d466b05fbd67f0beb9d4ba93a3d3ce0006208311099860546bc03607bdfd21b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12414": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2633e3b2a4dc6e844e5c94cc0ee3bd6896b0be8c792a6d3d03f0bec662742428",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12415": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c2c56ea5de0a13558e1f019b1c1c9a24bbc512b4e3ebea21a3b84b3a5b2d2777",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12416": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2a468b2ff4ff93e27b2a487a94c974050d992b8e5f0ff949b5ed33102c79cba5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12417": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9e666ba9507fcea8c05c6484449602587257d638322e5adc1fbc7b8c439edf59",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12418": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "da3e5b285e1312b1a24e98c3cec3b260e69f4922eeb4597337cf1b4083d3c5f6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12419": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "compute_line_distances",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "297b1449416e4d39a6e1bc6ffa726054308f81adbefa2ec5c4cd9ea5672aae17",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12420": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "compute_line_distances",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "efb7f827f69c68ddc3278a315b136bffa81b2e8fbf6b0639d8383b0b731f7d52",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12421": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "solve_window_decorative_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "97c1daa8c1448764af1fe29feab9f64f35283c0f9e11e3a8e9a63e5fe6ed1af7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12422": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "solve_line_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8b351d9d37d30867a9fbbe78be4faec6514a8921e2d39f011f7255ecd1a58b5c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12423": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "compute_line_distances",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "104fae7dd36d3314cbccac5d1ccb2a9eeb158a12a6592b44cdc85c9198f7bee5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12424": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "solve_window_decorative_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f6fc37a3927ec0f9688de53ae096c1bb400125dea61bdf2d25a104e50ce4cfce",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12425": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_system",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f29dfebb8004d17bea0c7ffa7f762a5afb5aad5ad77f15a74f84637bd013bb6b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12426": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_system",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "642ee3969c29d40c9d27251c3806bb7bb99e500fa2e1be76e279b5be98d7dd32",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12427": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "solve_triangle_region_system",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "176287cbb7f88f55d74af36416d4680deac30251135ce9828260b7b77ba556f5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12428": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_series",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e0da5e3d2f919bce6fd659cb7753cc98a41a61ec70cb1a523fe624626f5241eb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12429": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_system",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "31fcb0df8bc463e933b6855cf17edb58896674b490fd39afdad2160791c0da62",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12430": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "read_region_signs_from_figure",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9dbb0ef778dbed64d0ed8dc43fd6aa820bf5340b9bafc07ce712da60258fa6d9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12431": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "evaluate_line_statement_truth",
+   "variants": 10,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d2c8e7c2e5aa58355ca5b914f669bbff7d89274c27675dd35c52f88c52a23fde",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 10
+   }
+  },
+  "12432": {
+   "skill": "gh_EquationOfALine",
+   "operation": "evaluate_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d382e47dd320309d1ea8e9b73014a47c8bed707a68cc878e656f34063639a368",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12433": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "evaluate_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "10639ab1de21555ebc4e16675027b3bccfe424c0525c29b4d2485dcc7ad81943",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12434": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "evaluate_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9d0645cce57df95ab8c343862720d095dd018016de1f26cc6f3b331bb6e2c265",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12435": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "evaluate_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "906fb6e3176557f1c2db2edcca580aabd0562a17d4c1a7ced506d52dc4732cc0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12436": {
+   "skill": "gh_LineSlope",
+   "operation": "rank_line_slopes",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LineSlope",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9d61b3e83600e3678aa55a2c730d835f0c3451ab6bd5187a4390b2b151996469",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12437": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_line_equations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e4fd5a9bea84167478489004e6ca0d973c683c2e720455b6478884d48aa30c6c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12438": {
+   "skill": "gh_TranslationOfALine",
+   "operation": "solve_translation_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TranslationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2d954de414bb62bb3a6e2d5c69cc9b503e1a26b1055974cc6f49dca6f57eec11",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12439": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1889ef9d66c4141449fbeeccbb10ec3c71ab6e062b4f51879f0ceb1826646d16",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12440": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "37ef3d62c0b02f4d2f060d8f2f4cc9131b6df3e658edadc488c771358be4de27",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12441": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "select_points_same_side",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "98a6226ec32599b311c7fe4a52dcc33c7890b039a282c1c85240c9130536ae09",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12442": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_system",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "40b0670e4d031bad41cb306df01e35e2174bc9c8e0092c8f0a05f2a466202fff",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12443": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "solve_region_coefficients_from_figure",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a8e698b8c8634d944cad0fd1890f10e42b1ce8e6a2de496e562bf2cbd8d4526d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12444": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_rectangle_perpendicular_diagonals",
+   "variants": 16,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "60355f0f94bd81c20500a1b141be4b303dc2aa82247e7e0fafb5766b3372e22b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 16
+   }
+  },
+  "12445": {
+   "skill": "gh_EquationOfALine",
+   "operation": "solve_axis_triangle_area_line",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_EquationOfALine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5f50b18f483416f8d1af46b52aeb74334f6a4088f1f0edf99142d5c31344fc7f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12446": {
+   "skill": "gh_ParallelAndPerpendicularLines",
+   "operation": "solve_line_constructions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_ParallelAndPerpendicularLines",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b6bea3adff5501fbdb30f9292ae2c81dd17ed7eba828f656a352e03aaad478e6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12447": {
+   "skill": "gh_LinearInequalityInTwoVariables",
+   "operation": "graph_inequality_with_lattice_count",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearInequalityInTwoVariables",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f483df2f4f3d23f1eac6e337df3c4a726fc1936f0e1fef8994755de7417109eb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12448": {
+   "skill": "gh_DistanceFromPointToLine",
+   "operation": "solve_parallel_line_family",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_DistanceFromPointToLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "86f559deb6c71539a56c380a0ac8e8ac4d1539355bc2a59c05aa78fc96315f62",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_LineSlope": {
+   "status": "production_published",
+   "component_count": 3,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "runtime_ready_with_variation_warning",
+   "dynamic_count": 2,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12403",
+    "src_12404",
+    "src_12436"
+   ]
+  },
+  "gh_EquationOfALine": {
+   "status": "production_published",
+   "component_count": 9,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 7,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12405",
+    "src_12406",
+    "src_12407",
+    "src_12408",
+    "src_12409",
+    "src_12410",
+    "src_12432",
+    "src_12437",
+    "src_12445"
+   ]
+  },
+  "gh_TranslationOfALine": {
+   "status": "production_published",
+   "component_count": 3,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "dynamic",
+   "dynamic_count": 3,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12411",
+    "src_12412",
+    "src_12438"
+   ]
+  },
+  "gh_ParallelAndPerpendicularLines": {
+   "status": "production_published",
+   "component_count": 12,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 10,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12413",
+    "src_12414",
+    "src_12415",
+    "src_12416",
+    "src_12417",
+    "src_12418",
+    "src_12431",
+    "src_12433",
+    "src_12439",
+    "src_12440",
+    "src_12444",
+    "src_12446"
+   ]
+  },
+  "gh_DistanceFromPointToLine": {
+   "status": "production_published",
+   "component_count": 8,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 7,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12419",
+    "src_12420",
+    "src_12421",
+    "src_12422",
+    "src_12423",
+    "src_12424",
+    "src_12434",
+    "src_12448"
+   ]
+  },
+  "gh_LinearInequalityInTwoVariables": {
+   "status": "production_published",
+   "component_count": 11,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 2,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12425",
+    "src_12426",
+    "src_12427",
+    "src_12428",
+    "src_12429",
+    "src_12430",
+    "src_12435",
+    "src_12441",
+    "src_12442",
+    "src_12443",
+    "src_12447"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_LineSlope": {
+   "served_examples": {
+    "12403": 27,
+    "12404": 27,
+    "12436": 26
+   },
+   "problems": []
+  },
+  "gh_EquationOfALine": {
+   "served_examples": {
+    "12405": 9,
+    "12406": 9,
+    "12407": 9,
+    "12408": 8,
+    "12409": 9,
+    "12410": 9,
+    "12432": 9,
+    "12437": 9,
+    "12445": 9
+   },
+   "problems": []
+  },
+  "gh_TranslationOfALine": {
+   "served_examples": {
+    "12411": 27,
+    "12412": 27,
+    "12438": 26
+   },
+   "problems": []
+  },
+  "gh_ParallelAndPerpendicularLines": {
+   "served_examples": {
+    "12413": 7,
+    "12414": 6,
+    "12415": 7,
+    "12416": 7,
+    "12417": 6,
+    "12418": 7,
+    "12431": 7,
+    "12433": 6,
+    "12439": 7,
+    "12440": 6,
+    "12444": 7,
+    "12446": 7
+   },
+   "problems": []
+  },
+  "gh_DistanceFromPointToLine": {
+   "served_examples": {
+    "12419": 10,
+    "12420": 10,
+    "12421": 10,
+    "12422": 10,
+    "12423": 10,
+    "12424": 10,
+    "12434": 10,
+    "12448": 10
+   },
+   "problems": []
+  },
+  "gh_LinearInequalityInTwoVariables": {
+   "served_examples": {
+    "12425": 7,
+    "12426": 8,
+    "12427": 7,
+    "12428": 8,
+    "12429": 7,
+    "12430": 7,
+    "12435": 7,
+    "12441": 7,
+    "12442": 7,
+    "12443": 7,
+    "12447": 8
+   },
+   "problems": []
+  }
+ },
+ "production_paths_written": []
+}

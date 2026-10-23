@@ -47,6 +47,10 @@ def to_sympy(tree: Any, env: dict[str, Any] | None = None) -> sp.Expr:
         return sp.sqrt(args[0])
     if kind == "root":
         return sp.Pow(to_sympy(tree[2], env), sp.Rational(1, int(tree[1])))
+    if kind == "log":
+        return sp.log(args[0], 10)
+    if kind == "paren":
+        return args[0]
     raise ValueError(f"unknown_tree_node:{kind}")
 
 
@@ -81,6 +85,10 @@ def to_mpmath(tree: Any, env: dict[str, Any] | None = None) -> mp.mpf:
         return -vals[0]
     if kind == "sqrt":
         return mp.sqrt(vals[0])
+    if kind == "log":
+        return mp.log10(vals[0])
+    if kind == "paren":
+        return vals[0]
     raise ValueError(f"unknown_tree_node:{kind}")
 
 
@@ -159,6 +167,13 @@ def to_latex(tree: Any) -> str:
         return f"\\sqrt{{{to_latex(tree[1])}}}"
     if kind == "root":
         return f"\\sqrt[{tree[1]}]{{{to_latex(tree[2])}}}"
+    if kind == "paren":
+        return _wrap(to_latex(tree[1]))
+    if kind == "log":
+        inner = to_latex(tree[1])
+        if tree[1][0] in ("add", "sub", "mul", "jux", "pow"):
+            inner = _wrap(inner)
+        return f"\\log {inner}"
     raise ValueError(f"unknown_tree_node:{kind}")
 
 

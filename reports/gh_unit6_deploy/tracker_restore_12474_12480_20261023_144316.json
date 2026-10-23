@@ -1,0 +1,112 @@
+{
+ "started_at": "2026-10-23T14:43:16",
+ "mode": "commit",
+ "targets": [
+  12474,
+  12480
+ ],
+ "checks": {
+  "postfix_run_id": "07783036c0f745a9a41f335c23361bf3",
+  "unit6_tracker_rows_before": 32,
+  "12474": {
+   "hashes": {
+    "production": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5",
+    "dryrun": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5",
+    "isolated_phase2": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5"
+   },
+   "hashes_all_equal": true,
+   "payload_verified_sha": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5",
+   "payload_published_sha": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5",
+   "manifest_status": "verified",
+   "manifest_problem_type": "evaluate_circle_statement_truth",
+   "payload_problem_type": "evaluate_circle_statement_truth",
+   "iso_status": "verified",
+   "payload_keys": 77,
+   "payload_reconciliation_run_id": "07783036c0f745a9a41f335c23361bf3",
+   "postfix_passed": true,
+   "prod_before_status": "failed",
+   "prod_before_error": "runtime_generation_error: DOMAIN_CAPABILITY_UNRESOLVED: no_required_capabilities for skill gh_StandardFormOfACircle",
+   "prod_before_payload_len": 0
+  },
+  "12480": {
+   "hashes": {
+    "production": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29",
+    "dryrun": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29",
+    "isolated_phase2": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29"
+   },
+   "hashes_all_equal": true,
+   "payload_verified_sha": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29",
+   "payload_published_sha": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29",
+   "manifest_status": "verified",
+   "manifest_problem_type": "solve_circular_arch_height",
+   "payload_problem_type": "solve_circular_arch_height",
+   "iso_status": "verified",
+   "payload_keys": 79,
+   "payload_reconciliation_run_id": "07783036c0f745a9a41f335c23361bf3",
+   "postfix_passed": true,
+   "prod_before_status": "failed",
+   "prod_before_error": "runtime_generation_error: DOMAIN_CAPABILITY_UNRESOLVED: no_required_capabilities for skill gh_StandardFormOfACircle",
+   "prod_before_payload_len": 0
+  },
+  "12474_production_gate": {
+   "passed": true,
+   "blockers": [],
+   "production_hash": "78f6bb6e4c0281ea23d544e165b93c64d7df259102bca18348442bebe7eda8f5"
+  },
+  "12480_production_gate": {
+   "passed": true,
+   "blockers": [],
+   "production_hash": "5e480c3150c6580581fbd1e38d2f40c77f339251751134b0e44b00582bf63a29"
+  }
+ },
+ "blockers": [],
+ "backup": {
+  "path": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_before_unit6_tracker_restore_20261023_144316.db",
+  "size": 13357056,
+  "sha256": "b2a4e4d88776cf4c8e28082757de8c07c483c9ef1bcc3a8f42a1862436c8d7db",
+  "integrity_check": "ok",
+  "unit6_rows_match_production": true
+ },
+ "after": {
+  "unit6_tracker_rows_after": 32,
+  "other_rows_unchanged": true,
+  "other_rows_compared": 30,
+  "12474": {
+   "gencode_status": "verified",
+   "gencode_error_log": null,
+   "updated_at": "2026-10-23 14:43:16",
+   "payload_equals_isolated": true
+  },
+  "12480": {
+   "gencode_status": "verified",
+   "gencode_error_log": null,
+   "updated_at": "2026-10-23 14:43:16",
+   "payload_equals_isolated": true
+  }
+ },
+ "result": "committed",
+ "before_rows": {
+  "12474": {
+   "id": 4649,
+   "textbook_example_id": 12474,
+   "skill_id": "gh_StandardFormOfACircle",
+   "component_id": "src_12474",
+   "gencode_status": "failed",
+   "induced_spec_payload": 0,
+   "gencode_error_log": "runtime_generation_error: DOMAIN_CAPABILITY_UNRESOLVED: no_required_capabilities for skill gh_StandardFormOfACircle",
+   "created_at": "2026-10-23 13:32:24",
+   "updated_at": "2026-10-23 13:38:19"
+  },
+  "12480": {
+   "id": 4661,
+   "textbook_example_id": 12480,
+   "skill_id": "gh_StandardFormOfACircle",
+   "component_id": "src_12480",
+   "gencode_status": "failed",
+   "induced_spec_payload": 0,
+   "gencode_error_log": "runtime_generation_error: DOMAIN_CAPABILITY_UNRESOLVED: no_required_capabilities for skill gh_StandardFormOfACircle",
+   "created_at": "2026-10-23 13:32:32",
+   "updated_at": "2026-10-23 13:38:18"
+  }
+ }
+}

@@ -1,0 +1,326 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12449": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12450": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12451": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12452": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12453": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12454": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12455": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12456": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "solve_distance_ratio_locus",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12457": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "solve_distance_ratio_locus",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12458": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12459": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12460": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12461": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "solve_distance_ratio_locus",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12462": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12463": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12464": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "classify_points_against_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12465": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_circle_point_distances",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12466": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_mohr_circles",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12467": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_point_position_parameter_range",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12468": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_circle_point_distances",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12469": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12470": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "evaluate_circle_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12471": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "evaluate_circle_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12472": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "evaluate_circle_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12473": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "evaluate_circle_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12474": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "evaluate_circle_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12475": {
+   "skill": "gh_GeneralFormOfACircle",
+   "operation": "analyze_general_circle",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GeneralFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12476": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12477": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_circle_point_distances",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12478": {
+   "skill": "gh_PointAndCircleRelationship",
+   "operation": "solve_storm_entry_time",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PointAndCircleRelationship",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12479": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "write_circle_equations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  },
+  "12480": {
+   "skill": "gh_StandardFormOfACircle",
+   "operation": "solve_circular_arch_height",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_StandardFormOfACircle",
+    "verified"
+   ],
+   "failures": []
+  }
+ }
+}

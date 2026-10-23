@@ -1,0 +1,62 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "analytic_geometry.circle_equations",
+ "registry_revision": "promoted-c27fac060f71",
+ "bundle_sha256": "c27fac060f711ad16b65180750ecb9ec4f59f1b190c0b41a5049a6dc058ce05e",
+ "allowed_operations": [
+  "analyze_general_circle",
+  "classify_points_against_circle",
+  "evaluate_circle_statement_truth",
+  "solve_circle_point_distances",
+  "solve_circular_arch_height",
+  "solve_distance_ratio_locus",
+  "solve_mohr_circles",
+  "solve_point_position_parameter_range",
+  "solve_storm_entry_time",
+  "write_circle_equations"
+ ],
+ "skill_bindings": {
+  "gh_GeneralFormOfACircle": {
+   "fixed_domain_key": "analytic_geometry.circle_equations",
+   "allowed_operations": [
+    "analyze_general_circle",
+    "evaluate_circle_statement_truth",
+    "solve_distance_ratio_locus"
+   ]
+  },
+  "gh_PointAndCircleRelationship": {
+   "fixed_domain_key": "analytic_geometry.circle_equations",
+   "allowed_operations": [
+    "classify_points_against_circle",
+    "evaluate_circle_statement_truth",
+    "solve_circle_point_distances",
+    "solve_mohr_circles",
+    "solve_point_position_parameter_range",
+    "solve_storm_entry_time",
+    "write_circle_equations"
+   ]
+  },
+  "gh_StandardFormOfACircle": {
+   "fixed_domain_key": "analytic_geometry.circle_equations",
+   "allowed_operations": [
+    "evaluate_circle_statement_truth",
+    "solve_circular_arch_height",
+    "write_circle_equations"
+   ]
+  }
+ },
+ "operations_executed": {
+  "analyze_general_circle": 9,
+  "classify_points_against_circle": 1,
+  "evaluate_circle_statement_truth": 5,
+  "solve_circle_point_distances": 3,
+  "solve_circular_arch_height": 1,
+  "solve_distance_ratio_locus": 3,
+  "solve_mohr_circles": 1,
+  "solve_point_position_parameter_range": 1,
+  "solve_storm_entry_time": 1,
+  "write_circle_equations": 7
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\analytic_geometry_circles"
+}

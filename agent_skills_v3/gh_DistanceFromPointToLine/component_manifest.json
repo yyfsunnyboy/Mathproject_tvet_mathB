@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_DistanceFromPointToLine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12419",
+      "textbook_example_id": 12419,
+      "status": "verified",
+      "problem_type_id": "compute_line_distances",
+      "domain_operation": "compute_line_distances",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12419/generate.py"
+    },
+    {
+      "component_id": "src_12420",
+      "textbook_example_id": 12420,
+      "status": "verified",
+      "problem_type_id": "compute_line_distances",
+      "domain_operation": "compute_line_distances",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12420/generate.py"
+    },
+    {
+      "component_id": "src_12421",
+      "textbook_example_id": 12421,
+      "status": "verified",
+      "problem_type_id": "solve_window_decorative_lines",
+      "domain_operation": "solve_window_decorative_lines",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12421/generate.py"
+    },
+    {
+      "component_id": "src_12422",
+      "textbook_example_id": 12422,
+      "status": "verified",
+      "problem_type_id": "solve_line_parameters",
+      "domain_operation": "solve_line_parameters",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12422/generate.py"
+    },
+    {
+      "component_id": "src_12423",
+      "textbook_example_id": 12423,
+      "status": "verified",
+      "problem_type_id": "compute_line_distances",
+      "domain_operation": "compute_line_distances",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12423/generate.py"
+    },
+    {
+      "component_id": "src_12424",
+      "textbook_example_id": 12424,
+      "status": "verified",
+      "problem_type_id": "solve_window_decorative_lines",
+      "domain_operation": "solve_window_decorative_lines",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12424/generate.py"
+    },
+    {
+      "component_id": "src_12434",
+      "textbook_example_id": 12434,
+      "status": "verified",
+      "problem_type_id": "evaluate_line_statement_truth",
+      "domain_operation": "evaluate_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12434/generate.py"
+    },
+    {
+      "component_id": "src_12448",
+      "textbook_example_id": 12448,
+      "status": "verified",
+      "problem_type_id": "solve_parallel_line_family",
+      "domain_operation": "solve_parallel_line_family",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12448/generate.py"
+    }
+  ]
+}

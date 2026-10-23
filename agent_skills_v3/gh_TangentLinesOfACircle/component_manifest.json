@@ -1,0 +1,172 @@
+{
+  "skill_id": "gh_TangentLinesOfACircle",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 15,
+  "components": [
+    {
+      "component_id": "src_12500",
+      "textbook_example_id": 12500,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "example",
+      "generate_py": "components/src_12500/generate.py"
+    },
+    {
+      "component_id": "src_12501",
+      "textbook_example_id": 12501,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12501/generate.py"
+    },
+    {
+      "component_id": "src_12502",
+      "textbook_example_id": 12502,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12502/generate.py"
+    },
+    {
+      "component_id": "src_12503",
+      "textbook_example_id": 12503,
+      "status": "verified",
+      "problem_type_id": "solve_circle_tangent_scenarios",
+      "domain_operation": "solve_circle_tangent_scenarios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12503/generate.py"
+    },
+    {
+      "component_id": "src_12504",
+      "textbook_example_id": 12504,
+      "status": "verified",
+      "problem_type_id": "solve_circle_from_tangent_point",
+      "domain_operation": "solve_circle_from_tangent_point",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12504/generate.py"
+    },
+    {
+      "component_id": "src_12505",
+      "textbook_example_id": 12505,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12505/generate.py"
+    },
+    {
+      "component_id": "src_12506",
+      "textbook_example_id": 12506,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12506/generate.py"
+    },
+    {
+      "component_id": "src_12507",
+      "textbook_example_id": 12507,
+      "status": "verified",
+      "problem_type_id": "solve_circle_tangent_scenarios",
+      "domain_operation": "solve_circle_tangent_scenarios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12507/generate.py"
+    },
+    {
+      "component_id": "src_12508",
+      "textbook_example_id": 12508,
+      "status": "verified",
+      "problem_type_id": "evaluate_circle_line_statement_truth",
+      "domain_operation": "evaluate_circle_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12508/generate.py"
+    },
+    {
+      "component_id": "src_12509",
+      "textbook_example_id": 12509,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12509/generate.py"
+    },
+    {
+      "component_id": "src_12510",
+      "textbook_example_id": 12510,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "example",
+      "generate_py": "components/src_12510/generate.py"
+    },
+    {
+      "component_id": "src_12511",
+      "textbook_example_id": 12511,
+      "status": "verified",
+      "problem_type_id": "write_circle_tangent_lines",
+      "domain_operation": "write_circle_tangent_lines",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12511/generate.py"
+    },
+    {
+      "component_id": "src_12512",
+      "textbook_example_id": 12512,
+      "status": "verified",
+      "problem_type_id": "solve_circle_line_parameter",
+      "domain_operation": "solve_circle_line_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12512/generate.py"
+    },
+    {
+      "component_id": "src_12514",
+      "textbook_example_id": 12514,
+      "status": "verified",
+      "problem_type_id": "solve_circle_tangent_scenarios",
+      "domain_operation": "solve_circle_tangent_scenarios",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12514/generate.py"
+    },
+    {
+      "component_id": "src_12516",
+      "textbook_example_id": 12516,
+      "status": "verified",
+      "problem_type_id": "solve_circle_tangent_scenarios",
+      "domain_operation": "solve_circle_tangent_scenarios",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12516/generate.py"
+    }
+  ]
+}

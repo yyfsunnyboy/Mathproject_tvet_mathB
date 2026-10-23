@@ -1,0 +1,131 @@
+[
+ {
+  "id": 12421,
+  "fix": "image",
+  "page": 20,
+  "sha256": "641ad3d747b8ff5f09d1f6da6c2bd6cf89fb76df3e5a4094b19be239f354b079",
+  "why": "recrop: original crop clipped the (34,5) label, dimension arrows and axis labels"
+ },
+ {
+  "id": 12436,
+  "fix": "image",
+  "page": 28,
+  "sha256": "748c621a6cf0b3c3841ddeecf5a1701f0405e646a9b464d910c571dc527f3ce9",
+  "why": "recrop: original crop clipped the L1 label and axes"
+ },
+ {
+  "id": 12416,
+  "fix": "image",
+  "page": 13,
+  "sha256": "393ed8106fbcf0f306af03a298038430a30caa73652414b044440adbb620514c",
+  "why": "missing figure (A, B, L with right-angle mark)"
+ },
+ {
+  "id": 12417,
+  "fix": "image",
+  "page": 15,
+  "sha256": "34f254dfdcceead90189d2187b63e12bb465b7b850e2c50e96fcacae00921e97",
+  "why": "missing figure (S, A, B points and line SA)"
+ },
+ {
+  "id": 12430,
+  "fix": "image",
+  "page": 27,
+  "sha256": "1b044573697eda73382802cf9ce2f4ff73bc83798f389cb5469820d845eaeff6",
+  "why": "missing figure (shaded region of the inequality system)"
+ },
+ {
+  "id": 12443,
+  "fix": "image",
+  "page": 29,
+  "sha256": "666094259174b14b20e125f6decfdffdc63c178bdf97352add359f3f1142a4aa",
+  "why": "missing figure (shaded triangle O, A(2,6), B(5,0))"
+ },
+ {
+  "id": 12448,
+  "fix": "image",
+  "page": 30,
+  "sha256": "b211bbc58156e68c570da3103db6ab5b54acb53b682c36a1195eef641fbdd454",
+  "why": "missing figure (parallel lines L1..Ln, points A, B, P)"
+ },
+ {
+  "id": 12416,
+  "fix": "text",
+  "mode": "append"
+ },
+ {
+  "id": 12443,
+  "fix": "text",
+  "mode": "append"
+ },
+ {
+  "id": 12410,
+  "fix": "text",
+  "mode": "replace"
+ },
+ {
+  "id": 12431,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12432,
+  "fix": "rebind",
+  "to": "gh_EquationOfALine"
+ },
+ {
+  "id": 12433,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12434,
+  "fix": "rebind",
+  "to": "gh_DistanceFromPointToLine"
+ },
+ {
+  "id": 12436,
+  "fix": "rebind",
+  "to": "gh_LineSlope"
+ },
+ {
+  "id": 12437,
+  "fix": "rebind",
+  "to": "gh_EquationOfALine"
+ },
+ {
+  "id": 12438,
+  "fix": "rebind",
+  "to": "gh_TranslationOfALine"
+ },
+ {
+  "id": 12439,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12440,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12444,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12445,
+  "fix": "rebind",
+  "to": "gh_EquationOfALine"
+ },
+ {
+  "id": 12446,
+  "fix": "rebind",
+  "to": "gh_ParallelAndPerpendicularLines"
+ },
+ {
+  "id": 12448,
+  "fix": "rebind",
+  "to": "gh_DistanceFromPointToLine"
+ }
+]

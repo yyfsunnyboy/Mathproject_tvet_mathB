@@ -1,0 +1,40 @@
+{
+  "skill_id": "gh_TranslationOfALine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_12411",
+      "textbook_example_id": 12411,
+      "status": "verified",
+      "problem_type_id": "translate_line_equation",
+      "domain_operation": "translate_line_equation",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "example",
+      "generate_py": "components/src_12411/generate.py"
+    },
+    {
+      "component_id": "src_12412",
+      "textbook_example_id": 12412,
+      "status": "verified",
+      "problem_type_id": "translate_line_equation",
+      "domain_operation": "translate_line_equation",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12412/generate.py"
+    },
+    {
+      "component_id": "src_12438",
+      "textbook_example_id": 12438,
+      "status": "verified",
+      "problem_type_id": "solve_translation_parameter",
+      "domain_operation": "solve_translation_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12438/generate.py"
+    }
+  ]
+}

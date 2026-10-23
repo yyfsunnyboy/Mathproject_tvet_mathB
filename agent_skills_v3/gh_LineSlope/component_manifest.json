@@ -1,0 +1,40 @@
+{
+  "skill_id": "gh_LineSlope",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 3,
+  "components": [
+    {
+      "component_id": "src_12403",
+      "textbook_example_id": 12403,
+      "status": "verified",
+      "problem_type_id": "rank_line_slopes",
+      "domain_operation": "rank_line_slopes",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12403/generate.py"
+    },
+    {
+      "component_id": "src_12404",
+      "textbook_example_id": 12404,
+      "status": "verified",
+      "problem_type_id": "evaluate_slope_sign_statements",
+      "domain_operation": "evaluate_slope_sign_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12404/generate.py"
+    },
+    {
+      "component_id": "src_12436",
+      "textbook_example_id": 12436,
+      "status": "verified",
+      "problem_type_id": "rank_line_slopes",
+      "domain_operation": "rank_line_slopes",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12436/generate.py"
+    }
+  ]
+}

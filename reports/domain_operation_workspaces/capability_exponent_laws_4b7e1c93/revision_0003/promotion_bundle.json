@@ -1,0 +1,1173 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_exponent_laws_4b7e1c93",
+  "proposal_revision": 3,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "project_owner (explicit written approval in Claude Code chat, 2026-10-20)",
+    "approved_revision": 3,
+    "approval_scope": "revision 3: add 6 generic operations for gh 數學1 Unit 4 (科學記號與常用對數), log/paren expression nodes and benford model; existing 14 operations unchanged"
+  },
+  "domain_key": "algebra.exponent_laws",
+  "package_name": "algebra_exponent_laws",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "exponent_laws_adapter.py": "c02d8467d7178f9d71c786cb9940279c45d34106b4b7686ec61b56860e5f4133",
+    "exponent_laws_domain.py": "e209948b072233e542db38560148dc57cd09b27e820e0fbb3a7fe055c5fe9dac",
+    "expr_tree.py": "763ac080c71c22b3baeb282e3d4dd44792e84bc87c7d95cd6da2e65e05ec8421"
+  },
+  "domain_module": "exponent_laws_domain",
+  "entrypoint": "build_exponent_laws_matrix",
+  "capabilities": [
+    "simplify_exponent_expressions",
+    "solve_exponent_blank_equations",
+    "evaluate_conditional_exponent_values",
+    "evaluate_exponent_statement_truth",
+    "evaluate_repeated_folding",
+    "select_nearest_model_value",
+    "evaluate_power_law_model",
+    "solve_metabolic_scaling",
+    "solve_half_life_model",
+    "evaluate_scale_energy_ratio",
+    "solve_cooling_coefficient",
+    "express_rational_powers_as_radicals",
+    "solve_cooling_initial_temperature",
+    "solve_linear_unknowns_from_exponential_table",
+    "evaluate_scientific_notation_expression",
+    "evaluate_number_property_statements",
+    "evaluate_common_logarithm_items",
+    "approximate_common_logarithm",
+    "count_digits_of_integer_power",
+    "solve_power_of_ten_exponent"
+  ],
+  "operations": {
+    "simplify_exponent_expressions": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational",
+        "numeric_or_radical",
+        "expression",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_simplify_exponent_expressions_matrix",
+      "provided_capabilities": [
+        "simplify_exponent_expressions"
+      ]
+    },
+    "solve_exponent_blank_equations": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_exponent_blank_equations_matrix",
+      "provided_capabilities": [
+        "solve_exponent_blank_equations"
+      ]
+    },
+    "evaluate_conditional_exponent_values": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational",
+        "numeric_or_radical",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_conditional_exponent_values_matrix",
+      "provided_capabilities": [
+        "evaluate_conditional_exponent_values"
+      ]
+    },
+    "evaluate_exponent_statement_truth": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "single_choice",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "single_choice",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_exponent_statement_truth_matrix",
+      "provided_capabilities": [
+        "evaluate_exponent_statement_truth"
+      ]
+    },
+    "evaluate_repeated_folding": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_repeated_folding_matrix",
+      "provided_capabilities": [
+        "evaluate_repeated_folding"
+      ]
+    },
+    "select_nearest_model_value": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_select_nearest_model_value_matrix",
+      "provided_capabilities": [
+        "select_nearest_model_value"
+      ]
+    },
+    "evaluate_power_law_model": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_power_law_model_matrix",
+      "provided_capabilities": [
+        "evaluate_power_law_model"
+      ]
+    },
+    "solve_metabolic_scaling": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_metabolic_scaling_matrix",
+      "provided_capabilities": [
+        "solve_metabolic_scaling"
+      ]
+    },
+    "solve_half_life_model": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_half_life_model_matrix",
+      "provided_capabilities": [
+        "solve_half_life_model"
+      ]
+    },
+    "evaluate_scale_energy_ratio": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_scale_energy_ratio_matrix",
+      "provided_capabilities": [
+        "evaluate_scale_energy_ratio"
+      ]
+    },
+    "solve_cooling_coefficient": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_cooling_coefficient_matrix",
+      "provided_capabilities": [
+        "solve_cooling_coefficient"
+      ]
+    },
+    "express_rational_powers_as_radicals": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_express_rational_powers_as_radicals_matrix",
+      "provided_capabilities": [
+        "express_rational_powers_as_radicals"
+      ]
+    },
+    "solve_cooling_initial_temperature": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_cooling_initial_temperature_matrix",
+      "provided_capabilities": [
+        "solve_cooling_initial_temperature"
+      ]
+    },
+    "solve_linear_unknowns_from_exponential_table": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_linear_unknowns_from_exponential_table_matrix",
+      "provided_capabilities": [
+        "solve_linear_unknowns_from_exponential_table"
+      ]
+    },
+    "evaluate_scientific_notation_expression": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_scientific_notation_expression_matrix",
+      "provided_capabilities": [
+        "evaluate_scientific_notation_expression"
+      ]
+    },
+    "evaluate_number_property_statements": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "single_choice",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "single_choice",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_number_property_statements_matrix",
+      "provided_capabilities": [
+        "evaluate_number_property_statements"
+      ]
+    },
+    "evaluate_common_logarithm_items": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_evaluate_common_logarithm_items_matrix",
+      "provided_capabilities": [
+        "evaluate_common_logarithm_items"
+      ]
+    },
+    "approximate_common_logarithm": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_approximate_common_logarithm_matrix",
+      "provided_capabilities": [
+        "approximate_common_logarithm"
+      ]
+    },
+    "count_digits_of_integer_power": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_count_digits_of_integer_power_matrix",
+      "provided_capabilities": [
+        "count_digits_of_integer_power"
+      ]
+    },
+    "solve_power_of_ten_exponent": {
+      "handler": "build_exponent_laws_matrix",
+      "payload_adapter": "exponent_laws_adapter.adapt_exponent_laws_matrix",
+      "runtime_contract": "exponent_laws_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker",
+        "expression_equivalence_checker",
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_power_of_ten_exponent_matrix",
+      "provided_capabilities": [
+        "solve_power_of_ten_exponent"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_PositiveIntegerExponentsAndLaws": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    },
+    "gh_IntegerExponentsAndLaws": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    },
+    "gh_RationalExponentsAndLaws": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    },
+    "gh_RealExponentsAndLaws": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    },
+    "gh_ScientificNotationAndItsOperations": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    },
+    "gh_CommonLogarithms": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "simplify_exponent_expressions",
+        "solve_exponent_blank_equations",
+        "evaluate_conditional_exponent_values",
+        "evaluate_exponent_statement_truth",
+        "evaluate_repeated_folding",
+        "select_nearest_model_value",
+        "evaluate_power_law_model",
+        "solve_metabolic_scaling",
+        "solve_half_life_model",
+        "evaluate_scale_energy_ratio",
+        "solve_cooling_coefficient",
+        "express_rational_powers_as_radicals",
+        "solve_cooling_initial_temperature",
+        "solve_linear_unknowns_from_exponential_table",
+        "evaluate_scientific_notation_expression",
+        "evaluate_number_property_statements",
+        "evaluate_common_logarithm_items",
+        "approximate_common_logarithm",
+        "count_digits_of_integer_power",
+        "solve_power_of_ten_exponent"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "simplify_exponent_expressions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "利用指數律求下列各式的值：",
+          "items": [
+            [
+              "mul",
+              [
+                "pow",
+                [
+                  "n",
+                  "2"
+                ],
+                [
+                  "n",
+                  "3"
+                ]
+              ],
+              [
+                "pow",
+                [
+                  "n",
+                  "2"
+                ],
+                [
+                  "n",
+                  "5"
+                ]
+              ]
+            ],
+            [
+              "pow",
+              [
+                "pow",
+                [
+                  "n",
+                  "-1"
+                ],
+                [
+                  "n",
+                  "2"
+                ]
+              ],
+              [
+                "n",
+                "3"
+              ]
+            ],
+            [
+              "mul",
+              [
+                "pow",
+                [
+                  "n",
+                  "-5"
+                ],
+                [
+                  "n",
+                  "3"
+                ]
+              ],
+              [
+                "pow",
+                [
+                  "n",
+                  "2"
+                ],
+                [
+                  "n",
+                  "3"
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    ],
+    "evaluate_repeated_folding": [
+      {
+        "seed": 1,
+        "constraints": {
+          "thickness_cm": "0.01",
+          "fold_count": 10,
+          "distance_km": "384400",
+          "distance_name": "地球到月球"
+        }
+      }
+    ],
+    "solve_exponent_blank_equations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "利用指數律完成下列填空：",
+          "items": [
+            {
+              "kind": "product_to_base",
+              "factors": [
+                [
+                  "-3",
+                  4
+                ],
+                [
+                  "-3",
+                  5
+                ]
+              ],
+              "result_base": "-3"
+            },
+            {
+              "kind": "power_power",
+              "base": "2",
+              "inner": 4,
+              "outer": null,
+              "result_base": "2",
+              "result_exp": 20
+            },
+            {
+              "kind": "merge_bases",
+              "factors": [
+                [
+                  "2",
+                  10
+                ],
+                [
+                  "-3",
+                  5
+                ]
+              ],
+              "common_exponent": 5
+            }
+          ]
+        }
+      }
+    ],
+    "select_nearest_model_value": [
+      {
+        "seed": 1,
+        "constraints": {
+          "model": "folding",
+          "thickness_cm": "0.01",
+          "fold_count": 25,
+          "options": [
+            {
+              "name": "臺北 101",
+              "value": 509,
+              "text": "臺北 101 高度約 509 公尺"
+            },
+            {
+              "name": "七星山",
+              "value": 1120,
+              "text": "七星山高度約 1120 公尺"
+            },
+            {
+              "name": "玉山",
+              "value": 3952,
+              "text": "玉山高度約 3952 公尺"
+            },
+            {
+              "name": "聖母峰",
+              "value": 8844,
+              "text": "聖母峰高度約 8844 公尺"
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_conditional_exponent_values": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem_prefix": "已知 $a>0$ 且 ",
+          "var": "a",
+          "condition": {
+            "lhs": [
+              "add",
+              [
+                "sym",
+                "a"
+              ],
+              [
+                "pow",
+                [
+                  "sym",
+                  "a"
+                ],
+                [
+                  "n",
+                  "-1"
+                ]
+              ]
+            ],
+            "rhs": [
+              "n",
+              "3"
+            ]
+          },
+          "roots": [
+            "((3 + (1)*sqrt(5))/2)",
+            "((3 + (-1)*sqrt(5))/2)"
+          ],
+          "targets": [
+            [
+              "add",
+              [
+                "pow",
+                [
+                  "sym",
+                  "a"
+                ],
+                [
+                  "n",
+                  "2"
+                ]
+              ],
+              [
+                "pow",
+                [
+                  "sym",
+                  "a"
+                ],
+                [
+                  "n",
+                  "-2"
+                ]
+              ]
+            ],
+            [
+              "add",
+              [
+                "pow",
+                [
+                  "sym",
+                  "a"
+                ],
+                [
+                  "n",
+                  "3"
+                ]
+              ],
+              [
+                "pow",
+                [
+                  "sym",
+                  "a"
+                ],
+                [
+                  "n",
+                  "-3"
+                ]
+              ]
+            ]
+          ],
+          "assume_positive": true
+        }
+      }
+    ],
+    "evaluate_power_law_model": [
+      {
+        "seed": 1,
+        "constraints": {
+          "mode": "value",
+          "k": "300",
+          "exponent": -2,
+          "distance_m": "0.4"
+        }
+      }
+    ],
+    "solve_metabolic_scaling": [
+      {
+        "seed": 1,
+        "constraints": {
+          "exponent": "3/4",
+          "weight_ratio": 100,
+          "options": [
+            10,
+            20,
+            30,
+            40,
+            50
+          ],
+          "metabolic_ratio": 1000
+        }
+      }
+    ],
+    "solve_half_life_model": [
+      {
+        "seed": 1,
+        "constraints": {
+          "half_life_hours": 4,
+          "threshold_exponent": 6,
+          "days": 3
+        }
+      }
+    ],
+    "evaluate_exponent_statement_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statements": [
+            {
+              "lhs": [
+                "pow",
+                [
+                  "n",
+                  "2"
+                ],
+                [
+                  "n",
+                  "1/3"
+                ]
+              ],
+              "rhs": [
+                "div",
+                [
+                  "n",
+                  "1"
+                ],
+                [
+                  "pow",
+                  [
+                    "n",
+                    "2"
+                  ],
+                  [
+                    "n",
+                    "3"
+                  ]
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_scale_energy_ratio": [
+      {
+        "seed": 1,
+        "constraints": {
+          "factor_exponent": 5,
+          "high": 7,
+          "low": 3,
+          "partial_scale": "5.1",
+          "reference": 3
+        }
+      }
+    ],
+    "solve_cooling_coefficient": [
+      {
+        "seed": 1,
+        "constraints": {
+          "ambient": "30",
+          "initial": "180",
+          "measured": "48.75",
+          "minutes": 6,
+          "decimals": 1
+        }
+      }
+    ],
+    "express_rational_powers_as_radicals": [
+      {
+        "seed": 1,
+        "constraints": {
+          "conversions": [
+            {
+              "base": 3,
+              "exponent": "1/2"
+            },
+            {
+              "base": 2,
+              "exponent": "1.5"
+            },
+            {
+              "base": 5,
+              "exponent": "-2/3"
+            }
+          ]
+        }
+      }
+    ],
+    "solve_cooling_initial_temperature": [
+      {
+        "seed": 1,
+        "constraints": {
+          "ambient": "30",
+          "measured": "55.6",
+          "minutes": 3,
+          "decay_base": "1.25"
+        }
+      }
+    ],
+    "solve_linear_unknowns_from_exponential_table": [
+      {
+        "seed": 1,
+        "constraints": {
+          "table": [
+            {
+              "label": "金星",
+              "n": 0
+            },
+            {
+              "label": "地球",
+              "n": 1
+            },
+            {
+              "label": "火星",
+              "n": 2
+            }
+          ],
+          "base": "2",
+          "known": [
+            {
+              "label": "金星",
+              "distance": "0.7"
+            },
+            {
+              "label": "火星",
+              "distance": "1.6"
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_scientific_notation_expression": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "已知 $2018$ 年美國的人口數為 $329976959$ 人。",
+          "items": [
+            {
+              "kind": "value",
+              "value": "329976959",
+              "sig": 2,
+              "prompt": "將人口數取 $2$ 位有效數字並以科學記號表示。"
+            },
+            {
+              "kind": "value",
+              "value": "329976959",
+              "sig": 3,
+              "prompt": "將人口數取 $3$ 位有效數字並以科學記號表示。"
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_number_property_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "number": {
+            "mantissa": "0.3210",
+            "exponent": 9
+          },
+          "statements": [
+            {
+              "kind": "is_scientific_notation",
+              "claim": true
+            },
+            {
+              "kind": "digit_count",
+              "claim": 9
+            },
+            {
+              "kind": "zero_count",
+              "claim": 6
+            },
+            {
+              "kind": "greater_than_power",
+              "claim": 8
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_common_logarithm_items": [
+      {
+        "seed": 1,
+        "constraints": {
+          "stem": "",
+          "items": [
+            {
+              "kind": "as_power_of_ten",
+              "value": "2.7"
+            },
+            {
+              "kind": "expr",
+              "tree": [
+                "pow",
+                [
+                  "n",
+                  "10"
+                ],
+                [
+                  "log",
+                  [
+                    "n",
+                    "3.14"
+                  ]
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "approximate_common_logarithm": [
+      {
+        "seed": 1,
+        "constraints": {
+          "value": "1.34",
+          "decimals": 4
+        }
+      }
+    ],
+    "count_digits_of_integer_power": [
+      {
+        "seed": 1,
+        "constraints": {
+          "base": 2,
+          "exponent": 127,
+          "offset": -1,
+          "style": "lucas"
+        }
+      }
+    ],
+    "solve_power_of_ten_exponent": [
+      {
+        "seed": 1,
+        "constraints": {
+          "base": 6,
+          "exponent": 100,
+          "decimals": 1
+        }
+      }
+    ]
+  }
+}

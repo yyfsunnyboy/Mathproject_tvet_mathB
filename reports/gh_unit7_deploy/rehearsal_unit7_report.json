@@ -1,0 +1,923 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_unit7_rehearsal\\run",
+ "deferred": {},
+ "promotion": {
+  "domain_key": "analytic_geometry.circle_line_relations",
+  "registry_revision": "promoted-c1e82a37c211",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12481": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "327bf2a1850792d15a30eada1f4f1277c6680a5f5236264dd2dbc137e0acc085",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12482": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c4e58fb7e99bbcf9c3818d86cd1158af757209de3db429fbcecac4e50fa2f48b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12483": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d63f1df103c7fee62728b970b301030e9790631b3ee464a28ad68d38d06d7a88",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12484": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0ddaa8caab912c0b94cfa5ae4fc0f6fd4f6d415163331aef7506c5cedb0820bf",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12485": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "343be794c89231ee6ddc02f4c4c76548e5f27effbcc3fc31739038749f637a9a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12486": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5b09d1d0b562490dd76a63ee6d114679d4bb77703188d4b808475209bcebe0c2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12487": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9e777dfaca29e7ed2bf90d9e881e52b6dfb8f49e34ebc8d3aea80c6c21844104",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12488": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6c3a0ffa58fe2dfefc500908dd4ed6b782968f17051b623559de0cec90ba7a5d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12489": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7a20abcdbf225e2f67212b7a6383fccb0c92ccaaefcaa7ff895dc7825f727702",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12490": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "086cc8702f3b661f6c5a61339481b4d876c90b862555b06deb33500c423c3164",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12491": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "variants": 1,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1eb2c52e62e4d15eaf9a6f17e403ae66f68e5490e174435920ba8499115a67f0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 1
+   }
+  },
+  "12492": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a8111eba4a475b27b5858d78120e815b38ab9581db19c4b79b2821c668fbcd7f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12493": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "63965703736fe277ff8f98587cbd572125d5ce7d88b0d6c505f384db8d2055cb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12494": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b864a95fb5e6df2056c124359eff8995c3c98b40e7bf0d1cfe51eaafe14f1d72",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12495": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c4c4513b89b8637e0efd274ea9054323a2658f2c90582e0d164f4938fc7943cc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12496": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6fac599bde96db4d1ae36a00a2e64f47dd1fc463a8f435a1f5cca7fd2f159027",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12497": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "630e1d2bb9fee9ba6f4c0d854316dcf4348c0089f199a31d9133f8440425f789",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12498": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "85cf8874dc37412ede930c671c1f314bfec4da928ab9a67e47282694ca62c564",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12499": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9d7f3366bea5df4e46005be52abfdddf976a31502802d9dd816ee6989626b903",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12500": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "075d2ff5ec0bdbfc85b2094e6792d6f5e0ef53dd3fb1f96ca8247a3f93c07b1f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12501": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9e1a02a75bfe0853abe1bd6362030f98ef6cb5d900cf086cdf9794280ad1d6da",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12502": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "437e664fd6f22fc36bbf919fab0ca3a95e1d3d4cefbf387021c61a23f03ccbdc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12503": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ed57c3180af9838d896acf515e4bdc23fc2251af7d8ebffa4d9fcd42a415f5ef",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12504": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_from_tangent_point",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8064bd5ef2b47c340e59912e115bbc12eb9ca988db3c3d1a5960f844d7915acb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12505": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f137022da267076d7e84578699278f5f76c0f92f0e120addf9973e80a60b26c4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12506": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dec75a9f83618f4afe6b9902a36bf868cf7fb59c3e665551f471760690bee1b3",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12507": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "aceffeff9ded36c9c7ccb7ae7be57ea5257a172723e93f3ee157afa6351f6c0b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12508": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "evaluate_circle_line_statement_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "43a5644f68d003d267d193f9300ab38d68efb4b0bca5cd809191d6d695a9c00d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12509": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "14d5054a31124fcb1289c8bf6c01e8c0f00657754769b4c537b7f88a31a8d110",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12510": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "878e6b0fe327ba2a3ca2d9e10816635a41ab378fa05acc38c83f22c1eb97812f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12511": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "75bb467af017ca61491cb8ec8029f1ef01c2f3d9e866eff81f507778d4aaa793",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12512": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1781486e920f236952596f6f749bed2e49b86deabc35421ff2a23dfb2aca5568",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12513": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0009059068cdc64cc2a64ed4473f1bf198a01113d0d605d1efbd2db845497760",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12514": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8da071f7483588ad76bbf560c49c1fe8d8a4d8ba1ba860fb5ae09abb0238394a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12515": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3cdd57339e314b11e9c8911f7530e1330b2b2c92e2b5fdaf120a419bf69e6f15",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12516": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2b64c2b0204c68b4c7d74f8d150ec36cda40c5349128e9cddc90daf49f7cadfd",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": {
+   "status": "production_published",
+   "component_count": 21,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 15,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12481",
+    "src_12482",
+    "src_12483",
+    "src_12484",
+    "src_12485",
+    "src_12486",
+    "src_12487",
+    "src_12488",
+    "src_12489",
+    "src_12490",
+    "src_12491",
+    "src_12492",
+    "src_12493",
+    "src_12494",
+    "src_12495",
+    "src_12496",
+    "src_12497",
+    "src_12498",
+    "src_12499",
+    "src_12513",
+    "src_12515"
+   ]
+  },
+  "gh_TangentLinesOfACircle": {
+   "status": "production_published",
+   "component_count": 15,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 14,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12500",
+    "src_12501",
+    "src_12502",
+    "src_12503",
+    "src_12504",
+    "src_12505",
+    "src_12506",
+    "src_12507",
+    "src_12508",
+    "src_12509",
+    "src_12510",
+    "src_12511",
+    "src_12512",
+    "src_12514",
+    "src_12516"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": {
+   "served_examples": {
+    "12481": 4,
+    "12482": 4,
+    "12483": 4,
+    "12484": 4,
+    "12485": 3,
+    "12486": 4,
+    "12487": 4,
+    "12488": 3,
+    "12489": 4,
+    "12490": 4,
+    "12491": 4,
+    "12492": 4,
+    "12493": 4,
+    "12494": 4,
+    "12495": 4,
+    "12496": 4,
+    "12497": 4,
+    "12498": 3,
+    "12499": 3,
+    "12513": 4,
+    "12515": 4
+   },
+   "problems": [
+    "seed0:None:equivalent_misgraded",
+    "seed1:part_1:equivalent_misgraded",
+    "seed1:part_2:equivalent_misgraded",
+    "seed3:part_1:equivalent_misgraded",
+    "seed4:part_1:equivalent_misgraded",
+    "seed4:part_2:equivalent_misgraded",
+    "seed4:part_3:equivalent_misgraded",
+    "seed6:None:equivalent_misgraded",
+    "seed7:part_1:equivalent_misgraded",
+    "seed7:part_2:equivalent_misgraded",
+    "seed10:part_1:equivalent_misgraded",
+    "seed10:part_4:equivalent_misgraded",
+    "seed10:part_6:equivalent_misgraded",
+    "seed11:None:equivalent_misgraded",
+    "seed16:None:equivalent_misgraded",
+    "seed19:None:equivalent_misgraded",
+    "seed20:None:equivalent_misgraded",
+    "seed23:part_1:equivalent_misgraded",
+    "seed23:part_2:equivalent_misgraded",
+    "seed24:None:equivalent_misgraded",
+    "seed25:part_1:equivalent_misgraded",
+    "seed25:part_3:equivalent_misgraded",
+    "seed25:part_4:equivalent_misgraded",
+    "seed25:part_5:equivalent_misgraded",
+    "seed25:part_6:equivalent_misgraded",
+    "seed27:part_1:equivalent_misgraded",
+    "seed28:part_1:equivalent_misgraded",
+    "seed28:part_2:equivalent_misgraded",
+    "seed28:part_3:equivalent_misgraded",
+    "seed30:None:equivalent_misgraded",
+    "seed32:None:equivalent_misgraded",
+    "seed33:None:equivalent_misgraded",
+    "seed34:None:equivalent_misgraded",
+    "seed35:None:equivalent_misgraded",
+    "seed39:part_1:equivalent_misgraded",
+    "seed39:part_2:equivalent_misgraded",
+    "seed42:None:equivalent_misgraded",
+    "seed44:None:equivalent_misgraded",
+    "seed46:part_1:equivalent_misgraded",
+    "seed46:part_3:equivalent_misgraded",
+    "seed47:None:equivalent_misgraded",
+    "seed48:None:equivalent_misgraded",
+    "seed52:part_1:equivalent_misgraded",
+    "seed53:None:equivalent_misgraded",
+    "seed58:part_1:equivalent_misgraded",
+    "seed58:part_3:equivalent_misgraded",
+    "seed58:part_4:equivalent_misgraded",
+    "seed58:part_5:equivalent_misgraded",
+    "seed58:part_6:equivalent_misgraded",
+    "seed59:None:equivalent_misgraded",
+    "seed60:part_1:equivalent_misgraded",
+    "seed60:part_2:equivalent_misgraded",
+    "seed61:part_1:equivalent_misgraded",
+    "seed61:part_2:equivalent_misgraded",
+    "seed63:part_1:equivalent_misgraded",
+    "seed63:part_2:equivalent_misgraded",
+    "seed64:part_1:equivalent_misgraded",
+    "seed67:None:equivalent_misgraded",
+    "seed68:part_1:equivalent_misgraded",
+    "seed68:part_3:equivalent_misgraded",
+    "seed68:part_4:equivalent_misgraded",
+    "seed68:part_5:equivalent_misgraded",
+    "seed68:part_6:equivalent_misgraded",
+    "seed69:None:equivalent_misgraded",
+    "seed71:part_1:equivalent_misgraded",
+    "seed71:part_2:equivalent_misgraded",
+    "seed73:part_1:equivalent_misgraded",
+    "seed74:None:equivalent_misgraded",
+    "seed77:None:equivalent_misgraded",
+    "seed79:None:equivalent_misgraded"
+   ]
+  },
+  "gh_TangentLinesOfACircle": {
+   "served_examples": {
+    "12500": 5,
+    "12501": 5,
+    "12502": 6,
+    "12503": 6,
+    "12504": 5,
+    "12505": 5,
+    "12506": 5,
+    "12507": 5,
+    "12508": 5,
+    "12509": 5,
+    "12510": 5,
+    "12511": 5,
+    "12512": 6,
+    "12514": 6,
+    "12516": 6
+   },
+   "problems": [
+    "seed6:part_1:equivalent_misgraded",
+    "seed7:part_3:equivalent_misgraded",
+    "seed8:None:equivalent_misgraded",
+    "seed9:part_1:equivalent_misgraded",
+    "seed9:part_2:equivalent_misgraded",
+    "seed11:part_1:equivalent_misgraded",
+    "seed11:part_2:equivalent_misgraded",
+    "seed14:None:equivalent_misgraded",
+    "seed15:part_1:equivalent_misgraded",
+    "seed15:part_2:equivalent_misgraded",
+    "seed18:None:equivalent_misgraded",
+    "seed21:part_1:equivalent_misgraded",
+    "seed22:None:equivalent_misgraded",
+    "seed23:part_3:equivalent_misgraded",
+    "seed25:part_1:equivalent_misgraded",
+    "seed25:part_2:equivalent_misgraded",
+    "seed31:part_1:equivalent_misgraded",
+    "seed35:part_3:equivalent_misgraded",
+    "seed36:None:equivalent_misgraded",
+    "seed37:part_1:equivalent_misgraded",
+    "seed37:part_2:equivalent_misgraded",
+    "seed43:part_1:equivalent_misgraded",
+    "seed43:part_2:equivalent_misgraded",
+    "seed44:None:equivalent_misgraded",
+    "seed49:part_1:equivalent_misgraded",
+    "seed49:part_2:equivalent_misgraded",
+    "seed51:part_1:equivalent_misgraded",
+    "seed51:part_2:equivalent_misgraded",
+    "seed53:part_3:equivalent_misgraded",
+    "seed54:None:equivalent_misgraded",
+    "seed57:None:equivalent_misgraded",
+    "seed59:part_1:equivalent_misgraded",
+    "seed63:None:equivalent_misgraded",
+    "seed64:part_1:equivalent_misgraded",
+    "seed64:part_2:equivalent_misgraded",
+    "seed69:part_3:equivalent_misgraded",
+    "seed73:part_1:equivalent_misgraded",
+    "seed73:part_2:equivalent_misgraded",
+    "seed74:part_1:equivalent_misgraded",
+    "seed77:None:equivalent_misgraded",
+    "seed79:part_1:equivalent_misgraded",
+    "seed79:part_2:equivalent_misgraded"
+   ]
+  }
+ },
+ "production_paths_written": []
+}

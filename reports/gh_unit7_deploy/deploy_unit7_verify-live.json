@@ -1,0 +1,67 @@
+{
+ "facade": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": {
+   "served_examples": {
+    "12481": 4,
+    "12482": 4,
+    "12483": 4,
+    "12484": 4,
+    "12485": 3,
+    "12486": 4,
+    "12487": 4,
+    "12488": 3,
+    "12489": 4,
+    "12490": 4,
+    "12491": 4,
+    "12492": 4,
+    "12493": 4,
+    "12494": 4,
+    "12495": 4,
+    "12496": 4,
+    "12497": 4,
+    "12498": 3,
+    "12499": 3,
+    "12513": 4,
+    "12515": 4
+   },
+   "problems": []
+  },
+  "gh_TangentLinesOfACircle": {
+   "served_examples": {
+    "12500": 5,
+    "12501": 5,
+    "12502": 6,
+    "12503": 6,
+    "12504": 5,
+    "12505": 5,
+    "12506": 5,
+    "12507": 5,
+    "12508": 5,
+    "12509": 5,
+    "12510": 5,
+    "12511": 5,
+    "12512": 6,
+    "12514": 6,
+    "12516": 6
+   },
+   "problems": []
+  }
+ },
+ "manifest_status": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 21
+  },
+  "gh_TangentLinesOfACircle": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 15
+  }
+ },
+ "manifest_components": {
+  "gh_JudgingTheRelationshipOfCircleAndLine": 21,
+  "gh_TangentLinesOfACircle": 15
+ },
+ "manifest_matches_specs": true,
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

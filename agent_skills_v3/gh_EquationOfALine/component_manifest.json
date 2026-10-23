@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_EquationOfALine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12405",
+      "textbook_example_id": 12405,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12405/generate.py"
+    },
+    {
+      "component_id": "src_12406",
+      "textbook_example_id": 12406,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12406/generate.py"
+    },
+    {
+      "component_id": "src_12407",
+      "textbook_example_id": 12407,
+      "status": "verified",
+      "problem_type_id": "slope_of_line_from_equation",
+      "domain_operation": "slope_of_line_from_equation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12407/generate.py"
+    },
+    {
+      "component_id": "src_12408",
+      "textbook_example_id": 12408,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12408/generate.py"
+    },
+    {
+      "component_id": "src_12409",
+      "textbook_example_id": 12409,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12409/generate.py"
+    },
+    {
+      "component_id": "src_12410",
+      "textbook_example_id": 12410,
+      "status": "verified",
+      "problem_type_id": "fill_line_property_table",
+      "domain_operation": "fill_line_property_table",
+      "presentation_mode": "table_fill",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12410/generate.py"
+    },
+    {
+      "component_id": "src_12432",
+      "textbook_example_id": 12432,
+      "status": "verified",
+      "problem_type_id": "evaluate_line_statement_truth",
+      "domain_operation": "evaluate_line_statement_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12432/generate.py"
+    },
+    {
+      "component_id": "src_12437",
+      "textbook_example_id": 12437,
+      "status": "verified",
+      "problem_type_id": "solve_line_equations",
+      "domain_operation": "solve_line_equations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12437/generate.py"
+    },
+    {
+      "component_id": "src_12445",
+      "textbook_example_id": 12445,
+      "status": "verified",
+      "problem_type_id": "solve_axis_triangle_area_line",
+      "domain_operation": "solve_axis_triangle_area_line",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12445/generate.py"
+    }
+  ]
+}

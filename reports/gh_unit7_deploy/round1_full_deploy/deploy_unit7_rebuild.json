@@ -1,0 +1,402 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12481": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12482": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12483": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12484": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12485": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12486": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12487": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12488": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12489": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12490": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12491": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 1,
+   "failures": []
+  },
+  "12492": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12493": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12494": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "evaluate_circle_line_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12495": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12496": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12497": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "classify_circle_line_relations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12498": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12499": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12500": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12501": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12502": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12503": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12504": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_from_tangent_point",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12505": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12506": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12507": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12508": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "evaluate_circle_line_statement_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12509": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12510": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12511": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "write_circle_tangent_lines",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12512": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12513": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_circle_line_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12514": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12515": {
+   "skill": "gh_JudgingTheRelationshipOfCircleAndLine",
+   "operation": "solve_chord_and_distance",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_JudgingTheRelationshipOfCircleAndLine",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12516": {
+   "skill": "gh_TangentLinesOfACircle",
+   "operation": "solve_circle_tangent_scenarios",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_TangentLinesOfACircle",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

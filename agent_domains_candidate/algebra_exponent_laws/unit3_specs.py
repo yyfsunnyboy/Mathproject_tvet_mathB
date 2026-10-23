@@ -15,6 +15,8 @@ SKILLS = {
     "int": "gh_IntegerExponentsAndLaws",
     "rat": "gh_RationalExponentsAndLaws",
     "real": "gh_RealExponentsAndLaws",
+    "sn": "gh_ScientificNotationAndItsOperations",
+    "cl": "gh_CommonLogarithms",
 }
 
 
@@ -574,6 +576,305 @@ v12373 = {"table": PLANETS, "base": "2",
           "known": [{"label": "金星", "distance": "0.7"}, {"label": "火星", "distance": "1.6"}]}
 
 
+# --- Unit 4 (科學記號與常用對數) ---------------------------------------------------------
+
+def L(x: Any) -> list: return ["log", _t(x)]
+def Pa(x: Any) -> list: return ["paren", _t(x)]
+def sci(m: str, e: int) -> list: return Pa(M(m, P(10, e)))
+
+
+def _num_text(x: Any) -> str:
+    return str(x)
+
+
+def _sci_item(value: str, sig: int, prompt: str) -> dict:
+    return {"kind": "value", "value": value, "sig": sig, "prompt": prompt}
+
+
+def _sig_prompt(what: str, sig: int) -> str:
+    return f"將{what}取 ${sig}$ 位有效數字並以科學記號表示。"
+
+
+def s12377(rng):
+    n = rng.randint(10 ** rng.randint(6, 9), 10 ** rng.randint(9, 10) - 1)
+    year = rng.randint(2010, 2023)
+    sig1, sig2 = pick(rng, [(2, 3), (2, 4), (3, 4), (1, 2)])
+    return {"stem": f"已知 ${year}$ 年美國的人口數為 ${n}$ 人。",
+            "items": [_sci_item(str(n), sig1, _sig_prompt("人口數", sig1)), _sci_item(str(n), sig2, _sig_prompt("人口數", sig2))]}
+
+
+v12377 = {"stem": "已知 $2018$ 年美國的人口數為 $329976959$ 人。",
+          "items": [_sci_item("329976959", 2, _sig_prompt("人口數", 2)), _sci_item("329976959", 3, _sig_prompt("人口數", 3))]}
+
+_SCI_STEM = "計算下列各式的值，將答案取 $2$ 位有效數字並以科學記號表示："
+
+
+def _m(rng, lo=1.0, hi=9.9) -> str:
+    return f"{rng.uniform(lo, hi):.1f}"
+
+
+def s12378(rng):
+    a, b, c, d = _m(rng), _m(rng), _m(rng), _m(rng)
+    m1, n1 = rng.randint(2, 9), -rng.randint(3, 9)
+    p, q = rng.randint(10, 18), 0
+    q = p - 2
+    return {"stem": _SCI_STEM, "items": [
+        {"kind": "expr", "tree": M(sci(a, m1), sci(b, n1)), "sig": 2},
+        {"kind": "expr", "tree": Sb(sci(c, p), sci(d, q)), "sig": 2}]}
+
+
+v12378 = {"stem": _SCI_STEM, "items": [
+    {"kind": "expr", "tree": M(sci("3.0", 3), sci("4.5", -7)), "sig": 2},
+    {"kind": "expr", "tree": Sb(sci("3.2", 15), sci("7.1", 13)), "sig": 2}]}
+
+
+def s12379(rng):
+    a, b = _m(rng, 1.0, 9.9), _m(rng, 1.0, 9.9)
+    e1, e2 = rng.randint(14, 20), rng.randint(8, 13)
+    return {"stem": f"已知太陽的體積約為 ${a}\\times 10^{{{e1}}}$ 立方公里，且地球的體積約為 ${b}\\times 10^{{{e2}}}$ 立方公里，"
+                    "試問：太陽的體積為地球的幾倍？（將答案取 $2$ 位有效數字並以科學記號表示。）",
+            "items": [{"kind": "expr", "tree": D(M(a, P(10, e1)), M(b, P(10, e2))), "sig": 2, "show_expr": False}]}
+
+
+v12379 = {"stem": "已知太陽的體積約為 $1.41\\times 10^{18}$ 立方公里，且地球的體積約為 $1.08\\times 10^{12}$ 立方公里，"
+                  "試問：太陽的體積為地球的幾倍？（將答案取 $2$ 位有效數字並以科學記號表示。）",
+          "items": [{"kind": "expr", "tree": D(M("1.41", P(10, 18)), M("1.08", P(10, 12))), "sig": 2, "show_expr": False}]}
+
+
+def s12380(rng):
+    d = rng.randint(50, 990)
+    k = pick(rng, [-7, -6, -9, -8])
+    return {"stem": f"流感病毒的直徑約為 ${d}$ 奈米（3位有效數字）且 $1$ 奈米等於 $10^{{{k}}}$ 公分，問：將其以科學記號表示時為多少公分？",
+            "items": [{"kind": "expr", "tree": M(d, P(10, k)), "sig": 3, "show_expr": False}]}
+
+
+v12380 = {"stem": "流感病毒的直徑約為 $100$ 奈米（3位有效數字）且 $1$ 奈米等於 $10^{-7}$ 公分，問：將其以科學記號表示時為多少公分？",
+          "items": [{"kind": "expr", "tree": M(100, P(10, -7)), "sig": 3, "show_expr": False}]}
+
+
+def s12381(rng):
+    a, b, c, d = _m(rng), _m(rng, 2.0, 9.9), _m(rng), _m(rng)
+    n1, n2 = -rng.randint(3, 9), rng.randint(2, 6)
+    p = rng.randint(10, 14)
+    return {"stem": _SCI_STEM, "items": [
+        {"kind": "expr", "tree": D(sci(a, n1), sci(b, n2)), "sig": 2},
+        {"kind": "expr", "tree": A(sci(c, p), sci(d, p - 1)), "sig": 2}]}
+
+
+v12381 = {"stem": _SCI_STEM, "items": [
+    {"kind": "expr", "tree": D(sci("3.4", -6), sci("8.0", 4)), "sig": 2},
+    {"kind": "expr", "tree": A(sci("6.4", 12), sci("2.8", 11)), "sig": 2}]}
+
+
+def s12382(rng):
+    a, b = f"{rng.uniform(3.0, 9.9):.2f}", f"{rng.uniform(1.0, 9.9):.2f}"
+    e = rng.randint(6, 9)
+    return {"stem": f"亞洲是世界上最大的洲，其面積約為 ${a}\\times 10^{{{e}}}$ 平方公里；大洋洲是世界上最小的洲，其面積約為 "
+                    f"${b}\\times 10^{{{e - 1}}}$ 平方公里。試問：亞洲的面積比大洋洲大多少？（將答案取 $2$ 位有效數字並以科學記號表示）",
+            "items": [{"kind": "expr", "tree": Sb(M(a, P(10, e)), M(b, P(10, e - 1))), "sig": 2, "show_expr": False}]}
+
+
+v12382 = {"stem": "亞洲是世界上最大的洲，其面積約為 $4.46\\times 10^{7}$ 平方公里；大洋洲是世界上最小的洲，其面積約為 "
+                  "$8.54\\times 10^{6}$ 平方公里。試問：亞洲的面積比大洋洲大多少？（將答案取 $2$ 位有效數字並以科學記號表示）",
+          "items": [{"kind": "expr", "tree": Sb(M("4.46", P(10, 7)), M("8.54", P(10, 6))), "sig": 2, "show_expr": False}]}
+
+
+def s12383(rng):
+    v = f"{rng.randint(10 ** 7, 10 ** 9)}.{rng.randint(0, 9)}"
+    sig1, sig2 = pick(rng, [(2, 3), (3, 4), (2, 4)])
+    return {"stem": f"已知太陽到地球的平均距離為{v}公里。",
+            "items": [_sci_item(v, sig1, _sig_prompt("此平均距離", sig1)), _sci_item(v, sig2, _sig_prompt("此平均距離", sig2))]}
+
+
+v12383 = {"stem": "已知太陽到地球的平均距離為149597870.7公里。",
+          "items": [_sci_item("149597870.7", 2, _sig_prompt("此平均距離", 2)), _sci_item("149597870.7", 3, _sig_prompt("此平均距離", 3))]}
+
+
+def _digits_of(m: str, e: int) -> str:
+    return str(int(Fraction(m) * Fraction(10) ** e))
+
+
+def s12384(rng):
+    e = rng.randint(6, 10)
+    digits = rng.randint(2, 4)
+    m = "0." + "".join(str(rng.randint(1, 9)) for _ in range(digits - 1)) + str(rng.randint(1, 9)) + "0"
+    if len(m) - 2 > e:
+        m = "0." + "".join(str(rng.randint(1, 9)) for _ in range(e - 1)) + "0"
+    actual = _digits_of(m, e)
+    pick_claim = lambda true, delta: true if rng.random() < 0.6 else true + delta
+    return {"number": {"mantissa": m, "exponent": e}, "statements": [
+        {"kind": "is_scientific_notation", "claim": True},
+        {"kind": "digit_count", "claim": pick_claim(len(actual), pick(rng, [-1, 1]))},
+        {"kind": "zero_count", "claim": pick_claim(actual.count("0"), pick(rng, [-1, 1, 2]))},
+        {"kind": "greater_than_power", "claim": pick(rng, [e - 1, e, e - 2])}]}
+
+
+v12384 = {"number": {"mantissa": "0.3210", "exponent": 9}, "statements": [
+    {"kind": "is_scientific_notation", "claim": True}, {"kind": "digit_count", "claim": 9},
+    {"kind": "zero_count", "claim": 6}, {"kind": "greater_than_power", "claim": 8}]}
+
+
+def _decimal_str(rng) -> str:
+    return f"{rng.randint(1, 9)}.{rng.randint(1, 9)}{rng.randint(0, 9)}{rng.choice(['0', '0', '5'])}"
+
+
+def s12385(rng):
+    return {"stem": "", "items": [{"kind": "as_power_of_ten", "value": f"{rng.randint(11, 99) / 10:g}"},
+                                  {"kind": "expr", "tree": P(10, L(f"{rng.randint(101, 999) / 100:g}"))}]}
+
+
+v12385 = {"stem": "", "items": [{"kind": "as_power_of_ten", "value": "2.7"}, {"kind": "expr", "tree": P(10, L("3.14"))}]}
+
+
+def _pow10_num(k: int) -> Any:
+    return str(10 ** k) if k >= 0 else f"0.{'0' * (-k - 1)}1"
+
+
+def s12386(rng):
+    ks = rng.sample([-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6], 3)
+    return {"stem": "求下列各數的值：", "items": [{"kind": "expr", "tree": L(_pow10_num(k))} for k in ks]}
+
+
+v12386 = {"stem": "求下列各數的值：", "items": [{"kind": "expr", "tree": L(1)}, {"kind": "expr", "tree": L(100)}, {"kind": "expr", "tree": L("0.001")}]}
+
+
+def _cond_log(x: int, targets: list) -> dict:
+    return _cond("已知 ", V("t"), L(x), [f"log({x})/log(10)"], targets, var="t")
+
+
+def s12387(rng):
+    x = pick(rng, [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47])
+    return _cond_log(x, [P(100, V("t")), A(P(10, V("t")), P(10, Ng(V("t"))))])
+
+
+v12387 = _cond_log(13, [P(100, V("t")), A(P(10, V("t")), P(10, Ng(V("t"))))])
+
+
+def s12392(rng):
+    return s12387(rng)
+
+
+v12392 = _cond_log(5, [P(100, V("t")), A(P(10, V("t")), P(10, Ng(V("t"))))])
+
+
+def s12399(rng):
+    x = pick(rng, [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61])
+    return _cond_log(x, [P(10, V("t")), A(P(100, V("t")), P(10, Ng(V("t"))))])
+
+
+v12399 = _cond_log(7, [P(10, V("t")), A(P(100, V("t")), P(10, Ng(V("t"))))])
+
+
+def s12388(rng):
+    return {"value": f"{rng.randint(101, 999) / 100:g}", "decimals": 4}
+
+
+v12388 = {"value": "1.34", "decimals": 4}
+
+
+def s12389(rng):
+    return {"base": 2, "exponent": pick(rng, [13, 17, 19, 31, 61, 89, 107, 127, 521]), "offset": -1, "style": pick(rng, ["lucas", "known"])}
+
+
+v12389 = {"base": 2, "exponent": 127, "offset": -1, "style": "lucas"}
+
+
+def s12393(rng):
+    return s12389(rng)
+
+
+v12393 = {"base": 2, "exponent": 31, "offset": -1, "style": "known"}
+
+
+def s12390(rng):
+    return {"stem": "", "items": [{"kind": "as_power_of_ten", "value": f"{rng.randint(1, 99) / 100:g}"},
+                                  {"kind": "expr", "tree": P(10, L(rng.randint(101, 999)))}]}
+
+
+v12390 = {"stem": "", "items": [{"kind": "as_power_of_ten", "value": "0.02"}, {"kind": "expr", "tree": P(10, L(120))}]}
+
+
+def s12391(rng):
+    k1, k2 = rng.randint(2, 8), rng.randint(1, 6)
+    return {"stem": "", "items": [{"kind": "expr", "tree": L(10 ** k1)}, {"kind": "expr", "tree": L(D(1, 10 ** k2))}]}
+
+
+v12391 = {"stem": "", "items": [{"kind": "expr", "tree": L(10000)}, {"kind": "expr", "tree": L(D(1, 10))}]}
+
+
+def s12398(rng):
+    k1, k2 = rng.randint(2, 8), rng.randint(2, 8)
+    return {"stem": "求下列各數的值：", "items": [{"kind": "expr", "tree": L(10 ** k1)}, {"kind": "expr", "tree": L(D(1, 10 ** k2))}]}
+
+
+v12398 = {"stem": "求下列各數的值：", "items": [{"kind": "expr", "tree": L(100000)}, {"kind": "expr", "tree": L(D(1, 10000))}]}
+
+
+def s12394(rng):
+    lit = pick(rng, ["3.2100", "0.0450", "12.30", "4.0100", "0.00720", "8.500", "2.0030"])
+    digits = len(lit.replace(".", "").lstrip("0"))
+    claim = digits if rng.random() < 0.5 else digits + pick(rng, [-1, 1])
+    return {"number": {"decimal": lit}, "statements": [{"kind": "significant_digits", "claim": claim}]}
+
+
+v12394 = {"number": {"decimal": "3.2100"}, "statements": [{"kind": "significant_digits", "claim": 5}]}
+
+
+def s12395(rng):
+    a = rng.randint(2, 99)
+    form = rng.randrange(3)
+    if form == 0:
+        return _truth([{"lhs": _t(a), "rhs": P(10, L(a))}])
+    if form == 1:
+        return _truth([{"lhs": _t(a), "rhs": P(10, L(a + rng.randint(1, 5)))}])
+    return _truth([{"lhs": L(P(10, a)), "rhs": _t(a + pick(rng, [0, 0, 1]))}])
+
+
+v12395 = _truth([{"lhs": _t(7), "rhs": P(10, L(7))}])
+
+
+def s12396(rng):
+    k = rng.randint(1, 6)
+    claim = k if rng.random() < 0.4 else k + pick(rng, [-1, 1, 2])
+    return _truth([{"lhs": L(10 ** k), "rhs": _t(claim)}])
+
+
+v12396 = _truth([{"lhs": L(10), "rhs": _t(2)}])
+
+
+def s12397(rng):
+    x = f"{rng.randint(5, 40)}.{rng.randint(1, 9)}"
+    actual = int(float(x)) + 1
+    claim = actual if rng.random() < 0.4 else actual - 1
+    return {"number": {"ten_power": x}, "statements": [{"kind": "integer_part_digits", "claim": claim}]}
+
+
+v12397 = {"number": {"ten_power": "19.1"}, "statements": [{"kind": "integer_part_digits", "claim": 19}]}
+
+
+def s12400(rng):
+    return {"base": pick(rng, [2, 3, 5, 6, 7, 11]), "exponent": rng.randint(50, 300), "decimals": 1}
+
+
+v12400 = {"base": 6, "exponent": 100, "decimals": 1}
+
+
+def s12401(rng):
+    return {"base": 2, "tower_n": rng.randint(4, 20), "decimals": 0}
+
+
+v12401 = {"base": 2, "tower_n": 10, "decimals": 0}
+
+BENFORD = [{"name": f"{p}%", "value": p, "text": f"{p}%"} for p in (10, 20, 30, 40, 50)]
+
+
+def s12402(rng):
+    return {"model": "benford", "leading_digit": rng.randint(1, 9), "options": BENFORD}
+
+
+v12402 = {"model": "benford", "leading_digit": 1, "options": BENFORD}
+
+
 # --- registry of components -------------------------------------------------------
 
 OP = {
@@ -583,6 +884,9 @@ OP = {
     "o8": "solve_metabolic_scaling", "o9": "solve_half_life_model", "o10": "evaluate_scale_energy_ratio",
     "o11": "solve_cooling_coefficient", "o12": "express_rational_powers_as_radicals",
     "o13": "solve_cooling_initial_temperature", "o14": "solve_linear_unknowns_from_exponential_table",
+    "o15": "evaluate_scientific_notation_expression", "o16": "evaluate_number_property_statements",
+    "o17": "evaluate_common_logarithm_items", "o18": "approximate_common_logarithm",
+    "o19": "count_digits_of_integer_power", "o20": "solve_power_of_ten_exponent",
 }
 
 # id -> (skill key, op key, source variant, sampler)
@@ -606,7 +910,21 @@ COMPONENTS: dict[int, tuple[str, str, dict[str, Any], Callable]] = {
     12375: ("real", "o3", v12375, s12375), 12376: ("real", "o3", v12376, s12376),
     12351: ("rat", "o12", v12351, s12351), 12355: ("rat", "o12", v12355, s12355),
     12372: ("real", "o13", v12372, s12372), 12373: ("real", "o14", v12373, s12373),
+    12377: ("sn", "o15", v12377, s12377), 12378: ("sn", "o15", v12378, s12378),
+    12379: ("sn", "o15", v12379, s12379), 12380: ("sn", "o15", v12380, s12380),
+    12381: ("sn", "o15", v12381, s12381), 12382: ("sn", "o15", v12382, s12382),
+    12383: ("sn", "o15", v12383, s12383), 12384: ("sn", "o16", v12384, s12384),
+    12385: ("cl", "o17", v12385, s12385), 12386: ("cl", "o17", v12386, s12386),
+    12387: ("cl", "o3", v12387, s12387), 12388: ("cl", "o18", v12388, s12388),
+    12389: ("cl", "o19", v12389, s12389), 12390: ("cl", "o17", v12390, s12390),
+    12391: ("cl", "o17", v12391, s12391), 12392: ("cl", "o3", v12392, s12392),
+    12393: ("cl", "o19", v12393, s12393), 12394: ("cl", "o16", v12394, s12394),
+    12395: ("cl", "o4", v12395, s12395), 12396: ("cl", "o4", v12396, s12396),
+    12397: ("cl", "o16", v12397, s12397), 12398: ("cl", "o17", v12398, s12398),
+    12399: ("cl", "o3", v12399, s12399), 12400: ("cl", "o20", v12400, s12400),
+    12401: ("cl", "o20", v12401, s12401), 12402: ("cl", "o6", v12402, s12402),
 }
+UNIT4_IDS = tuple(range(12377, 12403))
 
 DEFERRED: dict[int, str] = {}
 FINAL_FOUR = (12351, 12355, 12372, 12373)
