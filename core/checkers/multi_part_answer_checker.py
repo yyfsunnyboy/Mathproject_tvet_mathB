@@ -20,6 +20,9 @@ SUPPORTED_PART_CHECKERS = frozenset(
         "decimal_tolerance_checker",
         "repeating_decimal_checker",
         "simplest_fraction_checker",
+        "linear_relation_set_checker",
+        "coordinate_pair_checker",
+        "free_response_drawing_checker",
         "rational_between_bounds_checker",
         "solution_set_checker",
         "text_short_checker",
@@ -83,6 +86,50 @@ def _check_numeric_equivalent(student: Any, expected: Any) -> bool:
     return student_frac == expected_frac
 
 
+def _is_drawing_part(part: dict[str, Any]) -> bool:
+    return (
+        str(part.get("checker") or part.get("checker_key") or "").strip() == "free_response_drawing_checker"
+        or str(part.get("answer_type") or "").strip() == "drawing"
+        or str(part.get("equivalence_type") or "").strip() == "drawing_equivalence"
+    )
+
+
+def _drawing_images(value: Any) -> tuple[str, str]:
+    """Composite and strokes-only data URLs from a drawing part value (JSON string, dict or bare data URL)."""
+    import json
+
+    data: Any = value
+    if isinstance(value, str) and value.strip().startswith("{"):
+        try:
+            data = json.loads(value)
+        except ValueError:
+            data = {}
+    if isinstance(data, dict):
+        return str(data.get("composite") or data.get("image_data_url") or ""), str(data.get("strokes") or "")
+    return (str(data).strip() if isinstance(data, str) else ""), ""
+
+
+def _check_drawing_part(student_answer: Any, part: dict[str, Any], context: dict[str, Any]) -> bool:
+    """Grade one independent canvas of a multi_part answer with the shared drawing grader.
+
+    A grader failure or low-confidence verdict is a system condition, never a silent wrong answer.
+    """
+    from core.checkers.free_response_drawing_checker import check_drawing_answer
+
+    composite, strokes = _drawing_images(student_answer)
+    result = check_drawing_answer(
+        image_data_url=composite or None,
+        question_text=str(part.get("prompt") or part.get("label") or ""),
+        answer_contract=part,
+        metadata={},
+        expected_drawing_spec=part.get("expected_drawing_spec") if isinstance(part.get("expected_drawing_spec"), dict) else {},
+        context={**context, "image_field": "composite", "student_strokes_image_data_url": strokes or None},
+    )
+    if result.get("system_error") or result.get("is_correct") is None:
+        raise RuntimeError(f"drawing_part_unavailable:{part.get('key')}:{result.get('status')}")
+    return bool(result.get("is_correct"))
+
+
 def _check_part(
     *,
     student_answer: Any,
@@ -93,6 +140,8 @@ def _check_part(
 ) -> bool:
     checker_key = checker.strip()
     equiv = equivalence_type.strip()
+    if _is_drawing_part(part):
+        return _check_drawing_part(student_answer, part, dict(part.get("_drawing_context") or {}))
     student_token = _normalize_slope_token(student_answer)
     expected_token = _normalize_slope_token(expected_answer)
     if (
@@ -120,6 +169,17 @@ def _check_part(
         from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
 
         res = check_simplest_fraction_answer(student_answer, expected_answer, answer_contract=part)
+        if res.get("system_error"):
+            raise RuntimeError(str(res.get("reason") or "grading system error"))
+        return bool(res.get("correct"))
+    if checker_key == "coordinate_pair_checker" or equiv == "coordinate_pair_equivalence":
+        from core.checkers.coordinate_pair_checker import check_coordinate_pair_answer
+
+        return bool(check_coordinate_pair_answer(student_answer, expected_answer))
+    if checker_key == "linear_relation_set_checker" or equiv == "linear_relation_set":
+        from core.checkers.linear_relation_set_checker import check_linear_relation_set_answer
+
+        res = check_linear_relation_set_answer(student_answer, expected_answer, answer_contract=part)
         if res.get("system_error"):
             raise RuntimeError(str(res.get("reason") or "grading system error"))
         return bool(res.get("correct"))
@@ -258,7 +318,15 @@ def check_multi_part_answer(
             expected = _value_for_part(correct_answer, key, index)
         student = _value_for_part(student_answer, key, index)
 
-        missing = student is None or _normalize_scalar(student) == ""
+        is_drawing = _is_drawing_part(part_contract)
+        if is_drawing:
+            part_contract["_drawing_context"] = {
+                "skill_id": str((payload or {}).get("skill_id") or ""),
+                "component_id": str((payload or {}).get("component_id") or ""),
+                "problem_type_id": str((payload or {}).get("problem_type_id") or ""),
+                "checker_key": "free_response_drawing_checker",
+            }
+        missing = student is None or (not is_drawing and _normalize_scalar(student) == "") or (is_drawing and not _drawing_images(student)[0])
         supported = checker in SUPPORTED_PART_CHECKERS or equivalence in {
             "numeric_exact",
             "numeric_equivalence",
@@ -273,6 +341,8 @@ def check_multi_part_answer(
             "decimal_tolerance",
             "decimal_expansion_exact",
             "simplest_fraction_exact",
+            "linear_relation_set",
+            "coordinate_pair_equivalence",
             "strict_between_bounds",
             "unordered_solution_set",
             "ordered_inequality",
@@ -295,8 +365,8 @@ def check_multi_part_answer(
             )
             reason = "correct" if correct else "incorrect"
 
-        normalized_student[key] = student
-        normalized_correct[key] = expected
+        normalized_student[key] = "[drawing]" if is_drawing else student
+        normalized_correct[key] = "[expected_drawing_spec]" if is_drawing else expected
         row = {
             "key": key,
             "label": label,
@@ -304,8 +374,8 @@ def check_multi_part_answer(
             "equivalence_type": equivalence,
             "correct": correct,
             "reason": reason,
-            "student_answer": student,
-            "expected_answer": expected,
+            "student_answer": "[drawing]" if is_drawing else student,
+            "expected_answer": "[expected_drawing_spec]" if is_drawing else expected,
         }
         per_part_results.append(row)
         if not correct:

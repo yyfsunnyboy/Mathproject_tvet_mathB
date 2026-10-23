@@ -558,6 +558,14 @@ def check_answer(
             raise RuntimeError(str(result.get("reason") or "grading system error"))
         return bool(result.get("correct"))
 
+    if checker == "linear_relation_set_checker" or equiv == "linear_relation_set":
+        from core.checkers.linear_relation_set_checker import check_linear_relation_set_answer
+
+        result = check_linear_relation_set_answer(user_answer, correct_answer, answer_contract=ac)
+        if result.get("system_error"):
+            raise RuntimeError(str(result.get("reason") or "grading system error"))
+        return bool(result.get("correct"))
+
     if checker == "simplest_fraction_checker" or equiv == "simplest_fraction_exact":
         from core.checkers.simplest_fraction_checker import check_simplest_fraction_answer
 

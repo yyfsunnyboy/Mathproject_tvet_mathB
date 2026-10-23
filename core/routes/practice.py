@@ -2947,24 +2947,13 @@ def next_question():
                             )
                             data = normalize_runtime_value(data)
                         except Exception as generate_exc:
-                            from core.gencode.services.component_tracker_service import save_tracker_record
-                            if picked_component_id:
-                                try:
-                                    raw_conn = db.engine.raw_connection()
-                                    try:
-                                        eid = int(picked_component_id.split("_")[1])
-                                        save_tracker_record(
-                                            raw_conn,
-                                            textbook_example_id=eid,
-                                            skill_id=skill_id,
-                                            gencode_status="failed",
-                                            gencode_error_log=f"runtime_generation_error: {str(generate_exc)}",
-                                        )
-                                        raw_conn.commit()
-                                    finally:
-                                        raw_conn.close()
-                                except Exception:
-                                    pass
+                            current_app.logger.exception(
+                                "Runtime generation failed: skill_id=%s component_id=%s seed=%s attempt=%s",
+                                skill_id,
+                                effective_component_id,
+                                gen_seed,
+                                attempt,
+                            )
                             raise generate_exc
 
                         route_source = "gencode_wrapper" if wrapper_loaded else "legacy"

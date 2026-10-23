@@ -3,9 +3,10 @@ from __future__ import annotations
 import ast
 import re
 from fractions import Fraction
+from math import isqrt
 from typing import Any
 
-from core.checkers.math_input_normalization import parse_exact_number
+from core.checkers.math_input_normalization import latex_to_plain, parse_exact_number
 from core.gencode.answer_contract_gate import coerce_single_choice_contract
 
 SOLUTION_SET_TYPES = frozenset({"set", "solution_set", "integer_set", "number_set"})
@@ -500,6 +501,29 @@ def _to_exact_rational(value: Any) -> Fraction | None:
     return parse_exact_number(text)
 
 
+def _exact_rational_square_root(value: Any) -> Fraction | None:
+    """Evaluate a single signed square root such as ``\\sqrt{16}`` or ``-\\sqrt{9/4}``.
+
+    Only radicands that are perfect rational squares yield a value; anything
+    else (irrational roots, sums, products) returns None.
+    """
+    if isinstance(value, (bool, int, float, Fraction)) or value is None:
+        return None
+    text = re.sub(r"\s+", "", latex_to_plain(value)).replace("√", "sqrt")
+    text = re.sub(r"sqrt(\d+(?:\.\d+)?)", r"sqrt(\1)", text)
+    m = re.fullmatch(r"([+-]?)sqrt\((.+)\)", text)
+    if not m:
+        return None
+    radicand = parse_exact_number(m.group(2))
+    if radicand is None or radicand < 0:
+        return None
+    num_root, den_root = isqrt(radicand.numerator), isqrt(radicand.denominator)
+    if num_root * num_root != radicand.numerator or den_root * den_root != radicand.denominator:
+        return None
+    root = Fraction(num_root, den_root)
+    return -root if m.group(1) == "-" else root
+
+
 def check_decimal_tolerance_answer(
     user_answer: Any,
     canonical_answer: Any,
@@ -565,6 +589,18 @@ def grade_numeric_contract_answer(
                 "result": "批改系統錯誤：容許誤差格式無效",
             }
         return check_decimal_tolerance_answer(user_answer, canonical, tol)
+
+    if checker_key in {"rational_checker", "fraction_checker"}:
+        radical_frac = _exact_rational_square_root(user_answer)
+        if radical_frac is not None:
+            exp_frac = _to_exact_rational(canonical)
+            if exp_frac is None:
+                return {
+                    "correct": False,
+                    "system_error": True,
+                    "result": "批改系統錯誤：標準答案格式無效",
+                }
+            return {"correct": radical_frac == exp_frac}
 
     user_val, user_err = parse_single_numeric(user_answer, require_integer=False)
     if user_err == "empty":

@@ -142,6 +142,23 @@ _SIMPLIFIED_TRIG_FORMS = frozenset({"simplified_trig", "fundamental_trig_simplif
 _EXPANDED_FORMS = frozenset({"expanded", "expanded_polynomial"})
 _SIMPLEST_RADICAL_FORMS = frozenset({"simplest_radical", "simplified_radical"})
 _RADICAL_NOTATION_FORMS = frozenset({"radical_notation", "radical_form"})
+_SCIENTIFIC_NOTATION_FORMS = frozenset({"scientific_notation", "scientific_form"})
+_SCI_NOTATION_RE = re.compile(
+    r"^\s*([+-]?\d+(?:\.\d+)?)\s*(?:\\times|\\cdot|×|\*|x)\s*10\s*\^\s*(?:\{\s*[+-]?\d+\s*\}|[+-]?\d+)\s*$"
+)
+
+
+def _is_scientific_notation_answer(user_raw: str, significant_digits: Any = None) -> bool:
+    """a×10^n with 1 <= |a| < 10 and, when the contract gives it, exactly that many significant digits."""
+    match = _SCI_NOTATION_RE.match(str(user_raw or ""))
+    if not match:
+        return False
+    mantissa = match.group(1).lstrip("+-")
+    if not (1 <= float(mantissa) < 10):
+        return False
+    if significant_digits in (None, ""):
+        return True
+    return len(mantissa.replace(".", "")) == int(significant_digits)
 
 
 def _is_radical_notation_answer(user_raw: str) -> bool:
@@ -560,6 +577,13 @@ def check_expression_equivalence_debug(
             or (required_form in _EXPANDED_FORMS and not _is_expanded_answer(ua_raw, user_expr))
             or (required_form in _SIMPLEST_RADICAL_FORMS and not _is_simplest_radical_answer(ua_raw, user_expr))
             or (required_form in _RADICAL_NOTATION_FORMS and not _is_radical_notation_answer(ua_raw))
+            or (
+                required_form in _SCIENTIFIC_NOTATION_FORMS
+                and not _is_scientific_notation_answer(
+                    ua_raw,
+                    (answer_contract or {}).get("significant_digits") or (payload or {}).get("significant_digits"),
+                )
+            )
         ):
             out["correct"] = False
             out["required_form_failed"] = True

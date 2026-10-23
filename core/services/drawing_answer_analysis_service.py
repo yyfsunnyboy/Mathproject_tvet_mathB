@@ -19,6 +19,7 @@ SUPPORTED_DRAWING_TYPES = frozenset(
         "line_chart",
         "coordinate_point_plot",
         "line_graph",
+        "linear_inequality_region",
     }
 )
 
@@ -192,6 +193,8 @@ def build_drawing_analysis_prompt(
     drawing_type = str(expected_drawing_spec.get("drawing_type") or "").strip()
     if drawing_type == "line_graph":
         return build_line_graph_analysis_prompt(expected_drawing_spec)
+    if drawing_type == "linear_inequality_region":
+        return build_inequality_region_analysis_prompt(expected_drawing_spec)
     schema = {
         "drawing_detected": True,
         "recognized_type": drawing_type,
@@ -683,6 +686,224 @@ def evaluate_line_graph(
     }
 
 
+# --- linear_inequality_region: boundary lines (solid / dashed) + shaded half-plane intersection ------
+
+INEQUALITY_REGION_THRESHOLDS = {
+    "confidence_min": 0.60,
+    "point_accept": 0.60,
+    "point_reject": 1.20,
+    "min_point_span": 2.0,
+    "probe_margin": 0.75,
+    "probe_margin_fine": 0.4,
+    "max_probe_points": 12,
+}
+
+
+def _spec_relations(spec: dict[str, Any]) -> list[dict[str, Any]]:
+    relations = []
+    for rel in spec.get("relations") or []:
+        line = rel.get("line") if isinstance(rel, dict) else None
+        if not isinstance(line, (list, tuple)) or len(line) != 3:
+            continue
+        coefficients = [_float_or_none(v) for v in line]
+        if None in coefficients or (coefficients[0] == 0 and coefficients[1] == 0):
+            continue
+        relations.append({"a": coefficients[0], "b": coefficients[1], "c": coefficients[2],
+                          "boundary": "dashed" if str(rel.get("boundary")).lower() == "dashed" else "solid"})
+    return relations
+
+
+def _relation_value(rel: dict[str, Any], x: float, y: float) -> float:
+    return (rel["a"] * x + rel["b"] * y + rel["c"]) / (rel["a"] ** 2 + rel["b"] ** 2) ** 0.5
+
+
+def inequality_region_probe_points(spec: dict[str, Any]) -> list[dict[str, Any]]:
+    """Deterministic grid points away from every boundary, half inside / half outside the region.
+
+    Integer grid points first; thin regions (a strip between parallel lines) fall back to a half-unit grid.
+    """
+    relations = _spec_relations(spec)
+    axis = spec.get("axis_range") if isinstance(spec.get("axis_range"), dict) else {}
+    x_min, x_max = int(axis.get("x_min", -6)), int(axis.get("x_max", 6))
+    y_min, y_max = int(axis.get("y_min", -6)), int(axis.get("y_max", 6))
+    half = INEQUALITY_REGION_THRESHOLDS["max_probe_points"] // 2
+
+    def collect(step_count: int, margin: float) -> tuple[list[tuple[float, float]], list[tuple[float, float]]]:
+        inside: list[tuple[float, float]] = []
+        outside: list[tuple[float, float]] = []
+        for ix in range((x_min + 1) * step_count, x_max * step_count):
+            for iy in range((y_min + 1) * step_count, y_max * step_count):
+                x, y = ix / step_count, iy / step_count
+                if ix == 0 or iy == 0:
+                    continue
+                values = [_relation_value(rel, x, y) for rel in relations]
+                if any(abs(v) < margin for v in values):
+                    continue
+                (inside if all(v > 0 for v in values) else outside).append((x, y))
+        return inside, outside
+
+    inside, outside = collect(1, INEQUALITY_REGION_THRESHOLDS["probe_margin"])
+    if len(inside) < 2 or len(outside) < 2:
+        inside, outside = collect(2, INEQUALITY_REGION_THRESHOLDS["probe_margin_fine"])
+
+    def spread(points: list[tuple[float, float]], count: int) -> list[tuple[float, float]]:
+        if len(points) <= count:
+            return points
+        step = len(points) / count
+        return [points[int(i * step)] for i in range(count)]
+
+    chosen = [(p, True) for p in spread(inside, half)] + [(p, False) for p in spread(outside, half)]
+    return [{"x": p[0], "y": p[1], "expected": flag} for p, flag in chosen]
+
+
+def build_inequality_region_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> str:
+    """Feature-extraction prompt for a shaded region bounded by straight lines.
+
+    Expected lines, line styles and the shaded side are deliberately withheld: the analyzer reports
+    what the student drew and answers neutral "is this grid point shaded?" questions;
+    ``evaluate_linear_inequality_region`` decides.
+    """
+    axis = expected_drawing_spec.get("axis_range")
+    axis = axis if isinstance(axis, dict) else {}
+    probes = [{"x": p["x"], "y": p["y"]} for p in inequality_region_probe_points(expected_drawing_spec)]
+    schema = {
+        "drawing_detected": True,
+        "recognized_type": "linear_inequality_region",
+        "required_elements": {"x_axis": True, "y_axis": True},
+        "lines": [
+            {"points_on_line": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]], "style": "solid | dashed | unknown"}
+        ],
+        "shaded_region_detected": True,
+        "probe_points": [{"x": 0, "y": 0, "shaded": True}],
+        "missing_features": [],
+        "incorrect_features": [],
+        "confidence": 0.0,
+        "feedback": "",
+    }
+    return (
+        "You are a strict math graph-reading analyzer. The image is a student's answer drawn on a "
+        "cartesian coordinate canvas. The pale grid, the printed x/y axes and the tick numbers are the "
+        "system-provided background; the student's pen strokes and shading are darker or colored.\n\n"
+        "Task: report what the student drew. Do not judge correctness and do not guess what the question wants.\n\n"
+        "Coordinate system: "
+        f"x from {axis.get('x_min', '?')} to {axis.get('x_max', '?')}, "
+        f"y from {axis.get('y_min', '?')} to {axis.get('y_max', '?')}. "
+        "Grid lines are at integer units and the printed axes cross at (0,0). Read coordinates from the printed tick numbers.\n\n"
+        "Rules:\n"
+        "- lines: one entry per straight boundary line the student drew (ignore the printed axes and grid). "
+        "points_on_line: three points ON that line, spread along its length, as [x, y] in graph units with 0.1 precision. "
+        "style: 'dashed' when the stroke is broken into dashes, 'solid' when continuous, 'unknown' if unclear.\n"
+        "- shaded_region_detected: true only when the student colored, hatched or scribbled over an area (not just lines).\n"
+        "- probe_points: for EACH point listed below, say whether that grid point lies inside the area the student "
+        "shaded (hatched / colored / filled). Points on drawn lines do not count as shaded by the line itself. "
+        "Answer false when the student shaded nothing or the point is clearly outside the shaded area.\n"
+        "- Ignore small stroke wobble and thickness. If positions cannot be read reliably, lower confidence instead of guessing.\n\n"
+        f"Probe points: {json.dumps(probes)}\n\n"
+        "Return JSON only, exactly in this shape:\n"
+        f"{json.dumps(schema, ensure_ascii=False, indent=2)}"
+    )
+
+
+def _line_gap(points: list[tuple[float, float]], rel: dict[str, Any]) -> float:
+    return max(abs(_relation_value(rel, x, y)) for x, y in points)
+
+
+def evaluate_linear_inequality_region(
+    recognized_features: dict[str, Any],
+    expected_drawing_spec: dict[str, Any],
+) -> dict[str, Any]:
+    th = INEQUALITY_REGION_THRESHOLDS
+    relations = _spec_relations(expected_drawing_spec)
+    if not relations:
+        return _result("missing_spec", None, feedback="本題圖形批改設定尚未完成，這次不計入答錯。", system_error=True)
+    confidence = _clamp01(_float_or_none(recognized_features.get("confidence")) or 0.0)
+    required = recognized_features.get("required_elements")
+    required = required if isinstance(required, dict) else {}
+    axes_on_canvas = isinstance(expected_drawing_spec.get("axis_range"), dict)
+
+    missing: list[str] = []
+    incorrect: list[str] = []
+    for element in expected_drawing_spec.get("required_elements", []):
+        if element in {"x_axis", "y_axis"} and axes_on_canvas:
+            continue
+        if element in {"boundary_lines", "shaded_region"}:
+            continue
+        if not required.get(element):
+            missing.append(str(element))
+
+    drawn_lines = []
+    for line in recognized_features.get("lines") or []:
+        if not isinstance(line, dict):
+            continue
+        points = _as_points(line.get("points_on_line"))
+        span = max((((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2) ** 0.5 for p in points for q in points), default=0.0)
+        if len(points) >= 2 and span >= th["min_point_span"]:
+            drawn_lines.append({"points": points, "style": str(line.get("style") or "unknown").strip().lower()})
+
+    undecided = False
+    used: set[int] = set()
+    for rel in relations:
+        gaps = [(_line_gap(line["points"], rel), index) for index, line in enumerate(drawn_lines) if index not in used]
+        if not gaps:
+            missing.append("boundary_lines")
+            continue
+        gap, index = min(gaps)
+        if gap > th["point_reject"]:
+            incorrect.append("boundary_line_position")
+            continue
+        if gap > th["point_accept"]:
+            undecided = True
+            continue
+        used.add(index)
+        drawn_style = drawn_lines[index]["style"]
+        if drawn_style in {"solid", "dashed"} and drawn_style != rel["boundary"]:
+            incorrect.append("boundary_style")
+    if len(drawn_lines) > len(relations) and not missing and not incorrect:
+        incorrect.append("extra_boundary_line")
+
+    answered: dict[tuple[int, int], bool] = {}
+    for item in recognized_features.get("probe_points") or []:
+        if isinstance(item, dict) and isinstance(item.get("shaded"), bool):
+            x, y = _float_or_none(item.get("x")), _float_or_none(item.get("y"))
+            if x is not None and y is not None:
+                answered[(round(x * 2), round(y * 2))] = item["shaded"]
+    shaded_wrong = False
+    shaded_unanswered = False
+    for probe in inequality_region_probe_points(expected_drawing_spec):
+        key = (round(probe["x"] * 2), round(probe["y"] * 2))
+        if key not in answered:
+            shaded_unanswered = True
+        elif answered[key] != probe["expected"]:
+            shaded_wrong = True
+    if not recognized_features.get("shaded_region_detected") and not any(answered.values()):
+        missing.append("shaded_region")
+    elif shaded_wrong:
+        incorrect.append("shaded_region")
+    elif shaded_unanswered:
+        undecided = True
+
+    verdict: bool | None
+    if missing or incorrect:
+        verdict = False
+    elif undecided:
+        verdict = None
+    else:
+        verdict = True
+    if confidence < th["confidence_min"]:
+        verdict = None
+    status = "success" if verdict is not None else "low_confidence"
+    score = 1.0 if verdict is True else (0.0 if verdict is False else 0.5)
+    return {
+        "status": status,
+        "is_correct": verdict,
+        "score": score,
+        "confidence": confidence,
+        "missing_features": sorted(set(missing)),
+        "incorrect_features": sorted(set(incorrect)),
+        "feedback": _build_feedback(verdict, missing, incorrect, correct_text="圖形作答正確，邊界直線、線型與鋪色區域都符合題目。"),
+    }
+
+
 DRAWING_EVALUATOR_REGISTRY.update(
     {
         "histogram": evaluate_histogram,
@@ -692,6 +913,7 @@ DRAWING_EVALUATOR_REGISTRY.update(
         "line_chart": evaluate_not_implemented,
         "coordinate_point_plot": evaluate_not_implemented,
         "line_graph": evaluate_line_graph,
+        "linear_inequality_region": evaluate_linear_inequality_region,
     }
 )
 
@@ -802,6 +1024,11 @@ DRAWING_FEATURE_LABELS = {
     "line_slope": "直線斜率",
     "line_intercept": "y 截距",
     "line_shape": "圖形應為直線",
+    "boundary_lines": "邊界直線",
+    "boundary_line_position": "邊界直線的位置",
+    "boundary_style": "邊界線型（含等號用實線、不含等號用虛線）",
+    "extra_boundary_line": "多餘的直線",
+    "shaded_region": "鋪色區域",
 }
 
 

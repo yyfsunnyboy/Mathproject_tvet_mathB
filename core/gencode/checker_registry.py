@@ -238,6 +238,12 @@ CHECKER_CAPABILITIES: dict[str, dict[str, Any]] = {
         "equivalence_types": ["strict_between_bounds"],
         "module": "core.checkers.rational_between_bounds_checker",
     },
+    "linear_relation_set_checker": {
+        "runtime_available": True,
+        "answer_types": ["short_answer", "linear_relation_set", "equation_set", "inequality_system"],
+        "equivalence_types": ["linear_relation_set"],
+        "module": "core.checkers.linear_relation_set_checker",
+    },
     "multi_blank_checker": {
         "runtime_available": True,
         "answer_types": ["multi_part", "multi_blank"],

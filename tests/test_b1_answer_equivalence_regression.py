@@ -190,6 +190,34 @@ def test_rational_contract_rejects_other_values(answer: str) -> None:
     assert res.get("correct") is not True
 
 
+_RATIONAL_EQUIV_CONTRACT = {"answer_type": "rational", "equivalence_type": "rational_equivalent"}
+
+
+@pytest.mark.parametrize(
+    ("answer", "canonical"),
+    [(r"\sqrt{16}", "4"), ("√16", "4"), ("sqrt(16)", "4"), (r"\sqrt{\frac{441}{16}}", "21/4"),
+     (r"-\sqrt{9/4}", "-3/2"), (r"\sqrt{0.25}", "1/2")],
+)
+def test_rational_contract_accepts_perfect_square_radical(answer: str, canonical: str) -> None:
+    res = grade_numeric_contract_answer(answer, canonical, _RATIONAL_EQUIV_CONTRACT, checker="rational_checker")
+    assert res.get("correct") is True
+
+
+@pytest.mark.parametrize(
+    ("answer", "canonical"),
+    [(r"\sqrt{15}", "4"), (r"\sqrt{17}", "4"), (r"-\sqrt{16}", "4"), (r"\sqrt{16}+1", "4"),
+     (r"2\sqrt{4}", "5"), (r"\sqrt[3]{64}", "8"), (r"\sqrt{-16}", "4")],
+)
+def test_rational_contract_rejects_non_equivalent_radical(answer: str, canonical: str) -> None:
+    res = grade_numeric_contract_answer(answer, canonical, _RATIONAL_EQUIV_CONTRACT, checker="rational_checker")
+    assert res.get("correct") is not True
+
+
+def test_integer_checker_radical_semantics_unchanged() -> None:
+    res = grade_numeric_contract_answer(r"\sqrt{16}", "4", {"answer_type": "integer"}, checker="integer_checker")
+    assert res.get("correct") is not True
+
+
 def test_numeric_equivalence_decimal_and_fraction() -> None:
     assert parse_single_numeric("3.5") == (3.5, None)
     assert parse_single_numeric(r"\frac{7}{2}") == (3.5, None)

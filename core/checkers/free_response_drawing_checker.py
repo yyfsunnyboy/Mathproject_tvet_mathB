@@ -29,6 +29,7 @@ SUPPORTED_DRAWING_TYPES = frozenset(
         "number_line",
         "geometry_construction",
         "statistical_chart",
+        "linear_inequality_region",
     }
 )
 
