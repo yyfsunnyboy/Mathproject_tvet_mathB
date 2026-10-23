@@ -1538,13 +1538,15 @@
 
         context.strokeStyle = applyFadedColor('#e5e7eb', Math.min(1, opacity + 0.15));
         context.lineWidth = 1;
-        for (let value = Math.ceil(xMin); value <= Math.floor(xMax); value += 1) {
+        // Measured-figure questions set show_grid=false so lengths cannot be read off unit squares.
+        const showGrid = visualSpec.show_grid !== false;
+        for (let value = Math.ceil(xMin); showGrid && value <= Math.floor(xMax); value += 1) {
             context.beginPath();
             context.moveTo(mapX(value), gridTop);
             context.lineTo(mapX(value), gridBottom);
             context.stroke();
         }
-        for (let value = Math.ceil(yMin); value <= Math.floor(yMax); value += 1) {
+        for (let value = Math.ceil(yMin); showGrid && value <= Math.floor(yMax); value += 1) {
             context.beginPath();
             context.moveTo(gridLeft, mapY(value));
             context.lineTo(gridRight, mapY(value));

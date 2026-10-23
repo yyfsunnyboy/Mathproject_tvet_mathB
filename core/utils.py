@@ -164,23 +164,19 @@ def get_chapters_by_curriculum_volume(curriculum, volume):
     
     chapters = [r[0] for r in results]
 
-    # 定義一個函式來從章節名稱中提取數字
-    def extract_chapter_number(chapter_name):
-        # 使用正規表示式尋找 "第" 和 "章" 之間的數字
-        match = re.search(r'第(\d+)', chapter_name)
-        if match:
-            return int(match.group(1))
-        return float('inf') # 如果找不到數字，排在最後
-
-    # 使用自訂的排序鍵進行排序
-    # [Fix] Natural Sorting
-    def natural_keys(text):
-        if not text: return []
-        return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', str(text))]
-
-    chapters.sort(key=natural_keys)
+    chapters.sort(key=chapter_natural_sort_key)
     
     return chapters
+
+
+def chapter_natural_sort_key(chapter):
+    """Sort numbered chapter/unit labels by each numeric component; keep unknown labels deterministic."""
+    label = str(chapter or '')
+    parts = re.split(r'(\d+)', label)
+    if len(parts) == 1:
+        return (1, label.casefold(), label)
+    return (0, tuple((0, int(part)) if part.isdigit() else (1, part.casefold())
+                     for part in parts), label)
 
 def normalize_vocational_math_skill_id(subject: str, vol_num: str, clean_en_id: str, prefix: str = "vh_") -> str:
     """
@@ -267,8 +263,28 @@ def parse_display_order_value(raw, *, required: bool = False):
         return None, "排序順序必須是整數"
 
 
-def get_skills_by_volume_chapter(volume, chapter):
-    """取得指定冊、章的所有技能（包含進度）"""
+_PARAGRAPH_MARKS = "甲乙丙丁戊己庚辛壬癸"
+
+
+def textbook_skill_sort_key(item):
+    """學生端 Skill 卡片的教材順序：先依 paragraph 的「甲乙丙…」段落序號，缺少時才用 display_order。
+
+    ``skills_info.skill_ch_name`` 已去除段落前綴，故以 ``skill_curriculum.paragraph`` 為準；
+    次排序為 display_order、中文名稱，確保穩定。
+    """
+    paragraph = str(item.get("paragraph") or "").strip()
+    mark = _PARAGRAPH_MARKS.find(paragraph[:1]) if paragraph else -1
+    has_mark = mark >= 0 and paragraph[1:2] in (".", "．", "、")
+    return (
+        0 if has_mark else 1,
+        mark if has_mark else 0,
+        int(item.get("display_order") or 0),
+        str(item.get("skill_ch_name") or ""),
+    )
+
+
+def get_skills_by_volume_chapter(volume, chapter, curriculum=None):
+    """取得指定冊、章的所有技能（包含進度）；依教材段落順序排列。"""
     # 使用 ORM 進行 JOIN 查詢
     # .join() 會根據我們在模型中定義的 ForeignKey 自動關聯
     results = apply_skill_display_order(
@@ -278,10 +294,11 @@ def get_skills_by_volume_chapter(volume, chapter):
             SkillCurriculum.volume == volume,
             SkillCurriculum.chapter == chapter,
             SkillInfo.is_active == True,
+            *([SkillCurriculum.curriculum.in_(get_curriculum_aliases(curriculum))] if curriculum else []),
         )
     ).all()
     
-    return [{
+    rows = [{
         'curriculum': sc.curriculum,
         'grade': sc.grade,
         'volume': sc.volume,
@@ -295,6 +312,8 @@ def get_skills_by_volume_chapter(volume, chapter):
         'description': si.description,
         'consecutive_correct_required': si.consecutive_correct_required
     } for sc, si in results]
+    rows.sort(key=textbook_skill_sort_key)
+    return rows
 
 def get_all_skill_curriculums():
     """
@@ -437,7 +456,7 @@ def handle_curriculum_filters(request):
         c_q = c_q.filter(SkillCurriculum.curriculum.in_(aliases))
     if f_grade != 'all' and str(f_grade).isdigit(): c_q = c_q.filter(SkillCurriculum.grade == int(f_grade))
     if f_vol != 'all': c_q = c_q.filter(SkillCurriculum.volume == f_vol)
-    filters['chapters'] = [r[0] for r in c_q.all()]
+    filters['chapters'] = sorted((r[0] for r in c_q.all()), key=chapter_natural_sort_key)
 
     # E. 節 (依據前四層)
     s_q = db.session.query(distinct(SkillCurriculum.section))

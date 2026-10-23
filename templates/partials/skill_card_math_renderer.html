@@ -3,6 +3,10 @@
   Text remains Jinja-escaped; MathJax reads text nodes only and no card content
   is inserted through unsafe HTML assignment.
 #}
+<style>
+    .skill-card-description { min-width: 0; overflow-wrap: anywhere; }
+    .skill-card-description mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+</style>
 <script>
     (function () {
         "use strict";
@@ -17,7 +21,36 @@
         };
 
         var renderQueue = Promise.resolve();
+        var rendered = new WeakSet();
         var delimiterPattern = /\$|\\\(|\\\[|\\frac|\\sqrt|\\(?:sin|cos|tan|theta|text)\b/;
+        var delimitedMath = /(\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$|\$[^$\n]*\$)/g;
+
+        // Format only equation-shaped ASCII runs outside existing TeX delimiters.
+        // Chinese prose and already delimited formulas remain untouched.
+        function formatBareEquations(text) {
+            return text.replace(/[A-Za-z0-9()[\]{}^_+*/=<>.,√πθ≤≥≠∞×\s-]+/g, function (run) {
+                var match = run.match(/^(\s*)([A-Za-z0-9()[\]{}^_+*/=<>.,√πθ≤≥≠∞×\s-]*[A-Za-z0-9)\]}])(\s*)$/);
+                if (!match) return run;
+                var formula = match[2].trim();
+                var words = formula.replace(/\b(?:sqrt|sin|cos|tan|log|ln|exp|rad)\b/gi, '');
+                if (!/[\^_+*/=<>√≤≥≠∞]/.test(formula)
+                    || (!/[=<>≤≥≠]/.test(formula) && !/[\^_√]/.test(formula))
+                    || /[A-Za-z]{3,}/.test(words) || formula.length > 240) return run;
+                return match[1] + '\\(' + formula + '\\)' + match[3];
+            });
+        }
+
+        function formatDescription(text) {
+            var output = '';
+            var last = 0;
+            delimitedMath.lastIndex = 0;
+            var match;
+            while ((match = delimitedMath.exec(text)) !== null) {
+                output += formatBareEquations(text.slice(last, match.index)) + match[0];
+                last = match.index + match[0].length;
+            }
+            return output + formatBareEquations(text.slice(last));
+        }
 
         function hasMathSource(element) {
             return Boolean(element && delimiterPattern.test(element.textContent || ''));
@@ -25,17 +58,23 @@
 
         function typesetSkillCardDescriptions(elements) {
             var targets = Array.from(new Set(elements || []))
-                .filter(hasMathSource);
-            if (!targets.length || !window.MathJax || !window.MathJax.typesetPromise) return;
+                .filter(function (element) {
+                    if (!element.isConnected || rendered.has(element)) return false;
+                    var original = element.textContent || '';
+                    var formatted = formatDescription(original);
+                    if (formatted !== original) element.textContent = formatted;
+                    return hasMathSource(element);
+                });
+            if (!targets.length || !window.MathJax || !window.MathJax.startup) return;
+            targets.forEach(function (element) { rendered.add(element); });
 
             renderQueue = renderQueue.then(function () {
-                // Clearing only these text containers makes a replaced dynamic
-                // description safe to typeset again without touching the page.
-                if (typeof window.MathJax.typesetClear === 'function') {
-                    window.MathJax.typesetClear(targets);
-                }
-                return window.MathJax.typesetPromise(targets);
+                return window.MathJax.startup.promise.then(function () {
+                    targets = targets.filter(function (element) { return element.isConnected; });
+                    if (targets.length) return window.MathJax.typesetPromise(targets);
+                });
             }).catch(function (error) {
+                targets.forEach(function (element) { rendered.delete(element); });
                 console.warn('Skill-card MathJax render error:', error);
             });
         }
@@ -69,7 +108,7 @@
             script.defer = true;
             script.setAttribute('data-skill-card-mathjax-loader', '1');
             script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
-            script.onload = function () { typesetSkillCardDescriptions(initial); };
+            script.onload = function () { typesetSkillCardDescriptions(skillCardDescriptions(document)); };
             document.head.appendChild(script);
         }
 

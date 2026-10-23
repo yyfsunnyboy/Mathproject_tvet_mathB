@@ -286,6 +286,7 @@ from core.utils import (
     apply_skill_display_order,
     find_skill_curriculum_entry,
     parse_display_order_value,
+    chapter_natural_sort_key,
 )
 from core.guest_demo import guest_demo_curriculum, guest_demo_skill_filter
 from core.ai_settings import (
@@ -498,7 +499,8 @@ def _collect_core_scope_options(filters=None):
         q_chapter = q_chapter.filter(SkillCurriculum.grade == grade)
     if volume:
         q_chapter = q_chapter.filter(SkillCurriculum.volume == volume)
-    chapters = sorted({str(r[0]) for r in q_chapter.distinct().all() if r[0] is not None})
+    chapters = sorted({str(r[0]) for r in q_chapter.distinct().all() if r[0] is not None},
+                      key=chapter_natural_sort_key)
 
     q_section = db.session.query(SkillCurriculum.section)
     if curriculum:
@@ -5217,7 +5219,7 @@ def api_get_chapters():
         SkillCurriculum.grade == grade,
         SkillCurriculum.volume == volume
     )
-    chapters = [row[0] for row in query.all()]
+    chapters = sorted((row[0] for row in query.all()), key=chapter_natural_sort_key)
     return jsonify(chapters)
 
 @core_bp.route('/api/get_sections')

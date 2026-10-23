@@ -31,7 +31,7 @@ def _thread_count() -> int:
 
 
 def build_production_app():
-    load_dotenv(PROJECT_ROOT / ".env")
+    load_dotenv(PROJECT_ROOT / ".env", override=True)
 
     from config import Config
 

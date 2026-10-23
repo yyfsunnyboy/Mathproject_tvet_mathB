@@ -27,6 +27,7 @@
                 prompt: String(part.display_label || part.label || part.prompt || part.key || part.field_key || `欄位 ${index + 1}`),
                 group_label: String(part.group_label || ""),
                 input_type: String(part.input_type || "text"),
+                canvas: part.canvas && typeof part.canvas === "object" ? part.canvas : null,
                 choices: Array.isArray(part.choices) ? part.choices : [],
                 checker: String(part.checker || part.checker_key || ""),
                 expected_answer: part.expected_answer == null ? "" : String(part.expected_answer),
@@ -156,7 +157,131 @@
         node.classList.add("control-" + (kind || "expression"));
     }
 
+    // Independent drawing canvas for a part (answer_contract part with input_type "canvas").
+    // Grid/axes are a non-interactive background; the answer value is a JSON string
+    // {composite, strokes} kept in a hidden .multi-part-input so collectMultiPartAnswers() is unchanged.
+    function createCanvasControl(part, index) {
+        const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
+        const range = (part.canvas && part.canvas.axis_range) || { x_min: -6, x_max: 6, y_min: -6, y_max: 6 };
+        const cssW = 300;
+        const cssH = 260;
+        const ratio = (typeof window !== "undefined" && window.devicePixelRatio) || 1;
+        const wrap = document.createElement("div");
+        wrap.className = "multi-part-canvas-wrap";
+        wrap.style.cssText = "position:relative;display:inline-block;width:" + cssW + "px;max-width:100%;";
+        const stage = document.createElement("div");
+        stage.style.cssText = "position:relative;width:" + cssW + "px;height:" + cssH + "px;border:1px solid #bbb;background:#fff;";
+        const make = () => {
+            const c = document.createElement("canvas");
+            c.width = Math.round(cssW * ratio);
+            c.height = Math.round(cssH * ratio);
+            c.style.cssText = "position:absolute;left:0;top:0;width:" + cssW + "px;height:" + cssH + "px;";
+            return c;
+        };
+        const bg = make();
+        const ink = make();
+        ink.id = `multi-part-canvas-${fieldKey}`;
+        ink.className = "multi-part-canvas";
+        ink.dataset.fieldKey = fieldKey;
+        ink.style.touchAction = "none";
+        ink.style.cursor = "crosshair";
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.id = `multi-part-input-${fieldKey}`;
+        hidden.className = "multi-part-input multi-part-canvas-value";
+        hidden.dataset.partIndex = String(index);
+        hidden.dataset.fieldKey = fieldKey;
+        hidden.dataset.answerOrder = String(part.answer_order == null ? index : part.answer_order);
+
+        const xMin = Number(range.x_min), xMax = Number(range.x_max), yMin = Number(range.y_min), yMax = Number(range.y_max);
+        const mapX = (x) => ((x - xMin) / (xMax - xMin)) * cssW;
+        const mapY = (y) => cssH - ((y - yMin) / (yMax - yMin)) * cssH;
+        const line = (ctx, x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+        const bctx = bg.getContext("2d");
+        bctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        bctx.fillStyle = "#fff";
+        bctx.fillRect(0, 0, cssW, cssH);
+        bctx.strokeStyle = "#e5e7eb";
+        bctx.lineWidth = 1;
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += 1) line(bctx, mapX(x), 0, mapX(x), cssH);
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += 1) line(bctx, 0, mapY(y), cssW, mapY(y));
+        bctx.strokeStyle = "#374151";
+        bctx.lineWidth = 1.5;
+        if (xMin <= 0 && xMax >= 0) line(bctx, mapX(0), 0, mapX(0), cssH);
+        if (yMin <= 0 && yMax >= 0) line(bctx, 0, mapY(0), cssW, mapY(0));
+        bctx.fillStyle = "#374151";
+        bctx.font = "10px sans-serif";
+        for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += 2) { if (x !== 0) bctx.fillText(String(x), mapX(x) + 2, Math.min(cssH - 2, mapY(0) + 11)); }
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += 2) { if (y !== 0) bctx.fillText(String(y), Math.max(2, mapX(0) + 3), mapY(y) - 2); }
+        bctx.fillText("x", cssW - 10, Math.min(cssH - 3, mapY(0) - 3));
+        bctx.fillText("y", Math.min(cssW - 8, mapX(0) + 4), 10);
+
+        const ictx = ink.getContext("2d");
+        ictx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ictx.lineCap = "round";
+        ictx.lineJoin = "round";
+        ictx.lineWidth = 2.5;
+        ictx.strokeStyle = "#1d4ed8";
+        let drawing = false;
+        let dirty = false;
+        const pos = (event) => {
+            const rect = ink.getBoundingClientRect();
+            return { x: ((event.clientX - rect.left) / rect.width) * cssW, y: ((event.clientY - rect.top) / rect.height) * cssH };
+        };
+        const commit = () => {
+            if (!dirty) { hidden.value = ""; return; }
+            const comp = document.createElement("canvas");
+            comp.width = ink.width;
+            comp.height = ink.height;
+            const cctx = comp.getContext("2d");
+            cctx.drawImage(bg, 0, 0);
+            cctx.drawImage(ink, 0, 0);
+            hidden.value = JSON.stringify({ composite: comp.toDataURL("image/png"), strokes: ink.toDataURL("image/png") });
+            hidden.dispatchEvent(new Event("input", { bubbles: true }));
+        };
+        ink.addEventListener("pointerdown", (event) => {
+            if (hidden.disabled) return;
+            drawing = true;
+            if (ink.setPointerCapture) ink.setPointerCapture(event.pointerId);
+            const p = pos(event);
+            ictx.beginPath();
+            ictx.moveTo(p.x, p.y);
+            ictx.lineTo(p.x + 0.01, p.y + 0.01);
+            ictx.stroke();
+            dirty = true;
+            event.preventDefault();
+        });
+        ink.addEventListener("pointermove", (event) => {
+            if (!drawing) return;
+            const p = pos(event);
+            ictx.lineTo(p.x, p.y);
+            ictx.stroke();
+            event.preventDefault();
+        });
+        const stop = () => { if (drawing) { drawing = false; commit(); } };
+        ink.addEventListener("pointerup", stop);
+        ink.addEventListener("pointercancel", stop);
+        const clear = document.createElement("button");
+        clear.type = "button";
+        clear.textContent = "清除此圖";
+        clear.className = "multi-part-canvas-clear";
+        clear.addEventListener("click", () => {
+            ictx.clearRect(0, 0, cssW, cssH);
+            dirty = false;
+            commit();
+        });
+        stage.appendChild(bg);
+        stage.appendChild(ink);
+        wrap.appendChild(stage);
+        wrap.appendChild(clear);
+        wrap.appendChild(hidden);
+        return wrap;
+    }
+
     function createControl(part, index) {
+        if (part.input_type === "canvas") {
+            return createCanvasControl(part, index);
+        }
         const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
         const choices = Array.isArray(part.choices) ? part.choices : [];
         const useSelect = part.input_type === "select" || choices.length > 0
@@ -175,8 +300,12 @@
                     : ["m>0", "m=0", "m<0", "m不存在"]);
             options.forEach((item) => {
                 const option = document.createElement("option");
-                option.value = String(item);
-                option.textContent = String(item);
+                // choices may be plain strings or {label, value, text} objects (answer_contract parts)
+                const isObject = item !== null && typeof item === "object";
+                const value = isObject ? (item.value ?? item.label ?? item.text ?? "") : item;
+                const text = isObject ? (item.text ?? item.value ?? item.label ?? "") : item;
+                option.value = String(value);
+                option.textContent = String(text);
                 input.appendChild(option);
             });
         } else {
@@ -293,6 +422,7 @@
         if (!node || !node.tagName) return false;
         const tag = node.tagName.toUpperCase();
         if (tag === "SELECT" || tag === "TEXTAREA") return true;
+        if (tag === "CANVAS") return String(node.className || "").indexOf("multi-part-canvas") >= 0;
         if (tag === "INPUT") {
             const type = String(node.getAttribute("type") || "text").toLowerCase();
             return type !== "hidden" && type !== "button" && type !== "submit";
@@ -315,7 +445,7 @@
 
     function countControls(container) {
         const nodes = container
-            ? Array.from(container.querySelectorAll("input, select, textarea"))
+            ? Array.from(container.querySelectorAll("input, select, textarea, canvas.multi-part-canvas"))
             : [];
         const interactive = nodes.filter(isInteractiveControl);
         const visible = interactive.filter(controlIsVisible);

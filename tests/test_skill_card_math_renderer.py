@@ -57,7 +57,9 @@ def test_shared_renderer_configures_mathjax_v3_and_safe_dynamic_card_typesetting
     assert "inlineMath: [['$', '$'], ['\\\\(', '\\\\)']]" in renderer
     assert "displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]" in renderer
     assert "typesetPromise(targets)" in renderer
-    assert "typesetClear(targets)" in renderer
+    assert "rendered = new WeakSet()" in renderer
+    assert "formatBareEquations" in renderer
+    assert "element.isConnected" in renderer
     assert "MutationObserver" in renderer
     assert ".skill-card-description" in renderer
     assert "innerHTML" not in renderer

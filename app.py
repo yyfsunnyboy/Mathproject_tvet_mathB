@@ -47,8 +47,8 @@ if os.path.exists(core_dir) and basedir not in sys.path:
 # =========================================================
 from dotenv import load_dotenv
 
-# 載入 .env 檔案中的環境變數
-load_dotenv()
+# 載入 .env 檔案中的環境變數；.env 是 AI 後台儲存 Key 的位置，必須優先於繼承自 Windows 的舊值
+load_dotenv(os.path.join(basedir, '.env'), override=True)
 
 import matplotlib
 matplotlib.use('Agg') # Use non-interactive backend
@@ -604,13 +604,13 @@ def create_app(*, production: bool | None = None):
             )
         
         if view_mode == 'curriculum':
-            from core.utils import get_volumes_by_curriculum, get_chapters_by_curriculum_volume, get_skills_by_volume_chapter
+            from core.utils import get_volumes_by_curriculum, get_chapters_by_curriculum_volume, get_skills_by_volume_chapter, textbook_skill_sort_key
             
             if curriculum:
                 session['current_curriculum'] = curriculum
 
             if curriculum and volume and chapter:
-                skills_raw = get_skills_by_volume_chapter(volume, chapter)
+                skills_raw = get_skills_by_volume_chapter(volume, chapter, curriculum)
                 chapter_display = _clean_chapter_display(chapter)
 
                 card_metrics = _skill_card_metrics([s['skill_id'] for s in skills_raw])
@@ -638,9 +638,7 @@ def create_app(*, production: bool | None = None):
                 grouped_sections = list(sections_map.values())
 
                 for section_group in grouped_sections:
-                    section_group['skills'].sort(
-                        key=lambda s: (int(s.get('display_order') or 0), str(s.get('skill_ch_name') or ''))
-                    )
+                    section_group['skills'].sort(key=textbook_skill_sort_key)
                 
                 # [Fix] 對 sections 進行自然排序
                 def natural_keys(text):

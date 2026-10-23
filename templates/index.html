@@ -2185,10 +2185,1191 @@
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
-    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-2-ios12"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-3-choice-objects"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3-ios12"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
+    <style>
+        /* Custom Alert Modal Styles */
+        .modal-overlay {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 10000;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+            /* Use flexbox for centering when displayed */
+            align-items: flex-start;
+            /* 改為從頂部對齊 */
+            justify-content: center;
+            /* Center horizontally */
+            padding-top: 25vh;
+            /* 從視窗頂部向下推 25% 的高度 */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            text-align: center;
+            position: relative;
+            /* Needed for animation */
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+        }
+
+        /* Add Animation */
+        @keyframes animatetop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .modal-button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+        }
+
+        .modal-button:hover {
+            background-color: #2980b9;
+        }
+
+        .modal-button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .modal-button.cancel {
+            background-color: #95a5a6;
+        }
+
+        .modal-button.cancel:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* --- Styles for Image Modal --- */
+        #diagram-image {
+            max-width: 200px;
+            max-height: 120px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        #diagram-image:hover {
+            opacity: 0.7;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 10001;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .image-modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        #caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 150px;
+        }
+
+        .image-modal-content,
+        #caption {
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+
+        @keyframes zoom {
+            from {
+                transform: scale(0)
+            }
+
+            to {
+                transform: scale(1)
+            }
+        }
+
+        .image-modal .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .image-modal .close:hover,
+        .image-modal .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* === [自動套用] 樣式升級補丁 === */
+        /* 1. 容器滿版 */
+        #question-container,
+        #scratchpad-container {
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+
+        /* 2. 對話氣泡滿版 */
+        .chat-message,
+        .chat-ai,
+        .chat-user {
+            max-width: 100% !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* === AI 聊天室排版強制修正 === */
+        .chat-area h3 {
+            margin-bottom: 0 !important;
+            padding-bottom: 5px !important;
+            margin-top: 0 !important;
+        }
+
+        #chat-history {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        .bot-message {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        /* 針對頑固的 pre 標籤進行降伏 */
+        .bot-message pre {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: inherit !important;
+            /* 消除醜醜的程式碼字體 */
+            font-weight: bold !important;
+            /* 強制粗體 */
+            white-space: pre-wrap !important;
+            /* 保留換行但允許自動折行 */
+            background-color: transparent !important;
+            border: none !important;
+        }
+    </style>
+    <style>
+        /* Practice chat layout guardrails (final override) */
+        @media (min-width: 900px) {
+            .chat-area {
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+            }
+        }
+
+        @media (max-width: 899px) {
+            .chat-area {
+                height: auto;
+                min-height: 0;
+                overflow: visible;
+            }
+        }
+
+        #chat-history {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            padding-right: 6px;
+        }
+
+        #static-prompts,
+        #dynamic-prompts,
+        .chat-input-area {
+            flex: 0 0 auto;
+        }
+
+        #static-prompts,
+        #dynamic-prompts {
+            max-height: none;
+            overflow-x: hidden;
+            overflow-y: visible;
+        }
+
+        /* === Final override: AI follow-up prompt buttons === */
+        #dynamic-prompts.suggestions-container,
+        #static-prompts.suggestions-container {
+            display: flex !important;
+            flex-direction: column !important;
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+            max-height: none !important;
+            overflow-y: visible !important;
+            overflow-x: hidden !important;
+            padding: 4px 2px 6px 2px !important;
+        }
+
+        #dynamic-prompts .dynamic-prompt-btn,
+        #static-prompts .prompt-button {
+            width: 100% !important;
+            max-width: 100% !important;
+            white-space: normal !important;
+            text-align: left !important;
+            line-height: 1.35 !important;
+            flex-shrink: 0 !important;
+            justify-content: flex-start !important;
+            box-sizing: border-box !important;
+        }
+    </style><!-- ═══════════════════════════════════════════════════════════════
+     UI Skin v3.0 — 教材紙本風 / 淺綠文青 / AI 學習平台
+     Rules: NO id/class rename · NO layout logic touch · CSS-only
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="ui-skin-v3">
+
+/* ─── 1. Design Tokens — 教材紙本風 ──────────────────────────── */
+:root {
+  /* ── 背景層次 (米白 / 紙本) */
+  --bg-base:      #f7f6f2;
+  --bg-surface:   #ffffff;
+  --bg-elevated:  #fcfbf8;
+  --bg-hover:     #f0ede6;
+  --bg-input:     #ffffff;
+
+  /* ── 邊框 (極細 / 教材感) */
+  --border-subtle:  rgba(95, 127, 104, 0.10);
+  --border-default: rgba(95, 127, 104, 0.18);
+  --border-strong:  rgba(95, 127, 104, 0.32);
+
+  /* ── 文字 (深墨綠) */
+  --text-primary:   #2f3a32;
+  --text-secondary: #4a544d;
+  --text-muted:     #7a8a7e;
+
+  /* ── 主色 (鼠尾草綠 / Sage Green) */
+  --green:          #6b8f71;
+  --green-dark:     #5a7a60;
+  --green-light:    #dfe8dc;
+  --green-pale:     #edf3eb;
+  --green-muted:    rgba(107, 143, 113, 0.14);
+  --green-ring:     rgba(107, 143, 113, 0.25);
+
+  /* ── 輔助色 (溫暖琥珀 / 提示用) */
+  --amber:          #b8860b;
+  --amber-bg:       #fdf6e3;
+  --amber-border:   #e8d5a3;
+
+  /* ── 語意色 */
+  --ok:             #4a7c59;
+  --ok-bg:          #edf6f0;
+  --ok-border:      #b8d9c3;
+  --ok-text:        #2f5c3e;
+
+  --err:            #b85450;
+  --err-bg:         #fdf2f2;
+  --err-border:     #e8c0be;
+  --err-text:       #7a2e2c;
+
+  /* ── 圓角 */
+  --r-xs:   3px;
+  --r-sm:   6px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-full: 999px;
+
+  /* ── 陰影 (極輕 / 教材感) */
+  --sh-xs:  0 1px 3px rgba(47,58,50,0.06);
+  --sh-sm:  0 2px 8px rgba(47,58,50,0.08);
+  --sh-md:  0 4px 16px rgba(47,58,50,0.10);
+  --sh-green: 0 2px 10px rgba(107,143,113,0.18);
+
+  /* ── 動態 */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur:  0.16s;
+}
+
+/* ─── 2. Global / Body ──────────────────────────────────────────── */
+html, body {
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+}
+
+/* Scrollbars — 細緻 / 不搶眼 */
+* { scrollbar-width: thin; scrollbar-color: #cdd9ca transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: #cdd9ca;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover { background: #aec0aa; }
+
+/* ─── 3. Layout Panels ─────────────────────────────────────────── */
+.container {
+  background: var(--bg-base) !important;
+}
+
+.practice-area {
+  background: var(--bg-surface) !important;
+  box-shadow: none !important;
+  border-right: 1px solid var(--border-default) !important;
+}
+
+.practice-top {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: 14px 20px !important;
+}
+
+.practice-bottom {
+  background: var(--bg-base) !important;
+  padding: 14px 18px !important;
+}
+
+/* ─── 4. Skill Title & Badges ──────────────────────────────────── */
+.practice-top h1,
+#skill-title {
+  color: var(--text-primary) !important;
+  font-size: 0.95em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0em !important;
+}
+
+#level-indicator {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  padding: 3px 11px !important;
+  font-size: 0.70em !important;
+  border-radius: var(--r-full) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  vertical-align: middle !important;
+}
+
+#streak-counter {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border: 1px solid var(--ok-border) !important;
+  padding: 4px 13px !important;
+  border-radius: var(--r-full) !important;
+  font-size: 0.78em !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+}
+
+/* ─── 5. Level Selector Toolbar ────────────────────────────────── */
+.level-selector {
+  margin-bottom: 12px !important;
+  gap: 7px !important;
+}
+
+.level-button {
+  padding: 7px 15px !important;
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.855em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+  letter-spacing: 0.01em !important;
+  box-shadow: var(--sh-xs) !important;
+}
+
+.level-button:hover:not(:disabled) {
+  background: var(--green-pale) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+}
+
+.level-button.active {
+  background: var(--green-muted) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green) !important;
+  font-weight: 600 !important;
+}
+
+/* Next-question = 主要 CTA */
+button#next-question-btn.level-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-color: var(--green-dark) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--sh-green) !important;
+}
+button#next-question-btn.level-button:hover:not(:disabled) {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+
+/* Prereq practice */
+button#practice-prereq-btn.level-button {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+button#practice-prereq-btn.level-button:hover {
+  background: #fef3c7 !important;
+}
+
+/* Similar practice buttons */
+button#similar-upload-btn.level-button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+}
+button#similar-show-answer-btn.level-button {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border-color: var(--ok-border) !important;
+}
+button#similar-reset-btn.level-button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted) !important;
+}
+
+/* Prereq dropdown */
+#prereq-skill-select {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--r-md) !important;
+  padding: 6px 10px !important;
+  font-size: 0.855em !important;
+  box-shadow: var(--sh-xs) !important;
+}
+#prereq-skill-select:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+#prereq-skill-select option {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ─── 6. Question Card ─────────────────────────────────────────── */
+#question-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+  color: var(--text-primary) !important;
+  padding: 22px 26px !important;
+  line-height: 1.85 !important;
+  font-size: 1.10rem !important;
+  margin-bottom: 14px !important;
+}
+
+#question-text {
+  color: var(--text-primary) !important;
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  line-height: 1.85 !important;
+  font-size: 1em !important;
+}
+
+#question-choices {
+  flex: 0 0 auto !important;
+}
+
+/* MathJax skin: spacing only. Baseline/scale owned by practice_math_typography.css */
+mjx-container { margin: 0 2px !important; }
+
+/* Diagram container */
+.diagram-container {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-md) !important;
+}
+
+/* Similar practice chips */
+.similar-chip {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-full) !important;
+  padding: 5px 14px !important;
+  font-size: 0.80em !important;
+}
+
+.similar-preview-box {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.88em !important;
+  padding: 12px 16px !important;
+}
+
+/* ─── 7. Answer Input Row ──────────────────────────────────────── */
+.input-group { gap: 8px !important; margin-top: 10px !important; }
+
+#answer-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  padding: 9px 14px !important;
+  font-size: 0.935em !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#answer-input::placeholder { color: var(--text-muted) !important; }
+#answer-input:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+#answer-input:disabled { opacity: 0.50 !important; cursor: not-allowed !important; }
+#answer-input.answer-input--drawing {
+  background: #eceff1 !important;
+  color: #6b7280 !important;
+  filter: grayscale(1) !important;
+}
+
+#submit-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 9px 22px !important;
+  font-size: 0.935em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#submit-button:hover:not(:disabled) {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+#submit-button:disabled {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border-subtle) !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.60 !important;
+}
+
+/* ─── 8. Result Display ────────────────────────────────────────── */
+#result-display {
+  border-radius: var(--r-md) !important;
+  font-size: 0.875em !important;
+  font-weight: 500 !important;
+  padding: 9px 15px !important;
+  margin-top: 8px !important;
+  transition: all var(--dur) var(--ease) !important;
+}
+#result-display.correct {
+  background: var(--ok-bg) !important;
+  color: var(--ok-text) !important;
+  border: 1px solid var(--ok-border) !important;
+}
+#result-display.incorrect {
+  background: var(--err-bg) !important;
+  color: var(--err-text) !important;
+  border: 1px solid var(--err-border) !important;
+}
+
+/* ─── 9. Misc Practice Notices ─────────────────────────────────── */
+.manual-review-unavailable {
+  background: var(--amber-bg) !important;
+  border: 1px solid var(--amber-border) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-secondary) !important;
+  padding: 16px 18px !important;
+  line-height: 1.70 !important;
+}
+.manual-review-unavailable strong { color: var(--amber) !important; }
+
+/* Prerequisite suggestion card */
+.prerequisite-card {
+  background: var(--green-pale) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-lg) !important;
+  color: var(--green-dark) !important;
+  box-shadow: var(--sh-sm) !important;
+  padding: 18px 20px !important;
+}
+.btn-prerequisite {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 10px 22px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.btn-prerequisite:hover {
+  background: var(--green-dark) !important;
+}
+
+/* ─── 10. Scratchpad Container ─────────────────────────────────── */
+#scratchpad-container {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+
+/* ─── 11. Scratchpad Toolbar ───────────────────────────────────── */
+#scratchpad-controls {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-lg) var(--r-lg) 0 0 !important;
+  box-shadow: none !important;
+  padding: 7px 10px !important;
+  gap: 4px !important;
+}
+
+.tool-btn {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--r-sm) !important;
+  color: var(--text-secondary) !important;
+  padding: 5px 7px !important;
+  cursor: pointer !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+}
+.tool-btn:hover {
+  background: var(--green-pale) !important;
+  border-color: var(--green-light) !important;
+  color: var(--green-dark) !important;
+  transform: none !important;
+}
+.tool-btn.active {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+  box-shadow: none !important;
+}
+.tool-btn.pen-btn.active { color: var(--pen-ink, var(--green-dark)) !important; }
+.tool-btn.pen-btn.active svg { stroke-width: 2.4; }
+.tool-btn.eraser-btn:hover,
+.tool-btn.eraser-btn.active {
+  background: var(--err-bg) !important;
+  border-color: var(--err-border) !important;
+  color: var(--err-text) !important;
+  box-shadow: none !important;
+}
+
+/* Width slider */
+#pen-width-label { color: var(--text-muted) !important; font-size: 0.78em !important; }
+input[type="range"] { accent-color: var(--green) !important; }
+
+/* Toolbar divider */
+div[style*="width: 1px"][style*="height: 20px"] {
+  background: var(--border-default) !important;
+  opacity: 0.7 !important;
+}
+span[style*="font-size: 0.8em"][style*="color: #666"] {
+  color: var(--text-muted) !important;
+}
+
+/* Canvas action buttons */
+.canvas-actions button {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 5px 12px !important;
+  font-size: 0.80em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: background var(--dur) var(--ease),
+              color var(--dur) var(--ease) !important;
+}
+.canvas-actions button:hover:not(:disabled) {
+  background: var(--green-pale) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+  box-shadow: none !important;
+}
+.canvas-actions button:disabled { opacity: 0.40 !important; cursor: not-allowed !important; }
+
+#upload-image-button {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border-color: var(--amber-border) !important;
+}
+#upload-image-button:hover { background: #fef3c7 !important; }
+
+#analyze-handwriting-button {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border-color: var(--green-light) !important;
+  font-weight: 600 !important;
+}
+#analyze-handwriting-button:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+}
+
+#clear-canvas-button {
+  background: var(--err-bg) !important;
+  color: var(--err-text) !important;
+  border-color: var(--err-border) !important;
+}
+#clear-canvas-button:hover { background: #f9e0e0 !important; }
+
+/* Canvas 本體 — 保持亮色手寫面 (帶淡點格紙感) */
+#drawing-background-canvas {
+  background-color: #fefefe !important;
+  background-image:
+    radial-gradient(circle, #d9e4d6 1px, transparent 1px) !important;
+  background-size: 22px 22px !important;
+  border: none !important;
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
+#handwriting-canvas {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
+canvas {
+  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
+}
+
+/* ─── 12. Chat Area ────────────────────────────────────────────── */
+.chat-area {
+  background: var(--bg-base) !important;
+  border-left: 1px solid var(--border-default) !important;
+  padding: 16px 14px 12px !important;
+}
+
+/* AI Tutor header */
+.chat-area h3,
+#tutor-model-label {
+  color: var(--green-dark) !important;
+  font-size: 0.83em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  text-align: left !important;
+  padding: 0 2px 10px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+/* Chat history panel */
+#chat-history {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 10px 2px 4px !important;
+  margin: 0 !important;
+}
+
+/* ─── 13. Chat Messages ─────────────────────────────────────────── */
+.chat-message {
+  border-radius: var(--r-lg) !important;
+  margin-bottom: 10px !important;
+  line-height: 1.65 !important;
+  font-size: 0.905em !important;
+  padding: 9px 14px !important;
+}
+
+/* 使用者訊息 — 柔和綠 */
+.user-message {
+  background: var(--green) !important;
+  color: #fff !important;
+  border-bottom-right-radius: 3px !important;
+  margin-left: auto !important;
+  box-shadow: var(--sh-green) !important;
+}
+
+/* AI 助教訊息 — 教材淺背景 */
+.bot-message {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-left: 3px solid var(--green) !important;
+  color: var(--text-primary) !important;
+  border-top-left-radius: 3px !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--sh-xs) !important;
+  padding: 13px 16px !important;
+  font-size: 0.925em !important;
+  line-height: 1.88 !important;
+  font-family: "Inter", "Noto Sans TC", "Segoe UI", "Microsoft JhengHei", sans-serif !important;
+}
+
+.bot-message.initial-greeting {
+  background: transparent !important;
+  border: none !important;
+  border-left: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 0 4px !important;
+  margin: 0 !important;
+}
+.bot-message.initial-greeting .greeting-text {
+  color: var(--text-secondary) !important;
+  font-size: 0.88em !important;
+  font-weight: 500 !important;
+}
+
+/* Code inside bot messages */
+.bot-message code {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-family: "Menlo", "Consolas", monospace !important;
+  font-size: 0.88em !important;
+}
+.bot-message pre {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 10px 14px !important;
+  color: var(--text-primary) !important;
+  font-weight: normal !important;
+}
+
+/* ─── 14. Chat Input ────────────────────────────────────────────── */
+.chat-input-area { gap: 7px !important; padding-top: 8px !important; }
+.chat-input-group { gap: 6px !important; }
+
+#chat-input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text-primary) !important;
+  padding: 10px 14px !important;
+  font-size: 0.915em !important;
+  box-shadow: var(--sh-xs) !important;
+  transition: border-color var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#chat-input::placeholder { color: var(--text-muted) !important; }
+#chat-input:focus {
+  outline: none !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px var(--green-ring) !important;
+}
+
+#chat-send-button {
+  background: var(--green) !important;
+  color: #fff !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  padding: 10px 18px !important;
+  font-weight: 600 !important;
+  font-size: 0.895em !important;
+  letter-spacing: 0.02em !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease),
+              box-shadow var(--dur) var(--ease) !important;
+}
+#chat-send-button:hover {
+  background: var(--green-dark) !important;
+  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
+}
+
+/* ─── 15. Prompt Chips ─────────────────────────────────────────── */
+#suggested-prompts-container h4 {
+  color: var(--text-muted) !important;
+  font-size: 0.72em !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* 靜態提示 chips — 教材引導感 */
+.suggestion-btn,
+.prompt-button {
+  background: var(--green-pale) !important;
+  color: var(--green-dark) !important;
+  border: 1px solid var(--green-light) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 6px 13px !important;
+  font-size: 0.82em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  line-height: 1.40 !important;
+  transition: background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease) !important;
+}
+.suggestion-btn:hover,
+.prompt-button:hover {
+  background: var(--green-muted) !important;
+  border-color: var(--green) !important;
+  color: var(--green-dark) !important;
+}
+
+/* 動態 AI 建議 chips — 溫和琥珀 */
+.dynamic-prompt-btn {
+  background: var(--amber-bg) !important;
+  color: var(--amber) !important;
+  border: 1px solid var(--amber-border) !important;
+  border-radius: var(--r-sm) !important;
+  padding: 6px 13px !important;
+  font-size: 0.82em !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  line-height: 1.40 !important;
+  box-shadow: none !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.dynamic-prompt-btn:hover {
+  background: #fef3c7 !important;
+  border-color: #d4a820 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ─── 17. Modals ────────────────────────────────────────────────── */
+.modal-overlay {
+  background: rgba(47,58,50,0.45) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+.modal-content {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-xl) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--sh-md) !important;
+}
+.modal-content p,
+.modal-content h3 { color: var(--text-primary) !important; }
+#prereqSuggestionModal .modal-content h3 { color: var(--amber) !important; }
+
+.modal-button {
+  background: var(--green) !important;
+  border: 1px solid var(--green-dark) !important;
+  border-radius: var(--r-md) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  padding: 10px 22px !important;
+  cursor: pointer !important;
+  box-shadow: var(--sh-green) !important;
+  transition: background var(--dur) var(--ease) !important;
+}
+.modal-button:hover { background: var(--green-dark) !important; }
+.modal-button.cancel {
+  background: var(--bg-elevated) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--sh-xs) !important;
+}
+.modal-button.cancel:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Image modal */
+.image-modal { background: rgba(20,30,22,0.94) !important; }
+
+/* ─── 19. Misc / Responsive border fixes ────────────────────────── */
+@media (max-width: 899px) {
+  .practice-area { border-right: none !important; }
+  .chat-area {
+    border-left: none !important;
+    border-top: 1px solid var(--border-default) !important;
+  }
+}
+
+/* ─── 20. Subtle entrance animation (不誇張) ───────────────────── */
+.bot-message,
+.user-message {
+  animation: skinFadeIn 0.20s var(--ease) both;
+}
+@keyframes skinFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.prerequisite-card {
+  animation: slideIn 0.24s var(--ease) both !important;
+}
+
+/* ─── 21. Extra — 整體排版細節 ─────────────────────────────────── */
+
+/* 題目文字舒適度：段落、MathJax 公式呼吸空間 */
+#question-text p { margin: 0 0 6px !important; }
+
+/* Toolbar label 文字 */
+.canvas-toolbar strong { color: var(--text-secondary) !important; }
+
+/* 工具列粗細標籤 */
+span[style*="粗細"],
+#scratchpad-controls span { color: var(--text-muted) !important; font-size: 0.78em !important; }
+
+/* 題目區圖示顏色修正 */
+#diagram-image {
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--r-md) !important;
+  opacity: 0.95;
+}
+
+/* 靜態 prompts 區域 */
+#suggested-prompts-container {
+  margin-bottom: 10px !important;
+}
+
+/* 對話框底部留白 */
+.chat-input-area {
+  border-top: 1px solid var(--border-subtle) !important;
+  padding-top: 10px !important;
+  margin-top: 4px !important;
+}
+
+/* Level selector 下拉 / 按鈕列整體背景 */
+.level-selector {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* 選擇器行分隔 */
+.practice-top .input-group {
+  margin-left: 0 !important;
+}
+
+/* 計算紙頂部工具列「粗細」文字 */
+#scratchpad-controls > div > span:first-child {
+  color: var(--text-muted) !important;
+}
+
+/* Chapter review keeps the shared practice runtime but removes repeated header rows. */
+.chapter-review-page .practice-header-block {
+  gap: 4px !important;
+  padding-top: 6px !important;
+}
+
+.chapter-review-page .chapter-review-banner {
+  box-shadow: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #streak-counter {
+  display: none !important;
+}
+
+.chapter-review-page .chapter-review-status-line #next-question-btn {
+  padding: 5px 12px !important;
+  box-shadow: none !important;
+}
+
+.chapter-review-page #question-container {
+  margin-bottom: 0 !important;
+  padding: 14px 16px !important;
+}
+
+.chapter-review-page .practice-answer-block {
+  gap: 4px;
+}
+
+.chapter-review-page .practice-answer-block > .input-group {
+  margin-top: 0 !important;
+}
+
+.chapter-review-start-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chapter-review-start-strip p {
+  margin: 0 !important;
+  line-height: 1.45;
+}
+
+.chapter-review-start-strip .level-button {
+  flex: 0 0 auto;
+  padding: 6px 14px !important;
+}
+
+.chapter-review-start-actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+@media (min-width: 900px) and (max-height: 900px) {
+  .chapter-review-page .practice-header-block {
+    padding-top: 4px !important;
+  }
+
+  .chapter-review-page #question-container {
+    padding: 12px 14px !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .chapter-review-page .chapter-review-banner {
+    border-radius: 6px;
+  }
+}
+
+</style>
 </head>
 
 <body{% if chapter_review %} class="chapter-review-page"{% endif %}>
@@ -2465,280 +3646,7 @@
                     class="modal-button cancel">繼續練習</button></div>
         </div>
     </div>
-    <style>
-        /* Custom Alert Modal Styles */
-        .modal-overlay {
-            display: none;
-            /* Hidden by default */
-            position: fixed;
-            /* Stay in place */
-            z-index: 10000;
-            /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            /* Full width */
-            height: 100%;
-            /* Full height */
-            background-color: rgba(0, 0, 0, 0.4);
-            /* Black w/ opacity */
-            /* Use flexbox for centering when displayed */
-            align-items: flex-start;
-            /* 改為從頂部對齊 */
-            justify-content: center;
-            /* Center horizontally */
-            padding-top: 25vh;
-            /* 從視窗頂部向下推 25% 的高度 */
-        }
 
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            text-align: center;
-            position: relative;
-            /* Needed for animation */
-            animation-name: animatetop;
-            animation-duration: 0.4s;
-        }
-
-        /* Add Animation */
-        @keyframes animatetop {
-            from {
-                transform: translateY(-50px);
-                opacity: 0
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1
-            }
-        }
-
-        .modal-button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 15px;
-        }
-
-        .modal-button:hover {
-            background-color: #2980b9;
-        }
-
-        .modal-button-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .modal-button.cancel {
-            background-color: #95a5a6;
-        }
-
-        .modal-button.cancel:hover {
-            background-color: #7f8c8d;
-        }
-
-        /* --- Styles for Image Modal --- */
-        #diagram-image {
-            max-width: 200px;
-            max-height: 120px;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 5px;
-        }
-
-        #diagram-image:hover {
-            opacity: 0.7;
-        }
-
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 10001;
-            padding-top: 50px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .image-modal-content {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-        }
-
-        #caption {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            text-align: center;
-            color: #ccc;
-            padding: 10px 0;
-            height: 150px;
-        }
-
-        .image-modal-content,
-        #caption {
-            animation-name: zoom;
-            animation-duration: 0.6s;
-        }
-
-        @keyframes zoom {
-            from {
-                transform: scale(0)
-            }
-
-            to {
-                transform: scale(1)
-            }
-        }
-
-        .image-modal .close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .image-modal .close:hover,
-        .image-modal .close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* === [自動套用] 樣式升級補丁 === */
-        /* 1. 容器滿版 */
-        #question-container,
-        #scratchpad-container {
-            max-width: 100% !important;
-            width: 100% !important;
-        }
-
-        /* 2. 對話氣泡滿版 */
-        .chat-message,
-        .chat-ai,
-        .chat-user {
-            max-width: 100% !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* === AI 聊天室排版強制修正 === */
-        .chat-area h3 {
-            margin-bottom: 0 !important;
-            padding-bottom: 5px !important;
-            margin-top: 0 !important;
-        }
-
-        #chat-history {
-            padding-top: 0 !important;
-            margin-top: 0 !important;
-        }
-
-        .bot-message {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
-
-        /* 針對頑固的 pre 標籤進行降伏 */
-        .bot-message pre {
-            margin: 0 !important;
-            padding: 0 !important;
-            font-family: inherit !important;
-            /* 消除醜醜的程式碼字體 */
-            font-weight: bold !important;
-            /* 強制粗體 */
-            white-space: pre-wrap !important;
-            /* 保留換行但允許自動折行 */
-            background-color: transparent !important;
-            border: none !important;
-        }
-    </style>
-    <style>
-        /* Practice chat layout guardrails (final override) */
-        @media (min-width: 900px) {
-            .chat-area {
-                height: 100%;
-                min-height: 0;
-                overflow: hidden;
-            }
-        }
-
-        @media (max-width: 899px) {
-            .chat-area {
-                height: auto;
-                min-height: 0;
-                overflow: visible;
-            }
-        }
-
-        #chat-history {
-            flex: 1 1 auto;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            padding-right: 6px;
-        }
-
-        #static-prompts,
-        #dynamic-prompts,
-        .chat-input-area {
-            flex: 0 0 auto;
-        }
-
-        #static-prompts,
-        #dynamic-prompts {
-            max-height: none;
-            overflow-x: hidden;
-            overflow-y: visible;
-        }
-
-        /* === Final override: AI follow-up prompt buttons === */
-        #dynamic-prompts.suggestions-container,
-        #static-prompts.suggestions-container {
-            display: flex !important;
-            flex-direction: column !important;
-            flex-wrap: wrap !important;
-            gap: 6px !important;
-            max-height: none !important;
-            overflow-y: visible !important;
-            overflow-x: hidden !important;
-            padding: 4px 2px 6px 2px !important;
-        }
-
-        #dynamic-prompts .dynamic-prompt-btn,
-        #static-prompts .prompt-button {
-            width: 100% !important;
-            max-width: 100% !important;
-            white-space: normal !important;
-            text-align: left !important;
-            line-height: 1.35 !important;
-            flex-shrink: 0 !important;
-            justify-content: flex-start !important;
-            box-sizing: border-box !important;
-        }
-    </style>
 
     <script>
         function normalizeQuestionImageSource(rawImage) {
@@ -4594,9 +5502,11 @@
         function renderBlankCellInput(cellSpec, showBlankLabels) {
             const fieldKey = String(cellSpec.field_key || cellSpec.label || '').trim();
             const label = String(cellSpec.label || '').trim();
-            const inputType = String(cellSpec.input_type || 'number').trim() || 'number';
+            const inputType = String(cellSpec.input_type || 'number').trim().toLowerCase() || 'number';
+            // Only plain numeric cells use a number control; expression/fraction/pi/radical cells need free text.
+            const numericCell = ['number', 'numeric', 'integer', 'decimal'].indexOf(inputType) !== -1;
             const input = document.createElement('input');
-            input.type = inputType === 'text' ? 'text' : 'number';
+            input.type = numericCell ? 'number' : 'text';
             input.className = 'table-fill-input';
             input.dataset.fieldKey = fieldKey;
             if (label) input.dataset.studentLabel = label;
@@ -4605,7 +5515,7 @@
                 showBlankLabels && label ? `${label} 的答案` : '表格空格'
             );
             input.autocomplete = 'off';
-            if (inputType === 'number') {
+            if (numericCell) {
                 input.inputMode = 'numeric';
                 input.step = '1';
             }
@@ -4717,11 +5627,14 @@
                 const row = document.createElement('div');
                 row.className = 'table-fill-fallback-row';
                 const input = document.createElement('input');
-                input.type = 'number';
+                const fallbackType = String(cell.input_type || 'number').trim().toLowerCase() || 'number';
+                const fallbackNumeric = ['number', 'numeric', 'integer', 'decimal'].indexOf(fallbackType) !== -1;
+                input.type = fallbackNumeric ? 'number' : 'text';
                 input.id = `table-fill-fallback-${index}`;
                 input.className = 'table-fill-input';
                 input.dataset.fieldKey = String(cell.field_key || cell.label || '');
-                input.inputMode = 'numeric';
+                if (fallbackNumeric) input.inputMode = 'numeric';
+                else input.autocomplete = 'off';
                 if (model.showBlankLabels) {
                     const label = document.createElement('label');
                     const studentLabel = String(cell.label || '').trim();
@@ -4982,8 +5895,12 @@
                         : ['m>0', 'm=0', 'm<0', 'm不存在']);
                 options.forEach((item) => {
                     const option = document.createElement('option');
-                    option.value = String(item);
-                    option.textContent = String(item);
+                    // choices may be plain strings or {label, value, text} objects (answer_contract parts)
+                    const isObject = item !== null && typeof item === 'object';
+                    const value = isObject ? (item.value ?? item.label ?? item.text ?? '') : item;
+                    const text = isObject ? (item.text ?? item.value ?? item.label ?? '') : item;
+                    option.value = String(value);
+                    option.textContent = String(text);
                     input.appendChild(option);
                 });
             } else {
@@ -6175,7 +7092,7 @@
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     undoStack = [];
                     redoStack = [];
-                    saveState(); 
+                    saveState();
                     */
                 })
                 .catch(err => {
@@ -7193,7 +8110,7 @@
 
             analyzeBtn.onclick = async () => {
                 if (isProcessing) return;
-                
+
                 const cq = currentQuestion || {};
                 const uiContract = resolveDrawingUiContract(cq);
 
@@ -7246,7 +8163,7 @@
                 fetch('/analyze_handwriting', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         image_data_url: img,
                         question_uid: handwritingQuestionUid,
                         question_text: questionText.innerText || ""
@@ -7724,7 +8641,7 @@
                         if (data.ai_mode === 'cloud') modeDisplay = '｜Cloud';
                         else if (data.ai_mode === 'edge') modeDisplay = '｜Edge';
                         else if (data.ai_mode === 'hybrid') modeDisplay = '｜Hybrid';
-                        
+
                         el.textContent = `AI 助教（${data.tutor_display_name}${modeDisplay}）`;
                     } else {
                         el.textContent = 'AI 助教（unknown）';
@@ -7739,914 +8656,7 @@
 
     </script>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     UI Skin v3.0 — 教材紙本風 / 淺綠文青 / AI 學習平台
-     Rules: NO id/class rename · NO layout logic touch · CSS-only
-     ═══════════════════════════════════════════════════════════════ -->
-<style id="ui-skin-v3">
 
-/* ─── 1. Design Tokens — 教材紙本風 ──────────────────────────── */
-:root {
-  /* ── 背景層次 (米白 / 紙本) */
-  --bg-base:      #f7f6f2;
-  --bg-surface:   #ffffff;
-  --bg-elevated:  #fcfbf8;
-  --bg-hover:     #f0ede6;
-  --bg-input:     #ffffff;
-
-  /* ── 邊框 (極細 / 教材感) */
-  --border-subtle:  rgba(95, 127, 104, 0.10);
-  --border-default: rgba(95, 127, 104, 0.18);
-  --border-strong:  rgba(95, 127, 104, 0.32);
-
-  /* ── 文字 (深墨綠) */
-  --text-primary:   #2f3a32;
-  --text-secondary: #4a544d;
-  --text-muted:     #7a8a7e;
-
-  /* ── 主色 (鼠尾草綠 / Sage Green) */
-  --green:          #6b8f71;
-  --green-dark:     #5a7a60;
-  --green-light:    #dfe8dc;
-  --green-pale:     #edf3eb;
-  --green-muted:    rgba(107, 143, 113, 0.14);
-  --green-ring:     rgba(107, 143, 113, 0.25);
-
-  /* ── 輔助色 (溫暖琥珀 / 提示用) */
-  --amber:          #b8860b;
-  --amber-bg:       #fdf6e3;
-  --amber-border:   #e8d5a3;
-
-  /* ── 語意色 */
-  --ok:             #4a7c59;
-  --ok-bg:          #edf6f0;
-  --ok-border:      #b8d9c3;
-  --ok-text:        #2f5c3e;
-
-  --err:            #b85450;
-  --err-bg:         #fdf2f2;
-  --err-border:     #e8c0be;
-  --err-text:       #7a2e2c;
-
-  /* ── 圓角 */
-  --r-xs:   3px;
-  --r-sm:   6px;
-  --r-md:   8px;
-  --r-lg:   12px;
-  --r-xl:   16px;
-  --r-full: 999px;
-
-  /* ── 陰影 (極輕 / 教材感) */
-  --sh-xs:  0 1px 3px rgba(47,58,50,0.06);
-  --sh-sm:  0 2px 8px rgba(47,58,50,0.08);
-  --sh-md:  0 4px 16px rgba(47,58,50,0.10);
-  --sh-green: 0 2px 10px rgba(107,143,113,0.18);
-
-  /* ── 動態 */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --dur:  0.16s;
-}
-
-/* ─── 2. Global / Body ──────────────────────────────────────────── */
-html, body {
-  background: var(--bg-base) !important;
-  color: var(--text-primary) !important;
-  font-family: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont,
-               "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  font-size: 15px !important;
-  line-height: 1.7 !important;
-}
-
-/* Scrollbars — 細緻 / 不搶眼 */
-* { scrollbar-width: thin; scrollbar-color: #cdd9ca transparent; }
-*::-webkit-scrollbar { width: 4px; height: 4px; }
-*::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb {
-  background: #cdd9ca;
-  border-radius: 99px;
-}
-*::-webkit-scrollbar-thumb:hover { background: #aec0aa; }
-
-/* ─── 3. Layout Panels ─────────────────────────────────────────── */
-.container {
-  background: var(--bg-base) !important;
-}
-
-.practice-area {
-  background: var(--bg-surface) !important;
-  box-shadow: none !important;
-  border-right: 1px solid var(--border-default) !important;
-}
-
-.practice-top {
-  background: var(--bg-surface) !important;
-  border-bottom: 1px solid var(--border-subtle) !important;
-  padding: 14px 20px !important;
-}
-
-.practice-bottom {
-  background: var(--bg-base) !important;
-  padding: 14px 18px !important;
-}
-
-/* ─── 4. Skill Title & Badges ──────────────────────────────────── */
-.practice-top h1,
-#skill-title {
-  color: var(--text-primary) !important;
-  font-size: 0.95em !important;
-  font-weight: 600 !important;
-  letter-spacing: 0em !important;
-}
-
-#level-indicator {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  border: 1px solid var(--green-light) !important;
-  padding: 3px 11px !important;
-  font-size: 0.70em !important;
-  border-radius: var(--r-full) !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.02em !important;
-  vertical-align: middle !important;
-}
-
-#streak-counter {
-  background: var(--ok-bg) !important;
-  color: var(--ok-text) !important;
-  border: 1px solid var(--ok-border) !important;
-  padding: 4px 13px !important;
-  border-radius: var(--r-full) !important;
-  font-size: 0.78em !important;
-  font-weight: 500 !important;
-  box-shadow: none !important;
-}
-
-/* ─── 5. Level Selector Toolbar ────────────────────────────────── */
-.level-selector {
-  margin-bottom: 12px !important;
-  gap: 7px !important;
-}
-
-.level-button {
-  padding: 7px 15px !important;
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-secondary) !important;
-  font-size: 0.855em !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: background var(--dur) var(--ease),
-              border-color var(--dur) var(--ease),
-              color var(--dur) var(--ease) !important;
-  letter-spacing: 0.01em !important;
-  box-shadow: var(--sh-xs) !important;
-}
-
-.level-button:hover:not(:disabled) {
-  background: var(--green-pale) !important;
-  border-color: var(--green) !important;
-  color: var(--green-dark) !important;
-}
-
-.level-button.active {
-  background: var(--green-muted) !important;
-  color: var(--green-dark) !important;
-  border-color: var(--green) !important;
-  font-weight: 600 !important;
-}
-
-/* Next-question = 主要 CTA */
-button#next-question-btn.level-button {
-  background: var(--green) !important;
-  color: #fff !important;
-  border-color: var(--green-dark) !important;
-  font-weight: 600 !important;
-  box-shadow: var(--sh-green) !important;
-}
-button#next-question-btn.level-button:hover:not(:disabled) {
-  background: var(--green-dark) !important;
-  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
-}
-
-/* Prereq practice */
-button#practice-prereq-btn.level-button {
-  background: var(--amber-bg) !important;
-  color: var(--amber) !important;
-  border-color: var(--amber-border) !important;
-}
-button#practice-prereq-btn.level-button:hover {
-  background: #fef3c7 !important;
-}
-
-/* Similar practice buttons */
-button#similar-upload-btn.level-button {
-  background: var(--bg-elevated) !important;
-  color: var(--text-secondary) !important;
-}
-button#similar-show-answer-btn.level-button {
-  background: var(--ok-bg) !important;
-  color: var(--ok-text) !important;
-  border-color: var(--ok-border) !important;
-}
-button#similar-reset-btn.level-button {
-  background: var(--bg-elevated) !important;
-  color: var(--text-muted) !important;
-}
-
-/* Prereq dropdown */
-#prereq-skill-select {
-  background: var(--bg-input) !important;
-  border: 1px solid var(--border-default) !important;
-  color: var(--text-secondary) !important;
-  border-radius: var(--r-md) !important;
-  padding: 6px 10px !important;
-  font-size: 0.855em !important;
-  box-shadow: var(--sh-xs) !important;
-}
-#prereq-skill-select:focus {
-  outline: none !important;
-  border-color: var(--green) !important;
-  box-shadow: 0 0 0 3px var(--green-ring) !important;
-}
-#prereq-skill-select option {
-  background: var(--bg-surface) !important;
-  color: var(--text-primary) !important;
-}
-
-/* ─── 6. Question Card ─────────────────────────────────────────── */
-#question-container {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-lg) !important;
-  box-shadow: var(--sh-xs) !important;
-  color: var(--text-primary) !important;
-  padding: 22px 26px !important;
-  line-height: 1.85 !important;
-  font-size: 1.10rem !important;
-  margin-bottom: 14px !important;
-}
-
-#question-text {
-  color: var(--text-primary) !important;
-  flex: 0 0 auto !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  line-height: 1.85 !important;
-  font-size: 1em !important;
-}
-
-#question-choices {
-  flex: 0 0 auto !important;
-}
-
-/* MathJax skin: spacing only. Baseline/scale owned by practice_math_typography.css */
-mjx-container { margin: 0 2px !important; }
-
-/* Diagram container */
-.diagram-container {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--r-md) !important;
-}
-
-/* Similar practice chips */
-.similar-chip {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-full) !important;
-  padding: 5px 14px !important;
-  font-size: 0.80em !important;
-}
-
-.similar-preview-box {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-secondary) !important;
-  font-size: 0.88em !important;
-  padding: 12px 16px !important;
-}
-
-/* ─── 7. Answer Input Row ──────────────────────────────────────── */
-.input-group { gap: 8px !important; margin-top: 10px !important; }
-
-#answer-input {
-  background: var(--bg-input) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-primary) !important;
-  padding: 9px 14px !important;
-  font-size: 0.935em !important;
-  box-shadow: var(--sh-xs) !important;
-  transition: border-color var(--dur) var(--ease),
-              box-shadow var(--dur) var(--ease) !important;
-}
-#answer-input::placeholder { color: var(--text-muted) !important; }
-#answer-input:focus {
-  outline: none !important;
-  border-color: var(--green) !important;
-  box-shadow: 0 0 0 3px var(--green-ring) !important;
-}
-#answer-input:disabled { opacity: 0.50 !important; cursor: not-allowed !important; }
-#answer-input.answer-input--drawing {
-  background: #eceff1 !important;
-  color: #6b7280 !important;
-  filter: grayscale(1) !important;
-}
-
-#submit-button {
-  background: var(--green) !important;
-  color: #fff !important;
-  border: 1px solid var(--green-dark) !important;
-  border-radius: var(--r-md) !important;
-  padding: 9px 22px !important;
-  font-size: 0.935em !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
-  cursor: pointer !important;
-  box-shadow: var(--sh-green) !important;
-  transition: background var(--dur) var(--ease),
-              box-shadow var(--dur) var(--ease) !important;
-}
-#submit-button:hover:not(:disabled) {
-  background: var(--green-dark) !important;
-  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
-}
-#submit-button:disabled {
-  background: var(--bg-elevated) !important;
-  color: var(--text-muted) !important;
-  border-color: var(--border-subtle) !important;
-  cursor: not-allowed !important;
-  box-shadow: none !important;
-  opacity: 0.60 !important;
-}
-
-/* ─── 8. Result Display ────────────────────────────────────────── */
-#result-display {
-  border-radius: var(--r-md) !important;
-  font-size: 0.875em !important;
-  font-weight: 500 !important;
-  padding: 9px 15px !important;
-  margin-top: 8px !important;
-  transition: all var(--dur) var(--ease) !important;
-}
-#result-display.correct {
-  background: var(--ok-bg) !important;
-  color: var(--ok-text) !important;
-  border: 1px solid var(--ok-border) !important;
-}
-#result-display.incorrect {
-  background: var(--err-bg) !important;
-  color: var(--err-text) !important;
-  border: 1px solid var(--err-border) !important;
-}
-
-/* ─── 9. Misc Practice Notices ─────────────────────────────────── */
-.manual-review-unavailable {
-  background: var(--amber-bg) !important;
-  border: 1px solid var(--amber-border) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-secondary) !important;
-  padding: 16px 18px !important;
-  line-height: 1.70 !important;
-}
-.manual-review-unavailable strong { color: var(--amber) !important; }
-
-/* Prerequisite suggestion card */
-.prerequisite-card {
-  background: var(--green-pale) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-lg) !important;
-  color: var(--green-dark) !important;
-  box-shadow: var(--sh-sm) !important;
-  padding: 18px 20px !important;
-}
-.btn-prerequisite {
-  background: var(--green) !important;
-  color: #fff !important;
-  border: 1px solid var(--green-dark) !important;
-  border-radius: var(--r-md) !important;
-  padding: 10px 22px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  box-shadow: var(--sh-green) !important;
-  transition: background var(--dur) var(--ease) !important;
-}
-.btn-prerequisite:hover {
-  background: var(--green-dark) !important;
-}
-
-/* ─── 10. Scratchpad Container ─────────────────────────────────── */
-#scratchpad-container {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-lg) !important;
-  box-shadow: var(--sh-xs) !important;
-}
-
-/* ─── 11. Scratchpad Toolbar ───────────────────────────────────── */
-#scratchpad-controls {
-  background: var(--bg-elevated) !important;
-  border-bottom: 1px solid var(--border-subtle) !important;
-  border-radius: var(--r-lg) var(--r-lg) 0 0 !important;
-  box-shadow: none !important;
-  padding: 7px 10px !important;
-  gap: 4px !important;
-}
-
-.tool-btn {
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: var(--r-sm) !important;
-  color: var(--text-secondary) !important;
-  padding: 5px 7px !important;
-  cursor: pointer !important;
-  transition: background var(--dur) var(--ease),
-              border-color var(--dur) var(--ease),
-              color var(--dur) var(--ease) !important;
-}
-.tool-btn:hover {
-  background: var(--green-pale) !important;
-  border-color: var(--green-light) !important;
-  color: var(--green-dark) !important;
-  transform: none !important;
-}
-.tool-btn.active {
-  background: var(--green-muted) !important;
-  border-color: var(--green) !important;
-  box-shadow: none !important;
-}
-.tool-btn.pen-btn.active { color: var(--pen-ink, var(--green-dark)) !important; }
-.tool-btn.pen-btn.active svg { stroke-width: 2.4; }
-.tool-btn.eraser-btn:hover,
-.tool-btn.eraser-btn.active {
-  background: var(--err-bg) !important;
-  border-color: var(--err-border) !important;
-  color: var(--err-text) !important;
-  box-shadow: none !important;
-}
-
-/* Width slider */
-#pen-width-label { color: var(--text-muted) !important; font-size: 0.78em !important; }
-input[type="range"] { accent-color: var(--green) !important; }
-
-/* Toolbar divider */
-div[style*="width: 1px"][style*="height: 20px"] {
-  background: var(--border-default) !important;
-  opacity: 0.7 !important;
-}
-span[style*="font-size: 0.8em"][style*="color: #666"] {
-  color: var(--text-muted) !important;
-}
-
-/* Canvas action buttons */
-.canvas-actions button {
-  background: var(--bg-elevated) !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-sm) !important;
-  padding: 5px 12px !important;
-  font-size: 0.80em !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  box-shadow: var(--sh-xs) !important;
-  transition: background var(--dur) var(--ease),
-              color var(--dur) var(--ease) !important;
-}
-.canvas-actions button:hover:not(:disabled) {
-  background: var(--green-pale) !important;
-  border-color: var(--green) !important;
-  color: var(--green-dark) !important;
-  box-shadow: none !important;
-}
-.canvas-actions button:disabled { opacity: 0.40 !important; cursor: not-allowed !important; }
-
-#upload-image-button {
-  background: var(--amber-bg) !important;
-  color: var(--amber) !important;
-  border-color: var(--amber-border) !important;
-}
-#upload-image-button:hover { background: #fef3c7 !important; }
-
-#analyze-handwriting-button {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  border-color: var(--green-light) !important;
-  font-weight: 600 !important;
-}
-#analyze-handwriting-button:hover {
-  background: var(--green-muted) !important;
-  border-color: var(--green) !important;
-}
-
-#clear-canvas-button {
-  background: var(--err-bg) !important;
-  color: var(--err-text) !important;
-  border-color: var(--err-border) !important;
-}
-#clear-canvas-button:hover { background: #f9e0e0 !important; }
-
-/* Canvas 本體 — 保持亮色手寫面 (帶淡點格紙感) */
-#drawing-background-canvas {
-  background-color: #fefefe !important;
-  background-image:
-    radial-gradient(circle, #d9e4d6 1px, transparent 1px) !important;
-  background-size: 22px 22px !important;
-  border: none !important;
-  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
-}
-#handwriting-canvas {
-  background-color: transparent !important;
-  background-image: none !important;
-  border: none !important;
-  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
-}
-canvas {
-  border-radius: 0 0 var(--r-lg) var(--r-lg) !important;
-}
-
-/* ─── 12. Chat Area ────────────────────────────────────────────── */
-.chat-area {
-  background: var(--bg-base) !important;
-  border-left: 1px solid var(--border-default) !important;
-  padding: 16px 14px 12px !important;
-}
-
-/* AI Tutor header */
-.chat-area h3,
-#tutor-model-label {
-  color: var(--green-dark) !important;
-  font-size: 0.83em !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
-  text-align: left !important;
-  padding: 0 2px 10px !important;
-  margin: 0 !important;
-  border-bottom: 1px solid var(--border-subtle) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 7px !important;
-}
-
-/* Chat history panel */
-#chat-history {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 10px 2px 4px !important;
-  margin: 0 !important;
-}
-
-/* ─── 13. Chat Messages ─────────────────────────────────────────── */
-.chat-message {
-  border-radius: var(--r-lg) !important;
-  margin-bottom: 10px !important;
-  line-height: 1.65 !important;
-  font-size: 0.905em !important;
-  padding: 9px 14px !important;
-}
-
-/* 使用者訊息 — 柔和綠 */
-.user-message {
-  background: var(--green) !important;
-  color: #fff !important;
-  border-bottom-right-radius: 3px !important;
-  margin-left: auto !important;
-  box-shadow: var(--sh-green) !important;
-}
-
-/* AI 助教訊息 — 教材淺背景 */
-.bot-message {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-left: 3px solid var(--green) !important;
-  color: var(--text-primary) !important;
-  border-top-left-radius: 3px !important;
-  border-radius: var(--r-lg) !important;
-  box-shadow: var(--sh-xs) !important;
-  padding: 13px 16px !important;
-  font-size: 0.925em !important;
-  line-height: 1.88 !important;
-  font-family: "Inter", "Noto Sans TC", "Segoe UI", "Microsoft JhengHei", sans-serif !important;
-}
-
-.bot-message.initial-greeting {
-  background: transparent !important;
-  border: none !important;
-  border-left: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 0 0 4px !important;
-  margin: 0 !important;
-}
-.bot-message.initial-greeting .greeting-text {
-  color: var(--text-secondary) !important;
-  font-size: 0.88em !important;
-  font-weight: 500 !important;
-}
-
-/* Code inside bot messages */
-.bot-message code {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  padding: 1px 5px !important;
-  border-radius: 3px !important;
-  font-family: "Menlo", "Consolas", monospace !important;
-  font-size: 0.88em !important;
-}
-.bot-message pre {
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-radius: var(--r-sm) !important;
-  padding: 10px 14px !important;
-  color: var(--text-primary) !important;
-  font-weight: normal !important;
-}
-
-/* ─── 14. Chat Input ────────────────────────────────────────────── */
-.chat-input-area { gap: 7px !important; padding-top: 8px !important; }
-.chat-input-group { gap: 6px !important; }
-
-#chat-input {
-  background: var(--bg-input) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  color: var(--text-primary) !important;
-  padding: 10px 14px !important;
-  font-size: 0.915em !important;
-  box-shadow: var(--sh-xs) !important;
-  transition: border-color var(--dur) var(--ease),
-              box-shadow var(--dur) var(--ease) !important;
-}
-#chat-input::placeholder { color: var(--text-muted) !important; }
-#chat-input:focus {
-  outline: none !important;
-  border-color: var(--green) !important;
-  box-shadow: 0 0 0 3px var(--green-ring) !important;
-}
-
-#chat-send-button {
-  background: var(--green) !important;
-  color: #fff !important;
-  border: 1px solid var(--green-dark) !important;
-  border-radius: var(--r-md) !important;
-  padding: 10px 18px !important;
-  font-weight: 600 !important;
-  font-size: 0.895em !important;
-  letter-spacing: 0.02em !important;
-  cursor: pointer !important;
-  box-shadow: var(--sh-green) !important;
-  transition: background var(--dur) var(--ease),
-              box-shadow var(--dur) var(--ease) !important;
-}
-#chat-send-button:hover {
-  background: var(--green-dark) !important;
-  box-shadow: 0 3px 12px rgba(107,143,113,0.28) !important;
-}
-
-/* ─── 15. Prompt Chips ─────────────────────────────────────────── */
-#suggested-prompts-container h4 {
-  color: var(--text-muted) !important;
-  font-size: 0.72em !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
-}
-
-/* 靜態提示 chips — 教材引導感 */
-.suggestion-btn,
-.prompt-button {
-  background: var(--green-pale) !important;
-  color: var(--green-dark) !important;
-  border: 1px solid var(--green-light) !important;
-  border-radius: var(--r-sm) !important;
-  padding: 6px 13px !important;
-  font-size: 0.82em !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  line-height: 1.40 !important;
-  transition: background var(--dur) var(--ease),
-              border-color var(--dur) var(--ease) !important;
-}
-.suggestion-btn:hover,
-.prompt-button:hover {
-  background: var(--green-muted) !important;
-  border-color: var(--green) !important;
-  color: var(--green-dark) !important;
-}
-
-/* 動態 AI 建議 chips — 溫和琥珀 */
-.dynamic-prompt-btn {
-  background: var(--amber-bg) !important;
-  color: var(--amber) !important;
-  border: 1px solid var(--amber-border) !important;
-  border-radius: var(--r-sm) !important;
-  padding: 6px 13px !important;
-  font-size: 0.82em !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  line-height: 1.40 !important;
-  box-shadow: none !important;
-  transition: background var(--dur) var(--ease) !important;
-}
-.dynamic-prompt-btn:hover {
-  background: #fef3c7 !important;
-  border-color: #d4a820 !important;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* ─── 17. Modals ────────────────────────────────────────────────── */
-.modal-overlay {
-  background: rgba(47,58,50,0.45) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-}
-.modal-content {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-xl) !important;
-  color: var(--text-primary) !important;
-  box-shadow: var(--sh-md) !important;
-}
-.modal-content p,
-.modal-content h3 { color: var(--text-primary) !important; }
-#prereqSuggestionModal .modal-content h3 { color: var(--amber) !important; }
-
-.modal-button {
-  background: var(--green) !important;
-  border: 1px solid var(--green-dark) !important;
-  border-radius: var(--r-md) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  padding: 10px 22px !important;
-  cursor: pointer !important;
-  box-shadow: var(--sh-green) !important;
-  transition: background var(--dur) var(--ease) !important;
-}
-.modal-button:hover { background: var(--green-dark) !important; }
-.modal-button.cancel {
-  background: var(--bg-elevated) !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid var(--border-default) !important;
-  box-shadow: var(--sh-xs) !important;
-}
-.modal-button.cancel:hover {
-  background: var(--bg-hover) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Image modal */
-.image-modal { background: rgba(20,30,22,0.94) !important; }
-
-/* ─── 19. Misc / Responsive border fixes ────────────────────────── */
-@media (max-width: 899px) {
-  .practice-area { border-right: none !important; }
-  .chat-area {
-    border-left: none !important;
-    border-top: 1px solid var(--border-default) !important;
-  }
-}
-
-/* ─── 20. Subtle entrance animation (不誇張) ───────────────────── */
-.bot-message,
-.user-message {
-  animation: skinFadeIn 0.20s var(--ease) both;
-}
-@keyframes skinFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0);   }
-}
-
-.prerequisite-card {
-  animation: slideIn 0.24s var(--ease) both !important;
-}
-
-/* ─── 21. Extra — 整體排版細節 ─────────────────────────────────── */
-
-/* 題目文字舒適度：段落、MathJax 公式呼吸空間 */
-#question-text p { margin: 0 0 6px !important; }
-
-/* Toolbar label 文字 */
-.canvas-toolbar strong { color: var(--text-secondary) !important; }
-
-/* 工具列粗細標籤 */
-span[style*="粗細"],
-#scratchpad-controls span { color: var(--text-muted) !important; font-size: 0.78em !important; }
-
-/* 題目區圖示顏色修正 */
-#diagram-image {
-  border: 1px solid var(--border-default) !important;
-  border-radius: var(--r-md) !important;
-  opacity: 0.95;
-}
-
-/* 靜態 prompts 區域 */
-#suggested-prompts-container {
-  margin-bottom: 10px !important;
-}
-
-/* 對話框底部留白 */
-.chat-input-area {
-  border-top: 1px solid var(--border-subtle) !important;
-  padding-top: 10px !important;
-  margin-top: 4px !important;
-}
-
-/* Level selector 下拉 / 按鈕列整體背景 */
-.level-selector {
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-/* 選擇器行分隔 */
-.practice-top .input-group {
-  margin-left: 0 !important;
-}
-
-/* 計算紙頂部工具列「粗細」文字 */
-#scratchpad-controls > div > span:first-child {
-  color: var(--text-muted) !important;
-}
-
-/* Chapter review keeps the shared practice runtime but removes repeated header rows. */
-.chapter-review-page .practice-header-block {
-  gap: 4px !important;
-  padding-top: 6px !important;
-}
-
-.chapter-review-page .chapter-review-banner {
-  box-shadow: none !important;
-}
-
-.chapter-review-page .chapter-review-status-line #streak-counter {
-  display: none !important;
-}
-
-.chapter-review-page .chapter-review-status-line #next-question-btn {
-  padding: 5px 12px !important;
-  box-shadow: none !important;
-}
-
-.chapter-review-page #question-container {
-  margin-bottom: 0 !important;
-  padding: 14px 16px !important;
-}
-
-.chapter-review-page .practice-answer-block {
-  gap: 4px;
-}
-
-.chapter-review-page .practice-answer-block > .input-group {
-  margin-top: 0 !important;
-}
-
-.chapter-review-start-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.chapter-review-start-strip p {
-  margin: 0 !important;
-  line-height: 1.45;
-}
-
-.chapter-review-start-strip .level-button {
-  flex: 0 0 auto;
-  padding: 6px 14px !important;
-}
-
-.chapter-review-start-actions {
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 8px;
-}
-
-@media (min-width: 900px) and (max-height: 900px) {
-  .chapter-review-page .practice-header-block {
-    padding-top: 4px !important;
-  }
-
-  .chapter-review-page #question-container {
-    padding: 12px 14px !important;
-  }
-}
-
-@media (max-width: 899px) {
-  .chapter-review-page .chapter-review-banner {
-    border-radius: 6px;
-  }
-}
-
-</style>
 {% include '_bug_report_widget.html' %}
 {% if session.get('guest_demo') is true %}
 <script>
