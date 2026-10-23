@@ -1,0 +1,150 @@
+{
+  "skill_id": "gh_RemainderTheorem",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_12518",
+      "textbook_example_id": 12518,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12518/generate.py"
+    },
+    {
+      "component_id": "src_12538",
+      "textbook_example_id": 12538,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12538/generate.py"
+    },
+    {
+      "component_id": "src_12539",
+      "textbook_example_id": 12539,
+      "status": "verified",
+      "problem_type_id": "solve_remainder_from_conditions",
+      "domain_operation": "solve_remainder_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12539/generate.py"
+    },
+    {
+      "component_id": "src_12540",
+      "textbook_example_id": 12540,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12540/generate.py"
+    },
+    {
+      "component_id": "src_12541",
+      "textbook_example_id": 12541,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12541/generate.py"
+    },
+    {
+      "component_id": "src_12542",
+      "textbook_example_id": 12542,
+      "status": "verified",
+      "problem_type_id": "solve_remainder_from_conditions",
+      "domain_operation": "solve_remainder_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12542/generate.py"
+    },
+    {
+      "component_id": "src_12543",
+      "textbook_example_id": 12543,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12543/generate.py"
+    },
+    {
+      "component_id": "src_12544",
+      "textbook_example_id": 12544,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12544/generate.py"
+    },
+    {
+      "component_id": "src_12545",
+      "textbook_example_id": 12545,
+      "status": "verified",
+      "problem_type_id": "solve_remainder_from_conditions",
+      "domain_operation": "solve_remainder_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12545/generate.py"
+    },
+    {
+      "component_id": "src_12546",
+      "textbook_example_id": 12546,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12546/generate.py"
+    },
+    {
+      "component_id": "src_12547",
+      "textbook_example_id": 12547,
+      "status": "verified",
+      "problem_type_id": "solve_remainder_from_conditions",
+      "domain_operation": "solve_remainder_from_conditions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12547/generate.py"
+    },
+    {
+      "component_id": "src_12548",
+      "textbook_example_id": 12548,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_from_remainder_congruences",
+      "domain_operation": "solve_polynomial_from_remainder_congruences",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12548/generate.py"
+    },
+    {
+      "component_id": "src_12549",
+      "textbook_example_id": 12549,
+      "status": "verified",
+      "problem_type_id": "solve_remainder_with_linear_part",
+      "domain_operation": "solve_remainder_with_linear_part",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12549/generate.py"
+    }
+  ]
+}

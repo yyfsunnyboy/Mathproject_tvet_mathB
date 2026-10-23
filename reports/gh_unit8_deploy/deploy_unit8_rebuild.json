@@ -1,0 +1,479 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12517": {
+   "skill": "gh_BasicConceptsOfPolynomials",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BasicConceptsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12518": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12519": {
+   "skill": "gh_FactorTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12520": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12521": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12522": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12523": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12524": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "taylor_shift_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12525": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "evaluate_polynomial_values",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12526": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12527": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12528": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12529": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12530": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12531": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "taylor_shift_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12532": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12533": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12534": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "polynomial_arithmetic_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12535": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "solve_divisor_from_quotient_remainder",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12536": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "evaluate_polynomial_values",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12537": {
+   "skill": "gh_ArithmeticOperationsOfPolynomials",
+   "operation": "taylor_shift_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_ArithmeticOperationsOfPolynomials",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12538": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_values",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12539": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_remainder_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12540": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_values",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12541": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_values",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12542": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_remainder_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12543": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12544": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12545": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_remainder_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12546": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12547": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_remainder_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12548": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_polynomial_from_remainder_congruences",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12549": {
+   "skill": "gh_RemainderTheorem",
+   "operation": "solve_remainder_with_linear_part",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RemainderTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12550": {
+   "skill": "gh_FactorTheorem",
+   "operation": "select_linear_factors",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12551": {
+   "skill": "gh_FactorTheorem",
+   "operation": "interpolate_polynomials",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12552": {
+   "skill": "gh_FactorTheorem",
+   "operation": "solve_erased_cubic",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12553": {
+   "skill": "gh_FactorTheorem",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12554": {
+   "skill": "gh_FactorTheorem",
+   "operation": "interpolate_polynomials",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12555": {
+   "skill": "gh_FactorTheorem",
+   "operation": "solve_masked_synthetic_coefficient",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12556": {
+   "skill": "gh_FactorTheorem",
+   "operation": "evaluate_polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12557": {
+   "skill": "gh_FactorTheorem",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12558": {
+   "skill": "gh_FactorTheorem",
+   "operation": "solve_polynomial_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12559": {
+   "skill": "gh_FactorTheorem",
+   "operation": "interpolate_polynomials",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_FactorTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

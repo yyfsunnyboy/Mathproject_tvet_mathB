@@ -1,0 +1,18 @@
+{
+  "skill_id": "gh_BasicConceptsOfPolynomials",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 1,
+  "components": [
+    {
+      "component_id": "src_12517",
+      "textbook_example_id": 12517,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12517/generate.py"
+    }
+  ]
+}

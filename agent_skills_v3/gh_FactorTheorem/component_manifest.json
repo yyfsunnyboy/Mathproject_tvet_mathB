@@ -1,0 +1,128 @@
+{
+  "skill_id": "gh_FactorTheorem",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_12519",
+      "textbook_example_id": 12519,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12519/generate.py"
+    },
+    {
+      "component_id": "src_12550",
+      "textbook_example_id": 12550,
+      "status": "verified",
+      "problem_type_id": "select_linear_factors",
+      "domain_operation": "select_linear_factors",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12550/generate.py"
+    },
+    {
+      "component_id": "src_12551",
+      "textbook_example_id": 12551,
+      "status": "verified",
+      "problem_type_id": "interpolate_polynomials",
+      "domain_operation": "interpolate_polynomials",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12551/generate.py"
+    },
+    {
+      "component_id": "src_12552",
+      "textbook_example_id": 12552,
+      "status": "verified",
+      "problem_type_id": "solve_erased_cubic",
+      "domain_operation": "solve_erased_cubic",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12552/generate.py"
+    },
+    {
+      "component_id": "src_12553",
+      "textbook_example_id": 12553,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12553/generate.py"
+    },
+    {
+      "component_id": "src_12554",
+      "textbook_example_id": 12554,
+      "status": "verified",
+      "problem_type_id": "interpolate_polynomials",
+      "domain_operation": "interpolate_polynomials",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12554/generate.py"
+    },
+    {
+      "component_id": "src_12555",
+      "textbook_example_id": 12555,
+      "status": "verified",
+      "problem_type_id": "solve_masked_synthetic_coefficient",
+      "domain_operation": "solve_masked_synthetic_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12555/generate.py"
+    },
+    {
+      "component_id": "src_12556",
+      "textbook_example_id": 12556,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12556/generate.py"
+    },
+    {
+      "component_id": "src_12557",
+      "textbook_example_id": 12557,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12557/generate.py"
+    },
+    {
+      "component_id": "src_12558",
+      "textbook_example_id": 12558,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12558/generate.py"
+    },
+    {
+      "component_id": "src_12559",
+      "textbook_example_id": 12559,
+      "status": "verified",
+      "problem_type_id": "interpolate_polynomials",
+      "domain_operation": "interpolate_polynomials",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12559/generate.py"
+    }
+  ]
+}

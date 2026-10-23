@@ -1,0 +1,42 @@
+{
+ "gh_ArithmeticOperationsOfPolynomials": {
+  "status": "production_published",
+  "component_count": 18,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "dynamic",
+  "dynamic_count": 18,
+  "static_count": 0
+ },
+ "gh_BasicConceptsOfPolynomials": {
+  "status": "production_published",
+  "component_count": 1,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "dynamic",
+  "dynamic_count": 1,
+  "static_count": 0
+ },
+ "gh_FactorTheorem": {
+  "status": "production_published",
+  "component_count": 11,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 9,
+  "static_count": 0
+ },
+ "gh_RemainderTheorem": {
+  "status": "production_published",
+  "component_count": 13,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 10,
+  "static_count": 0
+ }
+}

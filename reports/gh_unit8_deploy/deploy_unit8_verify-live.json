@@ -1,0 +1,94 @@
+{
+ "facade": {
+  "gh_BasicConceptsOfPolynomials": {
+   "served_examples": {
+    "12517": 80
+   },
+   "problems": []
+  },
+  "gh_ArithmeticOperationsOfPolynomials": {
+   "served_examples": {
+    "12520": 4,
+    "12521": 4,
+    "12522": 4,
+    "12523": 4,
+    "12524": 5,
+    "12525": 5,
+    "12526": 4,
+    "12527": 4,
+    "12528": 5,
+    "12529": 4,
+    "12530": 4,
+    "12531": 4,
+    "12532": 5,
+    "12533": 5,
+    "12534": 5,
+    "12535": 5,
+    "12536": 5,
+    "12537": 4
+   },
+   "problems": []
+  },
+  "gh_RemainderTheorem": {
+   "served_examples": {
+    "12518": 6,
+    "12538": 6,
+    "12539": 6,
+    "12540": 6,
+    "12541": 6,
+    "12542": 7,
+    "12543": 7,
+    "12544": 6,
+    "12545": 6,
+    "12546": 6,
+    "12547": 6,
+    "12548": 6,
+    "12549": 6
+   },
+   "problems": []
+  },
+  "gh_FactorTheorem": {
+   "served_examples": {
+    "12519": 7,
+    "12550": 8,
+    "12551": 7,
+    "12552": 8,
+    "12553": 7,
+    "12554": 7,
+    "12555": 7,
+    "12556": 7,
+    "12557": 7,
+    "12558": 7,
+    "12559": 8
+   },
+   "problems": []
+  }
+ },
+ "manifest_status": {
+  "gh_BasicConceptsOfPolynomials": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 1
+  },
+  "gh_ArithmeticOperationsOfPolynomials": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 18
+  },
+  "gh_RemainderTheorem": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 13
+  },
+  "gh_FactorTheorem": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 11
+  }
+ },
+ "manifest_components": {
+  "gh_BasicConceptsOfPolynomials": 1,
+  "gh_ArithmeticOperationsOfPolynomials": 18,
+  "gh_RemainderTheorem": 13,
+  "gh_FactorTheorem": 11
+ },
+ "manifest_matches_specs": true,
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

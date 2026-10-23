@@ -1,0 +1,22 @@
+[
+ {
+  "id": 12552,
+  "fix": "image",
+  "page": 16,
+  "sha256": "a2240e83110ea00d8f731fa05e21e77d8d814dfcc41a3495622c4965a9baee62"
+ },
+ {
+  "id": 12537,
+  "fix": "stem (2) restored"
+ },
+ {
+  "id": 12518,
+  "fix": "rebind",
+  "to": "gh_RemainderTheorem"
+ },
+ {
+  "id": 12519,
+  "fix": "rebind",
+  "to": "gh_FactorTheorem"
+ }
+]

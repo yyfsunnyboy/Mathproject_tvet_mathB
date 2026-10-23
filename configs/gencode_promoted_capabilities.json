@@ -998,6 +998,337 @@
         }
       }
     },
+    "algebra.polynomial_division": {
+      "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
+      "bundle_sha256": "53d919cf7758eb5b249b1263e2ec7f061a36abd76b4f8e3e3f406e76ecfbf609",
+      "capabilities": [
+        "evaluate_polynomial_statements",
+        "evaluate_polynomial_values",
+        "interpolate_polynomials",
+        "polynomial_arithmetic_items",
+        "select_linear_factors",
+        "solve_divisor_from_quotient_remainder",
+        "solve_erased_cubic",
+        "solve_masked_synthetic_coefficient",
+        "solve_polynomial_from_remainder_congruences",
+        "solve_polynomial_parameters",
+        "solve_remainder_from_conditions",
+        "solve_remainder_with_linear_part",
+        "taylor_shift_expansion"
+      ],
+      "domain_module": "core.domain.promoted.algebra_polynomial_division.polynomial_division_domain",
+      "entrypoint": "build_polynomial_division_matrix",
+      "operations": {
+        "evaluate_polynomial_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "evaluate_polynomial_statements"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_evaluate_polynomial_statements_matrix"
+        },
+        "evaluate_polynomial_values": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "evaluate_polynomial_values"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_evaluate_polynomial_values_matrix"
+        },
+        "interpolate_polynomials": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "interpolate_polynomials"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_interpolate_polynomials_matrix"
+        },
+        "polynomial_arithmetic_items": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "polynomial_arithmetic_items"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_polynomial_arithmetic_items_matrix"
+        },
+        "select_linear_factors": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "select_linear_factors"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_select_linear_factors_matrix"
+        },
+        "solve_divisor_from_quotient_remainder": {
+          "checker_keys": [
+            "expression_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_divisor_from_quotient_remainder"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_divisor_from_quotient_remainder_matrix"
+        },
+        "solve_erased_cubic": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_erased_cubic"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_erased_cubic_matrix"
+        },
+        "solve_masked_synthetic_coefficient": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_masked_synthetic_coefficient"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_masked_synthetic_coefficient_matrix"
+        },
+        "solve_polynomial_from_remainder_congruences": {
+          "checker_keys": [
+            "expression_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_polynomial_from_remainder_congruences"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_polynomial_from_remainder_congruences_matrix"
+        },
+        "solve_polynomial_parameters": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_polynomial_parameters"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_polynomial_parameters_matrix"
+        },
+        "solve_remainder_from_conditions": {
+          "checker_keys": [
+            "expression_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_remainder_from_conditions"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_remainder_from_conditions_matrix"
+        },
+        "solve_remainder_with_linear_part": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "solve_remainder_with_linear_part"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_solve_remainder_with_linear_part_matrix"
+        },
+        "taylor_shift_expansion": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_polynomial_division_matrix",
+          "payload_adapter": "core.domain.promoted.algebra_polynomial_division.polynomial_division_adapter.adapt_polynomial_division_matrix",
+          "provided_capabilities": [
+            "taylor_shift_expansion"
+          ],
+          "runtime_contract": "polynomial_division_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_taylor_shift_expansion_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "polynomial_core.py": "9fc42d9a0d31c8dc15b100d2013f95be4154a3aea2035db08ae7040440011aee",
+        "polynomial_division_adapter.py": "f5f0a77e0a3d15056c5a25a9eee5fd849bb3e768873e85305600890b4ef60ea4",
+        "polynomial_division_domain.py": "edeb1c753fd3cc94aade5aca49be276338bca9b94c147c5a277bc86213d0bf86"
+      },
+      "package_import": "core.domain.promoted.algebra_polynomial_division",
+      "package_name": "algebra_polynomial_division",
+      "proposal_id": "capability_algebra_polynomial_division_11e81ccd",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-53d919cf7758",
+      "skill_bindings": {
+        "gh_ArithmeticOperationsOfPolynomials": {
+          "allowed_operations": [
+            "evaluate_polynomial_statements",
+            "evaluate_polynomial_values",
+            "polynomial_arithmetic_items",
+            "solve_divisor_from_quotient_remainder",
+            "solve_polynomial_parameters",
+            "taylor_shift_expansion"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_BasicConceptsOfPolynomials": {
+          "allowed_operations": [
+            "evaluate_polynomial_statements"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_FactorTheorem": {
+          "allowed_operations": [
+            "evaluate_polynomial_statements",
+            "interpolate_polynomials",
+            "select_linear_factors",
+            "solve_erased_cubic",
+            "solve_masked_synthetic_coefficient",
+            "solve_polynomial_parameters"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_RemainderTheorem": {
+          "allowed_operations": [
+            "evaluate_polynomial_statements",
+            "evaluate_polynomial_values",
+            "solve_polynomial_from_remainder_congruences",
+            "solve_remainder_from_conditions",
+            "solve_remainder_with_linear_part"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "algebra.radical_operations": {
       "approved_by": "human_reviewer",
       "bundle_sha256": "285211635de39a592ec9e92b571402955d758d4f8e56a4c8e1b0d55e82439b61",

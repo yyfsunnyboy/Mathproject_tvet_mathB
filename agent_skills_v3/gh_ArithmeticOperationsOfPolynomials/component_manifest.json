@@ -1,0 +1,205 @@
+{
+  "skill_id": "gh_ArithmeticOperationsOfPolynomials",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 18,
+  "components": [
+    {
+      "component_id": "src_12520",
+      "textbook_example_id": 12520,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12520/generate.py"
+    },
+    {
+      "component_id": "src_12521",
+      "textbook_example_id": 12521,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12521/generate.py"
+    },
+    {
+      "component_id": "src_12522",
+      "textbook_example_id": 12522,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12522/generate.py"
+    },
+    {
+      "component_id": "src_12523",
+      "textbook_example_id": 12523,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12523/generate.py"
+    },
+    {
+      "component_id": "src_12524",
+      "textbook_example_id": 12524,
+      "status": "verified",
+      "problem_type_id": "taylor_shift_expansion",
+      "domain_operation": "taylor_shift_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12524/generate.py"
+    },
+    {
+      "component_id": "src_12525",
+      "textbook_example_id": 12525,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12525/generate.py"
+    },
+    {
+      "component_id": "src_12526",
+      "textbook_example_id": 12526,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12526/generate.py"
+    },
+    {
+      "component_id": "src_12527",
+      "textbook_example_id": 12527,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12527/generate.py"
+    },
+    {
+      "component_id": "src_12528",
+      "textbook_example_id": 12528,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_statements",
+      "domain_operation": "evaluate_polynomial_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12528/generate.py"
+    },
+    {
+      "component_id": "src_12529",
+      "textbook_example_id": 12529,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12529/generate.py"
+    },
+    {
+      "component_id": "src_12530",
+      "textbook_example_id": 12530,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12530/generate.py"
+    },
+    {
+      "component_id": "src_12531",
+      "textbook_example_id": 12531,
+      "status": "verified",
+      "problem_type_id": "taylor_shift_expansion",
+      "domain_operation": "taylor_shift_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12531/generate.py"
+    },
+    {
+      "component_id": "src_12532",
+      "textbook_example_id": 12532,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12532/generate.py"
+    },
+    {
+      "component_id": "src_12533",
+      "textbook_example_id": 12533,
+      "status": "verified",
+      "problem_type_id": "solve_polynomial_parameters",
+      "domain_operation": "solve_polynomial_parameters",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12533/generate.py"
+    },
+    {
+      "component_id": "src_12534",
+      "textbook_example_id": 12534,
+      "status": "verified",
+      "problem_type_id": "polynomial_arithmetic_items",
+      "domain_operation": "polynomial_arithmetic_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12534/generate.py"
+    },
+    {
+      "component_id": "src_12535",
+      "textbook_example_id": 12535,
+      "status": "verified",
+      "problem_type_id": "solve_divisor_from_quotient_remainder",
+      "domain_operation": "solve_divisor_from_quotient_remainder",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12535/generate.py"
+    },
+    {
+      "component_id": "src_12536",
+      "textbook_example_id": 12536,
+      "status": "verified",
+      "problem_type_id": "evaluate_polynomial_values",
+      "domain_operation": "evaluate_polynomial_values",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12536/generate.py"
+    },
+    {
+      "component_id": "src_12537",
+      "textbook_example_id": 12537,
+      "status": "verified",
+      "problem_type_id": "taylor_shift_expansion",
+      "domain_operation": "taylor_shift_expansion",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12537/generate.py"
+    }
+  ]
+}

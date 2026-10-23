@@ -1,0 +1,1680 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_algebra_polynomial_division_11e81ccd",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: new domain algebra.polynomial_division (13 operations, exact Fraction polynomial arithmetic, independent sympy validators) for 普高數學1 Unit 8 (多項式的除法原理), bound to gh_BasicConceptsOfPolynomials (1 row), gh_ArithmeticOperationsOfPolynomials (18 rows), gh_RemainderTheorem (13 rows) and gh_FactorTheorem (11 rows) per the formal DB; uses only the shared checkers (expression, rational, solution-set, choice-label, multi-part) - no checker, runtime, front-end or other-unit change"
+  },
+  "domain_key": "algebra.polynomial_division",
+  "package_name": "algebra_polynomial_division",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "polynomial_division_adapter.py": "f5f0a77e0a3d15056c5a25a9eee5fd849bb3e768873e85305600890b4ef60ea4",
+    "polynomial_division_domain.py": "edeb1c753fd3cc94aade5aca49be276338bca9b94c147c5a277bc86213d0bf86",
+    "polynomial_core.py": "9fc42d9a0d31c8dc15b100d2013f95be4154a3aea2035db08ae7040440011aee"
+  },
+  "domain_module": "polynomial_division_domain",
+  "entrypoint": "build_polynomial_division_matrix",
+  "capabilities": [
+    "evaluate_polynomial_statements",
+    "evaluate_polynomial_values",
+    "interpolate_polynomials",
+    "polynomial_arithmetic_items",
+    "select_linear_factors",
+    "solve_divisor_from_quotient_remainder",
+    "solve_erased_cubic",
+    "solve_masked_synthetic_coefficient",
+    "solve_polynomial_from_remainder_congruences",
+    "solve_polynomial_parameters",
+    "solve_remainder_from_conditions",
+    "solve_remainder_with_linear_part",
+    "taylor_shift_expansion"
+  ],
+  "operations": {
+    "evaluate_polynomial_statements": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "single_choice",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_evaluate_polynomial_statements_matrix",
+      "provided_capabilities": [
+        "evaluate_polynomial_statements"
+      ]
+    },
+    "evaluate_polynomial_values": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_evaluate_polynomial_values_matrix",
+      "provided_capabilities": [
+        "evaluate_polynomial_values"
+      ]
+    },
+    "interpolate_polynomials": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_interpolate_polynomials_matrix",
+      "provided_capabilities": [
+        "interpolate_polynomials"
+      ]
+    },
+    "polynomial_arithmetic_items": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_polynomial_arithmetic_items_matrix",
+      "provided_capabilities": [
+        "polynomial_arithmetic_items"
+      ]
+    },
+    "select_linear_factors": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "validator": "validate_select_linear_factors_matrix",
+      "provided_capabilities": [
+        "select_linear_factors"
+      ]
+    },
+    "solve_divisor_from_quotient_remainder": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker"
+      ],
+      "validator": "validate_solve_divisor_from_quotient_remainder_matrix",
+      "provided_capabilities": [
+        "solve_divisor_from_quotient_remainder"
+      ]
+    },
+    "solve_erased_cubic": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_erased_cubic_matrix",
+      "provided_capabilities": [
+        "solve_erased_cubic"
+      ]
+    },
+    "solve_masked_synthetic_coefficient": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_solve_masked_synthetic_coefficient_matrix",
+      "provided_capabilities": [
+        "solve_masked_synthetic_coefficient"
+      ]
+    },
+    "solve_polynomial_from_remainder_congruences": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker"
+      ],
+      "validator": "validate_solve_polynomial_from_remainder_congruences_matrix",
+      "provided_capabilities": [
+        "solve_polynomial_from_remainder_congruences"
+      ]
+    },
+    "solve_polynomial_parameters": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_solve_polynomial_parameters_matrix",
+      "provided_capabilities": [
+        "solve_polynomial_parameters"
+      ]
+    },
+    "solve_remainder_from_conditions": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker"
+      ],
+      "validator": "validate_solve_remainder_from_conditions_matrix",
+      "provided_capabilities": [
+        "solve_remainder_from_conditions"
+      ]
+    },
+    "solve_remainder_with_linear_part": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_solve_remainder_with_linear_part_matrix",
+      "provided_capabilities": [
+        "solve_remainder_with_linear_part"
+      ]
+    },
+    "taylor_shift_expansion": {
+      "handler": "build_polynomial_division_matrix",
+      "payload_adapter": "polynomial_division_adapter.adapt_polynomial_division_matrix",
+      "runtime_contract": "polynomial_division_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_taylor_shift_expansion_matrix",
+      "provided_capabilities": [
+        "taylor_shift_expansion"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_ArithmeticOperationsOfPolynomials": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_polynomial_statements",
+        "evaluate_polynomial_values",
+        "polynomial_arithmetic_items",
+        "solve_divisor_from_quotient_remainder",
+        "solve_polynomial_parameters",
+        "taylor_shift_expansion"
+      ]
+    },
+    "gh_BasicConceptsOfPolynomials": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_polynomial_statements"
+      ]
+    },
+    "gh_FactorTheorem": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_polynomial_statements",
+        "interpolate_polynomials",
+        "select_linear_factors",
+        "solve_erased_cubic",
+        "solve_masked_synthetic_coefficient",
+        "solve_polynomial_parameters"
+      ]
+    },
+    "gh_RemainderTheorem": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "evaluate_polynomial_statements",
+        "evaluate_polynomial_values",
+        "solve_polynomial_from_remainder_congruences",
+        "solve_remainder_from_conditions",
+        "solve_remainder_with_linear_part"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "evaluate_polynomial_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "poly",
+            "coeffs": [
+              3,
+              -2,
+              0,
+              1,
+              0,
+              5
+            ]
+          },
+          "statements": [
+            {
+              "kind": "is_degree_poly",
+              "n": 5
+            },
+            {
+              "kind": "deg_equals",
+              "n": 5
+            },
+            {
+              "kind": "coeff_is",
+              "power": 2,
+              "value": 0
+            },
+            {
+              "kind": "coeff_is",
+              "power": 3,
+              "value": 0
+            },
+            {
+              "kind": "value_is",
+              "x": -1,
+              "value": 3
+            }
+          ],
+          "mode": "select",
+          "intro_kind": "about_poly"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "dqr",
+            "divisor": [
+              1,
+              -2
+            ],
+            "quotient": [
+              1,
+              0,
+              0,
+              0,
+              2,
+              -1
+            ],
+            "remainder": [
+              1,
+              1
+            ]
+          },
+          "mode": "truth",
+          "statements": [
+            {
+              "kind": "remainder_equals",
+              "divisor": [
+                1,
+                -2
+              ],
+              "claimed": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "poly",
+            "coeffs": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "mode": "truth",
+          "statements": [
+            {
+              "kind": "is_factor",
+              "divisor": [
+                1,
+                1
+              ],
+              "phrase": "divisible"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "poly",
+            "coeffs": [
+              2,
+              -3,
+              1,
+              4
+            ]
+          },
+          "named_divisor": [
+            2,
+            1
+          ],
+          "intro_kind": "division_named",
+          "mode": "select",
+          "statements": [
+            {
+              "kind": "quotient_degree",
+              "divisor": [
+                2,
+                1
+              ],
+              "n": 2
+            },
+            {
+              "kind": "quotient_integer_coeffs",
+              "divisor": [
+                2,
+                1
+              ]
+            },
+            {
+              "kind": "remainder_equals",
+              "divisor": [
+                2,
+                1
+              ],
+              "claimed": [
+                3
+              ]
+            },
+            {
+              "kind": "division_identity",
+              "divisor": [
+                2,
+                1
+              ]
+            },
+            {
+              "kind": "fraction_identity",
+              "divisor": [
+                2,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "generic"
+          },
+          "mode": "truth",
+          "statements": [
+            {
+              "kind": "scaled_remainder_same",
+              "divisor": [
+                1,
+                1
+              ],
+              "k": 3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "generic"
+          },
+          "mode": "truth",
+          "statements": [
+            {
+              "kind": "scaled_quotient_same",
+              "divisor": [
+                1,
+                1
+              ],
+              "k": 3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "dqr",
+            "divisor": [
+              1,
+              2,
+              0,
+              1
+            ],
+            "quotient": [
+              1,
+              1,
+              -1
+            ],
+            "remainder": [
+              2,
+              0,
+              1
+            ]
+          },
+          "mode": "select",
+          "intro_kind": "set_expr",
+          "statements": [
+            {
+              "kind": "remainder_equals",
+              "divisor": [
+                1,
+                1
+              ],
+              "claimed": [
+                3
+              ]
+            },
+            {
+              "kind": "is_factor",
+              "divisor": [
+                1,
+                -2
+              ]
+            },
+            {
+              "kind": "remainder_equals",
+              "divisor": [
+                1,
+                2,
+                0,
+                1
+              ],
+              "claimed": [
+                2,
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "remainder_equals",
+              "divisor": [
+                2,
+                4,
+                0,
+                2
+              ],
+              "claimed": [
+                1,
+                0,
+                "1/2"
+              ]
+            },
+            {
+              "kind": "quotient_equals",
+              "divisor": [
+                1,
+                1,
+                -1
+              ],
+              "claimed": [
+                1,
+                2,
+                0,
+                3
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "generic"
+          },
+          "mode": "truth",
+          "statements": [
+            {
+              "kind": "factor_product_from_zeros",
+              "zeros": [
+                -1,
+                "1/2"
+              ],
+              "factors": [
+                [
+                  1,
+                  1
+                ],
+                [
+                  2,
+                  -1
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "evaluate_polynomial_values": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "remainder_linear",
+              "poly": [
+                64,
+                0,
+                0,
+                0,
+                0,
+                -4,
+                5
+              ],
+              "divisor": [
+                1,
+                1
+              ]
+            },
+            {
+              "kind": "remainder_linear",
+              "poly": [
+                64,
+                0,
+                0,
+                0,
+                0,
+                -4,
+                5
+              ],
+              "divisor": [
+                2,
+                -1
+              ]
+            }
+          ],
+          "style": "remainder_pair"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "expression",
+              "poly": [
+                1,
+                -7,
+                -58,
+                16,
+                -465,
+                100
+              ],
+              "x": 12
+            }
+          ],
+          "style": "expression"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "value",
+              "poly": [
+                123,
+                -389,
+                68,
+                -32,
+                -19
+              ],
+              "x": 3
+            }
+          ],
+          "style": "value"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "remainder_linear",
+              "poly": [
+                128,
+                0,
+                0,
+                0,
+                0,
+                4,
+                -2,
+                3
+              ],
+              "divisor": [
+                2,
+                1
+              ]
+            }
+          ],
+          "style": "remainder_single"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "value",
+              "poly": [
+                3,
+                -22,
+                -12,
+                -33,
+                10,
+                5
+              ],
+              "x": 8
+            }
+          ],
+          "style": "value"
+        }
+      }
+    ],
+    "interpolate_polynomials": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "degree": 3,
+              "points": [
+                [
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  3,
+                  2
+                ],
+                [
+                  4,
+                  18
+                ]
+              ]
+            }
+          ],
+          "style": "cubic_full",
+          "last": "與"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "degree": 3,
+              "points": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  1,
+                  0
+                ],
+                [
+                  2,
+                  0
+                ],
+                [
+                  3,
+                  24
+                ]
+              ]
+            }
+          ],
+          "style": "is_cubic",
+          "last": "且"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "degree": 3,
+              "points": [
+                [
+                  -1,
+                  0
+                ],
+                [
+                  -2,
+                  0
+                ],
+                [
+                  1,
+                  6
+                ],
+                [
+                  2,
+                  48
+                ]
+              ]
+            },
+            {
+              "degree": 3,
+              "points": [
+                [
+                  -1,
+                  5
+                ],
+                [
+                  -2,
+                  5
+                ],
+                [
+                  -3,
+                  5
+                ],
+                [
+                  -4,
+                  -7
+                ]
+              ]
+            }
+          ],
+          "style": "items",
+          "last": "與"
+        }
+      }
+    ],
+    "polynomial_arithmetic_items": [
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {
+            "f": [
+              3,
+              0,
+              4,
+              -5
+            ],
+            "g": [
+              1,
+              3,
+              1
+            ]
+          },
+          "items": [
+            {
+              "op": "add",
+              "f": "f",
+              "g": "g"
+            },
+            {
+              "op": "sub",
+              "f": "f",
+              "g": "g"
+            }
+          ],
+          "style": "defs_then_items"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {
+            "f": [
+              3,
+              -2,
+              1
+            ],
+            "g": [
+              2,
+              -1
+            ]
+          },
+          "items": [
+            {
+              "op": "mul",
+              "f": "f",
+              "g": "g"
+            }
+          ],
+          "style": "product"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {},
+          "items": [
+            {
+              "op": "synthetic",
+              "f": [
+                1,
+                2,
+                0,
+                5,
+                -7
+              ],
+              "g": [
+                1,
+                3
+              ],
+              "phrase": "into_by"
+            }
+          ],
+          "style": "synthetic_single"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {
+            "f": [
+              2,
+              1,
+              0,
+              -1
+            ],
+            "g": [
+              2,
+              0,
+              -3,
+              4
+            ]
+          },
+          "items": [
+            {
+              "op": "add",
+              "f": "f",
+              "g": "g"
+            },
+            {
+              "op": "sub",
+              "f": "f",
+              "g": "g"
+            }
+          ],
+          "style": "defs_then_items"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {
+            "f": [
+              3,
+              2
+            ],
+            "g": [
+              1,
+              -2,
+              1
+            ]
+          },
+          "items": [
+            {
+              "op": "mul",
+              "f": "f",
+              "g": "g"
+            }
+          ],
+          "style": "defs_then_items"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {},
+          "items": [
+            {
+              "op": "synthetic",
+              "f": [
+                1,
+                0,
+                2,
+                -1
+              ],
+              "g": [
+                1,
+                4
+              ],
+              "phrase": "into_by"
+            },
+            {
+              "op": "synthetic",
+              "f": [
+                2,
+                -3,
+                -5,
+                8,
+                -3
+              ],
+              "g": [
+                1,
+                -2
+              ],
+              "phrase": "into_by"
+            }
+          ],
+          "style": "synthetic_list",
+          "intro": "使用綜合除法，求下列各式。"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {
+            "f": [
+              3,
+              2,
+              -1
+            ],
+            "g": [
+              -3,
+              -1,
+              2
+            ],
+            "h": [
+              3,
+              -5,
+              0,
+              0,
+              -6
+            ]
+          },
+          "items": [
+            {
+              "op": "add",
+              "f": "f",
+              "g": "g"
+            },
+            {
+              "op": "sub",
+              "f": "f",
+              "g": "g"
+            },
+            {
+              "op": "mul",
+              "f": "f",
+              "g": "g"
+            },
+            {
+              "op": "divide",
+              "f": "h",
+              "g": "g"
+            }
+          ],
+          "style": "defs_then_items"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "defs": {},
+          "items": [
+            {
+              "op": "synthetic",
+              "f": [
+                1,
+                -5,
+                7,
+                -5
+              ],
+              "g": [
+                1,
+                -3
+              ],
+              "phrase": "by_into"
+            },
+            {
+              "op": "synthetic",
+              "f": [
+                2,
+                5,
+                0,
+                8,
+                -7
+              ],
+              "g": [
+                1,
+                2
+              ],
+              "phrase": "by_into"
+            }
+          ],
+          "style": "synthetic_list",
+          "intro": "利用綜合除法求下列各小題的商式及餘式："
+        }
+      }
+    ],
+    "select_linear_factors": [
+      {
+        "seed": 1,
+        "constraints": {
+          "poly_coeffs": [
+            2,
+            -1,
+            0,
+            -2,
+            1
+          ],
+          "candidates": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              -1
+            ],
+            [
+              2,
+              -1
+            ],
+            [
+              6,
+              -3
+            ]
+          ]
+        }
+      }
+    ],
+    "solve_divisor_from_quotient_remainder": [
+      {
+        "seed": 1,
+        "constraints": {
+          "dividend": [
+            1,
+            4,
+            5,
+            -3
+          ],
+          "quotient": [
+            1,
+            2
+          ],
+          "remainder": [
+            2,
+            -1
+          ]
+        }
+      }
+    ],
+    "solve_erased_cubic": [
+      {
+        "seed": 1,
+        "constraints": {
+          "known": [
+            1,
+            3,
+            -4
+          ],
+          "root": 2
+        }
+      }
+    ],
+    "solve_masked_synthetic_coefficient": [
+      {
+        "seed": 1,
+        "constraints": {
+          "coefficients": [
+            null,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            3,
+            -5
+          ],
+          "mask_index": 0,
+          "root": -2,
+          "remainder": 8
+        }
+      }
+    ],
+    "solve_polynomial_from_remainder_congruences": [
+      {
+        "seed": 1,
+        "constraints": {
+          "degree": 3,
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                1,
+                2
+              ],
+              "remainder": [
+                1,
+                2
+              ]
+            },
+            {
+              "divisor": [
+                1,
+                1,
+                -2
+              ],
+              "remainder": [
+                5,
+                -2
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "solve_polynomial_parameters": [
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "identity",
+          "params": [
+            "a",
+            "b"
+          ],
+          "f": [
+            1,
+            1,
+            [
+              "a",
+              1
+            ],
+            2
+          ],
+          "d": [
+            1,
+            2,
+            [
+              "b",
+              1
+            ]
+          ],
+          "q": [
+            1,
+            -1
+          ],
+          "r": [
+            1,
+            5
+          ],
+          "stem": "identity"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "division",
+          "params": [
+            "a"
+          ],
+          "f": [
+            2,
+            [
+              "a",
+              1
+            ],
+            -8,
+            7
+          ],
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                2,
+                -3
+              ],
+              "remainder": [
+                4
+              ]
+            }
+          ],
+          "ask_quotient": true,
+          "stem": "remainder_quotient"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "division",
+          "params": [
+            "a",
+            "b"
+          ],
+          "f": [
+            2,
+            -1,
+            [
+              "a",
+              1
+            ],
+            [
+              "b",
+              1
+            ]
+          ],
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -2,
+                -1
+              ],
+              "remainder": []
+            }
+          ],
+          "ask_quotient": true,
+          "stem": "divisible_quotient"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "division",
+          "params": [
+            "a"
+          ],
+          "f": [
+            2,
+            [
+              "a",
+              1
+            ],
+            0,
+            1
+          ],
+          "conditions": [
+            {
+              "divisor": [
+                2,
+                1
+              ],
+              "remainder": []
+            }
+          ],
+          "ask_quotient": false,
+          "stem": "factor_of"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "division",
+          "params": [
+            "a",
+            "b"
+          ],
+          "f": [
+            1,
+            [
+              "a",
+              3
+            ],
+            [
+              "b",
+              1
+            ],
+            -2
+          ],
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -1
+              ],
+              "remainder": []
+            },
+            {
+              "divisor": [
+                1,
+                -2
+              ],
+              "remainder": [
+                2
+              ]
+            }
+          ],
+          "ask_quotient": false,
+          "stem": "two_conditions"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": "division",
+          "params": [
+            "a"
+          ],
+          "f": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            [
+              "a",
+              1
+            ]
+          ],
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                1
+              ],
+              "remainder": []
+            }
+          ],
+          "ask_quotient": true,
+          "stem": "product_form"
+        }
+      }
+    ],
+    "solve_remainder_from_conditions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -1
+              ],
+              "remainder": [
+                6
+              ]
+            },
+            {
+              "divisor": [
+                1,
+                -2
+              ],
+              "remainder": [
+                4
+              ]
+            }
+          ],
+          "target": [
+            1,
+            -3,
+            2
+          ],
+          "target_form": "factored",
+          "joiner": "，且"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -3
+              ],
+              "remainder": [
+                16
+              ]
+            },
+            {
+              "divisor": [
+                1,
+                4
+              ],
+              "remainder": [
+                -19
+              ]
+            }
+          ],
+          "target": [
+            1,
+            1,
+            -12
+          ],
+          "target_form": "expanded",
+          "joiner": "；"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -2
+              ],
+              "remainder": [
+                8
+              ]
+            },
+            {
+              "divisor": [
+                1,
+                1
+              ],
+              "remainder": [
+                2
+              ]
+            }
+          ],
+          "target": [
+            1,
+            -1,
+            -2
+          ],
+          "target_form": "factored",
+          "joiner": "；"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "conditions": [
+            {
+              "divisor": [
+                1,
+                -4,
+                -5
+              ],
+              "remainder": [
+                3,
+                -2
+              ]
+            },
+            {
+              "divisor": [
+                1,
+                -2
+              ],
+              "remainder": [
+                4
+              ]
+            }
+          ],
+          "target": [
+            1,
+            -1,
+            -2
+          ],
+          "target_form": "expanded",
+          "joiner": "；"
+        }
+      }
+    ],
+    "solve_remainder_with_linear_part": [
+      {
+        "seed": 1,
+        "constraints": {
+          "roots": [
+            1,
+            2,
+            3
+          ],
+          "k": 3,
+          "first_value": -3,
+          "last_value": 7
+        }
+      }
+    ],
+    "taylor_shift_expansion": [
+      {
+        "seed": 1,
+        "constraints": {
+          "poly_coeffs": [
+            1,
+            -1,
+            -1,
+            1
+          ],
+          "center": 2,
+          "approx_x": "1.99",
+          "style": "numbered"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "poly_coeffs": [
+            2,
+            -5,
+            6,
+            3
+          ],
+          "center": 1,
+          "approx_x": "0.99",
+          "style": "single"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "poly_coeffs": [
+            8,
+            4,
+            -4,
+            7
+          ],
+          "center": "1/2",
+          "approx_x": "0.505",
+          "style": "synthetic_numbered"
+        }
+      }
+    ]
+  },
+  "deferred_components": {}
+}
