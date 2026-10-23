@@ -289,6 +289,30 @@ _GH_ZONE_HDR_RE = re.compile(
     r"^\s*(?:[一二三四五六七八九十]+\s*[、.．]\s*)?(觀念澄清|基礎題|進階題|綜合題|自我評量)\s*$"
 )
 _GH_SECTION_HEADING_RE = re.compile(r"^\s*([甲乙丙丁戊己庚辛壬癸])\s+([^\s，。：:；].{0,24})$")
+_GH_SECTION_MARKER_PREFIX_RE = re.compile(r"^\s*[甲乙丙丁戊己庚辛壬癸](?:\s*[.．、]\s*|\s+)(?=\S)")
+
+
+def strip_general_high_section_marker(name: str) -> str:
+    """「甲 直線的斜率」/「乙.圓的一般式」→ skill display name; the marker stays in ``paragraph``."""
+    return _GH_SECTION_MARKER_PREFIX_RE.sub("", str(name or "")).strip()
+
+
+def general_high_paragraph_with_marker(concept_name: str, concept_paragraph: str) -> str:
+    """``skill_curriculum.paragraph`` of a general-high skill always keeps its marker (the student card order).
+
+    The marker normally arrives in ``concept_paragraph`` ("甲.直線的斜率"); if only the concept name carried it
+    (it is stripped from ``skill_ch_name``) it is moved to the paragraph instead of being lost.
+    """
+    paragraph = str(concept_paragraph or "").strip()
+    if _GH_SECTION_MARKER_PREFIX_RE.match(paragraph):
+        return paragraph
+    marker = _GH_SECTION_MARKER_PREFIX_RE.match(str(concept_name or ""))
+    if marker:
+        body = paragraph if paragraph and paragraph != "未提供內容" else strip_general_high_section_marker(concept_name)
+        return f"{marker.group(0).strip()[0]}.{body}"
+    return paragraph
+
+
 _GH_SUBSECTION_HEADING_RE = re.compile(r"^\s*[\(（]([一二三四五六七八九十]+)[\)）]\s*([^\s，。：:；].{0,24})$")
 # "例題8 的解法…" / "例題3 中…" are exposition referring back to an example, not a new one.
 _GH_EXAMPLE_START_RE = re.compile(r"^\s*例題\s*(\d{1,2})(?!\d)(?!\s*[的中之裡])\s*(.*)$")
@@ -338,6 +362,7 @@ def scan_general_high_layout(
     zone = ""
     zone_lead = ""
     practice_ordinal = 0
+    started_example_numbers: set[int] = set()
     current: dict[str, Any] | None = None
 
     def _flush() -> None:
@@ -449,8 +474,13 @@ def scan_general_high_layout(
                 subsection_heading = f"({m_sub.group(1)}){m_sub.group(2).strip()}"
                 continue
             m_exm = _GH_EXAMPLE_START_RE.match(line)
+            # "例題1解方程式的過程中，…" is a sentence citing an example already started, not a new one;
+            # a bare repeated "例題N" heading still starts an item so the inventory gate sees the duplicate.
+            if m_exm and int(m_exm.group(1)) in started_example_numbers and _GH_SENTENCE_PUNCT_RE.search(m_exm.group(2)):
+                m_exm = None
             if m_exm:
                 n = int(m_exm.group(1))
+                started_example_numbers.add(n)
                 _start("example", f"例題{n}", str(n), m_exm.group(2).strip(), idx)
                 continue
             m_pr = _GH_PRACTICE_START_RE.match(line)
@@ -2618,12 +2648,44 @@ _QUESTION_VERBS = (
     "作圖",
     "試求",
     "求出",
+    "試問",
+    "問：",
+    "問:",
+    "填入",
+    "填寫",
 )
+
+
+# A stem that opens with an instruction ("將下列方程式化成…，並說明…", "下列…") is a question even when it
+# also contains explanation-style words such as 說明 / 答案.
+_QUESTION_INSTRUCTION_LEAD_RE = re.compile(r"^\s*(?:將|請|試|下列|已知|設|若|在|化成|改寫|寫出|畫出|圖示)")
 
 
 def _is_figure_caption_line(text: str) -> bool:
     t = str(text or "").strip()
     return bool(re.search(r"^(?:圖|表)\s*\d+", t))
+
+
+def is_source_confirmed_question_title(title: str) -> bool:
+    """True when ``title`` is a question the authoritative DOCX inventory scan found (例題/隨堂練習/習題 …)."""
+    items = (_DOCX_IMPORT_CONTEXT or {}).get("title_inventory_items") if isinstance(_DOCX_IMPORT_CONTEXT, dict) else None
+    wanted = str(title or "").strip()
+    if not wanted or not items:
+        return False
+    return any(wanted in (str(it.get("canonical_title") or "").strip(), str(it.get("raw_title") or "").strip()) for it in items)
+
+
+def resolve_question_block_kind(text: str, title: str = "") -> str | None:
+    """Text classification with the source structure as the authority.
+
+    A block whose title the source inventory confirmed as an example / practice / exercise is a question: general
+    words in its stem (說明、答案、填入…) must not make the importer drop it as exposition.  Empty text, figure
+    captions and titles the inventory does not know still go through the text classifier.
+    """
+    kind = classify_non_question_block(text)
+    if kind == "concept_explanation" and is_source_confirmed_question_title(title):
+        return None
+    return kind
 
 
 def classify_non_question_block(text: str) -> str | None:
@@ -2633,8 +2695,10 @@ def classify_non_question_block(text: str) -> str | None:
     if t == "[BLOCK_IMAGE]" or _is_figure_caption_line(t):
         return "figure_caption"
 
-    has_explain = any(cue in t for cue in _NON_QUESTION_EXPLANATION_CUES) or bool(re.search(r"^(?:說明|解題|觀念)\b", t))
-    has_question_verb = any(v in t for v in _QUESTION_VERBS)
+    # 「將答案取2位有效數字」等作答指示不是解答／說明內容，不可當作說明提示。
+    cue_text = re.sub(r"[將把請]\s*答案|答案\s*(?:取|以|四捨五入|寫成|用)", "", t)
+    has_explain = any(cue in cue_text for cue in _NON_QUESTION_EXPLANATION_CUES) or bool(re.search(r"^(?:說明|解題|觀念)\b", t))
+    has_question_verb = any(v in t for v in _QUESTION_VERBS) or bool(_QUESTION_INSTRUCTION_LEAD_RE.match(t))
     if has_explain and not has_question_verb:
         return "concept_explanation"
     if "[BLOCK_IMAGE]" in t and not has_question_verb:
@@ -7396,12 +7460,16 @@ def save_to_database(
 
                     if not skip_skill_creation:
                         # === SkillInfo 新增/更新 ===
+                        skill_display_name = (
+                            strip_general_high_section_marker(concept_name) or concept_name
+                            if curriculum == 'general' else concept_name
+                        )
                         existing_skill = SkillInfo.query.get(final_skill_id)
                         if not existing_skill:
                             new_skill = SkillInfo(
                                 skill_id=final_skill_id,
                                 skill_en_name=clean_en_id,
-                                skill_ch_name=concept_name,
+                                skill_ch_name=skill_display_name,
                                 category = section_title,
                                 description=concept.get('concept_description', ''),
                                 input_type='text',
@@ -7414,7 +7482,7 @@ def save_to_database(
                             processed_skill_ids.append(final_skill_id)
                         else:
                             existing_skill.skill_en_name = clean_en_id
-                            existing_skill.skill_ch_name = concept_name
+                            existing_skill.skill_ch_name = skill_display_name
                             existing_skill.category = section_title
                             existing_skill.description = concept.get('concept_description', existing_skill.description)
                             existing_skill.order_index = order_index
@@ -7428,6 +7496,27 @@ def save_to_database(
                             section=section_title
                         ).first()
                         
+                        # general-high: paragraph marker and textbook order come from the source structure (concept_order),
+                        # not from how many skills this run happened to create, and are refreshed on reuse / re-import.
+                        if curriculum == 'general':
+                            curr_paragraph = general_high_paragraph_with_marker(concept_name, concept_paragraph)
+                            if not _GH_SECTION_MARKER_PREFIX_RE.match(curr_paragraph):
+                                queue.put(
+                                    f"WARN: general-high paragraph has no marker; order falls back to source order "
+                                    f"concept_order={concept_order}, needs confirmation: {concept_name}"
+                                )
+                            curr_order = (
+                                structure_meta.get('display_order_base', chapter_num * 10000)
+                                if structure_meta
+                                else (chapter_num * 10000 + (int(filename_meta.get('section_index') or 0) * 100))
+                            ) + concept_order
+                            if existing_curr is not None:
+                                existing_curr.paragraph = curr_paragraph
+                                existing_curr.display_order = curr_order
+                        else:
+                            curr_paragraph = concept_paragraph
+                            curr_order = None
+
                         if not existing_curr:
                             # [V2.6] ?交?擃摮睬銝?朣仃??蝳迫撱箇??啁??暺?(?踹? 1_- ??1-1_-)
                             if is_vocational_mathb and structure_alignment_failed:
@@ -7440,8 +7529,8 @@ def save_to_database(
                                     volume=str(curriculum_info.get('volume', 1)),
                                     chapter=chapter_title,
                                     section=section_title,
-                                    paragraph=concept_paragraph,
-                                    display_order=(
+                                    paragraph=curr_paragraph,
+                                    display_order=curr_order if curr_order is not None else (
                                         structure_meta.get('display_order_base', chapter_num * 10000)
                                         if structure_meta
                                         else (chapter_num * 10000 + (int(filename_meta.get('section_index') or 0) * 100))
@@ -7509,7 +7598,7 @@ def save_to_database(
                                 logs.append(seg_meta.get("reason"))
                             ex["repair_log"] = logs
                             db_problem_text_raw = segmented_text
-                        block_kind = classify_non_question_block(db_problem_text_raw)
+                        block_kind = resolve_question_block_kind(db_problem_text_raw, example_title)
                         if block_kind in ("concept_explanation", "figure_caption", "narration"):
                             logs = ex.get("repair_log", [])
                             if not isinstance(logs, list):
@@ -7920,7 +8009,7 @@ def save_to_database(
                                 logs.append(seg_meta.get("reason"))
                             practice["repair_log"] = logs
                             practice_problem_raw = segmented_text
-                        block_kind = classify_non_question_block(practice_problem_raw)
+                        block_kind = resolve_question_block_kind(practice_problem_raw, practice_title)
                         if block_kind in ("concept_explanation", "figure_caption", "narration"):
                             logs = practice.get("repair_log", [])
                             if not isinstance(logs, list):

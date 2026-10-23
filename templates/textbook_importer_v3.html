@@ -1892,21 +1892,12 @@
                             setImportButtonState();
                             if (result.data && result.data.error === 'general_replacement_confirmation_required') {
                                 var scope = result.data.replacement || {};
-                                var message = '是否要清空目前單元的舊教材？
-' +
-                                    '學制：普高
-冊別：' + (scope.volume || '') + '
-單元：' + (scope.chapter || '') + '
-' +
-                                    '現有題目數量：' + (scope.old_count || 0) + ' 題
-' +
-                                    '無效 Skill 綁定：' + (scope.stale_binding_count || 0) + ' 個
-' +
-                                    '新版來源題數：' + (scope.incoming_count || 0) + '
-
-' +
-                                    '按「確定」＝是：先備份 DB，再以新版取代此單元舊題。
-' +
+                                var message = '是否要清空目前單元的舊教材？\n' +
+                                    '學制：普高\n冊別：' + (scope.volume || '') + '\n單元：' + (scope.chapter || '') + '\n' +
+                                    '現有題目數量：' + (scope.old_count || 0) + ' 題\n' +
+                                    '無效 Skill 綁定：' + (scope.stale_binding_count || 0) + ' 個\n' +
+                                    '新版來源題數：' + (scope.incoming_count || 0) + '\n\n' +
+                                    '按「確定」＝是：先備份 DB，再以新版取代此單元舊題。\n' +
                                     '按「取消」＝否：保留舊教材，維持原有匯入行為。';
                                 if (window.confirm(message)) submitSourceUpload(overwriteExisting, result.data.replacement_token);
                                 else submitSourceUpload(overwriteExisting, null, true);

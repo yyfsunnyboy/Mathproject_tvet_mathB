@@ -223,3 +223,124 @@ def test_layout_labels_never_become_skills():
         assert is_non_skill_bucket(name, "Whatever"), name
     for name in ("甲.正整數指數與指數律", "有理數指數與指數律", "乘法公式"):
         assert not is_non_skill_bucket(name, "RationalExponentsAndLaws"), name
+
+
+def test_section_marker_is_not_part_of_skill_display_name():
+    from core.textbook_processor import strip_general_high_section_marker
+
+    assert strip_general_high_section_marker("甲 直線的斜率") == "直線的斜率"
+    assert strip_general_high_section_marker("己.二元一次不等式") == "二元一次不等式"
+    assert strip_general_high_section_marker("甲. 圓與直線關係的判定") == "圓與直線關係的判定"
+    assert strip_general_high_section_marker("常用對數") == "常用對數"
+    assert strip_general_high_section_marker("甲烷") == "甲烷"
+
+
+def test_answer_instruction_is_not_explanation_and_unit4_blocks_all_kept():
+    from docx import Document
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+    from core.textbook_processor import classify_non_question_block, scan_general_high_layout
+
+    assert classify_non_question_block("試問：太陽的體積為地球的幾倍？（將答案取2位有效數字並以科學記號表示。）") is None
+    assert classify_non_question_block("說明：科學記號的定義。") == "concept_explanation"
+    assert classify_non_question_block("答案：5") == "concept_explanation"
+
+    source = next(Path("textbook_import/uploaded_sources/general/數學1").glob("*單元04-科學記號與常用對數.docx"))
+    doc = Document(str(source))
+    chunks = []
+    for child in doc.element.body.iterchildren():
+        if child.tag.endswith("}p"):
+            value = Paragraph(child, doc).text.strip()
+            if value:
+                chunks.append(value)
+        elif child.tag.endswith("}tbl"):
+            for row in Table(child, doc).rows:
+                chunks.extend(cell.text.strip() for cell in row.cells if cell.text.strip())
+    scan = scan_general_high_layout("\n".join(chunks))
+    assert len(scan["items"]) == 26 == len(scan["blocks"])
+    assert {t: classify_non_question_block(b) for t, b in scan["blocks"].items() if classify_non_question_block(b)} == {}
+
+
+def test_fill_in_instruction_is_a_question_and_unit5_blocks_all_kept():
+    from docx import Document
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+    from core.textbook_processor import classify_non_question_block, scan_general_high_layout
+
+    assert classify_non_question_block("在下列的表格中填入適當的答案：") is None
+    assert classify_non_question_block("答案：5") == "concept_explanation"
+
+    source = next(Path("textbook_import/uploaded_sources/general/數學1").glob("*單元05-直線方程式.docx"))
+    doc = Document(str(source))
+    chunks = []
+    for child in doc.element.body.iterchildren():
+        if child.tag.endswith("}p"):
+            value = Paragraph(child, doc).text.strip()
+            if value:
+                chunks.append(value)
+        elif child.tag.endswith("}tbl"):
+            for row in Table(child, doc).rows:
+                chunks.extend(cell.text.strip() for cell in row.cells if cell.text.strip())
+    scan = scan_general_high_layout("\n".join(chunks))
+    assert len(scan["items"]) == 46 == len(scan["blocks"])
+    assert {t: classify_non_question_block(b) for t, b in scan["blocks"].items() if classify_non_question_block(b)} == {}
+
+
+def _scan_general_source(pattern):
+    from docx import Document
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+    from core.textbook_processor import scan_general_high_layout
+
+    source = next(Path("textbook_import/uploaded_sources/general/數學1").glob(pattern))
+    doc = Document(str(source))
+    chunks = []
+    for child in doc.element.body.iterchildren():
+        if child.tag.endswith("}p"):
+            value = Paragraph(child, doc).text.strip()
+            if value:
+                chunks.append(value)
+        elif child.tag.endswith("}tbl"):
+            for row in Table(child, doc).rows:
+                chunks.extend(cell.text.strip() for cell in row.cells if cell.text.strip())
+    return scan_general_high_layout("\n".join(chunks))
+
+
+def test_instruction_stem_with_explain_word_is_a_question_and_unit6_blocks_all_kept():
+    from core.textbook_processor import classify_non_question_block
+
+    stem = "將下列方程式化成\(\left ( { x-h } \right ) ^ { 2 } +\left ( { y-k } \right ) ^ { 2 } =\ell\)的形式，並說明它們的圖形。"
+    assert classify_non_question_block(stem) is None
+    assert classify_non_question_block("說明：圓的標準式。") == "concept_explanation"
+    assert classify_non_question_block("答案：5") == "concept_explanation"
+
+    scan = _scan_general_source("*單元06-圓方程式.docx")
+    assert len(scan["items"]) == 32 == len(scan["blocks"])
+    assert {t: classify_non_question_block(b) for t, b in scan["blocks"].items() if classify_non_question_block(b)} == {}
+
+
+def test_source_inventory_is_the_authority_for_question_blocks(monkeypatch):
+    """A block whose title the authoritative scan confirmed is never dropped as exposition; unknown titles still are."""
+    from core import textbook_processor as T
+
+    exposition_like = "說明下列各圓的圓心與半徑。"  # no instruction lead: the text classifier alone calls it exposition
+    assert T.classify_non_question_block(exposition_like) == "concept_explanation"
+    monkeypatch.setattr(T, "_DOCX_IMPORT_CONTEXT", {"title_inventory_items": [{"canonical_title": "例題4", "raw_title": "例題4"}]})
+    assert T.resolve_question_block_kind(exposition_like, "例題4") is None
+    assert T.resolve_question_block_kind(exposition_like, "課文說明") == "concept_explanation"  # not in the inventory
+    assert T.resolve_question_block_kind("", "例題4") == "narration"  # empty text is still not a question
+    assert T.resolve_question_block_kind("[BLOCK_IMAGE]", "例題4") == "figure_caption"
+    monkeypatch.setattr(T, "_DOCX_IMPORT_CONTEXT", {})
+    assert T.resolve_question_block_kind(exposition_like, "例題4") == "concept_explanation"  # no inventory -> text only
+
+
+def test_all_stored_general_sources_keep_every_inventory_block():
+    from core.textbook_processor import classify_non_question_block
+
+    counts = {}
+    for source in sorted(Path("textbook_import/uploaded_sources/general/數學1").glob("*.docx")):
+        scan = _scan_general_source(source.name)
+        dropped = {t: classify_non_question_block(b) for t, b in scan["blocks"].items() if classify_non_question_block(b)}
+        assert dropped == {}, (source.name, dropped)
+        counts[source.name[-20:]] = len(scan["items"])
+    assert 32 in counts.values() and 46 in counts.values() and 26 in counts.values()

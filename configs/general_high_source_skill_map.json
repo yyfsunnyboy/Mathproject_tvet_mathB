@@ -38,6 +38,51 @@
         "2習題 進階題9": "gh_LinearInequalitiesWithAbsoluteValue",
         "2習題 觀念澄清3": "gh_LinearInequalitiesWithAbsoluteValue"
       }
+    },
+    {
+      "id": "general_數學1_單元7_圓與直線的關係_v1",
+      "curriculum": "general",
+      "volume": "數學1",
+      "chapter": "單元7 圓與直線的關係",
+      "confirmed_by": "user_confirmation_2026-10-23_unit7_stage1_fix",
+      "titles": {
+        "例題1": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "例題2": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "例題3": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "例題4": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "例題5": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "隨堂練習1": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "隨堂練習2": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "隨堂練習3": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "隨堂練習4": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "隨堂練習5": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 觀念澄清1": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 觀念澄清2": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 觀念澄清4": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 觀念澄清5": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 基礎題1": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 基礎題2": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 基礎題3": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 基礎題4": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 基礎題6": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 進階題10": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "7習題 進階題12": "gh_JudgingTheRelationshipOfCircleAndLine",
+        "例題6": "gh_TangentLinesOfACircle",
+        "例題7": "gh_TangentLinesOfACircle",
+        "例題8": "gh_TangentLinesOfACircle",
+        "例題9": "gh_TangentLinesOfACircle",
+        "隨堂練習6": "gh_TangentLinesOfACircle",
+        "隨堂練習7": "gh_TangentLinesOfACircle",
+        "隨堂練習8": "gh_TangentLinesOfACircle",
+        "隨堂練習9": "gh_TangentLinesOfACircle",
+        "7習題 觀念澄清3": "gh_TangentLinesOfACircle",
+        "7習題 基礎題5": "gh_TangentLinesOfACircle",
+        "7習題 基礎題7": "gh_TangentLinesOfACircle",
+        "7習題 基礎題8": "gh_TangentLinesOfACircle",
+        "7習題 基礎題9": "gh_TangentLinesOfACircle",
+        "7習題 進階題11": "gh_TangentLinesOfACircle",
+        "7習題 進階題13": "gh_TangentLinesOfACircle"
+      }
     }
   ]
 }

@@ -107,6 +107,37 @@ def test_example_back_reference_is_not_a_new_example():
     assert "的解法" not in scan["blocks"]["例題8"]
 
 
+UNIT7_BACK_REFERENCE_TEXT = "\n".join([
+    "7圓與直線的關係",
+    "甲 圓與直線關係的判定",
+    "例題1",
+    "判斷圓 \\(C:x^{2}+y^{2}=5\\) 和直線 \\(L:x-y+1=0\\) 的相交情形。",
+    "\\(\\o\\ac(■,解)\\)\t解聯立方程式。",
+    "隨堂練習",
+    "判斷圓 \\(C\\) 與下列直線的相交情形：",
+    "(1)\\(L_{1}:x+y-5=0\\)。　(2)\\(L_{2}:x+y-6=0\\)。",
+    "例題1解方程式的過程中，利用代入消去法可消去其中一個未知數，",
+    "(1)\t當 \\(D>0\\) 時，方程式有兩相異實數解。",
+    "例題2",
+    "設圓 \\(C\\) 與直線 \\(L:3x+4y+k=0\\) 相切，求k的值。",
+])
+
+
+def test_example_back_reference_sentence_without_particle_is_not_a_new_example():
+    scan = tp.scan_general_high_layout(UNIT7_BACK_REFERENCE_TEXT)
+    titles = [it["canonical_title"] for it in scan["items"]]
+    assert titles == ["例題1", "隨堂練習1", "例題2"]
+    assert "判斷圓" in scan["blocks"]["例題1"]
+    assert "代入消去法" not in scan["blocks"]["例題1"]
+    assert "代入消去法" not in scan["blocks"]["隨堂練習1"]
+
+
+def test_repeated_bare_example_heading_still_reaches_inventory_gate():
+    text = UNIT7_BACK_REFERENCE_TEXT.replace("例題1解方程式的過程中，利用代入消去法可消去其中一個未知數，", "例題1")
+    titles = [it["canonical_title"] for it in tp.scan_general_high_layout(text)["items"]]
+    assert titles.count("例題1") == 2
+
+
 def test_practice_lead_in_before_subquestions_stays_in_stem():
     stem = tp.scan_general_high_layout(UNIT2_LIKE_TEXT)["blocks"]["隨堂練習1"]
     assert "根據此規範回答下列各題" in stem
@@ -672,6 +703,48 @@ def test_repository_unit2_source_skill_map_counts():
         "gh_LinearEquationsWithAbsoluteValue": 6,
         "gh_LinearInequalitiesWithAbsoluteValue": 14,
     }
+
+
+_UNIT7 = "單元7 圓與直線的關係"
+_JUDGE, _TANGENT = "gh_JudgingTheRelationshipOfCircleAndLine", "gh_TangentLinesOfACircle"
+_UNIT7_TEACHER_FIXED = {"7習題 進階題10", "7習題 進階題12"}
+
+
+def test_repository_unit7_source_skill_map_counts():
+    entry = tp.find_general_high_source_skill_map("general", "數學1", _UNIT7)
+    counts = {}
+    for sid in entry["titles"].values():
+        counts[sid] = counts.get(sid, 0) + 1
+    assert len(entry["titles"]) == 36
+    assert counts == {_JUDGE: 21, _TANGENT: 15}
+    assert all(entry["titles"][t] == _JUDGE for t in _UNIT7_TEACHER_FIXED)
+    assert tp.find_general_high_source_skill_map("vocational", "數學1", _UNIT7) is None
+    assert tp.find_general_high_source_skill_map("general", "數學2", _UNIT7) is None
+
+
+def test_unit7_reimport_keeps_teacher_fixed_bindings(admin_app):
+    """A re-import whose AI pass puts 進階題10/12 under Tangent again is corrected by the repository map only."""
+    from models import TextbookExample, db
+
+    titles = tp.find_general_high_source_skill_map("general", "數學1", _UNIT7)["titles"]
+    ai_rows = [(t, _TANGENT if t in _UNIT7_TEACHER_FIXED else s) for t, s in titles.items()]
+    ids = _seed_unit_rows(db, _UNIT7, ai_rows, [_JUDGE, _TANGENT])
+    other = _seed_unit_rows(db, "單元6 圓方程式", [("7習題 進階題10", "gh_other_unit6")], ["gh_other_unit6"])
+
+    summary = tp.apply_general_high_source_skill_map(
+        parsed_data={"chapters": [{"chapter_title": _UNIT7}]},
+        scan={"chapter": {}},
+        curriculum_info={"curriculum": "general", "volume": "數學1"},
+    )
+
+    assert summary["applied"] is True and summary["map_id"] == "general_數學1_單元7_圓與直線的關係_v1"
+    assert sorted(c["title"] for c in summary["changed"]) == sorted(_UNIT7_TEACHER_FIXED)
+    assert all(c["from"] == _TANGENT and c["to"] == _JUDGE for c in summary["changed"])
+    assert summary["unmapped"] == [] and summary["missing"] == []
+    bound = {t: db.session.get(TextbookExample, i).skill_id for t, i in ids.items()}
+    assert bound == titles
+    assert sum(s == _JUDGE for s in bound.values()) == 21 and sum(s == _TANGENT for s in bound.values()) == 15
+    assert db.session.get(TextbookExample, other["7習題 進階題10"]).skill_id == "gh_other_unit6"
 
 
 def _fake_shared_enrichment(seen, attach_titles):
