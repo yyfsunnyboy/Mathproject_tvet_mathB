@@ -26,19 +26,17 @@
 
 ## System at a Glance
 
-### 教材涵蓋與已發布規模
+### 教材與動態出題規模
 
-技術型高中數學 B1～B4 教材（共 1,268 題）已完整匯入；普通型高中數學第一冊 Unit 1～11（405 題）已逐單元匯入並封板。下表只列**已正式發布、可執行**的 Generator：
+| 已發布 Generator 範圍 | 元件數量 |
+| --- | ---: |
+| 技術型高中數學 B 系列 | 487 |
+| 普通型高中數學第一冊 | 398 |
+| **正式發布合計** | **885** |
 
-| 教材範圍 | 教材題數 | 已發布 Skill | 已發布 Generator Components |
-| --- | --- | --- | --- |
-| 技術型高中數學 B1 | 321 | 23 | 233 |
-| 技術型高中數學 B2 | 321 | 42 | 200 |
-| 技術型高中數學 B4 | 253 | 11 | 54 |
-| 普通型高中數學第一冊 Unit 1～11 | 405 | 33 | 398 |
-| **合計** | — | **109** | **885** |
+系統已建置技高數學 B1～B4 及普高數學第一冊教材。以上統計為正式發布的參數化 Generator 元件，不代表固定題庫數量。
 
-> **Published** ＝ Skill 的 manifest 為 `production_manifest_compiled`、有對應 wrapper（`skills/`），且元件在 `gencode_component_tracker` 為 `verified`（截至 2026-10-24，由 `instance/kumon_math.db` 與 `agent_skills_v3/*/component_manifest.json` 核對）。`package_ready`、`candidate`、`verified` 不等於 Published。並非所有教材題目都已有正式 Generator，本表以已發布者為準；其餘教材與普高第二～四冊為後續擴充。
+> **Published** ＝ 已編入正式 production manifest、具對應 wrapper（`skills/`），且通過驗證並記錄於 `gencode_component_tracker` 的元件（截至 2026-10-24，核對自 `instance/kumon_math.db` 與 `agent_skills_v3/*/component_manifest.json`）。
 
 ### 五個不同的指標
 
