@@ -236,3 +236,14 @@ cython_debug/
 .DS_Store
 Thumbs.db
 reports/runtime_jobs/import_20260904002516_8b648a1d.json
+
+# One-off scratch diagnostics removed from tracking (local copies kept); tmp/ is already ignored
+scratch/audit_mathb_v3_results.json
+scratch/b2_1_1_convert_report.json
+scratch/dryrun_midpoint_output.json
+scratch/mtef_eval2.json
+scratch/mtef_fail_debug.json
+scratch/mtef_samples.json
+
+# Local browser profile (contains session data): never track
+scratch/chrome_profile/
