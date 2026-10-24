@@ -1,0 +1,69 @@
+{
+ "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\unit9_function_models\\20261023_220800\\accept\\kumon_math_accept.db",
+ "student_id": 2,
+ "skills": {
+  "gh_LinearFunctions": {
+   "practice_page": 200,
+   "served": {
+    "12560": 3,
+    "12561": 3,
+    "12562": 3,
+    "12563": 2,
+    "12564": 2,
+    "12565": 2,
+    "12566": 3,
+    "12598": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "figures": 3,
+   "multi_part": 0,
+   "drawing_served_only": [
+    12560,
+    12560,
+    12560
+   ]
+  },
+  "gh_QuadraticFunctions": {
+   "practice_page": 200,
+   "served": {
+    "12569": 2,
+    "12571": 2,
+    "12572": 2,
+    "12573": 2,
+    "12574": 2,
+    "12575": 2,
+    "12577": 2,
+    "12578": 2,
+    "12579": 2,
+    "12580": 2,
+    "12581": 1,
+    "12582": 1,
+    "12583": 1,
+    "12584": 1,
+    "12585": 1,
+    "12586": 2,
+    "12588": 1,
+    "12589": 1,
+    "12590": 1,
+    "12591": 2,
+    "12592": 1,
+    "12593": 1,
+    "12594": 1,
+    "12595": 1,
+    "12596": 1,
+    "12597": 1,
+    "12599": 1,
+    "12600": 1,
+    "12601": 1,
+    "12602": 1
+   },
+   "http_errors": [],
+   "grading": [],
+   "figures": 9,
+   "multi_part": 24
+  }
+ },
+ "runtime_errors": [],
+ "passed": true
+}

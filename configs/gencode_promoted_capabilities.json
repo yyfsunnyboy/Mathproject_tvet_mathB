@@ -2486,6 +2486,267 @@
         }
       }
     },
+    "function.linear_quadratic": {
+      "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
+      "bundle_sha256": "3aa582042951d37619a12fb533cc4ee25c3851bce8faad0cd91c5be76b11302b",
+      "capabilities": [
+        "complete_square_items",
+        "evaluate_function_statements",
+        "graph_quadratic_functions",
+        "quadratic_always_sign",
+        "quadratic_extrema",
+        "quadratic_graph_transformations",
+        "quadratic_vertex_axis",
+        "solve_linear_functions",
+        "solve_quadratic_applications"
+      ],
+      "domain_module": "core.domain.promoted.function_linear_quadratic.function_models_domain",
+      "entrypoint": "build_function_models_matrix",
+      "operations": {
+        "complete_square_items": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "complete_square_items"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_complete_square_items_matrix"
+        },
+        "evaluate_function_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "evaluate_function_statements"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_evaluate_function_statements_matrix"
+        },
+        "graph_quadratic_functions": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "equation_checker",
+            "free_response_drawing_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "graph_quadratic_functions"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "drawing",
+            "equation",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "canvas",
+            "multiple_inputs"
+          ],
+          "validator": "validate_graph_quadratic_functions_matrix"
+        },
+        "quadratic_always_sign": {
+          "checker_keys": [
+            "inequality_solution_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "quadratic_always_sign"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "inequality"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_quadratic_always_sign_matrix"
+        },
+        "quadratic_extrema": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "quadratic_extrema"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_quadratic_extrema_matrix"
+        },
+        "quadratic_graph_transformations": {
+          "checker_keys": [
+            "choice_label_checker",
+            "equation_checker",
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "quadratic_graph_transformations"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "expression",
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_quadratic_graph_transformations_matrix"
+        },
+        "quadratic_vertex_axis": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "equation_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "quadratic_vertex_axis"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "equation",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_quadratic_vertex_axis_matrix"
+        },
+        "solve_linear_functions": {
+          "checker_keys": [
+            "expression_checker",
+            "expression_equivalence_checker",
+            "free_response_drawing_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "solve_linear_functions"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "drawing",
+            "expression",
+            "multi_part",
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_linear_functions_matrix"
+        },
+        "solve_quadratic_applications": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "expression_checker",
+            "expression_equivalence_checker",
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_function_models_matrix",
+          "payload_adapter": "core.domain.promoted.function_linear_quadratic.function_models_adapter.adapt_function_models_matrix",
+          "provided_capabilities": [
+            "solve_quadratic_applications"
+          ],
+          "runtime_contract": "function_models_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "expression",
+            "multi_part",
+            "numeric_or_radical",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_quadratic_applications_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "function_models_adapter.py": "43bb0dcac6f722cc08631933d5713dd817f3e7da0ac80db99d738de55194a9b4",
+        "function_models_domain.py": "0eca75dab4f50b07b4affa57f7261b8bfd8605f06e3253e2322f9cd10b4d33a1"
+      },
+      "package_import": "core.domain.promoted.function_linear_quadratic",
+      "package_name": "function_linear_quadratic",
+      "proposal_id": "capability_function_linear_quadratic_e0f60450",
+      "proposal_revision": 2,
+      "registry_revision": "promoted-3aa582042951",
+      "skill_bindings": {
+        "gh_LinearFunctions": {
+          "allowed_operations": [
+            "evaluate_function_statements",
+            "solve_linear_functions"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_QuadraticFunctions": {
+          "allowed_operations": [
+            "complete_square_items",
+            "evaluate_function_statements",
+            "graph_quadratic_functions",
+            "quadratic_always_sign",
+            "quadratic_extrema",
+            "quadratic_graph_transformations",
+            "quadratic_vertex_axis",
+            "solve_quadratic_applications"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "number_system.rational_numbers": {
       "approved_by": "human_reviewer",
       "bundle_sha256": "80c3e5401b9c12089f1eb57ec589918922e2852ad6cfbfd3165d9df8ac1e470e",

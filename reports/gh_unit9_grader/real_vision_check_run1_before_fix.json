@@ -1,0 +1,312 @@
+{
+ "ran": true,
+ "cases": 30,
+ "exact": 19,
+ "uncertain": 10,
+ "false_accept": [],
+ "false_reject": [
+  "three_curves_complete"
+ ],
+ "rows": [
+  {
+   "case": "up_correct_y=x^2",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.98,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "down_correct_y=-2(x-1)^2+5",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_vertex_shifted",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_direction",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "line_instead",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "v_shape_instead",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "blank",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "three_curves_complete",
+   "round": 0,
+   "want": true,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 3,
+   "ok": false
+  },
+  {
+   "case": "three_expected_two_drawn",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 2,
+   "ok": true
+  },
+  {
+   "case": "three_expected_same_curve_x3",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "up_correct_y=x^2",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "down_correct_y=-2(x-1)^2+5",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_vertex_shifted",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_direction",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "line_instead",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "v_shape_instead",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "blank",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "three_curves_complete",
+   "round": 1,
+   "want": true,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95,
+   "curve_count": 3,
+   "ok": false
+  },
+  {
+   "case": "three_expected_two_drawn",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 2,
+   "ok": true
+  },
+  {
+   "case": "three_expected_same_curve_x3",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "up_correct_y=x^2",
+   "round": 2,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "down_correct_y=-2(x-1)^2+5",
+   "round": 2,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_vertex_shifted",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "wrong_direction",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  },
+  {
+   "case": "line_instead",
+   "round": 2,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "v_shape_instead",
+   "round": 2,
+   "want": false,
+   "got": null,
+   "status": "invalid_analyzer_response",
+   "confidence": 0.0,
+   "curve_count": null,
+   "ok": false
+  },
+  {
+   "case": "blank",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 1.0,
+   "curve_count": 0,
+   "ok": true
+  },
+  {
+   "case": "three_curves_complete",
+   "round": 2,
+   "want": true,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95,
+   "curve_count": 3,
+   "ok": false
+  },
+  {
+   "case": "three_expected_two_drawn",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 2,
+   "ok": true
+  },
+  {
+   "case": "three_expected_same_curve_x3",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95,
+   "curve_count": 1,
+   "ok": true
+  }
+ ]
+}

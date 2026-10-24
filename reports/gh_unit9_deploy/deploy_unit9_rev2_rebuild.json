@@ -1,0 +1,52 @@
+{
+ "failures": {},
+ "deferred": {
+  "12568": "three curves on one canvas: not publishable until the real vision model is shown to read them reliably"
+ },
+ "report": {
+  "12567": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "graph_quadratic_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12570": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "graph_quadratic_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12576": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "graph_quadratic_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12587": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "graph_quadratic_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

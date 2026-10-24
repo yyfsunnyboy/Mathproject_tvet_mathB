@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import itertools
 import json
 import logging
 import re
@@ -19,6 +20,7 @@ SUPPORTED_DRAWING_TYPES = frozenset(
         "line_chart",
         "coordinate_point_plot",
         "line_graph",
+        "parabola_graph",
         "linear_inequality_region",
     }
 )
@@ -193,6 +195,8 @@ def build_drawing_analysis_prompt(
     drawing_type = str(expected_drawing_spec.get("drawing_type") or "").strip()
     if drawing_type == "line_graph":
         return build_line_graph_analysis_prompt(expected_drawing_spec)
+    if drawing_type == "parabola_graph":
+        return build_parabola_graph_analysis_prompt(expected_drawing_spec)
     if drawing_type == "linear_inequality_region":
         return build_inequality_region_analysis_prompt(expected_drawing_spec)
     schema = {
@@ -309,6 +313,66 @@ def build_line_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> s
     )
 
 
+def build_parabola_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> str:
+    """Feature-extraction prompt for parabola graphs (one or several curves on one canvas).
+
+    The expected equations / vertices are deliberately withheld: the analyzer reports what the student drew,
+    correctness is decided by evaluate_parabola_graph.
+    """
+    axis = expected_drawing_spec.get("axis_range")
+    axis = axis if isinstance(axis, dict) else {}
+    schema = {
+        "drawing_detected": True,
+        "recognized_type": "parabola_graph",
+        "required_elements": {"x_axis": True, "y_axis": True, "curve": True},
+        "curve_count": 1,
+        "curves": [
+            {
+                "detected": True,
+                "shape": "parabola | line | v_shape | other",
+                "opens": "up | down | left | right | unknown",
+                "vertex": [0.0, 0.0],
+                "points_on_curve": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                "label_text": "",
+            }
+        ],
+        "missing_features": [],
+        "incorrect_features": [],
+        "confidence": 0.0,
+        "feedback": "",
+    }
+    return (
+        "You are a strict math graph-reading analyzer. The image is a student's answer drawn on a "
+        "cartesian coordinate canvas. The pale grid, the printed x/y axes and the tick numbers are the "
+        "system-provided background; the student's pen strokes are darker or colored.\n\n"
+        "Task: report, as numbers, every separate curve the student drew. Do not judge correctness and do "
+        "not guess what the question wants; report only what is actually drawn.\n\n"
+        "Coordinate system: "
+        f"x from {axis.get('x_min', '?')} to {axis.get('x_max', '?')}, "
+        f"y from {axis.get('y_min', '?')} to {axis.get('y_max', '?')}. "
+        "Grid lines are at integer units and the printed axes cross at (0,0). Read coordinates from the "
+        "printed tick numbers.\n\n"
+        "Rules:\n"
+        "- Printed axes count as present: set required_elements.x_axis / y_axis true when the axes are "
+        "visible. Never report a printed axis, a grid line, an arrowhead, a tick, text or an isolated dot as a curve.\n"
+        "- Report one entry in curves for each separate stroke-curve the student drew, and set curve_count to "
+        "their number. If the student drew nothing curved, curve_count is 0 and curves is empty. Never list "
+        "the same stroke twice and never invent a curve to match a count.\n"
+        "- shape: 'parabola' for a smooth U-shaped curve, 'line' for a straight stroke, 'v_shape' for two "
+        "straight segments meeting at a corner, otherwise 'other'. Judge the shape you see, not the intended one.\n"
+        "- opens: the direction the curve opens toward (up for a U, down for an upside-down U).\n"
+        "- vertex: the turning point of the curve as [x, y] in graph units with 0.1 precision.\n"
+        "- points_on_curve: five points ON that curve, spread along it (both ends, both sides of the vertex "
+        "and the vertex area), as [x, y] in graph units with 0.1 precision, read from the grid.\n"
+        "- label_text: transcribe any equation text written next to the curve; it is not the curve itself.\n"
+        "- Ignore small wobble, stroke thickness and slight hand tilt. If a curve is partly outside the canvas, "
+        "report only the points you can see.\n"
+        "- If positions cannot be read reliably, lower confidence instead of guessing.\n\n"
+        "Return JSON only, exactly in this shape:\n"
+        f"{json.dumps(schema, ensure_ascii=False, indent=2)}"
+    )
+
+
 def parse_analyzer_json(raw_text: Any) -> dict[str, Any] | None:
     text = str(getattr(raw_text, "text", raw_text) or "").strip()
     if not text:
@@ -334,6 +398,11 @@ def validate_analyzer_response(value: dict[str, Any], *, drawing_type: str) -> t
     recognized_type = str(out.get("recognized_type") or "").strip()
     if drawing_type == "line_graph" and recognized_type.lower() in LINE_GRAPH_TYPE_ALIASES:
         recognized_type = "line_graph"
+        out["recognized_type"] = recognized_type
+    if drawing_type == "parabola_graph":
+        # What the student drew is reported per curve (curves[].shape); the model often names a straight line or a
+        # V "line_graph" here, which must be graded as a wrong shape, not rejected as an unreadable response.
+        recognized_type = "parabola_graph"
         out["recognized_type"] = recognized_type
     if recognized_type and recognized_type not in SUPPORTED_DRAWING_TYPES:
         errors.append("recognized_type_unsupported")
@@ -488,6 +557,10 @@ LINE_GRAPH_TYPE_ALIASES = frozenset(
         "horizontal_line",
         "vertical_line",
     }
+)
+
+PARABOLA_GRAPH_TYPE_ALIASES = frozenset(
+    {"parabola_graph", "parabola", "quadratic_graph", "quadratic_function", "quadratic_function_graph", "function_graph", "u_curve"}
 )
 
 # Distances are in graph units (one grid cell = 1).  Between accept and reject
@@ -904,6 +977,165 @@ def evaluate_linear_inequality_region(
     }
 
 
+# --- parabola_graph: curve shape, opening direction, vertex and required points, one-to-one curve matching ------
+
+PARABOLA_GRAPH_THRESHOLDS = {
+    "confidence_min": 0.60,
+    "point_accept": 0.50,
+    "point_reject": 1.00,
+    "vertex_accept": 0.60,
+    "vertex_reject": 1.20,
+    "min_points": 3,
+    "axis_retrace": 0.20,
+}
+
+_PARABOLA_CORRECT_FEEDBACK = "圖形作答正確，所畫拋物線的開口、頂點與位置都符合題目。"
+
+
+def _parabola_distance(point: tuple[float, float], parabola: dict[str, Any]) -> float:
+    """Hand-drawing error against y = a(x-h)^2 + k: the smaller of the vertical and the horizontal offset.
+
+    Vertical offset is the natural error on the flat part of a parabola, horizontal offset on the steep part
+    (a point on a steep branch is never judged by its huge vertical gap, nor excused by a diagonal shortcut)."""
+    a, h, k = parabola["a"], parabola["h"], parabola["k"]
+    x, y = point
+    vertical = abs(y - (a * (x - h) ** 2 + k))
+    ratio = (y - k) / a
+    if ratio < 0:
+        return vertical
+    root = ratio ** 0.5
+    return min(vertical, abs(x - (h + root)), abs(x - (h - root)))
+
+
+def _expected_parabolas(spec: dict[str, Any]) -> list[dict[str, Any]] | None:
+    raw = spec.get("expected_parabolas")
+    if not isinstance(raw, list) or not raw:
+        return None
+    out = []
+    for item in raw:
+        if not isinstance(item, dict):
+            return None
+        a = _float_or_none(item.get("a"))
+        vertex = _as_points([item.get("vertex")])
+        if a is None or a == 0 or not vertex:
+            return None
+        out.append({"a": a, "h": vertex[0][0], "k": vertex[0][1], "opens": "up" if a > 0 else "down"})
+    return out
+
+
+def _is_axis_retrace(points: list[tuple[float, float]]) -> bool:
+    tol = PARABOLA_GRAPH_THRESHOLDS["axis_retrace"]
+    return bool(points) and (all(abs(y) <= tol for _x, y in points) or all(abs(x) <= tol for x, _y in points))
+
+
+def _drawn_curves(features: dict[str, Any]) -> list[dict[str, Any]]:
+    curves = []
+    for raw in features.get("curves") or []:
+        if not isinstance(raw, dict) or not raw.get("detected", True):
+            continue
+        points = _as_points(raw.get("points_on_curve"))
+        vertex = _as_points([raw.get("vertex")])
+        if _is_axis_retrace(points) or str(raw.get("shape") or "").strip().lower() == "axis":
+            continue  # a printed axis retraced is not a student curve
+        curves.append({"shape": str(raw.get("shape") or "").strip().lower(), "opens": str(raw.get("opens") or "").strip().lower(),
+                       "vertex": vertex[0] if vertex else None, "points": points})
+    return curves
+
+
+def _compare_parabola(drawn: dict[str, Any], expected: dict[str, Any]) -> tuple[bool | None, list[str], float]:
+    """(verdict, incorrect features, mismatch cost) of one drawn curve against one expected parabola."""
+    th = PARABOLA_GRAPH_THRESHOLDS
+    if drawn["shape"] in {"line", "v_shape", "other"}:
+        return False, ["curve_shape"], 99.0
+    if drawn["opens"] in {"up", "down"} and drawn["opens"] != expected["opens"]:
+        return False, ["opening_direction"], 99.0
+    if len(drawn["points"]) < th["min_points"]:
+        return None, [], 50.0
+    worst = max(_parabola_distance(p, expected) for p in drawn["points"])
+    cost = sum(_parabola_distance(p, expected) for p in drawn["points"]) / len(drawn["points"])
+    gap = None
+    if drawn["vertex"] is not None:
+        gap = ((drawn["vertex"][0] - expected["h"]) ** 2 + (drawn["vertex"][1] - expected["k"]) ** 2) ** 0.5
+        cost += 0.5 * gap
+    incorrect = []
+    if gap is not None and gap > th["vertex_reject"]:
+        incorrect.append("vertex_position")
+    if worst > th["point_reject"]:
+        incorrect.append("curve_position")
+    if incorrect:
+        return False, incorrect, cost
+    if worst <= th["point_accept"] and (gap is None or gap <= th["vertex_accept"]):
+        return True, [], cost
+    return None, [], cost
+
+
+def evaluate_parabola_graph(
+    recognized_features: dict[str, Any],
+    expected_drawing_spec: dict[str, Any],
+) -> dict[str, Any]:
+    th = PARABOLA_GRAPH_THRESHOLDS
+    required = recognized_features.get("required_elements")
+    required = required if isinstance(required, dict) else {}
+    confidence = _clamp01(_float_or_none(recognized_features.get("confidence")) or 0.0)
+    expected = _expected_parabolas(expected_drawing_spec)
+    if expected is None:
+        return _result("missing_spec", None, feedback="本題圖形批改設定尚未完成，這次不計入答錯。", system_error=True)
+    axes_on_canvas = isinstance(expected_drawing_spec.get("axis_range"), dict)
+    missing: list[str] = []
+    for element in expected_drawing_spec.get("required_elements", []):
+        if element in {"parabola_curve", "curve"}:
+            continue
+        if element in {"x_axis", "y_axis"} and axes_on_canvas:
+            continue
+        if not required.get(element):
+            missing.append(str(element))
+    drawn = _drawn_curves(recognized_features)
+    incorrect: list[str] = []
+    verdict: bool | None
+    if missing or not drawn:
+        verdict = False
+        if not drawn:
+            missing.append("parabola_curve")
+    elif len(drawn) < len(expected):
+        verdict = False
+        missing.append("parabola_curve")
+    elif len(drawn) > len(expected):
+        verdict = False
+        incorrect.append("extra_curve")
+    else:
+        # one-to-one assignment (at most a handful of curves): the cheapest total mismatch wins, so a single
+        # drawn curve can never be counted for two expected curves.
+        best: tuple[float, tuple[int, ...]] | None = None
+        for perm in itertools.permutations(range(len(drawn))):
+            total = sum(_compare_parabola(drawn[d], expected[e])[2] for e, d in enumerate(perm))
+            if best is None or total < best[0]:
+                best = (total, perm)
+        verdicts: list[bool | None] = []
+        for e, d in enumerate(best[1]):
+            v, bad, _cost = _compare_parabola(drawn[d], expected[e])
+            verdicts.append(v)
+            incorrect.extend(bad)
+        if any(v is False for v in verdicts):
+            verdict = False
+        elif all(v is True for v in verdicts):
+            verdict = True
+        else:
+            verdict = None
+    if confidence < th["confidence_min"]:
+        verdict = None
+    status = "success" if verdict is not None else "low_confidence"
+    score = 1.0 if verdict is True else (0.0 if verdict is False else 0.5)
+    return {
+        "status": status,
+        "is_correct": verdict,
+        "score": score,
+        "confidence": confidence,
+        "missing_features": sorted(set(missing)),
+        "incorrect_features": sorted(set(incorrect)),
+        "feedback": _build_feedback(verdict, missing, incorrect, correct_text=_PARABOLA_CORRECT_FEEDBACK),
+    }
+
+
 DRAWING_EVALUATOR_REGISTRY.update(
     {
         "histogram": evaluate_histogram,
@@ -913,6 +1145,7 @@ DRAWING_EVALUATOR_REGISTRY.update(
         "line_chart": evaluate_not_implemented,
         "coordinate_point_plot": evaluate_not_implemented,
         "line_graph": evaluate_line_graph,
+        "parabola_graph": evaluate_parabola_graph,
         "linear_inequality_region": evaluate_linear_inequality_region,
     }
 )
@@ -1022,6 +1255,12 @@ DRAWING_FEATURE_LABELS = {
     "function_line": "函數圖形（直線）",
     "line_position": "直線位置",
     "line_slope": "直線斜率",
+    "parabola_curve": "拋物線",
+    "curve_shape": "曲線形狀（應為拋物線）",
+    "opening_direction": "開口方向",
+    "vertex_position": "頂點位置",
+    "curve_position": "曲線位置",
+    "extra_curve": "多畫了不屬於本題的曲線",
     "line_intercept": "y 截距",
     "line_shape": "圖形應為直線",
     "boundary_lines": "邊界直線",

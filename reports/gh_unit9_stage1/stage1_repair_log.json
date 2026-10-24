@@ -1,0 +1,80 @@
+[
+ {
+  "id": 12571,
+  "fix": "MATH_PARSE_FAILED_220 replaced by derivation from PDF p.13"
+ },
+ {
+  "id": 12574,
+  "fix": "stem table (5,10 -> 45,80) restored from PDF p.16"
+ },
+ {
+  "id": 12592,
+  "fix": "stem completed from DOCX (y=-5x^2+20x and sub-questions (1)-(3))"
+ },
+ {
+  "id": 12593,
+  "fix": "stem completed from DOCX (求 f(x) 及其頂點坐標)"
+ },
+ {
+  "id": 12585,
+  "fix": "needs_review cleared after manual stem review"
+ },
+ {
+  "id": 12586,
+  "fix": "needs_review cleared after manual stem review"
+ },
+ {
+  "id": 12573,
+  "fix": "image",
+  "page": 15,
+  "bbox": [
+   230,
+   230,
+   398,
+   327
+  ],
+  "sha256": "c2e5347f2888e1dc718579b5f84d37f03c6d999455fd765e2ef938b40810dbab"
+ },
+ {
+  "id": 12591,
+  "fix": "image",
+  "page": 22,
+  "bbox": [
+   388,
+   139,
+   538,
+   264
+  ],
+  "sha256": "1df19cb5ef5658ce37c6e0793fcdd1bf1a99695dede569cecd9ba0c5652cb5da"
+ },
+ {
+  "fix": "insert",
+  "title": "9習題 觀念題1",
+  "skill": "gh_LinearFunctions",
+  "dedupe": "bd95ac85eb36e447"
+ },
+ {
+  "fix": "insert",
+  "title": "9習題 觀念題2",
+  "skill": "gh_QuadraticFunctions",
+  "dedupe": "2d598322880a15a6"
+ },
+ {
+  "fix": "insert",
+  "title": "9習題 觀念題3",
+  "skill": "gh_QuadraticFunctions",
+  "dedupe": "89c660a4a963314b"
+ },
+ {
+  "fix": "insert",
+  "title": "9習題 觀念題4",
+  "skill": "gh_QuadraticFunctions",
+  "dedupe": "ad63ca48de3610e2"
+ },
+ {
+  "fix": "insert",
+  "title": "9習題 觀念題5",
+  "skill": "gh_QuadraticFunctions",
+  "dedupe": "ee2d31b0765101a5"
+ }
+]

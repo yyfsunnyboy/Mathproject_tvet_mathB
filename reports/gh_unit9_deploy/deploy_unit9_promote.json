@@ -1,0 +1,49 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "function.linear_quadratic",
+ "registry_revision": "promoted-3752585c4f0b",
+ "bundle_sha256": "3752585c4f0b8e298a782ddc2b6186155be35d759ee6e511272f814f8a4f10ed",
+ "allowed_operations": [
+  "complete_square_items",
+  "evaluate_function_statements",
+  "quadratic_always_sign",
+  "quadratic_extrema",
+  "quadratic_graph_transformations",
+  "quadratic_vertex_axis",
+  "solve_linear_functions",
+  "solve_quadratic_applications"
+ ],
+ "skill_bindings": {
+  "gh_LinearFunctions": {
+   "fixed_domain_key": "function.linear_quadratic",
+   "allowed_operations": [
+    "evaluate_function_statements",
+    "solve_linear_functions"
+   ]
+  },
+  "gh_QuadraticFunctions": {
+   "fixed_domain_key": "function.linear_quadratic",
+   "allowed_operations": [
+    "complete_square_items",
+    "evaluate_function_statements",
+    "quadratic_always_sign",
+    "quadratic_extrema",
+    "quadratic_graph_transformations",
+    "quadratic_vertex_axis",
+    "solve_quadratic_applications"
+   ]
+  }
+ },
+ "operations_executed": {
+  "complete_square_items": 2,
+  "evaluate_function_statements": 8,
+  "quadratic_always_sign": 3,
+  "quadratic_extrema": 5,
+  "quadratic_graph_transformations": 4,
+  "quadratic_vertex_axis": 1,
+  "solve_linear_functions": 5,
+  "solve_quadratic_applications": 10
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\function_linear_quadratic"
+}

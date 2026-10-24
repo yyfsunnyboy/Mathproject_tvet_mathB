@@ -1,0 +1,861 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_unit9_rehearsal\\run",
+ "deferred": {
+  "12567": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12568": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12570": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）（描繪 + 頂點／對稱軸）",
+  "12576": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12587": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）（描繪 + 頂點／對稱軸）"
+ },
+ "promotion": {
+  "domain_key": "function.linear_quadratic",
+  "registry_revision": "promoted-aae1cda8fd49",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12560": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0e9fc2e461dbbbaa98f4adad6e2824ea5ebd6657c481ea260d81f6101c70c502",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12561": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3a69e014014da9faa2c02469aafb232c653f316e8ef016b227444879ee71d8e4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12562": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "70e428cd61ee155aa3919f6fd9b9dd914c2d971cd4f29af91478b0ffbded26e4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12563": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "eaee9bc14b4273032f5cf9fcbf3b28dc9ccc936777b56862f2ac734396793a3c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12564": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1021be0c650a8ba0b7be4efa79499393e450e5a7f612f12d7560c97e846f7991",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12565": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "075a1fe8d42538a88a71c417f4ccf6ecd4d89b1bc72340278e936941f1276b13",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12566": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cc5f599c9e97f0ca2f6d2c5106bbc6304b7b91ba079118c891f1571bd5eaddae",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12569": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "complete_square_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7d574a31626754a71c35e39faf1cf4a380c7e6490844eaf7d1df8831d8aa7845",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12571": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "830ed965bb67d9e28d79e1a941de755ffc7b504a3480956282c6971ff5c7165b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12572": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ea87cef4b7d9a18e2df6067376e1fe8977b0164c6e0176293840f960d75cc0cf",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12573": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "72441b23f4fbc24ed87121c8879e6d5be83207bfeb0bbe5f325e245337b751ea",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12574": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "16967474e61f8f3f536418db3c412a3327264cc59b581e2dbbf19abcbb0de3a6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12575": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7b835a4a2b4e574f9c152ec37965b898e17255743f6ce700bb86552e6f7a91f9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12577": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9ef5395cd04fe0af1302df31e474103645cf4c487f0ea7ae5d21591fc4f2e4b1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12578": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a8f8b4f1d43b98af54591c0ec31aab43c4a1e13a77e57502021c2108e9a6cf86",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12579": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "complete_square_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "15b9d1fed2a775e8c24a767ebc6dc741bf3eb7b4607b93105d5f33348b8ee463",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12580": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_vertex_axis",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "66559c40ee3aa1e4fb791447ca3823b23bc38ca024e13b4c7c1955ed54d0ba84",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12581": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a329870e180f7ddf07482a62045150bfc3d95079939fb0cc00ccb70b612c7653",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12582": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "36ead87a80f82bdb2a9e4f71e347499e06acba2e561c454f1d467db1bc4e41d0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12583": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f4d73ef862fff1e6d39f90d13489ca9ff5ac942e4824935e5ae8fc9b203fb992",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12584": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "85699bd28f2996a1d154ff115610dfa4b4fc421600d24bc83dfd460c12a550b9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12585": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2df5e63b0155c6393e1a1a0297c0add205301aacbee7143536ea5724615cb8c2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12586": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9aed038034279de0c5029a47080d1d195911ef1a2b10f373ff74569e20974664",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12588": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "fab9df718217c413a4f17bbde98eff0ddee7ec1cdee1d9b84bfa34c3253b0b78",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12589": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f8302bec2b7cd5c517faefe39258771bbbb07d8d2f99a0cde484b78f17bcb7fb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12590": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c0fdba623ab0dac1bfb8ef43d7659e24d962ddc1609979e97cf598d29a0d5e01",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12591": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "246342a07a47adc7c9ba083a14d0f16a8293772a9d75a44ac792a9fd1b0e77a2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12592": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c0c4ff4dcec035d297c5323883272d44fe3c9ea4a4d0153a50e57885b23a3170",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12593": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ce2c3a9d3d3594898e00106c17c2b53d093c443d69b8748000ae27bb7d887e05",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12594": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7e0d036684363885834482ee785e92aae6c19406be3d2584ba983bce19edcaba",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12595": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "bd4fea7036ab522080fd687a1fda06a754a1117da3d68df0ad9fd26ef9bff6e8",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12596": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4b640789c7e3e126d526ef78a904b68cc938aa9539cbb908eef4fa16d9660462",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12597": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e2cb1aaf0d0209ce913af4e4e1123329ce74a497957def025069c3f20794d79d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12598": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "de906f7e90276bf9277f21ce5240247e8cb17d82a1eac023a63a403e3e843f26",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12599": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7ba4be5d31bbea1023f14ce65a87027718c6ec596e4f847133ec94ad8a865ef2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12600": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1d6a09e76449fc7d446e193dda03ed1a0e4be993b30f216e46ca420babd8739d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12601": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9f2881d4cea9160d7d56de4fc1b9887586f588fc04315fd2e320d42209683231",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12602": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "variants": 2,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8f9280ce5c2c31241e1e7d0f7bde120ccc1f7743e91863504227ce0130877425",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 2
+   }
+  }
+ },
+ "publish": {
+  "gh_LinearFunctions": {
+   "status": "production_published",
+   "component_count": 8,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 6,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12560",
+    "src_12561",
+    "src_12562",
+    "src_12563",
+    "src_12564",
+    "src_12565",
+    "src_12566",
+    "src_12598"
+   ]
+  },
+  "gh_QuadraticFunctions": {
+   "status": "production_published",
+   "component_count": 30,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 25,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12569",
+    "src_12571",
+    "src_12572",
+    "src_12573",
+    "src_12574",
+    "src_12575",
+    "src_12577",
+    "src_12578",
+    "src_12579",
+    "src_12580",
+    "src_12581",
+    "src_12582",
+    "src_12583",
+    "src_12584",
+    "src_12585",
+    "src_12586",
+    "src_12588",
+    "src_12589",
+    "src_12590",
+    "src_12591",
+    "src_12592",
+    "src_12593",
+    "src_12594",
+    "src_12595",
+    "src_12596",
+    "src_12597",
+    "src_12599",
+    "src_12600",
+    "src_12601",
+    "src_12602"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_LinearFunctions": {
+   "served_examples": {
+    "12560": 10,
+    "12561": 10,
+    "12562": 10,
+    "12563": 10,
+    "12564": 10,
+    "12565": 10,
+    "12566": 10,
+    "12598": 10
+   },
+   "problems": [],
+   "drawing_served_only": [
+    12560
+   ]
+  },
+  "gh_QuadraticFunctions": {
+   "served_examples": {
+    "12569": 3,
+    "12571": 2,
+    "12572": 2,
+    "12573": 3,
+    "12574": 3,
+    "12575": 2,
+    "12577": 3,
+    "12578": 3,
+    "12579": 2,
+    "12580": 2,
+    "12581": 3,
+    "12582": 2,
+    "12583": 3,
+    "12584": 3,
+    "12585": 3,
+    "12586": 3,
+    "12588": 3,
+    "12589": 3,
+    "12590": 3,
+    "12591": 3,
+    "12592": 3,
+    "12593": 2,
+    "12594": 3,
+    "12595": 3,
+    "12596": 3,
+    "12597": 3,
+    "12599": 2,
+    "12600": 2,
+    "12601": 3,
+    "12602": 2
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

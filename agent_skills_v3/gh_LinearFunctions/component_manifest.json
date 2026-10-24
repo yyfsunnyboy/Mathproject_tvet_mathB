@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_LinearFunctions",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12560",
+      "textbook_example_id": 12560,
+      "status": "verified",
+      "problem_type_id": "solve_linear_functions",
+      "domain_operation": "solve_linear_functions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12560/generate.py"
+    },
+    {
+      "component_id": "src_12561",
+      "textbook_example_id": 12561,
+      "status": "verified",
+      "problem_type_id": "solve_linear_functions",
+      "domain_operation": "solve_linear_functions",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12561/generate.py"
+    },
+    {
+      "component_id": "src_12562",
+      "textbook_example_id": 12562,
+      "status": "verified",
+      "problem_type_id": "evaluate_function_statements",
+      "domain_operation": "evaluate_function_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12562/generate.py"
+    },
+    {
+      "component_id": "src_12563",
+      "textbook_example_id": 12563,
+      "status": "verified",
+      "problem_type_id": "solve_linear_functions",
+      "domain_operation": "solve_linear_functions",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12563/generate.py"
+    },
+    {
+      "component_id": "src_12564",
+      "textbook_example_id": 12564,
+      "status": "verified",
+      "problem_type_id": "solve_linear_functions",
+      "domain_operation": "solve_linear_functions",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12564/generate.py"
+    },
+    {
+      "component_id": "src_12565",
+      "textbook_example_id": 12565,
+      "status": "verified",
+      "problem_type_id": "solve_linear_functions",
+      "domain_operation": "solve_linear_functions",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12565/generate.py"
+    },
+    {
+      "component_id": "src_12566",
+      "textbook_example_id": 12566,
+      "status": "verified",
+      "problem_type_id": "evaluate_function_statements",
+      "domain_operation": "evaluate_function_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12566/generate.py"
+    },
+    {
+      "component_id": "src_12598",
+      "textbook_example_id": 12598,
+      "status": "verified",
+      "problem_type_id": "evaluate_function_statements",
+      "domain_operation": "evaluate_function_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12598/generate.py"
+    }
+  ]
+}

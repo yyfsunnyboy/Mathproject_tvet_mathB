@@ -1,0 +1,232 @@
+{
+ "calls": 27,
+ "exact": 17,
+ "uncertain": 5,
+ "false_accept": [
+  "curvature wrong (a=1)",
+  "curvature wrong (a=6)",
+  "curvature wrong (a=1)",
+  "curvature wrong (a=6)"
+ ],
+ "false_reject": [
+  "all three correct"
+ ],
+ "rows": [
+  {
+   "case": "all three correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "all three correct, sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "only two drawn",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "same curve repeated x3",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "horizontal shift wrong (g at 3)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "vertical shift wrong (h at 7)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "case": "opening wrong (h opens down)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.9
+  },
+  {
+   "case": "curvature wrong (a=1)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.9
+  },
+  {
+   "case": "curvature wrong (a=6)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.9
+  },
+  {
+   "case": "all three correct",
+   "round": 1,
+   "want": true,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "all three correct, sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.85
+  },
+  {
+   "case": "only two drawn",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "same curve repeated x3",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "horizontal shift wrong (g at 3)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "vertical shift wrong (h at 7)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "opening wrong (h opens down)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "curvature wrong (a=1)",
+   "round": 1,
+   "want": false,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "curvature wrong (a=6)",
+   "round": 1,
+   "want": false,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "all three correct",
+   "round": 2,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "all three correct, sloppy",
+   "round": 2,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "only two drawn",
+   "round": 2,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "case": "same curve repeated x3",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "horizontal shift wrong (g at 3)",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "vertical shift wrong (h at 7)",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "case": "opening wrong (h opens down)",
+   "round": 2,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "curvature wrong (a=1)",
+   "round": 2,
+   "want": false,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "case": "curvature wrong (a=6)",
+   "round": 2,
+   "want": false,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  }
+ ]
+}

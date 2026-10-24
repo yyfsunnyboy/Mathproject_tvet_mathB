@@ -1,0 +1,82 @@
+{
+ "facade": {
+  "gh_LinearFunctions": {
+   "served_examples": {
+    "12560": 10,
+    "12561": 10,
+    "12562": 10,
+    "12563": 10,
+    "12564": 10,
+    "12565": 10,
+    "12566": 10,
+    "12598": 10
+   },
+   "problems": [],
+   "drawing_served_only": [
+    12560
+   ]
+  },
+  "gh_QuadraticFunctions": {
+   "served_examples": {
+    "12567": 3,
+    "12569": 2,
+    "12570": 3,
+    "12571": 2,
+    "12572": 3,
+    "12573": 2,
+    "12574": 2,
+    "12575": 3,
+    "12576": 2,
+    "12577": 2,
+    "12578": 3,
+    "12579": 2,
+    "12580": 2,
+    "12581": 2,
+    "12582": 3,
+    "12583": 2,
+    "12584": 3,
+    "12585": 3,
+    "12586": 2,
+    "12587": 2,
+    "12588": 3,
+    "12589": 2,
+    "12590": 2,
+    "12591": 2,
+    "12592": 3,
+    "12593": 2,
+    "12594": 2,
+    "12595": 2,
+    "12596": 2,
+    "12597": 3,
+    "12599": 2,
+    "12600": 2,
+    "12601": 2,
+    "12602": 3
+   },
+   "problems": [],
+   "drawing_served_only": [
+    12567,
+    12570,
+    12576,
+    12587
+   ]
+  }
+ },
+ "manifest_status": {
+  "gh_LinearFunctions": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 8
+  },
+  "gh_QuadraticFunctions": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 34
+  }
+ },
+ "manifest_components": {
+  "gh_LinearFunctions": 8,
+  "gh_QuadraticFunctions": 34
+ },
+ "manifest_matches_specs": true,
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

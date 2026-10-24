@@ -1,0 +1,430 @@
+{
+ "failures": {},
+ "deferred": {
+  "12567": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12568": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12570": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）（描繪 + 頂點／對稱軸）",
+  "12576": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）",
+  "12587": "拋物線作圖題：既有 drawing 契約沒有可用的拋物線 grader（function_graph 不受 drawing_answer_analysis_service 支援）（描繪 + 頂點／對稱軸）"
+ },
+ "report": {
+  "12560": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12561": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12562": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12563": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12564": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12565": {
+   "skill": "gh_LinearFunctions",
+   "operation": "solve_linear_functions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12566": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12569": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "complete_square_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12571": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12572": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12573": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12574": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12575": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12577": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12578": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12579": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "complete_square_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12580": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_vertex_axis",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12581": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12582": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12583": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12584": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12585": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12586": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12588": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_graph_transformations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12589": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_extrema",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12590": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "quadratic_always_sign",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12591": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12592": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12593": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12594": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12595": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12596": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12597": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "solve_quadratic_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12598": {
+   "skill": "gh_LinearFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12599": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12600": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12601": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12602": {
+   "skill": "gh_QuadraticFunctions",
+   "operation": "evaluate_function_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_QuadraticFunctions",
+    "verified"
+   ],
+   "variants": 2,
+   "failures": []
+  }
+ }
+}

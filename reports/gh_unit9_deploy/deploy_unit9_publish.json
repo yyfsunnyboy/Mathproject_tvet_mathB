@@ -1,0 +1,22 @@
+{
+ "gh_LinearFunctions": {
+  "status": "production_published",
+  "component_count": 8,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 6,
+  "static_count": 0
+ },
+ "gh_QuadraticFunctions": {
+  "status": "production_published",
+  "component_count": 30,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 25,
+  "static_count": 0
+ }
+}

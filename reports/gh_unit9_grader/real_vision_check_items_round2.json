@@ -1,0 +1,246 @@
+{
+ "analyzer": "vision_analyzer:google:gemini-3.5-flash-lite",
+ "calls": 24,
+ "accepted": 15,
+ "rejected": 9,
+ "uncertain": 0,
+ "false_accept": [],
+ "false_reject": [],
+ "uncertain_cases": [],
+ "per_item": {
+  "12567": {
+   "calls": 14,
+   "exact": 14
+  },
+  "12570": {
+   "calls": 2,
+   "exact": 2
+  },
+  "12576": {
+   "calls": 4,
+   "exact": 4
+  },
+  "12587": {
+   "calls": 4,
+   "exact": 4
+  }
+ },
+ "rows": [
+  {
+   "item": "12567",
+   "case": "correct a=1",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=1 sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=3",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=3 sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "wrong shifted a=3",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "wrong opening a=3",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=-2",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=-2 sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "wrong shifted a=-2",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12567",
+   "case": "wrong opening a=-2",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=5",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=5 sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12567",
+   "case": "correct a=1/2",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12567",
+   "case": "correct a=1/2 sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12570",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12570",
+   "case": "wrong shifted",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12576",
+   "case": "(a) correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12576",
+   "case": "(b) correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12576",
+   "case": "(a) drew (b)'s curve",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12576",
+   "case": "(b) drew (a)'s curve",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12587",
+   "case": "(1) correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12587",
+   "case": "(2) correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12587",
+   "case": "(1) drew (2)'s curve",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12587",
+   "case": "(2) wrong shifted",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  }
+ ]
+}
