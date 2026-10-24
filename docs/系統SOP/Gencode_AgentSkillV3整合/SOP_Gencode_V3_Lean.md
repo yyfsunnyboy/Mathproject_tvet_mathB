@@ -1,4 +1,4 @@
-# Gencode V3 日常執行 SOP（v1.16-Lean）
+# Gencode V3 日常執行 SOP（v1.17-Lean）
 
 > 本文件是唯一日常主要 SOP，涵蓋教材 Stage 1 到學生端驗收。
 > 欄位、Answer Type、Checker、Gate 定義以 [Specification](./SOP_Gencode_AgentSkillV3_Specification.md) 為準。
@@ -75,6 +75,8 @@
    普高教材建置期間，同單元網頁重新匯入預設取代舊版：先核對來源、顯示範圍並確認，備份後在新版寫入的同一交易清理舊題與該單元無效 `skill_curriculum` 綁定（不刪 Skill 與 Domain Function）；多份來源範圍不明或有作答關聯時停止。匯入成功仍須獨立通過 Stage 1 封板。
    例題、隨堂練習、習題（含「戊.習題」）只是來源類型，不得自動建立 Skill；無法可靠判定數學 Skill 時標記待確認。已驗證且仍有效的 Domain Function 重用，不隨教材版本刪除。
    教材管理列表依題目自身 `source_volume`／`source_chapter` 歸屬，共用 Skill（如 `gh_Exercises`）不得造成跨單元顯示；清理範圍不得以 Skill 名稱或 ID 範圍界定。匯入確認視窗選「否」＝保留舊題、維持原匯入行為。
+   來源題幹被截斷（題尾缺小題或條件）時，只修該題 `problem_text`：依 authoritative DOCX／PDF 逐字還原，保留 `raw_problem_backup`、`question_anchor` 與 Skill 綁定，於 `notes` 記錄修復來源與原文；修復前備份 DB；無法由來源確認的內容不得推測。範例：`reports/gh_unit11_repair/repair_truncated_stems.py`。
+   已被新版取代的舊版題目，確認無作答、Tracker、圖片及其他參照後，先備份 DB，再以明確範圍的交易實體刪除；不使用連鎖刪除，也不以軟停用機制長期與新版並存。
 9. **WARNING**：DB 已有教材只證明曾寫入，不證明 authoritative source 已驗證；Stage 1 PASS 前不得正式進 Stage 2。
 
 ## 3. Stage 2：Gencode V3 Generator
@@ -105,6 +107,9 @@
 3. `pass`、`NotImplementedError`、固定空回傳、無 assertion、僅編譯或僅 schema 不能算 executable。
 4. Exact Readiness 與 Executable Workspace Gate 均 PASS 後才能 `ready_to_rebuild`。
 5. 對每題獨立 rebuild 與驗證；不得把一題成功視為整個 Capability 的發布資格。
+6. 已 Promotion 的 Domain 套件以 hash 鎖定；新增 Operation 或題型 kind 時建立新 revision（`revision_000N`）與新 Bundle，經人工核准後才 Promotion，不就地修改已核准套件。
+7. Promotion 前先在臨時 store 與 DB 副本做隔離演練（範本：`reports/gh_unit11_deploy/rehearse_unit11*.py`），並確認正式路徑零寫入；核准步驟由人工記錄於 Bundle 的 `review` 區塊。
+8. Adapter 與 Domain 程式須同時相容 Python 3.11 與 3.14：f-string 運算式內不得含反斜線，LaTeX 片段以模組常數組合。
 
 ### 3.3 Component 與答案權威
 
@@ -144,6 +149,8 @@
 - 無法安全解析或可靠判定時回報 parse／checker error，不猜測為正確，也不靜默判錯。
 - 禁止單題硬編答案、特殊字串、放寬判分；不得把尚未實作的智慧判分宣稱已上線。
 - 正確答案顯示是提交後 feedback，來源為 canonical answer；不參與 grading authority。
+- 共用 checker 新增可解析的解集原子（例如 `x=a`、`x≠a`）屬契約擴充：保留既有測試並加入對應的等價與錯答案例，影響範圍須寫入 Bundle 核准說明。
+- 題型與 checker 對照（Unit 11 實例）：不等式解集→`inequality_solution_checker`；根的集合／複選→`solution_set_checker`；方程式→`equation_checker`；多項式→`expression_checker`；選擇→`choice_label_checker`；多小題→`multi_part_answer_checker`；作圖→`free_response_drawing_checker`。
 
 ## 5. 必要驗證與 Sandbox
 
@@ -178,6 +185,14 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 8. 另查 Specification 與 PipelineFlow 規定的 Phase 3 publish eligibility、runtime smoke 與人工審核位置。
 9. Staging 失敗不得 promote；修正通用責任層後重新驗證 staging。
 
+### 5.2 增量驗收（新增元件或新 revision）
+
+1. 只重建受影響元件（部署腳本的 `ONLY` 範圍）；已發布元件不重建、不重跑。
+2. 發布後執行 `verify-live`（manifest 數量與規格相符、tracker 全為 verified、wrapper 判分）與 `accept`（新程序、Flask test client、DB 副本；不寫學生紀錄、不呼叫外部 AI）。
+3. 教材管理頁以 DB 副本確認該單元清單與教材題數一致。
+4. 不重啟正式 Flask：Skill 綁定於服務啟動時載入，重啟由管理者決定，結案時回報「需要重啟」。
+5. 部署腳本範本：`reports/gh_unit11_deploy/deploy_unit11*.py`（backup → promote → quarantine → rebuild → publish → verify-live → accept）。
+
 ## 6. Partial Publish、DEFERRED、回滾
 
 1. Phase 3 只封裝 VERIFIED component；failed／未 ready／來源或 Oracle 不合格者保留明確 exclusion reason。
@@ -208,3 +223,4 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 - [數學答案檢核原則](../數學答案檢核原則_v1.12_20260908.md)：等價判定與 required form 補充。
 - [KnownIssues](./KnownIssues_TechnicalDebt.md)：暫緩技術債，不能作新實作範例。
 - [Complete Master SOP](./SOP_Gencode_AgentSkillV3_Complete.md)：歷史案例與詳細整合紀錄，僅在查證舊行為時選讀。
+- [README](../../../README.md)：專案概觀、成熟度與文件導覽。

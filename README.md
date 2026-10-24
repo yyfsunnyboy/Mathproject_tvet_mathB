@@ -1,339 +1,154 @@
-# AI自適應學習平台(技術型高中版)
+# MathProject — Verified AI Code Generation for Adaptive Mathematics Learning
 
-> ## ▶️ [評審／教授請點此進入公開 Demo](https://mathb.math-adaptive.org/review-demo)
->
-> **https://mathb.math-adaptive.org/review-demo**  
-> 可直接進入唯讀展示模式，快速了解目前系統的教材、練習介面與教師端整合成果；展示模式不提供正式資料寫入。
+> **▶️ 公開 Demo（唯讀）：<https://mathb.math-adaptive.org/review-demo>** — 可直接瀏覽教材、學生練習介面與教師端；展示模式不寫入正式資料。
 
-## 專案定位
+MathProject 是一個以 Flask 實作的數學學習平台。它的核心工程問題是：**如何讓 AI 產生的出題程式，在進入學生端之前被證明數學正確、可判分、可追溯到教材來源。**
 
-**AI自適應學習平台(技術型高中版)** 是一個以技術型高中數學 B 系列為核心的長期教學研究與工程專案。
-
-專案最終目標是建立一套能根據學生學習證據進行診斷、推薦與補救的 AI 自適應學習平台；但目前開發進度仍在基礎建設階段，**尚未把自適應學習架構視為已完成成果**。
-
-目前已完成的主要里程碑是：
-
-> **Phase 1 — 技術型高中數學 B 教材數位化與系統化導入**
-
-也就是先把教材內容、章節結構、例題、習題、圖形與題型資料整理成系統可以持續使用、驗證與擴充的基礎資料層。
+| 價值 | 內容 |
+| --- | --- |
+| 工程深度 | AI 產生可執行的出題程式（GenCode V3），經過 Domain 精確運算、獨立 Validator、Sandbox、人工審核 Promotion 後才發布。 |
+| 研究價值 | 以 SymPy 作數學 Oracle，結合 AI 視覺特徵抽取＋確定性批改、知識追蹤（AKT）、PPO 路由與知識圖譜；各項成熟度見[實作現況](#實作現況已上線已測試研究原型)。 |
+| 系統規模 | 技高數學 B1～B4 教材全數匯入（1,268 題）；普高數學第一冊 Unit 1～11（405 題）已逐單元封板並發布 398 題。 |
 
 ---
 
-## 目前開發階段
+## 教材涵蓋範圍
 
-### Phase 1 — 技術型高中數學 B 教材導入
+| 範圍 | 教材匯入 | GenCode V3 題型程式 | 說明 |
+| --- | --- | --- | --- |
+| 技高數學 B1 | 321 題 | 314 題 verified | 3 章「式的運算」有 6 題待人工審核。 |
+| 技高數學 B2 | 321 題 | 200 題 verified | 向量章有 6 題 failed，其餘持續遷移中。 |
+| 技高數學 B3 | 373 題 | 373 個元件已建置（manifest 狀態 `package_ready`／candidate） | 尚未納入正式 tracker 驗證。 |
+| 技高數學 B4 | 253 題 | 54 題 verified | 統計等章持續進行。 |
+| **普高數學第一冊 Unit 1～11** | **405 題** | **398 題 verified** | 另 7 題為明確 DEFERRED／failed（Unit 1、2、5、9）。 |
+| 普高第二～四冊、選修 | 早期匯入資料存在 | 未走 V3 封板 | 後續擴充，沿用第一冊 SOP。 |
 
-目前已將技術型高中數學 **B1–B4** 納入同一套 curriculum / skill / textbook import 體系，重點工作包括：
+> 數字來自 `instance/kumon_math.db` 的 `textbook_examples` 與 `gencode_component_tracker`（截至 2026-10-24）；「verified」指通過 V3 Gate 並寫入 tracker，不代表已完成所有人工教學審查。
 
-- 建立 B1–B4 的冊別、章節、小節與技能結構。
-- 匯入 PDF / DOCX 教材內容。
-- 解析例題、隨堂練習、習題與章節自我評量。
-- 保存題目來源與教材定位資訊，避免教材內容失去可追溯性。
-- 處理數學公式、向量符號、特殊字元與 LaTeX 表示。
-- 對需要圖形的教材題目建立 image / PDF crop 資產流程。
-- 將教材內容整理成後續可供 generator、checker 與 practice runtime 使用的結構化資料。
-- 透過測試、人工驗收與 runtime contract 持續檢查匯入品質。
+---
 
-這個階段的核心不是「先做推薦模型」，而是先建立可靠的教材與題庫基礎。
+## 系統架構
 
-```text
-Textbook PDF / DOCX
-        │
-        ▼
-教材解析與結構化
-        │
-        ├── Curriculum
-        ├── Volume / Chapter / Section
-        ├── Textbook Examples
-        ├── Exercises / Self-assessment
-        └── Visual Assets
-        │
-        ▼
-可追蹤、可驗證的教材資料層
-        │
-        ▼
-Generator / Checker / Practice Runtime 驗證基礎
+```mermaid
+flowchart LR
+    SRC["教材來源<br/>DOCX / PDF / MathType"] --> IMP["教材匯入 V3<br/>解析 · 來源追溯 · 圖形裁切"]
+    IMP --> DB[("SQLite<br/>教材 · Skill · Tracker")]
+    DB --> GEN["GenCode V3<br/>Domain · Generator · Validator"]
+    GEN --> PUB["發布<br/>agent_skills_v3 · skills"]
+    PUB --> RT["Practice Runtime<br/>作答 · 判分 · 動態圖形"]
+    RT --> STU["學生端"]
+    RT --> LOG[("作答與診斷紀錄")]
+    LOG --> TEA["教師端<br/>學習分析 · 診斷"]
+    LOG --> ADP["適性學習<br/>AKT stub · PPO 路由 · 知識圖譜"]
+    ADP --> RT
 ```
 
----
-
-## 為什麼先做教材工程
-
-真正的自適應學習不能只靠一個推薦模型。
-
-在進入學生知識狀態建模與個人化推薦之前，系統至少必須先知道：
-
-- 學生正在學哪一本教材、哪一章、哪一節。
-- 每一題對應哪個技能與教材來源。
-- 題目能否穩定顯示、作答與判分。
-- 數學答案是否能以語意而非單純字串判定。
-- 圖形、圖片、多小題與作圖題是否有一致的 runtime 規範。
-- 學生作答紀錄是否能形成後續研究可使用的 learning evidence。
-
-因此目前先完成：
-
-**教材 → 結構化資料 → 題型／判分／練習基礎**
-
-之後才進一步研究：
-
-**學生作答 → Learning Evidence → Knowledge / Mastery Modeling → Adaptive Decision → 個人化學習與補救**
+主要目錄：`core/`（匯入、GenCode、checker、adaptive、routes）· `agent_skills_v3/` 與 `skills/`（已發布題型程式）· `templates/`、`static/`（Web UI）· `tests/` · `docs/`。完整說明見 [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)。
 
 ---
 
-## 目前系統成果
+## GenCode V3：可驗證的 AI 程式生成
 
-| 項目 | 目前狀態 | 說明 |
+AI 與規則只負責「組題與生成程式」；**數學答案由 Domain 的精確運算決定，並由另一條獨立路徑驗證**，不採信 AI 或 Generator 自己的輸出。
+
+```mermaid
+flowchart TD
+    A["Stage 1 教材封板<br/>來源 SHA-256 · 題數 · 公式 · 圖形"] --> B["Capability 盤點<br/>重用既有 Domain / Operation"]
+    B --> C["Domain Operation<br/>SymPy · Fraction 精確解"]
+    C --> D["獨立 Validator<br/>另一種演算法驗證答案"]
+    D --> E["Component 生成<br/>Generator · metadata · hint"]
+    E -->|失敗| H["Healer<br/>regex · AST 修復"]
+    H --> E
+    E --> F["Sandbox 驗證<br/>20 組種子 · 正解/錯解/等價解"]
+    F --> G["人工審核 Bundle<br/>digest 鎖定 · Promotion"]
+    G --> I["Phase 2 重建 → Publish<br/>manifest · wrapper · 學生端驗收"]
+```
+
+| 層 | 實作位置 | 作用 |
 | --- | --- | --- |
-| 技高數學 B1–B4 curriculum | Phase 1 已導入 | 已納入冊別、章節、小節、技能與教材資料體系。 |
-| 教材 PDF / DOCX 匯入 | 已建立 | 支援教材內容解析與結構綁定。 |
-| 例題／習題／自我評量 | 已導入 | 依教材來源建立可追蹤的結構化題目資料。 |
-| 數學公式與特殊符號 | 已建立處理流程 | 包含 LaTeX、向量、特殊數學符號與異常字元處理。 |
-| 教材圖形資產 | 已建立流程 | 可由教材 PDF 擷取必要圖形並掛接到題目資料。 |
-| 題型 generator / checker 基礎 | 持續驗證 | 用於確認教材題目能否轉成可執行、可判分的練習內容。 |
-| Practice runtime | 持續驗證 | 用於檢查選擇、填充、多小題、圖片、作圖等題型的實際呈現與作答。 |
-| 教師／學生展示介面 | 可展示 | 提供目前整合成果的實際操作介面。 |
-| 自適應知識狀態模型 | **尚未列為完成成果** | 屬於後續階段。 |
-| 個人化 routing / remediation | **尚未列為完成成果** | 屬於後續階段。 |
+| Domain / Operation | `core/domain/promoted/`、`core/registry/` | 每個 Operation 有 `build_*_matrix` 與獨立的 `validate_*_matrix`；Promotion 後檔案以 hash 鎖定，變更須新 revision 並重新審核。 |
+| Validator | `core/gencode/services/v3_question_integrity_validator.py`、`answer_contract_gate.py` | 檢查題幹、答案契約、圖形與題型一致性。 |
+| Checker | `core/checkers/`（20 餘種共用 checker）、`core/gencode/checker_registry.py` | 不等式、解集、方程式、表達式、選擇、多小題、作圖等判分；以數學等價而非字串比對。 |
+| Healer | `core/healers/` | regex／AST 修復生成程式的語法與常見缺陷。 |
+| Sandbox / Gate | `tests/gencode/test_gh_unit*_sandbox.py`、`reports/gh_unit*_deploy/` | 每元件 20 組確定性種子；演練腳本在臨時 store 與 DB 副本上跑完整 Promotion→重建→發布→學生端判分，並確認未寫入正式路徑。 |
+| Promotion | `core/gencode/reviewed_capability_promotion.py` | 需人工 `human_approved` 才能寫入正式 store；每步驟備份與回滾點。 |
 
-> **重要說明**：本專案不把「檔案存在」或「程式可以執行」直接視為教材完成。不同章節仍會分別檢查 source coverage、題意正確性、圖形語意、checker 與瀏覽器實際呈現。
+實例（普高 Unit 11 多項式不等式）：5 個 Operation 涵蓋 38 題，含參數反求、應用題與函數圖形；Domain 測試 81 項、Sandbox 閘門逐元件通過，隔離演練後才經核准發布。
 
 ---
 
-## Phase 1 系統架構
+## 其他技術重點
 
-```text
-教材來源
-PDF / DOCX
-    │
-    ▼
-Textbook Import Pipeline
-    │
-    ├── 章節與小節辨識
-    ├── 題目文字與數學式解析
-    ├── 例題／練習／自評分類
-    ├── Curriculum Binding
-    └── Visual Asset Extraction
-    │
-    ▼
-結構化教材資料
-    │
-    ├── curriculum / chapter / section
-    ├── skill metadata
-    ├── textbook examples
-    ├── source traceability
-    └── image assets
-    │
-    ▼
-題庫工程驗證
-    │
-    ├── GenCode / generator
-    ├── validator
-    ├── checker
-    └── practice runtime
-```
+**SymPy 與數學 Oracle**（`core/domain/`、`core/checkers/`，54 個核心模組使用 SymPy）
+答案以精確有理數／根號運算；判分採 `safe parse → normalize → 數學等價 → required form`（[數學答案檢核原則](docs/系統SOP/數學答案檢核原則_v1.12_20260908.md)）。測試以手算標準答案、錯答與等價寫法三面向驗證。
 
-主要程式責任分布：
+**DOCX／PDF／MathType 教材解析與來源追溯**（`core/textbook_importer_v3_*.py`、`core/mtef/`、`core/textbook_pdf_visual.py`）
+DOCX 為文字與結構權威、PDF 為圖形權威；每題保存來源檔 SHA-256、題目錨點與 PDF 頁面／bbox；MathType（MTEF）公式轉 LaTeX；匯入前先 dry-run，並要求寫入範圍為零。流程見 [Stage 1 SOP](docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md)。
 
-- `app.py`：Flask application factory 與主要 Web 入口。
-- `core/`：教材匯入、資料服務、practice、GenCode 等核心邏輯。
-- `textbook_import/`：教材匯入相關流程與資產。
-- `skills/`：已整理／發布的題型與 checker。
-- `generators/`：可重用的題型生成邏輯。
-- `validators/`、`core/validators/`：題目與程式驗證。
-- `core/healers/`：生成程式的 regex / AST 修復。
-- `agent_skills*`：skill / family / prompt / evaluation metadata。
-- `templates/`、`static/`：學生與教師 Web UI。
-- `tests/`：regression、integration 與 runtime contract tests。
-- `reports/`：教材匯入、GenCode、coverage、acceptance 等驗證紀錄。
-- `docs/`：架構、SOP、runtime contract 與長期技術文件。
+**動態數學圖形與 AI 手寫批改**（`static/js/visual_spec.js`、`core/services/drawing_answer_analysis_service.py`）
+圖形由題目參數即時產生（座標平面、多圖並列、函數曲線），不使用靜態教材圖。作圖題由視覺模型抽取筆跡特徵，**再由確定性 evaluator 判定**（直線、拋物線、三次函數、不等式區域、直方圖等），模型不直接決定對錯。
 
-完整目錄說明見 [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)。
+**適性學習**（`core/adaptive/`）
+知識追蹤目前是**啟發式 AKT stub**（程式內明文標示，非真實 AKT 模型）；PPO 策略（`models/adaptive/phase2_policy.pt`）對 5 個算術 Skill 做 stay／remediate／return 路由；知識圖譜資料在 `kg_outputs/`。尚非全面上線能力，見下表。
+
+**教師分析與學習資料管理**（`core/teacher_analysis_service.py`、`core/diagnosis_analyzer.py`、`core/mistake_notebook_service.py`）
+作答紀錄、錯題本、診斷與班級管理；教師端提供學生學習分析與教材／技能管理頁面。
 
 ---
 
-## Practice Runtime 驗證原則
+## 實作現況：已上線／已測試／研究原型
 
-教材匯入完成後，仍需要確認題目在實際學生介面中可以正確使用。
+| 狀態 | 項目 |
+| --- | --- |
+| **已上線** | 教材匯入 V3 與來源追溯；GenCode V3 已發布題型（見涵蓋範圍表）；Practice Runtime（單選、填充、多小題、作圖）；共用 checker；動態圖形；教師端管理與分析頁；Waitress 正式部署與公開 Demo。 |
+| **已測試（範圍有限）** | AI 手寫／作圖批改（有單元測試與 evaluator 測試）；PPO 路由（5 個算術 Skill）；AI Tutor 多輪對話契約（[`docs/AI_TUTOR_CONVERSATION_CONTRACT.md`](docs/AI_TUTOR_CONVERSATION_CONTRACT.md)）。 |
+| **研究原型** | AKT（heuristic stub）；RAG 補救（已自 Phase 1 runtime 移除，保留實驗資料）；知識圖譜視覺化；模擬學生（`Simulated_student/`）。 |
 
-目前技高 B1–B4 共用 practice runtime 規範，主要檢查：
-
-- 單選題、填充題與多小題的作答格式。
-- 數學式與方程式的等價判定。
-- 向量與特殊數學符號的輸入與顯示。
-- 教材圖片與動態圖形的掛接。
-- 作圖題與手寫區的互動規則。
-- reference diagram 與學生 drawing layer 分離。
-- chapter / skill 與題目來源的對應關係。
-
-詳細規範見 [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)。
+限制與誠實說明：技高 B2～B4 與普高第二冊以後的 GenCode 覆蓋尚未完成；自適應模型未以大規模學生資料驗證學習成效；完整測試套件仍有少數既有失敗項，與目前單元無關，封板時另行處理。
 
 ---
 
-## 教授／評審快速查看
-
-### 1. 直接看 Demo
-
-▶️ **https://mathb.math-adaptive.org/review-demo**
-
-這是最快了解目前成果的方式，可瀏覽目前教材、學生練習與教師端整合畫面。
-
-### 2. 看工程結構
-
-建議依序閱讀：
-
-1. 本 `README.md`
-2. [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md)
-3. [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)
-4. `reports/` 中保留的教材匯入、coverage、GenCode 與 acceptance evidence
-5. `tests/` 中的 regression 與 contract tests
-
----
-
-## 安裝與啟動
-
-### 1. Clone
-
-```bash
-git clone https://github.com/yyfsunnyboy/Mathproject_tvet_mathB.git
-cd Mathproject_tvet_mathB
-```
-
-### 2. 建立 Python 虛擬環境
-
-Windows PowerShell：
+## 快速開始
 
 ```powershell
+git clone https://github.com/yyfsunnyboy/Mathproject_tvet_mathB.git
+cd Mathproject_tvet_mathB
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 3. 環境設定
-
-建立 `.env`。正式環境至少需要：
+建立 `.env`（不要提交）：
 
 ```env
-SECRET_KEY=請使用至少32字元且不可為預設值的隨機字串
+SECRET_KEY=至少 32 字元的隨機字串
+GEMINI_API_KEY=選填，僅 AI 功能需要
+MATHPROJECT_DATABASE_URI=選填
 ```
-
-需要雲端 AI 功能時再設定：
-
-```env
-GEMINI_API_KEY=your_google_api_key
-```
-
-可選：
-
-```env
-MATHPROJECT_DATABASE_URI=sqlite:///...
-WAITRESS_THREADS=10
-```
-
-### 4. 開發模式
 
 ```powershell
-python app.py
+python app.py            # 開發：http://127.0.0.1:5000
+.\run_production.bat     # Windows 正式（Waitress）
 ```
 
-預設：
-
-```text
-http://127.0.0.1:5000
-```
-
-### 5. Production（Windows）
-
-```powershell
-.\run_production.bat
-```
-
-### 6. Health check
-
-```text
-GET /healthz
-```
+健康檢查：`GET /healthz`。測試：`pytest -q`（建議依變更範圍執行，見 [SOP §5.0](docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md)）。
 
 ---
 
-## 主要技術
+## 文件導覽
 
-| 類別 | 技術 |
+| 想了解 | 閱讀 |
 | --- | --- |
-| Backend | Python, Flask, Flask-SQLAlchemy, Flask-Login |
-| Production WSGI | Waitress |
-| Database | SQLite / SQLAlchemy |
-| Math rendering | MathJax 3 SVG |
-| AI / multimodal | Google Gemini integration、OCR / vision related utilities |
-| Document processing | PyMuPDF, python-docx, pypdf, pypandoc |
-| Data / reporting | pandas, NumPy, openpyxl, Matplotlib |
-| Testing | pytest + browser / contract / integration regression suites |
+| 專案結構與檔案治理 | [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md) |
+| GenCode V3 日常 SOP（匯入→生成→發布→驗收） | [`SOP_Gencode_V3_Lean.md`](docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md) |
+| 題型契約、Checker、Gate 規格 | [`Specification`](docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md)、[`PipelineFlow`](docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_PipelineFlow.md) |
+| 技高 Practice Runtime 契約 | [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md) |
+| 自適應規格與 AKT stub 說明 | [`docs/自適應實作/`](docs/自適應實作/ADAPTIVE_PRODUCT_SPEC_v1.md) |
+| 各單元發布證據 | `reports/gh_unit*_deploy/`、`reports/gh_unit*_stage1/` |
+| Agent 作業規範 | [`AGENTS.md`](AGENTS.md) |
 
 ---
 
-## 測試與品質控制
+## 授權與資料
 
-`tests/` 是目前教材工程的重要品質證據，不是暫存檔案。
-
-常用測試：
-
-```powershell
-pytest -q
-```
-
-教材與題型進入正式學生端前，至少需要區分：
-
-```text
-source coverage
-→ curriculum binding
-→ formula / symbol correctness
-→ visual asset correctness
-→ generator / checker validation
-→ runtime rendering
-→ browser / human acceptance
-```
-
-這也是本專案保留 regression tests、runtime contract 與 acceptance evidence 的原因。
-
----
-
-## Repository Hygiene
-
-為避免教材研究與開發過程產生的中介檔案污染 repository：
-
-- 正式程式放在 `core/`、`scripts/`、`skills/`、`generators/` 等維護目錄。
-- regression tests 放在 `tests/`。
-- 長期技術文件放在 `docs/`。
-- 正式驗證證據集中於 `reports/`。
-- pytest cache、DB、WAL、local backup、probe、export 等由 `.gitignore` 排除。
-- 不將本機 SQLite database、IDE cache 或一次性測試輸出提交到 repository。
-
----
-
-## 後續研究與開發方向
-
-Phase 1 完成教材基礎後，後續預計依序進行：
-
-1. **Learning Evidence** — 整理學生作答紀錄、錯誤型態、作答時間與章節進度等可用證據。
-2. **Knowledge / Mastery Modeling** — 定義可以反映學生學習狀態的表示方式與評估方法。
-3. **Adaptive Decision** — 研究下一題、下一技能與補救內容的個人化決策策略。
-4. **Remediation** — 建立前置知識診斷與補救路徑。
-5. **Evaluation** — 透過模擬實驗與實際學生使用資料評估自適應策略是否真的改善學習。
-
-上述項目屬於**後續 roadmap**，不是目前 README 所宣稱的已完成功能。
-
----
-
-## 核心文件
-
-- [`docs/REPOSITORY_STRUCTURE.md`](docs/REPOSITORY_STRUCTURE.md) — repository 結構與檔案治理規則
-- [`docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`](docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md) — 技高 B1–B4 practice runtime contract
-- `reports/` — 教材匯入、GenCode、coverage、acceptance 等驗證紀錄
-- `tests/` — regression、integration 與 runtime contract tests
-
----
-
-## 專案目前的核心價值
-
-目前 **AI自適應學習平台(技術型高中版)** 最重要的成果，是先把技術型高中數學 B1–B4 從原始教材轉成可追蹤、可驗證、可持續擴充的系統化教材資料與題庫基礎。
-
-這個 Phase 1 基礎將作為後續 learning evidence、knowledge modeling 與真正自適應決策研究的起點。
+教材原檔（DOCX／PDF）、正式資料庫與學生資料不納入版本控制（由 `.gitignore` 排除）；請勿將金鑰或 `.env` 提交。

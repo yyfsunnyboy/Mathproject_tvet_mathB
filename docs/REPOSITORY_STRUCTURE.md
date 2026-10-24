@@ -44,14 +44,29 @@ This repository is organized so that production runtime code, content-generation
 
 ## Documentation
 
-- `README.md` — project overview and primary entry document.
-- `docs/` — long-lived architecture, design, contracts, and operational documentation.
-- `AGENTS.md` — repository-level agent/runtime engineering instructions.
+- `README.md` — project overview, maturity table, and primary entry document.
+- `AGENTS.md` — repository-level agent/runtime engineering instructions and the document index agents start from.
+- `docs/` — long-lived architecture, design, contracts, and operational documentation. Canonical documents (update these instead of adding parallel copies):
+
+| Topic | Canonical document |
+| --- | --- |
+| Daily GenCode V3 workflow (import → generate → publish → acceptance) | `docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md` |
+| Field, Answer Contract, Checker, Gate specification | `docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_Specification.md` |
+| Timing, state, publish and recovery | `docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_AgentSkillV3_PipelineFlow.md` |
+| Mathematical equivalence and required form | `docs/系統SOP/數學答案檢核原則_v1.12_20260908.md` |
+| Textbook import tooling (MathType/DOCX) | `docs/系統SOP/教材匯入工具/` |
+| Vocational practice runtime contract | `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md` |
+| AI Tutor multi-turn contract | `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` |
+| Adaptive learning specification (AKT stub, PPO routing) | `docs/自適應實作/` |
+| Known technical debt | `docs/系統SOP/Gencode_AgentSkillV3整合/KnownIssues_TechnicalDebt.md` |
+
+Per-unit deployment and evidence live under `reports/gh_unit*_stage1/` and `reports/gh_unit*_deploy/`; `docs/audits/SYSTEM_CURRENT_STATE_AUDIT.md` is a historical snapshot, not the current state.
+
 
 ## Historical and temporary material
 
 - `temp/archive/` — historical one-off diagnostics, repair scripts, old generated reports, and backup/intermediate artifacts retained only for traceability. Nothing under this area is a production runtime dependency.
-- `tmp/`, local `temp/`, caches, test outputs, dependency installs, database backups, and generated diagnostics are excluded from future commits by `.gitignore`.
+- `tmp/`, local `temp/`, caches, test outputs, dependency installs, database backups, and generated diagnostics are excluded from future commits by `.gitignore`. `scratch/` is a local diagnostics area; its one-off outputs and `scratch/chrome_profile/` (a browser profile) are no longer tracked.
 
 ## Repository hygiene rule
 

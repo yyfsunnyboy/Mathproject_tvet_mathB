@@ -1,4 +1,4 @@
-# Codex / Cursor 專案指引（v1.16-Lean）
+# Codex / Cursor 專案指引（v1.17-Lean）
 
 ## 1. 預設工作模式
 - **最小必要執行**：先讀本檔，再按任務選讀相關 SOP 章節；禁止起手全文讀取所有 SOP。
@@ -15,6 +15,9 @@
 - 已知債：同目錄 `KnownIssues_TechnicalDebt.md`；Complete Master SOP 僅供歷史與案例查考，非預設必讀。
 - 修改 vocational practice / generator runtime 前讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
 - 已支援 AI Tutor 的 Skill 遵循 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 共用多輪契約，不另建不相容服務。
+- 專案概觀與成熟度：`README.md`；目錄治理與 Canonical 文件表：`docs/REPOSITORY_STRUCTURE.md`；更新既有文件，不建立平行副本。
+- 自適應（AKT stub／PPO 路由）規格：`docs/自適應實作/`；`docs/audits/SYSTEM_CURRENT_STATE_AUDIT.md` 為歷史快照，不代表現況。
+- 單元範本：`agent_domains_candidate/polynomial_inequality/`（Domain、adapter、specs、build_sandbox、verification）、`tests/gencode/test_gh_unit11_*_sandbox.py`、`reports/gh_unit11_deploy/`（backup→promote→quarantine→rebuild→publish→verify-live→accept）、`reports/gh_unit11_repair/`（Stage 1 局部修復）。
 
 ## 3. 安全邊界
 - 正式 DB、教材與資產：先確認來源、備份／transaction 與 dry-run Gate；不得把 DB 有紀錄當 Stage 1 封板。
@@ -66,3 +69,10 @@
 - 只報告修改檔案、runtime 影響、必要驗證與未解問題；必要 Gate 通過且驗收完成即結案。
 - 不做寬泛重構、不重複已通過 Gate、不自動展開後續單元。
 - 問題修復、直接測試與必要回歸 PASS、無直接 blocker 時立即停止；只回報修改範圍、測試及理由、PASS/FAIL、相關 blocker。
+
+## 11. 開始新冊（第二冊起）的起手順序
+1. 確認 authoritative DOCX／PDF 與 SHA-256，完成 Stage 1 dry-run 與封板（Lean §2）。
+2. 盤點可重用的 Domain／Operation（`core/domain/promoted/`、`configs/gencode_promoted_capabilities.json`），只補缺口。
+3. 以單元範本建立候選套件與 specs，跑該單元 Sandbox 測試與 Domain 驗證器（Lean §3、§5）。
+4. 建立 Bundle（`ready_for_human_review`）並做隔離演練；人工核准後才用部署腳本 Promotion／Publish。
+5. 以增量驗收（Lean §5.2）收尾；不重啟 Flask，結案時回報是否需要重啟。
