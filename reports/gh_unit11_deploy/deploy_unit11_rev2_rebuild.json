@@ -1,0 +1,39 @@
+{
+ "failures": {},
+ "deferred": {},
+ "report": {
+  "12650": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12662": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12664": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

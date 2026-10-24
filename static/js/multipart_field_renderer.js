@@ -170,12 +170,13 @@
         wrap.className = "multi-part-canvas-wrap";
         wrap.style.cssText = "position:relative;display:inline-block;width:" + cssW + "px;max-width:100%;";
         const stage = document.createElement("div");
-        stage.style.cssText = "position:relative;width:" + cssW + "px;height:" + cssH + "px;border:1px solid #bbb;background:#fff;";
+        stage.style.cssText = "position:relative;width:" + cssW + "px;max-width:100%;aspect-ratio:" + cssW + " / " + cssH + ";height:auto;border:1px solid #bbb;background:#fff;";
         const make = () => {
             const c = document.createElement("canvas");
             c.width = Math.round(cssW * ratio);
             c.height = Math.round(cssH * ratio);
-            c.style.cssText = "position:absolute;left:0;top:0;width:" + cssW + "px;height:" + cssH + "px;";
+            // The page-wide `canvas { background: #fff }` rule would hide the grid canvas under the ink canvas.
+            c.style.cssText = "position:absolute;left:0;top:0;width:100%;height:100%;background:transparent;";
             return c;
         };
         const bg = make();
@@ -212,7 +213,7 @@
         bctx.fillStyle = "#374151";
         bctx.font = "10px sans-serif";
         for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x += 2) { if (x !== 0) bctx.fillText(String(x), mapX(x) + 2, Math.min(cssH - 2, mapY(0) + 11)); }
-        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += 2) { if (y !== 0) bctx.fillText(String(y), Math.max(2, mapX(0) + 3), mapY(y) - 2); }
+        for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += 2) { if (y !== 0 && mapY(y) > 22) bctx.fillText(String(y), Math.max(2, mapX(0) + 3), mapY(y) - 2); }
         bctx.fillText("x", cssW - 10, Math.min(cssH - 3, mapY(0) - 3));
         bctx.fillText("y", Math.min(cssW - 8, mapX(0) + 4), 10);
 
@@ -322,9 +323,20 @@
         return input;
     }
 
+    // A generator may hand over a label that is raw TeX (y=x^{3}, \frac{..}{..}); it is shown as math, never as source.
+    const RAW_TEX = /\\[a-zA-Z]{2,}|[\^_]\{/;
+    const TEX_DELIMITED = /\$|\\\(|\\\[/;
+
+    function mathSafeLabel(text) {
+        const raw = String(text == null ? "" : text);
+        if (!RAW_TEX.test(raw) || TEX_DELIMITED.test(raw) || /[一-鿿]/.test(raw)) return raw;
+        const marker = raw.match(/^\s*([\(（]\s*\d{1,2}\s*[\)）])\s*(.*)$/);
+        return marker ? marker[1] + " \\(" + marker[2] + "\\)" : "\\(" + raw + "\\)";
+    }
+
     function appendField(container, part, index, groupLabel) {
         const row = document.createElement("div");
-        row.className = "multi-part-row";
+        row.className = "multi-part-row" + (part.input_type === "canvas" ? " multi-part-row--canvas" : "");
         const fieldKey = String(part.key || part.field_key || `part_${index + 1}`);
         const prompt = figureSlotDisplayLabel(part, index);
         const control = createControl(part, index);
@@ -332,12 +344,28 @@
             control.setAttribute("aria-label", prompt);
         } else {
             const label = document.createElement("label");
-            label.textContent = prompt;
+            label.textContent = mathSafeLabel(prompt);
             label.setAttribute("for", `multi-part-input-${fieldKey}`);
             row.appendChild(label);
         }
         row.appendChild(control);
         container.appendChild(row);
+    }
+
+    // Consecutive independent canvases share one strip: side by side while they fit, wrapping below each other,
+    // and always on a line of their own so numeric fields never float beside a canvas.
+    function appendPartField(container, part, index, groupLabel) {
+        if (part.input_type !== "canvas") {
+            appendField(container, part, index, groupLabel);
+            return;
+        }
+        let strip = container.lastElementChild;
+        if (!strip || !strip.classList || !strip.classList.contains("multi-part-canvas-strip")) {
+            strip = document.createElement("div");
+            strip.className = "multi-part-canvas-strip";
+            container.appendChild(strip);
+        }
+        appendField(strip, part, index, groupLabel);
     }
 
     function render(container, payload) {
@@ -373,13 +401,13 @@
                     groupWrap.appendChild(groupLabel);
                 }
                 group.fields.forEach((sq) => {
-                    appendField(groupWrap, sq, globalIndex, group.label);
+                    appendPartField(groupWrap, sq, globalIndex, group.label);
                     globalIndex += 1;
                 });
                 container.appendChild(groupWrap);
             });
         } else {
-            parts.forEach((part, index) => appendField(container, part, index));
+            parts.forEach((part, index) => appendPartField(container, part, index));
         }
         return { fields: parts, groups };
     }
@@ -466,6 +494,7 @@
         controlKindFromPayload,
         applyControlKind,
         studentLabel,
+        mathSafeLabel,
         figureSlotDisplayLabel,
         fitAnswerStrip,
     };

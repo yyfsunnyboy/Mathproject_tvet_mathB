@@ -1,0 +1,12 @@
+{
+ "gh_PolynomialInequalities": {
+  "status": "production_published",
+  "component_count": 36,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 30,
+  "static_count": 0
+ }
+}

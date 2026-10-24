@@ -1,0 +1,22 @@
+{
+ "gh_PolynomialFunctionGraphs": {
+  "status": "production_published",
+  "component_count": 2,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "runtime_ready_with_variation_warning",
+  "dynamic_count": 0,
+  "static_count": 0
+ },
+ "gh_PolynomialInequalities": {
+  "status": "production_published",
+  "component_count": 33,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 27,
+  "static_count": 0
+ }
+}

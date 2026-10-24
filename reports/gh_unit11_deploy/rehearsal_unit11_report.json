@@ -1,0 +1,794 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_unit11_rehearsal\\run",
+ "deferred": {
+  "12650": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（帳棚三角柱支架：只有開頭一句，缺圖中各段長度與全部小題）",
+  "12662": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（缺『x 的範圍』以外的後續敘述與所求，無法確認所求為何）",
+  "12664": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（砲彈高度 y=kt(4-t)：缺條件與所有小題）"
+ },
+ "promotion": {
+  "domain_key": "inequality.polynomial",
+  "registry_revision": "promoted-66b2c146598c",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12629": {
+   "skill": "gh_PolynomialFunctionGraphs",
+   "operation": "polynomial_graph_solutions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialFunctionGraphs",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "62e5673018e78b292f648d752d8ce8a52f63e377c541dadf07ee4a7564a408ed",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12630": {
+   "skill": "gh_PolynomialFunctionGraphs",
+   "operation": "polynomial_graph_solutions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialFunctionGraphs",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d5029e5db197512b2e139970cb43d1b4806a5ddcc1d42492c8f46a9211dbfb6b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12631": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c95802a75b92b341707846e2477fea4f85b1693e9e8b6f0e311a214e8102b1cc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12632": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ca51a24ffbb5525208e102f9c8c16acaf2c672f98835a77e4d75e07cdb983c2f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12633": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2359e03d21d34b0e6de7ad397576d0372dc06471f8b9543989b1531b4edc0955",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12634": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "287b93a720eaabc273b03cba118e02997dc8c3bad3e89a982fe7d88f2a6912ea",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12635": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "23c9df5a39e527185d52dbeb681227389faa96683e54ea54b07dcb62a34d8a4b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12636": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "361cfb18126930a25bf2f6eea6fb0cd1e2a00595adb9d23791bf13232eeda0c4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12637": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a90e5c034b15ed68f41bd86554083f1f57b89716b5219bce2f37f5f338be304f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12638": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0ea2958ca8b71bdfda8c57185cedfa3668225bd0ae70b34f5b0196ee9c659f3b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12639": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "81631f60ae67720de30fcd8f3575d566d682eda47503e8e6feb3240db8a5afa0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12640": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d5315309d6accf2961652280de1e0ca4fa2c58867534d4cb28b1d36c650ebd8d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12641": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e6553bf1515f1f3f032f9c0a51d2ffa48a77a3802fbc96a2bf16c43b5e3ad7a1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12642": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a94e9f2e85ba3ea560c88c4e20b8c7cc7e1795394f579a12a45b17c65810fed4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12643": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "26c77930b05afad435e9a20e99b89f5e2187ef3fe9582032c9d4bb34157b3e5d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12644": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8c3cd91180b292efac83c6597dfaae02204bac5a043413c6c5186953aac41125",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12645": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "462ea83e74af94721dbdcc14dd8e82f47e547589312c07dc03767fcc564ecd58",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12646": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "bb7dfd4c3ba47b93c90a7edc9c670ac0ab625405e90d7aa5dca8efb33a42489a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12647": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "23ac592112a986d2c556eb6012b72a9ab6cfeee37b2f8760be499ed5b8085a27",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12648": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "95db39fd6472aee30609874ba04b79cde96efa3210ed0d20b59de7d90b0d3305",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12649": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4ff71305054ba57738cbe0c4b4f9dda569fe3b739a1ba59a4c2fa7716dd3b3bc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12651": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "eb686ad4fa2a663b7ec488a3c0694a88a3127c346d672839f4951c506f8111e4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12652": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "872ba833155d8e68361d2e7466f6064a090673d3f62ad628a24f57fa1d273cf9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12653": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ce92948a69d8538d86924ea8a2754f62e77aa4003dd3258dcf3af64d68d149ac",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12654": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c3a8305e54d245e1274a660272542ea2d30ba8a2b07a2ea463e06592bec67e3a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12655": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "00812bfab85ae5bef4af03befbf51824ed734ffb2d07e7302ad19760f673f6db",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12656": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f2448667ce29c5fb4edabb4435811618e421080d65e931882a605e7bcf1bd5fe",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12657": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9482470aaede818b0757674257509b31f5bf11ad5b85df470edcbd583649b264",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12658": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "600c9e0feaf9ac48176ca95a016c4c7cde7ecb1bd1fdf3504584e1641b739197",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12659": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6c7473ce66847f6a2d3bb2ac58345b5a3a4d7d8fac03ac8aeaec36f83b328b99",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12660": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e8e2ff1e95c5a7ea59b02ca889dfdc825244f37585120142d7d7bf38f6acd471",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12661": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "738bd9d46ae38c5fa7063cfd81954d1f7c68d30e1b322a119c2aa318371e041e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12663": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "411ba3668c29b2331ff3684b6b7a29e57a1e4fff0732dbca917ebae5243386a7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12665": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "88819305b654e83721090486b033bb54169f01c14ab55bfd11acefa3fef5c6dc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12666": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0f21390b283248a47b7db1250f7ed14917664bf99d99b9c0b971806aa33b29df",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_PolynomialInequalities": {
+   "status": "production_published",
+   "component_count": 33,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 27,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12631",
+    "src_12632",
+    "src_12633",
+    "src_12634",
+    "src_12635",
+    "src_12636",
+    "src_12637",
+    "src_12638",
+    "src_12639",
+    "src_12640",
+    "src_12641",
+    "src_12642",
+    "src_12643",
+    "src_12644",
+    "src_12645",
+    "src_12646",
+    "src_12647",
+    "src_12648",
+    "src_12649",
+    "src_12651",
+    "src_12652",
+    "src_12653",
+    "src_12654",
+    "src_12655",
+    "src_12656",
+    "src_12657",
+    "src_12658",
+    "src_12659",
+    "src_12660",
+    "src_12661",
+    "src_12663",
+    "src_12665",
+    "src_12666"
+   ]
+  },
+  "gh_PolynomialFunctionGraphs": {
+   "status": "production_published",
+   "component_count": 2,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "runtime_ready_with_variation_warning",
+   "dynamic_count": 0,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12629",
+    "src_12630"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_PolynomialInequalities": {
+   "served_examples": {
+    "12631": 3,
+    "12632": 2,
+    "12633": 2,
+    "12634": 2,
+    "12635": 3,
+    "12636": 2,
+    "12637": 2,
+    "12638": 3,
+    "12639": 2,
+    "12640": 2,
+    "12641": 3,
+    "12642": 2,
+    "12643": 2,
+    "12644": 2,
+    "12645": 3,
+    "12646": 2,
+    "12647": 3,
+    "12648": 3,
+    "12649": 3,
+    "12651": 2,
+    "12652": 3,
+    "12653": 2,
+    "12654": 3,
+    "12655": 2,
+    "12656": 2,
+    "12657": 2,
+    "12658": 2,
+    "12659": 2,
+    "12660": 3,
+    "12661": 3,
+    "12663": 3,
+    "12665": 2,
+    "12666": 3
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_PolynomialFunctionGraphs": {
+   "served_examples": {
+    "12629": 40,
+    "12630": 40
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

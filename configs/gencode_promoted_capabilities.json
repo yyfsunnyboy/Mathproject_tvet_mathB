@@ -2486,6 +2486,180 @@
         }
       }
     },
+    "function.cubic_graph": {
+      "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
+      "bundle_sha256": "d6700365e954ab364d6ae7c14b848b7dc7e6408d34df5cddeec2bf2cec83aaed",
+      "capabilities": [
+        "cubic_center_form",
+        "cubic_curve_matching",
+        "cubic_from_conditions",
+        "cubic_option_graph",
+        "cubic_statements",
+        "graph_cubic_functions"
+      ],
+      "domain_module": "core.domain.promoted.function_cubic.cubic_domain",
+      "entrypoint": "build_cubic_graph_matrix",
+      "operations": {
+        "cubic_center_form": {
+          "checker_keys": [
+            "choice_label_checker",
+            "coordinate_pair_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "cubic_center_form"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_cubic_center_form_matrix"
+        },
+        "cubic_curve_matching": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "cubic_curve_matching"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "single_choice"
+          ],
+          "validator": "validate_cubic_curve_matching_matrix"
+        },
+        "cubic_from_conditions": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "cubic_from_conditions"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_cubic_from_conditions_matrix"
+        },
+        "cubic_option_graph": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "cubic_option_graph"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_cubic_option_graph_matrix"
+        },
+        "cubic_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "cubic_statements"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_cubic_statements_matrix"
+        },
+        "graph_cubic_functions": {
+          "checker_keys": [
+            "coordinate_pair_checker",
+            "free_response_drawing_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_cubic_graph_matrix",
+          "payload_adapter": "core.domain.promoted.function_cubic.cubic_adapter.adapt_cubic_graph_matrix",
+          "provided_capabilities": [
+            "graph_cubic_functions"
+          ],
+          "runtime_contract": "cubic_graph_exact_v1",
+          "supported_answer_types": [
+            "coordinate_pair",
+            "drawing",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "canvas",
+            "multiple_inputs"
+          ],
+          "validator": "validate_graph_cubic_functions_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cubic_adapter.py": "22671f8814754a4851d2ccca6c5dd152de63da141085aa60ef795c6c339d46dc",
+        "cubic_domain.py": "24bfecf2f9fd426f70dc7920a7fec2c5ee069e8f497361c0bca2e67a75ad406b"
+      },
+      "package_import": "core.domain.promoted.function_cubic",
+      "package_name": "function_cubic",
+      "proposal_id": "capability_function_cubic_c3228ee3",
+      "proposal_revision": 3,
+      "registry_revision": "promoted-d6700365e954",
+      "skill_bindings": {
+        "gh_GraphsOfCubicFunctions": {
+          "allowed_operations": [
+            "cubic_center_form",
+            "cubic_curve_matching",
+            "cubic_from_conditions",
+            "cubic_option_graph",
+            "cubic_statements",
+            "graph_cubic_functions"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "function.linear_quadratic": {
       "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
       "bundle_sha256": "3aa582042951d37619a12fb533cc4ee25c3851bce8faad0cd91c5be76b11302b",
@@ -2742,6 +2916,162 @@
             "quadratic_graph_transformations",
             "quadratic_vertex_axis",
             "solve_quadratic_applications"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "inequality.polynomial": {
+      "approved_by": "Yang-Fu Yeh (chat approval 2026-10-24)",
+      "bundle_sha256": "6635cb397ad67816ea5d2d7c1e11eb84a18ad3fba8e8df300e29ac725019facf",
+      "capabilities": [
+        "polynomial_applications",
+        "polynomial_graph_solutions",
+        "polynomial_inequality_parameters",
+        "polynomial_statements",
+        "solve_polynomial_inequality"
+      ],
+      "domain_module": "core.domain.promoted.polynomial_inequality.polynomial_inequality_domain",
+      "entrypoint": "build_polynomial_inequality_matrix",
+      "operations": {
+        "polynomial_applications": {
+          "checker_keys": [
+            "choice_label_checker",
+            "equation_checker",
+            "expression_checker",
+            "inequality_solution_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_inequality_matrix",
+          "payload_adapter": "core.domain.promoted.polynomial_inequality.polynomial_inequality_adapter.adapt_polynomial_inequality_matrix",
+          "provided_capabilities": [
+            "polynomial_applications"
+          ],
+          "runtime_contract": "polynomial_inequality_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "expression",
+            "inequality",
+            "multi_part",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_polynomial_applications_matrix"
+        },
+        "polynomial_graph_solutions": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_polynomial_inequality_matrix",
+          "payload_adapter": "core.domain.promoted.polynomial_inequality.polynomial_inequality_adapter.adapt_polynomial_inequality_matrix",
+          "provided_capabilities": [
+            "polynomial_graph_solutions"
+          ],
+          "runtime_contract": "polynomial_inequality_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_polynomial_graph_solutions_matrix"
+        },
+        "polynomial_inequality_parameters": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_polynomial_inequality_matrix",
+          "payload_adapter": "core.domain.promoted.polynomial_inequality.polynomial_inequality_adapter.adapt_polynomial_inequality_matrix",
+          "provided_capabilities": [
+            "polynomial_inequality_parameters"
+          ],
+          "runtime_contract": "polynomial_inequality_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_polynomial_inequality_parameters_matrix"
+        },
+        "polynomial_statements": {
+          "checker_keys": [
+            "choice_label_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_polynomial_inequality_matrix",
+          "payload_adapter": "core.domain.promoted.polynomial_inequality.polynomial_inequality_adapter.adapt_polynomial_inequality_matrix",
+          "provided_capabilities": [
+            "polynomial_statements"
+          ],
+          "runtime_contract": "polynomial_inequality_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_polynomial_statements_matrix"
+        },
+        "solve_polynomial_inequality": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_polynomial_inequality_matrix",
+          "payload_adapter": "core.domain.promoted.polynomial_inequality.polynomial_inequality_adapter.adapt_polynomial_inequality_matrix",
+          "provided_capabilities": [
+            "solve_polynomial_inequality"
+          ],
+          "runtime_contract": "polynomial_inequality_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_solve_polynomial_inequality_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "polynomial_inequality_adapter.py": "c4a2625ed95799c71d2b29536496e77d69cf8abffadff0839a4cca84adf5cad2",
+        "polynomial_inequality_domain.py": "51c592cdd57b7150d3a42ef6a08cf6a4684fdcbb3785ac47000df23df85a6481"
+      },
+      "package_import": "core.domain.promoted.polynomial_inequality",
+      "package_name": "polynomial_inequality",
+      "proposal_id": "capability_polynomial_inequality_a539d072",
+      "proposal_revision": 2,
+      "registry_revision": "promoted-6635cb397ad6",
+      "skill_bindings": {
+        "gh_PolynomialFunctionGraphs": {
+          "allowed_operations": [
+            "polynomial_graph_solutions"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PolynomialInequalities": {
+          "allowed_operations": [
+            "polynomial_applications",
+            "polynomial_inequality_parameters",
+            "polynomial_statements",
+            "solve_polynomial_inequality"
           ],
           "default_curriculum_profile": "general_high"
         }

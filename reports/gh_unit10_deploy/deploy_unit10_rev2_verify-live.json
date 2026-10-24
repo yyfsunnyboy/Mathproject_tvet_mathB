@@ -1,0 +1,55 @@
+{
+ "facade": {
+  "gh_GraphsOfCubicFunctions": {
+   "served_examples": {
+    "12603": 3,
+    "12604": 3,
+    "12605": 3,
+    "12606": 3,
+    "12607": 3,
+    "12608": 3,
+    "12609": 4,
+    "12610": 3,
+    "12611": 3,
+    "12612": 3,
+    "12613": 3,
+    "12614": 3,
+    "12615": 3,
+    "12616": 3,
+    "12617": 3,
+    "12618": 3,
+    "12619": 4,
+    "12620": 3,
+    "12621": 3,
+    "12622": 3,
+    "12623": 3,
+    "12624": 3,
+    "12625": 3,
+    "12626": 3,
+    "12627": 3,
+    "12628": 3
+   },
+   "problems": [],
+   "drawing_served_only": [
+    12603,
+    12604,
+    12605,
+    12606,
+    12607,
+    12613
+   ]
+  }
+ },
+ "manifest_status": {
+  "gh_GraphsOfCubicFunctions": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 26
+  }
+ },
+ "manifest_components": {
+  "gh_GraphsOfCubicFunctions": 26
+ },
+ "manifest_matches_specs": true,
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

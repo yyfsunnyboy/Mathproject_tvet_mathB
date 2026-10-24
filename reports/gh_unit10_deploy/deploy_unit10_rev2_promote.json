@@ -1,0 +1,37 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "function.cubic_graph",
+ "registry_revision": "promoted-2851416d9782",
+ "bundle_sha256": "2851416d97829d95b8ea2cd071b618d699c030b8f39a3cd56a3b0bdb3a88b7cc",
+ "allowed_operations": [
+  "cubic_center_form",
+  "cubic_curve_matching",
+  "cubic_from_conditions",
+  "cubic_option_graph",
+  "cubic_statements",
+  "graph_cubic_functions"
+ ],
+ "skill_bindings": {
+  "gh_GraphsOfCubicFunctions": {
+   "fixed_domain_key": "function.cubic_graph",
+   "allowed_operations": [
+    "cubic_center_form",
+    "cubic_curve_matching",
+    "cubic_from_conditions",
+    "cubic_option_graph",
+    "cubic_statements",
+    "graph_cubic_functions"
+   ]
+  }
+ },
+ "operations_executed": {
+  "cubic_center_form": 5,
+  "cubic_curve_matching": 5,
+  "cubic_from_conditions": 3,
+  "cubic_option_graph": 1,
+  "cubic_statements": 6,
+  "graph_cubic_functions": 6
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\function_cubic"
+}

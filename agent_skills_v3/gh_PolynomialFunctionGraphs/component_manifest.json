@@ -1,0 +1,29 @@
+{
+  "skill_id": "gh_PolynomialFunctionGraphs",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_12629",
+      "textbook_example_id": 12629,
+      "status": "verified",
+      "problem_type_id": "polynomial_graph_solutions",
+      "domain_operation": "polynomial_graph_solutions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12629/generate.py"
+    },
+    {
+      "component_id": "src_12630",
+      "textbook_example_id": 12630,
+      "status": "verified",
+      "problem_type_id": "polynomial_graph_solutions",
+      "domain_operation": "polynomial_graph_solutions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12630/generate.py"
+    }
+  ]
+}

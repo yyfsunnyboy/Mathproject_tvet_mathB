@@ -167,6 +167,35 @@
   min-width: 0;
 }
 
+/* Independent drawing canvases of the sub-questions share a strip on a line of their own: label above each
+ * canvas, side by side while they fit, so numeric fields never float beside (and vertically centre on) a canvas. */
+.practice-answer-block.has-multi-part-fields .multi-part-canvas-strip {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 14px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.multi-part-canvas-strip > .multi-part-row.multi-part-row--canvas {
+  display: grid;
+  flex: 0 1 auto;
+  justify-items: start;
+  align-content: start;
+  gap: 6px;
+}
+
+.multi-part-row--canvas .multi-part-canvas-wrap {
+  width: 100%;
+  max-width: 360px;
+}
+
+.multi-part-row--canvas .multi-part-canvas-clear {
+  margin-top: 4px;
+}
+
 /* Set by MultipartFieldRenderer.fitAnswerStrip only when the submit button
  * would otherwise wrap alone: narrower but still typeable widths. */
 .practice-answer-block.answer-strip-compact .multi-part-row .multi-part-input.control-numeric {

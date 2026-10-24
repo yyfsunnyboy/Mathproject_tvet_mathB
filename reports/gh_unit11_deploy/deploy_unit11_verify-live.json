@@ -1,0 +1,68 @@
+{
+ "facade": {
+  "gh_PolynomialInequalities": {
+   "served_examples": {
+    "12631": 3,
+    "12632": 2,
+    "12633": 2,
+    "12634": 2,
+    "12635": 3,
+    "12636": 2,
+    "12637": 2,
+    "12638": 3,
+    "12639": 2,
+    "12640": 2,
+    "12641": 3,
+    "12642": 2,
+    "12643": 2,
+    "12644": 2,
+    "12645": 3,
+    "12646": 2,
+    "12647": 3,
+    "12648": 3,
+    "12649": 3,
+    "12651": 2,
+    "12652": 3,
+    "12653": 2,
+    "12654": 3,
+    "12655": 2,
+    "12656": 2,
+    "12657": 2,
+    "12658": 2,
+    "12659": 2,
+    "12660": 3,
+    "12661": 3,
+    "12663": 3,
+    "12665": 2,
+    "12666": 3
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_PolynomialFunctionGraphs": {
+   "served_examples": {
+    "12629": 40,
+    "12630": 40
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "manifest_status": {
+  "gh_PolynomialInequalities": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 33
+  },
+  "gh_PolynomialFunctionGraphs": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 2
+  }
+ },
+ "manifest_components": {
+  "gh_PolynomialInequalities": 33,
+  "gh_PolynomialFunctionGraphs": 2
+ },
+ "manifest_matches_specs": true,
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

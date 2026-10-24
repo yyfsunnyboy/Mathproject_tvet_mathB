@@ -1,0 +1,395 @@
+{
+ "failures": {},
+ "deferred": {
+  "12650": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（帳棚三角柱支架：只有開頭一句，缺圖中各段長度與全部小題）",
+  "12662": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（缺『x 的範圍』以外的後續敘述與所求，無法確認所求為何）",
+  "12664": "Stage 1 題幹被截斷（缺少後續小題與條件），須先重新處理教材來源後才能出題（砲彈高度 y=kt(4-t)：缺條件與所有小題）"
+ },
+ "report": {
+  "12629": {
+   "skill": "gh_PolynomialFunctionGraphs",
+   "operation": "polynomial_graph_solutions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialFunctionGraphs",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12630": {
+   "skill": "gh_PolynomialFunctionGraphs",
+   "operation": "polynomial_graph_solutions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialFunctionGraphs",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12631": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12632": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12633": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12634": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12635": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12636": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12637": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12638": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12639": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12640": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12641": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12642": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12643": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12644": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12645": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12646": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12647": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12648": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12649": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12651": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12652": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12653": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12654": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12655": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12656": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12657": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12658": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12659": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_inequality_parameters",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12660": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "solve_polynomial_inequality",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12661": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12663": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12665": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12666": {
+   "skill": "gh_PolynomialInequalities",
+   "operation": "polynomial_applications",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PolynomialInequalities",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

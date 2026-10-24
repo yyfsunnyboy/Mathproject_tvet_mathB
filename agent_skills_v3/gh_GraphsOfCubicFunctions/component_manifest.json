@@ -1,0 +1,293 @@
+{
+  "skill_id": "gh_GraphsOfCubicFunctions",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 26,
+  "components": [
+    {
+      "component_id": "src_12603",
+      "textbook_example_id": 12603,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12603/generate.py"
+    },
+    {
+      "component_id": "src_12604",
+      "textbook_example_id": 12604,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12604/generate.py"
+    },
+    {
+      "component_id": "src_12605",
+      "textbook_example_id": 12605,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "canvas",
+      "answer_type": "drawing",
+      "source_kind": "example",
+      "generate_py": "components/src_12605/generate.py"
+    },
+    {
+      "component_id": "src_12606",
+      "textbook_example_id": 12606,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12606/generate.py"
+    },
+    {
+      "component_id": "src_12607",
+      "textbook_example_id": 12607,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12607/generate.py"
+    },
+    {
+      "component_id": "src_12608",
+      "textbook_example_id": 12608,
+      "status": "verified",
+      "problem_type_id": "cubic_from_conditions",
+      "domain_operation": "cubic_from_conditions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12608/generate.py"
+    },
+    {
+      "component_id": "src_12609",
+      "textbook_example_id": 12609,
+      "status": "verified",
+      "problem_type_id": "cubic_curve_matching",
+      "domain_operation": "cubic_curve_matching",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12609/generate.py"
+    },
+    {
+      "component_id": "src_12610",
+      "textbook_example_id": 12610,
+      "status": "verified",
+      "problem_type_id": "cubic_curve_matching",
+      "domain_operation": "cubic_curve_matching",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12610/generate.py"
+    },
+    {
+      "component_id": "src_12611",
+      "textbook_example_id": 12611,
+      "status": "verified",
+      "problem_type_id": "cubic_curve_matching",
+      "domain_operation": "cubic_curve_matching",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12611/generate.py"
+    },
+    {
+      "component_id": "src_12612",
+      "textbook_example_id": 12612,
+      "status": "verified",
+      "problem_type_id": "cubic_center_form",
+      "domain_operation": "cubic_center_form",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12612/generate.py"
+    },
+    {
+      "component_id": "src_12613",
+      "textbook_example_id": 12613,
+      "status": "verified",
+      "problem_type_id": "graph_cubic_functions",
+      "domain_operation": "graph_cubic_functions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12613/generate.py"
+    },
+    {
+      "component_id": "src_12614",
+      "textbook_example_id": 12614,
+      "status": "verified",
+      "problem_type_id": "cubic_from_conditions",
+      "domain_operation": "cubic_from_conditions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12614/generate.py"
+    },
+    {
+      "component_id": "src_12615",
+      "textbook_example_id": 12615,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12615/generate.py"
+    },
+    {
+      "component_id": "src_12616",
+      "textbook_example_id": 12616,
+      "status": "verified",
+      "problem_type_id": "cubic_from_conditions",
+      "domain_operation": "cubic_from_conditions",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12616/generate.py"
+    },
+    {
+      "component_id": "src_12617",
+      "textbook_example_id": 12617,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12617/generate.py"
+    },
+    {
+      "component_id": "src_12618",
+      "textbook_example_id": 12618,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12618/generate.py"
+    },
+    {
+      "component_id": "src_12619",
+      "textbook_example_id": 12619,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12619/generate.py"
+    },
+    {
+      "component_id": "src_12620",
+      "textbook_example_id": 12620,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12620/generate.py"
+    },
+    {
+      "component_id": "src_12621",
+      "textbook_example_id": 12621,
+      "status": "verified",
+      "problem_type_id": "cubic_curve_matching",
+      "domain_operation": "cubic_curve_matching",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12621/generate.py"
+    },
+    {
+      "component_id": "src_12622",
+      "textbook_example_id": 12622,
+      "status": "verified",
+      "problem_type_id": "cubic_center_form",
+      "domain_operation": "cubic_center_form",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12622/generate.py"
+    },
+    {
+      "component_id": "src_12623",
+      "textbook_example_id": 12623,
+      "status": "verified",
+      "problem_type_id": "cubic_center_form",
+      "domain_operation": "cubic_center_form",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12623/generate.py"
+    },
+    {
+      "component_id": "src_12624",
+      "textbook_example_id": 12624,
+      "status": "verified",
+      "problem_type_id": "cubic_center_form",
+      "domain_operation": "cubic_center_form",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12624/generate.py"
+    },
+    {
+      "component_id": "src_12625",
+      "textbook_example_id": 12625,
+      "status": "verified",
+      "problem_type_id": "cubic_center_form",
+      "domain_operation": "cubic_center_form",
+      "presentation_mode": "short_answer",
+      "answer_type": "coordinate_pair",
+      "source_kind": "example",
+      "generate_py": "components/src_12625/generate.py"
+    },
+    {
+      "component_id": "src_12626",
+      "textbook_example_id": 12626,
+      "status": "verified",
+      "problem_type_id": "cubic_option_graph",
+      "domain_operation": "cubic_option_graph",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12626/generate.py"
+    },
+    {
+      "component_id": "src_12627",
+      "textbook_example_id": 12627,
+      "status": "verified",
+      "problem_type_id": "cubic_statements",
+      "domain_operation": "cubic_statements",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12627/generate.py"
+    },
+    {
+      "component_id": "src_12628",
+      "textbook_example_id": 12628,
+      "status": "verified",
+      "problem_type_id": "cubic_curve_matching",
+      "domain_operation": "cubic_curve_matching",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12628/generate.py"
+    }
+  ]
+}

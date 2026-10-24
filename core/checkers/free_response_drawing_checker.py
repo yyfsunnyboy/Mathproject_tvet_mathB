@@ -26,6 +26,7 @@ SUPPORTED_DRAWING_TYPES = frozenset(
         "coordinate_point_plot",
         "line_graph",
         "parabola_graph",
+        "cubic_graph",
         "function_graph",
         "number_line",
         "geometry_construction",

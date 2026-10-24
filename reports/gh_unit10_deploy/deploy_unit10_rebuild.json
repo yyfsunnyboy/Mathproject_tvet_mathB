@@ -1,0 +1,223 @@
+{
+ "failures": {},
+ "deferred": {
+  "12603": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）",
+  "12604": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）",
+  "12605": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）",
+  "12606": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）（描繪 + 對稱中心）",
+  "12607": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）（a, p, h, k + 描繪 + 對稱中心）",
+  "12613": "三次函數描繪題：既有 drawing 契約沒有可用的三次函數 grader（需新增共用作圖類型，須另經核准）（a, p, h, k + 描繪 + 對稱中心）",
+  "12626": "選項為五張函數圖形（需多圖選項的圖形呈現），現有單一坐標平面圖形無法忠實呈現 (1)~(5) 選項圖"
+ },
+ "report": {
+  "12608": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12609": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12610": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12611": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12612": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12614": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12615": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12616": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12617": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12618": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12619": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12620": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12621": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12622": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12623": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12624": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12625": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12627": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12628": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

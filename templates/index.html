@@ -903,7 +903,8 @@
             display: inline-block;
             max-width: 100%;
         }
-        .question-multipart-items.question-multipart-items-multiline {
+        .question-multipart-items.question-multipart-items-multiline,
+        .multipart-stem-items.question-multipart-items-multiline {
             display: block;
             text-align: left;
         }
@@ -1199,6 +1200,20 @@
             flex-direction: column;
             gap: 8px;
             align-items: stretch;
+        }
+
+        #question-choices.choice-list.choice-compact {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        #question-choices.choice-list.choice-compact .choice-option {
+            width: auto;
+            min-width: 4.5rem;
+            flex: 0 0 auto;
+            justify-content: center;
         }
 
         #question-choices.choice-list.choice-grid-2x2 {
@@ -2183,13 +2198,13 @@
         }
     </style>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=answer-strip-5">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/practice_answer_layout.css') }}?v=answer-strip-7-canvas-strip">
     <script src="{{ url_for('static', filename='js/legacy_dom_polyfills.js') }}?v=ios12-1"></script>
-    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=exp-log-curves-1-ios12"></script>
+    <script src="{{ url_for('static', filename='js/visual_spec.js') }}?v=multi-figure-curves-3-labels"></script>
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
-    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-3-choice-objects"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-5-canvas-strip"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-strip-3-ios12"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
@@ -2597,6 +2612,7 @@ html, body {
   font-weight: 500 !important;
   letter-spacing: 0.02em !important;
   vertical-align: middle !important;
+  white-space: nowrap !important;
 }
 
 #streak-counter {
@@ -2608,6 +2624,7 @@ html, body {
   font-size: 0.78em !important;
   font-weight: 500 !important;
   box-shadow: none !important;
+  white-space: nowrap !important;
 }
 
 /* ─── 5. Level Selector Toolbar ────────────────────────────────── */
@@ -3945,12 +3962,20 @@ span[style*="粗細"],
                 window.MathDisplayNormalizer.normalizeElement(element);
             }
             // 檢查 MathJax 是否已載入並準備好
+            const afterTypeset = () => {
+                if (element.id === 'question-text') {
+                    keepMarkersWithMath(element);
+                    settleMultipartItems(element);
+                }
+            };
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([element])
+                    .then(afterTypeset)
                     .catch((err) => console.error('MathJax typeset failed:', err));
             } else if (window.MathJax && window.MathJax.startup) {
                 window.MathJax.startup.promise.then(() => {
                     window.MathJax.typesetPromise([element])
+                        .then(afterTypeset)
                         .catch((err) => console.error('MathJax typeset failed:', err));
                 });
             }
@@ -7218,6 +7243,9 @@ span[style*="粗細"],
             if (!questionChoices) return;
             questionChoices.classList.remove('choice-grid-2x2');
             const p = payload || currentQuestion || {};
+            if (questionChoices.classList.contains('choice-compact')) {
+                return;
+            }
             if (!isFourOptionSingleChoice(p)) {
                 return;
             }
@@ -7282,6 +7310,13 @@ span[style*="粗細"],
                 });
                 questionChoices.appendChild(button);
             });
+            // Short options (○ / ×, 圖(3), a number) sit side by side in one row instead of full-width bars,
+            // which leaves more of the page to the handwriting canvas.
+            const compactChoices = choices.length <= 6 && choices.every((choice) => {
+                const plain = extractChoiceText(choice).replace(/\\[()\[\]]|\$|\\[a-zA-Z]+|[{}^_]/g, '').trim();
+                return plain.length > 0 && plain.length <= 8;
+            });
+            questionChoices.classList.toggle('choice-compact', compactChoices);
             requestAnimationFrame(() => {
                 updateChoiceGridLayout(payload);
                 renderMathContent(questionChoices);
@@ -7424,6 +7459,106 @@ span[style*="粗細"],
             });
         }
 
+        // Reading order stays intact when a stem wraps (MathJax 3 cannot break inside one inline formula):
+        //  - a long formula chain "y = A = B" is cut before its top-level "=" into separate formulas, so the line
+        //    can wrap there and every piece is still typeset as math;
+        //  - a closing punctuation mark right after a formula moves inside it, so it never starts a line alone;
+        //  - a sub-question marker stays on the line of its first word / formula (no-break space).
+        const LONG_INLINE_MATH = 26;
+        const MATH_THEN_PUNCT = /\$([^$\n]+)\$([，。、；：？！])?|\\\(([\s\S]+?)\\\)([，。、；：？！])?/g;
+
+        function splitAtTopLevelEquals(body) {
+            const pieces = [];
+            let depth = 0;
+            let last = 0;
+            for (let i = 0; i < body.length; i += 1) {
+                const ch = body[i];
+                if (ch === '{' || ch === '(') depth += 1;
+                else if (ch === '}' || ch === ')') depth -= 1;
+                else if (ch === '=' && depth === 0 && i > 0 && !'<>!:\\'.includes(body[i - 1])) {
+                    pieces.push(body.slice(last, i));
+                    last = i;
+                }
+            }
+            pieces.push(body.slice(last));
+            const trimmed = pieces.map((piece) => piece.trim()).filter(Boolean);
+            // "y" or "f(x)" alone at the end of a line reads badly: keep a short left-hand side with the first "= ...".
+            if (trimmed.length > 1 && trimmed[0].length <= 6) {
+                trimmed.splice(0, 2, trimmed[0] + trimmed[1]);
+            }
+            return trimmed;
+        }
+
+        function glueStemText(text) {
+            const source = String(text || '');
+            const mathGlued = source.replace(MATH_THEN_PUNCT, (match, dollarBody, dollarPunct, parenBody, parenPunct) => {
+                const dollar = dollarBody !== undefined;
+                const body = dollar ? dollarBody : parenBody;
+                const punct = (dollar ? dollarPunct : parenPunct) || '';
+                const pieces = body.length >= LONG_INLINE_MATH ? splitAtTopLevelEquals(body) : [body];
+                if (punct) pieces[pieces.length - 1] += '\\text{' + punct + '}';
+                const open = dollar ? '$' : '\\(';
+                const close = dollar ? '$' : '\\)';
+                return pieces.map((piece) => open + piece + close).join('\u200b');
+            });
+            return mathGlued.replace(/[\(（]\s*\d{1,2}\s*[\)）][ \t]+(?=\S)/g, (match, offset) => {
+                if (insideInlineMath(mathGlued.slice(0, offset))) return match;
+                return match.replace(/[ \t]+$/, '\u00a0');
+            });
+        }
+
+        // After MathJax has typeset a stem, a marker such as "(2)" and the formula that follows it are kept together.
+        function keepMarkersWithMath(root) {
+            if (!root || !root.ownerDocument) return;
+            const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            const marker = /[\(（]\s*\d{1,2}\s*[\)）]\u00a0$/;
+            const hits = [];
+            let node = walker.nextNode();
+            while (node) {
+                const next = node.nextSibling;
+                if (marker.test(node.nodeValue) && next && next.nodeName === 'MJX-CONTAINER') hits.push(node);
+                node = walker.nextNode();
+            }
+            hits.forEach((textNode) => {
+                const found = textNode.nodeValue.match(marker);
+                const mathNode = textNode.nextSibling;
+                const glue = root.ownerDocument.createElement('span');
+                glue.className = 'multipart-glue';
+                glue.style.whiteSpace = 'nowrap';
+                textNode.nodeValue = textNode.nodeValue.slice(0, found.index);
+                textNode.parentNode.insertBefore(glue, mathNode);
+                glue.appendChild(root.ownerDocument.createTextNode(found[0]));
+                glue.appendChild(mathNode);
+            });
+        }
+
+        // The sub-question run is an inline-block so a short run stays on the prompt's line.  An inline-block that
+        // needs more than one line is baseline-aligned to its LAST line, which lifts the whole run above the prompt
+        // and pushes it right.  After layout, a run that spans several lines becomes a left-aligned block under the
+        // prompt (prompt first, then (1) ... (n) in order); a run that fits one line stays inline.
+        function settleMultipartItems(root) {
+            if (!root || !root.querySelectorAll) return;
+            root.querySelectorAll('.question-multipart-items, .multipart-stem-items').forEach((items) => {
+                items.classList.remove('question-multipart-items-multiline');
+                const previous = items.style.display;
+                items.style.display = 'inline';
+                const tops = new Set(Array.from(items.getClientRects()).map((rect) => Math.round(rect.top / 4)));
+                items.style.display = previous;
+                if (tops.size > 1) items.classList.add('question-multipart-items-multiline');
+            });
+        }
+
+        let multipartSettleRaf = null;
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', () => {
+                if (multipartSettleRaf) cancelAnimationFrame(multipartSettleRaf);
+                multipartSettleRaf = requestAnimationFrame(() => {
+                    multipartSettleRaf = null;
+                    settleMultipartItems(document.getElementById('question-text'));
+                });
+            });
+        }
+
         function findMultipartItemsStart(text) {
             const pattern = /[\(（]\s*(\d{1,2})\s*[\)）]/g;
             let start = -1;
@@ -7439,7 +7574,7 @@ span[style*="粗細"],
 
         function setQuestionDisplayText(element, text) {
             if (!element) return;
-            const safeText = joinMultipartMarkerLines(text);
+            const safeText = glueStemText(joinMultipartMarkerLines(text));
             const itemsStart = findMultipartItemsStart(safeText);
             if (itemsStart < 0) {
                 element.textContent = safeText;
@@ -7488,7 +7623,7 @@ span[style*="粗細"],
                 if (stem.prompt) {
                     const promptEl = document.createElement('span');
                     promptEl.className = 'multipart-stem-prompt';
-                    promptEl.textContent = stem.prompt;
+                    promptEl.textContent = glueStemText(stem.prompt);
                     wrap.appendChild(promptEl);
                 }
                 if (stem.prompt && !MULTIPART_JOIN_AFTER.test(stem.prompt)) {
@@ -7507,7 +7642,7 @@ span[style*="粗細"],
                     marker.textContent = (item && item.group_label) || '';
                     const body = document.createElement('span');
                     body.className = 'multipart-stem-body';
-                    body.textContent = (item && item.text) || '';
+                    body.textContent = glueStemText((item && item.text) || '');
                     row.appendChild(marker);
                     row.appendChild(document.createTextNode(' '));
                     row.appendChild(body);

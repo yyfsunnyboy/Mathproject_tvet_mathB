@@ -1,0 +1,858 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_function_cubic_c3228ee3",
+  "proposal_revision": 2,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
+    "approved_revision": 2,
+    "approval_scope": "revision 2: adds two operations to function.cubic_graph - graph_cubic_functions (cubic drawing on one canvas, with optional a/p/h/k numbers and symmetry-centre parts) and cubic_option_graph (five option graphs for a given line) - for the seven Unit 10 rows that revision 1 deferred (12603-12607, 12613, 12626). Drawing parts are graded by the new shared cubic_graph drawing type (free_response_drawing_checker -> drawing_answer_analysis_service.evaluate_cubic_graph; curve shape, end behaviour, centre, turning points, zeros, hand-drawing tolerance). 12626 uses the existing coordinate_plane_multi_figure renderer, now accepting curves and a fixed range per panel (static/js/visual_spec.js). The existing 4 operations, their payloads and the 19 published Unit 10 components are unchanged in behaviour (the revision-2 package files only add code; 380 payloads of the 19 components were compared byte for byte)"
+  },
+  "domain_key": "function.cubic_graph",
+  "package_name": "function_cubic",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cubic_adapter.py": "822b7f4a847bbbf3987588be2585567213fc4fc45d6876193f3bfec7dde9ffa3",
+    "cubic_domain.py": "24bfecf2f9fd426f70dc7920a7fec2c5ee069e8f497361c0bca2e67a75ad406b"
+  },
+  "domain_module": "cubic_domain",
+  "entrypoint": "build_cubic_graph_matrix",
+  "capabilities": [
+    "cubic_center_form",
+    "cubic_curve_matching",
+    "cubic_from_conditions",
+    "cubic_option_graph",
+    "cubic_statements",
+    "graph_cubic_functions"
+  ],
+  "operations": {
+    "cubic_center_form": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "coordinate_pair_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_cubic_center_form_matrix",
+      "provided_capabilities": [
+        "cubic_center_form"
+      ]
+    },
+    "cubic_curve_matching": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_cubic_curve_matching_matrix",
+      "provided_capabilities": [
+        "cubic_curve_matching"
+      ]
+    },
+    "cubic_from_conditions": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "expression",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "coordinate_pair_checker",
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_cubic_from_conditions_matrix",
+      "provided_capabilities": [
+        "cubic_from_conditions"
+      ]
+    },
+    "cubic_option_graph": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_cubic_option_graph_matrix",
+      "provided_capabilities": [
+        "cubic_option_graph"
+      ]
+    },
+    "cubic_statements": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "single_choice",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_cubic_statements_matrix",
+      "provided_capabilities": [
+        "cubic_statements"
+      ]
+    },
+    "graph_cubic_functions": {
+      "handler": "build_cubic_graph_matrix",
+      "payload_adapter": "cubic_adapter.adapt_cubic_graph_matrix",
+      "runtime_contract": "cubic_graph_exact_v1",
+      "supported_answer_types": [
+        "coordinate_pair",
+        "drawing",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "canvas",
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "coordinate_pair_checker",
+        "free_response_drawing_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_graph_cubic_functions_matrix",
+      "provided_capabilities": [
+        "graph_cubic_functions"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_GraphsOfCubicFunctions": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "cubic_center_form",
+        "cubic_curve_matching",
+        "cubic_from_conditions",
+        "cubic_option_graph",
+        "cubic_statements",
+        "graph_cubic_functions"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "cubic_center_form": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "translation_overlap",
+              "f": {
+                "a": 1,
+                "p": -4,
+                "h": 0,
+                "k": 0
+              },
+              "g": {
+                "a": 1,
+                "p": -4,
+                "h": -2,
+                "k": -3
+              }
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "to_form",
+              "coeffs": [
+                -1,
+                -6,
+                2,
+                -3
+              ]
+            },
+            {
+              "kind": "to_form",
+              "coeffs": [
+                1,
+                1,
+                -1,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "shift",
+              "form": {
+                "a": 1,
+                "p": -2,
+                "h": -1,
+                "k": 5
+              },
+              "dx": 3,
+              "dy": -4,
+              "power": 1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "from_center",
+              "a": 3,
+              "p": 8,
+              "center": [
+                -2,
+                5
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "center",
+              "coeffs": [
+                1,
+                3,
+                5,
+                6
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "cubic_curve_matching": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "match",
+          "functions": [
+            {
+              "coeffs": [
+                -1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                2,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                -2,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "order": [
+            1,
+            2,
+            0
+          ],
+          "window": {
+            "x": 2,
+            "y": 8
+          },
+          "colors": [
+            "紅色",
+            "藍色",
+            "綠色"
+          ],
+          "reference": [
+            {
+              "coeffs": [
+                1,
+                0,
+                0,
+                0
+              ],
+              "label": "y=x³"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "match",
+          "functions": [
+            {
+              "coeffs": [
+                2,
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                "-1/2",
+                0,
+                -1,
+                0
+              ]
+            }
+          ],
+          "order": [
+            1,
+            0
+          ],
+          "window": {
+            "x": 2,
+            "y": 8
+          },
+          "colors": [
+            "紅色",
+            "黑色"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "match",
+          "functions": [
+            {
+              "coeffs": [
+                1,
+                0,
+                -4,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                "-1/2",
+                0,
+                2,
+                0
+              ]
+            }
+          ],
+          "order": [
+            1,
+            0
+          ],
+          "window": {
+            "x": 3,
+            "y": 6
+          },
+          "colors": [
+            "紅色",
+            "黑色"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "compare",
+          "functions": [
+            {
+              "coeffs": [
+                -3,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                -1,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "coeffs": [
+                2,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "order": [
+            0,
+            1,
+            2
+          ],
+          "window": {
+            "x": 2,
+            "y": 6
+          },
+          "colors": [
+            "藍色",
+            "紅色",
+            "黑色"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "match",
+          "functions": [
+            {
+              "coeffs": [
+                1,
+                0,
+                -1,
+                0
+              ],
+              "tex": "y=f\\left(x\\right)"
+            },
+            {
+              "coeffs": [
+                1,
+                0,
+                -1,
+                3
+              ],
+              "tex": "y=f\\left(x\\right)+3"
+            },
+            {
+              "coeffs": [
+                1,
+                -3,
+                2,
+                0
+              ],
+              "tex": "y=f\\left(x-1\\right)"
+            },
+            {
+              "coeffs": [
+                1,
+                -3,
+                2,
+                -3
+              ],
+              "tex": "y=f\\left(x-1\\right)-3"
+            }
+          ],
+          "order": [
+            1,
+            0,
+            2,
+            3
+          ],
+          "window": {
+            "x": 3,
+            "y": 6
+          },
+          "colors": [
+            "藍色",
+            "黑色",
+            "紅色",
+            "綠色"
+          ],
+          "preface": "已知 $f\\left(x\\right)=x^{3}-x$，"
+        }
+      }
+    ],
+    "cubic_from_conditions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "center_zero_linear",
+              "center": [
+                2,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "symmetric_pair_origin",
+              "A": [
+                1,
+                25
+              ],
+              "B": [
+                7,
+                7
+              ],
+              "C_x": 9
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "global_local",
+              "lead": -2,
+              "slope": 5,
+              "intercept": 3,
+              "h": -1
+            }
+          ]
+        }
+      }
+    ],
+    "cubic_option_graph": [
+      {
+        "seed": 1,
+        "constraints": {
+          "slope": -1,
+          "intercept": 2,
+          "options": [
+            "parabola_up",
+            "S_up",
+            "S_down",
+            "M_up",
+            "M_down"
+          ]
+        }
+      }
+    ],
+    "cubic_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "free_cd",
+            "coeffs": [
+              3,
+              -5
+            ]
+          },
+          "statements": [
+            {
+              "kind": "value_attained",
+              "value": 1000,
+              "claim": "exists"
+            },
+            {
+              "kind": "x_axis_meets",
+              "claim": "at_least_one"
+            },
+            {
+              "kind": "axis_of_symmetry",
+              "claimed_x": "5/6"
+            },
+            {
+              "kind": "center_on_curve_at",
+              "x": "5/9"
+            },
+            {
+              "kind": "symmetric_mean",
+              "xm": "5/9",
+              "x1": "2/9",
+              "x2": "8/9"
+            }
+          ],
+          "mode": "select"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "form",
+            "a": 2,
+            "p": 3,
+            "h": 4,
+            "k": 5
+          },
+          "statements": [
+            {
+              "kind": "odd_function"
+            }
+          ],
+          "mode": "truth"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "form",
+            "a": 2,
+            "p": 3,
+            "h": 4,
+            "k": 5
+          },
+          "statements": [
+            {
+              "kind": "center_is",
+              "x": 4,
+              "y": 5
+            }
+          ],
+          "mode": "truth"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "form",
+            "a": 2,
+            "p": 3,
+            "h": 4,
+            "k": 5
+          },
+          "statements": [
+            {
+              "kind": "global_extremum",
+              "claim": "max",
+              "value": 5
+            }
+          ],
+          "mode": "truth"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "form",
+            "a": 2,
+            "p": 3,
+            "h": 4,
+            "k": 5
+          },
+          "statements": [
+            {
+              "kind": "local_line",
+              "x0": 4,
+              "m": 3,
+              "n": -7
+            }
+          ],
+          "mode": "truth"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "subject": {
+            "type": "cubic_with_center",
+            "coeffs": [
+              2,
+              -6,
+              9
+            ],
+            "center": [
+              1,
+              3
+            ]
+          },
+          "statements": [
+            {
+              "kind": "constant_claim",
+              "claimed": 2
+            },
+            {
+              "kind": "point_shift_on_graph",
+              "dx": 2,
+              "dy": 6
+            },
+            {
+              "kind": "local_line",
+              "x0": 1,
+              "m": 2,
+              "n": 3,
+              "style": "slope_intercept"
+            },
+            {
+              "kind": "value_approx",
+              "x": "0.99",
+              "approx": "2.97",
+              "decimals": 2
+            },
+            {
+              "kind": "translate_overlap",
+              "a": 2,
+              "p": 3,
+              "k": 4
+            }
+          ],
+          "mode": "select"
+        }
+      }
+    ],
+    "graph_cubic_functions": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "coeffs": [
+                1,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "ask": []
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "coeffs": [
+                1,
+                0,
+                2,
+                0
+              ]
+            }
+          ],
+          "ask": []
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "coeffs": [
+                1,
+                0,
+                -1,
+                0
+              ]
+            }
+          ],
+          "ask": []
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "form": {
+                "a": 1,
+                "p": 2,
+                "h": 3,
+                "k": 1
+              }
+            }
+          ],
+          "ask": [
+            "center"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "coeffs": [
+                1,
+                -6,
+                11,
+                -3
+              ]
+            }
+          ],
+          "ask": [
+            "form",
+            "center"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "coeffs": [
+                -1,
+                3,
+                -2,
+                -2
+              ]
+            }
+          ],
+          "ask": [
+            "form",
+            "center"
+          ]
+        }
+      }
+    ]
+  },
+  "deferred_components": {}
+}

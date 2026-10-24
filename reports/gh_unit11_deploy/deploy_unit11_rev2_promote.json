@@ -1,0 +1,39 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "inequality.polynomial",
+ "registry_revision": "promoted-6635cb397ad6",
+ "bundle_sha256": "6635cb397ad67816ea5d2d7c1e11eb84a18ad3fba8e8df300e29ac725019facf",
+ "allowed_operations": [
+  "polynomial_applications",
+  "polynomial_graph_solutions",
+  "polynomial_inequality_parameters",
+  "polynomial_statements",
+  "solve_polynomial_inequality"
+ ],
+ "skill_bindings": {
+  "gh_PolynomialFunctionGraphs": {
+   "fixed_domain_key": "inequality.polynomial",
+   "allowed_operations": [
+    "polynomial_graph_solutions"
+   ]
+  },
+  "gh_PolynomialInequalities": {
+   "fixed_domain_key": "inequality.polynomial",
+   "allowed_operations": [
+    "polynomial_applications",
+    "polynomial_inequality_parameters",
+    "polynomial_statements",
+    "solve_polynomial_inequality"
+   ]
+  }
+ },
+ "operations_executed": {
+  "polynomial_applications": 8,
+  "polynomial_graph_solutions": 2,
+  "polynomial_inequality_parameters": 5,
+  "polynomial_statements": 6,
+  "solve_polynomial_inequality": 17
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\polynomial_inequality"
+}

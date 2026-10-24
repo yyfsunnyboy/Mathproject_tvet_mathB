@@ -1,0 +1,819 @@
+{
+ "analyzer": "vision_analyzer:google:gemini-3.5-flash-lite",
+ "calls": 82,
+ "exact": 71,
+ "uncertain": 11,
+ "false_accept": [],
+ "false_reject": [],
+ "uncertain_cases": [
+  "12604 y=x^3+2x:correct sloppy",
+  "12605 y=x^3-x:straight line instead",
+  "12605 y=x^3-x:wave missing (monotone)",
+  "12607 y=x^3-6x^2+11x-3:wave missing (monotone)",
+  "12613 y=-x^3+3x^2-2x-2:wave missing (monotone)",
+  "12604 y=x^3+2x:correct sloppy",
+  "12605 y=x^3-x:straight line instead",
+  "12605 y=x^3-x:wave missing (monotone)",
+  "12606 y=(x-3)^3+2(x-3)+1:correct sloppy",
+  "12607 y=x^3-6x^2+11x-3:wave missing (monotone)",
+  "12613 y=-x^3+3x^2-2x-2:wave missing (monotone)"
+ ],
+ "per_case": {
+  "correct": {
+   "calls": 12,
+   "exact": 12,
+   "accepted": 12,
+   "rejected": 0,
+   "uncertain": 0
+  },
+  "correct sloppy": {
+   "calls": 12,
+   "exact": 9,
+   "accepted": 9,
+   "rejected": 0,
+   "uncertain": 3
+  },
+  "mirrored (wrong orientation)": {
+   "calls": 12,
+   "exact": 12,
+   "accepted": 0,
+   "rejected": 12,
+   "uncertain": 0
+  },
+  "centre shifted by (2, 1.5)": {
+   "calls": 12,
+   "exact": 12,
+   "accepted": 0,
+   "rejected": 12,
+   "uncertain": 0
+  },
+  "parabola instead": {
+   "calls": 12,
+   "exact": 12,
+   "accepted": 0,
+   "rejected": 12,
+   "uncertain": 0
+  },
+  "straight line instead": {
+   "calls": 12,
+   "exact": 10,
+   "accepted": 0,
+   "rejected": 10,
+   "uncertain": 2
+  },
+  "wave added": {
+   "calls": 4,
+   "exact": 4,
+   "accepted": 0,
+   "rejected": 4,
+   "uncertain": 0
+  },
+  "wave missing (monotone)": {
+   "calls": 6,
+   "exact": 0,
+   "accepted": 0,
+   "rejected": 0,
+   "uncertain": 6
+  }
+ },
+ "rows": [
+  {
+   "item": "12603 y=x^3",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.9
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "wave added",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.85
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "wave missing (monotone)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "wave added",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "wave missing (monotone)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "correct",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "correct sloppy",
+   "round": 0,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "mirrored (wrong orientation)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "parabola instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "straight line instead",
+   "round": 0,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "wave missing (monotone)",
+   "round": 0,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12603 y=x^3",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12604 y=x^3+2x",
+   "case": "wave added",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.85
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12605 y=x^3-x",
+   "case": "wave missing (monotone)",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12606 y=(x-3)^3+2(x-3)+1",
+   "case": "wave added",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.9
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12607 y=x^3-6x^2+11x-3",
+   "case": "wave missing (monotone)",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "correct",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "correct sloppy",
+   "round": 1,
+   "want": true,
+   "got": true,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "mirrored (wrong orientation)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "centre shifted by (2, 1.5)",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "parabola instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "straight line instead",
+   "round": 1,
+   "want": false,
+   "got": false,
+   "status": "success",
+   "confidence": 0.95
+  },
+  {
+   "item": "12613 y=-x^3+3x^2-2x-2",
+   "case": "wave missing (monotone)",
+   "round": 1,
+   "want": false,
+   "got": null,
+   "status": "low_confidence",
+   "confidence": 0.95
+  }
+ ]
+}

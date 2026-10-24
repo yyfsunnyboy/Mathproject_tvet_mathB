@@ -1,0 +1,589 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_unit10_rehearsal_rev2\\run",
+ "deferred": {},
+ "promotion": {
+  "domain_key": "function.cubic_graph",
+  "registry_revision": "promoted-3fc8fad2f47c",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12603": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d95a3a9c51736af4e6f5a98f1c07518484f1d3e7631b801313145abe62697d26",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12604": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8ec5d61eebf24eb263988abf521191a04b71347d684d698a87e91c11ab5eefd0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12605": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c595d9dcf48e09256e72b0b59e809720068d536656c0174a855a3cfda2cb605e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12606": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "734138039c2e25edd44ec7fdf3e70ca2e79201433bc1166c4359289a7edca58c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12607": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ace15ffa5cf8cbb634f1fbecd892dd8a852d7bc302a25416238100049bc82ef7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12608": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "25a0aa3a89a43a7832bb39f4019161f35842b172421f6d99feffc04492ec1e78",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12609": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8e543d24b14e4f82a1a8382d72b83f7d7e61b0c5e005d87acddb78f2fa346326",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12610": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9bb35cad21b414980914aa46e39841f9c70de684f181559a20bb4d81d5929665",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12611": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5c95659454762398788d1e01c8925ae06425ca4bfe9dcb32856171b06c2dc045",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12612": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5b1b210d92682b72bbf66bc83f8fc2257dd89eb93fb4d5abe4b8ff5e06872a66",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12613": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "graph_cubic_functions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3d3a3cf446b20dab277f4058c04ba82f762355e25b9a9934adc4972a9c3bf658",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12614": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f6a26e52badca10d0c219e01d1e006c1f2815cd2429e6a15bdcebdf34601940d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12615": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "aad69b9d9e5ea467dbeef945df1d050852f5515310badea4de0dfca85cd2a41a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12616": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_from_conditions",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dcdd24916deea6a5350a62254d574f981fb82b7369b4551f4aa110668300ae31",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12617": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0adb151c932cbf4441cef4ce82f208e6db98ad83c6ba7af4f7fc66ef52df5c1c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12618": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5c931afe1c0074766db7afc9e97234e70bc80e263c9b27fd08b7269266d234b0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12619": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9fce86afa1af2a0dce35df2d4f7c6267f323f80d22bb0f900c761fa059e74ac8",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12620": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "13942e0b242eb3a62c350cfc5a724e9b0eda600e06f52a6f9065a14c2823be5f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12621": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4db53cace37532d0a1adf87e9db17bbac70eea01fa7645c365ede918f48262ac",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12622": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "152ac4c42f6adb2e282557b2920bf65f513b8537b93dfc8af2959b310fc76f2e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12623": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b746e69a3f4dd921df35ba61fc127a3e593e3bb24df60b1822c1e84c5b0fe80a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12624": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ee60ba96305c9dfc0b945880d5031ea1507f141c5457fc2830368171fb735a08",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12625": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_center_form",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b6aebca9d9beaa73d4f9cb66ee54afb1f5871bac5fbc8afac2047df5b1528d34",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12626": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_option_graph",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9f95927766c3aa469b80981c4026475429bf11f8d102a6e627c78363168a38d4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12627": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "607ed0faf55a24044c1dee2638b3407a32a93594b0de1a1582491cc799f43acf",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12628": {
+   "skill": "gh_GraphsOfCubicFunctions",
+   "operation": "cubic_curve_matching",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_GraphsOfCubicFunctions",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ccf60de9896de879c519e56ac70edc80c5c922d2a983a5b07f147441124ad48b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_GraphsOfCubicFunctions": {
+   "status": "production_published",
+   "component_count": 26,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 13,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12603",
+    "src_12604",
+    "src_12605",
+    "src_12606",
+    "src_12607",
+    "src_12608",
+    "src_12609",
+    "src_12610",
+    "src_12611",
+    "src_12612",
+    "src_12613",
+    "src_12614",
+    "src_12615",
+    "src_12616",
+    "src_12617",
+    "src_12618",
+    "src_12619",
+    "src_12620",
+    "src_12621",
+    "src_12622",
+    "src_12623",
+    "src_12624",
+    "src_12625",
+    "src_12626",
+    "src_12627",
+    "src_12628"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_GraphsOfCubicFunctions": {
+   "served_examples": {
+    "12603": 3,
+    "12604": 3,
+    "12605": 3,
+    "12606": 3,
+    "12607": 3,
+    "12608": 3,
+    "12609": 4,
+    "12610": 3,
+    "12611": 3,
+    "12612": 3,
+    "12613": 3,
+    "12614": 3,
+    "12615": 3,
+    "12616": 3,
+    "12617": 3,
+    "12618": 3,
+    "12619": 4,
+    "12620": 3,
+    "12621": 3,
+    "12622": 3,
+    "12623": 3,
+    "12624": 3,
+    "12625": 3,
+    "12626": 3,
+    "12627": 3,
+    "12628": 3
+   },
+   "problems": [],
+   "drawing_served_only": [
+    12603,
+    12604,
+    12605,
+    12606,
+    12607,
+    12613
+   ]
+  }
+ },
+ "production_paths_written": []
+}

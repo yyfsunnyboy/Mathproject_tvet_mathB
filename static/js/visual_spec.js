@@ -187,20 +187,33 @@
                     });
                 }
             }
-            const fitted = fitPanelAxisRange(collectFitPoints(points, lines), xRange, yRange);
+            // A panel may carry function curves ([x, y] polylines) and a fixed range: qualitative option graphs
+            // (e.g. "which graph is y = ax^3 + bx") are drawn without axes when 0 lies outside the range.
+            const curves = Array.isArray(fig.curves) ? fig.curves : [];
+            const fixedRange = fig.fixed_range === true && Array.isArray(fig.x_range) && Array.isArray(fig.y_range);
+            const fitted = fixedRange
+                ? { x_range: fig.x_range, y_range: fig.y_range }
+                : fitPanelAxisRange(collectFitPoints(points, lines), xRange, yRange);
+            const panelSpec = {
+                kind: 'coordinate_plane',
+                scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
+                points: points,
+                lines: lines,
+                right_angle_marks: Array.isArray(fig.right_angle_marks) ? fig.right_angle_marks : [],
+                hide_unlabeled_points: true,
+                x_range: fitted.x_range,
+                y_range: fitted.y_range
+            };
+            if (curves.length) {
+                panelSpec.curves = curves;
+            }
+            if (fig.show_grid === false) {
+                panelSpec.show_grid = false;
+            }
             panels.push({
                 id: String(fig.id || ('fig' + (index + 1))),
                 label: String(fig.label || fig.id || ('圖' + (index + 1))),
-                spec: {
-                    kind: 'coordinate_plane',
-                    scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
-                    points: points,
-                    lines: lines,
-                    right_angle_marks: Array.isArray(fig.right_angle_marks) ? fig.right_angle_marks : [],
-                    hide_unlabeled_points: true,
-                    x_range: fitted.x_range,
-                    y_range: fitted.y_range
-                }
+                spec: panelSpec
             });
         });
 
@@ -867,6 +880,9 @@
         const lines = []
             .concat(Array.isArray(panelSpec.lines) ? panelSpec.lines : [])
             .concat(Array.isArray(panelSpec.segments) ? panelSpec.segments : []);
+        if (curvesAreDrawable(panelSpec.curves)) {
+            return true;
+        }
         if (!lines.length) {
             return false;
         }
@@ -1688,6 +1704,7 @@
         // Curves: function graphs sampled server-side as [x, y] polylines. Samples
         // outside the y-range are omitted, so a jump in x starts a new segment.
         const curves = Array.isArray(visualSpec.curves) ? visualSpec.curves : [];
+        const placedCurveLabels = [];
         const curveColors = ['#1565c0', '#c2410c', '#15803d', '#7c3aed'];
         curves.forEach(function (curve, curveIndex) {
             const samples = (curve && Array.isArray(curve.points) ? curve.points : []).map(function (p) {
@@ -1735,12 +1752,28 @@
                 return;
             }
             const display = formatDiagramLabel(curveLabel) || curveLabel;
-            context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
+            context.font = width < 180 ? '600 12px sans-serif' : '600 13px sans-serif';
             const textWidth = typeof context.measureText === 'function'
                 ? Number(context.measureText(display).width) || 0
                 : display.length * 7;
             const px = Math.min(Math.max(mapX(anchor.x) + 4, clipBox.minX + 2), clipBox.maxX - textWidth - 2);
-            const py = Math.min(Math.max(mapY(anchor.y) - 4, clipBox.minY + 14), clipBox.maxY - 2);
+            let py = Math.min(Math.max(mapY(anchor.y) - 4, clipBox.minY + 14), clipBox.maxY - 2);
+            // Curves that end close together must not print their labels on top of each other:
+            // step the label down (then up) until it clears every label already placed.
+            const labelHeight = width < 180 ? 13 : 15;
+            const overlaps = function (top) {
+                return placedCurveLabels.some(function (box) {
+                    return px < box.right && px + textWidth > box.left && top - labelHeight < box.bottom && top > box.top;
+                });
+            };
+            const baseline = py;
+            for (let step = 1; step <= 6 && overlaps(py); step += 1) {
+                const down = baseline + Math.ceil(step / 2) * (labelHeight + 1) * (step % 2 === 1 ? 1 : -1);
+                if (down >= clipBox.minY + 14 && down <= clipBox.maxY - 2) {
+                    py = down;
+                }
+            }
+            placedCurveLabels.push({ left: px, right: px + textWidth, top: py - labelHeight, bottom: py });
             context.fillStyle = applyFadedColor(color, opacity);
             context.textAlign = 'left';
             context.textBaseline = 'bottom';

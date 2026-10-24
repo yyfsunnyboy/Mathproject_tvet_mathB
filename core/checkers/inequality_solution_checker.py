@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from sympy import Interval, Intersection, Rational, S, Union, oo
+from sympy import FiniteSet, Interval, Intersection, Rational, S, Union, oo
 from sympy.sets.sets import Set
 
 from core.checkers.math_input_normalization import latex_to_plain, parse_exact_number
@@ -346,6 +346,22 @@ def _parse_relational(part: str) -> Set | None:
     return None
 
 
+_POINT_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)(==|=|!=|≠)(.+)$")
+
+
+def _parse_point_atom(raw: str) -> Set | None:
+    """``x=2`` is the single point {2}; ``x!=2`` / ``x≠2`` is every real number but 2."""
+    match = _POINT_RE.match(re.sub(r"\s+", "", raw))
+    if not match:
+        return None
+    value = parse_numeric_endpoint(match.group(3))
+    if value is None:
+        return None
+    if match.group(2) in ("!=", "≠"):
+        return Union(Interval.open(-oo, value), Interval.open(value, oo))
+    return FiniteSet(value)
+
+
 def _parse_atom(part: str) -> Set | None:
     raw = part.strip()
     if not raw:
@@ -354,6 +370,9 @@ def _parse_atom(part: str) -> Set | None:
         return S.EmptySet
     if _is_reals_phrase(raw):
         return S.Reals
+    got = _parse_point_atom(raw)
+    if got is not None:
+        return got
     got = _parse_bracket_interval(raw)
     if got is not None:
         return got

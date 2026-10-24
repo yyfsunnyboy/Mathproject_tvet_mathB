@@ -21,6 +21,7 @@ SUPPORTED_DRAWING_TYPES = frozenset(
         "coordinate_point_plot",
         "line_graph",
         "parabola_graph",
+        "cubic_graph",
         "linear_inequality_region",
     }
 )
@@ -197,6 +198,8 @@ def build_drawing_analysis_prompt(
         return build_line_graph_analysis_prompt(expected_drawing_spec)
     if drawing_type == "parabola_graph":
         return build_parabola_graph_analysis_prompt(expected_drawing_spec)
+    if drawing_type == "cubic_graph":
+        return build_cubic_graph_analysis_prompt(expected_drawing_spec)
     if drawing_type == "linear_inequality_region":
         return build_inequality_region_analysis_prompt(expected_drawing_spec)
     schema = {
@@ -313,6 +316,73 @@ def build_line_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> s
     )
 
 
+def build_cubic_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> str:
+    """Feature-extraction prompt for cubic-function graphs (one curve per canvas).
+
+    The expected equation / centre / turning points are deliberately withheld: the analyzer reports what the
+    student drew, correctness is decided by evaluate_cubic_graph.
+    """
+    axis = expected_drawing_spec.get("axis_range")
+    axis = axis if isinstance(axis, dict) else {}
+    schema = {
+        "drawing_detected": True,
+        "recognized_type": "cubic_graph",
+        "required_elements": {"x_axis": True, "y_axis": True, "curve": True},
+        "curve_count": 1,
+        "curves": [
+            {
+                "detected": True,
+                "shape": "cubic | parabola | line | other",
+                "right_end": "up | down | unknown",
+                "center": [0.0, 0.0],
+                "turning_points": [[0.0, 0.0]],
+                "x_intercepts": [0.0],
+                "points_on_curve": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                "label_text": "",
+            }
+        ],
+        "missing_features": [],
+        "incorrect_features": [],
+        "confidence": 0.0,
+        "feedback": "",
+    }
+    return (
+        "You are a strict math graph-reading analyzer. The image is a student's answer drawn on a "
+        "cartesian coordinate canvas. The pale grid, the printed x/y axes and the tick numbers are the "
+        "system-provided background; the student's pen strokes are darker or colored.\n\n"
+        "Task: report, as numbers, the curve the student drew. Do not judge correctness and do "
+        "not guess what the question wants; report only what is actually drawn.\n\n"
+        "Coordinate system: "
+        f"x from {axis.get('x_min', '?')} to {axis.get('x_max', '?')}, "
+        f"y from {axis.get('y_min', '?')} to {axis.get('y_max', '?')}. "
+        "Grid lines are at integer units and the printed axes cross at (0,0). Read coordinates from the "
+        "printed tick numbers.\n\n"
+        "Rules:\n"
+        "- Printed axes count as present: set required_elements.x_axis / y_axis true when the axes are "
+        "visible. Never report a printed axis, a grid line, an arrowhead, a tick, text or an isolated dot as a curve.\n"
+        "- Report one entry in curves for each separate stroke-curve the student drew, and set curve_count to "
+        "their number. If the student drew nothing curved, curve_count is 0 and curves is empty. Never list "
+        "the same stroke twice and never invent a curve to match a count.\n"
+        "- shape: 'cubic' for a smooth S-shaped curve of a cubic function (it rises on one side and falls on the other, "
+        "with or without a wave in the middle), 'parabola' for a U-shaped curve, 'line' for a straight stroke, otherwise 'other'. "
+        "Judge the shape you see, not the intended one.\n"
+        "- right_end: whether the right-hand end of the curve goes up or down.\n"
+        "- center: the point where the curve changes from bending one way to bending the other way (the middle of the S), "
+        "as [x, y] in graph units with 0.1 precision.\n"
+        "- turning_points: the local highest and lowest points of the waves of the curve (empty list when the curve never turns back), "
+        "each as [x, y] with 0.1 precision.\n"
+        "- x_intercepts: the x values where the curve crosses the x axis, 0.1 precision.\n"
+        "- points_on_curve: seven points ON the curve, spread along it (both ends, the middle and in between), as [x, y] in graph "
+        "units with 0.1 precision, read from the grid.\n"
+        "- label_text: transcribe any equation text written next to the curve; it is not the curve itself.\n"
+        "- Ignore small wobble, stroke thickness and slight hand tilt. If a curve is partly outside the canvas, "
+        "report only the points you can see.\n"
+        "- If positions cannot be read reliably, lower confidence instead of guessing.\n\n"
+        "Return JSON only, exactly in this shape:\n"
+        f"{json.dumps(schema, ensure_ascii=False, indent=2)}"
+    )
+
+
 def build_parabola_graph_analysis_prompt(expected_drawing_spec: dict[str, Any]) -> str:
     """Feature-extraction prompt for parabola graphs (one or several curves on one canvas).
 
@@ -399,10 +469,10 @@ def validate_analyzer_response(value: dict[str, Any], *, drawing_type: str) -> t
     if drawing_type == "line_graph" and recognized_type.lower() in LINE_GRAPH_TYPE_ALIASES:
         recognized_type = "line_graph"
         out["recognized_type"] = recognized_type
-    if drawing_type == "parabola_graph":
+    if drawing_type in ("parabola_graph", "cubic_graph"):
         # What the student drew is reported per curve (curves[].shape); the model often names a straight line or a
         # V "line_graph" here, which must be graded as a wrong shape, not rejected as an unreadable response.
-        recognized_type = "parabola_graph"
+        recognized_type = drawing_type
         out["recognized_type"] = recognized_type
     if recognized_type and recognized_type not in SUPPORTED_DRAWING_TYPES:
         errors.append("recognized_type_unsupported")
@@ -1136,6 +1206,184 @@ def evaluate_parabola_graph(
     }
 
 
+# --- cubic_graph: curve shape, end behaviour, centre, turning points and zeros of one cubic curve ----------------------------
+
+CUBIC_GRAPH_THRESHOLDS = {
+    "confidence_min": 0.60,
+    "point_accept": 0.50,
+    "point_reject": 1.00,
+    "center_accept": 0.70,
+    "center_reject": 1.30,
+    "feature_accept": 0.90,
+    "feature_reject": 1.80,
+    "min_points": 4,
+}
+
+
+def _cubic_distance(point: tuple[float, float], cubic: dict[str, Any]) -> float:
+    """Hand-drawing error against y = a(x-h)^3 + p(x-h) + k: the smaller of the vertical and the horizontal offset
+    (the flat part of the curve is judged vertically, the steep part horizontally)."""
+    import numpy as np
+
+    a, p, h, k = cubic["a"], cubic["p"], cubic["h"], cubic["k"]
+    x, y = point
+    vertical = abs(y - (a * (x - h) ** 3 + p * (x - h) + k))
+    roots = np.roots([a, 0.0, p, k - y])
+    real = [float(r.real) + h for r in roots if abs(r.imag) < 1e-7]
+    horizontal = min((abs(x - r) for r in real), default=vertical)
+    return min(vertical, horizontal)
+
+
+def _expected_cubics(spec: dict[str, Any]) -> list[dict[str, Any]] | None:
+    raw = spec.get("expected_cubics")
+    if not isinstance(raw, list) or not raw:
+        return None
+    out = []
+    for item in raw:
+        if not isinstance(item, dict):
+            return None
+        a, p = _float_or_none(item.get("a")), _float_or_none(item.get("p"))
+        center = _as_points([item.get("center")])
+        if a is None or a == 0 or p is None or not center:
+            return None
+        out.append({"a": a, "p": p, "h": center[0][0], "k": center[0][1], "right_end": "up" if a > 0 else "down",
+                    "turning": _as_points(item.get("turning_points") or []),
+                    "zeros": sorted(v for v in (_float_or_none(z) for z in (item.get("x_intercepts") or [])) if v is not None)})
+    return out
+
+
+def _drawn_cubic_curves(features: dict[str, Any]) -> list[dict[str, Any]]:
+    curves = []
+    for raw in features.get("curves") or []:
+        if not isinstance(raw, dict) or not raw.get("detected", True):
+            continue
+        points = _as_points(raw.get("points_on_curve"))
+        if _is_axis_retrace(points) or str(raw.get("shape") or "").strip().lower() == "axis":
+            continue  # a printed axis retraced is not a student curve
+        center = _as_points([raw.get("center")])
+        zeros = [v for v in (_float_or_none(z) for z in (raw.get("x_intercepts") or []) if not isinstance(z, (list, dict))) if v is not None]
+        curves.append({"shape": str(raw.get("shape") or "").strip().lower(), "right_end": str(raw.get("right_end") or "").strip().lower(),
+                       "center": center[0] if center else None, "turning": _as_points(raw.get("turning_points") or []),
+                       "zeros": sorted(zeros), "points": points})
+    return curves
+
+
+def _match_features(drawn: list[tuple[float, float]], expected: list[tuple[float, float]]) -> bool | None:
+    """Turning points: equal counts and every one close -> True, a clearly misplaced one -> False, a count that differs
+    (the reader may have missed or invented a wave) -> None."""
+    th = CUBIC_GRAPH_THRESHOLDS
+    if len(drawn) != len(expected):
+        return None
+    left, right = sorted(drawn), sorted(expected)
+    gaps = [((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5 for a, b in zip(left, right)]
+    if any(g > th["feature_reject"] for g in gaps):
+        return False
+    return True if all(g <= th["feature_accept"] for g in gaps) else None
+
+
+def _compare_cubic(drawn: dict[str, Any], expected: dict[str, Any]) -> tuple[bool | None, list[str], float]:
+    th = CUBIC_GRAPH_THRESHOLDS
+    if drawn["shape"] in {"line", "parabola", "other", "v_shape"}:
+        return False, ["curve_shape"], 99.0
+    if drawn["right_end"] in {"up", "down"} and drawn["right_end"] != expected["right_end"]:
+        return False, ["end_behavior"], 99.0
+    if len(drawn["points"]) < th["min_points"]:
+        return None, [], 50.0
+    distances = [_cubic_distance(p, expected) for p in drawn["points"]]
+    worst, cost = max(distances), sum(distances) / len(distances)
+    gap = None
+    if drawn["center"] is not None:
+        gap = ((drawn["center"][0] - expected["h"]) ** 2 + (drawn["center"][1] - expected["k"]) ** 2) ** 0.5
+        cost += 0.5 * gap
+    incorrect = []
+    if gap is not None and gap > th["center_reject"]:
+        incorrect.append("center_position")
+    if worst > th["point_reject"]:
+        incorrect.append("curve_position")
+    turning = _match_features(drawn["turning"], expected["turning"])
+    if turning is False:
+        incorrect.append("turning_points")
+    zeros = None
+    if len(drawn["zeros"]) == len(expected["zeros"]) and expected["zeros"]:
+        gaps = [abs(a - b) for a, b in zip(drawn["zeros"], expected["zeros"])]
+        zeros = False if any(g > th["feature_reject"] for g in gaps) else (True if all(g <= th["feature_accept"] for g in gaps) else None)
+        if zeros is False:
+            incorrect.append("x_intercepts")
+    if incorrect:
+        return False, incorrect, cost
+    centre_ok = gap is None or gap <= th["center_accept"]
+    if worst <= th["point_accept"] and centre_ok and turning is not None and zeros is not False:
+        return True, [], cost
+    if worst <= th["point_accept"] and centre_ok and not expected["turning"] and not drawn["turning"]:
+        return True, [], cost
+    return None, [], cost
+
+
+def evaluate_cubic_graph(
+    recognized_features: dict[str, Any],
+    expected_drawing_spec: dict[str, Any],
+) -> dict[str, Any]:
+    th = CUBIC_GRAPH_THRESHOLDS
+    required = recognized_features.get("required_elements")
+    required = required if isinstance(required, dict) else {}
+    confidence = _clamp01(_float_or_none(recognized_features.get("confidence")) or 0.0)
+    expected = _expected_cubics(expected_drawing_spec)
+    if expected is None:
+        return _result("missing_spec", None, feedback="本題圖形批改設定尚未完成，這次不計入答錯。", system_error=True)
+    axes_on_canvas = isinstance(expected_drawing_spec.get("axis_range"), dict)
+    missing: list[str] = []
+    for element in expected_drawing_spec.get("required_elements", []):
+        if element in {"cubic_curve", "curve"}:
+            continue
+        if element in {"x_axis", "y_axis"} and axes_on_canvas:
+            continue
+        if not required.get(element):
+            missing.append(str(element))
+    drawn = _drawn_cubic_curves(recognized_features)
+    incorrect: list[str] = []
+    verdict: bool | None
+    if missing or not drawn:
+        verdict = False
+        if not drawn:
+            missing.append("cubic_curve")
+    elif len(drawn) < len(expected):
+        verdict = False
+        missing.append("cubic_curve")
+    elif len(drawn) > len(expected):
+        verdict = False
+        incorrect.append("extra_curve")
+    else:
+        best: tuple[float, tuple[int, ...]] | None = None
+        for perm in itertools.permutations(range(len(drawn))):
+            total = sum(_compare_cubic(drawn[d], expected[e])[2] for e, d in enumerate(perm))
+            if best is None or total < best[0]:
+                best = (total, perm)
+        verdicts: list[bool | None] = []
+        for e, d in enumerate(best[1]):
+            v, bad, _cost = _compare_cubic(drawn[d], expected[e])
+            verdicts.append(v)
+            incorrect.extend(bad)
+        if any(v is False for v in verdicts):
+            verdict = False
+        elif all(v is True for v in verdicts):
+            verdict = True
+        else:
+            verdict = None
+    if confidence < th["confidence_min"]:
+        verdict = None
+    status = "success" if verdict is not None else "low_confidence"
+    score = 1.0 if verdict is True else (0.0 if verdict is False else 0.5)
+    return {
+        "status": status,
+        "is_correct": verdict,
+        "score": score,
+        "confidence": confidence,
+        "missing_features": sorted(set(missing)),
+        "incorrect_features": sorted(set(incorrect)),
+        "feedback": _build_feedback(verdict, missing, incorrect, correct_text="圖形作答正確，所畫三次函數的形狀、對稱中心與位置都符合題目。"),
+    }
+
+
 DRAWING_EVALUATOR_REGISTRY.update(
     {
         "histogram": evaluate_histogram,
@@ -1146,6 +1394,7 @@ DRAWING_EVALUATOR_REGISTRY.update(
         "coordinate_point_plot": evaluate_not_implemented,
         "line_graph": evaluate_line_graph,
         "parabola_graph": evaluate_parabola_graph,
+        "cubic_graph": evaluate_cubic_graph,
         "linear_inequality_region": evaluate_linear_inequality_region,
     }
 )
@@ -1256,6 +1505,11 @@ DRAWING_FEATURE_LABELS = {
     "line_position": "直線位置",
     "line_slope": "直線斜率",
     "parabola_curve": "拋物線",
+    "cubic_curve": "三次函數圖形",
+    "end_behavior": "圖形右端的走向",
+    "center_position": "對稱中心位置",
+    "turning_points": "極值（轉折）點位置",
+    "x_intercepts": "與 x 軸的交點",
     "curve_shape": "曲線形狀（應為拋物線）",
     "opening_direction": "開口方向",
     "vertex_position": "頂點位置",
