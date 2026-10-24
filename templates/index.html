@@ -903,6 +903,10 @@
             display: inline-block;
             max-width: 100%;
         }
+        .question-multipart-items.question-multipart-items-multiline {
+            display: block;
+            text-align: left;
+        }
         .multipart-stem-marker {
             font-weight: 600;
             margin-right: 0.25rem;
@@ -7394,6 +7398,8 @@ span[style*="粗細"],
         // Subquestion markers flow inline; the browser wraps them only when the row is full.
         function joinMultipartMarkerLines(text) {
             let seenFirstMarker = false;
+            let previousItemEnd = -1;
+            let previousNumber = 0;
             return String(text || '').replace(MULTIPART_MARKER, (match, gap, marker, number, offset, source) => {
                 const prefix = source.slice(0, offset);
                 const lineBreak = Boolean(gap && gap.includes('\n'));
@@ -7406,6 +7412,14 @@ span[style*="粗細"],
                     ? lineBreak
                     : seenFirstMarker && (Boolean(gap) || !/[A-Za-z0-9]$/.test(before));
                 if (!isItem && !lineBreak) return match;
+                // An item that itself spans several lines (e.g. its formula sits on its own line)
+                // keeps the author's line break before the next item instead of flowing inline.
+                const previousSpansLines = !first && previousItemEnd >= 0 && lineBreak
+                    && Number(number) === previousNumber + 1
+                    && source.slice(previousItemEnd, offset).includes('\n');
+                previousItemEnd = offset + match.length;
+                previousNumber = Number(number);
+                if (previousSpansLines) return `\n${marker}`;
                 return (!before || MULTIPART_JOIN_AFTER.test(before) ? '' : '\u3000') + marker;
             });
         }
@@ -7435,6 +7449,9 @@ span[style*="粗細"],
             const items = document.createElement('span');
             items.className = 'question-multipart-items';
             const itemsText = safeText.slice(itemsStart);
+            // An inline-block run that spans several lines is baseline-aligned to its LAST line, which
+            // drags the prompt down beside it; such a run is laid out as a block below the prompt.
+            if (/\n[\(（]\s*\d{1,2}\s*[\)）]/.test(itemsText)) items.classList.add('question-multipart-items-multiline');
             let last = 0;
             for (let at = itemsText.indexOf('\u3000'); at >= 0; at = itemsText.indexOf('\u3000', at + 1)) {
                 if (insideInlineMath(itemsText.slice(0, at))) continue;
