@@ -1,0 +1,271 @@
+{
+  "skill_id": "gh_Series",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 24,
+  "components": [
+    {
+      "component_id": "src_12707",
+      "textbook_example_id": 12707,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_items",
+      "domain_operation": "arithmetic_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12707/generate.py"
+    },
+    {
+      "component_id": "src_12708",
+      "textbook_example_id": 12708,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12708/generate.py"
+    },
+    {
+      "component_id": "src_12709",
+      "textbook_example_id": 12709,
+      "status": "verified",
+      "problem_type_id": "fish_rows",
+      "domain_operation": "fish_rows",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12709/generate.py"
+    },
+    {
+      "component_id": "src_12710",
+      "textbook_example_id": 12710,
+      "status": "verified",
+      "problem_type_id": "geometric_series_items",
+      "domain_operation": "geometric_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12710/generate.py"
+    },
+    {
+      "component_id": "src_12711",
+      "textbook_example_id": 12711,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12711/generate.py"
+    },
+    {
+      "component_id": "src_12712",
+      "textbook_example_id": 12712,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12712/generate.py"
+    },
+    {
+      "component_id": "src_12713",
+      "textbook_example_id": 12713,
+      "status": "verified",
+      "problem_type_id": "partial_sum_terms",
+      "domain_operation": "partial_sum_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12713/generate.py"
+    },
+    {
+      "component_id": "src_12714",
+      "textbook_example_id": 12714,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_items",
+      "domain_operation": "arithmetic_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12714/generate.py"
+    },
+    {
+      "component_id": "src_12715",
+      "textbook_example_id": 12715,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12715/generate.py"
+    },
+    {
+      "component_id": "src_12716",
+      "textbook_example_id": 12716,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12716/generate.py"
+    },
+    {
+      "component_id": "src_12717",
+      "textbook_example_id": 12717,
+      "status": "verified",
+      "problem_type_id": "geometric_series_items",
+      "domain_operation": "geometric_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12717/generate.py"
+    },
+    {
+      "component_id": "src_12718",
+      "textbook_example_id": 12718,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12718/generate.py"
+    },
+    {
+      "component_id": "src_12720",
+      "textbook_example_id": 12720,
+      "status": "verified",
+      "problem_type_id": "partial_sum_terms",
+      "domain_operation": "partial_sum_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12720/generate.py"
+    },
+    {
+      "component_id": "src_12721",
+      "textbook_example_id": 12721,
+      "status": "verified",
+      "problem_type_id": "series_statements",
+      "domain_operation": "series_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12721/generate.py"
+    },
+    {
+      "component_id": "src_12722",
+      "textbook_example_id": 12722,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_items",
+      "domain_operation": "arithmetic_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12722/generate.py"
+    },
+    {
+      "component_id": "src_12723",
+      "textbook_example_id": 12723,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12723/generate.py"
+    },
+    {
+      "component_id": "src_12724",
+      "textbook_example_id": 12724,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12724/generate.py"
+    },
+    {
+      "component_id": "src_12725",
+      "textbook_example_id": 12725,
+      "status": "verified",
+      "problem_type_id": "geometric_series_items",
+      "domain_operation": "geometric_series_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12725/generate.py"
+    },
+    {
+      "component_id": "src_12726",
+      "textbook_example_id": 12726,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12726/generate.py"
+    },
+    {
+      "component_id": "src_12728",
+      "textbook_example_id": 12728,
+      "status": "verified",
+      "problem_type_id": "partial_sum_terms",
+      "domain_operation": "partial_sum_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12728/generate.py"
+    },
+    {
+      "component_id": "src_12729",
+      "textbook_example_id": 12729,
+      "status": "verified",
+      "problem_type_id": "arithmetic_series_relation",
+      "domain_operation": "arithmetic_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12729/generate.py"
+    },
+    {
+      "component_id": "src_12730",
+      "textbook_example_id": 12730,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12730/generate.py"
+    },
+    {
+      "component_id": "src_12739",
+      "textbook_example_id": 12739,
+      "status": "verified",
+      "problem_type_id": "series_statements",
+      "domain_operation": "series_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12739/generate.py"
+    },
+    {
+      "component_id": "src_12743",
+      "textbook_example_id": 12743,
+      "status": "verified",
+      "problem_type_id": "geometric_series_relation",
+      "domain_operation": "geometric_series_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12743/generate.py"
+    }
+  ]
+}

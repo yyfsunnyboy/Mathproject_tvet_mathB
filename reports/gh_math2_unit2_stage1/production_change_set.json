@@ -1,0 +1,545 @@
+{
+ "unit": "數學2 單元2 級數",
+ "created": "2026-10-26",
+ "db_ops": [
+  {
+   "op": "delete",
+   "id": 1334,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "b482f01d01c94ac2bedd57ce76f5f0d123a856621a9c70ff1c352054581b279b"
+  },
+  {
+   "op": "delete",
+   "id": 1335,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "97dc6b865e2e89ccba85bf0b13222754124edd8dac122757547ea30a09d2e965"
+  },
+  {
+   "op": "delete",
+   "id": 1336,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "ca88c52505fd247e07ecea29d380f808648b8d0ed5371ef9851f0143b616c178"
+  },
+  {
+   "op": "delete",
+   "id": 1337,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "5f036900fbed6ed2aa8eda701abda6d60fc29e948d8256f1adbc8f89ebbf52af"
+  },
+  {
+   "op": "delete",
+   "id": 1338,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "5cf6c5d837cba121cee1d3b82feef4d5f25297e9309a99defdf7a701be6e5962"
+  },
+  {
+   "op": "delete",
+   "id": 1339,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "3b03cdaaede4afee6847f62d10adf3ce91ea78235164d92754f491e2704c3b29"
+  },
+  {
+   "op": "delete",
+   "id": 1340,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "1ac6d9edf377644c3771fa99b1a4cbd738d0bb44b7329449a58c2dbc0d4fc30d"
+  },
+  {
+   "op": "delete",
+   "id": 1341,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "905cc6e522cc136b65243dc15e54eaae20b5e8c2b1c84f3eea227230e19bd6df"
+  },
+  {
+   "op": "delete",
+   "id": 1342,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "82eec3ed4c94a639b8f7673085edc4ae76292e837a496ae059d7a0e5b2f28882"
+  },
+  {
+   "op": "delete",
+   "id": 1343,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "c7e1a75de8161ee6595e97eeb10a93cffdb38e8593fab13e549bc1c4590515d3"
+  },
+  {
+   "op": "delete",
+   "id": 1344,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "f282232a117a9ee2ebca15f3be00097326c9229e6f7e8ff29d7a8baf649f03f2"
+  },
+  {
+   "op": "delete",
+   "id": 1345,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "6020751b62821729275c83507b354fd176978721d402e88f1c562c7f705712a0"
+  },
+  {
+   "op": "delete",
+   "id": 1346,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "18474c483cb0cc556eb3b3174646438f933338a7f7b5573b8fabf6c7cf73c759"
+  },
+  {
+   "op": "delete",
+   "id": 1347,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "b936768c1fb809047a4eb1a1efaf21d783f42123bf17b6f6d953c4570e747233"
+  },
+  {
+   "op": "delete",
+   "id": 1348,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "61a537ca0621e3f57d0fe791902f8c2b7ce7bfbf9e0db87b284b20727b5b53ea"
+  },
+  {
+   "op": "delete",
+   "id": 1349,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "653bfc1916bbfff7c32fe5a661a80b35276836e8d17b054073a1dd4b5f7ffa01"
+  },
+  {
+   "op": "delete",
+   "id": 1350,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "8cbceb38766b7e2191f1af036cdc88aae3687e7e09e7afef0c000b0242543717"
+  },
+  {
+   "op": "delete",
+   "id": 1351,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "6b599a5216ce4717f35484d056d69f16a94560ee752e37d3dd157a1e01b02e88"
+  },
+  {
+   "op": "delete",
+   "id": 1352,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "2e4b4e3e79fd7e508a0c3000758148ab0ca737c741c90e6d02aff47984a739ab"
+  },
+  {
+   "op": "delete",
+   "id": 1353,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "4b65f01d512725b3a523f5e2609d17d634ffeb57d67ecbdaa04af810c60de1f1"
+  },
+  {
+   "op": "delete",
+   "id": 1354,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "b11d1c735cf0a04c41dfcead623f27fbd736707e4172e1817afa9d8356a98a9e"
+  },
+  {
+   "op": "delete",
+   "id": 1355,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "cd799d479f16b2e1b4ed110fea6dbbc2092e187408cfb3b45df067f287d92447"
+  },
+  {
+   "op": "delete",
+   "id": 1356,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "a6547bea0738f8432694aa0ec344f21730ccff862e17832bc108c27c6a7a47ff"
+  },
+  {
+   "op": "delete",
+   "id": 1357,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "4854a80af107e3968bbd10d2d1e49544d413e31a10cb07ad6181ca3e2bcc6837"
+  },
+  {
+   "op": "delete",
+   "id": 1358,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "45406a9c349ac8378454c6e37f3738ec23103e7f6c1161f23a96cd9e6e12721b"
+  },
+  {
+   "op": "delete",
+   "id": 1359,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "8f46ab0a2337e79e70c98634d11521ac71ac28c2be2b98c99677b002f1f817a1"
+  },
+  {
+   "op": "delete",
+   "id": 1360,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "fb551a090269c08630fd3a60c78b46079305888691061dfa34b4bfcd8b860a18"
+  },
+  {
+   "op": "delete",
+   "id": 1361,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "source_description",
+    "notes",
+    "skill_id"
+   ],
+   "expected_before_sha256": "97f8199dc3a771b954e478d3bb662dd8470ac0f228e9f87ccf8746acc21ddbde"
+  },
+  {
+   "op": "update",
+   "id": 12707,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"(1)求首項為24，前7項和為105的等差數列之公差。\\n(2)求等差級數\\\\(3+7+\\\\cdots +47\\\\)的和。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_001_001\", \"anchor_key\": \"general|longteng|2|2|section|example|1|1\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"1\", \"source_order\": 1, \"block_index\": 0, \"occurrence_index\": 1, \"question_label\": \"例1\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"5e66fd02352a57060db962df722a6967b1cbdf92e97eb6d7f37f611880382536\"}}"
+   },
+   "expected_before_sha256": "0aeb967ed2dfd1b9ee2de7adcac8ce40c40b266a9a487be3179374977d2b1c1c"
+  },
+  {
+   "op": "update",
+   "id": 12708,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"已知\\\\(\\\\left \\\\langle { a_{ n } } \\\\right \\\\rangle\\\\)為等差數列且\\\\(a_{ 13 } =11\\\\)。\\n(1)求\\\\(a_{ 1 } +a_{ 25 }\\\\)的值。　　　　(2)求前25項的和。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_002_003\", \"anchor_key\": \"general|longteng|2|2|section|example|2|3\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"2\", \"source_order\": 3, \"block_index\": 2, \"occurrence_index\": 1, \"question_label\": \"例2\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"be7f0c8075471e24b0d8783550b14145ac17f951ef34a6d40cead6ab07d47c5f\"}}"
+   },
+   "expected_before_sha256": "b6ca585458645afffcde23a9b47e81ece0f2adb7b4562cbaa1347609a45c8881"
+  },
+  {
+   "op": "update",
+   "id": 12709,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"古代陣法中，「魚鱗陣」的將領位於陣形的正後方，士兵依右圖排列：第1列有1人、第2列有3人、第3列有5人、……，以此類推。\\n(1)求前10列的士兵總人數。\\n(2)求前n列的士兵總人數。\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_003_005\", \"anchor_key\": \"general|longteng|2|2|section|example|3|5\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"3\", \"source_order\": 5, \"block_index\": 4, \"occurrence_index\": 1, \"question_label\": \"例3\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"e4efca63e0da27cadbf320ee0dc743284cd4ef7e46ad8f494eff31ba3832ef35\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例3_source_typetextbook_example_dedupeb1d8df18149d045f_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例3_source_typetextbook_example_dedupeb1d8df18149d045f_general__fig1.png\", \"page_index\": 3, \"source_page\": 4, \"bbox\": [413.0, 456.0, 509.0, 525.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: fish-scale formation of soldiers (rows of 1, 3, 5 ...)\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_example_003_005\", \"width\": 275, \"height\": 199, \"file_size\": 16568, \"sha256\": \"165d8088c70fc5bfb1a664bd179c31c33a9f780d851a592c4ed678376737978d\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 4, \"bbox\": [413.0, 456.0, 509.0, 525.0], \"sha256\": \"165d8088c70fc5bfb1a664bd179c31c33a9f780d851a592c4ed678376737978d\", \"size\": [275, 199]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}"
+   },
+   "expected_before_sha256": "eefade3f419595b7544a5a9f69947a70a6023394af2c9471787e22a430f7fac3"
+  },
+  {
+   "op": "update",
+   "id": 12710,
+   "columns": [
+    "problem_text",
+    "detailed_solution",
+    "notes"
+   ],
+   "new": {
+    "problem_text": "(1)求首項為3，公比為 \\(\\sqrt { 2 }\\) 的等比數列前 \\(6\\) 項的和。\n(2)求等比級數 \\(3+6+12+\\cdots +384\\) 的和。",
+    "detailed_solution": "(1)\t利用等比級數的和公式\\(S_{ n } =\\frac { a_{ 1 } \\left ( { 1-r ^ { n } } \\right ) } { 1-r }\\)，得\n\\(S_{ 6 } =\\frac { 3\\times \\left ( { 1-\\left ( { \\sqrt { 2 } } \\right ) ^ { 6 } } \\right ) } { 1-\\sqrt { 2 } }=21\\left ( { \\sqrt { 2 }+1 } \\right )\\)。\n(2)\t設此等比數列的項數為n。因為首項\\(a_{ 1 } =3\\)，公比\\(r=\\frac { 6 } { 3 }=2\\)，末項\\(a_{ n } =384\\)，所以\\(384=3\\times 2 ^ { n-1 }\\)，解得\\(n=8\\)。利用等比級數的和公式，得\n\\(S_{ 8 } =\\frac { 3\\times \\left ( { 1-2 ^ { 8 } } \\right ) } { 1-2 }=765\\)。",
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"(1)求首項為3，公比為\\\\(\\\\sqrt[] { 2 }\\\\)的等比數列前6項的和。\\n(2)求等比級數\\\\(3+6+12+\\\\cdots +384\\\\)的和。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_004_007\", \"anchor_key\": \"general|longteng|2|2|section|example|4|7\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"4\", \"source_order\": 7, \"block_index\": 6, \"occurrence_index\": 1, \"question_label\": \"例4\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"f8f048c29dba0bd3d4a2b70ebbd7f7cace9a73b33e0bf4919218aeb2db422467\"}}"
+   },
+   "expected_before_sha256": "665c622d1e627cab29be8e38142c50966eef93c5034cbacc5aa3faf9e5b4f67c"
+  },
+  {
+   "op": "update",
+   "id": 12711,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"已知\\\\(\\\\left \\\\langle { a_{ n } } \\\\right \\\\rangle\\\\)為等比數列，且\\\\(a_{ 2 } =6\\\\),\\\\(a_{ 4 } =54\\\\)，求此等比數列前5項的和。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_005_009\", \"anchor_key\": \"general|longteng|2|2|section|example|5|9\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"5\", \"source_order\": 9, \"block_index\": 8, \"occurrence_index\": 1, \"question_label\": \"例5\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"0ec5dbbcac3f3e4eb1c61b80d774cb5d0751842efda0641b963cd966cc287298\"}}"
+   },
+   "expected_before_sha256": "5c83af516974a1d7d17fc112aa2dd0b6b58a781b4027f66a8e9558630d5264be"
+  },
+  {
+   "op": "update",
+   "id": 12712,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"右圖中，已知\\\\(\\\\angle A=45{}^\\\\circ\\\\),\\\\({\\\\overline{ AB }} =1\\\\)，且\\\\(T_{ 1 }\\\\),\\\\(T_{ 2 }\\\\),\\\\(T_{ 3 }\\\\),…\\n都是正方形，求前6個正方形面積的總和。\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_006_011\", \"anchor_key\": \"general|longteng|2|2|section|example|6|11\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"6\", \"source_order\": 11, \"block_index\": 10, \"occurrence_index\": 1, \"question_label\": \"例6\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"3ed6abeacac2d90d86605c7d5b272e1e29f35a201378b04f31e2e18d8957ce97\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例6_source_typetextbook_example_dedupe633232dfdef9a762_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例6_source_typetextbook_example_dedupe633232dfdef9a762_general__fig1.png\", \"page_index\": 7, \"source_page\": 8, \"bbox\": [411.0, 162.0, 507.0, 235.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: angle A = 45 degrees with squares T1, T2, T3 ...\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_example_006_011\", \"width\": 274, \"height\": 211, \"file_size\": 5840, \"sha256\": \"03ad646e89c439150792ecfbae861c0d0e21cf075a876e450070f4e4a4dde556\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 8, \"bbox\": [411.0, 162.0, 507.0, 235.0], \"sha256\": \"03ad646e89c439150792ecfbae861c0d0e21cf075a876e450070f4e4a4dde556\", \"size\": [274, 211]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}"
+   },
+   "expected_before_sha256": "350a0b8d8f6ea9dbed82acbc834f7ac77a9e05c8e9e5dd276c9868f78f410fb3"
+  },
+  {
+   "op": "update",
+   "id": 12713,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"已知數列\\\\(\\\\left \\\\langle { a_{ n } } \\\\right \\\\rangle\\\\)前n項和\\\\(S_{ n } =3 ^ { n } -1\\\\)。\\n(1)求\\\\(a_{ 1 }\\\\)的值。　　　　(2)求\\\\(a_{ 3 }\\\\)的值。　　　　(3)寫出一般項\\\\(a_{ n }\\\\)的公式。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_007_013\", \"anchor_key\": \"general|longteng|2|2|section|example|7|13\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"7\", \"source_order\": 13, \"block_index\": 12, \"occurrence_index\": 1, \"question_label\": \"例7\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"8ef578a6ea9b148826b2a895c04360a8bb62cdd38984b7029a40d3b51a6c076e\"}}"
+   },
+   "expected_before_sha256": "e6ab6568d6d06bc012d8269ea72d6fdce96e66a6f78b3791a5ddcea243cfd93a"
+  },
+  {
+   "op": "update",
+   "id": 12719,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"右圖中，ABCD 是邊長為 2 的正方形，其內部的 5個黑色三角形皆為等腰直角三角形。試問這 5 個黑色三角形面積的總和為多少？\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_in_class_practice_006_012\", \"anchor_key\": \"general|longteng|2|2|section|in_class_practice|6|12\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"in_class_practice\", \"question_number\": \"6\", \"source_order\": 12, \"block_index\": 11, \"occurrence_index\": 1, \"question_label\": \"隨堂練習6\", \"source_type\": \"in_class_practice\", \"text_fingerprint\": \"96990fd29ea95591771d30a8bfbdad9b4d81af98ed27a8fdd9d9f646be78d643\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/in_class_practice_隨堂練習6_source_typein_class_practice_linked_example例題6_dedupe7531e1b3ed694f16_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/in_class_practice_隨堂練習6_source_typein_class_practice_linked_example例題6_dedupe7531e1b3ed694f16_general__fig1.png\", \"page_index\": 7, \"source_page\": 8, \"bbox\": [422.0, 567.0, 511.0, 661.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: square ABCD with 5 black isosceles right triangles\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_in_class_practice_006_012\", \"width\": 255, \"height\": 269, \"file_size\": 4340, \"sha256\": \"0ad592356a946afc1e72912d6d2b2042badd67b08300124da88f81ae9861cdb8\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 8, \"bbox\": [422.0, 567.0, 511.0, 661.0], \"sha256\": \"0ad592356a946afc1e72912d6d2b2042badd67b08300124da88f81ae9861cdb8\", \"size\": [255, 269]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}"
+   },
+   "expected_before_sha256": "598b5263d6938ec6a14834f5a882375bd138d3244d479222799f6d1d2cedaaf6"
+  },
+  {
+   "op": "update",
+   "id": 12727,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"右圖中，已知\\\\({\\\\overline{ AB }} =1\\\\)，且\\\\(T_{ 1 }\\\\),\\\\(T_{ 2 }\\\\),\\\\(T_{ 3 }\\\\),\\\\(T_{ 4 }\\\\),\\\\(T_{ 5 }\\\\)為5個等腰直角三角形，求這5個三角形的面積總和。\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_exercise_006_031\", \"anchor_key\": \"general|longteng|2|2|section|exercise|6|31\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"exercise\", \"question_number\": \"6\", \"source_order\": 31, \"block_index\": 30, \"occurrence_index\": 1, \"question_label\": \"2習題 基礎題6\", \"source_type\": \"basic_exercise\", \"text_fingerprint\": \"ce679cfba940abaf8d7fe3e07fdc50da09f8e66d19e8efc4974c02f17b4854b7\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/basic_exercise_2習題_基礎題6_source_typebasic_exercise_dedupe620bc93fab22eb18_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/basic_exercise_2習題_基礎題6_source_typebasic_exercise_dedupe620bc93fab22eb18_general__fig1.png\", \"page_index\": 15, \"source_page\": 16, \"bbox\": [429.0, 436.0, 524.0, 547.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: isosceles right triangles T1..T5 with AB = 1\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_exercise_006_031\", \"width\": 272, \"height\": 316, \"file_size\": 9082, \"sha256\": \"ec70722f0075deb4db95ae1f27529480428db7bb7c4b25a8d81bebd6d6d0f166\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 16, \"bbox\": [429.0, 436.0, 524.0, 547.0], \"sha256\": \"ec70722f0075deb4db95ae1f27529480428db7bb7c4b25a8d81bebd6d6d0f166\", \"size\": [272, 316]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}"
+   },
+   "expected_before_sha256": "571d0b253ff0474db797fa34e69e4d5fbe6f7f48d5b143f560137e44bcfd0fe8"
+  },
+  {
+   "op": "update",
+   "id": 12731,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"使用數學歸納法證明：對於所有的正整數n，級數和\\n\\\\(1 ^ { 2 } +2 ^ { 2 } +\\\\cdots +n ^ { 2 } =\\\\frac { n\\\\left ( { n+1 } \\\\right )\\\\left ( { 2n+1 } \\\\right ) } { 6 }\\\\)\\n恆成立。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_008_015\", \"anchor_key\": \"general|longteng|2|2|section|example|8|15\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"8\", \"source_order\": 15, \"block_index\": 14, \"occurrence_index\": 1, \"question_label\": \"例8\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"8f832653fe041975d779c6a28de7d31e22602f4786c2aa8b833b5c318f02a90f\"}}"
+   },
+   "expected_before_sha256": "cb1244200ffb33f3d3e0947d029d94bd33544b7661e2ccb24dbb5daad2c58b26"
+  },
+  {
+   "op": "update",
+   "id": 12732,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"求下列連續正整數的平方和。\\n(1)\\\\(1 ^ { 2 } +2 ^ { 2 } +3 ^ { 2 } +\\\\cdots +20 ^ { 2 }\\\\)。　　　　(2)\\\\(11 ^ { 2 } +12 ^ { 2 } +13 ^ { 2 } +\\\\cdots +20 ^ { 2 }\\\\)。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_009_017\", \"anchor_key\": \"general|longteng|2|2|section|example|9|17\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"9\", \"source_order\": 17, \"block_index\": 16, \"occurrence_index\": 1, \"question_label\": \"例9\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"4c854055e90cfacca1ec357f402fc03cee24f762544565ff87aade7dff378eae\"}}"
+   },
+   "expected_before_sha256": "a06eefd3aa9e77198cf67697b32a721ccaee4c420d7740791958e369b0b3c838"
+  },
+  {
+   "op": "update",
+   "id": 12733,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"image_role\": \"unknown\", \"image_dependency_reason\": \"no_diagram_dependency_detected\", \"needs_image\": false, \"math_format\": \"standard_latex\", \"raw_problem_backup\": \"(1)求連續正偶數的平方和：\\\\(2 ^ { 2 } +4 ^ { 2 } +6 ^ { 2 } +\\\\cdots +20 ^ { 2 }\\\\)。\\n(2)求連續正奇數的平方和：\\\\(1 ^ { 2 } +3 ^ { 2 } +5 ^ { 2 } +\\\\cdots +19 ^ { 2 }\\\\)。\", \"math_warnings\": [], \"needs_review\": false, \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"review_required_by_confidence\": false, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_010_019\", \"anchor_key\": \"general|longteng|2|2|section|example|10|19\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"10\", \"source_order\": 19, \"block_index\": 18, \"occurrence_index\": 1, \"question_label\": \"例10\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"5b5d390fdaebb2735e16d8b4a1116d70b5c677ed2ef64d929bad38f234e78c0d\"}}"
+   },
+   "expected_before_sha256": "a4379eadfeaa69ca7b1fdda4df80586fcc5368fc3be35972dee1118c9b99e935"
+  },
+  {
+   "op": "update",
+   "id": 12734,
+   "columns": [
+    "notes"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"右圖為使用高腳杯堆疊而成的香檳塔，最頂層有1個杯子，往下的每一層都排成正方形，第2層每邊有2個杯子，第3層每邊有3個杯子，……，以此類推。仿照上面的方式，堆成12層高的香檳塔，試回答下列問題。\\n(1)\\t第12層有幾個高腳杯？（單選）\\n①12　②\\\\(12 ^ { 2 }\\\\)　③\\\\(1+2+3+\\\\cdots +12\\\\)\\n④\\\\(1 ^ { 2 } +2 ^ { 2 } +3 ^ { 2 } +\\\\cdots +12 ^ { 2 }\\\\)。\\n(2)\\t堆成12層高的香檳塔需要準備多少個高腳杯？\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_example_011_021\", \"anchor_key\": \"general|longteng|2|2|section|example|11|21\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"example\", \"question_number\": \"11\", \"source_order\": 21, \"block_index\": 20, \"occurrence_index\": 1, \"question_label\": \"例11\", \"source_type\": \"textbook_example\", \"text_fingerprint\": \"4c29f8af9ea8bddbb4e8bd19b023caf6a42cacbcca5911a650676381d336a10b\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例11_source_typetextbook_example_dedupe152babd5e687bd84_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例11_source_typetextbook_example_dedupe152babd5e687bd84_general__fig1.png\", \"page_index\": 12, \"source_page\": 13, \"bbox\": [398.0, 376.0, 511.0, 502.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: champagne tower (4-layer illustration)\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_example_011_021\", \"width\": 321, \"height\": 358, \"file_size\": 38731, \"sha256\": \"23f33a7230b3c00701abf0acf22e813a92798ea922bc3430f8236d2107bee591\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 13, \"bbox\": [398.0, 376.0, 511.0, 502.0], \"sha256\": \"23f33a7230b3c00701abf0acf22e813a92798ea922bc3430f8236d2107bee591\", \"size\": [321, 358]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}"
+   },
+   "expected_before_sha256": "b2aeb46968b5922afc311457d69665f64490362e35f0756037525e93f6349a08"
+  },
+  {
+   "op": "update",
+   "id": 12739,
+   "columns": [
+    "skill_id"
+   ],
+   "new": {
+    "skill_id": "gh_Series"
+   },
+   "expected_before_sha256": "f8ce08d66c5a0d7d656f2c16f90f40184cf11819cfc6f7abf451271e99c62fb1"
+  },
+  {
+   "op": "update",
+   "id": 12743,
+   "columns": [
+    "notes",
+    "skill_id"
+   ],
+   "new": {
+    "notes": "{\"math_format\": \"standard_latex\", \"raw_problem_backup\": \"取一個邊長為32的白色正方形，將其等分成4個相同的正方形，然後將左上及右下的正方形塗成藍色；接著再將剩下的2個白色小正方形，分別等分成4個相同的更小正方形，並將左上及右下更小的正方形塗成藍色。重複這樣的步驟，如下圖所示。\\n依此規律可畫第4圖、第5圖、……。\\n(1)\\t求第9圖藍色正方形的總數。\\n(2)\\t求第9圖所有藍色正方形的面積和。\", \"math_warnings\": [], \"import_confidence\": 0.9, \"auto_fill_threshold\": 0.85, \"auto_fill_applied\": true, \"import_source_priority\": \"docx_primary\", \"optional_enrich_pdf_path\": \"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\uploads\\\\ad24ef5c8d5848c789e45794df7d127a\\\\02-.pdf\", \"source_provenance\": {\"primary\": {\"filename\": \"02-.docx\", \"original_filename\": \"單元02-級數.docx\", \"size_bytes\": 593843, \"sha256\": \"fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/fe95de3920ab_單元02-級數.docx\"}, \"optional_enrich_pdf\": {\"filename\": \"02-.pdf\", \"original_filename\": \"單元02-級數.pdf\", \"size_bytes\": 2008296, \"sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"stored_path\": \"textbook_import/uploaded_sources/general/數學2/9d32c092de77_單元02-級數.pdf\"}}, \"rollback_metadata\": {\"preserved\": true, \"policy\": {\"execution_arch\": \"native\", \"docx_primary\": true, \"pdf_optional_enrich\": true, \"auto_post_ocr_ai\": true, \"auto_backfill_high_confidence\": true, \"review_low_confidence\": true}}, \"question_anchor\": {\"anchor_id\": \"general_2_section_advanced_exercise_012_037\", \"anchor_key\": \"general|longteng|2|2|section|advanced_exercise|12|37\", \"curriculum\": \"general\", \"publisher\": \"longteng\", \"volume\": \"數學2\", \"chapter\": \"2\", \"section\": \"\", \"question_type\": \"advanced_exercise\", \"question_number\": \"12\", \"source_order\": 37, \"block_index\": 36, \"occurrence_index\": 1, \"question_label\": \"2習題 進階題12\", \"source_type\": \"advanced_exercise\", \"text_fingerprint\": \"7306c8624795bbd5760fe100aa6c32b7a50a273a52fd1b903928a4d42baee297\"}, \"image_assets\": [{\"asset_type\": \"pdf_visual_crop\", \"asset_slot\": \"pdf_visual_01\", \"source\": \"pdf\", \"path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/advanced_exercise_2習題_進階題12_source_typeadvanced_exercise_dedupe4b1c697e6a7dae8a_general__fig1.png\", \"display_path\": \"uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/advanced_exercise_2習題_進階題12_source_typeadvanced_exercise_dedupe4b1c697e6a7dae8a_general__fig1.png\", \"page_index\": 17, \"source_page\": 18, \"bbox\": [186.0, 475.0, 423.0, 551.0], \"needs_crop_review\": false, \"needs_image_conversion\": false, \"reason\": \"manual_verified_region: figures 1-3 of the blue-square subdivision\", \"image_description\": \"required\", \"visual_type\": \"diagram\", \"visual_classification\": \"required\", \"visual_status\": \"accepted\", \"visual_review_reasons\": [], \"match_method\": \"manual_page_region\", \"match_score\": 1.0, \"question_anchor\": \"general_2_section_advanced_exercise_012_037\", \"width\": 666, \"height\": 220, \"file_size\": 9915, \"sha256\": \"f787da3f6198dcc9d53c71606f106c818dc8103f99d3dca626c00b9b2d2c5195\", \"dpi\": 200}], \"has_image\": true, \"needs_image_review\": false, \"visual_status\": \"accepted\", \"manual_visual_review\": {\"date\": \"2026-10-26\", \"source_pdf_sha256\": \"9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964\", \"result\": \"each crop viewed against the PDF page render; complete figure, no neighbouring question content\", \"crops\": [{\"slot\": \"pdf_visual_01\", \"page\": 18, \"bbox\": [186.0, 475.0, 423.0, 551.0], \"sha256\": \"f787da3f6198dcc9d53c71606f106c818dc8103f99d3dca626c00b9b2d2c5195\", \"size\": [666, 220]}]}, \"repair_log\": [\"2026-10-26 Stage1 isolated repair: figure mounted from the verified PDF region (vector figure, no raster)\"]}",
+    "skill_id": "gh_Series"
+   },
+   "expected_before_sha256": "ed8853df13ac6f4a1961a89a588d9c85cd5a2d2053fc14c24dc0fe849c9be4cf"
+  }
+ ],
+ "asset_files": [
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例3_source_typetextbook_example_dedupeb1d8df18149d045f_general__fig1.png",
+   "sha256": "165d8088c70fc5bfb1a664bd179c31c33a9f780d851a592c4ed678376737978d"
+  },
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例6_source_typetextbook_example_dedupe633232dfdef9a762_general__fig1.png",
+   "sha256": "03ad646e89c439150792ecfbae861c0d0e21cf075a876e450070f4e4a4dde556"
+  },
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/in_class_practice_隨堂練習6_source_typein_class_practice_linked_example例題6_dedupe7531e1b3ed694f16_general__fig1.png",
+   "sha256": "0ad592356a946afc1e72912d6d2b2042badd67b08300124da88f81ae9861cdb8"
+  },
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/basic_exercise_2習題_基礎題6_source_typebasic_exercise_dedupe620bc93fab22eb18_general__fig1.png",
+   "sha256": "ec70722f0075deb4db95ae1f27529480428db7bb7c4b25a8d81bebd6d6d0f166"
+  },
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/textbook_example_例11_source_typetextbook_example_dedupe152babd5e687bd84_general__fig1.png",
+   "sha256": "23f33a7230b3c00701abf0acf22e813a92798ea922bc3430f8236d2107bee591"
+  },
+  {
+   "copy_to": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元2_級數/sec_unknown_2級數/advanced_exercise_2習題_進階題12_source_typeadvanced_exercise_dedupe4b1c697e6a7dae8a_general__fig1.png",
+   "sha256": "f787da3f6198dcc9d53c71606f106c818dc8103f99d3dca626c00b9b2d2c5195"
+  }
+ ],
+ "expected_unit_rows_after": 37,
+ "expected_total_after": 5000,
+ "source": {
+  "docx_sha256": "fe95de3920ab895c790a19cd28c04373454f6e1b222221ce110198a0edfe09f5",
+  "pdf_sha256": "9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964"
+ }
+}

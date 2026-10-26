@@ -1,0 +1,72 @@
+{
+ "A_preflight": {
+  "passed": false,
+  "blockers": [
+   "human_review_not_approved",
+   "approved_revision_mismatch"
+  ],
+  "bundle_sha256": "3d1cb59939d97743518ab79f468976de0129f6fff88fe86394185f19399c53f3"
+ },
+ "C_safety": {
+  "byte_identical_to_sandbox_candidate_and_bundle_hash": {
+   "__init__.py": true,
+   "sequence_progression_adapter.py": true,
+   "sequence_progression_domain.py": true,
+   "sequence_progression_recurrence.py": true,
+   "sequence_progression_recurrence_adapter.py": true
+  },
+  "banned_findings": [],
+  "third_party_or_core_imports": [
+   "__future__",
+   "fractions",
+   "re",
+   "sympy",
+   "typing"
+  ]
+ },
+ "B_cross_validation": {
+  "terms": [
+   80,
+   80
+  ],
+  "arith_two_terms": [
+   20,
+   20
+  ],
+  "arith_first_negative": [
+   20,
+   20
+  ],
+  "geo_ratio_two_terms": [
+   60,
+   60
+  ],
+  "geo_nth": [
+   40,
+   40
+  ],
+  "geo_shifted_pair_sums": [
+   10,
+   20,
+   10
+  ],
+  "not_covered_by_existing_domain": [
+   "geometric_from_relations/product_positive,diff_sum",
+   "progression_three_numbers (4 kinds)",
+   "sequence_statements (4 kinds)",
+   "radical ratios in geometric_from_terms index search"
+  ]
+ },
+ "D_published_two_choice_skill": {
+  "skill": "gh_PolynomialInequalities",
+  "status": "unsafe_dynamic",
+  "non_dynamic": {
+   "src_12634": null,
+   "src_12651": "Single choice must have 4 choices, got 2",
+   "src_12652": "Single choice must have 4 choices, got 2",
+   "src_12653": "Single choice must have 4 choices, got 2",
+   "src_12654": "Single choice must have 4 choices, got 2",
+   "src_12655": "Single choice must have 4 choices, got 2"
+  }
+ }
+}

@@ -1,0 +1,73 @@
+{
+ "skills": {
+  "gh_RecursiveRelation": {
+   "practice_page": 200,
+   "mathjax_in_page": true,
+   "served": {
+    "12687": 6,
+    "12688": 6,
+    "12689": 6,
+    "12690": 6,
+    "12692": 6,
+    "12693": 6,
+    "12695": 6,
+    "12697": 6,
+    "12699": 6
+   },
+   "http_errors": [],
+   "grading_problems": [],
+   "figure_fields": 0,
+   "image_fields": 0,
+   "multi_part": 42
+  },
+  "gh_Sequence": {
+   "practice_page": 200,
+   "mathjax_in_page": true,
+   "served": {
+    "12667": 6,
+    "12669": 6,
+    "12670": 6,
+    "12671": 6,
+    "12672": 6,
+    "12674": 6,
+    "12675": 6,
+    "12676": 6,
+    "12677": 6,
+    "12678": 6,
+    "12679": 6,
+    "12680": 6,
+    "12681": 6,
+    "12682": 6,
+    "12683": 6,
+    "12684": 6,
+    "12685": 6
+   },
+   "http_errors": [],
+   "grading_problems": [],
+   "figure_fields": 0,
+   "image_fields": 0,
+   "multi_part": 36
+  }
+ },
+ "db_copy": "reports\\gh_math2_unit1_bundle\\live_acceptance_tmp\\kumon_math_live_acceptance.db",
+ "student_id": 2,
+ "runtime_errors": [],
+ "formal_db_counts_before": {
+  "practice_attempts": 2747,
+  "adaptive_learning_logs": 385,
+  "progress": 394,
+  "mistake_notebook_entries": 125,
+  "student_abilities": 0
+ },
+ "formal_db_counts_after": {
+  "practice_attempts": 2747,
+  "adaptive_learning_logs": 385,
+  "progress": 394,
+  "mistake_notebook_entries": 125,
+  "student_abilities": 0
+ },
+ "formal_db_unchanged": true,
+ "components_served": 26,
+ "payload_count": 156,
+ "passed": true
+}

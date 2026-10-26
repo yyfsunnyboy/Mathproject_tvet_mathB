@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_CommonSeriesSummationFormulas",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12732",
+      "textbook_example_id": 12732,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12732/generate.py"
+    },
+    {
+      "component_id": "src_12733",
+      "textbook_example_id": 12733,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12733/generate.py"
+    },
+    {
+      "component_id": "src_12734",
+      "textbook_example_id": 12734,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12734/generate.py"
+    },
+    {
+      "component_id": "src_12736",
+      "textbook_example_id": 12736,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12736/generate.py"
+    },
+    {
+      "component_id": "src_12737",
+      "textbook_example_id": 12737,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12737/generate.py"
+    },
+    {
+      "component_id": "src_12738",
+      "textbook_example_id": 12738,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12738/generate.py"
+    },
+    {
+      "component_id": "src_12740",
+      "textbook_example_id": 12740,
+      "status": "verified",
+      "problem_type_id": "series_statements",
+      "domain_operation": "series_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12740/generate.py"
+    },
+    {
+      "component_id": "src_12741",
+      "textbook_example_id": 12741,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12741/generate.py"
+    },
+    {
+      "component_id": "src_12742",
+      "textbook_example_id": 12742,
+      "status": "verified",
+      "problem_type_id": "power_sums",
+      "domain_operation": "power_sums",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12742/generate.py"
+    }
+  ]
+}

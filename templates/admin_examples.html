@@ -281,6 +281,8 @@
         .teacher-v3-deployed-pending-revalidation { background: #ffedd5; border-color: #fb923c; color: #9a3412; }
         .teacher-v3-failed { background: #fee2e2; border-color: #f87171; color: #991b1b; }
         .teacher-v3-not-generated { background: #f3e8ff; border-color: #c084fc; color: #6b21a8; }
+        .teacher-v3-fixed-graded { background: #e0f2fe; border-color: #38bdf8; color: #075985; }
+        .teacher-v3-fixed-ungraded { background: #fef9c3; border-color: #facc15; color: #854d0e; }
         .teacher-v3-generating { background: #dbeafe; border-color: #60a5fa; color: #1e40af; }
         .teacher-v3-generated-not-packaged,
         .teacher-v3-partial,
@@ -574,14 +576,14 @@
                         </td>
                         <td class="v3-cell">
                             {% set gencode = (gencode_status_map or {}).get(example.id, {}) %}
-                            {% set teacher_status = gencode.get('teacher_status', {}) %}
+                            {% set teacher_status = gencode.get('display_status') or gencode.get('teacher_status', {}) %}
                             {% set v3_light = teacher_status.get('icon', '⚪') %}
                             {% set v3_label = teacher_status.get('label', '尚未生成') %}
                             <button type="button"
                                 class="v3-badge {{ teacher_status.get('badge_class', '') }}"
                                 data-v3-badge-example-id="{{ example.id }}"
                                 data-v3-skill-id="{{ example.skill_id }}"
-                                title="目前狀態: {{ v3_label }}&#10;component_id: {{ gencode.get('component_id') or '-' }}&#10;最後生成時間: {{ gencode.get('updated_at') or '-' }}"
+                                title="目前狀態: {{ v3_label }}&#10;GenCode V3: {{ (gencode.get('teacher_status') or {}).get('label', '尚未生成') }}&#10;練習方式: {{ (gencode.get('practice_status') or {}).get('label', '尚無可用練習方式') }}&#10;component_id: {{ gencode.get('component_id') or '-' }}&#10;最後生成時間: {{ gencode.get('updated_at') or '-' }}"
                                 onclick="openV3ExampleDrawer({{ example.id }}, '{{ example.skill_id }}')">
                                 <span>{{ v3_light }}</span><span class="v3-badge-label">{{ v3_label }}</span>
                             </button>

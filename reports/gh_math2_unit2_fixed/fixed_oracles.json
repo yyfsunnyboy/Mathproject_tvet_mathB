@@ -1,0 +1,45 @@
+{
+ "pdf_sha256": "9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964",
+ "12719": {
+  "answer": "341/128",
+  "areas": [
+   "2",
+   "1/2",
+   "1/8",
+   "1/32",
+   "1/128"
+  ],
+  "method": "areas of the five filled triangles measured from the PDF page-8 vector paths, scaled by square side = 2; no overlap",
+  "page": 8,
+  "bbox": [
+   422,
+   567,
+   511,
+   661
+  ]
+ },
+ "12727": {
+  "answer": "31/2",
+  "areas": [
+   "8",
+   "4",
+   "2",
+   "1",
+   "1/2"
+  ],
+  "method": "areas of the five stroked isosceles right triangles from the PDF page-16 vector paths, scaled by AB = 1 (the shortest leg, T1)",
+  "page": 16,
+  "bbox": [
+   429,
+   445,
+   515,
+   548
+  ]
+ },
+ "12731": {
+  "verified": "induction step (k -> k+1) symbolic + n=1..39 numeric"
+ },
+ "12735": {
+  "verified": "induction step (k -> k+1) symbolic + n=1..39 numeric"
+ }
+}

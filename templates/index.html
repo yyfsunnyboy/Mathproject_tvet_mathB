@@ -871,6 +871,14 @@
             border: 1px solid #e2e8f0;
             border-radius: 8px;
         }
+        #result-display.ungraded-note {
+            background: #f2f7f3;
+            color: #2f4f3a;
+            border: 1px solid #cfe0d3;
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: left;
+        }
         .visual-spec-caption {
             font-size: 0.95rem;
             font-weight: 600;
@@ -3446,7 +3454,7 @@ span[style*="粗細"],
                     {% endif %}
                     <span id="level-indicator"
                         style="background: #1abc9c; color: white; padding: 4px 10px; font-size: 0.7em; border-radius: 12px; vertical-align: middle;">等級：1</span><span
-                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>{% if (pass_target or 0) | int > 0 %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題{% else %}🔥 連續答對：暫無門檻{% endif %}</span></h1>
+                        id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>{% if streak_without_target %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} 題{% elif (pass_target or 0) | int > 0 %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題{% else %}🔥 連續答對：暫無門檻{% endif %}</span></h1>
                 <!-- 新增：難度選擇器 -->
                 <!-- 新增：難度選擇器 -->
                 <div class="level-selector">
@@ -4044,6 +4052,8 @@ span[style*="粗細"],
         const PAGE_SKILL_ID = {{ (skill_id or '') | tojson | safe }};
         const INITIAL_CONSECUTIVE_CORRECT = {{ (consecutive_correct or 0) | int }};
         const PRACTICE_PASS_TARGET = {{ (pass_target or 0) | int }};
+        // Mixed practice (generated questions + self-check textbook rows that never produce a verdict): the M of "N / M" cannot be reached by graded answers alone.
+        const PRACTICE_STREAK_WITHOUT_TARGET = {{ 'true' if streak_without_target else 'false' }};
         const MANUAL_REVIEW_UNAVAILABLE = {{ (true if manual_review_unavailable is defined and manual_review_unavailable else false) | tojson | safe }};
         const PREREQ_SKILLS = {{ prereq_skills | tojson | safe }};
         const CHAPTER_REVIEW = {{ (chapter_review or none) | tojson | safe }};
@@ -5053,9 +5063,11 @@ span[style*="粗細"],
                 ? (normalizedTarget > 0
                     ? `🔥 進階答對 ${normalizedStreak}/${normalizedTarget} 題`
                     : '🔥 進階答對：暫無門檻')
-                : (normalizedTarget > 0
-                    ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
-                    : '🔥 連續答對：暫無門檻');
+                : (PRACTICE_STREAK_WITHOUT_TARGET
+                    ? `🔥 連續答對 ${normalizedStreak} 題`
+                    : (normalizedTarget > 0
+                        ? `🔥 連續答對 ${normalizedStreak} / ${normalizedTarget} 題`
+                        : '🔥 連續答對：暫無門檻'));
             streakCounter.style.display = 'inline-block';
         }
 
@@ -5439,6 +5451,9 @@ span[style*="粗細"],
                 table_data: payload.table_data || {},
                 table_question: payload.table_question || {},
                 image_base64: payload.image_base64 || '',
+                graded: payload.graded,
+                check_mode: payload.check_mode || '',
+                fixed_textbook_practice: payload.fixed_textbook_practice || '',
             };
         }
 
@@ -6893,6 +6908,56 @@ span[style*="粗細"],
             console.log('[FRONTEND PRACTICE] user_answer', userAnswer);
         }
 
+        // Fixed textbook practice (no generator): optional step prompts under the stem, and the reference solution after a self-check submit.
+        function renderFixedPracticeExtras(data) {
+            ['fixed-practice-tag', 'fixed-practice-scaffold'].forEach((id) => {
+                const old = document.getElementById(id);
+                if (old) old.remove();
+            });
+            const host = document.getElementById('question-text');
+            if (!host || !data || !data.fixed_textbook_practice) return;  // generated questions keep their usual look
+            const tag = document.createElement('div');
+            tag.id = 'fixed-practice-tag';
+            tag.style.cssText = 'display:flex;gap:6px;align-items:center;margin:0 0 4px;font-size:0.82em;line-height:1.3;color:#3f5b46;';
+            [['📖 課本原題', '#e4efe6'], [data.graded === false ? '不自動評分' : '可自動判分', data.graded === false ? '#fdf3d0' : '#dcecf8']].forEach(([text, bg]) => {
+                const chip = document.createElement('span');
+                chip.textContent = text;
+                chip.style.cssText = `padding:1px 8px;border-radius:10px;background:${bg};`;
+                tag.appendChild(chip);
+            });
+            if (Array.isArray(data.practice_scaffold) && data.practice_scaffold.length) {  // step prompts share the tag line: no extra vertical space
+                const steps = document.createElement('span');
+                steps.id = 'fixed-practice-scaffold';
+                steps.textContent = '依序完成：' + data.practice_scaffold.map((step, i) => `${'①②③④⑤'[i] || (i + 1) + '.'}${String(step)}`).join(' ');
+                tag.style.flexWrap = 'wrap';
+                tag.appendChild(steps);
+            }
+            host.insertAdjacentElement('beforebegin', tag);
+        }
+
+        function showUngradedResult(data) {
+            resultDisplay.textContent = '';
+            resultDisplay.className = 'ungraded-note';
+            const message = document.createElement('div');
+            message.textContent = data.result || '本題不自動判定對錯。';
+            resultDisplay.appendChild(message);
+            if (Array.isArray(data.reference_solution) && data.reference_solution.length) {
+                const heading = document.createElement('div');
+                heading.textContent = '參考解法（請自行對照）：';
+                heading.style.cssText = 'margin-top:8px;font-weight:600;';
+                resultDisplay.appendChild(heading);
+                const list = document.createElement('ol');
+                list.style.margin = '4px 0 0 20px';
+                data.reference_solution.forEach((step) => {
+                    const li = document.createElement('li');
+                    li.textContent = String(step);
+                    list.appendChild(li);
+                });
+                resultDisplay.appendChild(list);
+            }
+            renderMathContent(resultDisplay);
+        }
+
         function loadQuestion() {
             const skill = getSkillId();
             if (consumePracticeTypeRotationTransition()) return;
@@ -6920,6 +6985,10 @@ span[style*="粗細"],
             const safeLevel = getSafeSelectedLevel();
             const params = new URLSearchParams();
             params.set('skill', skill);
+            if (!window.__practiceFirstLoadDone) {  // the page was just opened / refreshed: come back to the question that was left open instead of skipping it
+                params.set('resume', '1');
+                window.__practiceFirstLoadDone = true;
+            }
             params.set('level', safeLevel);
             params.set('mode', 'type_rotation');
             if (CHAPTER_REVIEW) params.set('chapter_review', '1');
@@ -7007,6 +7076,7 @@ span[style*="粗細"],
 
                     // 1. 顯示題目文字（完整覆寫）
                     const questionMainText = renderQuestion(data);
+                    renderFixedPracticeExtras(data);
                     isInitialQuestionLoaded = true;
                     applyDrawingUiContract();
                     isProcessing = false;
@@ -7814,7 +7884,7 @@ span[style*="粗細"],
                         stopLoadingMessage();
                         return;
                     }
-                } else if (!userAnswer) {
+                } else if (!userAnswer && !(currentQuestion && currentQuestion.graded === false)) {
                     resultDisplay.textContent = '請先輸入答案。';
                     resultDisplay.className = 'incorrect';
                     isProcessing = false;
@@ -7867,6 +7937,11 @@ span[style*="粗細"],
                             resultDisplay.textContent = data.message || '題目已更新，請重新載入題目';
                             resultDisplay.className = 'incorrect';
                             loadQuestion();
+                            return;
+                        }
+
+                        if (data.graded === false) {  // self-check practice: no verdict, no streak, no mistake bookkeeping
+                            showUngradedResult(data);
                             return;
                         }
 

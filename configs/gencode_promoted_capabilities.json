@@ -3293,6 +3293,476 @@
           "default_curriculum_profile": "general_high"
         }
       }
+    },
+    "sequence.progression": {
+      "approved_by": "Yang-Fu Yeh (yeh.ivan@hlbh.hlc.edu.tw), explicit chat authorization 2026-10-26: one-time Promotion and Publish of revision_0002 (incremental: gh_Sequence 12668 and 12673 only; revision_0001 and the 26 published components stay)",
+      "bundle_sha256": "123c5741bbd3e5f93d8e6265aed93022932efaab6cfe9291f72de2877f7f7ca1",
+      "capabilities": [
+        "arithmetic_from_terms",
+        "figure_path_pattern",
+        "finger_counting_cycle",
+        "geometric_from_relations",
+        "geometric_from_terms",
+        "progression_three_numbers",
+        "recurrence_from_process",
+        "sequence_statements",
+        "sequence_terms_from_formula"
+      ],
+      "domain_module": "core.domain.promoted.sequence_progression.sequence_progression_domain",
+      "entrypoint": "build_sequence_progression_matrix",
+      "operations": {
+        "arithmetic_from_terms": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "arithmetic_from_terms"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_arithmetic_from_terms_matrix"
+        },
+        "figure_path_pattern": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "figure_path_pattern"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_figure_path_pattern_matrix"
+        },
+        "finger_counting_cycle": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "finger_counting_cycle"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_finger_counting_cycle_matrix"
+        },
+        "geometric_from_relations": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "geometric_from_relations"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "numeric_or_radical",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_geometric_from_relations_matrix"
+        },
+        "geometric_from_terms": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "geometric_from_terms"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_geometric_from_terms_matrix"
+        },
+        "progression_three_numbers": {
+          "checker_keys": [
+            "expression_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "progression_three_numbers"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "numeric_or_radical",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_progression_three_numbers_matrix"
+        },
+        "recurrence_from_process": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "recurrence_from_process"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_recurrence_from_process_matrix"
+        },
+        "sequence_statements": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "sequence_statements"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_sequence_statements_matrix"
+        },
+        "sequence_terms_from_formula": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_sequence_progression_matrix",
+          "payload_adapter": "core.domain.promoted.sequence_progression.sequence_progression_adapter.adapt_sequence_progression_matrix",
+          "provided_capabilities": [
+            "sequence_terms_from_formula"
+          ],
+          "runtime_contract": "sequence_progression_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_sequence_terms_from_formula_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sequence_progression_adapter.py": "e20f6d8632e072bb6d660f8605cb18ec585b42acc214a8d142f36b55b69c6093",
+        "sequence_progression_domain.py": "212c15bfd80772368d76c37ddaf3ebf30c15c2b9089dda158e15a1b682590ff4",
+        "sequence_progression_pattern_adapter.py": "c095ca3847fb117200426ad06ed2bd4f74f69422f4ffb917bfa7080781e3e263",
+        "sequence_progression_patterns.py": "bdb0e6740ba947a9eb6bbab0c708baf3a803b63a065d1f60e81ff514d6f1b561",
+        "sequence_progression_recurrence.py": "c98b7f7becbc28205f2e29a35a22b37530723997f681ef7227fe32ef6fe86c65",
+        "sequence_progression_recurrence_adapter.py": "f9f58e888d4d2ea12663e5b0361c9d0c85e74003503960c6ae9dc6f80d52bdf8"
+      },
+      "package_import": "core.domain.promoted.sequence_progression",
+      "package_name": "sequence_progression",
+      "proposal_id": "capability_sequence_progression_ba7ea8dc",
+      "proposal_revision": 2,
+      "registry_revision": "promoted-123c5741bbd3",
+      "skill_bindings": {
+        "gh_RecursiveRelation": {
+          "allowed_operations": [
+            "progression_three_numbers",
+            "recurrence_from_process",
+            "sequence_statements"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_Sequence": {
+          "allowed_operations": [
+            "arithmetic_from_terms",
+            "figure_path_pattern",
+            "finger_counting_cycle",
+            "geometric_from_relations",
+            "geometric_from_terms",
+            "progression_three_numbers",
+            "sequence_statements",
+            "sequence_terms_from_formula"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "sequence.series_sums": {
+      "approved_by": "Yang-Fu Yeh (yeh.ivan@hlbh.hlc.edu.tw), explicit chat authorization 2026-10-26: one-time Promotion and Publish of 數學2 Unit 2 (gh_Series 24 + gh_CommonSeriesSummationFormulas 9 components); 12719, 12727, 12731, 12735 stay deferred",
+      "bundle_sha256": "b3fc93095b76f4583df3f82713adb5c5d4c5a22e5c44b0cd41014f15b58a3eae",
+      "capabilities": [
+        "arithmetic_series_items",
+        "arithmetic_series_relation",
+        "fish_rows",
+        "geometric_series_items",
+        "geometric_series_relation",
+        "partial_sum_terms",
+        "power_sums",
+        "series_statements"
+      ],
+      "domain_module": "core.domain.promoted.series_summation.series_summation_domain",
+      "entrypoint": "build_series_summation_matrix",
+      "operations": {
+        "arithmetic_series_items": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "arithmetic_series_items"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_arithmetic_series_items_matrix"
+        },
+        "arithmetic_series_relation": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "arithmetic_series_relation"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_arithmetic_series_relation_matrix"
+        },
+        "fish_rows": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "fish_rows"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_fish_rows_matrix"
+        },
+        "geometric_series_items": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "geometric_series_items"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "numeric_or_radical",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_geometric_series_items_matrix"
+        },
+        "geometric_series_relation": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "geometric_series_relation"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_geometric_series_relation_matrix"
+        },
+        "partial_sum_terms": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "partial_sum_terms"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_partial_sum_terms_matrix"
+        },
+        "power_sums": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "power_sums"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_power_sums_matrix"
+        },
+        "series_statements": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_series_summation_matrix",
+          "payload_adapter": "core.domain.promoted.series_summation.series_summation_adapter.adapt_series_summation_matrix",
+          "provided_capabilities": [
+            "series_statements"
+          ],
+          "runtime_contract": "series_summation_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_series_statements_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "series_summation_adapter.py": "f530c4ef691e6315af9dcebdc10acca3dc88644c89b9d2f7bae99c4665fd0991",
+        "series_summation_domain.py": "427f4fa2ac0f24e0f39b9886d1019e050aeabe55d9b140704b7b7a3196ac4b4e"
+      },
+      "package_import": "core.domain.promoted.series_summation",
+      "package_name": "series_summation",
+      "proposal_id": "capability_sequence_series_563ab074",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-b3fc93095b76",
+      "skill_bindings": {
+        "gh_CommonSeriesSummationFormulas": {
+          "allowed_operations": [
+            "power_sums",
+            "series_statements"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_Series": {
+          "allowed_operations": [
+            "arithmetic_series_items",
+            "arithmetic_series_relation",
+            "fish_rows",
+            "geometric_series_items",
+            "geometric_series_relation",
+            "partial_sum_terms",
+            "series_statements"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
     }
   },
   "schema": "promoted_capability_store.v1"

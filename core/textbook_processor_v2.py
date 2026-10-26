@@ -152,7 +152,7 @@ _SCAN_KEY_LINE_RE = re.compile(r"^\s*KEY\b", re.IGNORECASE)
 _SCAN_CHAPTER_EX_NUM_RE = re.compile(r"^\s*(\d{1,2})(?:[\.、．)\t]|\s+)")
 _SCAN_EXAMPLE_NUM_RE = re.compile(r"例題\s*(\d{1,2})\b")
 _EXAMPLE_BOUNDARY_CHARS = "；;!?。"
-_SCAN_SUITANG_PREFIX_RE = re.compile(r"^\s*隨堂練習")
+_SCAN_SUITANG_PREFIX_RE = re.compile(r"^\s*隨堂練習(?!\s*[的中之裡])")
 _SCAN_SUITANG_NUM_INLINE_RE = re.compile(r"隨堂練習[\s\.、．]*(\d{1,2})\b")
 _SCAN_SUBSECTION_HEADING_RE = re.compile(r"^\s*\d+\s*-\s*\d+(?:\.\d+)?\s+\S")
 _SCAN_MC_OPTION_RE = re.compile(r"^\s*[\(（]\s*([A-Da-d])\s*[\)）]")
@@ -2481,7 +2481,13 @@ def _docx_paragraph_text_with_symbols(para) -> str:
     if not symbols:
         return str(para.text or '')
     node = deepcopy(para._p)
-    symbol_chars = {0x2B: '+', 0x2D: '−', 0xB0: '°'}
+    symbol_chars = {
+        0x2B: '+', 0x2D: '−', 0xB0: '°',
+        # Adobe Symbol encoding: operators, relations and the lower-case Greek letters used in school math.
+        0xB1: '±', 0xB4: '×', 0xB8: '÷', 0xA3: '≤', 0xB3: '≥', 0xB9: '≠', 0xA5: '∞', 0xD6: '√',
+        0x61: 'α', 0x62: 'β', 0x67: 'γ', 0x64: 'δ', 0x71: 'θ', 0x6C: 'λ', 0x6D: 'μ', 0x70: 'π',
+        0x73: 'σ', 0x66: 'φ', 0x77: 'ω',
+    }
     for symbol in node.xpath('.//w:sym'):
         font = symbol.get(qn('w:font'), '')
         code = symbol.get(qn('w:char'), '')

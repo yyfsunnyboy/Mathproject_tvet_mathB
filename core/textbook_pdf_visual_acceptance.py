@@ -25,6 +25,7 @@ REASON_INCOMPLETE_MULTI_FIGURE = "incomplete_multi_figure"
 REASON_NON_QUESTION_CONTAMINATION = "non_question_contamination"
 REASON_LOW_MAPPING_CONFIDENCE = "low_mapping_confidence"
 REASON_OVERSPAN_MULTI_QUESTION = "overspan_multi_question"
+REASON_CROP_DISCONNECTED_REGIONS = "crop_spans_disconnected_regions"
 
 _MULTI_FIGURE_RE = re.compile(
     r"圖\s*[（(]\s*[一二三四五六七八九十1-9]\s*[）)]|"
@@ -195,6 +196,46 @@ def legitimate_shared_visual(
     return (same / n) >= min_stem_overlap
 
 
+_DISCONNECTED_GAP_PT = 60.0
+
+
+def crop_extent_reasons(page: dict[str, Any] | None, crop_bbox: list[float] | None) -> list[str]:
+    """Extent error an otherwise accepted crop can still have.
+
+    A crop whose ink falls apart into regions separated by a tall blank band (a figure plus a decorative
+    mascot or the next block below it) is not one figure.  It goes to review rather than being treated
+    as a verified student-ready asset.
+    """
+    if not page or not crop_bbox or len(crop_bbox) < 4:
+        return []
+    x0, y0, x1, y1 = (float(v) for v in crop_bbox[:4])
+    cw, ch = max(x1 - x0, 1.0), max(y1 - y0, 1.0)
+    spans: list[tuple[float, float]] = []
+
+    def _add(bb: list[float]) -> None:
+        bx0, by0, bx1, by1 = (float(v) for v in bb[:4])
+        if bx1 <= x0 or bx0 >= x1 or by1 <= y0 or by0 >= y1:
+            return
+        if (bx1 - bx0) >= 0.85 * cw and (by1 - by0) >= 0.6 * ch:
+            return  # enclosing panel, not figure ink
+        spans.append((max(by0, y0), min(by1, y1)))
+
+    for obj in list(page.get("drawings") or []) + list(page.get("small_drawings") or []) + list(page.get("images") or []):
+        if not obj.get("blended"):
+            _add(obj["bbox"])
+    for w in page.get("words") or []:
+        _add([w[0], w[1], w[2], w[3]])
+    if not spans:
+        return []
+    spans.sort()
+    reach = spans[0][1]
+    for lo, hi in spans[1:]:
+        if lo - reach >= _DISCONNECTED_GAP_PT:
+            return [REASON_CROP_DISCONNECTED_REGIONS]
+        reach = max(reach, hi)
+    return []
+
+
 def evaluate_visual_acceptance(
     *,
     problem_text: str,
@@ -206,6 +247,7 @@ def evaluate_visual_acceptance(
     strong_cue: bool,
     page_height: float | None = None,
     question_start_y: float | None = None,
+    page: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return visual_status + reasons for a candidate crop (pre-write gate)."""
     reasons: list[str] = []
@@ -267,6 +309,8 @@ def evaluate_visual_acceptance(
         qh = max(1.0, float(question_bbox[3] - question_bbox[1]))
         if vh > 0.85 * qh and qh > 120:
             reasons.append(REASON_OVERSPAN_MULTI_QUESTION)
+
+    reasons.extend(crop_extent_reasons(page, clipped))
 
     labels = detect_multi_figure_labels(problem_text)
     if len(labels) >= 2:

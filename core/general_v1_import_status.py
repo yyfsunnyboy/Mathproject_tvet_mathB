@@ -49,6 +49,8 @@ _RE_PDF_SKIPPED = re.compile(r"\[PDF VISUAL\] skipped")
 _RE_IMPORT_COMPLETE = re.compile(
     r"Import complete: skills=(\d+),.*?examples=(\d+), practices=(\d+),.*?needs_review=(\d+), skipped=(\d+)"
 )
+_RE_STAGE1_GATE = re.compile(r"\[STAGE1 GATE\] status=(\w+) rows=(\d+) blocked=(\d+) needs_review=(\d+) reasons=(\{.*\})")
+_STAGE1_RANK = {"READY": 0, "NEEDS_REVIEW": 1, "BLOCKED": 2}
 _VISUAL_REVIEW_STATUSES = ("VISUAL_UNCERTAIN", "VISUAL_REQUIRED_MISSING")
 
 
@@ -99,6 +101,7 @@ class GeneralV1ImportStatus:
             "visual_attached": None,
             "visual_needs_review": None,
             "pdf_visual_status_counts": None,
+            "stage1_gate": None,
         }
         self.updated_at = time.time()
 
@@ -247,6 +250,25 @@ class GeneralV1ImportStatus:
             self._set("pdf_alignment", "skipped")
             self._set("asset_linking", "skipped")
             return
+        m = _RE_STAGE1_GATE.search(text)
+        if m:
+            status = m.group(1) if m.group(1) in _STAGE1_RANK else "BLOCKED"
+            try:
+                reasons = ast.literal_eval(m.group(5))
+            except (ValueError, SyntaxError):
+                reasons = {}
+            prev = c["stage1_gate"] or {"status": "READY", "rows": 0, "blocked": 0, "needs_review": 0, "reasons": {}}
+            merged = dict(prev["reasons"])
+            for key, value in (reasons or {}).items():
+                merged[str(key)] = merged.get(str(key), 0) + int(value)
+            c["stage1_gate"] = {
+                "status": status if _STAGE1_RANK[status] > _STAGE1_RANK[prev["status"]] else prev["status"],
+                "rows": prev["rows"] + int(m.group(2)),
+                "blocked": prev["blocked"] + int(m.group(3)),
+                "needs_review": prev["needs_review"] + int(m.group(4)),
+                "reasons": merged,
+            }
+            return
         m = _RE_IMPORT_COMPLETE.search(text)
         if m:
             created, examples, practices, needs_review, skipped = (int(x) for x in m.groups())
@@ -276,8 +298,11 @@ class GeneralV1ImportStatus:
         needs_review = None
         if c["question_needs_review"] is not None or c["visual_needs_review"] is not None:
             needs_review = (c["question_needs_review"] or 0) + (c["visual_needs_review"] or 0)
+        gate = c["stage1_gate"]
         c.update(
             {
+                # import_complete != Stage 1 READY: rows written, but only READY is a usable source for Gencode V3
+                "stage1_ready": None if gate is None else gate["status"] == "READY",
                 "formal_skills_reused": reused,
                 "bound_skill_ids": sorted(self.skill_ids),
                 "needs_review": needs_review,

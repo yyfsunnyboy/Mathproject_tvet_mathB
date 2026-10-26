@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_RecursiveRelation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12687",
+      "textbook_example_id": 12687,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12687/generate.py"
+    },
+    {
+      "component_id": "src_12688",
+      "textbook_example_id": 12688,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12688/generate.py"
+    },
+    {
+      "component_id": "src_12689",
+      "textbook_example_id": 12689,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12689/generate.py"
+    },
+    {
+      "component_id": "src_12690",
+      "textbook_example_id": 12690,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12690/generate.py"
+    },
+    {
+      "component_id": "src_12692",
+      "textbook_example_id": 12692,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12692/generate.py"
+    },
+    {
+      "component_id": "src_12693",
+      "textbook_example_id": 12693,
+      "status": "verified",
+      "problem_type_id": "sequence_statements",
+      "domain_operation": "sequence_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12693/generate.py"
+    },
+    {
+      "component_id": "src_12695",
+      "textbook_example_id": 12695,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12695/generate.py"
+    },
+    {
+      "component_id": "src_12697",
+      "textbook_example_id": 12697,
+      "status": "verified",
+      "problem_type_id": "progression_three_numbers",
+      "domain_operation": "progression_three_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "numeric_or_radical",
+      "source_kind": "example",
+      "generate_py": "components/src_12697/generate.py"
+    },
+    {
+      "component_id": "src_12699",
+      "textbook_example_id": 12699,
+      "status": "verified",
+      "problem_type_id": "recurrence_from_process",
+      "domain_operation": "recurrence_from_process",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12699/generate.py"
+    }
+  ]
+}

@@ -1133,6 +1133,9 @@ def classify_and_detect_visuals(
             page = pages[regions[0]["page"] - 1]
             page_words = page.get("words") or []
             page_h = float(page.get("height") or 0)
+            page_index_entry = page
+        else:
+            page_index_entry = None
         acceptance = evaluate_visual_acceptance(
             problem_text=problem_text,
             visual_bbox=visual_bbox,
@@ -1143,6 +1146,7 @@ def classify_and_detect_visuals(
             strong_cue=strong_cue,
             page_height=page_h,
             question_start_y=stem_y,
+            page=page_index_entry,
         )
         if acceptance.get("clipped_bbox") and visual_bbox:
             visual_bbox = acceptance["clipped_bbox"]
@@ -1349,6 +1353,90 @@ def _example_to_item(row: Any) -> dict[str, Any]:
     }
 
 
+VISUAL_REGION_SIDECAR_SUFFIX = ".visual_regions.json"
+
+
+def load_visual_region_overrides(
+    pdf_path: str | Path, explicit: dict[str, Any] | None = None
+) -> tuple[dict[str, list[dict[str, Any]]], list[str]]:
+    """Human-verified figure regions for questions the detector cannot place reliably.
+
+    Sidecar ``<pdf>.visual_regions.json`` next to the paired PDF (or an explicit dict)::
+
+        {"pdf_sha256": "...", "verified_by": "name", "verified_on": "YYYY-MM-DD",
+         "regions": {"例題6": [{"page": 8, "bbox": [x0, y0, x1, y1], "why": "hexagon tiles"}], ...}}
+
+    A figure with several parts (main figure + option figures) lists one entry per part, in slot order.
+    The sidecar is rejected as a whole unless it names its reviewer and date and its PDF hash matches the
+    paired PDF, so a region verified against one printing is never applied to another.
+    """
+    pdf = Path(pdf_path)
+    warnings: list[str] = []
+    data = explicit
+    if data is None:
+        sidecar = pdf.with_name(pdf.name + VISUAL_REGION_SIDECAR_SUFFIX)
+        if not sidecar.is_file():
+            return {}, warnings
+        try:
+            data = json.loads(sidecar.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}, ["visual_regions_unreadable"]
+    if not isinstance(data, dict) or not data.get("regions"):
+        return {}, warnings
+    if not str(data.get("verified_by") or "").strip() or not str(data.get("verified_on") or "").strip():
+        return {}, ["visual_regions_rejected:reviewer_missing"]
+    if str(data.get("pdf_sha256") or "").lower() != fingerprint_file(pdf).lower():
+        return {}, ["visual_regions_rejected:pdf_hash_mismatch"]
+    out: dict[str, list[dict[str, Any]]] = {}
+    for label, specs in (data.get("regions") or {}).items():
+        valid = []
+        for spec in specs or []:
+            bbox = spec.get("bbox") if isinstance(spec, dict) else None
+            if isinstance(bbox, list) and len(bbox) == 4 and int(spec.get("page") or 0) > 0 and bbox[2] > bbox[0] and bbox[3] > bbox[1]:
+                valid.append({"page": int(spec["page"]), "bbox": [float(v) for v in bbox], "why": str(spec.get("why") or "")})
+        if valid and len(valid) == len(specs):
+            out[normalize_question_label(str(label))] = valid
+        else:
+            warnings.append(f"visual_regions_invalid:{label}")
+    return out, warnings
+
+
+def apply_visual_region_overrides(matched: list[dict[str, Any]], overrides: dict[str, list[dict[str, Any]]]) -> list[str]:
+    """Mount the verified regions for matching questions; returns the labels applied."""
+    applied: list[str] = []
+    if not overrides:
+        return applied
+    for row in matched:
+        label = normalize_question_label(re.sub(r"\s*\[[^\]]*\]\s*$", "", str(row.get("source_description") or "")))
+        specs = overrides.get(label)
+        if not specs:
+            continue
+        row["visual_crops"] = [
+            {"page": sp["page"], "bbox": sp["bbox"], "classification": "required", "visual_type": "diagram", "why": sp["why"]}
+            for sp in specs
+        ]
+        row.update(
+            {
+                "visual_classification": "required",
+                "should_mount": True,
+                "visual_status": VISUAL_STATUS_ACCEPTED,
+                "visual_review_reasons": [],
+                "visual_bbox": list(specs[0]["bbox"]),
+                "visual_page": specs[0]["page"],
+                "visual_type": "diagram",
+                "visual_reason": "manual_verified_region: " + "; ".join(sp["why"] for sp in specs if sp["why"]),
+                "match_method": "manual_page_region",
+                "match_score": 1.0,
+                "needs_review": False,
+                "manual_region_override": True,
+            }
+        )
+        if not row.get("pdf_match"):
+            row["pdf_match"] = {"page": specs[0]["page"], "question_start_y": specs[0]["bbox"][1]}
+        applied.append(label)
+    return applied
+
+
 def enrich_textbook_examples_with_pdf_visuals(
     *,
     pdf_path: str | Path,
@@ -1360,8 +1448,13 @@ def enrich_textbook_examples_with_pdf_visuals(
     publish_assets: bool | None = None,
     dpi: int = DEFAULT_DPI,
     assemble_visual_groups: bool = False,
+    region_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Match/detect/crop/link PDF visuals for TextbookExample rows. Non-fatal per question."""
+    """Match/detect/crop/link PDF visuals for TextbookExample rows. Non-fatal per question.
+
+    ``region_overrides`` (or a ``<pdf>.visual_regions.json`` sidecar) carries human-verified figure regions;
+    see :func:`load_visual_region_overrides`.  Detector output is otherwise never forced to "correct".
+    """
     import fitz
 
     root = Path(project_root) if project_root else Path.cwd()
@@ -1425,6 +1518,9 @@ def enrich_textbook_examples_with_pdf_visuals(
     matched = correct_pdf_regions(matched, pages, pdf, curriculum_info)
     from core.textbook_b2_12 import correct_pdf_visual_regions
     matched = correct_pdf_visual_regions(matched, pages, pdf, curriculum_info)
+    overrides, override_warnings = load_visual_region_overrides(pdf, region_overrides)
+    summary["warnings"].extend(override_warnings)
+    summary["manual_region_overrides_applied"] = apply_visual_region_overrides(matched, overrides)
 
     curriculum = str(curriculum_info.get("curriculum") or "vocational")
     publisher = str(curriculum_info.get("publisher") or "longteng")

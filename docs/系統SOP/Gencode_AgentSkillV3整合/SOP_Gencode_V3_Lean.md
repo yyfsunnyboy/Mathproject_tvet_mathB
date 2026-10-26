@@ -29,6 +29,17 @@
 5. 工具同一操作連續失敗兩次即停止並報告證據與阻礙。
 6. Gate 通過且驗收完成即結案，不自動開始下一單元。
 
+### 0.1 Unit-Level Workflow
+
+`教材匯入（Stage 1 封板）→ Gencode V3 完整單元流程 → 一次性驗收與發布 → 下一 Unit`
+
+1. 工作單位是整個 Unit，驗證單位仍是 Component；不逐 Skill、逐 Gate 要求人工確認。
+2. 已授權範圍內自動依序完成 Domain 盤點、Generator、Bundle（`ready_for_human_review`）與隔離演練；原有所有必要 Gate 一個都不省略。
+3. 只在真正的 Blocker（來源不可信、Gate 失敗、需要正式寫入）或 Promotion／Publish 授權時中斷；每個 Unit 集中進行一次人工發布核可。
+4. 不追求 100% 覆蓋率：已 verified 的 Component 依 §6 Partial Publish，其餘保留 DEFERRED 與理由。
+5. 已驗證且未受影響的成果不重跑、不重建；只處理缺口與受影響元件。
+6. 最終一次回報 PASS／DEFERRED／Blocker 與是否需要發布授權、是否需要重啟 Flask。
+
 ## 1. 權威與作業邊界
 
 - 一道教材例題對應一個獨立 component：`component_id = src_<textbook_example_id>`。
@@ -133,7 +144,7 @@
 9. 等價判分遵守 Specification §8.4 與[數學答案檢核原則](../數學答案檢核原則_v1.12_20260908.md)。
 10. 區分數學等價、required form、parse failure 與 checker crash；後兩者不可靜默判錯。
 11. 數學等價判分與正確答案顯示分離；顯示只能從 canonical `answer_contract` 經 backend submit response。
-12. 送出前不得曝露 canonical answer；答錯後依 Answer Type 顯示正解或正確格式。
+12. 送出前不得曝露 canonical answer；`answer_format_example` 等格式提示不得等於正解或包含當題答案成員，須跨變體檢查；答錯後依 Answer Type 顯示正解或正確格式。
 13. 不等式回饋優先顯示含 `x` 的不等式；題目明確要求區間形式時依題目要求。此為待核對的 Unit 2 經驗，正式契約未明訂前不得作 Gate 規則。
 14. 數線拖曳、手繪、AI 判圖只按已存在的作答契約執行；目前三者的完整分流契約待確認，不自行升格為新規範。
 15. 不以 AI 判圖替代正式 drawing grader，除非正式契約明確授權。
@@ -192,6 +203,7 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 3. 教材管理頁以 DB 副本確認該單元清單與教材題數一致。
 4. 不重啟正式 Flask：Skill 綁定於服務啟動時載入，重啟由管理者決定，結案時回報「需要重啟」。
 5. 部署腳本範本：`reports/gh_unit11_deploy/deploy_unit11*.py`（backup → promote → quarantine → rebuild → publish → verify-live → accept）。
+6. 已發布能力要新增 operation 或元件時，建立新的 Bundle revision（含新增套件檔、`approval_scope` 註明為增量），不覆蓋、不重建已核准並已 promote 的歷史 revision；部署紀錄以 revision 區分檔名。
 
 ## 6. Partial Publish、DEFERRED、回滾
 
@@ -204,6 +216,12 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 7. 回滾後核對 runtime selectable、manifest 與服務狀態，保存失敗證據。
 8. 不因回滾或 DEFERRED 降低 Gate，也不將未驗證 component 偷放進 wrapper。
 
+### 6.1 無 Generator 的固定教材練習
+
+1. 尚未發布 Generator 的 Skill，可依既有正式教材備援流程（`db_textbook_example`）依序輪流提供固定教材題；輪替進度不得只靠會被 session 精簡的欄位，並避免連續重複同一題。
+2. 教材題沒有可靠參考答案或判分契約時，只能提供未評分練習：不判對錯、不用自由文字或 AI 回饋當正式判定，也不得寫入答題紀錄、連續答對、學習進度或掌握度。
+3. 未評分模式以 Skill 明確列入（opt-in），目前已驗證僅 `gh_MathematicalInduction`；不得宣稱其他 Legacy Skill 已支援，擴大須另行驗證其影響。
+
 ## 7. 學生端驗收與結案
 
 1. 每個已發布 Skill 驗證 wrapper import、manifest/component count、可選取、可生成、無 fallback／duplicate。
@@ -215,6 +233,9 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 7. 教材 Stage 1 和 Gencode Stage 2 的封板證據分別保留，記錄 published／DEFERRED 清單。
 8. 所有必要 Gate 與學生端驗收通過後立即結案；未通過者只報明確 blocker 與下一條件。
 9. 問題已修、直接及必要回歸 PASS、無直接 blocker 時 STOP；報告限修改範圍、測試及理由、PASS/FAIL、相關 blocker。
+10. 結案狀態分三級並分別回報：Published（manifest／wrapper 已寫入）、Runtime Verified（`verify-live`／`accept` 通過）、Live Accepted（正式服務重啟後確認載入）。
+11. 正式 Flask 的 Skill 綁定與路由程式於啟動時載入；發布或修改路由後必須明確回報「需要重啟」，未經授權不得自行重啟。
+12. 已通過的單元不因非阻斷性 DEFERRED 題目持續延長開發；DEFERRED 另案排期。
 
 ## 8. 依需求查閱的詳細契約
 

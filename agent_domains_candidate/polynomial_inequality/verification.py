@@ -132,7 +132,8 @@ def figure_problems(payload: dict) -> list[str]:
     if spec and spec.get("kind") == "cartesian_canvas":
         return []  # the blank answer canvas of a drawing question is not a figure the stem points to
     if cue and not spec:
-        return ["figure_missing"]
+        # a reviewed textbook picture reused by the practice route (attached from the stored, manually verified crop)
+        return [] if payload.get("reuse_textbook_image") and payload.get("textbook_example_id") else ["figure_missing"]
     if spec and not cue:
         return ["figure_without_cue"]
     if spec:

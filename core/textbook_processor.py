@@ -316,7 +316,45 @@ def general_high_paragraph_with_marker(concept_name: str, concept_paragraph: str
 _GH_SUBSECTION_HEADING_RE = re.compile(r"^\s*[\(（]([一二三四五六七八九十]+)[\)）]\s*([^\s，。：:；].{0,24})$")
 # "例題8 的解法…" / "例題3 中…" are exposition referring back to an example, not a new one.
 _GH_EXAMPLE_START_RE = re.compile(r"^\s*例題\s*(\d{1,2})(?!\d)(?!\s*[的中之裡])\s*(.*)$")
-_GH_PRACTICE_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})?(?!\d)\s*(.*)$")
+# "隨堂練習中，…" / "隨堂練習的…" is exposition citing a practice (a sidebar, a 數學超展開 note), never a new one.
+_GH_PRACTICE_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})?(?!\d)(?!\s*[的中之裡])\s*(.*)$")
+_GH_CHOICE_START_RE = re.compile(r"^\s*[①②③④⑤⑥⑦⑧⑨⑩]")
+_GH_BACKREF_RE = re.compile(r"^\s*(?:例題|隨堂練習|習題)\s*\d{0,2}\s*[的中之裡]")
+_GH_UNFINISHED_TAIL_RE = re.compile(r"(?:[，、：；,:;]|\\\)|\\\])\s*$")
+_GH_ASK_RE = re.compile(r"[？?]|求|試|證明|寫出|判斷|說明|化簡|計算|選出|何者|哪|比較|驗證|填|作圖|畫出|標出|算出|解[下二一不方聯]|是否|下列")
+_GH_CONTENT_CUE_RE = re.compile(r"[0-9A-Za-z]|\\\(|\\\[")
+_GH_HEADING_LIKE_RE = re.compile(r"^[^，。；！？：:\\\d]{1,14}$")
+
+
+def _gh_stem_continues(current: dict[str, Any], line: str, body_set: set[str]) -> bool:
+    """True when a plain-text line is still part of the question being collected.
+
+    Textbook stems wrap across paragraphs that start with neither a sub-question marker nor a formula
+    ("1, 2, 3,…。", "依此規律可畫第5圖…", "恆為6的倍數。").  Exposition that follows a practice or exercise is
+    recognised by layout instead: running-text paragraphs, back-references to an example, or a heading-like
+    short line.  Once sub-questions start only choices and formula/sub-question lines continue the stem.
+    """
+    if line in body_set or _GH_BACKREF_RE.match(line):
+        return False
+    stem = current["stem_lines"]
+    if _GH_CHOICE_START_RE.match(line):
+        return True
+    if any(_GH_SUBITEM_START_RE.match(s) for s in stem):
+        return False
+    if current["kind"] == "example":
+        # An example's solution follows its stem; only a visibly unfinished stem line may continue.
+        return bool(stem) and bool(_GH_UNFINISHED_TAIL_RE.search(stem[-1]))
+    if _GH_HEADING_LIKE_RE.match(line):
+        return False
+    if stem and _GH_UNFINISHED_TAIL_RE.search(stem[-1]):
+        return True
+    # A stem that already asks something is complete; what follows is exposition.  An ask-less stem
+    # ("…如下圖所示。", "…依序數數字：") is still open and continues with numbers, variables or formulas.
+    if _GH_ASK_RE.search("\n".join(stem)):
+        return False
+    return bool(_GH_CONTENT_CUE_RE.search(line))
+
+
 _GH_EXERCISE_NUM_RE = re.compile(r"^\s*(\d{1,2})\s*(?:[\.、．\t]|\s+)\s*(.*)$")
 # 觀念澄清 true/false items are numbered "(1)" and/or carry an answer box before the number:
 # "(　)1.", "□ 1", "（ ）(1)" or a private-use box glyph from the publisher font.
@@ -509,7 +547,12 @@ def scan_general_high_layout(
             leads_into_subitems = bool(_GH_SUBITEM_START_RE.match(next_line)) and not any(
                 _GH_SUBITEM_START_RE.match(s) for s in current["stem_lines"]
             )
-            if not current["stem_lines"] or _GH_CONTINUATION_RE.match(line) or leads_into_subitems:
+            if (
+                not current["stem_lines"]
+                or _GH_CONTINUATION_RE.match(line)
+                or leads_into_subitems
+                or _gh_stem_continues(current, line, body_set)
+            ):
                 current["stem_lines"].append(line)
             else:
                 current["stem_open"] = False
@@ -754,6 +797,16 @@ def interpolate_unmatched_pdf_pages(pages: list[int | None]) -> dict[int, int]:
     return out
 
 
+def pick_current_import_row(group: list) -> Any:
+    """One title matching several rows: an older printing of the same chapter may still be in the DB (reimport replaces it only after
+    cleanup).  Rows of the import being processed carry ``source_provenance``; the older ones do not.  Returns the single provenance
+    row, or None when the group is genuinely ambiguous."""
+    from core.textbook_pdf_visual import parse_notes_dict
+
+    fresh = [row for row in group if (parse_notes_dict(row.notes).get("source_provenance") or {}).get("primary")]
+    return fresh[0] if len(fresh) == 1 else None
+
+
 def enrich_general_high_pdf_visuals(
     *,
     pdf_path: str,
@@ -788,6 +841,7 @@ def enrich_general_high_pdf_visuals(
         "rows": [],
         "ambiguous_titles": [],
         "unanchored_rows": 0,
+        "stale_duplicate_rows": 0,
         "warnings": [],
     }
     pdf = Path(str(pdf_path))
@@ -847,8 +901,12 @@ def enrich_general_high_pdf_visuals(
                 summary["unanchored_rows"] += len(group)
                 continue
             if len(group) > 1:
-                summary["ambiguous_titles"].append(label)
-                continue
+                picked = pick_current_import_row(group)
+                if picked is None:
+                    summary["ambiguous_titles"].append(label)
+                    continue
+                summary["stale_duplicate_rows"] = summary.get("stale_duplicate_rows", 0) + len(group) - 1
+                group = [picked]
             row = group[0]
             notes = parse_notes_dict(row.notes)
             if not isinstance(notes.get("question_anchor"), dict):
@@ -916,9 +974,35 @@ def enrich_general_high_pdf_visuals(
         queue.put(
             f"INFO: [PDF VISUAL] ok={summary['ok']} statuses={summary['status_counts']} "
             f"ambiguous={len(summary['ambiguous_titles'])} unanchored={summary['unanchored_rows']} "
+            f"stale_duplicates={summary['stale_duplicate_rows']} "
             f"warnings={summary['warnings']}"
         )
     return summary
+
+
+def evaluate_general_high_stage1_gate(curriculum_info: dict, scan: dict[str, Any], queue=None) -> dict[str, Any]:
+    """Stage 1 gate over the rows of the imported 普高 unit; never raises and never writes."""
+    try:
+        from core.textbook_stage1_gate import evaluate_stage1_gate, format_gate_log_line
+
+        unit = (scan or {}).get("chapter") or {}
+        if not unit.get("unit"):
+            return {}
+        chapter = normalize_general_high_chapter_section(f"{unit.get('unit')} {unit.get('title')}")[0]
+        rows = TextbookExample.query.filter(
+            TextbookExample.source_curriculum == "general",
+            TextbookExample.source_volume == str(curriculum_info.get("volume") or ""),
+            TextbookExample.source_chapter == chapter,
+        ).all()
+        gate = evaluate_stage1_gate(rows)
+        if queue is not None:
+            queue.put("INFO: " + format_gate_log_line(gate))
+        return gate
+    except Exception as exc:  # the gate is advisory for the import itself; its absence is reported, not hidden
+        current_app.logger.warning(f"[STAGE1 GATE] evaluation failed: {exc}")
+        if queue is not None:
+            queue.put(f"WARN: [STAGE1 GATE] evaluation_failed {type(exc).__name__}")
+        return {"status": "BLOCKED", "stage1_ready": False, "import_complete": True, "error": f"{type(exc).__name__}"}
 
 
 def scan_docx_title_inventory(
@@ -2384,9 +2468,67 @@ def _xml_local_name(tag: str) -> str:
     return tag.split("}", 1)[-1] if "}" in tag else tag
 
 
+_SCRIPT_MARK_RE = re.compile("￹([\\^_])(.*?)￻", re.S)
+_SCRIPT_BASE_RE = re.compile(r"([A-Za-z]+|\d+(?:\.\d+)?)$")
+
+
+def _render_script_markers(text: str) -> str:
+    """Turn marked super/subscript runs into LaTeX; ``r`` + superscript ``2`` becomes ``\\(r ^ { 2 }\\)``."""
+    out = ""
+    pos = 0
+    for m in _SCRIPT_MARK_RE.finditer(text):
+        out += text[pos:m.start()]
+        pos = m.end()
+        op, body = m.group(1), m.group(2)
+        if not body.strip():
+            continue
+        if out.count("\\(") > out.count("\\)"):
+            out += f"{op} {{ {body} }}"
+            continue
+        base = _SCRIPT_BASE_RE.search(out)
+        if base:
+            out = out[:base.start()] + f"\\({base.group(1)} {op} {{ {body} }}\\)"
+        else:
+            out += f"\\({op} {{ {body} }}\\)"
+    return out + text[pos:]
+
+
+def docx_paragraph_text_faithful(paragraph) -> str:
+    """Paragraph text that keeps what ``paragraph.text`` silently drops.
+
+    python-docx discards ``w:sym`` glyphs (Word Symbol minus / times / ≤ …) and flattens super/subscript
+    runs (``r`` ``2`` -> ``r2``).  Symbols go through ``textbook_processor_v2._docx_paragraph_text_with_symbols``
+    (unknown glyphs stay as explicit ``MATH_PARSE_FAILED`` markers); script runs become LaTeX.
+    Paragraphs with neither feature return exactly ``paragraph.text``.
+    """
+    from copy import deepcopy
+
+    from docx.oxml.ns import qn
+    from docx.text.paragraph import Paragraph
+
+    p_el = paragraph._p
+    script_runs = [
+        r for r in p_el.xpath(".//w:r[w:rPr/w:vertAlign]")
+        if r.find(qn("w:rPr")).find(qn("w:vertAlign")).get(qn("w:val")) in ("superscript", "subscript")
+    ]
+    if not script_runs and not p_el.xpath(".//w:sym"):
+        return str(paragraph.text or "")
+    from core.textbook_processor_v2 import _docx_paragraph_text_with_symbols
+
+    node = deepcopy(p_el)
+    for run in node.xpath(".//w:r[w:rPr/w:vertAlign]"):
+        val = run.find(qn("w:rPr")).find(qn("w:vertAlign")).get(qn("w:val"))
+        if val not in ("superscript", "subscript"):
+            continue
+        for t in run.findall(qn("w:t")):
+            t.text = f"￹{'^' if val == 'superscript' else '_'}{t.text or ''}￻"
+    text = _docx_paragraph_text_with_symbols(Paragraph(node, paragraph._parent))
+    return _render_script_markers(text)
+
+
 def extract_docx_paragraph_with_equations(paragraph) -> str:
     """提取段落文字"""
-    return str(paragraph.text or "").strip()
+    return docx_paragraph_text_faithful(paragraph).strip()
 
 
 def extract_docx_table_with_equations(table) -> str:
@@ -2416,7 +2558,7 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
     for block in doc.element.body.iterchildren():
         if block.tag.endswith("}p"):
             para = Paragraph(block, doc)
-            text = str(para.text or "").strip()
+            text = docx_paragraph_text_faithful(para).strip()
             paragraph_count += 1
             if text:
                 ordered_chunks.append(text)
@@ -2428,7 +2570,7 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
             for row in tbl.rows:
                 for cell in row.cells:
                     for p in cell.paragraphs:
-                        text = str(p.text or "").strip()
+                        text = docx_paragraph_text_faithful(p).strip()
                         if text:
                             ordered_chunks.append(text)
     merged = "\n".join(ordered_chunks).strip()
@@ -3340,7 +3482,7 @@ def _scan_find_example_inline_start(line: str) -> re.Match[str] | None:
             return m
     return None
 _SCAN_SUITANG_START_RE = re.compile(r"^\s*隨堂練習[\s\.…·]*(\d{1,2})\b")
-_SCAN_SUITANG_PREFIX_RE = re.compile(r"^\s*隨堂練習")
+_SCAN_SUITANG_PREFIX_RE = re.compile(r"^\s*隨堂練習(?!\s*[的中之裡])")
 _SCAN_SUITANG_NUM_INLINE_RE = re.compile(r"隨堂練習[\s\.…·]*(\d{1,2})\b")
 _SCAN_SUBSECTION_HEADING_RE = re.compile(r"^\s*\d+\s*-\s*\d+(?:\.\d+)?\s+\S")
 _SCAN_MC_OPTION_RE = re.compile(r"^\s*[\(（]\s*([A-DＡ-Ｄa-dａ-ｄ])\s*[\)）]")
@@ -4098,6 +4240,8 @@ def process_textbook_file(
                     raise ValueError("general_replacement_pdf_enrichment_failed")
             elif queue is not None:
                 queue.put("INFO: [PDF VISUAL] skipped reason=paired_pdf_missing")
+            # "Import complete" means rows were written; Stage 1 READY means they are a trustworthy source.
+            result["stage1_gate"] = evaluate_general_high_stage1_gate(curriculum_info, general_high_scan, queue=queue)
         try:
             temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
             if temp_dir and bool(current_app.config.get("CLEAN_ORPHAN_DOCX_MEDIA", True)):

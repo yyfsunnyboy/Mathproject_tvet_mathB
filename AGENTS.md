@@ -29,6 +29,7 @@
 - 不自行啟動多個 Flask、Terminal 或瀏覽器；不任意重啟 Flask 5000/5001、停止 Cloudflare 或改動正式服務。
 - 發布只在既有必要 Gate 通過後執行；Token 節約不得犧牲數學正確性、資料完整性或部署安全。
 - 一般 Bug 跑局部測試；正式 Gencode 發布必須保留 Specification、PipelineFlow 規定的全部必要 Gate。
+- Gencode 學生端送出前的格式提示不得洩漏 canonical answer；含變體或集合答案時逐 seed 檢查 `answer_format_example`，依 Lean SOP 的 Answer Contract 規則處理。
 
 ## 3.1 Impact-Based Testing（MUST）
 - 先界定直接影響、使用現有測試、先跑最小單元；失敗只追案例與直接依賴，證實共用契約受影響才擴大。
@@ -76,3 +77,6 @@
 3. 以單元範本建立候選套件與 specs，跑該單元 Sandbox 測試與 Domain 驗證器（Lean §3、§5）。
 4. 建立 Bundle（`ready_for_human_review`）並做隔離演練；人工核准後才用部署腳本 Promotion／Publish。
 5. 以增量驗收（Lean §5.2）收尾；不重啟 Flask，結案時回報是否需要重啟。
+6. 預設以完整 Unit 為執行單位（流程見 Lean §0.1），不逐 Skill、逐 Gate 要求人工確認；已授權範圍內自動完成 Generator、Bundle 與隔離驗證，保留所有必要 Gate。
+7. 只有真正的 Blocker 或正式寫入、Promotion、Publish 授權需求才中斷；每個 Unit 集中一次人工發布核可。
+8. 最終一次回報 PASS／DEFERRED／Blocker、是否需要發布授權及是否需要重啟 Flask；驗收完成即停止，不自動進入下一 Unit。

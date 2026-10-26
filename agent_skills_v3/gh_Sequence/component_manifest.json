@@ -1,0 +1,216 @@
+{
+  "skill_id": "gh_Sequence",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 19,
+  "components": [
+    {
+      "component_id": "src_12667",
+      "textbook_example_id": 12667,
+      "status": "verified",
+      "problem_type_id": "sequence_terms_from_formula",
+      "domain_operation": "sequence_terms_from_formula",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12667/generate.py"
+    },
+    {
+      "component_id": "src_12668",
+      "textbook_example_id": 12668,
+      "status": "verified",
+      "problem_type_id": "figure_path_pattern",
+      "domain_operation": "figure_path_pattern",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12668/generate.py"
+    },
+    {
+      "component_id": "src_12669",
+      "textbook_example_id": 12669,
+      "status": "verified",
+      "problem_type_id": "geometric_from_terms",
+      "domain_operation": "geometric_from_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12669/generate.py"
+    },
+    {
+      "component_id": "src_12670",
+      "textbook_example_id": 12670,
+      "status": "verified",
+      "problem_type_id": "geometric_from_relations",
+      "domain_operation": "geometric_from_relations",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12670/generate.py"
+    },
+    {
+      "component_id": "src_12671",
+      "textbook_example_id": 12671,
+      "status": "verified",
+      "problem_type_id": "progression_three_numbers",
+      "domain_operation": "progression_three_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12671/generate.py"
+    },
+    {
+      "component_id": "src_12672",
+      "textbook_example_id": 12672,
+      "status": "verified",
+      "problem_type_id": "sequence_terms_from_formula",
+      "domain_operation": "sequence_terms_from_formula",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12672/generate.py"
+    },
+    {
+      "component_id": "src_12673",
+      "textbook_example_id": 12673,
+      "status": "verified",
+      "problem_type_id": "finger_counting_cycle",
+      "domain_operation": "finger_counting_cycle",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12673/generate.py"
+    },
+    {
+      "component_id": "src_12674",
+      "textbook_example_id": 12674,
+      "status": "verified",
+      "problem_type_id": "geometric_from_terms",
+      "domain_operation": "geometric_from_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12674/generate.py"
+    },
+    {
+      "component_id": "src_12675",
+      "textbook_example_id": 12675,
+      "status": "verified",
+      "problem_type_id": "geometric_from_relations",
+      "domain_operation": "geometric_from_relations",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12675/generate.py"
+    },
+    {
+      "component_id": "src_12676",
+      "textbook_example_id": 12676,
+      "status": "verified",
+      "problem_type_id": "progression_three_numbers",
+      "domain_operation": "progression_three_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12676/generate.py"
+    },
+    {
+      "component_id": "src_12677",
+      "textbook_example_id": 12677,
+      "status": "verified",
+      "problem_type_id": "sequence_statements",
+      "domain_operation": "sequence_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12677/generate.py"
+    },
+    {
+      "component_id": "src_12678",
+      "textbook_example_id": 12678,
+      "status": "verified",
+      "problem_type_id": "sequence_statements",
+      "domain_operation": "sequence_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12678/generate.py"
+    },
+    {
+      "component_id": "src_12679",
+      "textbook_example_id": 12679,
+      "status": "verified",
+      "problem_type_id": "sequence_statements",
+      "domain_operation": "sequence_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12679/generate.py"
+    },
+    {
+      "component_id": "src_12680",
+      "textbook_example_id": 12680,
+      "status": "verified",
+      "problem_type_id": "sequence_statements",
+      "domain_operation": "sequence_statements",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12680/generate.py"
+    },
+    {
+      "component_id": "src_12681",
+      "textbook_example_id": 12681,
+      "status": "verified",
+      "problem_type_id": "arithmetic_from_terms",
+      "domain_operation": "arithmetic_from_terms",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12681/generate.py"
+    },
+    {
+      "component_id": "src_12682",
+      "textbook_example_id": 12682,
+      "status": "verified",
+      "problem_type_id": "geometric_from_relations",
+      "domain_operation": "geometric_from_relations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12682/generate.py"
+    },
+    {
+      "component_id": "src_12683",
+      "textbook_example_id": 12683,
+      "status": "verified",
+      "problem_type_id": "geometric_from_relations",
+      "domain_operation": "geometric_from_relations",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12683/generate.py"
+    },
+    {
+      "component_id": "src_12684",
+      "textbook_example_id": 12684,
+      "status": "verified",
+      "problem_type_id": "progression_three_numbers",
+      "domain_operation": "progression_three_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12684/generate.py"
+    },
+    {
+      "component_id": "src_12685",
+      "textbook_example_id": 12685,
+      "status": "verified",
+      "problem_type_id": "progression_three_numbers",
+      "domain_operation": "progression_three_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12685/generate.py"
+    }
+  ]
+}

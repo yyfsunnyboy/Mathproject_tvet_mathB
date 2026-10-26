@@ -2006,6 +2006,24 @@ def run_v3_pair_pipeline(
                         metrics=link_metrics,
                     )
 
+            # Rows written != Stage 1 READY (missing key figure / cut stem / corrupted symbols / unreviewed visuals).
+            try:
+                from core.textbook_stage1_gate import evaluate_stage1_gate
+
+                gate_rows = TextbookExample.query.filter_by(
+                    source_curriculum=str(curriculum_info.get("curriculum") or "vocational"),
+                    source_volume=str(curriculum_info.get("volume") or volume),
+                    source_section=str(curriculum_info.get("section") or ""),
+                ).all()
+                gate = evaluate_stage1_gate(gate_rows)
+            except Exception as gate_exc:
+                gate = {"import_complete": True, "stage1_ready": False, "status": "BLOCKED",
+                        "error": f"{type(gate_exc).__name__}: {gate_exc}"}
+            report["stage1_gate"] = gate
+            report["metrics"]["stage1_gate"] = {
+                k: gate.get(k) for k in ("status", "stage1_ready", "rows", "reasons")
+            } | {"blocked": len(gate.get("blocked") or []), "needs_review": len(gate.get("needs_review") or [])}
+
             _emit(tid, task_queue, stage=STAGE_COMPLETE, status="success")
 
             report["ok"] = True
@@ -2161,6 +2179,7 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
     fidelity_failures = [
         p for p in pairs
         if formula_fidelity_failed(p)
+        or (p.get("stage1_gate") or {}).get("status") == "BLOCKED"
         or int(((p.get("metrics") or {}).get("ai_alignment") or {}).get("section_outline_fallback_count") or 0) > 0
         or int(((p.get("metrics") or {}).get("pdf_visual") or {}).get("errors") or 0) > 0
     ]
@@ -2243,6 +2262,12 @@ def build_v3_ui_result_payload(batch_report: dict[str, Any]) -> dict[str, Any]:
             for p in pairs
         ],
         "stages": batch_report.get("stages"),
+        # "database" above says rows were written; only a READY gate says they are a usable Stage 1 source.
+        "stage1Ready": bool(ok_pairs) and not failed_pairs and all((p.get("stage1_gate") or {}).get("stage1_ready") is True for p in pairs),
+        "stage1Gate": [
+            {"baseName": p.get("base_name"), **{k: (p.get("stage1_gate") or {}).get(k) for k in ("status", "rows", "reasons", "blocked", "needs_review")}}
+            for p in pairs
+        ],
     }
 
 

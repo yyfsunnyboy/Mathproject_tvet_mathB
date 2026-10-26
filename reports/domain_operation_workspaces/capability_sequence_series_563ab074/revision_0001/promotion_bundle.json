@@ -1,0 +1,725 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_sequence_series_563ab074",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (yeh.ivan@hlbh.hlc.edu.tw), explicit chat authorization 2026-10-26: one-time Promotion and Publish of 數學2 Unit 2 (gh_Series 24 + gh_CommonSeriesSummationFormulas 9 components); 12719, 12727, 12731, 12735 stay deferred",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 2 級數 — domain sequence.series_sums (8 operations: arithmetic_series_items, arithmetic_series_relation, fish_rows, geometric_series_items, geometric_series_relation, partial_sum_terms, power_sums, series_statements); Skills gh_Series (24 components: 12707, 12708, 12709, 12710, 12711, 12712, 12713, 12714, 12715, 12716, 12717, 12718, 12720, 12721, 12722, 12723, 12724, 12725, 12726, 12728, 12729, 12730, 12739, 12743); gh_CommonSeriesSummationFormulas (9 components: 12732, 12733, 12734, 12736, 12737, 12738, 12740, 12741, 12742); 33 of the 37 formal rows (ids 12707-12743). Deferred: induction proofs 12731, 12735 (no proof grading contract) and figure-only geometry 12719, 12727 (no text or textbook solution to serve as Source Oracle). Figure rows 12709, 12712, 12743, 12734 reuse the reviewed textbook crop (reuse_textbook_image); nothing is drawn. Value-set format hints never show the answer."
+  },
+  "domain_key": "sequence.series_sums",
+  "package_name": "series_summation",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "series_summation_adapter.py": "f530c4ef691e6315af9dcebdc10acca3dc88644c89b9d2f7bae99c4665fd0991",
+    "series_summation_domain.py": "427f4fa2ac0f24e0f39b9886d1019e050aeabe55d9b140704b7b7a3196ac4b4e"
+  },
+  "domain_module": "series_summation_domain",
+  "entrypoint": "build_series_summation_matrix",
+  "capabilities": [
+    "arithmetic_series_items",
+    "arithmetic_series_relation",
+    "fish_rows",
+    "geometric_series_items",
+    "geometric_series_relation",
+    "partial_sum_terms",
+    "power_sums",
+    "series_statements"
+  ],
+  "operations": {
+    "arithmetic_series_items": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_arithmetic_series_items_matrix",
+      "provided_capabilities": [
+        "arithmetic_series_items"
+      ]
+    },
+    "arithmetic_series_relation": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_arithmetic_series_relation_matrix",
+      "provided_capabilities": [
+        "arithmetic_series_relation"
+      ]
+    },
+    "fish_rows": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_fish_rows_matrix",
+      "provided_capabilities": [
+        "fish_rows"
+      ]
+    },
+    "geometric_series_items": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_geometric_series_items_matrix",
+      "provided_capabilities": [
+        "geometric_series_items"
+      ]
+    },
+    "geometric_series_relation": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_geometric_series_relation_matrix",
+      "provided_capabilities": [
+        "geometric_series_relation"
+      ]
+    },
+    "partial_sum_terms": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_partial_sum_terms_matrix",
+      "provided_capabilities": [
+        "partial_sum_terms"
+      ]
+    },
+    "power_sums": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_power_sums_matrix",
+      "provided_capabilities": [
+        "power_sums"
+      ]
+    },
+    "series_statements": {
+      "handler": "build_series_summation_matrix",
+      "payload_adapter": "series_summation_adapter.adapt_series_summation_matrix",
+      "runtime_contract": "series_summation_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_series_statements_matrix",
+      "provided_capabilities": [
+        "series_statements"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_CommonSeriesSummationFormulas": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "power_sums",
+        "series_statements"
+      ]
+    },
+    "gh_Series": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "arithmetic_series_items",
+        "arithmetic_series_relation",
+        "fish_rows",
+        "geometric_series_items",
+        "geometric_series_relation",
+        "partial_sum_terms",
+        "series_statements"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "arithmetic_series_items": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "d_from_sum",
+              "a1": 24,
+              "n": 7,
+              "S": 105
+            },
+            {
+              "kind": "sum_terms",
+              "first": 3,
+              "d": 4,
+              "last": 47,
+              "show": 2
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "d_from_sum",
+              "a1": 6,
+              "n": 8,
+              "S": 132
+            },
+            {
+              "kind": "sum_terms",
+              "first": 9,
+              "d": -4,
+              "last": -15,
+              "show": 3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "d_from_sum",
+              "a1": 36,
+              "n": 9,
+              "S": 144
+            },
+            {
+              "kind": "sum_terms",
+              "first": -3,
+              "d": 2,
+              "last": 23,
+              "show": 3
+            }
+          ]
+        }
+      }
+    ],
+    "arithmetic_series_relation": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "mid_term",
+          "m": 13,
+          "value": 11
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "pair_from_sum",
+          "n": 20,
+          "S": 10,
+          "pairs": [
+            [
+              1,
+              20
+            ],
+            [
+              2,
+              19
+            ]
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "threshold_count",
+          "first": 10,
+          "last": 70,
+          "threshold": 500
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "mid_total",
+          "n": 19,
+          "step": 2,
+          "mid": 24
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "two_walls",
+          "thick": 63,
+          "big1": 2,
+          "bigd": 2,
+          "small1": 1,
+          "smalld": 1
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "front_back",
+          "n": 12,
+          "first2": 15,
+          "last2": 75
+        }
+      }
+    ],
+    "fish_rows": [
+      {
+        "seed": 1,
+        "constraints": {
+          "k": 10
+        }
+      }
+    ],
+    "geometric_series_items": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "ratio_sum",
+              "a1": 3,
+              "r": "sqrt(2)",
+              "n": 6
+            },
+            {
+              "kind": "list_sum",
+              "terms": [
+                "3",
+                "6",
+                "12"
+              ],
+              "last": "384"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "ratio_sum",
+              "a1": 3,
+              "r": -2,
+              "n": 5
+            },
+            {
+              "kind": "list_sum",
+              "terms": [
+                "729",
+                "243",
+                "81"
+              ],
+              "last": "9"
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "ratio_sum",
+              "a1": 96,
+              "r": "1/2",
+              "n": 6
+            },
+            {
+              "kind": "list_sum",
+              "terms": [
+                "-2",
+                "6",
+                "-18"
+              ],
+              "last": "39366",
+              "last_tex": "(-2)\\times (-3)^{9}"
+            }
+          ]
+        }
+      }
+    ],
+    "geometric_series_relation": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "two_terms",
+          "p": 2,
+          "q": 4,
+          "A": 6,
+          "B": 54,
+          "n": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "square_areas",
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "consecutive_triples",
+          "A": 3,
+          "B": -6,
+          "n": 8
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "first_last_sum",
+          "a1": 2,
+          "last": 512,
+          "S": 682
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "layers",
+          "W": 96,
+          "frac": "1/8",
+          "kids": 2,
+          "layers": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "blue_squares",
+          "side": 32,
+          "n": 9
+        }
+      }
+    ],
+    "partial_sum_terms": [
+      {
+        "seed": 1,
+        "constraints": {
+          "form": {
+            "kind": "exp",
+            "c": 1,
+            "base": 3
+          },
+          "asks": [
+            [
+              "a",
+              1
+            ],
+            [
+              "a",
+              3
+            ],
+            [
+              "general"
+            ]
+          ],
+          "style": "前n項和"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": {
+            "kind": "quad",
+            "a": -1,
+            "b": 6
+          },
+          "asks": [
+            [
+              "a",
+              1
+            ],
+            [
+              "a",
+              4
+            ],
+            [
+              "general"
+            ]
+          ],
+          "style": "前n項和"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "form": {
+            "kind": "quad",
+            "a": -2,
+            "b": 1
+          },
+          "asks": [
+            [
+              "a",
+              1
+            ],
+            [
+              "general"
+            ]
+          ],
+          "style": "之前n項和"
+        }
+      }
+    ],
+    "power_sums": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_ranges",
+          "layout": "intro_items",
+          "items": [
+            {
+              "p": 2,
+              "first": 1,
+              "step": 1,
+              "last": 20
+            },
+            {
+              "p": 2,
+              "first": 11,
+              "step": 1,
+              "last": 20
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_ranges",
+          "layout": "named_items",
+          "items": [
+            {
+              "p": 2,
+              "first": 2,
+              "step": 2,
+              "last": 20
+            },
+            {
+              "p": 2,
+              "first": 1,
+              "step": 2,
+              "last": 19
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "tower",
+          "layers": 12,
+          "order": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_ranges",
+          "layout": "intro_items",
+          "items": [
+            {
+              "p": 3,
+              "first": 1,
+              "step": 1,
+              "last": 20
+            },
+            {
+              "p": 3,
+              "first": 11,
+              "step": 1,
+              "last": 20
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_ranges",
+          "layout": "single",
+          "items": [
+            {
+              "p": 3,
+              "first": 3,
+              "step": 3,
+              "last": 21
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "layer_split",
+          "layers": 15,
+          "top": 10
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_ranges",
+          "layout": "intro_named",
+          "items": [
+            {
+              "p": 2,
+              "first": 6,
+              "step": 1,
+              "last": 15
+            },
+            {
+              "p": 3,
+              "first": 2,
+              "step": 2,
+              "last": 20
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "cube_total_inverse",
+          "n": 14
+        }
+      }
+    ],
+    "series_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "ap_center",
+            "k": 5,
+            "c": 3
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "gp_formula",
+            "r": 3,
+            "m": 10,
+            "e": 10
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "cube_sum",
+            "claim": "square_of_sum"
+          }
+        }
+      }
+    ]
+  },
+  "deferred_components": {
+    "12719": "題幹沒有描述圖形的幾何構造（只有「右圖中…」與等腰直角三角形的個數），答案只能由圖形判讀，教材又沒有詳解可作 Source Oracle，不憑圖形推定答案：隨堂練習6 正方形 ABCD 內 5 個黑色等腰直角三角形",
+    "12727": "題幹沒有描述圖形的幾何構造（只有「右圖中…」與等腰直角三角形的個數），答案只能由圖形判讀，教材又沒有詳解可作 Source Oracle，不憑圖形推定答案：習題基礎題6 以 AB=1 起算的 T1～T5 等腰直角三角形",
+    "12731": "整題是數學歸納法證明：目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代（與 gh_MathematicalInduction 同一原則）：例題8 平方和公式",
+    "12735": "整題是數學歸納法證明：目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代（與 gh_MathematicalInduction 同一原則）：隨堂練習8 立方和公式"
+  }
+}

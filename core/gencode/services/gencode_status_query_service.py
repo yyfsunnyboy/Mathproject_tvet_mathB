@@ -126,6 +126,52 @@ TEACHER_V3_STATUS: dict[str, dict[str, object]] = {
 }
 
 
+# How a textbook row can be practised.  Independent of the GenCode V3 status: a fixed textbook row (reviewed, configured in
+# configs/fixed_textbook_practice.json) is practisable but is never a GenCode VERIFIED / Published component.
+PRACTICE_STATUS: dict[str, dict[str, object]] = {
+    "dynamic_published": {"key": "dynamic_published", "label": "GenCode 動態生成已發布", "icon": "🟢", "badge_class": "teacher-v3-published"},
+    "fixed_graded": {"key": "fixed_graded", "label": "固定教材可練習（可自動判分）", "icon": "📝", "badge_class": "teacher-v3-fixed-graded"},
+    "fixed_ungraded": {"key": "fixed_ungraded", "label": "固定教材可練習（未評分）", "icon": "📝", "badge_class": "teacher-v3-fixed-ungraded"},
+    "none": {"key": "none", "label": "尚無可用練習方式", "icon": "⚪", "badge_class": "teacher-v3-not-generated"},
+}
+
+
+def resolve_example_practice_status(teacher_status_key: str, fixed_mode: str | None) -> dict[str, object]:
+    """Practice state of one textbook row from its GenCode state and (independently) its fixed-practice mode."""
+    if teacher_status_key == "published":
+        key = "dynamic_published"
+    elif fixed_mode == "graded":
+        key = "fixed_graded"
+    elif fixed_mode == "ungraded":
+        key = "fixed_ungraded"
+    else:
+        key = "none"
+    return dict(PRACTICE_STATUS[key])
+
+
+def example_display_status(teacher_status: dict[str, object], practice_status: dict[str, object]) -> dict[str, object]:
+    """The badge of the examples table: fixed practice is shown as such (never as a GenCode state); every other row keeps its GenCode badge."""
+    if practice_status["key"] in ("fixed_graded", "fixed_ungraded"):
+        return dict(practice_status)
+    return dict(teacher_status)
+
+
+def fixed_practice_modes(conn: sqlite3.Connection, examples: list[tuple[int, str]]) -> dict[int, str]:
+    """``{example_id: 'graded'|'ungraded'}`` for rows whose reviewed fixed-practice entry still matches the Stage 1 stem (read-only)."""
+    from core.fixed_textbook_practice import load_entries, stem_sha256
+
+    entries = load_entries()
+    out: dict[int, str] = {}
+    for example_id, skill_id in examples:
+        entry = entries.get(int(example_id))
+        if not entry or str(entry.get("skill_id")) != str(skill_id):
+            continue
+        row = conn.execute("SELECT problem_text FROM textbook_examples WHERE id = ?", (int(example_id),)).fetchone()
+        if row is not None and stem_sha256(row[0]) == entry.get("problem_text_sha256"):
+            out[int(example_id)] = str(entry["mode"])
+    return out
+
+
 def _teacher_status_payload(status_key: str) -> dict[str, object]:
     return dict(TEACHER_V3_STATUS.get(status_key, TEACHER_V3_STATUS["not_generated"]))
 
@@ -862,11 +908,15 @@ def build_admin_example_gencode_status_view(
         deployed_without_tracker=deployed_without_tracker,
         production_runtime_ready=runtime_selectable,
     )
+    practice_status = resolve_example_practice_status(
+        str(teacher_status.get("status_key") or ""), fixed_practice_modes(conn, [(int(textbook_example_id), skill_id)]).get(int(textbook_example_id)))
     return {
         **tracker_status,
         **file_status,
         **sync_status,
         "teacher_status": teacher_status,
+        "practice_status": practice_status,
+        "display_status": example_display_status(teacher_status, practice_status),
         "status_label": format_gencode_status_label(status),
         "hash_evidence_stale": hash_evidence_stale,
         "production_runtime_ready": runtime_selectable,
@@ -887,6 +937,7 @@ def build_admin_examples_gencode_status_map(
 ) -> dict[int, dict[str, object]]:
     example_ids = [example_id for example_id, _skill_id in examples]
     base_map = get_gencode_status_for_examples(conn, example_ids)
+    fixed_modes = fixed_practice_modes(conn, examples)
     status_map: dict[int, dict[str, object]] = {}
     publication_by_skill = {
         skill_id: inspect_skill_runtime_publication(
@@ -960,11 +1011,14 @@ def build_admin_examples_gencode_status_map(
             deployed_without_tracker=deployed_without_tracker,
             production_runtime_ready=runtime_selectable,
         )
+        practice_status = resolve_example_practice_status(str(teacher_status.get("status_key") or ""), fixed_modes.get(int(example_id)))
         status_map[example_id] = {
             **tracker_status,
             **file_status,
             **sync_status,
             "teacher_status": teacher_status,
+            "practice_status": practice_status,
+            "display_status": example_display_status(teacher_status, practice_status),
             "status_label": format_gencode_status_label(status),
             "hash_evidence_stale": hash_evidence_stale,
             "production_runtime_ready": runtime_selectable,

@@ -1,0 +1,655 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u1_rehearsal\\run",
+ "deferred": {
+  "12686": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：例題6 的正六邊形地磚排列",
+  "12694": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：基礎題5 的正方形地磚排列",
+  "12698": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：進階題9 的艾薛爾飛魚圖案",
+  "12696": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+  "12700": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+  "12701": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+  "12702": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律，並含圖形選項（單選）：例題11 的艾薛爾蜥蜴圖案",
+  "12703": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+  "12704": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+  "12705": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：隨堂練習11 的艾薛爾蝴蝶圖案",
+  "12706": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代"
+ },
+ "promotion": {
+  "domain_key": "sequence.progression",
+  "registry_revision": "promoted-231d6d6b4568",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12667": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_terms_from_formula",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "861992e96c7994cfe0a62e38b352358e96f74f5bce183bdc46f90c0baccfac9c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12668": {
+   "skill": "gh_Sequence",
+   "operation": "figure_path_pattern",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c8660426a8e247174821d01554968c26bd05b19b98fd68f523a6317bfea0eedb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12669": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "76d9fc734c5c3e2b966162647e4ef8a9064031b136be5e1515a8f417c26a2247",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12670": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cd16da0ca8ff7e64295f0d8e68ae0daa22017226b6543e33a2d36cbb19395205",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12671": {
+   "skill": "gh_Sequence",
+   "operation": "progression_three_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "36038a48321e08d647920c58b50418c03a4791b01248a35706aaa2524af7e624",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12672": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_terms_from_formula",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b9bc0391385ef9be704db6eee8a4a9688f6d6d07d59b6fcb45b0179565ff4594",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12673": {
+   "skill": "gh_Sequence",
+   "operation": "finger_counting_cycle",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "df42cff1fd21b7239f64a10ab944ecf0064d375feff49292bc709ddea53c0961",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12674": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "87bc5844f16fb596c908bed5da6133a252003e7ba4d7ec4889d1441af96f0988",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12675": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dd189c42f812ede49152d55fccf3e56b135eb13fd0c12a54a23763dc72f0d544",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12676": {
+   "skill": "gh_Sequence",
+   "operation": "progression_three_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9829b64755d6239b9f982a0d09ade2096b925794d2077ad97dc6e0b4620d55c9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12677": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e4d15f00796f0fb9321eb77462c6db16239ef07c60ce176e66c854656037745a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12678": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "006b88ad71b434624e9fe01b8aaa24f6838a5aee83eb6c149772808bec6f3230",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12679": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c25c7ab6cf39e0b686680e4a87bff58f7b16fe1ccbccd724a7cd29f2efe6d748",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12680": {
+   "skill": "gh_Sequence",
+   "operation": "sequence_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "72d7be7c90f1786bb74e1e1d025414f631c235798a4679688574800e8e8b9293",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12681": {
+   "skill": "gh_Sequence",
+   "operation": "arithmetic_from_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5c66d481251207d75db7a1ab7fa625421e56a24c6ca202292bb7095b54c3578c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12682": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5bfbdadede45ec6696dd3fc2d625458889f9aa33d4be21f15b5aa7ffc792719a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12683": {
+   "skill": "gh_Sequence",
+   "operation": "geometric_from_relations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f282a01e8444cc08f4d27e99d9a3e8c521af4c31b23f7cc6cb50c5d34ae38bfa",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12684": {
+   "skill": "gh_Sequence",
+   "operation": "progression_three_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3b07d40e91f7172390ca9ec2b118a1e24bab95dcd0aebee5ea6a7011ee32e056",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12685": {
+   "skill": "gh_Sequence",
+   "operation": "progression_three_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Sequence",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "440f9711d6093d9621c24f9496e107bfeb890bb434a78dd09e762e9dacf40157",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12687": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "37c1df29b6368fb8ba41375cea162b813356d4d1465f998e392df748bd37d475",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12688": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1e4edb2599f1083f4bc91dea12f62f4698a37ff6927fcd1aa0ff84601678b721",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12689": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8e1fe9c5406263ebfb8666138a9cc70d84bda99433dcfc9e0c27c3d9da4bc1be",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12690": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1b2b5d5747061ef6e5f1a474537581dd61bbd2555d54343616f73f40a862bbfd",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12692": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "94389879c725bc8f6c13fc5e213af98668746c14fe179a3ca7a866b4033a5673",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12693": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "sequence_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0a7ea59e4fe84e410d60eaf76e33c9ba925e23431ffd4186da998329d191ff6b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12695": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "fe29b5f5f05344b6134f831030a8fc46dcaa00c0453bf090ccb552426ea348f8",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12697": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "progression_three_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "efbb204c23f25363c0af1078c1b497dd31e8318db94de9aa6b49ea2705208746",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12699": {
+   "skill": "gh_RecursiveRelation",
+   "operation": "recurrence_from_process",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RecursiveRelation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c39cd510b8c0503c14523e13a1c5a7d7531ef84eff68f286d34b0ac8e9c74673",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_RecursiveRelation": {
+   "status": "production_published",
+   "component_count": 9,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 8,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12687",
+    "src_12688",
+    "src_12689",
+    "src_12690",
+    "src_12692",
+    "src_12693",
+    "src_12695",
+    "src_12697",
+    "src_12699"
+   ]
+  },
+  "gh_Sequence": {
+   "status": "production_published",
+   "component_count": 19,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 15,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12667",
+    "src_12668",
+    "src_12669",
+    "src_12670",
+    "src_12671",
+    "src_12672",
+    "src_12673",
+    "src_12674",
+    "src_12675",
+    "src_12676",
+    "src_12677",
+    "src_12678",
+    "src_12679",
+    "src_12680",
+    "src_12681",
+    "src_12682",
+    "src_12683",
+    "src_12684",
+    "src_12685"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_RecursiveRelation": {
+   "served_examples": {
+    "12687": 9,
+    "12688": 9,
+    "12689": 9,
+    "12690": 8,
+    "12692": 9,
+    "12693": 9,
+    "12695": 9,
+    "12697": 9,
+    "12699": 9
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_Sequence": {
+   "served_examples": {
+    "12667": 4,
+    "12668": 4,
+    "12669": 4,
+    "12670": 4,
+    "12671": 4,
+    "12672": 5,
+    "12673": 4,
+    "12674": 4,
+    "12675": 4,
+    "12676": 4,
+    "12677": 4,
+    "12678": 4,
+    "12679": 4,
+    "12680": 5,
+    "12681": 5,
+    "12682": 4,
+    "12683": 5,
+    "12684": 4,
+    "12685": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

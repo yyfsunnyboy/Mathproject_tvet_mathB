@@ -1,0 +1,13 @@
+{
+ "pdf_sha256": "9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964",
+ "verified_by": "claude Stage 1 review (each crop viewed against the PDF page render; pending teacher confirmation)",
+ "verified_on": "2026-10-26",
+ "regions": {
+  "例題3": [{"page": 4, "bbox": [413, 456, 509, 525], "why": "fish-scale formation of soldiers (rows of 1, 3, 5 ...)"}],
+  "例題6": [{"page": 8, "bbox": [411, 162, 507, 235], "why": "angle A = 45 degrees with squares T1, T2, T3 ..."}],
+  "隨堂練習6": [{"page": 8, "bbox": [422, 567, 511, 661], "why": "square ABCD with 5 black isosceles right triangles"}],
+  "例題11": [{"page": 13, "bbox": [398, 376, 511, 502], "why": "champagne tower (4-layer illustration)"}],
+  "2習題 基礎題6": [{"page": 16, "bbox": [429, 436, 524, 547], "why": "isosceles right triangles T1..T5 with AB = 1"}],
+  "2習題 進階題12": [{"page": 18, "bbox": [186, 475, 423, 551], "why": "figures 1-3 of the blue-square subdivision"}]
+ }
+}

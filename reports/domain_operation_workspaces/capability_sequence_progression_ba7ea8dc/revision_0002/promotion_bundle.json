@@ -1,0 +1,610 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_sequence_progression_ba7ea8dc",
+  "proposal_revision": 2,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (yeh.ivan@hlbh.hlc.edu.tw), explicit chat authorization 2026-10-26: one-time Promotion and Publish of revision_0002 (incremental: gh_Sequence 12668 and 12673 only; revision_0001 and the 26 published components stay)",
+    "approved_revision": 2,
+    "approval_scope": "revision 2 (incremental on the promoted revision 1): 普高數學2 Unit 1 數列與遞迴關係 — domain sequence.progression, nine operations (the seven of revision 1 plus figure_path_pattern and finger_counting_cycle). New components: gh_Sequence 12668 (number path picture, drawn with the shared coordinate_plane renderer) and 12673 (finger counting, reuses the reviewed textbook hand picture through reuse_textbook_image). Together with the 26 already published components that is gh_Sequence 19 + gh_RecursiveRelation 9 = 28; 11 rows stay deferred (figure-pattern 12686, 12694, 12698, 12702, 12705 and induction-proof 12696, 12700, 12701, 12703, 12704, 12706). gh_MathematicalInduction has no component: its 7 rows are served from the textbook with no verdict (ungraded self study). Package files 5 -> 7; the five revision-1 files change only by registering the two new operations."
+  },
+  "domain_key": "sequence.progression",
+  "package_name": "sequence_progression",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sequence_progression_adapter.py": "e20f6d8632e072bb6d660f8605cb18ec585b42acc214a8d142f36b55b69c6093",
+    "sequence_progression_domain.py": "212c15bfd80772368d76c37ddaf3ebf30c15c2b9089dda158e15a1b682590ff4",
+    "sequence_progression_recurrence.py": "c98b7f7becbc28205f2e29a35a22b37530723997f681ef7227fe32ef6fe86c65",
+    "sequence_progression_recurrence_adapter.py": "f9f58e888d4d2ea12663e5b0361c9d0c85e74003503960c6ae9dc6f80d52bdf8",
+    "sequence_progression_patterns.py": "bdb0e6740ba947a9eb6bbab0c708baf3a803b63a065d1f60e81ff514d6f1b561",
+    "sequence_progression_pattern_adapter.py": "c095ca3847fb117200426ad06ed2bd4f74f69422f4ffb917bfa7080781e3e263"
+  },
+  "domain_module": "sequence_progression_domain",
+  "entrypoint": "build_sequence_progression_matrix",
+  "capabilities": [
+    "arithmetic_from_terms",
+    "figure_path_pattern",
+    "finger_counting_cycle",
+    "geometric_from_relations",
+    "geometric_from_terms",
+    "progression_three_numbers",
+    "recurrence_from_process",
+    "sequence_statements",
+    "sequence_terms_from_formula"
+  ],
+  "operations": {
+    "arithmetic_from_terms": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_arithmetic_from_terms_matrix",
+      "provided_capabilities": [
+        "arithmetic_from_terms"
+      ]
+    },
+    "figure_path_pattern": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_figure_path_pattern_matrix",
+      "provided_capabilities": [
+        "figure_path_pattern"
+      ]
+    },
+    "finger_counting_cycle": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_finger_counting_cycle_matrix",
+      "provided_capabilities": [
+        "finger_counting_cycle"
+      ]
+    },
+    "geometric_from_relations": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "numeric_or_radical",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_geometric_from_relations_matrix",
+      "provided_capabilities": [
+        "geometric_from_relations"
+      ]
+    },
+    "geometric_from_terms": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_geometric_from_terms_matrix",
+      "provided_capabilities": [
+        "geometric_from_terms"
+      ]
+    },
+    "progression_three_numbers": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "numeric_or_radical",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_progression_three_numbers_matrix",
+      "provided_capabilities": [
+        "progression_three_numbers"
+      ]
+    },
+    "recurrence_from_process": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "expression",
+        "multi_part",
+        "numeric_or_radical",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "expression_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_recurrence_from_process_matrix",
+      "provided_capabilities": [
+        "recurrence_from_process"
+      ]
+    },
+    "sequence_statements": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_sequence_statements_matrix",
+      "provided_capabilities": [
+        "sequence_statements"
+      ]
+    },
+    "sequence_terms_from_formula": {
+      "handler": "build_sequence_progression_matrix",
+      "payload_adapter": "sequence_progression_adapter.adapt_sequence_progression_matrix",
+      "runtime_contract": "sequence_progression_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_sequence_terms_from_formula_matrix",
+      "provided_capabilities": [
+        "sequence_terms_from_formula"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_RecursiveRelation": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "progression_three_numbers",
+        "recurrence_from_process",
+        "sequence_statements"
+      ]
+    },
+    "gh_Sequence": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "arithmetic_from_terms",
+        "figure_path_pattern",
+        "finger_counting_cycle",
+        "geometric_from_relations",
+        "geometric_from_terms",
+        "progression_three_numbers",
+        "sequence_statements",
+        "sequence_terms_from_formula"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "arithmetic_from_terms": [
+      {
+        "seed": 1,
+        "constraints": {
+          "m": 10,
+          "A": 20,
+          "n": 20,
+          "B": 10
+        }
+      }
+    ],
+    "figure_path_pattern": [
+      {
+        "seed": 1,
+        "constraints": {
+          "start": 1,
+          "t": 106,
+          "T": 107,
+          "order": [
+            2,
+            3,
+            0,
+            1
+          ]
+        }
+      }
+    ],
+    "finger_counting_cycle": [
+      {
+        "seed": 1,
+        "constraints": {
+          "ks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "N": 999
+        }
+      }
+    ],
+    "geometric_from_relations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "sum_pairs",
+          "S13": 20,
+          "S24": -10,
+          "ask_k": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "product_positive",
+          "P13": 1,
+          "a4": 4
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "two_terms",
+          "m": 3,
+          "A": -3,
+          "n": 6,
+          "B": "9*sqrt(3)"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "diff_sum",
+          "D": 2,
+          "S": 10,
+          "ask_k": 4
+        }
+      }
+    ],
+    "geometric_from_terms": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "aperture",
+          "terms": [
+            "2",
+            "2*sqrt(2)",
+            "4"
+          ],
+          "ask_k": 6,
+          "target": 32
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "list",
+          "terms": [
+            "3",
+            "-6",
+            "12"
+          ],
+          "ask_k": 5,
+          "target": -384
+        }
+      }
+    ],
+    "progression_three_numbers": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "geo_then_arith",
+          "m": 2,
+          "c": -1
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "arith_positions",
+          "A": 1,
+          "i": 2,
+          "j": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "arith_geo_chain",
+          "p": -2,
+          "q": 18
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "arith_geo_shift",
+          "S": 30,
+          "shifts": [
+            1,
+            6,
+            47
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "geo_sum_relation",
+          "c": 1
+        }
+      }
+    ],
+    "recurrence_from_process": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "subdivision",
+          "shape": "triangle",
+          "parts": 4,
+          "removed": 1,
+          "where": "中間",
+          "ask": "value",
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "row_sums",
+          "first": 1,
+          "step": 2,
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "tearing",
+          "start": 2,
+          "pieces": 4,
+          "k": 2,
+          "target": 101
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "subdivision",
+          "shape": "segment",
+          "parts": 3,
+          "removed": 1,
+          "where": "中間",
+          "ask": "value",
+          "k": 9
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "array_row_end",
+          "start": 1,
+          "first_row": 1,
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "subdivision",
+          "shape": "square",
+          "parts": 9,
+          "removed": 1,
+          "where": "左上角",
+          "ask": "threshold",
+          "limit": 1000
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "nested_polygon",
+          "shape": "square",
+          "P": 16,
+          "k": 10
+        }
+      }
+    ],
+    "sequence_statements": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "term_claim",
+            "p2": 1,
+            "p1": 0,
+            "p0": 2,
+            "r": 2,
+            "s": -1,
+            "k": 5,
+            "value": "3"
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "progression_claim",
+            "terms": [
+              "4",
+              "6",
+              "9"
+            ],
+            "claim": "geometric"
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "both_claim",
+            "terms": [
+              "5",
+              "5",
+              "5"
+            ]
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "recurrence_claim",
+            "type": "arithmetic",
+            "a1": 5,
+            "c": -3,
+            "shown_type": "arithmetic",
+            "shown_a1": 5,
+            "shown_c": -3
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "statement": {
+            "kind": "recurrence_term_claim",
+            "type": "geometric",
+            "a1": 2,
+            "c": 2,
+            "k": 4,
+            "value": "8"
+          }
+        }
+      }
+    ],
+    "sequence_terms_from_formula": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "linear",
+              "a": 2,
+              "b": -1
+            },
+            {
+              "kind": "frac",
+              "p": 1,
+              "q": 0,
+              "r": 3,
+              "s": 1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "quad",
+              "a": -1,
+              "b": 0,
+              "c": 1,
+              "ascending": true
+            },
+            {
+              "kind": "signed_frac",
+              "p": 1,
+              "r": 2,
+              "s": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "deferred_components": {
+    "12686": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：例題6 的正六邊形地磚排列",
+    "12694": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：基礎題5 的正方形地磚排列",
+    "12696": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+    "12698": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：進階題9 的艾薛爾飛魚圖案",
+    "12700": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+    "12701": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+    "12702": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律，並含圖形選項（單選）：例題11 的艾薛爾蜥蜴圖案",
+    "12703": "第 (3) 小題要求使用數學歸納法驗證：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+    "12704": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代",
+    "12705": "圖形的規律只存在於教材圖形中（題幹文字沒有描述各圖的構造，只給前幾項），不能只靠文字出題，也不能由前幾項唯一確定一般規律：隨堂練習11 的艾薛爾蝴蝶圖案",
+    "12706": "整題是數學歸納法證明：含數學歸納法證明作答（寫出證明過程），目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代"
+  }
+}

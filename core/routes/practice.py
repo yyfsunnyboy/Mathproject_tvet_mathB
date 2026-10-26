@@ -106,6 +106,11 @@ from core.vocational_math_b4.domain.b4_validators import (
     check_expected_value_answer,
 )
 
+# A textbook example without a reference answer is served for self-study only (see _build_textbook_example_practice_response).
+UNGRADED_SELF_STUDY_MODE = "ungraded_self_study"
+# Explicit opt-in per skill (proof / figure-pattern units with no checker); other legacy skills keep their existing behaviour.
+UNGRADED_SELF_STUDY_SKILLS = frozenset({"gh_MathematicalInduction"})
+
 # Phase 6G-0: Chap2 skill / problem-type gates ??user-facing messages (SOP 禮8.1).
 # JSON `error` must not expose internal phase codes, legacy import traces, or URL-encoded skill_id.
 B4_CHAP2_SKILL_NOT_ENABLED_PUBLIC_ERROR = (
@@ -467,6 +472,13 @@ def _select_textbook_example_for_skill(skill_id: str, example_id: int | None = N
         idx = int(session.get(seq_key, 0) or 0) % len(rows)
     except Exception:
         idx = 0
+    # ``te_seq_*`` is not a kept practice key, so cookie pruning drops it and the rotation would restart at the first row on
+    # every request.  ``current_textbook_example_id`` survives pruning: continue from the example served last.
+    if str(session.get("current_skill_id", "")).strip() == str(skill_id):
+        last_served = str(session.get("current_textbook_example_id", "")).strip()
+        positions = {str(row.id): pos for pos, row in enumerate(rows)}
+        if last_served in positions:
+            idx = (positions[last_served] + 1) % len(rows)
     session[seq_key] = idx + 1
     session.modified = True
     return rows[idx]
@@ -494,6 +506,23 @@ def _build_textbook_example_practice_response(
     else:
         input_type = getattr(skill_info, "input_type", "text") or "text"
 
+    # A textbook example without a reference answer (proofs, figure patterns) has nothing a checker can compare with: serve it
+    # for self-study, never as a graded attempt (no right/wrong, no streak, no mastery or progress record).
+    from core.fixed_textbook_practice import entry_for_row
+
+    fixed = entry_for_row(te)  # reviewed fixed practice (graded with an independent oracle, or ungraded with a reference solution)
+    fixed_graded = bool(fixed and fixed["mode"] == "graded")
+    if fixed_graded:
+        answer = str(fixed["answer"])
+        input_type = str((fixed.get("answer_contract") or {}).get("answer_type") or input_type)
+    ungraded = bool(fixed and fixed["mode"] == "ungraded") or (skill_id in UNGRADED_SELF_STUDY_SKILLS and not str(answer).strip())
+    fixed_extra: dict[str, Any] = {}
+    if fixed:
+        fixed_extra = {"fixed_textbook_practice": fixed["mode"], "reference_solution": list(fixed.get("reference_solution") or []),
+                       "practice_scaffold": list(fixed.get("practice_scaffold") or [])}
+        if fixed_graded:
+            fixed_extra["answer_contract"] = dict(fixed["answer_contract"])
+            fixed_extra["presentation_mode"] = "short_answer"
     data = {
         "question_text": stem,
         "new_question_text": stem,
@@ -501,6 +530,8 @@ def _build_textbook_example_practice_response(
         "answer": answer,
         "context_string": "",
         "answer_type": input_type,
+        **({"check_mode": UNGRADED_SELF_STUDY_MODE, "grading_mode": UNGRADED_SELF_STUDY_MODE} if ungraded else {}),
+        **fixed_extra,
         "textbook_example_id": te.id,
         "question_id": te.id,
         "source_kind": "textbook_example",
@@ -527,8 +558,8 @@ def _build_textbook_example_practice_response(
             "question_text_hash": stored.get("question_text_hash", ""),
             "question_text": stem,
             "new_question_text": stem,
-            "correct_answer": answer,
-            "answer": answer,
+            "correct_answer": "" if fixed_graded else answer,  # the canonical answer stays server-side until the student has submitted
+            "answer": "" if fixed_graded else answer,
             "context_string": "",
             "consecutive_correct": consecutive,
             "current_level": difficulty_level,
@@ -543,6 +574,8 @@ def _build_textbook_example_practice_response(
             "route_source": "db_textbook_example",
             "route_mode": "textbook_example",
             "route_reason": "no_generator_serve_textbook_example",
+            **({"check_mode": UNGRADED_SELF_STUDY_MODE, "grading_mode": UNGRADED_SELF_STUDY_MODE, "graded": False} if ungraded else {}),
+            **{k: v for k, v in fixed_extra.items() if k in ("fixed_textbook_practice", "practice_scaffold", "answer_contract", "presentation_mode")},
             "wrapper_loaded": False,
             "question_source": "db_textbook_example",
             "source_kind": "textbook_example",
@@ -1153,6 +1186,24 @@ def _chapter_review_apply_verdict(skill_id: str, run_id: str, type_key: str, out
     out["practice_type_rotation"] = summary
 
 
+def _fixed_row_already_credited(skill_id: str, current_question: Any) -> bool:
+    """True when this student already has a correct, recorded answer to the same graded fixed textbook question."""
+    if not isinstance(current_question, dict) or is_guest_demo() or not getattr(current_user, "is_authenticated", False):
+        return False
+    try:
+        from core.fixed_textbook_practice import load_entries
+        from models import PracticeAttempt
+
+        entry = load_entries().get(int(current_question.get("textbook_example_id") or 0))
+        if not entry or entry.get("mode") != "graded" or str(entry.get("skill_id")) != str(skill_id):
+            return False
+        stem = str(current_question.get("question_text") or "").strip()
+        return bool(stem) and db.session.query(PracticeAttempt.id).filter_by(
+            student_id=current_user.id, skill_id=skill_id, question_text=stem, is_correct=True).first() is not None
+    except Exception:  # noqa: BLE001 - never block a verdict because of the credit lookup
+        return False
+
+
 def _emit_check_result(
     question_uid: str,
     skill_id: str,
@@ -1193,6 +1244,15 @@ def _emit_check_result(
     _is_gradable = _status in ("correct", "incorrect") or (
         _status == "" and not out.get("system_error") and not out.get("invalid_input")
     )
+    if record_progress and _is_gradable and out.get("correct") is True and _fixed_row_already_credited(skill_id, current_question):
+        # A fixed textbook question can be opened again at will: it counts towards streak / mastery / ability once per student, so repeating
+        # it with the same correct answer cannot push them up.  The verdict is still shown.
+        record_progress = False
+        try:
+            progress_row = db.session.query(Progress).filter_by(user_id=current_user.id, skill_id=skill_id).first()
+            out["consecutive_correct"] = int(progress_row.consecutive_correct if progress_row else 0)
+        except Exception:  # noqa: BLE001 - display only
+            pass
     submission_id = str(ctx.get("handwriting_submission_id") or "")
     image_sha256 = str(ctx.get("handwriting_image_sha256") or "")
     if submission_id:
@@ -2014,7 +2074,12 @@ def practice(skill_id):
             chapter_review["resume_url"] = url_for("practice.practice", skill_id=skill_id, chapter_review="resume")
             chapter_review["restart_url"] = url_for("practice.practice", skill_id=skill_id, chapter_review="restart")
 
+    from core.fixed_textbook_practice import skill_has_selfcheck_rows
+    from models import TextbookExample
+
+    streak_without_target = skill_has_selfcheck_rows(TextbookExample.query.filter_by(skill_id=skill_id).all())
     return render_template('index.html', 
+                           streak_without_target=streak_without_target,
                            chapter_review=chapter_review,
                            skill_id=skill_id,
                            skill_ch_name=skill_ch_name,
@@ -2612,6 +2677,39 @@ def next_question():
                     "message": "題目載入失敗，請通知教師檢查此技能。"
                 }), 404
 
+        # Textbook order: for a skill that has reviewed fixed textbook rows, "next question" follows the textbook's own sequence and each row is
+        # served the way it can be practised (published generator component, else the fixed original question).  One pool, one sequence.
+        if (
+            request.args.get("mode", "").strip() == "type_rotation"
+            and request.args.get("chapter_review", "").strip() != "1"
+            and not requested_component_id
+            and not str(problem_type or "").strip()
+            and review_entry is None
+            and not _te_id_raw
+        ):
+            from core.textbook_order_practice import pick_next_in_textbook_order
+            from models import TextbookExample as _TextbookExample
+
+            _order_rows = _TextbookExample.query.filter_by(skill_id=skill_id).all()
+            _last_served = session.get("current_textbook_example_id") if str(session.get("current_skill_id", "")).strip() == skill_id else None
+            _generator_keys = set(getattr(mod, "GENERATOR_KEYS", ()) or ()) if wrapper_loaded else set()
+            _stay = False
+            if _last_served and request.args.get("resume", "").strip() == "1":
+                # page just opened / refreshed: if the row last served was never answered, show that row again (no skipping, no jumping back)
+                _open = get_current() or {}
+                _stay = str(_open.get("skill_id", "")).strip() == skill_id and str(_open.get("status", "")).strip() == "generated"
+            _order_pick = pick_next_in_textbook_order(_order_rows, last_served_id=_last_served, generator_keys=_generator_keys, stay_on_last=_stay)
+            if _order_pick is not None:
+                if _order_pick["kind"] == "fixed":
+                    return _build_textbook_example_practice_response(
+                        _order_pick["row"],
+                        skill_id=skill_id,
+                        difficulty_level=difficulty_level,
+                        consecutive=consecutive,
+                        skill_info=skill_info,
+                    )
+                requested_component_id = _order_pick["component_id"]
+
         # AI prereq query
         prereq_query = db.session.query(SkillInfo).join(
             SkillPrerequisites, SkillInfo.skill_id == SkillPrerequisites.prerequisite_id
@@ -3168,6 +3266,27 @@ def check_answer():
     check_mode = str(
         current.get("check_mode") or current.get("grading_mode") or ""
     ).strip().lower()
+    if check_mode == UNGRADED_SELF_STUDY_MODE:
+        # Nothing reliable to grade against: no verdict, no attempt record (emits before any progress / mistake bookkeeping).
+        reference_steps: list[str] = []
+        try:  # the reviewed reference solution of a fixed textbook row (bound to the Stage 1 stem by hash); the question store keeps only a slim copy
+            from core.fixed_textbook_practice import entry_for_row
+            from models import TextbookExample
+
+            row = db.session.get(TextbookExample, int(current.get("textbook_example_id") or 0))
+            entry = entry_for_row(row) if row is not None else None
+            reference_steps = [str(x) for x in (entry or {}).get("reference_solution") or []]
+        except Exception:  # noqa: BLE001 - the notice below is still correct without the steps
+            reference_steps = []
+        return jsonify(
+            {
+                "correct": None,
+                "graded": False,
+                "result": "本題為證明／圖形規律題，系統不自動判定對錯，也不會計入答題紀錄。請對照下方參考解法自行檢查，再按「下一題」。",
+                "check_mode": check_mode,
+                "reference_solution": reference_steps,
+            }
+        )
     if check_mode in {
         "ai_judged_free_response",
         "visual_ai_checked",

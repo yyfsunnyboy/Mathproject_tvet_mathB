@@ -1,0 +1,753 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u2_rehearsal\\run",
+ "deferred": {
+  "12719": "題幹沒有描述圖形的幾何構造（只有「右圖中…」與等腰直角三角形的個數），答案只能由圖形判讀，教材又沒有詳解可作 Source Oracle，不憑圖形推定答案：隨堂練習6 正方形 ABCD 內 5 個黑色等腰直角三角形",
+  "12727": "題幹沒有描述圖形的幾何構造（只有「右圖中…」與等腰直角三角形的個數），答案只能由圖形判讀，教材又沒有詳解可作 Source Oracle，不憑圖形推定答案：習題基礎題6 以 AB=1 起算的 T1～T5 等腰直角三角形",
+  "12731": "整題是數學歸納法證明：目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代（與 gh_MathematicalInduction 同一原則）：例題8 平方和公式",
+  "12735": "整題是數學歸納法證明：目前沒有已授權的證明判分契約，不以自由文字或 AI 判斷替代（與 gh_MathematicalInduction 同一原則）：隨堂練習8 立方和公式"
+ },
+ "promotion": {
+  "domain_key": "sequence.series_sums",
+  "registry_revision": "promoted-296356dbd9b8",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12707": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "273180de59f4eff9ac6426d4336ceea8c00738b06ded4f459940c84d22ca300d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12708": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3246dfe2498553fe6608637bc5be3bffd85e6a5f45ff97a585a94b92098ab488",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12709": {
+   "skill": "gh_Series",
+   "operation": "fish_rows",
+   "variants": 15,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "143db3e69169f882cf35faf58318246017297570d55d599b367823876739ce84",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 15
+   }
+  },
+  "12710": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ec29fb45b1355122a4ad5c14d2fe1d240a338a0619371f36c7a972ccfc1ca1a1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12711": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d28634e1e7a59965cbc705942d9de3f470e6cba42a2369aa612578096686435f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12712": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "05b51dab95b2f7c8d6c3bf150f47f5350697689236e1c8c785d81080ba210db4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12713": {
+   "skill": "gh_Series",
+   "operation": "partial_sum_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cef782b4f314067f667aa51c25d34eb1bc299f99a9b29bc613c1b389a5af085b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12714": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e76b5887356f672171d414a89639aba430bfa541a7dd3da85f667df0f7008223",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12715": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "662f6f25b3d33d4db2768405080f8646d223902ce5e0d69a85fec3c27982f9e0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12716": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b64fc6e87ebceaafbfc3174f8e759c97fcce42491584aac855befcad3f22cce9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12717": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3b9669b041f0904f0df9ba7b275c547790525b0d0d0bf49099b5a5c70359d51c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12718": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "edfe5c20a140a01210f3f2b893310241dd5ce6b5a0232debbd2b5bff9b0e54bc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12720": {
+   "skill": "gh_Series",
+   "operation": "partial_sum_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a1d28fc4b0dd96eecfb704deab77089533f54bcfd9f90ee598019dcef1898534",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12721": {
+   "skill": "gh_Series",
+   "operation": "series_statements",
+   "variants": 15,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f5cc01dc3bb8f3ed35513afe513d132a490212093348f72466c3bd11e9b4d889",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 15
+   }
+  },
+  "12722": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dbcae665d2dd431465bfeffdfe0f183b30439bdcd449fe209c3ab85a64898b70",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12723": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "aff507c25c2a71a99f0221bcddd2bc1e6b5a8c55cc762341235036bcf3bbbb21",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12724": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9be5736cf193edad7665f8affca911db2b37e11cd75052e96c1b84951eb571d2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12725": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "17f29a0cf01f5330a202214092210a0655e88c28ebb926699ed1171eb21110ba",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12726": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d45d16435eb6d47a816c60a8cd79fcbe2620a59b9a79f692938f1b096a6df1d0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12728": {
+   "skill": "gh_Series",
+   "operation": "partial_sum_terms",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6c4d5515086ba9e1c798739f71287e66c381403c275097551bc379b94db7c238",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12729": {
+   "skill": "gh_Series",
+   "operation": "arithmetic_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "65c0be67198daf4c99bc690603f5ff7ee0bd9642a11e7b0dac83e3a98641005c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12730": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2a5fad9327e547cef1bcd5f07beb23d71bbc086be6d15a7204eac2550ad6f4c3",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12732": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d9e97ef31ce121e541eafe6700251de0321c1d39e6189a29af53012c6209bad6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12733": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c789feadcedc11c1984efab81d0953e9b60ea8e1f91f907f43a103d8eb8e652f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12734": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8c8679744cfd42fa544249908b3f7dfae886ab9a5e95a19a9acb04386665173b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12736": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f6d028c9d2608ed7cc4cb64fbf65c688ec471868e8876ac68dff5677e65895af",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12737": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4ce5aa7915047be5a89a02b1350eb667e7f4a43779cac1f6cf599022d8dc7361",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12738": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f9913c91b12ccdefc13d5ea4b43be6c9c1e3862de63d070fb2c2ffb197142555",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12739": {
+   "skill": "gh_Series",
+   "operation": "series_statements",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d412c127cf9cb0618d36dfb579438e71947cba783e2662e32bcc2bc28f1442b2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12740": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "series_statements",
+   "variants": 4,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "971a345de0111971b1194f2820b9de9ecd02488478fcee18d73190d94f8ca98f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 4
+   }
+  },
+  "12741": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a07cec48a78c92cc3d2848a1c4044003c15799c65dd128cb809c9346d9ab5e1f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12742": {
+   "skill": "gh_CommonSeriesSummationFormulas",
+   "operation": "power_sums",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CommonSeriesSummationFormulas",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "179106ec5a3f96d1f60c74db7310001411d4dba2cab701ab668e3846e3503189",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12743": {
+   "skill": "gh_Series",
+   "operation": "geometric_series_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Series",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6849bafaa89d79745771fedb27ea33daccfcd1ed267e8823c9e41396b8c01ff2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_CommonSeriesSummationFormulas": {
+   "status": "production_published",
+   "component_count": 9,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 8,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12732",
+    "src_12733",
+    "src_12734",
+    "src_12736",
+    "src_12737",
+    "src_12738",
+    "src_12740",
+    "src_12741",
+    "src_12742"
+   ]
+  },
+  "gh_Series": {
+   "status": "production_published",
+   "component_count": 24,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 22,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12707",
+    "src_12708",
+    "src_12709",
+    "src_12710",
+    "src_12711",
+    "src_12712",
+    "src_12713",
+    "src_12714",
+    "src_12715",
+    "src_12716",
+    "src_12717",
+    "src_12718",
+    "src_12720",
+    "src_12721",
+    "src_12722",
+    "src_12723",
+    "src_12724",
+    "src_12725",
+    "src_12726",
+    "src_12728",
+    "src_12729",
+    "src_12730",
+    "src_12739",
+    "src_12743"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_CommonSeriesSummationFormulas": {
+   "served_examples": {
+    "12732": 9,
+    "12733": 9,
+    "12734": 9,
+    "12736": 8,
+    "12737": 9,
+    "12738": 9,
+    "12740": 9,
+    "12741": 9,
+    "12742": 9
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_Series": {
+   "served_examples": {
+    "12707": 3,
+    "12708": 4,
+    "12709": 3,
+    "12710": 3,
+    "12711": 3,
+    "12712": 4,
+    "12713": 4,
+    "12714": 3,
+    "12715": 3,
+    "12716": 3,
+    "12717": 4,
+    "12718": 3,
+    "12720": 3,
+    "12721": 3,
+    "12722": 4,
+    "12723": 3,
+    "12724": 4,
+    "12725": 3,
+    "12726": 3,
+    "12728": 4,
+    "12729": 3,
+    "12730": 4,
+    "12739": 3,
+    "12743": 3
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}
